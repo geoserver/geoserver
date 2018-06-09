@@ -17,16 +17,14 @@ import org.geotools.util.NumberRange;
 
 /**
  * A form component for a {@link Range} object.
- * 
+ *
  * @author Andrea Aime, OpenGeo
  */
 @SuppressWarnings("serial")
 public class RangePanel extends FormComponentPanel<NumberRange> {
 
     protected Double min, max;
-
     protected Label minLabel, maxLabel;
-
     protected DecimalTextField minInput, maxInput;
 
     public RangePanel(String id) {
@@ -70,17 +68,21 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
     }
 
     public RangePanel setReadOnly(final boolean readOnly) {
-        visitChildren(TextField.class, (component, visit) -> {
-            component.setEnabled(!readOnly);
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    component.setEnabled(!readOnly);
+                });
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).processInput();
+                });
 
         // update the envelope model
         if (min != null && max != null) {
@@ -95,9 +97,10 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).clearInput();
+                });
     }
-
 }

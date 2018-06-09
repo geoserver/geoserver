@@ -4,6 +4,9 @@
  */
 package org.geoserver.wcs.responses;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -15,47 +18,46 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import ucar.ma2.InvalidRangeException;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * Writes out a NetCDF file (the write parameters are provided during construction, see {@link NetCDFEncoderFactory}
+ * Writes out a NetCDF file (the write parameters are provided during construction, see {@link
+ * NetCDFEncoderFactory}
  */
 public interface NetCDFEncoder {
 
     /**
      * Writes out the NetCDF file
-     * 
+     *
      * @throws IOException
      * @throws InvalidRangeException
      */
     void write() throws IOException, InvalidRangeException;
 
-    /**
-     * Close and release resources
-     */
+    /** Close and release resources */
     void close();
 
     /**
      * Extracts the NetCDF encoding settings out of the encoding parameters
+     *
      * @param encodingParameters
      * @return
      */
     static NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
-        if (keys != null && !keys.isEmpty() && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
+        if (keys != null
+                && !keys.isEmpty()
+                && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
             String coverageId = encodingParameters.get(WCS20GetCoverageResponse.COVERAGE_ID_PARAM);
             if (coverageId != null) {
                 return getSettings(coverageId);
             }
         }
-        
+
         return null;
     }
 
     /**
      * Extracts the NetCDF encoding settings from the coverage identifier
+     *
      * @param coverageId
      * @return
      */
@@ -69,15 +71,17 @@ public interface NetCDFEncoder {
                 map = info.getResource().getMetadata();
             }
         }
-        if (map != null && !map.isEmpty()
+        if (map != null
+                && !map.isEmpty()
                 && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
-            NetCDFLayerSettingsContainer settings = (NetCDFLayerSettingsContainer) map.get(
-                    NetCDFSettingsContainer.NETCDFOUT_KEY,
-                    NetCDFLayerSettingsContainer.class);
+            NetCDFLayerSettingsContainer settings =
+                    (NetCDFLayerSettingsContainer)
+                            map.get(
+                                    NetCDFSettingsContainer.NETCDFOUT_KEY,
+                                    NetCDFLayerSettingsContainer.class);
             return settings;
         }
-        
+
         return null;
     }
-
 }

@@ -4,18 +4,19 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.util.NoSuchElementException;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.NoSuchElementException;
-
 class TimeoutFeatureIterator<F extends Feature> implements FeatureIterator<F> {
 
-    static class SimpleTimeoutFeatureIterator extends TimeoutFeatureIterator<SimpleFeature> implements SimpleFeatureIterator {
+    static class SimpleTimeoutFeatureIterator extends TimeoutFeatureIterator<SimpleFeature>
+            implements SimpleFeatureIterator {
 
-        public SimpleTimeoutFeatureIterator(TimeoutVerifier timeoutVerifier, FeatureIterator<SimpleFeature> delegate) {
+        public SimpleTimeoutFeatureIterator(
+                TimeoutVerifier timeoutVerifier, FeatureIterator<SimpleFeature> delegate) {
             super(timeoutVerifier, delegate);
         }
     }
@@ -46,5 +47,4 @@ class TimeoutFeatureIterator<F extends Feature> implements FeatureIterator<F> {
         // do not check timeout on close, we are done already...
         delegate.close();
     }
-
 }

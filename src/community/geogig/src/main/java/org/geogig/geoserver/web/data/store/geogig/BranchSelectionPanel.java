@@ -6,12 +6,13 @@ package org.geogig.geoserver.web.data.store.geogig;
 
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Supplier;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -24,9 +25,6 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Supplier;
-
 public class BranchSelectionPanel extends FormComponentPanel<String> {
     private static final long serialVersionUID = 1L;
 
@@ -36,8 +34,11 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
 
     private transient Supplier<RepositoryManager> manager = () -> RepositoryManager.get();
 
-    public BranchSelectionPanel(String id, IModel<String> repositoryUriModel,
-            IModel<String> branchNameModel, Form<DataStoreInfo> storeEditForm) {
+    public BranchSelectionPanel(
+            String id,
+            IModel<String> repositoryUriModel,
+            IModel<String> branchNameModel,
+            Form<DataStoreInfo> storeEditForm) {
         super(id, branchNameModel);
         this.repositoryUriModel = repositoryUriModel;
 
@@ -49,20 +50,21 @@ public class BranchSelectionPanel extends FormComponentPanel<String> {
         add(choice);
         updateChoices(false, null);
 
-        final AjaxSubmitLink refreshLink = new AjaxSubmitLink("refresh", storeEditForm) {
-            private static final long serialVersionUID = 1L;
+        final AjaxSubmitLink refreshLink =
+                new AjaxSubmitLink("refresh", storeEditForm) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                onSubmit(target, form);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        onSubmit(target, form);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                updateChoices(true, form);
-                target.add(BranchSelectionPanel.this.choice);
-            }
-        };
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        updateChoices(true, form);
+                        target.add(BranchSelectionPanel.this.choice);
+                    }
+                };
         add(refreshLink);
     }
 

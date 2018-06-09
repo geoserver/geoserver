@@ -5,8 +5,13 @@
  */
 package org.geoserver.wps.ppio;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 import java.util.List;
-
 import org.geoserver.wps.ppio.gpx.GpxType;
 import org.geoserver.wps.ppio.gpx.RteType;
 import org.geoserver.wps.ppio.gpx.WptType;
@@ -14,18 +19,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.Name;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-
-/**
- * Small helper class to convert from JTS Geometry to GPX types
- * 
- * 
- */
+/** Small helper class to convert from JTS Geometry to GPX types */
 public class GPXHelper {
     private GpxType gpxType;
 
@@ -66,50 +60,37 @@ public class GPXHelper {
             for (int li = 0; li < nrls; li++) {
                 Geometry ls = ((MultiLineString) go).getGeometryN(li);
                 RteType rte = toRte((LineString) ls);
-                if (nameStr != null)
-                    rte.setName(nameStr);
-                if (commentStr != null)
-                    rte.setCmt(commentStr);
-                if (descriptionStr != null)
-                    rte.setDesc(descriptionStr);
+                if (nameStr != null) rte.setName(nameStr);
+                if (commentStr != null) rte.setCmt(commentStr);
+                if (descriptionStr != null) rte.setDesc(descriptionStr);
                 gpxType.getRte().add(rte);
             }
         } else if (go instanceof LineString) {
             RteType rte = toRte((LineString) go);
-            if (nameStr != null)
-                rte.setName(nameStr);
-            if (commentStr != null)
-                rte.setCmt(commentStr);
-            if (descriptionStr != null)
-                rte.setDesc(descriptionStr);
+            if (nameStr != null) rte.setName(nameStr);
+            if (commentStr != null) rte.setCmt(commentStr);
+            if (descriptionStr != null) rte.setDesc(descriptionStr);
             gpxType.getRte().add(rte);
         } else if (go instanceof MultiPoint) {
             int nrpt = ((MultiPoint) go).getNumGeometries();
             for (int pi = 0; pi < nrpt; pi++) {
                 Geometry pt = ((MultiPoint) go).getGeometryN(pi);
                 WptType wpt = toWpt((Point) pt);
-                if (nameStr != null)
-                    wpt.setName(nameStr);
-                if (commentStr != null)
-                    wpt.setCmt(commentStr);
-                if (descriptionStr != null)
-                    wpt.setDesc(descriptionStr);
+                if (nameStr != null) wpt.setName(nameStr);
+                if (commentStr != null) wpt.setCmt(commentStr);
+                if (descriptionStr != null) wpt.setDesc(descriptionStr);
                 gpxType.getWpt().add(wpt);
             }
         } else if (go instanceof Point) {
             WptType wpt = toWpt((Point) go);
-            if (nameStr != null)
-                wpt.setName(nameStr);
-            if (commentStr != null)
-                wpt.setCmt(commentStr);
-            if (descriptionStr != null)
-                wpt.setDesc(descriptionStr);
+            if (nameStr != null) wpt.setName(nameStr);
+            if (commentStr != null) wpt.setCmt(commentStr);
+            if (descriptionStr != null) wpt.setDesc(descriptionStr);
             gpxType.getWpt().add(wpt);
         } else {
             // no useful geometry, no feature!
             return;
         }
-
     }
 
     public WptType toWpt(Point p) {
@@ -132,6 +113,5 @@ public class GPXHelper {
             rtePts.add(coordToWpt(coordinates[pi].x, coordinates[pi].y));
         }
         return rte;
-
     }
 }

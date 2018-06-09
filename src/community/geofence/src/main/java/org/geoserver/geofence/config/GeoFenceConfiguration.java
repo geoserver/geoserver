@@ -19,17 +19,15 @@
  */
 package org.geoserver.geofence.config;
 
+import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 /**
  * Configuration object for GeofenceAccessManager.
- * 
- * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  *
+ * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  */
 public class GeoFenceConfiguration implements Serializable, Cloneable {
 
@@ -55,17 +53,14 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     private String defaultUserGroupServiceName;
 
-    /**
-     * Remote GeoFence services url.
-     *
-     */
+    /** Remote GeoFence services url. */
     public String getServicesUrl() {
         return servicesUrl;
     }
 
     /**
      * Remote GeoFence services url.
-     * 
+     *
      * @param servicesUrl
      */
     public void setServicesUrl(String servicesUrl) {
@@ -74,7 +69,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * Name of this GeoServer instance for GeoFence rule configuration.
-     * 
+     *
      * @param instanceName the instanceName to set
      */
     public void setInstanceName(String instanceName) {
@@ -83,7 +78,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * Name of this GeoServer instance for GeoFence rule configuration.
-     * 
+     *
      * @return the instanceName
      */
     public String getInstanceName() {
@@ -92,24 +87,22 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * Flag to allow usage of remote and inline layers in SLDs.
-     * 
+     *
      * @param allowRemoteAndInlineLayers
      */
     public void setAllowRemoteAndInlineLayers(boolean allowRemoteAndInlineLayers) {
         this.allowRemoteAndInlineLayers = allowRemoteAndInlineLayers;
     }
 
-    /**
-     * Flag to allow usage of remote and inline layers in SLDs.
-     *
-     */
+    /** Flag to allow usage of remote and inline layers in SLDs. */
     public boolean isAllowRemoteAndInlineLayers() {
         return allowRemoteAndInlineLayers;
     }
 
     /**
-     * Allows write access to resources to authenticated users, if false only ADMINs have write access.
-     * 
+     * Allows write access to resources to authenticated users, if false only ADMINs have write
+     * access.
+     *
      * @return the grantWriteToWorkspacesToAuthenticatedUsers
      */
     public boolean isGrantWriteToWorkspacesToAuthenticatedUsers() {
@@ -117,18 +110,21 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     }
 
     /**
-     * Allows write access to resources to authenticated users, if false only ADMINs have write access.
-     * 
-     * @param grantWriteToWorkspacesToAuthenticatedUsers the grantWriteToWorkspacesToAuthenticatedUsers to set
+     * Allows write access to resources to authenticated users, if false only ADMINs have write
+     * access.
+     *
+     * @param grantWriteToWorkspacesToAuthenticatedUsers the
+     *     grantWriteToWorkspacesToAuthenticatedUsers to set
      */
     public void setGrantWriteToWorkspacesToAuthenticatedUsers(
             boolean grantWriteToWorkspacesToAuthenticatedUsers) {
-        this.grantWriteToWorkspacesToAuthenticatedUsers = grantWriteToWorkspacesToAuthenticatedUsers;
+        this.grantWriteToWorkspacesToAuthenticatedUsers =
+                grantWriteToWorkspacesToAuthenticatedUsers;
     }
 
     /**
      * Use authenticated users roles to match rules, instead of username.
-     * 
+     *
      * @return the useRolesToFilter
      */
     public boolean isUseRolesToFilter() {
@@ -137,7 +133,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * Use authenticated users roles to match rules, instead of username.
-     * 
+     *
      * @param useRolesToFilter the useRolesToFilter to set
      */
     public void setUseRolesToFilter(boolean useRolesToFilter) {
@@ -146,7 +142,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * List of mutually exclusive roles used for rule matching when useRolesToFilter is true.
-     * 
+     *
      * @return the acceptedRoles
      */
     public String getAcceptedRoles() {
@@ -155,7 +151,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * List of mutually exclusive roles used for rule matching when useRolesToFilter is true.
-     * 
+     *
      * @param acceptedRoles the acceptedRoles to set
      */
     public void setAcceptedRoles(String acceptedRoles) {
@@ -177,48 +173,36 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
         return servicesUrl.startsWith(URL_INTERNAL);
     }
 
-    /**
-     * 
-     * @return
-     */
+    /** @return */
     public String getGwcContextSuffix() {
         return gwcContextSuffix;
     }
 
-    /**
-     * @param gwcContextSuffix the gwcContextSuffix to set
-     */
+    /** @param gwcContextSuffix the gwcContextSuffix to set */
     public void setGwcContextSuffix(String gwcContextSuffix) {
         this.gwcContextSuffix = gwcContextSuffix;
     }
 
-    /**
-     * @param defaultUserGroupServiceName the defaultUserGroupServiceName to set
-     */
+    /** @param defaultUserGroupServiceName the defaultUserGroupServiceName to set */
     public void setDefaultUserGroupServiceName(String defaultUserGroupServiceName) {
         this.defaultUserGroupServiceName = defaultUserGroupServiceName;
     }
 
-    /**
-     * 
-     * @return
-     */
+    /** @return */
     public String getDefaultUserGroupServiceName() {
         return defaultUserGroupServiceName;
     }
 
-    /**
-     * Creates a copy of the configuration object.
-     */
+    /** Creates a copy of the configuration object. */
     @Override
     public GeoFenceConfiguration clone() {
         try {
             GeoFenceConfiguration clone = (GeoFenceConfiguration) super.clone();
-            clone.setAcceptedRoles(acceptedRoles); // make sure the computed list is properly initted
+            clone.setAcceptedRoles(
+                    acceptedRoles); // make sure the computed list is properly initted
             return clone;
         } catch (CloneNotSupportedException ex) {
             throw new UnknownError("Unexpected exception: " + ex.getMessage());
         }
     }
-
 }

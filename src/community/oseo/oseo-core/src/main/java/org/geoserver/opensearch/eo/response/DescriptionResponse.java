@@ -6,9 +6,7 @@ package org.geoserver.opensearch.eo.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.opensearch.eo.OSEODescription;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -20,9 +18,9 @@ import org.geoserver.platform.ServiceException;
  * @author Andrea Aime - GeoSolutions
  */
 public class DescriptionResponse extends Response {
-    
+
     public static final String OS_DESCRIPTION_MIME = "application/opensearchdescription+xml";
-    
+
     public DescriptionResponse() {
         super(OSEODescription.class, OS_DESCRIPTION_MIME);
     }
@@ -45,11 +43,9 @@ public class DescriptionResponse extends Response {
             throw new ServiceException(e);
         }
     }
-    
+
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         return "description.xml";
-    }   
-
-
+    }
 }

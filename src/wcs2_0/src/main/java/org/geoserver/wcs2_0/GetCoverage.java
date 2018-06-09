@@ -21,13 +21,22 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import javax.media.jai.BorderExtender;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.WarpAffine;
-
+import net.opengis.wcs20.ExtensionItemType;
+import net.opengis.wcs20.ExtensionType;
+import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.InterpolationAxesType;
+import net.opengis.wcs20.InterpolationAxisType;
+import net.opengis.wcs20.InterpolationMethodType;
+import net.opengis.wcs20.InterpolationType;
+import net.opengis.wcs20.RangeIntervalType;
+import net.opengis.wcs20.RangeItemType;
+import net.opengis.wcs20.RangeSubsetType;
+import net.opengis.wcs20.ScalingType;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
@@ -102,55 +111,42 @@ import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
-import net.opengis.wcs20.ExtensionItemType;
-import net.opengis.wcs20.ExtensionType;
-import net.opengis.wcs20.GetCoverageType;
-import net.opengis.wcs20.InterpolationAxesType;
-import net.opengis.wcs20.InterpolationAxisType;
-import net.opengis.wcs20.InterpolationMethodType;
-import net.opengis.wcs20.InterpolationType;
-import net.opengis.wcs20.RangeIntervalType;
-import net.opengis.wcs20.RangeItemType;
-import net.opengis.wcs20.RangeSubsetType;
-import net.opengis.wcs20.ScalingType;
-
 /**
  * Implementation of the WCS 2.0.1 GetCoverage request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  * @author Simone Giannecchini, GeoSolutions
  * @author Daniele Romagnoli, GeoSolutions
  */
 public class GetCoverage {
-    
-    private static final Hints HINTS = new Hints(
-            Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
 
-	private final static Set<String> mdFormats;
+    private static final Hints HINTS = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
+
+    private static final Set<String> mdFormats;
 
     private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
-    
+
     static {
-        //TODO: This one should be pluggable through Extensions
+        // TODO: This one should be pluggable through Extensions
         mdFormats = new HashSet<String>();
         mdFormats.add("application/x-netcdf");
         mdFormats.add("application/x-netcdf4");
     }
 
-    /** Logger.*/
-    private static Logger LOGGER= Logging.getLogger(GetCoverage.class);
-    
+    /** Logger. */
+    private static Logger LOGGER = Logging.getLogger(GetCoverage.class);
+
     private WCSInfo wcs;
-    
+
     private Catalog catalog;
-    
-    /** Utility class to map envelope dimension*/
+
+    /** Utility class to map envelope dimension */
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
-    
-    /** A URI authorithy with lonlat order.*/
+
+    /** A URI authorithy with lonlat order. */
     private CRSAuthorityFactory lonLatCRSFactory;
 
-    /** A URI authorithy with latlon order.*/
+    /** A URI authorithy with latlon order. */
     private CRSAuthorityFactory latLonCRSFactory;
 
     /** Factory used to create new coverages */
@@ -158,36 +154,45 @@ public class GetCoverage {
 
     private MIMETypeMapper mimeMapper;
 
-    public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
+    public static final String SRS_STARTER = "http://www.opengis.net/def/crs/EPSG/0/";
 
     /** Hints to indicate that a scale has been pre-applied, reporting the scaling factors */
     public static Hints.Key PRE_APPLIED_SCALE = new Hints.Key(Double[].class);
 
     private static final double EPS = 1e-6;
 
-    public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimeMapper) {
+    public GetCoverage(
+            WCSInfo serviceInfo,
+            Catalog catalog,
+            EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
+            MIMETypeMapper mimeMapper) {
         this.wcs = serviceInfo;
         this.catalog = catalog;
-        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        this.envelopeDimensionsMapper = envelopeDimensionsMapper;
         this.mimeMapper = mimeMapper;
 
         // building the needed URI CRS Factories
         Hints hints = GeoTools.getDefaultHints();
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        lonLatCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
-        
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.FALSE));
+        lonLatCRSFactory =
+                ReferencingFactoryFinder.getCRSAuthorityFactory(
+                        "http://www.opengis.net/def", hints);
+
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.FALSE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        latLonCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints);
-        this.gridCoverageFactory = CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
+        latLonCRSFactory =
+                ReferencingFactoryFinder.getCRSAuthorityFactory(
+                        "http://www.opengis.net/def", hints);
+        this.gridCoverageFactory =
+                CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
     }
 
     /**
-     * Return true in case the specified format supports Multidimensional Output
-     * TODO: Consider adding a method to CoverageResponseDelegate returning this information
-     * @param format
+     * Return true in case the specified format supports Multidimensional Output TODO: Consider
+     * adding a method to CoverageResponseDelegate returning this information
      *
+     * @param format
      */
     public static boolean formatSupportMDOutput(String format) {
         return mdFormats.contains(format);
@@ -195,38 +200,44 @@ public class GetCoverage {
 
     /**
      * Executes the provided {@link GetCoverageType}.
-     * 
+     *
      * @param request the {@link GetCoverageType} to be executed.
-     * @return the {@link GridCoverage} produced by the chain of operations specified by the provided {@link GetCoverageType}.
+     * @return the {@link GridCoverage} produced by the chain of operations specified by the
+     *     provided {@link GetCoverageType}.
      */
     public GridCoverage run(GetCoverageType request) {
 
         // get same support filter as in WCS 1.0 and WCS 1.1
         Filter filter = WCSUtils.getRequestFilter();
-        if(filter != null) {
+        if (filter != null) {
             request.setFilter(filter);
         }
-        
+
         //
         // get the coverage info from the catalog or throw an exception if we don't find it
         //
         final LayerInfo linfo = NCNameResourceCodec.getCoverage(catalog, request.getCoverageId());
-        if(linfo == null) {
-            throw new WCS20Exception("Could not locate coverage " + request.getCoverageId(), 
-                    WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, "coverageId");
-        } 
-        final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
-        if(LOGGER.isLoggable(Level.FINE)){
-            LOGGER.fine("Executing GetCoverage request on coverage :"+linfo.toString());
+        if (linfo == null) {
+            throw new WCS20Exception(
+                    "Could not locate coverage " + request.getCoverageId(),
+                    WCS20Exception.WCS20ExceptionCode.NoSuchCoverage,
+                    "coverageId");
         }
-        
+        final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Executing GetCoverage request on coverage :" + linfo.toString());
+        }
+
         // prepare the default format
-        if(request.getFormat() == null) {
+        if (request.getFormat() == null) {
             try {
                 String nativeFormat = mimeMapper.mapNativeFormat(cinfo);
                 request.setFormat(nativeFormat);
-            } catch(Exception e) {
-                LOGGER.log(Level.WARNING, "Could not compute the native type of the coverage, defaulting to image/tiff", e);
+            } catch (Exception e) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Could not compute the native type of the coverage, defaulting to image/tiff",
+                        e);
             }
         }
 
@@ -241,75 +252,126 @@ public class GetCoverage {
             // here I find if I can use overviews and do subsampling
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
-            hints.add(new RenderingHints(JAI.KEY_BORDER_EXTENDER,BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
-//            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check interpolation
+            hints.add(
+                    new RenderingHints(
+                            JAI.KEY_BORDER_EXTENDER,
+                            BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+            //            hints.add(new
+            // RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check
+            // interpolation
 
             // get a reader for this coverage
-            final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo.getGridCoverageReader(
-                    new DefaultProgressListener(), 
-                    hints);
+            final GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            cinfo.getGridCoverageReader(new DefaultProgressListener(), hints);
 
-            WCSDimensionsSubsetHelper helper = parseGridCoverageRequest(cinfo, reader, request, extensions);
+            WCSDimensionsSubsetHelper helper =
+                    parseGridCoverageRequest(cinfo, reader, request, extensions);
             GridCoverageRequest gcr = helper.getGridCoverageRequest();
 
-            //TODO consider dealing with the Format instance instead of a String parsing or check against WCSUtils.isSupportedMDOutputFormat(String).
-            final GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(hints);
-            if (reader instanceof StructuredGridCoverage2DReader && formatSupportMDOutput(request.getFormat())) {
-                // Split the main request into a List of requests in order to read more coverages to be stacked 
+            // TODO consider dealing with the Format instance instead of a String parsing or check
+            // against WCSUtils.isSupportedMDOutputFormat(String).
+            final GridCoverageFactory coverageFactory =
+                    CoverageFactoryFinder.getGridCoverageFactory(hints);
+            if (reader instanceof StructuredGridCoverage2DReader
+                    && formatSupportMDOutput(request.getFormat())) {
+                // Split the main request into a List of requests in order to read more coverages to
+                // be stacked
                 final Set<GridCoverageRequest> requests = helper.splitRequestToSet();
                 if (requests == null || requests.isEmpty()) {
                     throw new IllegalArgumentException("Splitting requests returned nothing");
                 } else {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Splitting request generated " + requests.size() + " sub requests");
+                        LOGGER.fine(
+                                "Splitting request generated " + requests.size() + " sub requests");
                     }
                 }
                 final List<DimensionBean> dimensions = helper.setupDimensions();
                 final String nativeName = cinfo.getNativeCoverageName();
-                final String coverageName = nativeName != null ? nativeName : reader.getGridCoverageNames()[0];
-                final GranuleStackImpl stack = new GranuleStackImpl(coverageName, reader.getCoordinateReferenceSystem(), dimensions);
+                final String coverageName =
+                        nativeName != null ? nativeName : reader.getGridCoverageNames()[0];
+                final GranuleStackImpl stack =
+                        new GranuleStackImpl(
+                                coverageName, reader.getCoordinateReferenceSystem(), dimensions);
                 // Geoserver max memory limit definition
                 long outputLimit = wcs.getMaxOutputMemory() * 1024;
                 long inputLimit = wcs.getMaxInputMemory() * 1024;
-                // Object value used for storing the sum of the output size of each internal coverage
-                ImageSizeRecorder incrementalOutputSize=new ImageSizeRecorder(outputLimit,false);
+                // Object value used for storing the sum of the output size of each internal
+                // coverage
+                ImageSizeRecorder incrementalOutputSize = new ImageSizeRecorder(outputLimit, false);
                 // Object used for storing the sum of the output size of each internal coverage
-                ImageSizeRecorder incrementalInputSize=new ImageSizeRecorder(inputLimit,true);
+                ImageSizeRecorder incrementalInputSize = new ImageSizeRecorder(inputLimit, true);
                 // Image size estimation
                 final int numRequests = requests.size();
                 final Iterator<GridCoverageRequest> requestsIterator = requests.iterator();
                 GridCoverageRequest firstRequest = requestsIterator.next();
-                GridCoverage2D firstCoverage = setupCoverage(helper, firstRequest, request, reader, hints, extensions, dimensions,
-                        incrementalOutputSize, incrementalInputSize, coverageFactory);
+                GridCoverage2D firstCoverage =
+                        setupCoverage(
+                                helper,
+                                firstRequest,
+                                request,
+                                reader,
+                                hints,
+                                extensions,
+                                dimensions,
+                                incrementalOutputSize,
+                                incrementalInputSize,
+                                coverageFactory);
                 // check the first coverage memory usage
                 long actual = incrementalInputSize.finalSize();
                 // Estimated size
-                long estimatedSize = actual*numRequests;
-                //Check if the estimated size is greater than that of the maximum output memory
+                long estimatedSize = actual * numRequests;
+                // Check if the estimated size is greater than that of the maximum output memory
                 // Limit check is performed only when the limit is defined
-                if(outputLimit > 0 && estimatedSize > outputLimit){
-                    throw new WcsException("This request is trying to generate too much data, " +
-                            "the limit is " + formatBytes(outputLimit) + " but the estimated amount of bytes to be " +
-                                    "written in the output is " + formatBytes(estimatedSize));
+                if (outputLimit > 0 && estimatedSize > outputLimit) {
+                    throw new WcsException(
+                            "This request is trying to generate too much data, "
+                                    + "the limit is "
+                                    + formatBytes(outputLimit)
+                                    + " but the estimated amount of bytes to be "
+                                    + "written in the output is "
+                                    + formatBytes(estimatedSize));
                 }
-                // If the estimated size does not exceed the limit, the first coverage is added to the GranuleStack
+                // If the estimated size does not exceed the limit, the first coverage is added to
+                // the GranuleStack
                 stack.addCoverage(firstCoverage);
 
                 // Get a coverage for each subrequest
                 while (requestsIterator.hasNext()) {
                     GridCoverageRequest subRequest = requestsIterator.next();
-                    GridCoverage2D singleCoverage = setupCoverage(helper, subRequest, request, reader, hints, extensions, dimensions,
-                            incrementalOutputSize, incrementalInputSize, coverageFactory);
+                    GridCoverage2D singleCoverage =
+                            setupCoverage(
+                                    helper,
+                                    subRequest,
+                                    request,
+                                    reader,
+                                    hints,
+                                    extensions,
+                                    dimensions,
+                                    incrementalOutputSize,
+                                    incrementalInputSize,
+                                    coverageFactory);
                     stack.addCoverage(singleCoverage);
                 }
                 coverage = stack;
             } else {
                 // IncrementalSize not used
-                coverage = setupCoverage(helper, gcr, request, reader, hints, extensions, null, null, null, coverageFactory);
+                coverage =
+                        setupCoverage(
+                                helper,
+                                gcr,
+                                request,
+                                reader,
+                                hints,
+                                extensions,
+                                null,
+                                null,
+                                null,
+                                coverageFactory);
             }
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             throw e;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
         } finally {
             // make sure the coverage will get cleaned at the end of the processing
@@ -322,30 +384,32 @@ public class GetCoverage {
     }
 
     /**
-     * Setup a coverage on top of the specified gridCoverageRequest 
+     * Setup a coverage on top of the specified gridCoverageRequest
+     *
      * @param helper a {@link CoverageInfo} instance
-     * @param gridCoverageRequest the gridCoverageRequest specifying interpolation, subsettings, filters, ...
+     * @param gridCoverageRequest the gridCoverageRequest specifying interpolation, subsettings,
+     *     filters, ...
      * @param coverageType the getCoverage
      * @param reader the Reader to be used to perform the read operation
      * @param hints hints to be used by the involved operations
-     * @param extensions 
-     * @param coverageFactory 
-     * @param dimensions 
-     *
+     * @param extensions
+     * @param coverageFactory
+     * @param dimensions
      */
     private GridCoverage2D setupCoverage(
-            final WCSDimensionsSubsetHelper helper, 
-            final GridCoverageRequest gridCoverageRequest, 
-            final GetCoverageType coverageType, 
-            final GridCoverage2DReader reader, 
-            final Hints hints, 
-            final Map<String, ExtensionItemType> extensions, 
+            final WCSDimensionsSubsetHelper helper,
+            final GridCoverageRequest gridCoverageRequest,
+            final GetCoverageType coverageType,
+            final GridCoverage2DReader reader,
+            final Hints hints,
+            final Map<String, ExtensionItemType> extensions,
             final List<DimensionBean> coverageDimensions,
             ImageSizeRecorder incrementalOutputSize,
             ImageSizeRecorder incrementalInputSize,
-            final GridCoverageFactory coverageFactory) throws Exception {
+            final GridCoverageFactory coverageFactory)
+            throws Exception {
         List<GridCoverage2D> coverages = null;
-        double[] preAppliedScale = new double[]{Double.NaN, Double.NaN};
+        double[] preAppliedScale = new double[] {Double.NaN, Double.NaN};
         //
         // we setup the params to force the usage of imageread and to make it use
         // the right overview and so on
@@ -353,19 +417,27 @@ public class GetCoverage {
         // we specify to work in streaming fashion
         // TODO elevation
         ScalingType scaling = extractScaling(extensions);
-        coverages = readCoverage(helper, gridCoverageRequest, reader, hints,
-                incrementalInputSize, scaling, preAppliedScale);
+        coverages =
+                readCoverage(
+                        helper,
+                        gridCoverageRequest,
+                        reader,
+                        hints,
+                        incrementalInputSize,
+                        scaling,
+                        preAppliedScale);
         GridSampleDimension[] sampleDimensions = collectDimensions(coverages);
         if (coverages == null || coverages.isEmpty()) {
-            throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
+            throw new IllegalStateException(
+                    "Unable to read a coverage for the current request" + coverageType.toString());
         }
 
         //
         // handle range subsetting
-        //        
+        //
         for (int i = 0; i < coverages.size(); i++) {
-            GridCoverage2D rangeSubsetted = handleRangeSubsettingExtension(coverages.get(i), extensions,
-                    hints);
+            GridCoverage2D rangeSubsetted =
+                    handleRangeSubsettingExtension(coverages.get(i), extensions, hints);
             coverages.set(i, rangeSubsetted);
         }
 
@@ -374,8 +446,9 @@ public class GetCoverage {
         //
         List<GridCoverage2D> temp = new ArrayList<>();
         for (int i = 0; i < coverages.size(); i++) {
-            List<GridCoverage2D> subsetted = handleSubsettingExtension(coverages.get(i),
-                    gridCoverageRequest.getSpatialSubset(), hints);
+            List<GridCoverage2D> subsetted =
+                    handleSubsettingExtension(
+                            coverages.get(i), gridCoverageRequest.getSpatialSubset(), hints);
             temp.addAll(subsetted);
         }
         coverages = temp;
@@ -385,8 +458,13 @@ public class GetCoverage {
         //
         // scaling is done in raster space with eventual interpolation
         for (int i = 0; i < coverages.size(); i++) {
-            GridCoverage2D scaled = handleScaling(coverages.get(i), scaling,
-                    gridCoverageRequest.getSpatialInterpolation(), preAppliedScale, hints);
+            GridCoverage2D scaled =
+                    handleScaling(
+                            coverages.get(i),
+                            scaling,
+                            gridCoverageRequest.getSpatialInterpolation(),
+                            preAppliedScale,
+                            hints);
             coverages.set(i, scaled);
         }
 
@@ -395,9 +473,12 @@ public class GetCoverage {
         //
         // reproject the output coverage to an eventual outputCrs
         for (int i = 0; i < coverages.size(); i++) {
-            GridCoverage2D reprojected = handleReprojection(coverages.get(i),
-                    gridCoverageRequest.getOutputCRS(),
-                    gridCoverageRequest.getSpatialInterpolation(), hints);
+            GridCoverage2D reprojected =
+                    handleReprojection(
+                            coverages.get(i),
+                            gridCoverageRequest.getOutputCRS(),
+                            gridCoverageRequest.getSpatialInterpolation(),
+                            hints);
             coverages.set(i, reprojected);
         }
 
@@ -407,30 +488,40 @@ public class GetCoverage {
         //
         // axes swap management
         //
-        final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(gridCoverageRequest.getOutputCRS());
-        if (wcs.isLatLon() && enforceLatLonAxesOrder){
+        final boolean enforceLatLonAxesOrder =
+                requestingLatLonAxesOrder(gridCoverageRequest.getOutputCRS());
+        if (wcs.isLatLon() && enforceLatLonAxesOrder) {
             coverage = enforceLatLongOrder(coverage, hints, gridCoverageRequest.getOutputCRS());
         }
 
         //
         // Output limits checks
-        // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
+        // We need to enforce them once again as it might be that no scaling or rangesubsetting is
+        // requested
         // Direct check is made only for single dimensional coverages
         if (incrementalOutputSize == null) {
-            WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage
-                    .getRenderedImage().getSampleModel());
+            WCSUtils.checkOutputLimits(
+                    wcs,
+                    coverage.getGridGeometry().getGridRange2D(),
+                    coverage.getRenderedImage().getSampleModel());
         } else {
-            // Check for each coverage added if the total coverage dimension exceeds the maximum limit
+            // Check for each coverage added if the total coverage dimension exceeds the maximum
+            // limit
             // If the size is exceeded an exception is thrown
             incrementalOutputSize.addSize(coverage);
         }
 
-//        // add the originator -- FOR THE MOMENT DON'T, NOT CLEAR WHAT EO METADATA WE SHOULD ADD TO THE OUTPUT
-//        Map<String, Object> properties = new HashMap<String, Object>(coverage.getProperties());
-//        properties.put(WebCoverageService20.ORIGINATING_COVERAGE_INFO, cinfo);
-//        GridCoverage2D [] sources = (GridCoverage2D[]) coverage.getSources().toArray(new GridCoverage2D[coverage.getSources().size()]);
-//        coverage = new GridCoverageFactory().create(coverage.getName().toString(), coverage.getRenderedImage(), 
-//                coverage.getGridGeometry(), coverage.getSampleDimensions(), sources, properties);
+        //        // add the originator -- FOR THE MOMENT DON'T, NOT CLEAR WHAT EO METADATA WE
+        // SHOULD ADD TO THE OUTPUT
+        //        Map<String, Object> properties = new HashMap<String,
+        // Object>(coverage.getProperties());
+        //        properties.put(WebCoverageService20.ORIGINATING_COVERAGE_INFO, cinfo);
+        //        GridCoverage2D [] sources = (GridCoverage2D[]) coverage.getSources().toArray(new
+        // GridCoverage2D[coverage.getSources().size()]);
+        //        coverage = new GridCoverageFactory().create(coverage.getName().toString(),
+        // coverage.getRenderedImage(),
+        //                coverage.getGridGeometry(), coverage.getSampleDimensions(), sources,
+        // properties);
         if (reader instanceof StructuredGridCoverage2DReader && coverageDimensions != null) {
             // Setting dimensions as properties
             Map map = coverage.getProperties();
@@ -440,11 +531,21 @@ public class GetCoverage {
             for (DimensionBean coverageDimension : coverageDimensions) {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }
-            // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
-            coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
+            // Need to recreate the coverage in order to update the properties since the
+            // getProperties method returns a copy
+            coverage =
+                    coverageFactory.create(
+                            coverage.getName(),
+                            coverage.getRenderedImage(),
+                            coverage.getEnvelope(),
+                            coverage.getSampleDimensions(),
+                            null,
+                            map);
         }
         if (sampleDimensions != null && sampleDimensions.length > 0) {
-            coverage = GridCoverageWrapper.wrapCoverage(coverage, coverage, sampleDimensions, null, true);
+            coverage =
+                    GridCoverageWrapper.wrapCoverage(
+                            coverage, coverage, sampleDimensions, null, true);
         }
         return coverage;
     }
@@ -469,11 +570,12 @@ public class GetCoverage {
         List<GridSampleDimension> dimensions = new ArrayList<GridSampleDimension>();
         for (GridCoverage2D coverage : coverages) {
             if (coverage instanceof GridCoverageWrapper) {
-                for (GridSampleDimension dimension: coverage.getSampleDimensions()) {
+                for (GridSampleDimension dimension : coverage.getSampleDimensions()) {
                     dimensions.add(dimension);
                 }
             }
-        };
+        }
+        ;
         return dimensions.toArray(new GridSampleDimension[dimensions.size()]);
     }
 
@@ -482,7 +584,7 @@ public class GetCoverage {
         GridCoverage2D first = coverages.get(0);
         if (coverages.size() == 1) {
             return first;
-        } 
+        }
 
         // special case for crs that do wrap, we have to roll one of the coverages
         CoordinateReferenceSystem crs = first.getCoordinateReferenceSystem2D();
@@ -496,13 +598,15 @@ public class GetCoverage {
             }
             for (int i = 1; i < coverages.size(); i++) {
                 GridCoverage2D c = coverages.get(i);
-                if (Math.abs(c.getEnvelope().getMinimum(0) + offset
-                        - first.getEnvelope().getMaximum(0)) < EPS) {
+                if (Math.abs(
+                                c.getEnvelope().getMinimum(0)
+                                        + offset
+                                        - first.getEnvelope().getMaximum(0))
+                        < EPS) {
                     GridCoverage2D displaced = displaceCoverage(coverages.get(1), offset);
                     coverages.set(i, displaced);
                 }
             }
-
         }
 
         // mosaic
@@ -510,7 +614,8 @@ public class GetCoverage {
             final ParameterValueGroup param = processor.getOperation("Mosaic").getParameters();
             param.parameter("sources").setValue(coverages);
             param.parameter("policy").setValue(GridGeometryPolicy.FIRST.name());
-            return (GridCoverage2D) ((Mosaic)processor.getOperation("Mosaic")).doOperation(param, hints);
+            return (GridCoverage2D)
+                    ((Mosaic) processor.getOperation("Mosaic")).doOperation(param, hints);
         } catch (Exception e) {
             throw new RuntimeException("Failed to mosaic the input coverages", e);
         }
@@ -526,23 +631,32 @@ public class GetCoverage {
         double miny = envelope.getMinY();
         double maxx = envelope.getMaxX() + offset;
         double maxy = envelope.getMaxY();
-        ReferencedEnvelope translatedEnvelope = new ReferencedEnvelope(minx, maxx, miny, maxy,
-                envelope.getCoordinateReferenceSystem());
+        ReferencedEnvelope translatedEnvelope =
+                new ReferencedEnvelope(
+                        minx, maxx, miny, maxy, envelope.getCoordinateReferenceSystem());
 
         GridGeometry2D translatedGG = new GridGeometry2D(gridRange, translatedEnvelope);
 
-        GridCoverage2D translatedCoverage = gridCoverageFactory.create(coverage.getName(),
-                coverage.getRenderedImage(), translatedGG, coverage.getSampleDimensions(),
-                new GridCoverage2D[] { coverage }, coverage.getProperties());
+        GridCoverage2D translatedCoverage =
+                gridCoverageFactory.create(
+                        coverage.getName(),
+                        coverage.getRenderedImage(),
+                        translatedGG,
+                        coverage.getSampleDimensions(),
+                        new GridCoverage2D[] {coverage},
+                        coverage.getProperties());
         return translatedCoverage;
     }
 
-    private double computeMercatorWorldSpan(CoordinateReferenceSystem crs,
-            MapProjection mapProjection)
+    private double computeMercatorWorldSpan(
+            CoordinateReferenceSystem crs, MapProjection mapProjection)
             throws FactoryException, TransformException {
-        double centralMeridian = mapProjection.getParameterValues().parameter(
-                AbstractProvider.CENTRAL_MERIDIAN.getName().getCode()).doubleValue();
-        double[] src = new double[] { centralMeridian, 0, 180 + centralMeridian, 0 };
+        double centralMeridian =
+                mapProjection
+                        .getParameterValues()
+                        .parameter(AbstractProvider.CENTRAL_MERIDIAN.getName().getCode())
+                        .doubleValue();
+        double[] src = new double[] {centralMeridian, 0, 180 + centralMeridian, 0};
         double[] dst = new double[4];
         MathTransform mt = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
         mt.transform(src, 0, dst, 0, 2);
@@ -550,16 +664,22 @@ public class GetCoverage {
         return worldSpan;
     }
 
-    private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
-            GetCoverageType request, Map<String, ExtensionItemType> extensions) throws IOException {
+    private WCSDimensionsSubsetHelper parseGridCoverageRequest(
+            CoverageInfo ci,
+            GridCoverage2DReader reader,
+            GetCoverageType request,
+            Map<String, ExtensionItemType> extensions)
+            throws IOException {
         //
         // Extract CRS values for relative extension
         //
         final CoordinateReferenceSystem subsettingCRS = extractSubsettingCRS(reader, extensions);
-        final CoordinateReferenceSystem outputCRS = extractOutputCRS(reader, extensions,
-                subsettingCRS);
+        final CoordinateReferenceSystem outputCRS =
+                extractOutputCRS(reader, extensions, subsettingCRS);
 
-        WCSDimensionsSubsetHelper subsetHelper = new WCSDimensionsSubsetHelper(reader, request, ci, subsettingCRS, envelopeDimensionsMapper);
+        WCSDimensionsSubsetHelper subsetHelper =
+                new WCSDimensionsSubsetHelper(
+                        reader, request, ci, subsettingCRS, envelopeDimensionsMapper);
 
         // extract dimensions subsetting
         GridCoverageRequest requestSubset = subsetHelper.createGridCoverageRequestSubset();
@@ -568,10 +688,10 @@ public class GetCoverage {
         // Handle interpolation extension
         //
         // notice that for the moment we support only homogeneous interpolation on the 2D axis
-        final Map<String, InterpolationPolicy> axesInterpolations = extractInterpolation(reader,
-                extensions);
-        final Interpolation spatialInterpolation = extractSpatialInterpolation(axesInterpolations,
-                reader.getOriginalEnvelope());
+        final Map<String, InterpolationPolicy> axesInterpolations =
+                extractInterpolation(reader, extensions);
+        final Interpolation spatialInterpolation =
+                extractSpatialInterpolation(axesInterpolations, reader.getOriginalEnvelope());
         final OverviewPolicy overviewPolicy = extractOverviewPolicy(extensions);
         // TODO time interpolation
         assert spatialInterpolation != null;
@@ -592,20 +712,24 @@ public class GetCoverage {
     }
 
     private OverviewPolicy extractOverviewPolicy(Map<String, ExtensionItemType> extensions) {
-        if (extensions == null || extensions.size() == 0
+        if (extensions == null
+                || extensions.size() == 0
                 || !extensions.containsKey(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
             // NO extension at hand
             return null;
         }
 
         // look for an overviewPolicy extension
-        final ExtensionItemType extensionItem = extensions.get(WCS20Const.OVERVIEW_POLICY_EXTENSION);
+        final ExtensionItemType extensionItem =
+                extensions.get(WCS20Const.OVERVIEW_POLICY_EXTENSION);
         if (extensionItem.getName().equals(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
             String overviewPolicy = extensionItem.getSimpleContent();
 
             // checks
             if (overviewPolicy == null) {
-                throw new WCS20Exception(WCS20Const.OVERVIEW_POLICY_EXTENSION + " was null", WCS20ExceptionCode.MissingParameterValue,
+                throw new WCS20Exception(
+                        WCS20Const.OVERVIEW_POLICY_EXTENSION + " was null",
+                        WCS20ExceptionCode.MissingParameterValue,
                         "null");
             }
 
@@ -613,8 +737,11 @@ public class GetCoverage {
             try {
                 return OverviewPolicy.valueOf(overviewPolicy);
             } catch (Exception e) {
-                final WCS20Exception exception = new WCS20Exception("Invalid " + WCS20Const.OVERVIEW_POLICY_EXTENSION,
-                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue, overviewPolicy);
+                final WCS20Exception exception =
+                        new WCS20Exception(
+                                "Invalid " + WCS20Const.OVERVIEW_POLICY_EXTENSION,
+                                WCS20Exception.WCS20ExceptionCode.InvalidParameterValue,
+                                overviewPolicy);
                 exception.initCause(e);
                 throw exception;
             }
@@ -626,56 +753,62 @@ public class GetCoverage {
      * @param coverage
      * @param hints
      * @param outputCRS
-     *
      */
-    private GridCoverage2D enforceLatLongOrder(GridCoverage2D coverage, final Hints hints,
-            final CoordinateReferenceSystem outputCRS) throws Exception {
+    private GridCoverage2D enforceLatLongOrder(
+            GridCoverage2D coverage, final Hints hints, final CoordinateReferenceSystem outputCRS)
+            throws Exception {
         final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
-        if(epsgCode!=null&& epsgCode>0){
+        if (epsgCode != null && epsgCode > 0) {
             // final CRS
-            CoordinateReferenceSystem finalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
-            if(CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))){
+            CoordinateReferenceSystem finalCRS =
+                    latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
+            if (CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))) {
                 return coverage;
             }
-            
+
             // get g2w and swap axes
-            final AffineTransform g2w= new AffineTransform((AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D());
+            final AffineTransform g2w =
+                    new AffineTransform(
+                            (AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D());
             g2w.preConcatenate(CoverageUtilities.AXES_SWAP);
 
             // rework the transformation
-            final GridGeometry2D finalGG= new GridGeometry2D(
-                    coverage.getGridGeometry().getGridRange(), 
-                    PixelInCell.CELL_CENTER, 
-                    new AffineTransform2D(g2w), 
-                    finalCRS, 
-                    hints);
+            final GridGeometry2D finalGG =
+                    new GridGeometry2D(
+                            coverage.getGridGeometry().getGridRange(),
+                            PixelInCell.CELL_CENTER,
+                            new AffineTransform2D(g2w),
+                            finalCRS,
+                            hints);
 
             // recreate the coverage
-            coverage=CoverageFactoryFinder.getGridCoverageFactory(hints).create(
-                    coverage.getName(),
-                    coverage.getRenderedImage(),
-                    finalGG,
-                    coverage.getSampleDimensions(),
-                    new GridCoverage[]{coverage},
-                    coverage.getProperties()
-                    );
+            coverage =
+                    CoverageFactoryFinder.getGridCoverageFactory(hints)
+                            .create(
+                                    coverage.getName(),
+                                    coverage.getRenderedImage(),
+                                    finalGG,
+                                    coverage.getSampleDimensions(),
+                                    new GridCoverage[] {coverage},
+                                    coverage.getProperties());
         }
         return coverage;
     }
 
     /**
-     * This utility method tells me whether or not we should do a final reverse on the axis of the data.
-     * 
-     * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
-     * 
+     * This utility method tells me whether or not we should do a final reverse on the axis of the
+     * data.
+     *
+     * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request
      * @return <code>true</code> in case we need to swap axes, <code>false</code> otherwise.
      */
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
 
         try {
             final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
-            if(epsgCode!=null&& epsgCode>0){
-                CoordinateReferenceSystem originalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
+            if (epsgCode != null && epsgCode > 0) {
+                CoordinateReferenceSystem originalCRS =
+                        latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
                 return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
             }
         } catch (FactoryException e) {
@@ -686,12 +819,12 @@ public class GetCoverage {
     }
 
     /**
-     * This method is responsible for extracting the spatial interpolation from the provided {@link GetCoverageType} 
-     * request.
-     * 
-     * <p>
-     * We don't support mixed interpolation at this time and we will never support it for grid axes.
-     * 
+     * This method is responsible for extracting the spatial interpolation from the provided {@link
+     * GetCoverageType} request.
+     *
+     * <p>We don't support mixed interpolation at this time and we will never support it for grid
+     * axes.
+     *
      * @param axesInterpolations the association between axes URIs and the requested interpolations.
      * @param envelope the original envelope for the source {@link GridCoverage}.
      * @return the requested {@link Interpolation}
@@ -703,13 +836,13 @@ public class GetCoverage {
         // we assume that we are going to support the same interpolation ONLY on the i and j axes
         // therefore we extract the first one of the two we find. We implicitly assume we already
         // checked that we don't have mixed interpolation types for lat,lon
-        Interpolation interpolation=InterpolationPolicy.getDefaultPolicy().getInterpolation();
-        for(String axisLabel:axesInterpolations.keySet()){
+        Interpolation interpolation = InterpolationPolicy.getDefaultPolicy().getInterpolation();
+        for (String axisLabel : axesInterpolations.keySet()) {
             // check if this is an axis we like
-            final int index=envelopeDimensionsMapper.getAxisIndex(envelope, axisLabel);
-            if(index==0||index==1){
+            final int index = envelopeDimensionsMapper.getAxisIndex(envelope, axisLabel);
+            if (index == 0 || index == 1) {
                 // found it!
-                interpolation=axesInterpolations.get(axisLabel).getInterpolation();
+                interpolation = axesInterpolations.get(axisLabel).getInterpolation();
                 break;
             }
         }
@@ -720,11 +853,10 @@ public class GetCoverage {
      * This method is responsible for reading the data based on the specified request. It might
      * return a single coverage, but if the request is a dateline crossing one, it will return two
      * instead
-     * 
+     *
      * @param cinfo
      * @param reader
      * @param hints
-     *
      */
     private List<GridCoverage2D> readCoverage(
             WCSDimensionsSubsetHelper helper,
@@ -733,7 +865,8 @@ public class GetCoverage {
             Hints hints,
             ImageSizeRecorder incrementalInputSize,
             final ScalingType scaling,
-            final double[] preAppliedScale) throws Exception {
+            final double[] preAppliedScale)
+            throws Exception {
 
         CoverageInfo cinfo = helper.getCoverageInfo();
         WCSEnvelope requestedEnvelope = helper.getRequestedEnvelope();
@@ -774,8 +907,19 @@ public class GetCoverage {
                 }
             }
             if (cov == null) {
-                cov = readCoverage(cinfo, request, reader, hints, incrementalInputSize,
-                        spatialInterpolation, coverageCRS, readEnvelope, requestedEnvelope, scaling, preAppliedScale);
+                cov =
+                        readCoverage(
+                                cinfo,
+                                request,
+                                reader,
+                                hints,
+                                incrementalInputSize,
+                                spatialInterpolation,
+                                coverageCRS,
+                                readEnvelope,
+                                requestedEnvelope,
+                                scaling,
+                                preAppliedScale);
                 if (cov == null) {
                     continue;
                 }
@@ -783,8 +927,8 @@ public class GetCoverage {
             }
             Envelope2D covEnvelope = cov.getEnvelope2D();
             if (covEnvelope.contains(readBoundingBox)
-                    && (covEnvelope.getWidth() > readBoundingBox.getWidth() || covEnvelope
-                            .getHeight() > readBoundingBox.getHeight())) {
+                    && (covEnvelope.getWidth() > readBoundingBox.getWidth()
+                            || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
                 GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
                 result.add(cropped);
             } else {
@@ -795,12 +939,16 @@ public class GetCoverage {
         return result;
     }
 
-    private void addEnvelopes(Envelope envelope, List<GeneralEnvelope> readEnvelopes,
-            CoordinateReferenceSystem readerCRS) throws TransformException, FactoryException {
+    private void addEnvelopes(
+            Envelope envelope,
+            List<GeneralEnvelope> readEnvelopes,
+            CoordinateReferenceSystem readerCRS)
+            throws TransformException, FactoryException {
         // leverage GeoTools projection handlers to figure out exactly which areas we should be
         // reading
-        ProjectionHandler handler = ProjectionHandlerFinder.getHandler(new ReferencedEnvelope(
-                envelope), readerCRS, true);
+        ProjectionHandler handler =
+                ProjectionHandlerFinder.getHandler(
+                        new ReferencedEnvelope(envelope), readerCRS, true);
         if (handler == null) {
             readEnvelopes.add(new GeneralEnvelope(envelope));
         } else {
@@ -811,30 +959,41 @@ public class GetCoverage {
         }
     }
 
-    private GridCoverage2D readCoverage(CoverageInfo cinfo, GridCoverageRequest request,
-            GridCoverage2DReader reader, Hints hints, ImageSizeRecorder incrementalInputSize,
-            Interpolation spatialInterpolation, final CoordinateReferenceSystem coverageCRS,
-            Envelope subset, WCSEnvelope requestedEnvelope, ScalingType scaling, double[] preAppliedScale) throws TransformException, IOException,
-            NoninvertibleTransformException {
-        if(!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)){
+    private GridCoverage2D readCoverage(
+            CoverageInfo cinfo,
+            GridCoverageRequest request,
+            GridCoverage2DReader reader,
+            Hints hints,
+            ImageSizeRecorder incrementalInputSize,
+            Interpolation spatialInterpolation,
+            final CoordinateReferenceSystem coverageCRS,
+            Envelope subset,
+            WCSEnvelope requestedEnvelope,
+            ScalingType scaling,
+            double[] preAppliedScale)
+            throws TransformException, IOException, NoninvertibleTransformException {
+        if (!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)) {
             subset = CRS.transform(subset, coverageCRS);
         }
         // k, now subset is in the CRS of the source coverage
 
         //
         // read best available coverage and render it
-        //        
+        //
         final GridGeometry2D readGG;
-        
+
         // do we need to reproject the coverage to a different crs?
         // this would force us to enlarge the read area
         CoordinateReferenceSystem outputCRS = request.getOutputCRS();
-        final boolean equalsMetadata=CRS.equalsIgnoreMetadata(outputCRS, coverageCRS);
+        final boolean equalsMetadata = CRS.equalsIgnoreMetadata(outputCRS, coverageCRS);
         boolean sameCRS;
         try {
-            sameCRS = equalsMetadata?true:CRS.findMathTransform(outputCRS, coverageCRS,true).isIdentity();
+            sameCRS =
+                    equalsMetadata
+                            ? true
+                            : CRS.findMathTransform(outputCRS, coverageCRS, true).isIdentity();
         } catch (FactoryException e1) {
-            final IOException ioe= new IOException();
+            final IOException ioe = new IOException();
             ioe.initCause(e1);
             throw ioe;
         }
@@ -842,57 +1001,73 @@ public class GetCoverage {
         //
         // instantiate basic params for reading
         //
-        // 
+        //
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
-        GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
+        GeneralParameterValue[] readParameters =
+                CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
         // work in streaming fashion when JAI is involved
-        readParameters = WCSUtils.replaceParameter(readParameters, Boolean.TRUE,
-                AbstractGridFormat.USE_JAI_IMAGEREAD);
+        readParameters =
+                WCSUtils.replaceParameter(
+                        readParameters, Boolean.TRUE, AbstractGridFormat.USE_JAI_IMAGEREAD);
 
         // handle "time"
         if (request.getTemporalSubset() != null) {
-            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor().descriptors();
+            List<GeneralParameterDescriptor> descriptors =
+                    readParametersDescriptor.getDescriptor().descriptors();
             List<Object> times = new ArrayList<Object>();
             times.add(request.getTemporalSubset());
-            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters, times, "TIME", "Time");
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            descriptors, readParameters, times, "TIME", "Time");
         }
 
         // handle "elevation"
         if (request.getElevationSubset() != null) {
-            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor().descriptors();
+            List<GeneralParameterDescriptor> descriptors =
+                    readParametersDescriptor.getDescriptor().descriptors();
             List<Object> elevations = new ArrayList<Object>();
             elevations.add(request.getElevationSubset());
-            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters, elevations, "ELEVATION", "Elevation");
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            descriptors, readParameters, elevations, "ELEVATION", "Elevation");
         }
 
         // handle filter
         if (request.getFilter() != null) {
-            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor()
-                    .descriptors();
-            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters,
-                    request.getFilter(), "Filter");
+            List<GeneralParameterDescriptor> descriptors =
+                    readParametersDescriptor.getDescriptor().descriptors();
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            descriptors, readParameters, request.getFilter(), "Filter");
         }
-        
+
         // handle sorting
         if (request.getSortBy() != null) {
-            List<GeneralParameterDescriptor> descriptors = readParametersDescriptor.getDescriptor()
-                    .descriptors();
-            String sortBySpec = request.getSortBy().stream()
-                    .map(sb -> sb.getPropertyName().getPropertyName() + " "
-                            + sb.getSortOrder().name().charAt(0))
-                    .collect(Collectors.joining(","));
+            List<GeneralParameterDescriptor> descriptors =
+                    readParametersDescriptor.getDescriptor().descriptors();
+            String sortBySpec =
+                    request.getSortBy()
+                            .stream()
+                            .map(
+                                    sb ->
+                                            sb.getPropertyName().getPropertyName()
+                                                    + " "
+                                                    + sb.getSortOrder().name().charAt(0))
+                            .collect(Collectors.joining(","));
 
-            readParameters = CoverageUtils.mergeParameter(descriptors, readParameters, sortBySpec,
-                    "SORTING");
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            descriptors, readParameters, sortBySpec, "SORTING");
         }
 
         // handle additional dimensions through dynamic parameters
         // TODO: When dealing with StructuredGridCoverage2DReader we may consider parsing
         // Dimension descriptors and set filter queries
         if (request.getDimensionsSubset() != null && !request.getDimensionsSubset().isEmpty()) {
-            final List<GeneralParameterDescriptor> descriptors = new ArrayList<GeneralParameterDescriptor>(readParametersDescriptor.getDescriptor()
-                    .descriptors());
+            final List<GeneralParameterDescriptor> descriptors =
+                    new ArrayList<GeneralParameterDescriptor>(
+                            readParametersDescriptor.getDescriptor().descriptors());
             Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
             descriptors.addAll(dynamicParameters);
 
@@ -900,12 +1075,12 @@ public class GetCoverage {
             Set<String> dimensionKeys = dimensionsSubset.keySet();
             for (String key : dimensionKeys) {
                 List<Object> dimValues = dimensionsSubset.get(key);
-                readParameters = CoverageUtils.mergeParameter(descriptors, readParameters,
-                        dimValues, key);
+                readParameters =
+                        CoverageUtils.mergeParameter(descriptors, readParameters, dimValues, key);
             }
         }
 
-        GridCoverage2D coverage=null;
+        GridCoverage2D coverage = null;
         //
         // kk, now build a good GG to read the smallest available area for the following operations
         //
@@ -913,42 +1088,54 @@ public class GetCoverage {
         if (sameCRS) {
             // we should not be reprojecting
             // let's create a subsetting GG2D (Taking overviews and requested scaling into account)
-            MathTransform transform = getMathTransform(reader,
-                    requestedEnvelope != null ? requestedEnvelope : subset, request,
-                    PixelInCell.CELL_CENTER, scaling);
-            readGG = new GridGeometry2D(
-                    PixelInCell.CELL_CENTER,
-                    transform,
-                    subset,
-                    hints);           
-            
+            MathTransform transform =
+                    getMathTransform(
+                            reader,
+                            requestedEnvelope != null ? requestedEnvelope : subset,
+                            request,
+                            PixelInCell.CELL_CENTER,
+                            scaling);
+            readGG = new GridGeometry2D(PixelInCell.CELL_CENTER, transform, subset, hints);
+
         } else {
-            
+
             // we are reprojecting, let's add a gutter in raster space.
             //
-            // We need to investigate much more and also we need 
+            // We need to investigate much more and also we need
             // to do this only when needed
             //
-            // 
+            //
             // add gutter by increasing size of 10 pixels each side
-            Rectangle rasterRange = CRS.transform(
-                    reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER).inverse(),
-                    subset).toRectangle2D().getBounds();
-            rasterRange.setBounds(rasterRange.x-10, rasterRange.y-10, rasterRange.width+20, rasterRange.height+20);
-            rasterRange=rasterRange.intersection(( GridEnvelope2D)reader.getOriginalGridRange());// make sure we are in it
-            
+            Rectangle rasterRange =
+                    CRS.transform(
+                                    reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER)
+                                            .inverse(),
+                                    subset)
+                            .toRectangle2D()
+                            .getBounds();
+            rasterRange.setBounds(
+                    rasterRange.x - 10,
+                    rasterRange.y - 10,
+                    rasterRange.width + 20,
+                    rasterRange.height + 20);
+            rasterRange =
+                    rasterRange.intersection(
+                            (GridEnvelope2D)
+                                    reader.getOriginalGridRange()); // make sure we are in it
+
             // read
-            readGG = new GridGeometry2D(
-                    new GridEnvelope2D(rasterRange),
-                    PixelInCell.CELL_CENTER,
-                    reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
-                    coverageCRS,
-                    hints);            
+            readGG =
+                    new GridGeometry2D(
+                            new GridEnvelope2D(rasterRange),
+                            PixelInCell.CELL_CENTER,
+                            reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
+                            coverageCRS,
+                            hints);
         }
 
         // === read
         // check limits
-        WCSUtils.checkInputLimits(wcs,cinfo,reader,readGG);
+        WCSUtils.checkInputLimits(wcs, cinfo, reader, readGG);
         Hints readHints = new Hints();
         if (hints != null) {
             readHints.putAll(hints);
@@ -956,31 +1143,35 @@ public class GetCoverage {
         if (request.getOverviewPolicy() != null) {
             readHints.add(new Hints(Hints.OVERVIEW_POLICY, request.getOverviewPolicy()));
         }
-        coverage= RequestUtils.readBestCoverage(
-                reader, 
-                readParameters,  
-                readGG, 
-                spatialInterpolation,
-                request.getOverviewPolicy(),
-                readHints);
+        coverage =
+                RequestUtils.readBestCoverage(
+                        reader,
+                        readParameters,
+                        readGG,
+                        spatialInterpolation,
+                        request.getOverviewPolicy(),
+                        readHints);
         if (coverage != null) {
             // check limits again
             if (incrementalInputSize == null) {
                 WCSUtils.checkInputLimits(wcs, coverage);
             } else {
-                // Check for each coverage added if the total coverage dimension exceeds the maximum limit
+                // Check for each coverage added if the total coverage dimension exceeds the maximum
+                // limit
                 // If the size is exceeded an exception is thrown
                 incrementalInputSize.addSize(coverage);
             }
-            
+
             // see what scaling factors the reader actually applied
             if (scaling != null) {
                 MathTransform cmt = coverage.getGridGeometry().getGridToCRS();
                 MathTransform rmt = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
                 if (!(cmt instanceof AffineTransform2D) || !(rmt instanceof AffineTransform2D)) {
-                    LOGGER.log(Level.FINE, "Cannot check if the returned coverage "
-                            + "matched the requested resolution due to a non affine "
-                            + "grid to world backing it"); 
+                    LOGGER.log(
+                            Level.FINE,
+                            "Cannot check if the returned coverage "
+                                    + "matched the requested resolution due to a non affine "
+                                    + "grid to world backing it");
                 } else {
                     AffineTransform2D cat = (AffineTransform2D) cmt;
                     AffineTransform2D rat = (AffineTransform2D) rmt;
@@ -988,18 +1179,22 @@ public class GetCoverage {
                     preAppliedScale[1] = cat.getScaleY() / rat.getScaleY();
                 }
             }
-
         }
 
         // return
         return coverage;
     }
 
-    MathTransform getMathTransform(GridCoverage2DReader reader, Envelope subset, 
-            GridCoverageRequest request, PixelInCell pixelInCell, ScalingType scaling) throws IOException {
+    MathTransform getMathTransform(
+            GridCoverage2DReader reader,
+            Envelope subset,
+            GridCoverageRequest request,
+            PixelInCell pixelInCell,
+            ScalingType scaling)
+            throws IOException {
         // return the original grid to world only if there is no scaling, the overview policy
         // is going to be taken care of when sending data to the image reader (failing to do
-        // so will cause OOM or get the processing thread blocked for a long time because 
+        // so will cause OOM or get the processing thread blocked for a long time because
         // the reader is no more allowed to use subsampling)
         ScalingPolicy scalingPolicy = scaling == null ? null : ScalingPolicy.getPolicy(scaling);
         if (scalingPolicy == null || scalingPolicy == ScalingPolicy.DoNothing) {
@@ -1009,15 +1204,17 @@ public class GetCoverage {
         // here we are already assuming to work off an affine transform
         MathTransform transform = reader.getOriginalGridToWorld(pixelInCell);
         AffineTransform af = (AffineTransform) transform;
-   
+
         // Getting the native resolution
         final double nativeResX = XAffineTransform.getScaleX0(af);
         final double nativeResY = XAffineTransform.getScaleY0(af);
 
-        // Getting the requested resolution, taking the requested scaling into account 
-        final double[] requestedResolution = computeRequestedResolution(scaling, subset, nativeResX, nativeResY);
+        // Getting the requested resolution, taking the requested scaling into account
+        final double[] requestedResolution =
+                computeRequestedResolution(scaling, subset, nativeResX, nativeResY);
 
-        // setup a scaling to get the desired resolution while allowing the reader to apply subsampling 
+        // setup a scaling to get the desired resolution while allowing the reader to apply
+        // subsampling
         AffineTransform scale = new AffineTransform();
         scale.scale(requestedResolution[0] / nativeResX, requestedResolution[1] / nativeResY);
         AffineTransform finalTransform = new AffineTransform(af);
@@ -1026,23 +1223,25 @@ public class GetCoverage {
     }
 
     /**
-     * Parse the scaling type applied to that request and return a resolution satisfying that scaling.
+     * Parse the scaling type applied to that request and return a resolution satisfying that
+     * scaling.
+     *
      * @param scaling
      * @param subset
      * @param nativeResX
      * @param nativeResY
-     *
      */
-    private double[] computeRequestedResolution(ScalingType scaling, Envelope subset,
-            double nativeResX, double nativeResY) {
+    private double[] computeRequestedResolution(
+            ScalingType scaling, Envelope subset, double nativeResX, double nativeResY) {
         ScalingPolicy policy = ScalingPolicy.getPolicy(scaling);
         double[] requestedResolution = new double[2];
         if (policy == ScalingPolicy.ScaleToSize || policy == ScalingPolicy.ScaleToExtent) {
             int[] scalingSize = ScalingPolicy.getTargetSize(scaling);
 
             // Getting the requested resolution (using envelope and requested scaleSize)
-            final GridToEnvelopeMapper mapper = new GridToEnvelopeMapper(new GridEnvelope2D(0, 0,
-                    scalingSize[0], scalingSize[1]), subset);
+            final GridToEnvelopeMapper mapper =
+                    new GridToEnvelopeMapper(
+                            new GridEnvelope2D(0, 0, scalingSize[0], scalingSize[1]), subset);
             AffineTransform scalingTransform = mapper.createAffineTransform();
             requestedResolution[0] = XAffineTransform.getScaleX0(scalingTransform);
             requestedResolution[1] = XAffineTransform.getScaleY0(scalingTransform);
@@ -1053,143 +1252,153 @@ public class GetCoverage {
             requestedResolution[1] = nativeResY / scalingFactors[1];
         }
         return requestedResolution;
-
     }
 
     /**
      * This method is responsible for etracting the outputCRS.
-     * 
-     * <p>
-     * In case it is not provided the subsettingCRS falls back on the subsettingCRS.
+     *
+     * <p>In case it is not provided the subsettingCRS falls back on the subsettingCRS.
+     *
      * @param reader the {@link GridCoverage2DReader} to be used
      * @param extensions the {@link Map} of extension for this request.
-     * @param subsettingCRS  the subsettingCRS as a {@link CoordinateReferenceSystem}
+     * @param subsettingCRS the subsettingCRS as a {@link CoordinateReferenceSystem}
      * @return the outputCRS as a {@link CoordinateReferenceSystem}
      */
-    private CoordinateReferenceSystem extractOutputCRS(GridCoverage2DReader reader,
-            Map<String, ExtensionItemType> extensions, CoordinateReferenceSystem subsettingCRS) {
-        return extractCRSInternal(extensions, subsettingCRS,true);   
+    private CoordinateReferenceSystem extractOutputCRS(
+            GridCoverage2DReader reader,
+            Map<String, ExtensionItemType> extensions,
+            CoordinateReferenceSystem subsettingCRS) {
+        return extractCRSInternal(extensions, subsettingCRS, true);
     }
 
     /**
      * Extract the specified crs being it subsetting or output with proper defaults.
-     * 
+     *
      * @param extensions the {@link Map}of extensions for this request.
      * @param defaultCRS the defaultCRS as a {@link CoordinateReferenceSystem} for this extraction
-     * @param isOutputCRS a <code>boolean</code> which tells me whether the CRS we are looking for is a subsetting or an OutputCRS
+     * @param isOutputCRS a <code>boolean</code> which tells me whether the CRS we are looking for
+     *     is a subsetting or an OutputCRS
      * @return a {@link CoordinateReferenceSystem}.
      * @throws WCS20Exception
      */
-    private CoordinateReferenceSystem extractCRSInternal(Map<String, ExtensionItemType> extensions,
-            CoordinateReferenceSystem defaultCRS, boolean isOutputCRS) throws WCS20Exception {
+    private CoordinateReferenceSystem extractCRSInternal(
+            Map<String, ExtensionItemType> extensions,
+            CoordinateReferenceSystem defaultCRS,
+            boolean isOutputCRS)
+            throws WCS20Exception {
         Utilities.ensureNonNull("defaultCRS", defaultCRS);
-        final String identifier=isOutputCRS?"outputCrs":"subsettingCrs";
+        final String identifier = isOutputCRS ? "outputCrs" : "subsettingCrs";
         // look for subsettingCRS Extension extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey( identifier)){
-             // NO extension at hand
+        if (extensions == null || extensions.size() == 0 || !extensions.containsKey(identifier)) {
+            // NO extension at hand
             return defaultCRS;
         }
-        
+
         // look for an crs extension
-        final ExtensionItemType extensionItem=extensions.get(identifier);
+        final ExtensionItemType extensionItem = extensions.get(identifier);
         if (extensionItem.getName().equals(identifier)) {
             // get URI
             String crsName = extensionItem.getSimpleContent();
 
             // checks
             if (crsName == null) {
-                throw new WCS20Exception(identifier+" was null",
-                        WCS20ExceptionCode.NotACrs, "null");
+                throw new WCS20Exception(
+                        identifier + " was null", WCS20ExceptionCode.NotACrs, "null");
             }
 
             // instantiate
             try {
                 return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
             } catch (Exception e) {
-                final WCS20Exception exception = new WCS20Exception("Invalid "+identifier,
-                        isOutputCRS?WCS20Exception.WCS20ExceptionCode.OutputCrsNotSupported:WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                final WCS20Exception exception =
+                        new WCS20Exception(
+                                "Invalid " + identifier,
+                                isOutputCRS
+                                        ? WCS20Exception.WCS20ExceptionCode.OutputCrsNotSupported
+                                        : WCS20Exception.WCS20ExceptionCode
+                                                .SubsettingCrsNotSupported,
                                 crsName);
                 exception.initCause(e);
                 throw exception;
-            }        
-
+            }
         }
-        
+
         // should not happen
         return defaultCRS;
     }
 
     /**
      * This method is responsible for extracting the subsettingCRS.
-     * 
-     * <p>
-     * In case it is not provided the subsettingCRS falls back on the nativeCRS.
-     * 
+     *
+     * <p>In case it is not provided the subsettingCRS falls back on the nativeCRS.
+     *
      * @param reader the {@link GridCoverage2DReader} to be used
      * @param extensions the {@link Map} of extension for this request.
      * @return the subsettingCRS as a {@link CoordinateReferenceSystem}
      */
-    private CoordinateReferenceSystem extractSubsettingCRS(GridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
+    private CoordinateReferenceSystem extractSubsettingCRS(
+            GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         Utilities.ensureNonNull("reader", reader);
-        return extractCRSInternal(extensions, reader.getCoordinateReferenceSystem(),false);       
+        return extractCRSInternal(extensions, reader.getCoordinateReferenceSystem(), false);
     }
 
     /**
-     * This method id responsible for extracting the extensions from the incoming request to 
+     * This method id responsible for extracting the extensions from the incoming request to
      * facilitate the work of successive methods.
-     * 
+     *
      * @param request the {@link GetCoverageType} request to execute.
-     * 
      * @return a {@link Map} that maps extension names to {@link ExtensionType}s.
      */
     private Map<String, ExtensionItemType> extractExtensions(GetCoverageType request) {
         // === checks
         Utilities.ensureNonNull("request", request);
-        if(LOGGER.isLoggable(Level.FINE)){
+        if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Extracting extensions from provided request");
         }
-        
+
         // look for subsettingCRS Extension extension
         final ExtensionType extension = request.getExtension();
-        
+
         // look for the various extensions
-        final Map<String,ExtensionItemType> parsedExtensions=new HashMap<String, ExtensionItemType>();
+        final Map<String, ExtensionItemType> parsedExtensions =
+                new HashMap<String, ExtensionItemType>();
         // no extensions?
-        if(extension!=null){
+        if (extension != null) {
             final EList<ExtensionItemType> extensions = extension.getContents();
             for (final ExtensionItemType extensionItem : extensions) {
                 final String extensionName = extensionItem.getName();
                 if (extensionName == null || extensionName.length() <= 0) {
                     throw new WCS20Exception("Null extension");
                 }
-                if(LOGGER.isLoggable(Level.FINE)){
-                    LOGGER.fine("Parsing extension "+extensionName);
-                }                
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Parsing extension " + extensionName);
+                }
                 if (extensionName.equals("subsettingCrs")) {
                     parsedExtensions.put("subsettingCrs", extensionItem);
-                    if(LOGGER.isLoggable(Level.FINE)){
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension subsettingCrs");
-                    }                     
+                    }
                 } else if (extensionName.equals("outputCrs")) {
                     parsedExtensions.put("outputCrs", extensionItem);
-                    if(LOGGER.isLoggable(Level.FINE)){
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension outputCrs");
-                    }    
+                    }
                 } else if (extensionName.equals("Scaling")) {
                     parsedExtensions.put("Scaling", extensionItem);
-                    if(LOGGER.isLoggable(Level.FINE)){
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension Scaling");
-                    }    
+                    }
                 } else if (extensionName.equals("Interpolation")) {
                     parsedExtensions.put("Interpolation", extensionItem);
-                    if(LOGGER.isLoggable(Level.FINE)){
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension Interpolation");
-                    }     
-                } else if (extensionName.equals("rangeSubset")||extensionName.equals("RangeSubset")) {
+                    }
+                } else if (extensionName.equals("rangeSubset")
+                        || extensionName.equals("RangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
-                    if(LOGGER.isLoggable(Level.FINE)){
+                    if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Added extension rangeSubset");
-                    }    
+                    }
                 } else if (extensionName.equals(WCS20Const.OVERVIEW_POLICY_EXTENSION)) {
                     parsedExtensions.put(WCS20Const.OVERVIEW_POLICY_EXTENSION, extensionItem);
                     if (LOGGER.isLoggable(Level.FINE)) {
@@ -1197,37 +1406,41 @@ public class GetCoverage {
                     }
                 }
             }
-        } else if(LOGGER.isLoggable(Level.FINE)){
+        } else if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("No extensions found in provided request");
         }
         return parsedExtensions;
     }
 
     /**
-     * @param reader 
+     * @param reader
      * @param extensions
-     *
      */
-    private Map<String,InterpolationPolicy> extractInterpolation(GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
+    private Map<String, InterpolationPolicy> extractInterpolation(
+            GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         // preparation
-        final Map<String,InterpolationPolicy> returnValue= new HashMap<String, InterpolationPolicy>();
-        final Envelope envelope= reader.getOriginalEnvelope();
+        final Map<String, InterpolationPolicy> returnValue =
+                new HashMap<String, InterpolationPolicy>();
+        final Envelope envelope = reader.getOriginalEnvelope();
         final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
-        for(String axisName:axesNames){
-            returnValue.put(axisName, InterpolationPolicy.getDefaultPolicy());// use defaults if no specified
-        }    
-    
+        for (String axisName : axesNames) {
+            returnValue.put(
+                    axisName,
+                    InterpolationPolicy.getDefaultPolicy()); // use defaults if no specified
+        }
+
         // look for scaling extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey("Interpolation")){
-             // NO INTERPOLATION
+        if (extensions == null
+                || extensions.size() == 0
+                || !extensions.containsKey("Interpolation")) {
+            // NO INTERPOLATION
             return returnValue;
         }
-            
+
         // look for an interpolation extension
-        final ExtensionItemType extensionItem=extensions.get("Interpolation");
+        final ExtensionItemType extensionItem = extensions.get("Interpolation");
         // get interpolationType
-        InterpolationType interpolationType = (InterpolationType) extensionItem
-                .getObjectContent();
+        InterpolationType interpolationType = (InterpolationType) extensionItem.getObjectContent();
         // which type
         if (interpolationType.getInterpolationMethod() != null) {
             InterpolationMethodType method = interpolationType.getInterpolationMethod();
@@ -1238,8 +1451,8 @@ public class GetCoverage {
 
         } else if (interpolationType.getInterpolationAxes() != null) {
             // make sure we don't set things twice
-            final List<String> foundAxes=new ArrayList<String>();
-            
+            final List<String> foundAxes = new ArrayList<String>();
+
             final InterpolationAxesType axes = interpolationType.getInterpolationAxes();
             for (InterpolationAxisType axisInterpolation : axes.getInterpolationAxis()) {
 
@@ -1252,33 +1465,42 @@ public class GetCoverage {
                 // get label from axis
                 // TODO synonyms reduction
                 int index = axis.lastIndexOf("/");
-                final String axisLabel = (index >= 0 ? axis.substring(index+1, axis.length())
-                        : axis);
-                
+                final String axisLabel =
+                        (index >= 0 ? axis.substring(index + 1, axis.length()) : axis);
+
                 // did we already set this interpolation?
-                if(foundAxes.contains(axisLabel)){
-                    throw new WCS20Exception("Duplicated axis",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,axisLabel);
+                if (foundAxes.contains(axisLabel)) {
+                    throw new WCS20Exception(
+                            "Duplicated axis",
+                            WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,
+                            axisLabel);
                 }
                 foundAxes.add(axisLabel);
-                
+
                 // do we have this axis?
-                if(!returnValue.containsKey(axisLabel)){
-                    throw new WCS20Exception("Invalid axes URI",WCS20Exception.WCS20ExceptionCode.NoSuchAxis,axisLabel);
+                if (!returnValue.containsKey(axisLabel)) {
+                    throw new WCS20Exception(
+                            "Invalid axes URI",
+                            WCS20Exception.WCS20ExceptionCode.NoSuchAxis,
+                            axisLabel);
                 }
                 returnValue.put(axisLabel, policy);
             }
         }
-        
+
         // final checks, we dont' supported different interpolations on Long and Lat
-        InterpolationPolicy lat=null,lon=null;
-        if(returnValue.containsKey("Long")){
-            lon=returnValue.get("Long");
+        InterpolationPolicy lat = null, lon = null;
+        if (returnValue.containsKey("Long")) {
+            lon = returnValue.get("Long");
         }
-        if(returnValue.containsKey("Lat")){
-            lat=returnValue.get("Lat");
+        if (returnValue.containsKey("Lat")) {
+            lat = returnValue.get("Lat");
         }
-        if(lat!=lon){
-            throw new WCS20Exception("We don't support different interpolations on Lat,Lon", WCS20Exception.WCS20ExceptionCode.InterpolationMethodNotSupported,"");
+        if (lat != lon) {
+            throw new WCS20Exception(
+                    "We don't support different interpolations on Lat,Lon",
+                    WCS20Exception.WCS20ExceptionCode.InterpolationMethodNotSupported,
+                    "");
         }
         returnValue.get("Lat");
         return returnValue;
@@ -1286,22 +1508,30 @@ public class GetCoverage {
 
     /**
      * This method is responsible for handling reprojection of the source coverage to a certain CRS.
+     *
      * @param coverage the {@link GridCoverage} to reproject.
      * @param targetCRS the target {@link CoordinateReferenceSystem}
      * @param spatialInterpolation the {@link Interpolation} to adopt.
      * @param hints {@link Hints} to control the process.
      * @return a new instance of {@link GridCoverage} reprojeted to the targetCRS.
      */
-    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem targetCRS, Interpolation spatialInterpolation, Hints hints) {
+    private GridCoverage2D handleReprojection(
+            GridCoverage2D coverage,
+            CoordinateReferenceSystem targetCRS,
+            Interpolation spatialInterpolation,
+            Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         // check the two crs tosee if we really need to do anything
-        if(CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), targetCRS)){
+        if (CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), targetCRS)) {
             return coverage;
         }
 
         // reproject
-        final CoverageProcessor processor=hints==null?CoverageProcessor.getInstance():CoverageProcessor.getInstance(hints);
+        final CoverageProcessor processor =
+                hints == null
+                        ? CoverageProcessor.getInstance()
+                        : CoverageProcessor.getInstance(hints);
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup parameters = operation.getParameters();
         parameters.parameter("Source").setValue(coverage);
@@ -1312,106 +1542,116 @@ public class GetCoverage {
     }
 
     /**
-     * This method is responsible for performing the RangeSubsetting operation
-     * which can be used to subset of actually remix or even duplicate bands
-     * from the input source coverage.
-     * 
-     * <p>
-     * The method tries to enforce the WCS Resource Limits specified at config time.
-     * 
+     * This method is responsible for performing the RangeSubsetting operation which can be used to
+     * subset of actually remix or even duplicate bands from the input source coverage.
+     *
+     * <p>The method tries to enforce the WCS Resource Limits specified at config time.
+     *
      * @param coverage the {@link GridCoverage2D} to work on
      * @param extensions the list of WCS extension to look for the the RangeSubset one
      * @param hints an instance of {@link Hints} to use for the operations.
-     * @return a new instance of {@link GridCoverage2D} or the source one in case no operation was needed.
-     * 
+     * @return a new instance of {@link GridCoverage2D} or the source one in case no operation was
+     *     needed.
      */
     private GridCoverage2D handleRangeSubsettingExtension(
-            GridCoverage2D coverage,
-            Map<String, ExtensionItemType> extensions, 
-            Hints hints) {
+            GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Hints hints) {
         // preparation
-         final List<String> returnValue=new ArrayList<String>();  
-    
+        final List<String> returnValue = new ArrayList<String>();
+
         // look for rangeSubset extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey("rangeSubset")){
-             // NO subsetting
+        if (extensions == null
+                || extensions.size() == 0
+                || !extensions.containsKey("rangeSubset")) {
+            // NO subsetting
             return coverage;
         }
         // get original bands
         final GridSampleDimension[] bands = coverage.getSampleDimensions();
-        final List<String> bandsNames= new ArrayList<String>();
-        for(GridSampleDimension band:bands){
+        final List<String> bandsNames = new ArrayList<String>();
+        for (GridSampleDimension band : bands) {
             bandsNames.add(band.getDescription().toString());
         }
-            
+
         // look for an interpolation extension
-        final ExtensionItemType extensionItem=extensions.get("rangeSubset");
-        assert extensionItem!=null; // should not happen
+        final ExtensionItemType extensionItem = extensions.get("rangeSubset");
+        assert extensionItem != null; // should not happen
         final RangeSubsetType range = (RangeSubsetType) extensionItem.getObjectContent();
-        for(RangeItemType rangeItem: range.getRangeItems()){
+        for (RangeItemType rangeItem : range.getRangeItems()) {
             // there you go the range item
-            
-            // single element 
-            final String rangeComponent=rangeItem.getRangeComponent();
-            
+
+            // single element
+            final String rangeComponent = rangeItem.getRangeComponent();
+
             // range?
-            if(rangeComponent==null){
+            if (rangeComponent == null) {
                 final RangeIntervalType rangeInterval = rangeItem.getRangeInterval();
-                final String startRangeComponent=rangeInterval.getStartComponent();     
-                final String endRangeComponent=rangeInterval.getEndComponent();
-                if(!bandsNames.contains(startRangeComponent)){
-                    throw new WCS20Exception("Invalid Band Name",WCS20Exception.WCS20ExceptionCode.NoSuchField,rangeComponent);
+                final String startRangeComponent = rangeInterval.getStartComponent();
+                final String endRangeComponent = rangeInterval.getEndComponent();
+                if (!bandsNames.contains(startRangeComponent)) {
+                    throw new WCS20Exception(
+                            "Invalid Band Name",
+                            WCS20Exception.WCS20ExceptionCode.NoSuchField,
+                            rangeComponent);
                 }
-                if(!bandsNames.contains(endRangeComponent)){
-                    throw new WCS20Exception("Invalid Band Name",WCS20Exception.WCS20ExceptionCode.NoSuchField,rangeComponent);
-                }                
-                
+                if (!bandsNames.contains(endRangeComponent)) {
+                    throw new WCS20Exception(
+                            "Invalid Band Name",
+                            WCS20Exception.WCS20ExceptionCode.NoSuchField,
+                            rangeComponent);
+                }
+
                 // loop
-                boolean add=false;
-                for(SampleDimension sd: bands){
-                    if(sd instanceof GridSampleDimension){
-                        final GridSampleDimension band=(GridSampleDimension) sd;
-                        final String name=band.getDescription().toString();
-                        if(name.equals(startRangeComponent)){
+                boolean add = false;
+                for (SampleDimension sd : bands) {
+                    if (sd instanceof GridSampleDimension) {
+                        final GridSampleDimension band = (GridSampleDimension) sd;
+                        final String name = band.getDescription().toString();
+                        if (name.equals(startRangeComponent)) {
                             returnValue.add(startRangeComponent);
-                            add=true;
-                        } else if(name.equals(endRangeComponent)){
+                            add = true;
+                        } else if (name.equals(endRangeComponent)) {
                             returnValue.add(endRangeComponent);
-                            add=false;
-                        } else if(add){
+                            add = false;
+                        } else if (add) {
                             returnValue.add(name);
                         }
                     }
                 }
                 // paranoiac check add a false
-                if(add){
+                if (add) {
                     throw new IllegalStateException("Unable to close range in band identifiers");
                 }
             } else {
-                if(bandsNames.contains(rangeComponent)){
+                if (bandsNames.contains(rangeComponent)) {
                     returnValue.add(rangeComponent);
                 } else {
-                    throw new WCS20Exception("Invalid Band Name",WCS20Exception.WCS20ExceptionCode.NoSuchField,rangeComponent);
+                    throw new WCS20Exception(
+                            "Invalid Band Name",
+                            WCS20Exception.WCS20ExceptionCode.NoSuchField,
+                            rangeComponent);
                 }
             }
         }
-   
+
         // kk now let's see what we got to do
-        if(returnValue.isEmpty()){
+        if (returnValue.isEmpty()) {
             return coverage;
         }
         // houston we got a list of dimensions
         // create a list of indexes to select
-        final int indexes[]= new int[returnValue.size()];
-        int i=0;
-        for(String bandName:returnValue){
-            indexes[i++]=bandsNames.indexOf(bandName);// I am assuming there is no duplication in band names which is ok I believe
+        final int indexes[] = new int[returnValue.size()];
+        int i = 0;
+        for (String bandName : returnValue) {
+            indexes[i++] =
+                    bandsNames.indexOf(
+                            bandName); // I am assuming there is no duplication in band names which
+            // is ok I believe
         }
-        
+
         // === enforce limits
-        if(coverage.getNumSampleDimensions()<indexes.length){
+        if (coverage.getNumSampleDimensions() < indexes.length) {
             // ok we are enlarging the number of bands, let's check the final size
-            WCSUtils.checkOutputLimits(wcs, coverage,indexes);
+            WCSUtils.checkOutputLimits(wcs, coverage, indexes);
         }
 
         // create output
@@ -1421,17 +1661,15 @@ public class GetCoverage {
     /**
      * This method is reponsible for cropping the provided {@link GridCoverage} using the provided
      * subset envelope.
-     * 
-     * <p>
-     * The subset envelope at this stage should be in the native crs.
-     * 
+     *
+     * <p>The subset envelope at this stage should be in the native crs.
+     *
      * @param coverage the source {@link GridCoverage}
      * @param subset an instance of {@link GeneralEnvelope} that drives the crop operation.
      * @return a cropped version of the source {@link GridCoverage}
      */
-    private List<GridCoverage2D> handleSubsettingExtension(GridCoverage2D coverage,
-            WCSEnvelope subset,
-            Hints hints) {
+    private List<GridCoverage2D> handleSubsettingExtension(
+            GridCoverage2D coverage, WCSEnvelope subset, Hints hints) {
 
         List<GridCoverage2D> result = new ArrayList<GridCoverage2D>();
         if (subset != null) {
@@ -1461,9 +1699,11 @@ public class GetCoverage {
                 cropEnvelope = CRS.transform(cropEnvelope, sourceCRS);
             }
         } catch (TransformException e) {
-            throw new WCS20Exception("Unable to initialize subsetting envelope",
+            throw new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
                     WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
-                    subsettingCRS.toWKT(), e);
+                    subsettingCRS.toWKT(),
+                    e);
         }
 
         GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
@@ -1473,73 +1713,86 @@ public class GetCoverage {
 
     /**
      * This method is responsible for handling the scaling WCS extension.
-     * 
-     * <p>
-     * Scaling can be used to scale a {@link GridCoverage2D} in different ways. An user can 
-     * decide to use either an uniform scale factor on each axes or by specifying a specific one 
-     * on each of them.
-     * Alternatively, an user can decide to specify the target size on each axes.
-     * 
-     * <p>
-     * In case no scaling is in place but an higher order interpolation is required, scale is performed anyway
-     * to respect such interpolation.
-     * 
-     * <p>
-     * This method tries to enforce the WCS resource limits if they are set
-     * 
+     *
+     * <p>Scaling can be used to scale a {@link GridCoverage2D} in different ways. An user can
+     * decide to use either an uniform scale factor on each axes or by specifying a specific one on
+     * each of them. Alternatively, an user can decide to specify the target size on each axes.
+     *
+     * <p>In case no scaling is in place but an higher order interpolation is required, scale is
+     * performed anyway to respect such interpolation.
+     *
+     * <p>This method tries to enforce the WCS resource limits if they are set
+     *
      * @param coverage the input {@link GridCoverage2D}
      * @param spatialInterpolation the requested {@link Interpolation}
      * @param extensions the list of WCS extensions to draw info from
      * @param hints an instance of {@link Hints} to apply
-     * @return a scaled version of the input {@link GridCoverage2D} according to what is specified in the list of extensions. It might be the source coverage itself if
-     * no operations where to be applied.
+     * @return a scaled version of the input {@link GridCoverage2D} according to what is specified
+     *     in the list of extensions. It might be the source coverage itself if no operations where
+     *     to be applied.
      */
-    private GridCoverage2D handleScaling(GridCoverage2D coverage, ScalingType scaling, Interpolation spatialInterpolation,
-            double preAppliedScale[], Hints hints) {
+    private GridCoverage2D handleScaling(
+            GridCoverage2D coverage,
+            ScalingType scaling,
+            Interpolation spatialInterpolation,
+            double preAppliedScale[],
+            Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
-        
+
         // look for scaling extension
-        if(scaling == null){
-             // NO SCALING do we need interpolation?
-            if(spatialInterpolation instanceof InterpolationNearest){
+        if (scaling == null) {
+            // NO SCALING do we need interpolation?
+            if (spatialInterpolation instanceof InterpolationNearest) {
                 return coverage;
             } else {
-                // interpolate coverage if requested and not nearest!!!!         
+                // interpolate coverage if requested and not nearest!!!!
                 final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                 final ParameterValueGroup parameters = operation.getParameters();
                 parameters.parameter("Source").setValue(coverage);
-                parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
-                parameters.parameter("interpolation").setValue(spatialInterpolation!=null?spatialInterpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
-                parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(coverage));// TODO check and improve
-                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+                parameters
+                        .parameter("warp")
+                        .setValue(
+                                new WarpAffine(AffineTransform.getScaleInstance(1, 1))); // identity
+                parameters
+                        .parameter("interpolation")
+                        .setValue(
+                                spatialInterpolation != null
+                                        ? spatialInterpolation
+                                        : InterpolationPolicy.getDefaultPolicy()
+                                                .getInterpolation());
+                parameters
+                        .parameter("backgroundValues")
+                        .setValue(
+                                CoverageUtilities.getBackgroundValues(
+                                        coverage)); // TODO check and improve
+                return (GridCoverage2D)
+                        CoverageProcessor.getInstance().doOperation(parameters, hints);
             }
         }
-        
+
         // instantiate enum
         final ScalingPolicy scalingPolicy = ScalingPolicy.getPolicy(scaling);
         // Before doing the scaling, check if some preScaling as been applied
         // This may occur when dealing with overviews
         if (!Double.isNaN(preAppliedScale[0]) && !Double.isNaN(preAppliedScale[1])) {
-            final Double[] scale = new Double[]{preAppliedScale[0], preAppliedScale[1]};
+            final Double[] scale = new Double[] {preAppliedScale[0], preAppliedScale[1]};
             hints.add(new Hints(GetCoverage.PRE_APPLIED_SCALE, scale));
         }
         return scalingPolicy.scale(coverage, scaling, spatialInterpolation, hints, wcs);
-
     }
 
     /**
      * Helper class used for storing and checking the size of each image
-     * 
+     *
      * @author Nicola Lagomarsini
-     * 
      */
     static class ImageSizeRecorder {
         /** Incremental value for the size */
         private long incrementalSize = 0;
 
         private final long limit;
-        
+
         private final boolean input;
 
         ImageSizeRecorder(long limit, boolean input) {
@@ -1549,46 +1802,47 @@ public class GetCoverage {
 
         /**
          * Increment the total size value if not disabled
-         * 
+         *
          * @param GridCoverage2D
          */
         public void addSize(GridCoverage2D coverage) {
-            incrementalSize += getCoverageSize(coverage.getGridGeometry().getGridRange2D(),
-                    coverage.getRenderedImage().getSampleModel());
+            incrementalSize +=
+                    getCoverageSize(
+                            coverage.getGridGeometry().getGridRange2D(),
+                            coverage.getRenderedImage().getSampleModel());
             isSizeExceeded();
         }
 
-        /**
-         * Return the total size accumulated
-         * 
-         *
-         */
+        /** Return the total size accumulated */
         public long finalSize() {
             return incrementalSize;
         }
 
         private void isSizeExceeded() {
             if (limit > 0 && incrementalSize > limit) {
-                throw new WcsException("This request is trying to " + (input ? "read" : "generate")
-                        + " too much data, the limit is " + formatBytes(limit)
-                        + " but the actual amount of bytes to be " + (input ? "read" : "written")
-                        + " is " + formatBytes(incrementalSize));
+                throw new WcsException(
+                        "This request is trying to "
+                                + (input ? "read" : "generate")
+                                + " too much data, the limit is "
+                                + formatBytes(limit)
+                                + " but the actual amount of bytes to be "
+                                + (input ? "read" : "written")
+                                + " is "
+                                + formatBytes(incrementalSize));
             }
         }
 
-        /**
-         * Reset the total size stored to 0
-         */
+        /** Reset the total size stored to 0 */
         public void reset() {
             incrementalSize = 0;
         }
 
         /**
-         * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
-         * (code from WCSUtils)
+         * Computes the size of a grid coverage in bytes given its grid envelope and the target
+         * sample model (code from WCSUtils)
+         *
          * @param envelope
          * @param sm
-         *
          */
         private static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
             // === compute the coverage memory usage and compare with limit
@@ -1603,8 +1857,8 @@ public class GetCoverage {
         }
 
         /**
-         * Computes the number of pixels for this {@link GridEnvelope2D}.
-         * (code from WCSUtils)
+         * Computes the number of pixels for this {@link GridEnvelope2D}. (code from WCSUtils)
+         *
          * @param rasterEnvelope the {@link GridEnvelope2D} to compute the number of pixels for
          * @return the number of pixels for the provided {@link GridEnvelope2D}
          */
@@ -1618,10 +1872,10 @@ public class GetCoverage {
             return pixelsNumber;
         }
     }
-    
+
     /**
-     * Utility function to format a byte amount into a human readable string
-     * (code from WCSUtils)
+     * Utility function to format a byte amount into a human readable string (code from WCSUtils)
+     *
      * @param bytes
      * @return a formatted string
      */

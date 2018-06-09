@@ -8,13 +8,11 @@ package org.geoserver;
 import com.thoughtworks.xstream.XStream;
 
 /**
- * 
- * Can be used to encode AtomLink with X-Stream.
- * Not using annotations because x-stream configuration is different for XML and JSON (the latter not using namespaces), 
- * instead providing static methods for this purpose.
- * 
- * @author Niels Charlier
+ * Can be used to encode AtomLink with X-Stream. Not using annotations because x-stream
+ * configuration is different for XML and JSON (the latter not using namespaces), instead providing
+ * static methods for this purpose.
  *
+ * @author Niels Charlier
  */
 public class AtomLink {
 
@@ -44,7 +42,6 @@ public class AtomLink {
     }
 
     /**
-     *
      * Configure x-stream for XML encoding of link
      *
      * @param xStream
@@ -58,7 +55,6 @@ public class AtomLink {
     }
 
     /**
-     *
      * Configure x-stream for JSON encoding of link
      *
      * @param xStream

@@ -8,7 +8,6 @@ package org.geoserver.ows.kvp;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpRequestReader;
@@ -16,21 +15,16 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.xml.EMFUtils;
 
-
 /**
  * Web Feature Service Key Value Pair Request reader.
- * <p>
- * This request reader makes use of the Eclipse Modelling Framework
- * reflection api.
- * </p>
+ *
+ * <p>This request reader makes use of the Eclipse Modelling Framework reflection api.
+ *
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime, TOPP
- *
  */
 public class EMFKvpRequestReader extends KvpRequestReader {
-    /**
-     * Factory used to create model objects / requests.
-     */
+    /** Factory used to create model objects / requests. */
     protected EFactory factory;
 
     /**
@@ -41,7 +35,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     public EMFKvpRequestReader(Class requestBean, EFactory factory) {
         super(requestBean);
 
-        //make sure an eobject is passed in
+        // make sure an eobject is passed in
         if (!EObject.class.isAssignableFrom(requestBean)) {
             String msg = "Request bean must be an EObject";
             throw new IllegalArgumentException(msg);
@@ -50,13 +44,11 @@ public class EMFKvpRequestReader extends KvpRequestReader {
         this.factory = factory;
     }
 
-    /**
-     * Reflectivley creates the request bean instance.
-     */
+    /** Reflectivley creates the request bean instance. */
     public Object createRequest() {
         String className = getRequestBean().getName();
 
-        //strip off package
+        // strip off package
         int index = className.lastIndexOf('.');
 
         if (index != -1) {
@@ -73,27 +65,32 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     }
 
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        //use emf reflection
+        // use emf reflection
         EObject eObject = (EObject) request;
 
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext();) {
+        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
             Map.Entry entry = (Map.Entry) e.next();
             String property = (String) entry.getKey();
             Object value = entry.getValue();
 
-            //respect the filter
-            if ( filter( property ) ) {
+            // respect the filter
+            if (filter(property)) {
                 continue;
             }
-            
+
             if (EMFUtils.has(eObject, property)) {
                 try {
                     setValue(eObject, property, value);
-                } catch(Exception ex) {
-                    throw new ServiceException("Failed to set property " + property 
-                            + " in request object using value " + value 
-                            + (value != null ? " of type " + value.getClass() : ""), ex, 
-                            ServiceException.INVALID_PARAMETER_VALUE, property);
+                } catch (Exception ex) {
+                    throw new ServiceException(
+                            "Failed to set property "
+                                    + property
+                                    + " in request object using value "
+                                    + value
+                                    + (value != null ? " of type " + value.getClass() : ""),
+                            ex,
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            property);
                 }
             }
         }
@@ -102,8 +99,8 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     }
 
     /**
-     * Sets a value in the target EMF object, adding it to a collection if the target is a collection,
-     * setting it otherwise. Subclasses can override this behavior
+     * Sets a value in the target EMF object, adding it to a collection if the target is a
+     * collection, setting it otherwise. Subclasses can override this behavior
      */
     protected void setValue(EObject eObject, String property, Object value) {
         // check for a collection

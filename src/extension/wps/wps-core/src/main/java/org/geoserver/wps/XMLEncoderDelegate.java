@@ -11,24 +11,24 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Encodes complex objects as inline XML
+ *
  * @author Justin Deoliveria
  */
 public class XMLEncoderDelegate implements EncoderDelegate {
 
     XMLPPIO ppio;
     Object object;
-    
-    public XMLEncoderDelegate( XMLPPIO ppio, Object object ) {
+
+    public XMLEncoderDelegate(XMLPPIO ppio, Object object) {
         this.ppio = ppio;
         this.object = object;
     }
-    
-    public XMLPPIO getProcessParameterIO() { 
+
+    public XMLPPIO getProcessParameterIO() {
         return ppio;
     }
-    
+
     public void encode(ContentHandler handler) throws Exception {
         ppio.encode(object, handler);
     }
-
 }

@@ -5,19 +5,17 @@
  */
 package org.geoserver.security.web.auth;
 
-import java.util.List;
+import static org.geoserver.security.GeoServerSecurityFilterChain.*;
+import static org.junit.Assert.*;
 
+import java.util.List;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.GeoServerAuthenticationProvider;
-import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.geoserver.security.GeoServerSecurityFilterChain.*;
-import static org.junit.Assert.*;
 
 public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
 
@@ -33,12 +31,13 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         initializeForXML();
         createUserPasswordAuthProvider("default2", "default");
         activateRORoleService();
-        
+
         tester.startPage(page = new AuthenticationPage());
         tester.assertComponent("form:providerChain:authProviderNames:recorder", Recorder.class);
 
-        List<String> selected = 
-            (List<String>) (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();
+        List<String> selected =
+                (List<String>)
+                        (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();
         assertEquals(1, selected.size());
         assertTrue(selected.contains("default"));
 
@@ -48,35 +47,29 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertNoErrorMessage();
 
         boolean authProvFound = false;
-        for (GeoServerAuthenticationProvider prov : getSecurityManager()
-                .getAuthenticationProviders()) {
-            if (UsernamePasswordAuthenticationProvider.class.isAssignableFrom(prov
-                    .getClass())) {
-                if (((UsernamePasswordAuthenticationProvider) prov).getName()
-                        .equals("default2")) {
+        for (GeoServerAuthenticationProvider prov :
+                getSecurityManager().getAuthenticationProviders()) {
+            if (UsernamePasswordAuthenticationProvider.class.isAssignableFrom(prov.getClass())) {
+                if (((UsernamePasswordAuthenticationProvider) prov).getName().equals("default2")) {
                     authProvFound = true;
                     break;
                 }
-    
             }
         }
         assertTrue(authProvFound);
     }
-    
-//    protected void assignAuthProvider(String providerName) throws Exception {
-//        form.setValue("config.authProviderNames:recorder", providerName);
-//        // tester.executeAjaxEvent(formComponentId+":config.authProviderNames:recorder",
-//        // change);
-//        // newFormTester();
-//    }
-//    
+
+    //    protected void assignAuthProvider(String providerName) throws Exception {
+    //        form.setValue("config.authProviderNames:recorder", providerName);
+    //        // tester.executeAjaxEvent(formComponentId+":config.authProviderNames:recorder",
+    //        // change);
+    //        // newFormTester();
+    //    }
+    //
     protected boolean hasAuthProviderImpl(Class<?> aClass) {
         for (Object o : getSecurityManager().getProviders()) {
-            if (o.getClass() == aClass)
-                return true;
+            if (o.getClass() == aClass) return true;
         }
         return false;
     }
-
 }
-

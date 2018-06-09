@@ -15,5 +15,4 @@ public abstract class KombuWorkspaceItemInfo extends KombuSource {
     public void setWorkspace(String workspace) {
         this.workspace = workspace;
     }
-
 }

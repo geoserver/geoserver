@@ -7,7 +7,6 @@ package org.geoserver.gwc.dispatch;
 
 import java.util.Objects;
 import java.util.logging.Logger;
-
 import org.geoserver.gwc.GWC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
@@ -23,22 +22,27 @@ import org.opengis.referencing.FactoryException;
 
 /**
  * Filter which applies GeoServer security to GWC requests
- * 
- * @author Kevin Smith, Boundless
  *
+ * @author Kevin Smith, Boundless
  */
 public class GeoServerSecurityFilter implements SecurityFilter {
-    
+
     private static final Logger log = Logging.getLogger(GWC.class);
-    
+
     @Override
     public void checkSecurity(TileLayer layer, BoundingBox extent, SRS srs)
             throws SecurityException, GeoWebCacheException {
-        if(GWC.get().getConfig().isSecurityEnabled()) {
+        if (GWC.get().getConfig().isSecurityEnabled()) {
             try {
                 ReferencedEnvelope env;
-                if(Objects.nonNull(extent)) {
-                    env = new ReferencedEnvelope(extent.getMinX(), extent.getMaxX(),extent.getMinY(), extent.getMaxY(),CRS.decode(srs.toString()));
+                if (Objects.nonNull(extent)) {
+                    env =
+                            new ReferencedEnvelope(
+                                    extent.getMinX(),
+                                    extent.getMaxX(),
+                                    extent.getMinY(),
+                                    extent.getMaxY(),
+                                    CRS.decode(srs.toString()));
                 } else {
                     env = null;
                 }
@@ -48,5 +52,4 @@ public class GeoServerSecurityFilter implements SecurityFilter {
             }
         }
     }
-
 }

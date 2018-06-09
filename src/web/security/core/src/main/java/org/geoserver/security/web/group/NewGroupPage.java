@@ -6,7 +6,6 @@
 package org.geoserver.security.web.group;
 
 import java.io.IOException;
-
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerRole;
@@ -17,8 +16,8 @@ import org.geoserver.security.validation.UserGroupStoreValidationWrapper;
 public class NewGroupPage extends AbstractGroupPage {
 
     public NewGroupPage(String userGroupServiceName) {
-        super(userGroupServiceName,new GeoServerUserGroup(""));
-                
+        super(userGroupServiceName, new GeoServerUserGroup(""));
+
         if (!hasUserGroupStore(userGroupServiceName)) {
             throw new IllegalStateException("New group not possible for read only service");
         }
@@ -26,20 +25,22 @@ public class NewGroupPage extends AbstractGroupPage {
 
     @Override
     protected void onFormSubmit(GeoServerUserGroup group) throws IOException {
-        GeoServerUserGroupStore store=null;
+        GeoServerUserGroupStore store = null;
         try {
             store = new UserGroupStoreValidationWrapper(getUserGroupStore(userGroupServiceName));
-            group = store.createGroupObject(group.getGroupname(),group.isEnabled());
+            group = store.createGroupObject(group.getGroupname(), group.isEnabled());
             store.addGroup(group);
             store.store();
         } catch (IOException ex) {
             try {
-                store.load(); 
-            } catch (IOException ex2) {};
+                store.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         }
 
-        GeoServerRoleStore gaStore=null;
+        GeoServerRoleStore gaStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
                 gaStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
@@ -51,9 +52,12 @@ public class NewGroupPage extends AbstractGroupPage {
                 gaStore.store();
             }
         } catch (IOException ex) {
-            try {gaStore.load(); } catch (IOException ex2) {};
+            try {
+                gaStore.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         }
     }
-
 }

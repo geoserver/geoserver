@@ -8,13 +8,11 @@ package org.geoserver.gwc.web.gridset;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.measure.converter.UnitConverter;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Quantity;
 import javax.measure.unit.NonSI;
 import javax.measure.unit.Unit;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Units;
 import org.geotools.referencing.CRS;
@@ -48,9 +46,7 @@ class GridSetInfo implements Serializable {
 
     private boolean internal;
 
-    /**
-     * Same as {@link GridSet#isResolutionsPreserved()}
-     */
+    /** Same as {@link GridSet#isResolutionsPreserved()} */
     private boolean resolutionsPreserved;
 
     public GridSetInfo() {
@@ -64,8 +60,7 @@ class GridSetInfo implements Serializable {
 
     /**
      * @param gridset
-     * @param internal
-     *            whether this gridset is one of the GWC internally defined ones
+     * @param internal whether this gridset is one of the GWC internally defined ones
      */
     public GridSetInfo(final GridSet gridset, final boolean internal) {
         this.internal = internal;
@@ -103,38 +98,27 @@ class GridSetInfo implements Serializable {
         }
     }
 
-    /**
-     * @see GridSet#isResolutionsPreserved()
-     */
+    /** @see GridSet#isResolutionsPreserved() */
     public boolean isResolutionsPreserved() {
         return resolutionsPreserved;
     }
 
-    /**
-     * @see GridSet#isResolutionsPreserved()
-     */
+    /** @see GridSet#isResolutionsPreserved() */
     public void setResolutionsPreserved(boolean resolutionsPreserved) {
         this.resolutionsPreserved = resolutionsPreserved;
     }
 
-    /**
-     * @return the pixelSize
-     */
+    /** @return the pixelSize */
     public double getPixelSize() {
         return pixelSize;
     }
 
-    /**
-     * @param pixelSize
-     *            the pixelSize to set
-     */
+    /** @param pixelSize the pixelSize to set */
     public void setPixelSize(double pixelSize) {
         this.pixelSize = pixelSize;
     }
 
-    /**
-     * @return {@code true} if this is a GWC internally defined GridSet
-     */
+    /** @return {@code true} if this is a GWC internally defined GridSet */
     public boolean isInternal() {
         return internal;
     }
@@ -143,122 +127,82 @@ class GridSetInfo implements Serializable {
         this.internal = internal;
     }
 
-    /**
-     * @return the name
-     */
+    /** @return the name */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     *            the name to set
-     */
+    /** @param name the name to set */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
+    /** @return the description */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description
-     *            the description to set
-     */
+    /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the crs
-     */
+    /** @return the crs */
     public CoordinateReferenceSystem getCrs() {
         return crs;
     }
 
-    /**
-     * @param crs
-     *            the crs to set
-     */
+    /** @param crs the crs to set */
     public void setCrs(CoordinateReferenceSystem crs) {
         this.crs = crs;
     }
 
-    /**
-     * @return the bounds
-     */
+    /** @return the bounds */
     public ReferencedEnvelope getBounds() {
         return bounds;
     }
 
-    /**
-     * @param bounds
-     *            the bounds to set
-     */
+    /** @param bounds the bounds to set */
     public void setBounds(ReferencedEnvelope bounds) {
         this.bounds = bounds;
     }
 
-    /**
-     * @return the tileWidth
-     */
+    /** @return the tileWidth */
     public int getTileWidth() {
         return tileWidth;
     }
 
-    /**
-     * @param tileWidth
-     *            the tileWidth to set
-     */
+    /** @param tileWidth the tileWidth to set */
     public void setTileWidth(int tileWidth) {
         this.tileWidth = tileWidth;
     }
 
-    /**
-     * @return the tileHeight
-     */
+    /** @return the tileHeight */
     public int getTileHeight() {
         return tileHeight;
     }
 
-    /**
-     * @param tileHeight
-     *            the tileHeight to set
-     */
+    /** @param tileHeight the tileHeight to set */
     public void setTileHeight(int tileHeight) {
         this.tileHeight = tileHeight;
     }
 
-    /**
-     * @return the alignTopLeft
-     */
+    /** @return the alignTopLeft */
     public boolean isAlignTopLeft() {
         return alignTopLeft;
     }
 
-    /**
-     * @param alignTopLeft
-     *            the alignTopLeft to set
-     */
+    /** @param alignTopLeft the alignTopLeft to set */
     public void setAlignTopLeft(boolean alignTopLeft) {
         this.alignTopLeft = alignTopLeft;
     }
 
-    /**
-     * @return the levels
-     */
+    /** @return the levels */
     public List<Grid> getLevels() {
         return levels;
     }
 
-    /**
-     * @param levels
-     *            the levels to set
-     */
+    /** @param levels the levels to set */
     public void setLevels(List<Grid> levels) {
         this.levels = levels;
     }
@@ -299,5 +243,4 @@ class GridSetInfo implements Serializable {
         }
         return meters;
     }
-
 }

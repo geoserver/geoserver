@@ -4,25 +4,27 @@
  */
 package org.geoserver.cluster;
 
-import org.geoserver.cluster.events.ToggleType;
-import org.springframework.jms.listener.SessionAwareMessageListener;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import org.geoserver.cluster.events.ToggleType;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 
-/**
- * A simple JMS events listener for our tests.
- */
-public final class JmsEventsListener extends JMSApplicationListener implements SessionAwareMessageListener<Message> {
+/** A simple JMS events listener for our tests. */
+public final class JmsEventsListener extends JMSApplicationListener
+        implements SessionAwareMessageListener<Message> {
 
     public enum Status {
-        NO_STATUS, SELECT_CONTINUE, REJECT_CONTINUE, SELECT_STOP, REJECT_STOP
+        NO_STATUS,
+        SELECT_CONTINUE,
+        REJECT_CONTINUE,
+        SELECT_STOP,
+        REJECT_STOP
     }
 
     private static final List<Message> messages = new ArrayList<>();
@@ -47,16 +49,20 @@ public final class JmsEventsListener extends JMSApplicationListener implements S
     }
 
     /**
-     * Blocking helper method that allows us to wait for certain messages in a certain time.
-     * The stop method will be used to check if we have all the messages we need. Only
-     * messages that match one of the provided handlers keys will be selected.
+     * Blocking helper method that allows us to wait for certain messages in a certain time. The
+     * stop method will be used to check if we have all the messages we need. Only messages that
+     * match one of the provided handlers keys will be selected.
      */
-    public static List<Message> getMessagesByHandlerKey(int timeoutMs, Function<List<Message>, Boolean> stop, String... keys) {
+    public static List<Message> getMessagesByHandlerKey(
+            int timeoutMs, Function<List<Message>, Boolean> stop, String... keys) {
         List<String> keysList = Arrays.asList(keys);
-        return JmsEventsListener.getMessages(timeoutMs, stop,
+        return JmsEventsListener.getMessages(
+                timeoutMs,
+                stop,
                 (message) -> {
                     try {
-                        String handlerKey = message.getStringProperty(JMSEventHandlerSPI.getKeyName());
+                        String handlerKey =
+                                message.getStringProperty(JMSEventHandlerSPI.getKeyName());
                         if (keysList.contains(handlerKey)) {
                             // we want this message
                             return Status.SELECT_CONTINUE;
@@ -70,16 +76,22 @@ public final class JmsEventsListener extends JMSApplicationListener implements S
     }
 
     /**
-     * Blocking helper method that allows us to wait for certain messages in a certain time.
-     * The stop method will be used to check if we have all the messages we need. The selector
-     * method is used to select only certain messages.
+     * Blocking helper method that allows us to wait for certain messages in a certain time. The
+     * stop method will be used to check if we have all the messages we need. The selector method is
+     * used to select only certain messages.
      */
-    public static List<Message> getMessages(int timeoutMs, Function<List<Message>, Boolean> stop, Function<Message, Status> selector) {
+    public static List<Message> getMessages(
+            int timeoutMs,
+            Function<List<Message>, Boolean> stop,
+            Function<Message, Status> selector) {
         List<Message> selected = new ArrayList<>();
         Status status = Status.NO_STATUS;
         int max = (int) Math.ceil(timeoutMs / 10.0);
         int i = 0;
-        while (i < max && status != Status.SELECT_STOP && status != Status.REJECT_STOP && !stop.apply(selected)) {
+        while (i < max
+                && status != Status.SELECT_STOP
+                && status != Status.REJECT_STOP
+                && !stop.apply(selected)) {
             try {
                 // let's wait ten milliseconds
                 Thread.sleep(10);
@@ -108,10 +120,9 @@ public final class JmsEventsListener extends JMSApplicationListener implements S
         return selected;
     }
 
-    /**
-     * Searches the events that match a certain handler and apply the handler to those elements.
-     */
-    public static <T> List<T> getMessagesForHandler(List<Message> messages, String handlerName, JMSEventHandler<String, T> handler) {
+    /** Searches the events that match a certain handler and apply the handler to those elements. */
+    public static <T> List<T> getMessagesForHandler(
+            List<Message> messages, String handlerName, JMSEventHandler<String, T> handler) {
         List<T> found = new ArrayList<>();
         for (Message message : messages) {
             try {

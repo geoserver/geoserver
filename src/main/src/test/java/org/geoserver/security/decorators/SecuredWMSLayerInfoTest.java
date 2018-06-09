@@ -8,7 +8,8 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 
-public class SecuredWMSLayerInfoTest extends SecuredResourceInfoTest<WMSLayerInfo, SecuredWMSLayerInfo> {
+public class SecuredWMSLayerInfoTest
+        extends SecuredResourceInfoTest<WMSLayerInfo, SecuredWMSLayerInfo> {
 
     @Override
     WMSLayerInfo createDelegate() {
@@ -41,5 +42,4 @@ public class SecuredWMSLayerInfoTest extends SecuredResourceInfoTest<WMSLayerInf
     int getStackOverflowCount() {
         return 50_000;
     }
-
 }

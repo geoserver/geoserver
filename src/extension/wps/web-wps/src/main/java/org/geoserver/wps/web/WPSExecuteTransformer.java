@@ -8,14 +8,11 @@ package org.geoserver.wps.web;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.xml.serializer.TreeWalker;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.web.InputParameterValues.ParameterType;
 import org.geoserver.wps.web.InputParameterValues.ParameterValue;
 import org.geotools.filter.v1_0.OGC;
@@ -40,9 +37,8 @@ import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Helper class to turn a {@link ExecuteRequest} into the corresponding WPS 1.0 Execute xml
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 class WPSExecuteTransformer extends TransformerBase {
 
@@ -92,12 +88,34 @@ class WPSExecuteTransformer extends TransformerBase {
             // we really need to move those namespace declaration down to
             // the single request elements so that we can mix them)
             if (mainProcess) {
-                AttributesImpl attributes = attributes("version", "1.0.0", "service", "WPS",
-                        "xmlns:xsi", XSI_URI, "xmlns", WPS_URI, "xmlns:wfs", WFS_URI, "xmlns:wps",
-                        WPS_URI, "xmlns:ows", OWS.NAMESPACE, "xmlns:gml", GML.NAMESPACE, "xmlns:ogc",
-                        OGC.NAMESPACE, "xmlns:wcs", WCS_URI, "xmlns:xlink", XLINK.NAMESPACE,
-                        "xsi:schemaLocation", WPS.NAMESPACE + " "
-                                + "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd");
+                AttributesImpl attributes =
+                        attributes(
+                                "version",
+                                "1.0.0",
+                                "service",
+                                "WPS",
+                                "xmlns:xsi",
+                                XSI_URI,
+                                "xmlns",
+                                WPS_URI,
+                                "xmlns:wfs",
+                                WFS_URI,
+                                "xmlns:wps",
+                                WPS_URI,
+                                "xmlns:ows",
+                                OWS.NAMESPACE,
+                                "xmlns:gml",
+                                GML.NAMESPACE,
+                                "xmlns:ogc",
+                                OGC.NAMESPACE,
+                                "xmlns:wcs",
+                                WCS_URI,
+                                "xmlns:xlink",
+                                XLINK.NAMESPACE,
+                                "xsi:schemaLocation",
+                                WPS.NAMESPACE
+                                        + " "
+                                        + "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd");
                 start("wps:Execute", attributes);
             } else {
                 AttributesImpl attributes = attributes("version", "1.0.0", "service", "WPS");
@@ -111,9 +129,8 @@ class WPSExecuteTransformer extends TransformerBase {
 
         /**
          * Helper to build a set of attributes out of a list of key/value pairs
-         * 
-         * @param nameValues
          *
+         * @param nameValues
          */
         AttributesImpl attributes(String... nameValues) {
             AttributesImpl atts = new AttributesImpl();
@@ -145,9 +162,10 @@ class WPSExecuteTransformer extends TransformerBase {
                         String crs = null;
                         if (env.getCoordinateReferenceSystem() != null) {
                             try {
-                                crs = "EPSG:"
-                                        + CRS.lookupEpsgCode(env.getCoordinateReferenceSystem(),
-                                                false);
+                                crs =
+                                        "EPSG:"
+                                                + CRS.lookupEpsgCode(
+                                                        env.getCoordinateReferenceSystem(), false);
                             } catch (Exception e) {
                                 LOGGER.log(Level.WARNING, "Could not get EPSG code for " + crs);
                             }
@@ -176,8 +194,8 @@ class WPSExecuteTransformer extends TransformerBase {
                             // write out a warning without blowing pu
                             char[] comment = "Can't handle this data type yet".toCharArray();
                             try {
-                                ((LexicalHandler) contentHandler).comment(comment, 0,
-                                        comment.length);
+                                ((LexicalHandler) contentHandler)
+                                        .comment(comment, 0, comment.length);
                             } catch (SAXException se) {
                                 throw new RuntimeException(se);
                             }
@@ -208,8 +226,15 @@ class WPSExecuteTransformer extends TransformerBase {
 
         private void handleRasterLayerInput(ParameterValue value) {
             RasterLayerConfiguration raster = (RasterLayerConfiguration) value.value;
-            start("wps:Reference", attributes("mimeType", value.mime, "xlink:href",
-                    "http://geoserver/wcs", "method", "POST"));
+            start(
+                    "wps:Reference",
+                    attributes(
+                            "mimeType",
+                            value.mime,
+                            "xlink:href",
+                            "http://geoserver/wcs",
+                            "method",
+                            "POST"));
             start("wps:Body");
             if (raster != null && raster.getLayerName() != null) {
                 start("wcs:GetCoverage", attributes("service", "WCS", "version", "1.1.1"));
@@ -232,14 +257,21 @@ class WPSExecuteTransformer extends TransformerBase {
 
         private void handleVectorInput(ParameterValue value) {
             VectorLayerConfiguration vector = (VectorLayerConfiguration) value.value;
-            start("wps:Reference", attributes("mimeType", value.mime, "xlink:href",
-                    "http://geoserver/wfs", "method", "POST"));
+            start(
+                    "wps:Reference",
+                    attributes(
+                            "mimeType",
+                            value.mime,
+                            "xlink:href",
+                            "http://geoserver/wfs",
+                            "method",
+                            "POST"));
             start("wps:Body");
 
-            AttributesImpl atts = 
-                attributes("service", "WFS", "version", "1.0.0", "outputFormat", "GML2");
+            AttributesImpl atts =
+                    attributes("service", "WFS", "version", "1.0.0", "outputFormat", "GML2");
 
-            //if the layer name is qualfiied we should include a namespace mapping on the 
+            // if the layer name is qualfiied we should include a namespace mapping on the
             // GetFeature request
             if (catalog != null && vector.layerName != null && vector.layerName.contains(":")) {
                 String prefix = vector.layerName.split(":")[0];
@@ -265,11 +297,23 @@ class WPSExecuteTransformer extends TransformerBase {
         public void handleReferenceInput(ParameterValue value) {
             ReferenceConfiguration reference = (ReferenceConfiguration) value.value;
             if (reference.mime != null) {
-                start("wps:Reference", attributes("mimeType", reference.mime, "xlink:href",
-                        reference.url, "method", reference.method.toString()));
+                start(
+                        "wps:Reference",
+                        attributes(
+                                "mimeType",
+                                reference.mime,
+                                "xlink:href",
+                                reference.url,
+                                "method",
+                                reference.method.toString()));
             } else {
-                start("wps:Reference", attributes("xlink:href", reference.url, "method",
-                        reference.method.toString()));
+                start(
+                        "wps:Reference",
+                        attributes(
+                                "xlink:href",
+                                reference.url,
+                                "method",
+                                reference.method.toString()));
             }
             if (reference.method == ReferenceConfiguration.Method.POST) {
                 start("wps:Body");
@@ -283,8 +327,15 @@ class WPSExecuteTransformer extends TransformerBase {
         private void handleSubprocessInput(ParameterValue value) {
             ExecuteRequest request = (ExecuteRequest) value.value;
 
-            start("wps:Reference", attributes("mimeType", value.mime, "xlink:href",
-                    "http://geoserver/wps", "method", "POST"));
+            start(
+                    "wps:Reference",
+                    attributes(
+                            "mimeType",
+                            value.mime,
+                            "xlink:href",
+                            "http://geoserver/wps",
+                            "method",
+                            "POST"));
             start("wps:Body");
             encode(request, false);
             end("wps:Body");
@@ -368,5 +419,4 @@ class WPSExecuteTransformer extends TransformerBase {
             end("wps:ResponseForm");
         }
     }
-
 }

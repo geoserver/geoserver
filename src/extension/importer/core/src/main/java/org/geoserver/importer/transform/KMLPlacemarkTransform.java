@@ -5,11 +5,11 @@
  */
 package org.geoserver.importer.transform;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.importer.FeatureDataConverter;
 import org.geoserver.importer.ImportTask;
@@ -21,8 +21,6 @@ import org.geotools.kml.Folder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 public class KMLPlacemarkTransform extends AbstractTransform implements InlineVectorTransform {
 
@@ -64,8 +62,8 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
             newFeature.setAttribute("Folder", serializedFolders);
         }
         @SuppressWarnings("unchecked")
-        Map<String, String> untypedExtendedData = (Map<String, String>) userData
-                .get("UntypedExtendedData");
+        Map<String, String> untypedExtendedData =
+                (Map<String, String>) userData.get("UntypedExtendedData");
         if (untypedExtendedData != null) {
             for (Entry<String, String> entry : untypedExtendedData.entrySet()) {
                 if (targetFeatureType.getDescriptor(entry.getKey()) != null) {
@@ -91,14 +89,15 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
     }
 
     @Override
-    public SimpleFeatureType apply(ImportTask task, DataStore dataStore,
-            SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(
+            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         return convertFeatureType(featureType);
     }
 
     @Override
-    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature,
-            SimpleFeature feature) throws Exception {
+    public SimpleFeature apply(
+            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+            throws Exception {
         SimpleFeatureType targetFeatureType = feature.getFeatureType();
         SimpleFeature newFeature = convertFeature(oldFeature, targetFeatureType);
         feature.setAttributes(newFeature.getAttributes());

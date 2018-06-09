@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.script.ScriptFactory;
@@ -30,14 +29,12 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 
-/**
- * Function factory that creates processes from scripts located in the data directory.
- */
+/** Function factory that creates processes from scripts located in the data directory. */
 public class ScriptFunctionFactory extends ScriptFactory implements FunctionFactory {
 
     /** logger */
     static Logger LOGGER = Logging.getLogger(ScriptProcessFactory.class);
-    
+
     /** script manager */
     ScriptManager scriptMgr;
 
@@ -69,13 +66,14 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                     LOGGER.fine("Skipping " + file.name() + ", no hook found");
                 }
 
-                //TODO: support multiple functions in one file
-                //TODO: support the function defining its namespace
-                names.add(ff.functionName(
-                    new NameImpl(getExtension(file.name()), getBaseName(file.name())), -1));
+                // TODO: support multiple functions in one file
+                // TODO: support the function defining its namespace
+                names.add(
+                        ff.functionName(
+                                new NameImpl(getExtension(file.name()), getBaseName(file.name())),
+                                -1));
             }
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             LOGGER.log(Level.WARNING, "Error looking up filters", e);
         }
         return names;
@@ -95,7 +93,7 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
     ScriptFunction function(Name name) {
         ScriptFunction function = functions.get(name);
         if (function == null) {
-            synchronized(this) {
+            synchronized (this) {
                 function = functions.get(name);
                 if (function == null) {
                     ScriptManager scriptMgr = scriptMgr();
@@ -104,9 +102,8 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                     Resource f = null;
                     if (name.getNamespaceURI() != null) {
                         f = filterRoot.get(name.getLocalPart() + "." + name.getNamespaceURI());
-                    }
-                    else {
-                        //look for a file based on basename
+                    } else {
+                        // look for a file based on basename
                         for (Resource file : filterRoot.list()) {
                             if (name.getLocalPart().equals(getBaseName(file.name()))) {
                                 f = file;
@@ -118,7 +115,7 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                     if (f == null) {
                         return null;
                     }
-                    
+
                     if (!Resources.exists(f)) {
                         LOGGER.log(Level.WARNING, "File not found : " + f.path());
                         return null;
@@ -131,5 +128,4 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
         }
         return function;
     }
-
 }

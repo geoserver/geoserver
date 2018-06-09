@@ -14,9 +14,7 @@ import org.geoserver.nsg.timeout.TimeoutCallback;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 
-/**
- * Panel to set the WFS timeout value
- */
+/** Panel to set the WFS timeout value */
 public class NSGTimeoutPanel extends AdminPagePanel {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -25,10 +23,11 @@ public class NSGTimeoutPanel extends AdminPagePanel {
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
         MapModel timeoutModel = new MapModel(metadata, TimeoutCallback.TIMEOUT_CONFIG_KEY);
-        if(timeoutModel.getObject() == null) {
+        if (timeoutModel.getObject() == null) {
             timeoutModel.setObject(TimeoutCallback.TIMEOUT_CONFIG_DEFAULT);
         }
-        TextField<Integer> timeoutField = new TextField<>("timeoutSeconds", timeoutModel, Integer.class);
+        TextField<Integer> timeoutField =
+                new TextField<>("timeoutSeconds", timeoutModel, Integer.class);
         timeoutField.setRequired(true);
         timeoutField.add(RangeValidator.minimum(0));
         add(timeoutField);

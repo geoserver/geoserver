@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -50,9 +49,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * ClassifierController.
- */
+/** ClassifierController. */
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
@@ -60,11 +57,18 @@ public class RasterizerController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(RasterizerController.class);
 
     public enum COLORRAMP_TYPE {
-        RED, BLUE, GRAY, JET, RANDOM, CUSTOM
+        RED,
+        BLUE,
+        GRAY,
+        JET,
+        RANDOM,
+        CUSTOM
     };
 
     public enum COLORMAP_TYPE {
-        RAMP, INTERVALS, VALUES
+        RAMP,
+        INTERVALS,
+        VALUES
     };
 
     private static final String DEFAULT_MIN = "0.0";
@@ -84,13 +88,22 @@ public class RasterizerController extends AbstractCatalogController {
         super(catalog);
     }
 
-    @GetMapping(path = "/{layerName}/rasterize", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public Object rasterize(@PathVariable String layerName,
+    @GetMapping(
+        path = "/{layerName}/rasterize",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
+    public Object rasterize(
+            @PathVariable String layerName,
             @RequestParam(value = "min", required = false, defaultValue = DEFAULT_MIN) double min,
             @RequestParam(value = "max", required = false, defaultValue = DEFAULT_MAX) double max,
-            @RequestParam(value = "classes", required = false, defaultValue = DEFAULT_CLASSES) int classes,
-            @RequestParam(value = "digits", required = false, defaultValue = DEFAULT_DIGITS) int digits,
+            @RequestParam(value = "classes", required = false, defaultValue = DEFAULT_CLASSES)
+                    int classes,
+            @RequestParam(value = "digits", required = false, defaultValue = DEFAULT_DIGITS)
+                    int digits,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "startColor", required = false) String startColor,
             @RequestParam(value = "endColor", required = false) String endColor,
@@ -110,11 +123,10 @@ public class RasterizerController extends AbstractCatalogController {
             }
         }
 
-        COLORRAMP_TYPE rampType = (ramp != null ? COLORRAMP_TYPE.valueOf(ramp.toUpperCase())
-                : COLORRAMP_TYPE.RED);
+        COLORRAMP_TYPE rampType =
+                (ramp != null ? COLORRAMP_TYPE.valueOf(ramp.toUpperCase()) : COLORRAMP_TYPE.RED);
 
-        if (min == max)
-            min = min - Double.MIN_VALUE;
+        if (min == max) min = min - Double.MIN_VALUE;
 
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo != null) {
@@ -133,9 +145,20 @@ public class RasterizerController extends AbstractCatalogController {
 
                 Style rasterized;
                 try {
-                    rasterized = remapStyle(defaultStyle, rasterSymbolizer, min, max, classes,
-                            rampType, layerName, digits, colormapType, startColor, endColor,
-                            midColor);
+                    rasterized =
+                            remapStyle(
+                                    defaultStyle,
+                                    rasterSymbolizer,
+                                    min,
+                                    max,
+                                    classes,
+                                    rampType,
+                                    layerName,
+                                    digits,
+                                    colormapType,
+                                    startColor,
+                                    endColor,
+                                    midColor);
                 } catch (Exception e) {
                     throw new InvalidSymbolizer();
                 }
@@ -147,25 +170,36 @@ public class RasterizerController extends AbstractCatalogController {
         return wrapList(new ArrayList(), ArrayList.class);
     }
 
-    @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "RasterSymbolizer SLD expected!")
+    @ResponseStatus(
+        value = HttpStatus.EXPECTATION_FAILED,
+        reason = "RasterSymbolizer SLD expected!"
+    )
     private class InvalidSymbolizer extends RuntimeException {
         private static final long serialVersionUID = 5453377766415209696L;
     }
 
     /**
-     * 
      * @param defaultStyle
      * @param rasterSymbolizer
      * @param layerName
      * @param midColor
      * @param endColor
      * @param startColor
-     *
      * @throws Exception
      */
-    private Style remapStyle(StyleInfo defaultStyle, RasterSymbolizer rasterSymbolizer, double min,
-            double max, int classes, COLORRAMP_TYPE ramp, String layerName, final int digits,
-            final int colorMapType, String startColor, String endColor, String midColor)
+    private Style remapStyle(
+            StyleInfo defaultStyle,
+            RasterSymbolizer rasterSymbolizer,
+            double min,
+            double max,
+            int classes,
+            COLORRAMP_TYPE ramp,
+            String layerName,
+            final int digits,
+            final int colorMapType,
+            String startColor,
+            String endColor,
+            String midColor)
             throws Exception {
         StyleBuilder sb = new StyleBuilder();
 
@@ -193,34 +227,34 @@ public class RasterizerController extends AbstractCatalogController {
             }
 
             switch (ramp) {
-            case RED:
-                colorRamp = new RedColorRamp();
-                break;
-            case BLUE:
-                colorRamp = new BlueColorRamp();
-                break;
-            case GRAY:
-                colorRamp = new GrayColorRamp();
-                break;
-            case JET:
-                colorRamp = new JetColorRamp();
-                break;
-            case RANDOM:
-                colorRamp = new RandomColorRamp();
-                break;
-            case CUSTOM:
-                colorRamp = new CustomColorRamp();
-                CustomColorRamp customRamp = (CustomColorRamp) colorRamp;
-                if (startColor != null) {
-                    customRamp.setStartColor(Color.decode(startColor));
-                }
-                if (endColor != null) {
-                    customRamp.setEndColor(Color.decode(endColor));
-                }
-                if (midColor != null) {
-                    customRamp.setMid(Color.decode(midColor));
-                }
-                break;
+                case RED:
+                    colorRamp = new RedColorRamp();
+                    break;
+                case BLUE:
+                    colorRamp = new BlueColorRamp();
+                    break;
+                case GRAY:
+                    colorRamp = new GrayColorRamp();
+                    break;
+                case JET:
+                    colorRamp = new JetColorRamp();
+                    break;
+                case RANDOM:
+                    colorRamp = new RandomColorRamp();
+                    break;
+                case CUSTOM:
+                    colorRamp = new CustomColorRamp();
+                    CustomColorRamp customRamp = (CustomColorRamp) colorRamp;
+                    if (startColor != null) {
+                        customRamp.setStartColor(Color.decode(startColor));
+                    }
+                    if (endColor != null) {
+                        customRamp.setEndColor(Color.decode(endColor));
+                    }
+                    if (midColor != null) {
+                        customRamp.setMid(Color.decode(midColor));
+                    }
+                    break;
             }
             colorRamp.setNumClasses(classes);
 
@@ -228,8 +262,9 @@ public class RasterizerController extends AbstractCatalogController {
             realColorRamp.add(Color.BLACK);
             realColorRamp.addAll(colorRamp.getRamp());
 
-            resampledColorMap = sb.createColorMap(labels, quantities,
-                    realColorRamp.toArray(new Color[1]), colorMapType);
+            resampledColorMap =
+                    sb.createColorMap(
+                            labels, quantities, realColorRamp.toArray(new Color[1]), colorMapType);
             FilterFactory2 filterFactory = CommonFactoryFinder.getFilterFactory2(null);
             resampledColorMap.getColorMapEntry(0).setOpacity(filterFactory.literal(0));
         } else {
@@ -242,17 +277,13 @@ public class RasterizerController extends AbstractCatalogController {
         return style;
     }
 
-    /**
-     * 
-     * @param defaultStyle
-     *
-     */
+    /** @param defaultStyle */
     private RasterSymbolizer getRasterSymbolizer(StyleInfo sInfo) {
         RasterSymbolizer rasterSymbolizer = null;
 
         try {
-            for (FeatureTypeStyle ftStyle : sInfo.getStyle().featureTypeStyles()
-                    .toArray(new FeatureTypeStyle[0])) {
+            for (FeatureTypeStyle ftStyle :
+                    sInfo.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0])) {
                 for (Rule rule : ftStyle.rules().toArray(new Rule[0])) {
                     for (Symbolizer sym : rule.getSymbolizers()) {
                         if (sym instanceof RasterSymbolizer) {
@@ -261,21 +292,20 @@ public class RasterizerController extends AbstractCatalogController {
                         }
                     }
 
-                    if (rasterSymbolizer != null)
-                        break;
+                    if (rasterSymbolizer != null) break;
                 }
 
-                if (rasterSymbolizer != null)
-                    break;
+                if (rasterSymbolizer != null) break;
             }
         } catch (IOException e) {
             if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE,
-                        "The following exception has occurred " + e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.FINE,
+                        "The following exception has occurred " + e.getLocalizedMessage(),
+                        e);
             return null;
         }
 
         return rasterSymbolizer;
     }
-
 }

@@ -16,5 +16,4 @@ public class KombuWorkspaceInfo extends KombuSource {
     public void setNamespaceURI(String namespaceURI) {
         this.namespaceURI = namespaceURI;
     }
-
 }

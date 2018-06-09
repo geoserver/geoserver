@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.MockData;
@@ -36,7 +35,8 @@ public abstract class GeofenceBaseTest extends GeoServerTestSupport {
             LOGGER.severe(
                     "Error in OneTimeSetup: it may be due to GeoFence not running, please check the logs -- "
                             + e.getMessage());
-            LOGGER.log(Level.FINE,
+            LOGGER.log(
+                    Level.FINE,
                     "Error in OneTimeSetup: it may be due to GeoFence not running, please check the logs",
                     e);
         }
@@ -50,13 +50,17 @@ public abstract class GeofenceBaseTest extends GeoServerTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
 
         // get the beans we use for testing
-        accessManager = (GeofenceAccessManager) applicationContext
-                .getBean("geofenceRuleAccessManager");
-        geofenceService = (RuleReaderService) applicationContext.getBean(
-                applicationContext.getBeanFactory().resolveEmbeddedValue("${ruleReaderBackend}"));
-        configManager = (GeoFenceConfigurationManager) applicationContext
-                .getBean("geofenceConfigurationManager");
-
+        accessManager =
+                (GeofenceAccessManager) applicationContext.getBean("geofenceRuleAccessManager");
+        geofenceService =
+                (RuleReaderService)
+                        applicationContext.getBean(
+                                applicationContext
+                                        .getBeanFactory()
+                                        .resolveEmbeddedValue("${ruleReaderBackend}"));
+        configManager =
+                (GeoFenceConfigurationManager)
+                        applicationContext.getBean("geofenceConfigurationManager");
     }
 
     @Override
@@ -86,12 +90,13 @@ public abstract class GeofenceBaseTest extends GeoServerTestSupport {
         if (IS_GEOFENCE_AVAILABLE) {
             super.runTest();
         } else {
-            System.out.println("Skipping test in " + getClass().getSimpleName()
-                    + " as GeoFence service is down: "
-                    + "in order to run this test you need the services to be running on port 9191");
+            System.out.println(
+                    "Skipping test in "
+                            + getClass().getSimpleName()
+                            + " as GeoFence service is down: "
+                            + "in order to run this test you need the services to be running on port 9191");
             // TODO: use Assume when using junit >=3
         }
-
     }
 
     protected boolean isGeoFenceAvailable() {

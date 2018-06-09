@@ -4,18 +4,16 @@
  */
 package org.geoserver.params.extractor;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
 
 public final class Filter implements GeoServerFilter, ExtensionPriority {
 
@@ -35,22 +33,28 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    public void init(FilterConfig filterConfig) throws ServletException {}
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         if (httpServletRequest.getRequestURI().contains("web/wicket")
                 || httpServletRequest.getRequestURI().contains("geoserver/web")) {
             chain.doFilter(request, response);
             return;
         }
-        UrlTransform urlTransform = new UrlTransform(httpServletRequest.getRequestURI(), httpServletRequest.getParameterMap());
+        UrlTransform urlTransform =
+                new UrlTransform(
+                        httpServletRequest.getRequestURI(), httpServletRequest.getParameterMap());
         String originalRequest = urlTransform.toString();
         rules.forEach(rule -> rule.apply(urlTransform));
         if (urlTransform.haveChanged()) {
-            Utils.info(LOGGER, "Request '%s' transformed to '%s'.", originalRequest, urlTransform.toString());
+            Utils.info(
+                    LOGGER,
+                    "Request '%s' transformed to '%s'.",
+                    originalRequest,
+                    urlTransform.toString());
             chain.doFilter(new RequestWrapper(urlTransform, httpServletRequest), response);
         } else {
             chain.doFilter(request, response);
@@ -58,6 +62,5 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     }
 
     @Override
-    public void destroy() {
-    }
+    public void destroy() {}
 }

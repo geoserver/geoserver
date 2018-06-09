@@ -4,6 +4,11 @@
  */
 package org.geoserver.nsg;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.nsg.versioning.TimeVersioning;
@@ -17,20 +22,13 @@ import org.geotools.util.NullProgressListener;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.util.ProgressListener;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public final class TestsUtils {
 
     public static final ProgressListener NULL_PROGRESS_LISTENER = new NullProgressListener();
 
     public static final Hints EMPTY_HINTS = new Hints();
 
-    private TestsUtils() {
-    }
+    private TestsUtils() {}
 
     public static String readResource(String resourceName) {
         try (InputStream input = TestsUtils.class.getResourceAsStream(resourceName)) {
@@ -40,8 +38,12 @@ public final class TestsUtils {
         }
     }
 
-    public static void updateFeatureTypeTimeVersioning(Catalog catalog, String featureTypeName,
-                                                       boolean enabled, String idProperty, String timeProperty) {
+    public static void updateFeatureTypeTimeVersioning(
+            Catalog catalog,
+            String featureTypeName,
+            boolean enabled,
+            String idProperty,
+            String timeProperty) {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(featureTypeName);
         if (enabled) {
             TimeVersioning.enable(featureType, idProperty, timeProperty);
@@ -54,24 +56,28 @@ public final class TestsUtils {
     public static List<SimpleFeature> searchFeatures(Catalog catalog, String featureTypeName) {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(featureTypeName);
         if (featureType == null) {
-            throw new RuntimeException(String.format(
-                    "Feature type '%s' not found.", featureTypeName));
+            throw new RuntimeException(
+                    String.format("Feature type '%s' not found.", featureTypeName));
         }
         FeatureSource source;
         try {
             source = featureType.getFeatureSource(NULL_PROGRESS_LISTENER, EMPTY_HINTS);
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error obtaining feature source of feature type '%s'.",
-                    featureTypeName), exception);
+            throw new RuntimeException(
+                    String.format(
+                            "Error obtaining feature source of feature type '%s'.",
+                            featureTypeName),
+                    exception);
         }
         FeatureCollection collection;
         try {
             collection = source.getFeatures();
         } catch (Exception exception) {
-            throw new RuntimeException(String.format(
-                    "Error obtaining feature collection for feature type '%s'.",
-                    featureTypeName), exception);
+            throw new RuntimeException(
+                    String.format(
+                            "Error obtaining feature collection for feature type '%s'.",
+                            featureTypeName),
+                    exception);
         }
         try (FeatureIterator iterator = collection.features()) {
             List<SimpleFeature> features = new ArrayList<>();
@@ -83,19 +89,32 @@ public final class TestsUtils {
         }
     }
 
-    public static List<SimpleFeature> searchFeatures(List<SimpleFeature> features, String namePropertyName,
-                                                     String timePropertyName, String expectedName, Date expectedTime, int toleranceInSeconds) {
-        return features.stream().filter(feature -> {
-            String name = Converters.convert(feature.getAttribute(namePropertyName), String.class);
-            if (name == null || !name.equals(expectedName)) {
-                return false;
-            }
-            Date time = Converters.convert(feature.getAttribute(timePropertyName), Date.class);
-            return dateEqualWitTolerance(time, expectedTime, toleranceInSeconds);
-        }).collect(Collectors.toList());
+    public static List<SimpleFeature> searchFeatures(
+            List<SimpleFeature> features,
+            String namePropertyName,
+            String timePropertyName,
+            String expectedName,
+            Date expectedTime,
+            int toleranceInSeconds) {
+        return features.stream()
+                .filter(
+                        feature -> {
+                            String name =
+                                    Converters.convert(
+                                            feature.getAttribute(namePropertyName), String.class);
+                            if (name == null || !name.equals(expectedName)) {
+                                return false;
+                            }
+                            Date time =
+                                    Converters.convert(
+                                            feature.getAttribute(timePropertyName), Date.class);
+                            return dateEqualWitTolerance(time, expectedTime, toleranceInSeconds);
+                        })
+                .collect(Collectors.toList());
     }
 
-    private static boolean dateEqualWitTolerance(Date time, Date expectedTime, int toleranceInSeconds) {
+    private static boolean dateEqualWitTolerance(
+            Date time, Date expectedTime, int toleranceInSeconds) {
         if (time == null && expectedTime == null) {
             return true;
         }

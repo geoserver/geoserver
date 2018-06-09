@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.util.List;
-
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.Model;
@@ -22,12 +21,12 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
     public static void cleanupNodeInfo() {
         GeoServerBasePage.NODE_INFO = null;
     }
-    
+
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath*:/custom-gs-node-id-ctx.xml");
     }
-    
+
     @Test
     public void testNodeInfoInvisible() throws Exception {
         CustomNodeInfo.ID = null;
@@ -45,7 +44,7 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
         tester.assertVisible("nodeIdContainer");
         tester.assertModelValue("nodeIdContainer:nodeId", "testId");
     }
-    
+
     public static class CustomNodeInfo implements GeoServerNodeInfo {
         static String ID = null;
         static String STYLE = null;
@@ -62,10 +61,10 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
 
         @Override
         public void customize(WebMarkupContainer nodeInfoContainer) {
-            if(STYLE != null) {
-                nodeInfoContainer.add(new AttributeAppender("style", new Model<String>(STYLE), ";"));
+            if (STYLE != null) {
+                nodeInfoContainer.add(
+                        new AttributeAppender("style", new Model<String>(STYLE), ";"));
             }
         }
-        
     }
 }

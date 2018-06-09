@@ -5,6 +5,14 @@
  */
 package org.geoserver.wps.executor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.InputType;
@@ -26,20 +34,10 @@ import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
 import org.springframework.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Centralizes some common request parsing activities
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class ExecuteRequest {
 
@@ -54,54 +52,37 @@ public class ExecuteRequest {
 
         processName = Ows11Util.name(request.getIdentifier());
         pf = GeoServerProcessors.createProcessFactory(processName, true);
-        if(pf == null) {
+        if (pf == null) {
             throw new WPSException("Unknown process " + processName);
         }
     }
 
-    /**
-     * The wrapped WPS 1.0 request
-     * 
-     *
-     */
+    /** The wrapped WPS 1.0 request */
     public ExecuteType getRequest() {
         return request;
     }
 
-    /**
-     * True if the request is asynchronous
-     * 
-     *
-     */
+    /** True if the request is asynchronous */
     public boolean isAsynchronous() {
         return request.getResponseForm() != null
                 && request.getResponseForm().getResponseDocument() != null
                 && request.getResponseForm().getResponseDocument().isStoreExecuteResponse();
     }
 
-    /**
-     * Returns true if status update is requested
-     * 
-     *
-     */
+    /** Returns true if status update is requested */
     public boolean isStatusEnabled() {
         return isAsynchronous() && request.getResponseForm().getResponseDocument().isStatus();
     }
 
-    /**
-     * Returns the process name according to the GeoTools API
-     * 
-     *
-     */
+    /** Returns the process name according to the GeoTools API */
     public Name getProcessName() {
         return Ows11Util.name(request.getIdentifier());
     }
 
     /**
      * Returns the process inputs according to the GeoTools API expectations
-     * 
-     * @param request
      *
+     * @param request
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
         if (inputs == null) {
@@ -117,10 +98,11 @@ public class ExecuteRequest {
 
         // see what output raw data we have that need the user chosen mime type to be
         // sent back to the process as an input
-        Map<String, String> outputMimeParameters = AbstractRawData.getOutputMimeParameters(
-                processName, pf);
+        Map<String, String> outputMimeParameters =
+                AbstractRawData.getOutputMimeParameters(processName, pf);
         if (!outputMimeParameters.isEmpty()) {
-            Map<String, String> requestedRawDataMimeTypes = getRequestedRawDataMimeTypes(outputMimeParameters.keySet(), processName, pf);
+            Map<String, String> requestedRawDataMimeTypes =
+                    getRequestedRawDataMimeTypes(outputMimeParameters.keySet(), processName, pf);
             for (Map.Entry<String, String> param : outputMimeParameters.entrySet()) {
                 String outputName = param.getKey();
                 String inputParameter = param.getValue();
@@ -131,7 +113,7 @@ public class ExecuteRequest {
         }
 
         // turn them into a map of input providers
-        for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext();) {
+        for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext(); ) {
             InputType input = (InputType) i.next();
             String inputId = input.getIdentifier().getValue();
 
@@ -154,16 +136,17 @@ public class ExecuteRequest {
             }
 
             // get the validators
-            Collection<Validator> validators = (Collection<Validator>) p.metadata
-                    .get(ProcessLimitsFilter.VALIDATORS_KEY);
+            Collection<Validator> validators =
+                    (Collection<Validator>) p.metadata.get(ProcessLimitsFilter.VALIDATORS_KEY);
             // we handle multiplicity validation here, before the parsing even starts
-            List<Validator> filteredValidators = Validators.filterOutClasses(validators,
-                    MultiplicityValidator.class);
+            List<Validator> filteredValidators =
+                    Validators.filterOutClasses(validators, MultiplicityValidator.class);
 
             // build the provider
             try {
-                InputProvider provider = AbstractInputProvider.getInputProvider(input, ppio,
-                        manager, manager.applicationContext, validators);
+                InputProvider provider =
+                        AbstractInputProvider.getInputProvider(
+                                input, ppio, manager, manager.applicationContext, validators);
 
                 // store the input
                 if (p.maxOccurs > 1) {
@@ -185,18 +168,18 @@ public class ExecuteRequest {
         return new LazyInputMap(providers);
     }
 
-    private Map<String, String> getRequestedRawDataMimeTypes(Collection<String> rawResults, Name name,
-            ProcessFactory pf) {
+    private Map<String, String> getRequestedRawDataMimeTypes(
+            Collection<String> rawResults, Name name, ProcessFactory pf) {
         Map<String, String> result = new HashMap<String, String>();
         ResponseFormType form = request.getResponseForm();
         OutputDefinitionType raw = form.getRawDataOutput();
         ResponseDocumentType document = form.getResponseDocument();
-		if (form == null || (raw == null && document == null)) {
+        if (form == null || (raw == null && document == null)) {
             // all outputs using their default mime
-        	for (String rawResult : rawResults) {
-        		String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
-        		result.put(rawResult, mime);
-			}
+            for (String rawResult : rawResults) {
+                String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
+                result.put(rawResult, mime);
+            }
         } else if (raw != null) {
             // just one output type
             String output = raw.getIdentifier().getValue();
@@ -209,20 +192,20 @@ public class ExecuteRequest {
             result.put(output, mime);
         } else {
             // the response document form
-        	for (Iterator it = document.getOutput().iterator(); it.hasNext();) {
-				OutputDefinitionType out = (OutputDefinitionType) it.next();
-				String outputName = out.getIdentifier().getValue();
-				if(rawResults.contains(outputName)) {
-					// was the output mime specified?
-					String mime = out.getMimeType();
-					if(mime == null || mime.trim().isEmpty()) {
-						mime = AbstractRawData.getDefaultMime(name, pf, outputName);
-					}
-					result.put(outputName, mime);
-				}
-			}
+            for (Iterator it = document.getOutput().iterator(); it.hasNext(); ) {
+                OutputDefinitionType out = (OutputDefinitionType) it.next();
+                String outputName = out.getIdentifier().getValue();
+                if (rawResults.contains(outputName)) {
+                    // was the output mime specified?
+                    String mime = out.getMimeType();
+                    if (mime == null || mime.trim().isEmpty()) {
+                        mime = AbstractRawData.getDefaultMime(name, pf, outputName);
+                    }
+                    result.put(outputName, mime);
+                }
+            }
         }
-        
+
         return result;
     }
 
@@ -232,10 +215,7 @@ public class ExecuteRequest {
                 && request.getResponseForm().getResponseDocument().isLineage();
     }
 
-    /**
-     * Returns null if nothing specific was requested, the list otherwise
-     *
-     */
+    /** Returns null if nothing specific was requested, the list otherwise */
     public List<OutputDefinitionType> getRequestedOutputs() {
         // in case nothing specific was requested
         ResponseFormType responseForm = request.getResponseForm();
@@ -261,6 +241,7 @@ public class ExecuteRequest {
 
     /**
      * Ensures the requested output are valid
+     *
      * @param inputs
      */
     public void validateOutputs(Map inputs) {
@@ -271,10 +252,14 @@ public class ExecuteRequest {
             for (OutputDefinitionType output : requestedOutputs) {
                 String outputIdentifier = output.getIdentifier().getValue();
                 if (!resultInfo.containsKey(outputIdentifier)) {
-                    String locator = output instanceof DocumentOutputDefinitionType ? 
-                            "ResponseDocument" : "RawDataOutput";
-                    throw new WPSException("Unknow output " + outputIdentifier, ServiceException
-                            .INVALID_PARAMETER_VALUE, locator);                    
+                    String locator =
+                            output instanceof DocumentOutputDefinitionType
+                                    ? "ResponseDocument"
+                                    : "RawDataOutput";
+                    throw new WPSException(
+                            "Unknow output " + outputIdentifier,
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            locator);
                 }
             }
         }

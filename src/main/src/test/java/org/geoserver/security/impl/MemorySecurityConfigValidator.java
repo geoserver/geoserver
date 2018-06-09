@@ -13,5 +13,4 @@ public class MemorySecurityConfigValidator extends SecurityConfigValidator {
     public MemorySecurityConfigValidator(GeoServerSecurityManager securityManager) {
         super(securityManager);
     }
-
 }

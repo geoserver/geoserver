@@ -17,16 +17,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * An iterator listing and mapping resources to a target object via a {@link ResourceMapper}.
- * The mapping is performed in a background thread pool, allowing to decouple CPU bound activities
- * from IO bound ones.
+ * An iterator listing and mapping resources to a target object via a {@link ResourceMapper}. The
+ * mapping is performed in a background thread pool, allowing to decouple CPU bound activities from
+ * IO bound ones.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -59,86 +58,96 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
         T apply(Resource t) throws IOException;
     }
 
-    /**
-     * Indicates the end of a blocking queue contents
-     */
+    /** Indicates the end of a blocking queue contents */
     static final Object TERMINATOR = new Object();
 
-    /**
-     * The queue connecting the background threads loading the resources with the iterator
-     */
+    /** The queue connecting the background threads loading the resources with the iterator */
     BlockingQueue<Object> queue;
 
-    /**
-     * The thread coordinating the background resource load
-     */
+    /** The thread coordinating the background resource load */
     Thread thread;
 
-    /**
-     * The current mapped resource for the iterator
-     */
+    /** The current mapped resource for the iterator */
     T mapped;
 
-    /**
-     * A flag used to mark completion
-     */
+    /** A flag used to mark completion */
     volatile boolean completed = false;
 
     /**
      * Builds an asynchronous {@link Resource} iterator
-     * 
+     *
      * @param root The directory resource
      * @param filter The filter getting specific child resources out of the root
      * @param mapper The mapper performing work on the resources found
      */
-    public AsynchResourceIterator(Resource root, Filter<Resource> filter,
-            ResourceMapper<T> mapper) {
+    public AsynchResourceIterator(
+            Resource root, Filter<Resource> filter, ResourceMapper<T> mapper) {
         // parallelize filtering (this is still synch'ed, cannot do anything in parallel with this)
-        List<Resource> resources = root.list().parallelStream().filter(r -> filter.accept(r))
-                .collect(Collectors.toList());
+        List<Resource> resources =
+                root.list()
+                        .parallelStream()
+                        .filter(r -> filter.accept(r))
+                        .collect(Collectors.toList());
         // decide if we want to have a background thread for loading resources, or not
         if (resources.size() > 1) {
             queue = new LinkedBlockingQueue<>(10000);
             // create a background thread allowing this constructor to return immediately and
             // start accumulating in the queue asynchronously
-            thread = new Thread(() -> {
-                // parallelize IO in a local thread pool
-                ExecutorService executor = Executors.newFixedThreadPool(ASYNCH_RESOURCE_THREADS);
-                BlockingQueue<Object> sourceQueue = new LinkedBlockingQueue<>(resources);
-                for (int i = 0; i < ASYNCH_RESOURCE_THREADS; i++) {
-                    // each IO thread will exit when close is called or when the terminator is
-                    // reached, we need one terminator per IO thread
-                    sourceQueue.add(TERMINATOR);
-                    executor.submit(() -> {
-                        try {
-                            Object o;
-                            while (!completed && (o = sourceQueue.take()) != TERMINATOR) {
-                                Resource r = (Resource) o;
-                                try {
-                                    T mapped = mapper.apply(r);
-                                    if (mapped != null) {
-                                        queue.put(mapped);
-                                    }
-                                } catch (IOException e) {
-                                    LOGGER.log(Level.WARNING,
-                                            "Failed to load resource '" + r.name() + "'", e);
+            thread =
+                    new Thread(
+                            () -> {
+                                // parallelize IO in a local thread pool
+                                ExecutorService executor =
+                                        Executors.newFixedThreadPool(ASYNCH_RESOURCE_THREADS);
+                                BlockingQueue<Object> sourceQueue =
+                                        new LinkedBlockingQueue<>(resources);
+                                for (int i = 0; i < ASYNCH_RESOURCE_THREADS; i++) {
+                                    // each IO thread will exit when close is called or when the
+                                    // terminator is
+                                    // reached, we need one terminator per IO thread
+                                    sourceQueue.add(TERMINATOR);
+                                    executor.submit(
+                                            () -> {
+                                                try {
+                                                    Object o;
+                                                    while (!completed
+                                                            && (o = sourceQueue.take())
+                                                                    != TERMINATOR) {
+                                                        Resource r = (Resource) o;
+                                                        try {
+                                                            T mapped = mapper.apply(r);
+                                                            if (mapped != null) {
+                                                                queue.put(mapped);
+                                                            }
+                                                        } catch (IOException e) {
+                                                            LOGGER.log(
+                                                                    Level.WARNING,
+                                                                    "Failed to load resource '"
+                                                                            + r.name()
+                                                                            + "'",
+                                                                    e);
+                                                        }
+                                                    }
+                                                } catch (InterruptedException e) {
+                                                    return;
+                                                }
+                                            });
                                 }
-                            }
-                        } catch (InterruptedException e) {
-                            return;
-                        }
-                    });
-                }
-                // wait for everything to comlete and then add the terminator marker
-                try {
-                    executor.shutdown();
-                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-                    // add the terminator
-                    queue.put(TERMINATOR);
-                } catch (InterruptedException e) {
-                    LOGGER.log(Level.WARNING, "Failed to put the terminator in the queue", e);
-                }
-            }, "Loader" + root.name());
+                                // wait for everything to comlete and then add the terminator marker
+                                try {
+                                    executor.shutdown();
+                                    executor.awaitTermination(
+                                            Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+                                    // add the terminator
+                                    queue.put(TERMINATOR);
+                                } catch (InterruptedException e) {
+                                    LOGGER.log(
+                                            Level.WARNING,
+                                            "Failed to put the terminator in the queue",
+                                            e);
+                                }
+                            },
+                            "Loader" + root.name());
             thread.start();
         } else if (resources.size() == 1) {
             // don't start a thread for a single resource, there is no parallelism advantage
@@ -198,5 +207,4 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
             queue.clear();
         }
     }
-
 }

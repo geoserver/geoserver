@@ -9,10 +9,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.security.GeoServerRestRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanel;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GeoServerRestRoleServicePanel
         extends RoleServicePanel<GeoServerRestRoleServiceConfig> {
 
@@ -32,5 +29,4 @@ public class GeoServerRestRoleServicePanel
         add(new TextField<Long>("cacheMaximumSize").setRequired(true));
         add(new TextField<Long>("cacheExpirationTime").setRequired(true));
     }
-
 }

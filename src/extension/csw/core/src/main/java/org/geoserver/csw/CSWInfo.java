@@ -10,24 +10,23 @@ import org.geoserver.config.ServiceInfo;
 
 /**
  * CSW configuration
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public interface CSWInfo extends ServiceInfo {
 
     /**
      * Get the flag that determines the encoding of the CSW schemaLocation.
-     *  
-     * True if the CSW schemaLocation should refer to the canonical location,
-     * false if the CSW schemaLocation should refer to a copy served by GeoServer.
+     *
+     * <p>True if the CSW schemaLocation should refer to the canonical location, false if the CSW
+     * schemaLocation should refer to a copy served by GeoServer.
      */
     boolean isCanonicalSchemaLocation();
 
     /**
-     * Set the flag that determines the encoding of the CSW schemaLocation. 
-     * True if the CSW schemaLocation should refer to the canonical location,
-     * false if the CSW schemaLocation should refer to a copy served by GeoServer.
+     * Set the flag that determines the encoding of the CSW schemaLocation. True if the CSW
+     * schemaLocation should refer to the canonical location, false if the CSW schemaLocation should
+     * refer to a copy served by GeoServer.
      */
     void setCanonicalSchemaLocation(boolean canonicalSchemaLocation);
-    
 }

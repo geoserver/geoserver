@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.map;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Color;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -64,11 +64,9 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
 /**
  * reads in a GetFeature XML WFS request from a XML stream
- * 
+ *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
  * @version $Id$
@@ -83,9 +81,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     /**
      * Creates a new GetMapXmlReader object.
-     * 
-     * @param wms
-     *            The WMS config object.
+     *
+     * @param wms The WMS config object.
      */
     public GetMapXmlReader(WMS wms) {
         super(OWS.NAMESPACE, "GetMap");
@@ -96,9 +93,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         return wms;
     }
 
-    /**
-     * Reads the GetMap XML request into a GetMap Request object.
-     */
+    /** Reads the GetMap XML request into a GetMap Request object. */
     @SuppressWarnings("rawtypes")
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
@@ -129,11 +124,18 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             // also see:
             // http://doctypechanger.sourceforge.net/
             // J+
-            throw new ServiceException("unknown host - " + unh.getLocalizedMessage()
-                    + " - if its in a !DOCTYPE, remove the !DOCTYPE tag.");
+            throw new ServiceException(
+                    "unknown host - "
+                            + unh.getLocalizedMessage()
+                            + " - if its in a !DOCTYPE, remove the !DOCTYPE tag.");
         } catch (SAXParseException se) {
-            throw new ServiceException("line " + se.getLineNumber() + " column "
-                    + se.getColumnNumber() + " -- " + se.getLocalizedMessage());
+            throw new ServiceException(
+                    "line "
+                            + se.getLineNumber()
+                            + " column "
+                            + se.getColumnNumber()
+                            + " -- "
+                            + se.getLocalizedMessage());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -173,8 +175,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 xml = new BufferedReader(new FileReader(temp)); // pretend like nothing has happened
             }
 
-            javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory
-                    .newInstance();
+            javax.xml.parsers.DocumentBuilderFactory dbf =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
 
             dbf.setExpandEntityReferences(false);
             dbf.setValidating(false);
@@ -182,7 +184,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
             EntityResolver entityResolver = wms.getCatalog().getResourcePool().getEntityResolver();
-            if(entityResolver != null) {
+            if (entityResolver != null) {
                 db.setEntityResolver(entityResolver);
             }
 
@@ -199,7 +201,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             if (!(nodeNameEqual(nodeGetMap, "getmap"))) {
                 if (nodeNameEqual(nodeGetMap, "StyledLayerDescriptor")) // oopsy!! its a SLD POST
-                                                                        // with get parameters!
+                // with get parameters!
                 {
                     if (validateSchema) {
                         validateSchemaSLD(temp, getMapRequest);
@@ -233,8 +235,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             parseBBox(getMapRequest, nodeGetMap);
 
             // for SLD we already have it (from above) (which we'll handle as layers later)
-            StyledLayerDescriptor sld = sldParser.parseDescriptor(getNode(rootNode,
-                    "StyledLayerDescriptor"));
+            StyledLayerDescriptor sld =
+                    sldParser.parseDescriptor(getNode(rootNode, "StyledLayerDescriptor"));
             processStyles(getMapRequest, sld);
 
             // step c - "Output"
@@ -280,13 +282,11 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
         // get styles/layers from the sld.
         StyledLayerDescriptor sld = sldParser.parseDescriptor(rootNode); // root =
-                                                                         // <StyledLayerDescriptor>
+        // <StyledLayerDescriptor>
         processStyles(getMapRequest, sld);
     }
 
-    /**
-     * taken from the kvp reader, with modifications
-     */
+    /** taken from the kvp reader, with modifications */
     private void processStyles(GetMapRequest getMapRequest, StyledLayerDescriptor sld)
             throws Exception {
         final StyledLayer[] styledLayers = sld.getStyledLayers();
@@ -319,14 +319,16 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     && ((((UserLayer) sl)).getInlineFeatureDatastore() != null)) {
                 // SPECIAL CASE - we make the temporary version
                 UserLayer ul = ((UserLayer) sl);
-                CoordinateReferenceSystem crs = (getMapRequest.getCrs() == null) ? DefaultGeographicCRS.WGS84
-                        : getMapRequest.getCrs();
+                CoordinateReferenceSystem crs =
+                        (getMapRequest.getCrs() == null)
+                                ? DefaultGeographicCRS.WGS84
+                                : getMapRequest.getCrs();
                 currLayer = initializeInlineFeatureLayer(ul, crs);
                 addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
             } else {
 
                 LayerGroupInfo layerGroup = getWMS().getLayerGroupByName(layerName);
-                
+
                 if (layerGroup != null) {
                     List<LayerInfo> layerGroupLayers = layerGroup.layers();
                     List<StyleInfo> layerGroupStyles = layerGroup.getStyles();
@@ -334,21 +336,34 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                         StyleInfo si = layerGroupStyles.get(j);
                         LayerInfo layer = layerGroupLayers.get(j);
                         currLayer = new MapLayerInfo(layer);
-                        if (si != null){
+                        if (si != null) {
                             currLayer.setStyle(si.getStyle());
                         }
-                        addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
-                    }                    
+                        addStyles(
+                                wms,
+                                getMapRequest,
+                                currLayer,
+                                styledLayers[i],
+                                layers,
+                                styles,
+                                filters);
+                    }
                 } else {
                     LayerInfo layerInfo = getWMS().getLayerByName(layerName);
                     if (layerInfo == null) {
                         throw new ServiceException("Layer not found: " + layerName);
                     }
                     currLayer = new MapLayerInfo(layerInfo);
-                    addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
+                    addStyles(
+                            wms,
+                            getMapRequest,
+                            currLayer,
+                            styledLayers[i],
+                            layers,
+                            styles,
+                            filters);
                 }
             }
-
         }
 
         getMapRequest.setLayers(layers);
@@ -361,12 +376,12 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * will either be : a) nothing - in which case grab the layer's default style b) a set of: i)
      * NameStyle -- grab it from the pre-loaded styles ii)UserStyle -- grab it from the sld the user
      * uploaded
-     * 
-     * NOTE: we're going to get a set of layer->style pairs for (b). these are added to
+     *
+     * <p>NOTE: we're going to get a set of layer->style pairs for (b). these are added to
      * layers,styles
-     * 
-     * NOTE: we also handle some featuretypeconstraints
-     * 
+     *
+     * <p>NOTE: we also handle some featuretypeconstraints
+     *
      * @param request
      * @param currLayer
      * @param layer
@@ -375,9 +390,15 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param filters
      * @throws IOException
      */
-    public static void addStyles(WMS wms, GetMapRequest request, MapLayerInfo currLayer,
-            StyledLayer layer, List<MapLayerInfo> layers, List<Style> styles, List<Filter> filters) throws ServiceException,
-            IOException {
+    public static void addStyles(
+            WMS wms,
+            GetMapRequest request,
+            MapLayerInfo currLayer,
+            StyledLayer layer,
+            List<MapLayerInfo> layers,
+            List<Style> styles,
+            List<Filter> filters)
+            throws ServiceException, IOException {
         if (currLayer == null) {
             return; // protection
         }
@@ -389,7 +410,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             ftcs = ((NamedLayer) layer).getLayerFeatureConstraints();
             layerStyles = ((NamedLayer) layer).getStyles();
             if (shouldUseLayerStyle(layerStyles, currLayer)) {
-                layerStyles = new Style[]{currLayer.getStyle()};
+                layerStyles = new Style[] {currLayer.getStyle()};
             }
         } else if (layer instanceof UserLayer) {
             ftcs = ((UserLayer) layer).getLayerFeatureConstraints();
@@ -412,8 +433,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
                     try {
                         final FeatureType currSchema = currLayer.getFeature().getFeatureType();
-                        matches = currSchema.getName().getLocalPart().equalsIgnoreCase(ftc_name)
-                                || FeatureTypes.isDecendedFrom(currSchema, null, ftc_name);
+                        matches =
+                                currSchema.getName().getLocalPart().equalsIgnoreCase(ftc_name)
+                                        || FeatureTypes.isDecendedFrom(currSchema, null, ftc_name);
                     } catch (Exception e) {
                         matches = false; // bad news
                     }
@@ -421,10 +443,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     if (!matches) {
                         continue; // this layer is filtered out
                     }
-                    
+
                     // add filter
                     if (ftc.getFilter() != null) {
-                    	filters.add(ftc.getFilter());
+                        filters.add(ftc.getFilter());
                     }
                 }
             }
@@ -463,22 +485,21 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     }
 
     /**
-     * Performs a check to see if we should use the style from the layer 
-     * info or from the given set of styles from the request.
+     * Performs a check to see if we should use the style from the layer info or from the given set
+     * of styles from the request.
+     *
      * @param layerStyles
      * @param currLayer
-     *
      */
-    private static boolean shouldUseLayerStyle(Style[] layerStyles,
-            MapLayerInfo currLayer) {
+    private static boolean shouldUseLayerStyle(Style[] layerStyles, MapLayerInfo currLayer) {
         boolean noSldLayerStyles = (layerStyles == null || layerStyles.length == 0);
         boolean layerHasStyle = currLayer.getStyle() != null;
         boolean shouldUseLayerStyle = noSldLayerStyles && layerHasStyle;
         return shouldUseLayerStyle;
     }
 
-    private static MapLayerInfo initializeInlineFeatureLayer(UserLayer ul,
-            CoordinateReferenceSystem requestCrs) throws Exception {
+    private static MapLayerInfo initializeInlineFeatureLayer(
+            UserLayer ul, CoordinateReferenceSystem requestCrs) throws Exception {
         // SPECIAL CASE - we make the temporary version
         final DataStore inlineDatastore = ul.getInlineFeatureDatastore();
 
@@ -489,15 +510,16 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         // output SRS of the
         // request they're making.
         if (ul.getInlineFeatureType().getCoordinateReferenceSystem() == null) {
-            LOGGER.warning("No CRS set on inline features default geometry.  "
-                    + "Assuming the requestor has their inlinefeatures in the boundingbox CRS.");
+            LOGGER.warning(
+                    "No CRS set on inline features default geometry.  "
+                            + "Assuming the requestor has their inlinefeatures in the boundingbox CRS.");
 
             SimpleFeatureType currFt = ul.getInlineFeatureType();
             Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
             FeatureReader<SimpleFeatureType, SimpleFeature> ilReader;
             ilReader = inlineDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT);
-            ForceCoordinateSystemFeatureReader reader = new ForceCoordinateSystemFeatureReader(
-                    ilReader, requestCrs);
+            ForceCoordinateSystemFeatureReader reader =
+                    new ForceCoordinateSystemFeatureReader(ilReader, requestCrs);
             MemoryDataStore reTypedDS = new MemoryDataStore(reader);
             source = reTypedDS.getFeatureSource(reTypedDS.getTypeNames()[0]);
         } else {
@@ -508,14 +530,13 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         return mapLayer;
     }
 
-    /**
-     * xs:element name="BoundingBox" type="gml:BoxType"/> dont forget the SRS!
-     */
+    /** xs:element name="BoundingBox" type="gml:BoxType"/> dont forget the SRS! */
     private void parseBBox(GetMapRequest getMapRequest, Node nodeGetMap) throws Exception {
         Node bboxNode = getNode(nodeGetMap, "BoundingBox");
 
         if (bboxNode == null) {
-            throw new Exception("GetMap XML parser - couldnt find node 'BoundingBox' in GetMap tag");
+            throw new Exception(
+                    "GetMap XML parser - couldnt find node 'BoundingBox' in GetMap tag");
         }
 
         List coordList = ExpressionDOMParser.parseCoords(bboxNode);
@@ -556,14 +577,14 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     // J--
     /**
-     * 
      * <xs:element name="Format" type="ogc:FormatType"/> <xs:element name="Transparent"
      * type="xs:boolean" minOccurs="0"/> <xs:element name="BGcolor" type="xs:string" minOccurs="0"/>
      * <xs:element name="Size"> <xs:complexType> <xs:sequence> <xs:element name="Width"
      * type="xs:positiveInteger"/> <xs:element name="Height" type="xs:positiveInteger"/>
      * </xs:sequence> </xs:complexType> <xs:element name="Buffer" type="xs:integer" minOccurs="0"/>
-     * </xs:element><!--Size-->
-     * 
+     * </xs:element>
+     * <!--Size-->
+     *
      * @param nodeGetMap
      * @param getMapRequest
      */
@@ -618,7 +639,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         Node sizeNode = getNode(outputNode, "Size");
 
         if (sizeNode == null) {
-            throw new Exception("GetMap XML parser - couldnt find node 'Size' in GetMap/Output tag");
+            throw new Exception(
+                    "GetMap XML parser - couldnt find node 'Size' in GetMap/Output tag");
         }
 
         // Size/Width
@@ -644,11 +666,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     /**
      * Give a node and the name of a child of that node, return it. This doesnt do anything complex.
-     * 
+     *
      * @param parentNode
      * @param wantedChildName
-     * 
-     *
      */
     public Node getNode(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -677,11 +697,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /**
      * Give a node and the name of a child of that node, find its (string) value. This doesnt do
      * anything complex.
-     * 
+     *
      * @param parentNode
      * @param wantedChildName
-     * 
-     *
      */
     public String getNodeValue(Node parentNode, String wantedChildName) {
         NodeList children = parentNode.getChildNodes();
@@ -709,11 +727,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     /**
      * returns true if this node is named "name". Ignores case and namespaces.
-     * 
+     *
      * @param n
      * @param name
-     * 
-     *
      */
     public boolean nodeNameEqual(Node n, String name) {
         if (n.getNodeName().equalsIgnoreCase(name)) {
@@ -737,10 +753,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     /**
      * This should only be called if the xml starts with StyledLayerDescriptor Don't use on a
      * GetMap.
-     * 
+     *
      * @param f
      * @param getMapRequest
-     * 
      * @throws ServiceException
      */
     public void validateSchemaSLD(File f, GetMapRequest getMapRequest) throws Exception {
@@ -764,8 +779,8 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 throw new ServiceException(SLDValidator.getErrorMessage(in, errors));
             }
         } catch (IOException e) {
-            String msg = new StringBuffer("Creating remote SLD url: ").append(e.getMessage())
-                    .toString();
+            String msg =
+                    new StringBuffer("Creating remote SLD url: ").append(e.getMessage()).toString();
 
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.log(Level.WARNING, msg, e);
@@ -777,10 +792,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     /**
      * This should only be called if the xml starts with GetMap Don't use on a SLD.
-     * 
+     *
      * @param f
      * @param getMapRequest
-     * 
      * @throws ServiceException
      */
     public void validateSchemaGETMAP(File f, GetMapRequest getMapRequest) throws Exception {
@@ -804,8 +818,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 throw new ServiceException(GETMAPValidator.getErrorMessage(in, errors));
             }
         } catch (IOException e) {
-            String msg = new StringBuffer("Creating remote GETMAP url: ").append(e.getMessage())
-                    .toString();
+            String msg =
+                    new StringBuffer("Creating remote GETMAP url: ")
+                            .append(e.getMessage())
+                            .toString();
 
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.log(Level.WARNING, msg, e);
@@ -819,5 +835,4 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         GetMapRequest request = new GetMapRequest();
         return request;
     }
-
 }

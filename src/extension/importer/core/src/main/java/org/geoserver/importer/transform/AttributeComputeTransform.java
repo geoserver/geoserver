@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.security.InvalidParameterException;
 import org.geoserver.importer.ImportTask;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -13,13 +14,9 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.expression.Expression;
 
-import java.security.InvalidParameterException;
-
-/**
- * Transform creating a new attribute based on the existing ones
- */
+/** Transform creating a new attribute based on the existing ones */
 public class AttributeComputeTransform extends AbstractTransform implements InlineVectorTransform {
-    
+
     private static final long serialVersionUID = 1L;
 
     /** field to remap */
@@ -27,17 +24,18 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
 
     /** type to remap to */
     protected Class type;
-    
+
     /** the expression to apply (stored as a string as CQL does not always round trip properly */
     protected String cql;
+
     protected Expression expression;
-    
+
     public AttributeComputeTransform(String field, Class type, String cql) throws CQLException {
         this.field = field;
         this.type = type;
         setCql(cql);
     }
-    
+
     public String getField() {
         return field;
     }
@@ -63,14 +61,17 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         this.expression = ECQL.toExpression(cql);
     }
 
-    public SimpleFeatureType apply(ImportTask task, DataStore dataStore,
-                                   SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(
+            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // validate the target attribute is not already there
         if (featureType.getDescriptor(field) != null) {
-            throw new InvalidParameterException("The computed attribute " + field + " is already present in the " +
-                    "source feature type");
+            throw new InvalidParameterException(
+                    "The computed attribute "
+                            + field
+                            + " is already present in the "
+                            + "source feature type");
         }
-        
+
         // remap the type
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.init(featureType);
@@ -79,12 +80,12 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         return builder.buildFeatureType();
     }
 
-    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, 
-        SimpleFeature feature) throws Exception {
+    public SimpleFeature apply(
+            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+            throws Exception {
         Object value = expression.evaluate(oldFeature);
         feature.setAttribute(field, value);
-        
+
         return feature;
     }
-
 }

@@ -9,9 +9,8 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 
 /**
  * Configuration for {@linkplain WebServiceBodyResponseSecurityProvider} class.
- * 
- * @author Alessio Fabiani, GeoSolutions S.A.S.
  *
+ * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class WebServiceBodyResponseSecurityProviderConfig extends BaseSecurityNamedServiceConfig
         implements SecurityAuthProviderConfig {
@@ -21,8 +20,7 @@ public class WebServiceBodyResponseSecurityProviderConfig extends BaseSecurityNa
 
     String userGroupServiceName;
 
-    public WebServiceBodyResponseSecurityProviderConfig() {
-    }
+    public WebServiceBodyResponseSecurityProviderConfig() {}
 
     public WebServiceBodyResponseSecurityProviderConfig(
             WebServiceBodyResponseSecurityProviderConfig other) {
@@ -39,5 +37,4 @@ public class WebServiceBodyResponseSecurityProviderConfig extends BaseSecurityNa
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }
-
 }

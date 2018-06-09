@@ -15,15 +15,12 @@ import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
-
 import org.geoserver.wms.WMSMapContent;
 
-
 public class ScaleRatioDecoration implements MapDecoration {
-    
+
     String format = null;
     String formatLanguage = null;
 
@@ -38,7 +35,7 @@ public class ScaleRatioDecoration implements MapDecoration {
         }
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         return new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
     }
@@ -49,11 +46,11 @@ public class ScaleRatioDecoration implements MapDecoration {
 
     public String getScaleText(WMSMapContent mapContent) {
         final double scale = getScale(mapContent);
-        if(format == null) {
+        if (format == null) {
             return String.format("1 : %0$1.0f", scale);
         } else {
             DecimalFormatSymbols decimalFormatSymbols;
-            if(formatLanguage != null) {
+            if (formatLanguage != null) {
                 decimalFormatSymbols = DecimalFormatSymbols.getInstance(new Locale(formatLanguage));
             } else {
                 decimalFormatSymbols = DecimalFormatSymbols.getInstance();
@@ -61,21 +58,20 @@ public class ScaleRatioDecoration implements MapDecoration {
             return "1 : " + new DecimalFormat(format, decimalFormatSymbols).format(scale);
         }
     }
-    
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) 
-    throws Exception {
+
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
+            throws Exception {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
-        Dimension d = 
-            new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
+        Dimension d =
+                new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
         Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
 
-        float x = (float)(paintArea.getMinX() + (paintArea.getWidth() - d.getWidth()) / 2.0); 
-        float y = (float)(paintArea.getMaxY() - (paintArea.getHeight() - d.getHeight()) / 2.0);
-        Rectangle2D bgRect = new Rectangle2D.Double(
-            x - 3.0, y - d.getHeight(), 
-            d.getWidth() + 6.0, d.getHeight() + 6.0
-        );
+        float x = (float) (paintArea.getMinX() + (paintArea.getWidth() - d.getWidth()) / 2.0);
+        float y = (float) (paintArea.getMaxY() - (paintArea.getHeight() - d.getHeight()) / 2.0);
+        Rectangle2D bgRect =
+                new Rectangle2D.Double(
+                        x - 3.0, y - d.getHeight(), d.getWidth() + 6.0, d.getHeight() + 6.0);
         g2d.setColor(Color.WHITE);
         g2d.fill(bgRect);
 

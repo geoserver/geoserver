@@ -5,14 +5,12 @@
 
 package org.geoserver.notification.support;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.text.SimpleDateFormat;
-
 import org.geoserver.notification.geonode.kombu.KombuMessage;
 import org.geoserver.notification.geonode.kombu.KombuSource;
 import org.geoserver.notification.geonode.kombu.KombuSourceDeserializer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class Utils {
 
@@ -24,5 +22,4 @@ public class Utils {
         mapper.registerModule(module);
         return mapper.readValue(data, KombuMessage.class);
     }
-    
 }

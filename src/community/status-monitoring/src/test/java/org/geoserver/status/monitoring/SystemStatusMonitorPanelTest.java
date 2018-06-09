@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.status.monitoring.web.SystemStatusMonitorPanel;
 import org.geoserver.web.GeoServerWicketTestSupport;

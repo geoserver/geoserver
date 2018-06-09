@@ -5,13 +5,10 @@
  */
 package org.geoserver.script.wps;
 
-
 public abstract class ScriptProcessNamespaceTest extends ScriptProcessTest {
 
     @Override
     public String getNamespace() {
         return "foo";
     }
-
-
 }

@@ -4,29 +4,24 @@
  */
 package org.geoserver.wps.validator;
 
-import org.springframework.validation.Errors;
-
 import com.google.common.reflect.Parameter;
+import org.springframework.validation.Errors;
 
 /**
  * A validator checking the maximum size of an object, in MB. This validator uses
  * ObjectSizeEstimator classes, and receives special treatment to advertise the limits to the
  * outside world, and apply them on raw binary inputs without going through the estimation
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MaxSizeValidator implements WPSInputValidator {
 
     private static final long serialVersionUID = 6486547223545859567L;
 
-    /**
-     * Key in the {@link Parameter} metadata map representing the size limits
-     */
+    /** Key in the {@link Parameter} metadata map representing the size limits */
     public static String PARAMETER_KEY = "MaxSizeMB";
 
-    /**
-     * The size of a megabyte, in bytes
-     */
+    /** The size of a megabyte, in bytes */
     static final long MB = 1024 * 1024;
 
     static final String CODE = "ExcessSize";
@@ -52,8 +47,10 @@ public class MaxSizeValidator implements WPSInputValidator {
     }
 
     public String getErrorMessage(long size) {
-        return "The size of the input has been estimated to " + size
-                + ", which exceeds the maximum allowed " + maxSizeMB * MB;
+        return "The size of the input has been estimated to "
+                + size
+                + ", which exceeds the maximum allowed "
+                + maxSizeMB * MB;
     }
 
     public int getMaxSizeMB() {
@@ -74,15 +71,11 @@ public class MaxSizeValidator implements WPSInputValidator {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         MaxSizeValidator other = (MaxSizeValidator) obj;
-        if (maxSizeMB != other.maxSizeMB)
-            return false;
+        if (maxSizeMB != other.maxSizeMB) return false;
         return true;
     }
 
@@ -100,5 +93,4 @@ public class MaxSizeValidator implements WPSInputValidator {
     public boolean isUnset() {
         return maxSizeMB <= 0;
     }
-
 }

@@ -7,7 +7,6 @@ package org.geoserver.web.data.store.pgraster;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -27,10 +26,8 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * a Panel with PGRaster automatic configuration options
- * TODO:
- * 1) Add numeric validator for PORT
- * 2) change text description on the GUI (right now there is the name of the params)
+ * a Panel with PGRaster automatic configuration options TODO: 1) Add numeric validator for PORT 2)
+ * change text description on the GUI (right now there is the name of the params)
  */
 public class PGRasterPanel extends Panel {
 
@@ -42,10 +39,10 @@ public class PGRasterPanel extends Panel {
      */
     public static final String TABLE_NAME = "tableName";
 
-    private static final String RESOURCE_KEY_PREFIX = PGRasterPanel.class
-            .getSimpleName();
+    private static final String RESOURCE_KEY_PREFIX = PGRasterPanel.class.getSimpleName();
 
-    private final static Logger LOGGER = org.geotools.util.logging.Logging.getLogger(ImageMosaicReader.class);
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(ImageMosaicReader.class);
 
     FormComponent server;
 
@@ -67,7 +64,8 @@ public class PGRasterPanel extends Panel {
 
     CRSPanel epsgcode;
 
-    private static CoordinateReferenceSystem DEFAULT_CRS; 
+    private static CoordinateReferenceSystem DEFAULT_CRS;
+
     static {
         try {
             DEFAULT_CRS = CRS.decode("EPSG:4326");
@@ -82,21 +80,22 @@ public class PGRasterPanel extends Panel {
 
         super(id);
         server = addTextPanel(paramsModel, "server", true);
-        
+
         port = addTextPanel(paramsModel, "port", true);
         SRSToCRSModel srsModel = new SRSToCRSModel(new PropertyModel(paramsModel, "ESPG:4326"));
         epsgcode = new CRSPanel("epsgcode", srsModel);
         epsgcode.setModelObject(DEFAULT_CRS);
         add(epsgcode);
-        
+
         user = addTextPanel(paramsModel, "user", "Postgis user", true);
         password = addPasswordPanel(paramsModel, "password");
         database = addTextPanel(paramsModel, "database", "Postgis Database", true);
         table = addTextPanel(paramsModel, "table", true);
         schema = addTextPanel(paramsModel, "schema", true);
-        schema.setModelValue(new String[]{"public"});
+        schema.setModelValue(new String[] {"public"});
         fileext = addTextPanel(paramsModel, "fileext", "tiles file extension filter", false);
-        importopt = addTextPanel(paramsModel, "importopt", "raster2pgsql script import options",  false);
+        importopt =
+                addTextPanel(paramsModel, "importopt", "raster2pgsql script import options", false);
 
         server.setOutputMarkupId(true);
         port.setOutputMarkupId(true);
@@ -114,11 +113,15 @@ public class PGRasterPanel extends Panel {
 
         final String resourceKey = RESOURCE_KEY_PREFIX + "." + paramName;
 
-        final PasswordParamPanel pwdPanel = new PasswordParamPanel(paramName, new MapModel(
-                paramsModel, paramName), new ResourceModel(resourceKey, paramName), true);
+        final PasswordParamPanel pwdPanel =
+                new PasswordParamPanel(
+                        paramName,
+                        new MapModel(paramsModel, paramName),
+                        new ResourceModel(resourceKey, paramName),
+                        true);
         add(pwdPanel);
 
-        String defaultTitle = paramName; 
+        String defaultTitle = paramName;
 
         ResourceModel titleModel = new ResourceModel(resourceKey + ".title", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
@@ -128,16 +131,25 @@ public class PGRasterPanel extends Panel {
         return pwdPanel.getFormComponent();
     }
 
-    private FormComponent addTextPanel(final IModel paramsModel, final String paramName, final boolean required) {
+    private FormComponent addTextPanel(
+            final IModel paramsModel, final String paramName, final boolean required) {
         return addTextPanel(paramsModel, paramName, paramName, required);
     }
-    
-    private FormComponent addTextPanel(final IModel paramsModel, final String paramName, final String paramTitle, final boolean required) {
+
+    private FormComponent addTextPanel(
+            final IModel paramsModel,
+            final String paramName,
+            final String paramTitle,
+            final boolean required) {
         final String resourceKey = getClass().getSimpleName() + "." + paramName;
 
-        final TextParamPanel textParamPanel = new TextParamPanel(paramName, new MapModel(
-                paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
-        textParamPanel.getFormComponent().setType(String.class/*param.type*/);
+        final TextParamPanel textParamPanel =
+                new TextParamPanel(
+                        paramName,
+                        new MapModel(paramsModel, paramTitle),
+                        new ResourceModel(resourceKey, paramName),
+                        required);
+        textParamPanel.getFormComponent().setType(String.class /*param.type*/);
 
         String defaultTitle = paramTitle;
 
@@ -151,21 +163,35 @@ public class PGRasterPanel extends Panel {
     }
 
     public FormComponent[] getDependentFormComponents() {
-        return new FormComponent[]{server, port, user, password, database, schema, table, fileext, importopt};
+        return new FormComponent[] {
+            server, port, user, password, database, schema, table, fileext, importopt
+        };
     }
 
     /**
      * Setup a URL String composing all the required configuration options
      *
-     * @throws FactoryException 
+     * @throws FactoryException
      */
     public String buildURL() {
         StringBuilder builder = new StringBuilder("pgraster://");
-//        pgraster://USER:PASS@HOST:PORT:DATABASE.SCHEMA.TABLE@EPSGCODE:*.FILE_EXTENSION?OPTIONS#/PATH/TO/RASTER_TILES/"
-        builder.append(user.getValue()).append(":").append(password.getValue()).append("@").append(server.getValue()).append(":")
-        .append(port.getValue()).append(":").append(database.getValue()).append(".").append(schema.getValue()).append(".")
-        .append(table.getValue());
-        final CoordinateReferenceSystem crs = (CoordinateReferenceSystem) epsgcode.getModel().getObject();
+        //
+        // pgraster://USER:PASS@HOST:PORT:DATABASE.SCHEMA.TABLE@EPSGCODE:*.FILE_EXTENSION?OPTIONS#/PATH/TO/RASTER_TILES/"
+        builder.append(user.getValue())
+                .append(":")
+                .append(password.getValue())
+                .append("@")
+                .append(server.getValue())
+                .append(":")
+                .append(port.getValue())
+                .append(":")
+                .append(database.getValue())
+                .append(".")
+                .append(schema.getValue())
+                .append(".")
+                .append(table.getValue());
+        final CoordinateReferenceSystem crs =
+                (CoordinateReferenceSystem) epsgcode.getModel().getObject();
         if (crs != null) {
             Integer code;
             try {

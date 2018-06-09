@@ -7,17 +7,14 @@
 package org.geoserver.wps;
 
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.opengis.wps10.DescribeProcessType;
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.GetCapabilitiesType;
 import net.opengis.wps10.ProcessDescriptionsType;
 import net.opengis.wps10.WPSCapabilitiesType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.executor.ProcessStatusTracker;
@@ -30,7 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * Default Web Processing Service class
- * 
+ *
  * @author Lucas Reed, Refractions Research Inc
  */
 public class DefaultWebProcessingService implements WebProcessingService, ApplicationContextAware {
@@ -46,53 +43,45 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     private ProcessStatusTracker tracker;
 
-    public DefaultWebProcessingService(GeoServer gs, WPSExecutionManager executionManager,
-            WPSResourceManager resources, ProcessStatusTracker tracker) {
+    public DefaultWebProcessingService(
+            GeoServer gs,
+            WPSExecutionManager executionManager,
+            WPSResourceManager resources,
+            ProcessStatusTracker tracker) {
         this.gs = gs;
         this.executionManager = executionManager;
         this.resources = resources;
         this.tracker = tracker;
     }
 
-    /**
-     * @see WebMapService#getServiceInfo()
-     */
+    /** @see WebMapService#getServiceInfo() */
     public WPSInfo getServiceInfo() {
         return gs.getService(WPSInfo.class);
     }
 
-    /**
-     * @see org.geoserver.wps.WebProcessingService#getCapabilities
-     */
+    /** @see org.geoserver.wps.WebProcessingService#getCapabilities */
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType request) throws WPSException {
         return new GetCapabilities(getServiceInfo(), context).run(request);
     }
 
-    /**
-     * @see org.geoserver.wps.WebProcessingService#describeProcess
-     */
-    public ProcessDescriptionsType describeProcess(DescribeProcessType request) throws WPSException {
+    /** @see org.geoserver.wps.WebProcessingService#describeProcess */
+    public ProcessDescriptionsType describeProcess(DescribeProcessType request)
+            throws WPSException {
         return new DescribeProcess(getServiceInfo(), context).run(request);
     }
 
-    /**
-     * @see org.geoserver.wps.WebProcessingService#execute
-     */
+    /** @see org.geoserver.wps.WebProcessingService#execute */
     public ExecuteResponseType execute(ExecuteType request) throws WPSException {
         return new Execute(executionManager, context).run(request);
     }
-    
-    /**
-     * @see org.geoserver.wps.WebProcessingService#getSchema
-     */
+
+    /** @see org.geoserver.wps.WebProcessingService#getSchema */
     public void getSchema(HttpServletRequest request, HttpServletResponse response)
             throws WPSException {
         new GetSchema(getServiceInfo()).run(request, response);
     }
 
-    /**
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext
-     */
+    /** @see org.springframework.context.ApplicationContextAware#setApplicationContext */
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
@@ -101,7 +90,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
     public Object getExecutionStatus(GetExecutionStatusType request) throws WPSException {
         return new GetStatus(tracker, resources, context).run(request);
     }
-    
+
     @Override
     public Resource getExecutionResult(GetExecutionResultType request) throws WPSException {
         return new GetResult(resources).run(request);

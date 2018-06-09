@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
@@ -19,7 +18,7 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        //add a workspace that shouldn't get removed if "purge" is set to false
+        // add a workspace that shouldn't get removed if "purge" is set to false
         this.getTestData().addWorkspace("shouldNotBeDeleted", "http://snbd", getCatalog());
     }
 
@@ -33,8 +32,8 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
 
         assertNotNull(getCatalog().getWorkspaceByName("shouldNotBeDeleted"));
 
-        RestoreExecutionAdapter restoreExecution = backupFacade
-            .runRestoreAsync(file("settings-modified-restore.zip"), null, params);
+        RestoreExecutionAdapter restoreExecution =
+                backupFacade.runRestoreAsync(file("settings-modified-restore.zip"), null, params);
 
         // Wait a bit
         Thread.sleep(100);
@@ -53,8 +52,8 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
             Thread.sleep(100);
 
             if (restoreExecution.getStatus() == BatchStatus.ABANDONED
-                || restoreExecution.getStatus() == BatchStatus.FAILED
-                || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
+                    || restoreExecution.getStatus() == BatchStatus.FAILED
+                    || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                 for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
                     LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
@@ -67,17 +66,17 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
         GeoServer geoServer = getGeoServer();
         assertEquals(null, geoServer.getLogging().getLocation());
 
-        assertEquals("Andrea Aime", geoServer.getGlobal().getSettings()
-            .getContact().getContactPerson());
+        assertEquals(
+                "Andrea Aime", geoServer.getGlobal().getSettings().getContact().getContactPerson());
 
         WMSInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
         assertEquals(null, serviceInfo.getFees());
 
-        String configPasswordEncrypterName = getSecurityManager().getSecurityConfig().getConfigPasswordEncrypterName();
+        String configPasswordEncrypterName =
+                getSecurityManager().getSecurityConfig().getConfigPasswordEncrypterName();
         assertEquals("pbePasswordEncoder", configPasswordEncrypterName);
 
         Catalog catalog = geoServer.getCatalog();
         assertNotNull(catalog.getWorkspaceByName("shouldNotBeDeleted"));
-
     }
 }

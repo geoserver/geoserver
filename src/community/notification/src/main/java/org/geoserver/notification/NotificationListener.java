@@ -6,7 +6,6 @@
 package org.geoserver.notification;
 
 import java.util.logging.Logger;
-
 import org.geoserver.notification.common.Notification;
 import org.geotools.util.logging.Logging;
 
@@ -19,5 +18,4 @@ public class NotificationListener {
     protected void notify(Notification notification) {
         this.messageMultiplexer.addToMainQueue(notification);
     }
-
 }

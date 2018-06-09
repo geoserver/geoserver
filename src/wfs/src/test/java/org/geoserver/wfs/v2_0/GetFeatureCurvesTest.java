@@ -8,9 +8,7 @@ package org.geoserver.wfs.v2_0;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -37,20 +35,32 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
         super.setUpInternal(testData);
 
         testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
-        testData.addVectorLayer(CURVELINES, Collections.EMPTY_MAP, "curvelines.properties",
-                MockData.class, getCatalog());
-        testData.addVectorLayer(CURVEMULTILINES, Collections.EMPTY_MAP,
-                "curvemultilines.properties", MockData.class, getCatalog());
-        testData.addVectorLayer(CURVEPOLYGONS, Collections.EMPTY_MAP, "curvepolygons.properties",
-                MockData.class, getCatalog());
+        testData.addVectorLayer(
+                CURVELINES,
+                Collections.EMPTY_MAP,
+                "curvelines.properties",
+                MockData.class,
+                getCatalog());
+        testData.addVectorLayer(
+                CURVEMULTILINES,
+                Collections.EMPTY_MAP,
+                "curvemultilines.properties",
+                MockData.class,
+                getCatalog());
+        testData.addVectorLayer(
+                CURVEPOLYGONS,
+                Collections.EMPTY_MAP,
+                "curvepolygons.properties",
+                MockData.class,
+                getCatalog());
 
         FeatureTypeInfo curveLines = getCatalog().getFeatureTypeByName(getLayerId(CURVELINES));
         curveLines.setCircularArcPresent(true);
         curveLines.setLinearizationTolerance(null);
         getCatalog().save(curveLines);
 
-        FeatureTypeInfo curveMultiLines = getCatalog().getFeatureTypeByName(
-                getLayerId(CURVEMULTILINES));
+        FeatureTypeInfo curveMultiLines =
+                getCatalog().getFeatureTypeByName(getLayerId(CURVEMULTILINES));
         curveMultiLines.setCircularArcPresent(true);
         curveMultiLines.setLinearizationTolerance(null);
         getCatalog().save(curveMultiLines);
@@ -76,8 +86,10 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
     @Test
     public void testCurveLine() throws Exception {
-        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                + getLayerId(CURVELINES));
+        Document dom =
+                getAsDOM(
+                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
+                                + getLayerId(CURVELINES));
         // print(dom);
 
         // check the compound curve
@@ -88,7 +100,9 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
                         dom));
         assertEquals(
                 10,
-                countCoordinates(dom, xpath,
+                countCoordinates(
+                        dom,
+                        xpath,
                         "//cite:curvelines[@gml:id='cp.1']/cite:geom/gml:Curve/gml:segments/gml:ArcString/gml:posList"));
         assertEquals(
                 "1",
@@ -110,7 +124,9 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
                         dom));
         assertEquals(
                 10,
-                countCoordinates(dom, xpath,
+                countCoordinates(
+                        dom,
+                        xpath,
                         "//cite:curvelines[@gml:id='cp.2']/cite:geom/gml:Curve/gml:segments/gml:ArcString/gml:posList"));
 
         // check the wave
@@ -121,14 +137,19 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
                         dom));
         assertEquals(
                 10,
-                countCoordinates(dom, xpath,
+                countCoordinates(
+                        dom,
+                        xpath,
                         "//cite:curvelines[@gml:id='cp.3']/cite:geom/gml:Curve/gml:segments/gml:ArcString/gml:posList"));
     }
 
     @Test
     public void testCurveMultiLine() throws Exception {
-        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                + getLayerId(CURVEMULTILINES) + "&featureid=cp.1");
+        Document dom =
+                getAsDOM(
+                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
+                                + getLayerId(CURVEMULTILINES)
+                                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve
@@ -156,8 +177,11 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
     @Test
     public void testCurvePolygons() throws Exception {
-        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                + getLayerId(CURVEPOLYGONS) + "&featureid=cp.1");
+        Document dom =
+                getAsDOM(
+                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
+                                + getLayerId(CURVEPOLYGONS)
+                                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve
@@ -171,5 +195,4 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
                 "count(//cite:curvepolygons[@gml:id='cp.1']/cite:geom/gml:Polygon/gml:interior/gml:Ring/gml:curveMember/gml:Curve/gml:segments/gml:ArcString)",
                 dom);
     }
-
 }

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,14 +35,18 @@ import org.geoserver.notification.common.Notification.Type;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class NotificationCatalogListener extends NotificationListener implements
-        INotificationCatalogListener {
+public class NotificationCatalogListener extends NotificationListener
+        implements INotificationCatalogListener {
 
     private Boolean filterEvent(CatalogInfo source) {
-        return (source instanceof WorkspaceInfo || source instanceof NamespaceInfo
-                || source instanceof FeatureTypeInfo || source instanceof CoverageInfo
-                || source instanceof WMSLayerInfo || source instanceof StoreInfo
-                || source instanceof LayerInfo || source instanceof LayerGroupInfo);
+        return (source instanceof WorkspaceInfo
+                || source instanceof NamespaceInfo
+                || source instanceof FeatureTypeInfo
+                || source instanceof CoverageInfo
+                || source instanceof WMSLayerInfo
+                || source instanceof StoreInfo
+                || source instanceof LayerInfo
+                || source instanceof LayerGroupInfo);
     }
 
     @Override
@@ -52,8 +55,14 @@ public class NotificationCatalogListener extends NotificationListener implements
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
-            Notification notification = new NotificationImpl(Type.Catalog, event.getSource()
-                    .getId(), Action.Remove, info, null, user);
+            Notification notification =
+                    new NotificationImpl(
+                            Type.Catalog,
+                            event.getSource().getId(),
+                            Action.Remove,
+                            info,
+                            null,
+                            user);
             notify(notification);
         }
     }
@@ -64,8 +73,14 @@ public class NotificationCatalogListener extends NotificationListener implements
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
-            Notification notification = new NotificationImpl(Type.Catalog, event.getSource()
-                    .getId(), Action.Update, info, handleModifiedProperties(event), user);
+            Notification notification =
+                    new NotificationImpl(
+                            Type.Catalog,
+                            event.getSource().getId(),
+                            Action.Update,
+                            info,
+                            handleModifiedProperties(event),
+                            user);
             notify(notification);
         }
     }
@@ -76,8 +91,9 @@ public class NotificationCatalogListener extends NotificationListener implements
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
-            Notification notification = new NotificationImpl(Type.Catalog, event.getSource()
-                    .getId(), Action.Add, info, null, user);
+            Notification notification =
+                    new NotificationImpl(
+                            Type.Catalog, event.getSource().getId(), Action.Add, info, null, user);
             notify(notification);
         }
     }
@@ -88,9 +104,12 @@ public class NotificationCatalogListener extends NotificationListener implements
         final List<String> changedProperties = event.getPropertyNames();
         final List<Object> oldValues = event.getOldValues();
         final List<Object> newValues = event.getNewValues();
-        if (source instanceof FeatureTypeInfo || source instanceof CoverageInfo
-                || source instanceof WMSLayerInfo || source instanceof LayerGroupInfo) {
-            if (changedProperties.contains("name") || changedProperties.contains("namespace")
+        if (source instanceof FeatureTypeInfo
+                || source instanceof CoverageInfo
+                || source instanceof WMSLayerInfo
+                || source instanceof LayerGroupInfo) {
+            if (changedProperties.contains("name")
+                    || changedProperties.contains("namespace")
                     || changedProperties.contains("workspace")) {
                 handleRename(properties, source, changedProperties, oldValues, newValues);
             }
@@ -109,9 +128,12 @@ public class NotificationCatalogListener extends NotificationListener implements
         return properties;
     }
 
-    private void handleLayerGroupInfoChange(Map<String, Object> properties,
-            final List<String> changedProperties, final List<Object> oldValues,
-            final List<Object> newValues, final LayerGroupInfo lgInfo) {
+    private void handleLayerGroupInfoChange(
+            Map<String, Object> properties,
+            final List<String> changedProperties,
+            final List<Object> oldValues,
+            final List<Object> newValues,
+            final LayerGroupInfo lgInfo) {
 
         if (changedProperties.contains("layers")) {
             final int layersIndex = changedProperties.indexOf("layers");
@@ -122,19 +144,30 @@ public class NotificationCatalogListener extends NotificationListener implements
         if (changedProperties.contains("styles")) {
             final int stylesIndex = changedProperties.indexOf("styles");
             BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("name");
-            String oldStyles = StringUtils.join(CollectionUtils.collect(
-                    (Set<StyleInfo>) oldValues.get(stylesIndex), transformer).toArray());
-            String newStyles = StringUtils.join(CollectionUtils.collect(
-                    (Set<StyleInfo>) newValues.get(stylesIndex), transformer).toArray());
+            String oldStyles =
+                    StringUtils.join(
+                            CollectionUtils.collect(
+                                            (Set<StyleInfo>) oldValues.get(stylesIndex),
+                                            transformer)
+                                    .toArray());
+            String newStyles =
+                    StringUtils.join(
+                            CollectionUtils.collect(
+                                            (Set<StyleInfo>) newValues.get(stylesIndex),
+                                            transformer)
+                                    .toArray());
             if (!oldStyles.equals(newStyles)) {
                 properties.put("styles", newStyles);
             }
         }
     }
 
-    private void handleLayerInfoChange(Map<String, Object> properties,
-            final List<String> changedProperties, final List<Object> oldValues,
-            final List<Object> newValues, final LayerInfo li) {
+    private void handleLayerInfoChange(
+            Map<String, Object> properties,
+            final List<String> changedProperties,
+            final List<Object> oldValues,
+            final List<Object> newValues,
+            final LayerInfo li) {
 
         if (changedProperties.contains("defaultStyle")) {
             final int propIndex = changedProperties.indexOf("defaultStyle");
@@ -151,27 +184,40 @@ public class NotificationCatalogListener extends NotificationListener implements
         if (changedProperties.contains("styles")) {
             final int stylesIndex = changedProperties.indexOf("styles");
             BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("name");
-            String oldStyles = StringUtils.join(CollectionUtils.collect(
-                    (Set<StyleInfo>) oldValues.get(stylesIndex), transformer).toArray());
-            String newStyles = StringUtils.join(CollectionUtils.collect(
-                    (Set<StyleInfo>) newValues.get(stylesIndex), transformer).toArray());
+            String oldStyles =
+                    StringUtils.join(
+                            CollectionUtils.collect(
+                                            (Set<StyleInfo>) oldValues.get(stylesIndex),
+                                            transformer)
+                                    .toArray());
+            String newStyles =
+                    StringUtils.join(
+                            CollectionUtils.collect(
+                                            (Set<StyleInfo>) newValues.get(stylesIndex),
+                                            transformer)
+                                    .toArray());
             if (!oldStyles.equals(newStyles)) {
                 properties.put("styles", newStyles);
             }
         }
-
     }
 
-    private void handleWorkspaceRename(Map<String, Object> properties, final CatalogInfo source,
-            final List<String> changedProperties, final List<Object> oldValues,
+    private void handleWorkspaceRename(
+            Map<String, Object> properties,
+            final CatalogInfo source,
+            final List<String> changedProperties,
+            final List<Object> oldValues,
             final List<Object> newValues) {
         final int nameIndex = changedProperties.indexOf("name");
         final String oldWorkspaceName = (String) oldValues.get(nameIndex);
         final String newWorkspaceName = (String) newValues.get(nameIndex);
     }
 
-    private void handleRename(Map<String, Object> properties, final CatalogInfo source,
-            final List<String> changedProperties, final List<Object> oldValues,
+    private void handleRename(
+            Map<String, Object> properties,
+            final CatalogInfo source,
+            final List<String> changedProperties,
+            final List<Object> oldValues,
             final List<Object> newValues) {
 
         final int nameIndex = changedProperties.indexOf("name");
@@ -179,7 +225,7 @@ public class NotificationCatalogListener extends NotificationListener implements
 
         String oldLayerName;
         String newLayerName;
-        if (source instanceof ResourceInfo) {// covers LayerInfo, CoverageInfo, and WMSLayerInfo
+        if (source instanceof ResourceInfo) { // covers LayerInfo, CoverageInfo, and WMSLayerInfo
             // must cover prefix:name
             final ResourceInfo resourceInfo = (ResourceInfo) source;
             final NamespaceInfo currNamespace = resourceInfo.getNamespace();
@@ -216,7 +262,5 @@ public class NotificationCatalogListener extends NotificationListener implements
     }
 
     @Override
-    public void reloaded() {
-    }
-
+    public void reloaded() {}
 }

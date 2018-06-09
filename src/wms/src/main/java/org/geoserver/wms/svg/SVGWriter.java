@@ -5,6 +5,16 @@
  */
 package org.geoserver.wms.svg;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -16,31 +26,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
-
 import org.geotools.data.DataSourceException;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
- * 
  * @author Gabriel Roldan
  * @version $Id$
  */
 class SVGWriter extends OutputStreamWriter {
-    private static final Logger LOGGER = org.geotools.util.logging.Logging
-            .getLogger(SVGWriter.class.getPackage().getName());
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(SVGWriter.class.getPackage().getName());
 
     /**
      * a number formatter setted up to write SVG legible numbers ('.' as decimal separator, no group
@@ -48,9 +45,7 @@ class SVGWriter extends OutputStreamWriter {
      */
     private static DecimalFormat formatter;
 
-    /**
-     * map of geometry class to writer
-     */
+    /** map of geometry class to writer */
     private HashMap<Class<? extends Geometry>, SVGFeatureWriter> writers;
 
     static {
@@ -92,9 +87,7 @@ class SVGWriter extends OutputStreamWriter {
 
     private boolean pointsAsCircles;
 
-    /**
-     * Creates a new SVGWriter object.
-     */
+    /** Creates a new SVGWriter object. */
     public SVGWriter(OutputStream out, Envelope mapAreaOfInterest) {
         super(out);
 
@@ -209,8 +202,9 @@ class SVGWriter extends OutputStreamWriter {
         super.write('\n');
     }
 
-    public void writeFeatures(SimpleFeatureType featureType, SimpleFeatureIterator reader,
-            String style) throws IOException {
+    public void writeFeatures(
+            SimpleFeatureType featureType, SimpleFeatureIterator reader, String style)
+            throws IOException {
         SimpleFeature ft;
 
         try {
@@ -307,7 +301,8 @@ class SVGWriter extends OutputStreamWriter {
             featureWriter.startElement(ft);
         }
 
-        public void endFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
+        public void endFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
+                throws IOException {
             featureWriter.endElement(ft);
         }
 
@@ -331,10 +326,7 @@ class SVGWriter extends OutputStreamWriter {
 
         private SVGFeatureWriter featureWriter;
 
-        /**
-         * Creates a new CollectSVGHandler object.
-         * 
-         */
+        /** Creates a new CollectSVGHandler object. */
         public CollectSVGHandler(SVGFeatureWriter featureWriter) {
             this.featureWriter = featureWriter;
         }
@@ -345,16 +337,12 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     * decorator handler that adds the feature id as the "id" attribute
-     */
+    /** decorator handler that adds the feature id as the "id" attribute */
     public class FIDSVGHandler extends SVGFeatureWriterHandler {
 
         private SVGFeatureWriterHandler handler;
 
-        /**
-         * Creates a new NormalSVGHandler object.
-         */
+        /** Creates a new NormalSVGHandler object. */
         public FIDSVGHandler(SVGFeatureWriterHandler handler) {
             this.handler = handler;
         }
@@ -375,9 +363,7 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     * decorator handler that adds the feature id as the "id" attribute
-     */
+    /** decorator handler that adds the feature id as the "id" attribute */
     public class BoundsSVGHandler extends SVGFeatureWriterHandler {
 
         private SVGFeatureWriterHandler handler;
@@ -404,9 +390,7 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     * decorator handler that adds the feature id as the "id" attribute
-     */
+    /** decorator handler that adds the feature id as the "id" attribute */
     public class AttributesSVGHandler extends SVGFeatureWriterHandler {
 
         private SVGFeatureWriterHandler handler;
@@ -440,14 +424,11 @@ class SVGWriter extends OutputStreamWriter {
         /**
          * Parses the passed string, and encodes the special characters (used in xml for special
          * purposes) with the appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
-         * 
-         * @param inData
-         *            The string to encode into xml.
-         * 
-         * 
+         *
+         * @param inData The string to encode into xml.
          * @task REVISIT: Once we write directly to out, as we should, this method should be
-         *       simpler, as we can just write strings with escapes directly to out, replacing as we
-         *       iterate of chars to write them.
+         *     simpler, as we can just write strings with escapes directly to out, replacing as we
+         *     iterate of chars to write them.
          */
         private void encodeAttribute(String inData) throws IOException {
             // return null, if null is passed as argument
@@ -476,8 +457,8 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         /**
-         * returns the xml unicode escape sequence for the character <code>c</code>, such as
-         * <code>"&#x00d1;"</code> for the character <code>'?'</code>
+         * returns the xml unicode escape sequence for the character <code>c</code>, such as <code>
+         * "&#x00d1;"</code> for the character <code>'?'</code>
          */
         private void writeUnicodeEscapeSequence(char c) throws IOException {
             write("&#x");
@@ -485,8 +466,7 @@ class SVGWriter extends OutputStreamWriter {
             String hex = Integer.toHexString(c);
             int pendingZeros = 4 - hex.length();
 
-            for (int i = 0; i < pendingZeros; i++)
-                write('0');
+            for (int i = 0; i < pendingZeros; i++) write('0');
 
             write(hex);
             write(';');
@@ -511,17 +491,14 @@ class SVGWriter extends OutputStreamWriter {
 
         /**
          * Writes the content of the <b>d</b> attribute in a <i>path</i> SVG element
-         * 
-         * <p>
-         * While iterating over the coordinate array passed as parameter, this method performs a
+         *
+         * <p>While iterating over the coordinate array passed as parameter, this method performs a
          * kind of very basic path generalization, verifying that the distance between the current
          * coordinate and the last encoded one is greater than the minimun distance expressed by the
-         * field <code>minCoordDistance</code> and established by the method
-         * {@link #setReferenceSpace(Envelope, float) setReferenceSpace(Envelope, blurFactor)}
-         * </p>
-         * 
+         * field <code>minCoordDistance</code> and established by the method {@link
+         * #setReferenceSpace(Envelope, float) setReferenceSpace(Envelope, blurFactor)}
+         *
          * @param coords
-         * 
          * @throws IOException
          */
         protected void writePathContent(Coordinate[] coords) throws IOException {
@@ -561,30 +538,22 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class PointWriter extends SVGFeatureWriter {
-        /**
-         * Creates a new PointWriter object.
-         */
-        public PointWriter() {
-        }
+        /** Creates a new PointWriter object. */
+        public PointWriter() {}
 
         protected void startElement(SimpleFeature feature) throws IOException {
             write(pointsAsCircles ? "<circle r='0.25%' fill='blue'" : "<use");
         }
 
-        protected void startGeometry(Geometry geom) throws IOException {
-        }
+        protected void startGeometry(Geometry geom) throws IOException {}
 
         /**
          * overrides writeBounds for points to do nothing. You can get the position of the point
          * with the x and y attributes of the "use" SVG element written to represent each point
-         * 
          */
-        protected void writeBounds(Envelope env) throws IOException {
-        }
+        protected void writeBounds(Envelope env) throws IOException {}
 
         protected void writeGeometry(Geometry geom) throws IOException {
             Point p = (Point) geom;
@@ -610,13 +579,10 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class MultiPointWriter extends PointWriter {
 
-        public MultiPointWriter() {
-        }
+        public MultiPointWriter() {}
 
         protected void startElement(SimpleFeature feature) throws IOException {
             write("<g ");
@@ -645,9 +611,8 @@ class SVGWriter extends OutputStreamWriter {
     /**
      * Writer to handle feature types which contain a Geometry attribute that is actually of the
      * class Geometry. This can occur in heterogeneous data sets.
-     * 
+     *
      * @author Justin Deoliveira, jdeolive@openplans.org
-     * 
      */
     private class GeometryWriter extends SVGFeatureWriter {
         SVGFeatureWriter delegate;
@@ -676,15 +641,10 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class LineStringWriter extends SVGFeatureWriter {
-        /**
-         * Creates a new LineStringWriter object.
-         */
-        public LineStringWriter() {
-        }
+        /** Creates a new LineStringWriter object. */
+        public LineStringWriter() {}
 
         protected void startElement(SimpleFeature feature) throws IOException {
             write("<path");
@@ -699,15 +659,10 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class MultiLineStringWriter extends LineStringWriter {
-        /**
-         * Creates a new MultiLineStringWriter object.
-         */
-        public MultiLineStringWriter() {
-        }
+        /** Creates a new MultiLineStringWriter object. */
+        public MultiLineStringWriter() {}
 
         protected void writeGeometry(Geometry geom) throws IOException {
             MultiLineString ml = (MultiLineString) geom;
@@ -718,15 +673,10 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class PolygonWriter extends SVGFeatureWriter {
-        /**
-         * Creates a new PolygonWriter object.
-         */
-        public PolygonWriter() {
-        }
+        /** Creates a new PolygonWriter object. */
+        public PolygonWriter() {}
 
         protected void startElement(SimpleFeature feature) throws IOException {
             write("<path");
@@ -747,15 +697,10 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private class MultiPolygonWriter extends PolygonWriter {
-        /**
-         * Creates a new MultiPolygonWriter object.
-         */
-        public MultiPolygonWriter() {
-        }
+        /** Creates a new MultiPolygonWriter object. */
+        public MultiPolygonWriter() {}
 
         protected void writeGeometry(Geometry geom) throws IOException {
             MultiPolygon mpoly = (MultiPolygon) geom;

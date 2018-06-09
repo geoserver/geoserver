@@ -8,19 +8,15 @@ import java.util.function.Consumer;
 
 public class GetFeatureCallbackTester implements GetFeatureCallback {
 
-    public static final Consumer<GetFeatureContext> NO_OP = ctx -> {
-    };
+    public static final Consumer<GetFeatureContext> NO_OP = ctx -> {};
     Consumer<GetFeatureContext> contextConsumer = NO_OP;
 
-    public GetFeatureCallbackTester() {
-    }
-
+    public GetFeatureCallbackTester() {}
 
     @Override
     public void beforeQuerying(GetFeatureContext context) {
         contextConsumer.accept(context);
     }
-
 
     public void clear() {
         contextConsumer = NO_OP;

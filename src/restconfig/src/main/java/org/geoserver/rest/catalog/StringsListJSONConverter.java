@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
-
+import net.sf.json.JSONObject;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.http.HttpOutputMessage;
@@ -18,11 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSONObject;
-
-/**
- * Convert a named {@link StringsList} to JSON.
- */
+/** Convert a named {@link StringsList} to JSON. */
 @Component
 public class StringsListJSONConverter extends BaseMessageConverter<StringsList> {
 
@@ -49,8 +45,9 @@ public class StringsListJSONConverter extends BaseMessageConverter<StringsList> 
     @Override
     public void writeInternal(StringsList stringsList, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Map<String, Object> values = Collections.singletonMap("list",
-                Collections.singletonMap("string", stringsList.getValues()));
+        Map<String, Object> values =
+                Collections.singletonMap(
+                        "list", Collections.singletonMap("string", stringsList.getValues()));
         Writer outWriter = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody()));
         JSONObject.fromObject(values).write(outWriter);
         outWriter.flush();

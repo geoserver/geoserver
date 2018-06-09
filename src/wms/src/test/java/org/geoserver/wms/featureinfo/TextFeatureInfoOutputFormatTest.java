@@ -15,10 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -37,35 +35,35 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
-    
-private TextFeatureInfoOutputFormat outputFormat;
-    
+
+    private TextFeatureInfoOutputFormat outputFormat;
+
     private FeatureCollectionType fcType;
-    
+
     Map<String, Object> parameters;
-    
+
     GetFeatureInfoRequest getFeatureInfoRequest;
-    
+
     @Before
     public void setUp() throws URISyntaxException, IOException {
         outputFormat = new TextFeatureInfoOutputFormat(getWMS());
-        
+
         Request request = new Request();
         parameters = new HashMap<String, Object>();
-        parameters.put("LAYER", "testLayer");        
+        parameters.put("LAYER", "testLayer");
         Map<String, String> env = new HashMap<String, String>();
         env.put("TEST1", "VALUE1");
-        env.put("TEST2", "VALUE2");        
+        env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
         request.setKvp(parameters);
-        
+
         Dispatcher.REQUEST.set(request);
-        
+
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.NULLS);
-        
+
         fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
         fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
-        
+
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
         LayerInfo layerInfo = new LayerInfoImpl();
@@ -81,10 +79,10 @@ private TextFeatureInfoOutputFormat outputFormat;
         getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
     }
-    
+
     /**
      * Test null geometry is correctly handled (GEOS-6829).
-     * 
+     *
      * @throws IOException
      * @throws URISyntaxException
      */
@@ -93,8 +91,8 @@ private TextFeatureInfoOutputFormat outputFormat;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
-        
+
         assertFalse(result.contains("java.lang.NullPointerException"));
-        assertTrue(result.contains("pointProperty = null"));    
+        assertTrue(result.contains("pointProperty = null"));
     }
 }

@@ -5,7 +5,6 @@
 package org.geoserver.rest.security;
 
 import java.io.IOException;
-
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.rest.security.xml.JaxbUser;
@@ -16,12 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class UserRoleRestControllerTest extends GeoServerTestSupport {
-    
+
     private static final String USER_SERVICE = "default";
 
     protected UsersRestController usersController;
 
-    protected RolesRestController rolesController;    
+    protected RolesRestController rolesController;
 
     @Before
     public void oneTimeSetUp() throws Exception {
@@ -33,18 +32,18 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
 
     @Test
     public void test() throws PasswordPolicyException, IOException {
-        
+
         JaxbUser user = new JaxbUser();
         user.setUserName("pipo");
         user.setPassword("secret");
         user.setEnabled(true);
-        
+
         usersController.insertUser(USER_SERVICE, user);
         usersController.insertGroup(USER_SERVICE, "clowns");
         usersController.insertGroup(USER_SERVICE, "circus");
         usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
         usersController.associateUserToGroup(USER_SERVICE, "pipo", "circus");
-        
+
         JaxbUserList users = usersController.getUsers(USER_SERVICE);
         boolean found = false;
         for (JaxbUser u : users.getUsers()) {
@@ -54,7 +53,7 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
             }
         }
         assertTrue(found);
-        
+
         users = usersController.getUsersFromGroup(USER_SERVICE, "clowns");
         found = false;
         for (JaxbUser u : users.getUsers()) {
@@ -64,25 +63,25 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
             }
         }
         assertTrue(found);
-        
+
         JaxbGroupList groups = usersController.getGroupsFromUser(USER_SERVICE, "pipo");
         assertEquals(2, groups.getGroups().size());
         assertTrue(groups.getGroups().contains("clowns"));
         assertTrue(groups.getGroups().contains("circus"));
-        
+
         usersController.disassociateUserFromGroup(USER_SERVICE, "pipo", "circus");
         groups = usersController.getGroupsFromUser(USER_SERVICE, "pipo");
         assertEquals(1, groups.getGroups().size());
         assertTrue(groups.getGroups().contains("clowns"));
         assertFalse(groups.getGroups().contains("circus"));
-        
+
         usersController.deleteGroup(USER_SERVICE, "circus");
         assertEquals(1, groups.getGroups().size());
         assertTrue(groups.getGroups().contains("clowns"));
         assertFalse(groups.getGroups().contains("circus"));
-        
+
         user = new JaxbUser();
-        user.setEnabled(false);       
+        user.setEnabled(false);
         usersController.updateUser(USER_SERVICE, "pipo", user);
         users = usersController.getUsers(USER_SERVICE);
         found = false;
@@ -93,33 +92,33 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
             }
         }
         assertTrue(found);
-        
+
         rolesController.insert("vozen");
         rolesController.insert("kwiestenbiebel");
         users = usersController.getUsers(USER_SERVICE);
         JaxbRoleList roles = rolesController.get();
         assertTrue(roles.getRoles().contains("vozen"));
         assertTrue(roles.getRoles().contains("kwiestenbiebel"));
-        
-        rolesController.associate( "vozen", "pipo");
-        rolesController.associate( "kwiestenbiebel", "pipo");
-                
+
+        rolesController.associate("vozen", "pipo");
+        rolesController.associate("kwiestenbiebel", "pipo");
+
         roles = rolesController.getUser("pipo");
         assertEquals(2, roles.getRoles().size());
         assertTrue(roles.getRoles().contains("vozen"));
         assertTrue(roles.getRoles().contains("kwiestenbiebel"));
-                
+
         rolesController.disassociate("kwiestenbiebel", "pipo");
         roles = rolesController.getUser("pipo");
         assertEquals(1, roles.getRoles().size());
         assertTrue(roles.getRoles().contains("vozen"));
         assertFalse(roles.getRoles().contains("kwiestenbiebel"));
-        
-        rolesController.delete( "kwiestenbiebel");
+
+        rolesController.delete("kwiestenbiebel");
         assertEquals(1, roles.getRoles().size());
         assertTrue(roles.getRoles().contains("vozen"));
-        assertFalse(roles.getRoles().contains("kwiestenbiebel"));        
-        
+        assertFalse(roles.getRoles().contains("kwiestenbiebel"));
+
         usersController.deleteUser(USER_SERVICE, "pipo");
         users = usersController.getUsers(USER_SERVICE);
         found = false;
@@ -129,41 +128,38 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
             }
         }
         assertFalse(found);
-        
-        //not found errors - will be translated by spring exception handler to code 404 
+
+        // not found errors - will be translated by spring exception handler to code 404
         boolean notfound = false;
         try {
-                usersController.getUsers("blabla");
+            usersController.getUsers("blabla");
         } catch (IllegalArgumentException e) {
-                notfound = true;
-        }
-        assertTrue(notfound);
-        
-        notfound = false;
-        try {
-                usersController.getGroupsFromUser(USER_SERVICE, "niemand");
-        } catch (IllegalArgumentException e) {
-                notfound = true;
-        }
-        assertTrue(notfound);
-        
-
-        notfound = false;
-        try {
-                usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
-        } catch (IllegalArgumentException e) {
-                notfound = true;
+            notfound = true;
         }
         assertTrue(notfound);
 
+        notfound = false;
+        try {
+            usersController.getGroupsFromUser(USER_SERVICE, "niemand");
+        } catch (IllegalArgumentException e) {
+            notfound = true;
+        }
+        assertTrue(notfound);
 
         notfound = false;
         try {
-                rolesController.delete("onbestaand");
+            usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
         } catch (IllegalArgumentException e) {
-                notfound = true;
+            notfound = true;
+        }
+        assertTrue(notfound);
+
+        notfound = false;
+        try {
+            rolesController.delete("onbestaand");
+        } catch (IllegalArgumentException e) {
+            notfound = true;
         }
         assertTrue(notfound);
     }
-
 }

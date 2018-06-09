@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.Repository;
@@ -26,20 +25,31 @@ import org.opengis.feature.type.Name;
  */
 public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
-    public static final Param REPOSITORY_PARAM = new Param("repository", Repository.class,
-            "The repository that will provide the store instances", false, null,
-            new KVP(Param.LEVEL, "advanced"));
+    public static final Param REPOSITORY_PARAM =
+            new Param(
+                    "repository",
+                    Repository.class,
+                    "The repository that will provide the store instances",
+                    false,
+                    null,
+                    new KVP(Param.LEVEL, "advanced"));
 
-    public static final Param STORE_PARAM = new Param("store", String.class, "Delegate data store",
-            false, null, new KVP(Param.ELEMENT, String.class));
+    public static final Param STORE_PARAM =
+            new Param(
+                    "store",
+                    String.class,
+                    "Delegate data store",
+                    false,
+                    null,
+                    new KVP(Param.ELEMENT, String.class));
 
     /** parameter for database type */
-    public static final Param DBTYPE = new Param("dbtype", String.class, "Type", true,
-            "opensearch-eo-jdbc");
+    public static final Param DBTYPE =
+            new Param("dbtype", String.class, "Type", true, "opensearch-eo-jdbc");
 
     /** parameter for namespace of the datastore */
-    public static final Param NAMESPACE = new Param("namespace", String.class, "Namespace prefix",
-            false);
+    public static final Param NAMESPACE =
+            new Param("namespace", String.class, "Namespace prefix", false);
 
     @Override
     public Map<Key, ?> getImplementationHints() {
@@ -69,7 +79,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
     @Override
     public Param[] getParametersInfo() {
-        return new Param[] { DBTYPE, REPOSITORY_PARAM, STORE_PARAM, NAMESPACE };
+        return new Param[] {DBTYPE, REPOSITORY_PARAM, STORE_PARAM, NAMESPACE};
     }
 
     @Override
@@ -134,5 +144,4 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
     public boolean isAvailable() {
         return true;
     }
-
 }

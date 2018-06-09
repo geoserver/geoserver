@@ -6,7 +6,6 @@
 package org.geoserver.wms;
 
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -23,7 +22,8 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     @Override
-    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
+    protected void qualifyRequest(
+            WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
         if (WebMapService.class.isInstance(service.getService())) {
             String layers = (String) request.getRawKvp().get("LAYERS");
             if (layers != null) {
@@ -52,8 +52,8 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         }
     }
 
-    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Operation operation,
-            Request request) {
+    protected void qualifyRequest(
+            WorkspaceInfo ws, PublishedInfo l, Operation operation, Request request) {
         GetCapabilitiesRequest gc = parameter(operation, GetCapabilitiesRequest.class);
         if (gc != null) {
             gc.setNamespace(ws.getName());
@@ -67,7 +67,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
         return toCommaSeparatedList(list);
     }
-    
+
     /**
      * Overriding the base class behavior as we want to avoid qualifying global layer group names
      */
@@ -111,5 +111,4 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     private String toCommaSeparatedList(List<String> list) {
         return String.join(",", list);
     }
-
 }

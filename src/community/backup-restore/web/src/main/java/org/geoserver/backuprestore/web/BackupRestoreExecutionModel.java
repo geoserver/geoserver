@@ -6,25 +6,22 @@ package org.geoserver.backuprestore.web;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.backuprestore.AbstractExecutionAdapter;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geotools.util.logging.Logging;
 
-/**
- * @author Alessio Fabiani, GeoSolutions
- *
- */
-public class BackupRestoreExecutionModel<T extends AbstractExecutionAdapter> extends LoadableDetachableModel<AbstractExecutionAdapter> {
+/** @author Alessio Fabiani, GeoSolutions */
+public class BackupRestoreExecutionModel<T extends AbstractExecutionAdapter>
+        extends LoadableDetachableModel<AbstractExecutionAdapter> {
 
     static Logger LOGGER = Logging.getLogger(BackupRestoreExecutionModel.class);
 
     long id;
 
     private Class<T> clazz;
-    
+
     public BackupRestoreExecutionModel(AbstractExecutionAdapter exec, Class<T> clazz) {
         this(exec.getId(), clazz);
     }
@@ -33,11 +30,11 @@ public class BackupRestoreExecutionModel<T extends AbstractExecutionAdapter> ext
         this.id = id;
         this.clazz = clazz;
     }
-    
+
     public Class<T> getType() {
         return this.clazz;
     }
-    
+
     @Override
     protected AbstractExecutionAdapter load() {
         try {
@@ -47,8 +44,7 @@ public class BackupRestoreExecutionModel<T extends AbstractExecutionAdapter> ext
                 return BackupRestoreWebUtils.backupFacade().getRestoreExecutions().get(id);
             }
             return null;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Unable to load execution " + id, e);
             return null;
         }

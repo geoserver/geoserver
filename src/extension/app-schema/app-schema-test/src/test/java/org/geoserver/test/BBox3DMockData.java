@@ -9,17 +9,19 @@ package org.geoserver.test;
 /**
  * Mock data for testing 3D BBOXes in app-schema
  *
- * 
  * @author Niels Charlier
  */
 public class BBox3DMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        add3DFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeature3D.xml",
-                "MappedFeature3D.properties", "ObservationMethod.xml", "ObservationMethod.properties");
+        add3DFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeature3D.xml",
+                "MappedFeature3D.properties",
+                "ObservationMethod.xml",
+                "ObservationMethod.properties");
     }
 }

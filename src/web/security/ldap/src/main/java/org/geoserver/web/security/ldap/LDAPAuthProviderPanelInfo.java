@@ -11,11 +11,11 @@ import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
 
 /**
  * Configuration panel extension for {@link LDAPAuthenticationProvider}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class LDAPAuthProviderPanelInfo 
-    extends AuthenticationProviderPanelInfo<LDAPSecurityServiceConfig, LDAPAuthProviderPanel> {
+public class LDAPAuthProviderPanelInfo
+        extends AuthenticationProviderPanelInfo<LDAPSecurityServiceConfig, LDAPAuthProviderPanel> {
 
     private static final long serialVersionUID = 4754541712479614409L;
 

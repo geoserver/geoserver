@@ -13,9 +13,8 @@ import org.junit.Test;
 /**
  * This test just checks the basic OWS flow controller matches requests as expecte, for a
  * concurrency test see {@link GlobalFlowControllerTest}
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public class OWSRequestMatcherTest extends AbstractFlowControllerTest {
 
@@ -26,7 +25,7 @@ public class OWSRequestMatcherTest extends AbstractFlowControllerTest {
         assertTrue(controller.apply(buildRequest("WMS", "GetMap", "image/png")));
         assertTrue(controller.apply(buildRequest("WMS", "GetFeatureInfo", "image/png")));
     }
-    
+
     @Test
     public void testMatchServiceRequest() {
         OWSRequestMatcher controller = new OWSRequestMatcher("WMS", "GetMap");
@@ -34,7 +33,7 @@ public class OWSRequestMatcherTest extends AbstractFlowControllerTest {
         assertTrue(controller.apply(buildRequest("WMS", "GETMAP", "image/png")));
         assertFalse(controller.apply(buildRequest("WMS", "GetFeatureInfo", "image/png")));
     }
-    
+
     @Test
     public void testMatchServiceRequestOutputFormat() {
         OWSRequestMatcher controller = new OWSRequestMatcher("WMS", "GetMap", "image/png");

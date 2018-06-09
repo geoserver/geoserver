@@ -7,10 +7,9 @@ package org.geoserver.monitor.ows.wcs10;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geotools.xml.EMFUtils;
 
 public class DescribeCoverageHandler extends RequestObjectHandler {
@@ -22,8 +21,7 @@ public class DescribeCoverageHandler extends RequestObjectHandler {
     @Override
     public List<String> getLayers(Object request) {
         @SuppressWarnings("unchecked")
-        List<String> l = (List<String>)EMFUtils.get((EObject)request, "coverage");
-        return l != null ? new ArrayList<String>(l) : null; 
+        List<String> l = (List<String>) EMFUtils.get((EObject) request, "coverage");
+        return l != null ? new ArrayList<String>(l) : null;
     }
-
 }

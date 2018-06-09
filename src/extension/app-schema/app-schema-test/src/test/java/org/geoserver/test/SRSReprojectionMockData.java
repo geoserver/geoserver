@@ -10,31 +10,34 @@ import org.geoserver.data.test.MockData;
 
 /**
  * Mock data for testing SRS reprojection in app-schema {@link SRSReprojectionTest}
- * 
- * Inspired by {@link MockData}.
- * 
+ *
+ * <p>Inspired by {@link MockData}.
+ *
  * @author Victor Tey, CSIRO Exploration and Mining
  */
 public class SRSReprojectionMockData extends AbstractAppSchemaMockData {
-    /**
-     * Prefix for ex namespace.
-     */
+    /** Prefix for ex namespace. */
     protected static final String EX_PREFIX = "ex";
 
-    /**
-     * URI for ex namespace.
-     */
+    /** URI for ex namespace. */
     protected static final String EX_URI = "http://example.com";
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeature.xml",
-                "MappedFeature.properties", "ObservationMethod.xml", "ObservationMethod.properties");
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeature.xml",
+                "MappedFeature.properties",
+                "ObservationMethod.xml",
+                "ObservationMethod.properties");
         putNamespace(EX_PREFIX, EX_URI);
-        addFeatureType(EX_PREFIX, "geomContainer", "SRSReprojectionTest.xml",
-                "SRSTestPropertyfile.properties", "NestedGeometry.xsd");
+        addFeatureType(
+                EX_PREFIX,
+                "geomContainer",
+                "SRSReprojectionTest.xml",
+                "SRSTestPropertyfile.properties",
+                "NestedGeometry.xsd");
     }
 }

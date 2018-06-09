@@ -10,6 +10,7 @@ import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.isNull;
 
+import com.google.common.base.Preconditions;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
@@ -18,11 +19,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -35,14 +34,12 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.logging.LoggingStartupContextListener;
 import org.geoserver.logging.LoggingUtils;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ClassProperties;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-
-import com.google.common.base.Preconditions;
 
 @ParametersAreNonnullByDefault
 public class JDBCGeoServerFacade implements GeoServerFacade {
@@ -56,15 +53,15 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     private GeoServer geoServer;
 
     public final ConfigDatabase db;
-    
+
     private ResourceStore ddResourceStore;
-    
+
     private GeoServerResourceLoader resourceLoader;
 
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
-    
+
     public void setDdResourceStore(ResourceStore ddResourceStore) {
         this.ddResourceStore = ddResourceStore;
     }
@@ -80,50 +77,70 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             if (realLogInfo == null) {
                 return;
             }
-            LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(
-                    ddResourceStore == null ? resourceLoader : ddResourceStore);
-            
+            LoggingInfo startLogInfo =
+                    LoggingStartupContextListener.getLogging(
+                            ddResourceStore == null ? resourceLoader : ddResourceStore);
+
             // Doing this reflectively so that if LoggingInfo gets new properties, this should still
             // work. KS
-            
+
             ClassProperties properties = OwsUtils.getClassProperties(LoggingInfo.class);
-            
+
             List<String> propertyNames = new ArrayList<String>(properties.properties().size());
             List<Object> newValues = new ArrayList<Object>(properties.properties().size());
             List<Object> oldValues = new ArrayList<Object>(properties.properties().size());
-            
+
             final Level propertyTableLevel = Level.FINE;
-            LOGGER.log(propertyTableLevel, "Checking Logging configuration in case it neeeds to be reinitialized");
+            LOGGER.log(
+                    propertyTableLevel,
+                    "Checking Logging configuration in case it neeeds to be reinitialized");
             for (String propName : properties.properties()) {
-                
+
                 // Don't care about the return type
                 Method read = properties.getter(propName, null);
-                
+
                 Object newVal = read.invoke(realLogInfo);
                 Object oldVal = read.invoke(startLogInfo);
-                
-                if((newVal==null && oldVal==null) || (newVal!=null && newVal.equals(oldVal))) {
+
+                if ((newVal == null && oldVal == null)
+                        || (newVal != null && newVal.equals(oldVal))) {
                     // Values the same
-                    LOGGER.log(propertyTableLevel, "=== {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {read.getName(), oldVal, newVal});
+                    LOGGER.log(
+                            propertyTableLevel,
+                            "=== {0} (logging.xml: {1}, JDBCConfig: {2})",
+                            new Object[] {read.getName(), oldVal, newVal});
                 } else {
                     // Values different
                     propertyNames.add(propName);
                     newValues.add(newVal);
                     oldValues.add(oldVal);
-                    LOGGER.log(propertyTableLevel, "=/= {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {read.getName(), oldVal, newVal});
+                    LOGGER.log(
+                            propertyTableLevel,
+                            "=/= {0} (logging.xml: {1}, JDBCConfig: {2})",
+                            new Object[] {read.getName(), oldVal, newVal});
                 }
             }
             // If there's a difference other than the ID
-            if(!(propertyNames.isEmpty() || (propertyNames.size()==1 && propertyNames.get(0).equals("Id")))) {
-                LOGGER.log(Level.WARNING, "Start up logging config does not match that in JDBCConfig.  Reconfiguring now.  Logs preceding this message may reflect a different configuration.");
-                LoggingUtils.initLogging(resourceLoader, realLogInfo.getLevel(), !realLogInfo.isStdOutLogging(), realLogInfo.getLocation());
-            } 
+            if (!(propertyNames.isEmpty()
+                    || (propertyNames.size() == 1 && propertyNames.get(0).equals("Id")))) {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Start up logging config does not match that in JDBCConfig.  Reconfiguring now.  Logs preceding this message may reflect a different configuration.");
+                LoggingUtils.initLogging(
+                        resourceLoader,
+                        realLogInfo.getLevel(),
+                        !realLogInfo.isStdOutLogging(),
+                        realLogInfo.getLocation());
+            }
         } catch (Exception ex) {
             // If something bad happens, log it and keep going with the wrong logging config
-            LOGGER.log(Level.SEVERE, "Problem while reinitializing Logging from JDBC Config.  Log configuration may not be correct.", ex);
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Problem while reinitializing Logging from JDBC Config.  Log configuration may not be correct.",
+                    ex);
         }
     }
-    
+
     @Override
     public GeoServer getGeoServer() {
         return geoServer;
@@ -149,9 +166,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             SettingsInfo defaultSettings = geoServer.getFactory().createSettings();
             add(defaultSettings);
             global.setSettings(defaultSettings);
-        //JD: disabling this check, global settings should have an id 
-        //}else if(null == global.getSettings().getId()){
-        }else {
+            // JD: disabling this check, global settings should have an id
+            // }else if(null == global.getSettings().getId()){
+        } else {
             add(global.getSettings());
         }
         if (null == getGlobal()) {
@@ -240,7 +257,6 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
         Filter filter = equal("workspace.id", workspace.getId());
 
         return db.get(SettingsInfo.class, filter);
-
     }
 
     @Override
@@ -280,13 +296,14 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             return filterForGlobal();
         }
     }
+
     private Filter filterForGlobal() {
         return isNull("workspace.id");
     }
-    
+
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
-        
+
         Filter filter = filterForWorkspace(workspace);
         return db.queryAsList(ServiceInfo.class, filter, null, null, null);
     }
@@ -299,7 +316,8 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ServiceInfo> T getService(final WorkspaceInfo workspace, final Class<T> clazz) {
+    public <T extends ServiceInfo> T getService(
+            final WorkspaceInfo workspace, final Class<T> clazz) {
         return (T) db.getService(workspace, clazz);
     }
 
@@ -314,14 +332,16 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     }
 
     @Override
-    public <T extends ServiceInfo> T getServiceByName(final String name,
-            final WorkspaceInfo workspace, final Class<T> clazz) {
+    public <T extends ServiceInfo> T getServiceByName(
+            final String name, final WorkspaceInfo workspace, final Class<T> clazz) {
 
         return findByName(name, workspace, clazz);
     }
 
-    private <T extends Info> T findByName(@Nonnull final String name,
-            @Nullable final WorkspaceInfo workspace, @Nonnull final Class<T> clazz)
+    private <T extends Info> T findByName(
+            @Nonnull final String name,
+            @Nullable final WorkspaceInfo workspace,
+            @Nonnull final Class<T> clazz)
             throws AssertionError {
 
         Filter filter = equal("name", name);

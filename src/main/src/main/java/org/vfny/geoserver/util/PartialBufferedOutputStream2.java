@@ -8,40 +8,33 @@ package org.vfny.geoserver.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * <b>PartialBufferedOutputStream</b><br> Oct 19, 2005<br>
+ * <b>PartialBufferedOutputStream</b><br>
+ * Oct 19, 2005<br>
  * <b>Purpose:</b><br>
- * I have modelled this class after the BufferedOutputStream. Several methods
- * are synchronized as a result. The interior of this class uses a
- * ByteArrayOutputStream when it starts and then a BufferedOutputStream. This
- * is essentially a decorator. This class uses a temporary to-memory
- * OutputStream for initial bufferring. This OutputStream is a
- * ByteArrayOutputStream. Once a pre-defined BUFFER_SIZE has been reached, the
- * output that is stored in the ByteArrayOutputStream is output to the real
- * OutputStream to the response. Further data is then written to that response
- * OutputStream. For the first run of this, we will write to memory for the
- * buffered part. Writing to disk is another option. NOTE: If we switch to
- * writing out to disk, we will have to clean up our temporary files with
- * abort(). WARNING: IF you abuse the size of the buffer, you may leak memory
- * if this OutputStream is not terminated. The ByteArrayOutputStream will hold
- * onto its allocated memory even after you call reset() on it. So if you put
- * in 60MB of buffer space, it will stay there until the object is no longer
- * referenced and the garbage collector decides to pick it up. A solution to
- * this would be to use a FileOutputStream instead of the
- * ByteArrayOutputStream. CONTRACT: -close() will NOT flush remaining bytes to
- * the output stream, as per the contract with OutputStream. Close will remove
- * any references to OutputStreams and its HttpServletResponse. -fush() will
- * NOT flush if the buffer is not full. -abort() will succeed if the buffer is
- * not full yet. If the buffer has been filled and the information has been
- * written out to response's OutputStream, the abort reports as having failed.
- * The point of this PartialBufferedOutputStream is to allow an abort before
- * the information has been written out to the real OutputStream. When abort
- * is called the references to any OutputStreams and the HttpServletResponse
- * are removed.
+ * I have modelled this class after the BufferedOutputStream. Several methods are synchronized as a
+ * result. The interior of this class uses a ByteArrayOutputStream when it starts and then a
+ * BufferedOutputStream. This is essentially a decorator. This class uses a temporary to-memory
+ * OutputStream for initial bufferring. This OutputStream is a ByteArrayOutputStream. Once a
+ * pre-defined BUFFER_SIZE has been reached, the output that is stored in the ByteArrayOutputStream
+ * is output to the real OutputStream to the response. Further data is then written to that response
+ * OutputStream. For the first run of this, we will write to memory for the buffered part. Writing
+ * to disk is another option. NOTE: If we switch to writing out to disk, we will have to clean up
+ * our temporary files with abort(). WARNING: IF you abuse the size of the buffer, you may leak
+ * memory if this OutputStream is not terminated. The ByteArrayOutputStream will hold onto its
+ * allocated memory even after you call reset() on it. So if you put in 60MB of buffer space, it
+ * will stay there until the object is no longer referenced and the garbage collector decides to
+ * pick it up. A solution to this would be to use a FileOutputStream instead of the
+ * ByteArrayOutputStream. CONTRACT: -close() will NOT flush remaining bytes to the output stream, as
+ * per the contract with OutputStream. Close will remove any references to OutputStreams and its
+ * HttpServletResponse. -fush() will NOT flush if the buffer is not full. -abort() will succeed if
+ * the buffer is not full yet. If the buffer has been filled and the information has been written
+ * out to response's OutputStream, the abort reports as having failed. The point of this
+ * PartialBufferedOutputStream is to allow an abort before the information has been written out to
+ * the real OutputStream. When abort is called the references to any OutputStreams and the
+ * HttpServletResponse are removed.
  *
  * @author Brent Owens (The Open Planning Project)
  * @version
@@ -58,37 +51,32 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     /** Temporary output stream, the buffered one */
     private ByteArrayOutputStream out_buffer;
 
-    /**
-     * Response output stream, the non-buffered one, this is passed in
-     * by the response
-     */
+    /** Response output stream, the non-buffered one, this is passed in by the response */
     private OutputStream out_real;
+
     private OutputStream currentStream;
 
-    /**
-     * This contains the OutputStream that will be put in out_real when
-     * the buffer is full
-     */
+    /** This contains the OutputStream that will be put in out_real when the buffer is full */
     private HttpServletResponse response;
 
     /** Set to true when close() is called to prevent further writing */
     private boolean closed = false;
 
     /**
-             * Constructor Defaults buffer size to 50KB
-             * @param response
-             */
-    public PartialBufferedOutputStream2(HttpServletResponse response)
-        throws IOException {
+     * Constructor Defaults buffer size to 50KB
+     *
+     * @param response
+     */
+    public PartialBufferedOutputStream2(HttpServletResponse response) throws IOException {
         this(response, DEFAULT_BUFFER_SIZE); // default to 50KB
     }
 
     /**
-             * @param response the response with its output stream to write to once the buffer is full
-             * @param kilobytes size, in kilobytes, of the buffer
-             */
+     * @param response the response with its output stream to write to once the buffer is full
+     * @param kilobytes size, in kilobytes, of the buffer
+     */
     public PartialBufferedOutputStream2(HttpServletResponse response, int kilobytes)
-        throws IOException {
+            throws IOException {
         if (kilobytes < 1) {
             throw new IllegalArgumentException("Buffer size not greater than 0: " + kilobytes);
         }
@@ -101,7 +89,8 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     }
 
     /**
-     * <b>bufferCapacity</b><br><br>
+     * <b>bufferCapacity</b><br>
+     * <br>
      * <b>Description:</b><br>
      * This will return the max capacity of the buffer in kilobytes.
      *
@@ -112,7 +101,8 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     }
 
     /**
-     * <b>bufferSize</b><br><br>
+     * <b>bufferSize</b><br>
+     * <br>
      * <b>Description:</b><br>
      * This will return the size of the buffer, in bytes.
      *
@@ -171,7 +161,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     /* (non-Javadoc)
      * @see java.io.OutputStream#flush()
      *
-     * If the buffer is not maxed yet, it won't flush. If this is really needed, 
+     * If the buffer is not maxed yet, it won't flush. If this is really needed,
      * call forceFlush
      */
     public synchronized void flush() throws IOException {
@@ -183,7 +173,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
             currentStream.flush();
         }
     }
-    
+
     public synchronized void forceFlush() throws IOException {
         if (currentStream == out_buffer) {
             flushBuffer();
@@ -192,37 +182,36 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     }
 
     /**
-     * Closes the stream. If we're still working against the in memory buffer that
-     * will be written out before close occurs
+     * Closes the stream. If we're still working against the in memory buffer that will be written
+     * out before close occurs
      */
     public void close() throws IOException {
         if (closed) {
             return;
         }
-        
+
         forceFlush();
-        
+
         closed = true;
 
         out_buffer.close();
         out_buffer = null;
         out_real = null; // get rid of our local pointer
         response = null; // get rid of our local pointer
-                         //if (out_real != null)	// removed so the user has to close their stream
-                         //	out_real.close();
+        // if (out_real != null)	// removed so the user has to close their stream
+        //	out_real.close();
     }
 
     /**
-     * <b>abort</b><br><br>
+     * <b>abort</b><br>
+     * <br>
      * <b>Description:</b><br>
-     * Abort is called when something bad has happened and we want to get out
-     * of writing out to the real stream. This is why we have a buffer. Abort
-     * will succeed if the buffer is not full yet. If that is true, then the
-     * buffer is cleared and closed. It does NOT close the response's
+     * Abort is called when something bad has happened and we want to get out of writing out to the
+     * real stream. This is why we have a buffer. Abort will succeed if the buffer is not full yet.
+     * If that is true, then the buffer is cleared and closed. It does NOT close the response's
      * OutputStream
      *
      * @return DOCUMENT ME!
-     *
      * @throws IOException
      */
     public boolean abort() throws IOException {

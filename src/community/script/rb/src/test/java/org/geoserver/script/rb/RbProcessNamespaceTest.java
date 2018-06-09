@@ -13,5 +13,4 @@ public class RbProcessNamespaceTest extends ScriptProcessNamespaceTest {
     public String getExtension() {
         return "rb";
     }
-
 }

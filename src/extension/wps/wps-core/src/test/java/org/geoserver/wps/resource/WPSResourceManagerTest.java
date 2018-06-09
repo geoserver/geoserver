@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
@@ -27,7 +26,7 @@ public class WPSResourceManagerTest extends WPSTestSupport {
 
     ProcessStatusTracker tracker;
 
-    private final static File WPS_RESOURCE_DIR = new File("target/gs_datadir/tmp/wps");
+    private static final File WPS_RESOURCE_DIR = new File("target/gs_datadir/tmp/wps");
 
     @Before
     public void setUpInternal() throws Exception {
@@ -39,7 +38,8 @@ public class WPSResourceManagerTest extends WPSTestSupport {
         }
         WPS_RESOURCE_DIR.mkdirs();
         FileSystemResourceStore resourceStore = new FileSystemResourceStore(WPS_RESOURCE_DIR);
-        DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resourceMgr.getArtifactsStore();
+        DefaultProcessArtifactsStore artifactsStore =
+                (DefaultProcessArtifactsStore) resourceMgr.getArtifactsStore();
         artifactsStore.setResourceStore(resourceStore);
 
         tracker = new ProcessStatusTracker();
@@ -94,7 +94,5 @@ public class WPSResourceManagerTest extends WPSTestSupport {
 
         // Check the processId folder doesn't exist anymore
         assertFalse(processDir.exists());
-
-
     }
 }

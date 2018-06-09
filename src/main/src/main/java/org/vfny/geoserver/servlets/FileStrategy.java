@@ -14,16 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.ows.DispatcherOutputStream;
 import org.geoserver.ows.ServiceStrategy;
 
-
 /**
- * A safe ServiceConfig strategy that uses a temporary file until writeTo
- * completes.
+ * A safe ServiceConfig strategy that uses a temporary file until writeTo completes.
  *
  * @author $author$
  * @version $Revision: 1.23 $
@@ -40,7 +36,8 @@ public class FileStrategy implements ServiceStrategy {
     static int sequence = 0;
 
     /** Class logger */
-    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
+    protected static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
     /** OutputStream provided to writeTo method */
     private OutputStream safe;
@@ -51,18 +48,13 @@ public class FileStrategy implements ServiceStrategy {
     /**
      * Provides a outputs stream on a temporary file.
      *
-     * <p>
-     * I have changed this to use a BufferedWriter to agree with SpeedStrategy.
-     * </p>
+     * <p>I have changed this to use a BufferedWriter to agree with SpeedStrategy.
      *
      * @param response Response being handled
-     *
      * @return Outputstream for a temporary file
-     *
      * @throws IOException If temporary file could not be created.
      */
-    public DispatcherOutputStream getDestination(HttpServletResponse response)
-        throws IOException {
+    public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         // REVISIT: Should do more than sequence here
         // (In case we are running two GeoServers at once)
         // - Could we use response.getHandle() in the filename?
@@ -74,8 +66,8 @@ public class FileStrategy implements ServiceStrategy {
             temp = File.createTempFile("wfs" + sequence, "tmp");
 
             if (!temp.canRead() || !temp.canWrite()) {
-                String errorMsg = "Temporary-file permission problem for location: "
-                    + temp.getPath();
+                String errorMsg =
+                        "Temporary-file permission problem for location: " + temp.getPath();
                 throw new IOException(errorMsg);
             }
         } catch (IOException e) {
@@ -97,8 +89,15 @@ public class FileStrategy implements ServiceStrategy {
      */
     public void flush(HttpServletResponse response) throws IOException {
         if ((temp == null) || (response == null) || (safe == null) || !temp.exists()) {
-            LOGGER.fine("temp is " + temp + ", response is " + response + " safe is " + safe
-                + ", temp exists " + temp.exists());
+            LOGGER.fine(
+                    "temp is "
+                            + temp
+                            + ", response is "
+                            + response
+                            + " safe is "
+                            + safe
+                            + ", temp exists "
+                            + temp.exists());
             throw new IllegalStateException("flush should only be called after getDestination");
         }
 

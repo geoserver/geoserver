@@ -12,32 +12,28 @@ import org.geotools.data.complex.AppSchemaDataAccess;
 /**
  * Mock data for testing use of geometryless data sources {@link AppSchemaDataAccess} with
  * GeoServer.
- * 
- * Inspired by {@link MockData}.
- * 
+ *
+ * <p>Inspired by {@link MockData}.
+ *
  * @author Rob Atkinson
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
- * 
  */
 public class XYGeomMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * Prefix of the test namespace.
-     */
+    /** Prefix of the test namespace. */
     public static final String TEST_PREFIX = "test";
 
-    /**
-     * The test namespace URI.
-     */
+    /** The test namespace URI. */
     public static final String TEST_URI = "http://test";
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     public void addContent() {
         putNamespace(TEST_PREFIX, TEST_URI);
-        addFeatureType(TEST_PREFIX, "PointFeature", "PointFeature.xml",
-                "PointFeatureGeomPropertyfile.properties", "GeometrylessTest.xsd");
+        addFeatureType(
+                TEST_PREFIX,
+                "PointFeature",
+                "PointFeature.xml",
+                "PointFeatureGeomPropertyfile.properties",
+                "GeometrylessTest.xsd");
     }
-
 }

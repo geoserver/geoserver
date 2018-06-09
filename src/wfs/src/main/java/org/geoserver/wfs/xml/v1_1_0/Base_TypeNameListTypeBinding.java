@@ -6,18 +6,16 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractSimpleBinding;
 import org.geotools.xml.InstanceComponent;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:Base_TypeNameListType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:simpleType name="Base_TypeNameListType"&gt;
  *      &lt;xsd:list itemType="xsd:QName"/&gt;
@@ -25,6 +23,7 @@ import org.geotools.xml.InstanceComponent;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class Base_TypeNameListTypeBinding extends AbstractSimpleBinding {
@@ -34,14 +33,13 @@ public class Base_TypeNameListTypeBinding extends AbstractSimpleBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.BASE_TYPENAMELISTTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -52,14 +50,14 @@ public class Base_TypeNameListTypeBinding extends AbstractSimpleBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(InstanceComponent instance, Object value)
-        throws Exception {
-        //TODO: implement
+    public Object parse(InstanceComponent instance, Object value) throws Exception {
+        // TODO: implement
         return null;
     }
 }

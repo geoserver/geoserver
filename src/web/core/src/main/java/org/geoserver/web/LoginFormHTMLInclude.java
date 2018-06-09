@@ -4,12 +4,13 @@
  */
 package org.geoserver.web;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.include.Include;
@@ -17,13 +18,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class LoginFormHTMLInclude extends Include {
 
     protected static final Logger LOGGER = Logging.getLogger(LoginFormHTMLInclude.class);
@@ -57,7 +52,7 @@ public class LoginFormHTMLInclude extends Include {
 
     /**
      * Imports the contents of the url of the model object.
-     * 
+     *
      * @return the imported contents
      */
     @Override
@@ -68,7 +63,8 @@ public class LoginFormHTMLInclude extends Include {
             Template template = templateConfig.getTemplate(this.resourceReference.getName());
             Map<String, Object> params = new HashMap<>();
 
-            String autocompleteValue = GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
+            String autocompleteValue =
+                    GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
             if (autocompleteValue == null) {
                 autocompleteValue = DEFAULT_AUTOCOMPLETE_VALUE;
             }
@@ -85,5 +81,4 @@ public class LoginFormHTMLInclude extends Include {
 
         return "";
     }
-
 }

@@ -7,29 +7,25 @@
 package org.geoserver.security;
 
 /**
- * System filter chain which cannot be modified  
- * 
- * @author christian
+ * System filter chain which cannot be modified
  *
+ * @author christian
  */
 public class ConstantFilterChain extends RequestFilterChain {
 
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = 1L;
-    
+
     public ConstantFilterChain(String... patterns) {
-        super(patterns);       
+        super(patterns);
     }
 
-    public  boolean isConstant() {
-        return true; 
+    public boolean isConstant() {
+        return true;
     }
 
     @Override
     public boolean canBeRemoved() {
         return false;
     }
-    
 }

@@ -10,7 +10,7 @@ import org.geoserver.importer.ImportTask;
 
 /**
  * Transform that is performed after an import has been completed.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public interface PostTransform extends ImportTransform {

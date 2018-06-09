@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import org.eclipse.xsd.XSDAttributeDeclaration;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
@@ -25,25 +23,19 @@ import org.geotools.xml.impl.Handler;
 import org.geotools.xml.impl.HandlerFactory;
 import org.geotools.xml.impl.ParserHandler;
 
-
 /**
- * Special handler factory which creates handlers for elements which are
- * defined as wfs feature types.
+ * Special handler factory which creates handlers for elements which are defined as wfs feature
+ * types.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public class WFSHandlerFactory implements HandlerFactory {
     static Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
 
-    /**
-     * Catalog reference
-     */
+    /** Catalog reference */
     Catalog catalog;
 
-    /**
-     * Schema Builder
-     */
+    /** Schema Builder */
     FeatureTypeSchemaBuilder schemaBuilder;
 
     public WFSHandlerFactory(Catalog catalog, FeatureTypeSchemaBuilder schemaBuilder) {
@@ -59,19 +51,19 @@ public class WFSHandlerFactory implements HandlerFactory {
         String namespaceURI = name.getNamespaceURI();
 
         if (namespaceURI == null) {
-            //assume default
+            // assume default
             namespaceURI = catalog.getDefaultNamespace().getURI();
         }
 
         try {
-            //look for a FeatureType
-            FeatureTypeInfo meta = catalog.getFeatureTypeByName( namespaceURI, name.getLocalPart() );
+            // look for a FeatureType
+            FeatureTypeInfo meta = catalog.getFeatureTypeByName(namespaceURI, name.getLocalPart());
 
             if (meta != null) {
-                //found it
+                // found it
                 XSDSchema schema = schemaBuilder.build(meta, null);
 
-                for (Iterator e = schema.getElementDeclarations().iterator(); e.hasNext();) {
+                for (Iterator e = schema.getElementDeclarations().iterator(); e.hasNext(); ) {
                     XSDElementDeclaration element = (XSDElementDeclaration) e.next();
 
                     if (name.getLocalPart().equals(element.getName())) {
@@ -86,13 +78,13 @@ public class WFSHandlerFactory implements HandlerFactory {
         return null;
     }
 
-    public ElementHandler createElementHandler(XSDElementDeclaration e, Handler parent,
-        ParserHandler parser) {
+    public ElementHandler createElementHandler(
+            XSDElementDeclaration e, Handler parent, ParserHandler parser) {
         return null;
     }
 
-    public AttributeHandler createAttributeHandler(XSDAttributeDeclaration a, Handler parent,
-        ParserHandler parser) {
+    public AttributeHandler createAttributeHandler(
+            XSDAttributeDeclaration a, Handler parent, ParserHandler parser) {
         return null;
     }
 }

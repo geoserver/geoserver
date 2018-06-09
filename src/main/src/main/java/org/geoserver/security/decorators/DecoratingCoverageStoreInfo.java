@@ -8,7 +8,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -21,17 +20,16 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
- * 
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
+ *
  * @author Andrea Aime - TOPP
- * 
  * @param <T>
  * @param <F>
  */
-public class DecoratingCoverageStoreInfo extends
-        AbstractDecorator<CoverageStoreInfo> implements CoverageStoreInfo {
-    
+public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStoreInfo>
+        implements CoverageStoreInfo {
+
     public DecoratingCoverageStoreInfo(CoverageStoreInfo delegate) {
         super(delegate);
     }
@@ -115,7 +113,7 @@ public class DecoratingCoverageStoreInfo extends
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
-    
+
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
     }
@@ -125,5 +123,4 @@ public class DecoratingCoverageStoreInfo extends
             throws IOException {
         return delegate.getGridCoverageReader(listener, hints);
     }
-
 }

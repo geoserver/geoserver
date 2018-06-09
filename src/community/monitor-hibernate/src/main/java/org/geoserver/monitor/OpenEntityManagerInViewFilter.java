@@ -7,11 +7,13 @@
 package org.geoserver.monitor;
 
 import org.geoserver.filters.GeoServerFilter;
+
 /**
- * Makes the JPA {@link OpenEntityManagerInViewFilter} be picked up by the {@link SpringDelegatingFilter}
+ * Makes the JPA {@link OpenEntityManagerInViewFilter} be picked up by the {@link
+ * SpringDelegatingFilter}
+ *
  * @author Mark Paxton
  */
-public class OpenEntityManagerInViewFilter extends
-	org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter implements GeoServerFilter {
-
-}
+public class OpenEntityManagerInViewFilter
+        extends org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+        implements GeoServerFilter {}

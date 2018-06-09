@@ -5,24 +5,23 @@
  */
 package org.geoserver.wfs;
 
-import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WFSServiceExceptionTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-    	WFSInfo wfs = getWFS();
+        WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
     }
@@ -47,12 +46,13 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         testJsonException("2.0.0");
     }
 
-    private void testJsonpException(String wfsVersion) throws UnsupportedEncodingException, Exception {
+    private void testJsonpException(String wfsVersion)
+            throws UnsupportedEncodingException, Exception {
 
         String path = getPath(wfsVersion);
         JSONType.setJsonpEnabled(true);
-        MockHttpServletResponse response = getAsServletResponse(path + "&EXCEPTIONS="
-                + JSONType.jsonp);
+        MockHttpServletResponse response =
+                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.jsonp);
         JSONType.setJsonpEnabled(false);
 
         // MimeType
@@ -63,10 +63,12 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         testJson(testJsonP(content), wfsVersion);
     }
 
-    private void testJsonException(String wfsVersion) throws UnsupportedEncodingException, Exception {
+    private void testJsonException(String wfsVersion)
+            throws UnsupportedEncodingException, Exception {
 
         String path = getPath(wfsVersion);
-        MockHttpServletResponse response = getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
+        MockHttpServletResponse response =
+                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
 
         // MimeType
         assertEquals(JSONType.json, response.getContentType());
@@ -77,9 +79,15 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
     }
 
     private String getPath(String wfsVersion) {
-        String path = "wfs/?service=wfs" + "&version=" + wfsVersion + "&request=DescribeFeatureType"
-                + "&typeName=foobar" + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY
-                + ":myMethod";
+        String path =
+                "wfs/?service=wfs"
+                        + "&version="
+                        + wfsVersion
+                        + "&request=DescribeFeatureType"
+                        + "&typeName=foobar"
+                        + "&format_options="
+                        + JSONType.CALLBACK_FUNCTION_KEY
+                        + ":myMethod";
         return path;
     }
 
@@ -95,10 +103,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         return content;
     }
 
-    /**
-     * @param path
-     * 
-     */
+    /** @param path */
     private static void testJson(String content, String expectedVersion) {
 
         JSONObject jsonException = JSONObject.fromObject(content);
@@ -111,8 +116,5 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
         assertEquals(exceptionText, "Could not find type: {http://geoserver.org}foobar");
-
     }
-
-
 }

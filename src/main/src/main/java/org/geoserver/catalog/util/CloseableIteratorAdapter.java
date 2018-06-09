@@ -5,20 +5,18 @@
  */
 package org.geoserver.catalog.util;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Closeables;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
 
 public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
@@ -65,7 +63,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     /**
      * Closes the wrapped iterator if its an instance of {@code CloseableIterator}, does nothing
      * otherwise; override if needed.
-     * 
+     *
      * @see java.io.Closeable#close()
      */
     @Override
@@ -85,7 +83,8 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
             try {
                 close();
             } finally {
-                LOGGER.warning("There is code not closing CloseableIterator!!! Auto closing at finalize().");
+                LOGGER.warning(
+                        "There is code not closing CloseableIterator!!! Auto closing at finalize().");
             }
         }
     }
@@ -94,20 +93,19 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
         Predicate<T> predicate = filterAdapter(filter);
         return filter(iterator, predicate);
-        
     }
-    
-    public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Predicate<T> predicate) {
-        
+
+    public static <T> CloseableIterator<T> filter(
+            final Iterator<T> iterator, final Predicate<T> predicate) {
+
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
 
         return new CloseableIteratorAdapter<T>(filteredNotCloseable, closeable);
-
     }
 
-    public static <F, T> CloseableIterator<T> transform(Iterator<F> iterator,
-            Function<? super F, ? extends T> function) {
+    public static <F, T> CloseableIterator<T> transform(
+            Iterator<F> iterator, Function<? super F, ? extends T> function) {
 
         Iterator<T> transformedNotCloseable = Iterators.transform(iterator, function);
         Closeable closeable = (Closeable) (iterator instanceof CloseableIterator ? iterator : null);
@@ -121,7 +119,6 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
 
         return new CloseableIteratorAdapter<T>(limitedNotCloseable, closeable);
-
     }
 
     public static void close(Iterator<?> iterator) {

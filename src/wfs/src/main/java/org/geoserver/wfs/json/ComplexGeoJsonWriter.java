@@ -5,6 +5,13 @@
 package org.geoserver.wfs.json;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
@@ -20,17 +27,7 @@ import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-/**
- * GeoJSON writer capable of handling complex features.
- */
+/** GeoJSON writer capable of handling complex features. */
 public final class ComplexGeoJsonWriter {
 
     private final GeoJSONBuilder jsonWriter;
@@ -52,9 +49,7 @@ public final class ComplexGeoJsonWriter {
         }
     }
 
-    /**
-     * Encode all available features by iterating over the iterator.
-     */
+    /** Encode all available features by iterating over the iterator. */
     private void encodeFeatureCollection(FeatureIterator iterator) {
         while (iterator.hasNext()) {
             // encode the next feature
@@ -63,9 +58,7 @@ public final class ComplexGeoJsonWriter {
         }
     }
 
-    /**
-     * Encode a feature in GeoJSON.
-     */
+    /** Encode a feature in GeoJSON. */
     private void encodeFeature(Feature feature) {
         // start the feature JSON object
         jsonWriter.object();
@@ -89,9 +82,9 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Encode feature geometry attribute which may not exist or be NULL.
-     * Returns the geometry attribute name for the provided feature, NULL
-     * will be returned if the provided feature has no geometry attribute.
+     * Encode feature geometry attribute which may not exist or be NULL. Returns the geometry
+     * attribute name for the provided feature, NULL will be returned if the provided feature has no
+     * geometry attribute.
      */
     private Property encodeGeometry(Feature feature) {
         // get feature geometry attribute description
@@ -129,23 +122,21 @@ public final class ComplexGeoJsonWriter {
         return geometryAttribute;
     }
 
-    /**
-     * Encode a feature properties. Geometry attribute will be ignored.
-     */
-    private void encodeProperties(Property geometryAttribute, PropertyType parentType, Collection<Property> properties) {
+    /** Encode a feature properties. Geometry attribute will be ignored. */
+    private void encodeProperties(
+            Property geometryAttribute, PropertyType parentType, Collection<Property> properties) {
         // index all the feature available properties by their type
-        Map<PropertyType, List<Property>> index = indexPropertiesByType(geometryAttribute, properties);
+        Map<PropertyType, List<Property>> index =
+                indexPropertiesByType(geometryAttribute, properties);
         for (Map.Entry<PropertyType, List<Property>> entry : index.entrySet()) {
             // encode properties per type
             encodePropertiesByType(parentType, entry.getKey(), entry.getValue());
         }
     }
 
-    /**
-     * Index the provided properties by their type, geometry property
-     * will be ignored.
-     */
-    private Map<PropertyType, List<Property>> indexPropertiesByType(Property geometryAttribute, Collection<Property> properties) {
+    /** Index the provided properties by their type, geometry property will be ignored. */
+    private Map<PropertyType, List<Property>> indexPropertiesByType(
+            Property geometryAttribute, Collection<Property> properties) {
         Map<PropertyType, List<Property>> index = new HashMap<>();
         for (Property property : properties) {
             if (geometryAttribute != null && property.equals(geometryAttribute)) {
@@ -165,11 +156,11 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Encode feature properties by type, we do this way so we can handle the case were
-     * these properties should be encoded as a list or as elements that appear multiple
-     * times.
+     * Encode feature properties by type, we do this way so we can handle the case were these
+     * properties should be encoded as a list or as elements that appear multiple times.
      */
-    private void encodePropertiesByType(PropertyType parentType, PropertyType type, List<Property> properties) {
+    private void encodePropertiesByType(
+            PropertyType parentType, PropertyType type, List<Property> properties) {
         PropertyDescriptor multipleType = isMultipleType(parentType, type);
         if (multipleType == null) {
             // simple JSON objects
@@ -187,9 +178,7 @@ public final class ComplexGeoJsonWriter {
         }
     }
 
-    /**
-     * Encodes a list of features (chained features) as a JSON array.
-     */
+    /** Encodes a list of features (chained features) as a JSON array. */
     private void encodeChainedFeatures(String attributeName, List<Feature> chainedFeatures) {
         // start the JSON object
         jsonWriter.key(attributeName);
@@ -204,9 +193,7 @@ public final class ComplexGeoJsonWriter {
         jsonWriter.endArray();
     }
 
-    /**
-     * Check if a property type should appear multiple times or be encoded as a list.
-     */
+    /** Check if a property type should appear multiple times or be encoded as a list. */
     private PropertyDescriptor isMultipleType(PropertyType parentType, PropertyType type) {
         if (!(parentType instanceof ComplexType)) {
             // only properties that belong to a complex type can be chained features
@@ -233,8 +220,8 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Get a list of chained features, NULL will be returned if this properties
-     * are not chained features.
+     * Get a list of chained features, NULL will be returned if this properties are not chained
+     * features.
      */
     private List<Feature> getChainedFeatures(List<Property> properties) {
         List<Feature> features = new ArrayList<>();
@@ -260,9 +247,7 @@ public final class ComplexGeoJsonWriter {
         return features;
     }
 
-    /**
-     * Helper method that just gets an element from a collection at a certain index.
-     */
+    /** Helper method that just gets an element from a collection at a certain index. */
     private <T> T getElementAt(Collection<T> collection, int index) {
         Iterator<T> iterator = collection.iterator();
         T element = null;
@@ -273,9 +258,8 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Encode a feature property, we only support complex attributes and
-     * simple attributes, if another tye of attribute is used an exception
-     * will be throw.
+     * Encode a feature property, we only support complex attributes and simple attributes, if
+     * another tye of attribute is used an exception will be throw.
      */
     private void encodeProperty(Property property) {
         if (property instanceof ComplexAttribute) {
@@ -299,15 +283,16 @@ public final class ComplexGeoJsonWriter {
             }
         } else {
             // unsupported attribute type provided, this will unlikely happen
-            throw new RuntimeException(String.format(
-                    "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported.",
-                    property.getName(), property.getClass().getCanonicalName()));
+            throw new RuntimeException(
+                    String.format(
+                            "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported.",
+                            property.getName(), property.getClass().getCanonicalName()));
         }
     }
 
     /**
-     * Helper method that try to extract a list of features from
-     * an attribute. If no features can be found NULL is returned.
+     * Helper method that try to extract a list of features from an attribute. If no features can be
+     * found NULL is returned.
      */
     private List<Feature> getFeatures(Attribute attribute) {
         Object value = attribute.getValue();
@@ -333,8 +318,8 @@ public final class ComplexGeoJsonWriter {
         for (Object object : collection) {
             if (!(object instanceof Feature)) {
                 // not a feature this is a mixed collection
-                throw new RuntimeException(String.format(
-                        "Unable to handle attribute '%s'.", attribute));
+                throw new RuntimeException(
+                        String.format("Unable to handle attribute '%s'.", attribute));
             }
             features.add((Feature) object);
         }
@@ -342,8 +327,8 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Helper method that try to extract a simple content from a complex
-     * attribute, NULL is returned if no simple content is present.
+     * Helper method that try to extract a simple content from a complex attribute, NULL is returned
+     * if no simple content is present.
      */
     private Object getSimpleContent(ComplexAttribute property) {
         Collection<Property> properties = property.getProperties();
@@ -362,9 +347,7 @@ public final class ComplexGeoJsonWriter {
             return null;
         }
         Object value = simpleContent.getValue();
-        if (value instanceof Number
-                || value instanceof String
-                || value instanceof Character) {
+        if (value instanceof Number || value instanceof String || value instanceof Character) {
             // the extract value is a simple Java type
             return value;
         }
@@ -372,9 +355,7 @@ public final class ComplexGeoJsonWriter {
         return null;
     }
 
-    /**
-     * Encode a complex attribute as a JSON object.
-     */
+    /** Encode a complex attribute as a JSON object. */
     private void encodeComplexAttribute(ComplexAttribute attribute) {
         // get the attribute name and start a JSON object
         String name = attribute.getName().getLocalPart();
@@ -388,8 +369,8 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Encode a simple attribute, this means that this property
-     * will be encoded as a simple JSON attribute.
+     * Encode a simple attribute, this means that this property will be encoded as a simple JSON
+     * attribute.
      */
     private void encodeSimpleAttribute(Attribute attribute) {
         String name = attribute.getName().getLocalPart();
@@ -398,31 +379,25 @@ public final class ComplexGeoJsonWriter {
     }
 
     /**
-     * Encode a simple attribute, this means that this property
-     * will be encoded as a simple JSON attribute.
+     * Encode a simple attribute, this means that this property will be encoded as a simple JSON
+     * attribute.
      */
     private void encodeSimpleAttribute(String name, Object value) {
         // add a simple JSON attribute to the current object
         jsonWriter.key(name).value(value);
     }
 
-    /**
-     * Return TRUE if a geometry was found during the features collections encoding.
-     */
+    /** Return TRUE if a geometry was found during the features collections encoding. */
     public boolean geometryFound() {
         return geometryFound;
     }
 
-    /**
-     * Return a CRS if one was found during the features collections encoding.
-     */
+    /** Return a CRS if one was found during the features collections encoding. */
     public CoordinateReferenceSystem foundCrs() {
         return crs;
     }
 
-    /**
-     * Return the number of top encoded features.
-     */
+    /** Return the number of top encoded features. */
     public long getFeaturesCount() {
         return featuresCount;
     }

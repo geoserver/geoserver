@@ -11,7 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -38,8 +37,8 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @deprecated use {@link #beforeSaved(CatalogInfo, List, List, List)} and {@link #afterSaved(CatalogInfo, List, List, List)} as
-     *             appropriate
+     * @deprecated use {@link #beforeSaved(CatalogInfo, List, List, List)} and {@link
+     *     #afterSaved(CatalogInfo, List, List, List)} as appropriate
      */
     @Deprecated
     protected void saved(CatalogInfo object) {
@@ -56,14 +55,15 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         afterSaved(object, propertyNames, oldValues, newValues);
     }
 
-    protected void beforeSaved(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+    protected void beforeSaved(
+            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
         getCatalog().fireModified(real, propertyNames, oldValues, newValues);
     }
 
-    protected <T extends CatalogInfo> T commitProxy(T object){
+    protected <T extends CatalogInfo> T commitProxy(T object) {
         // this object is a proxy
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
 
@@ -72,11 +72,12 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
 
         // commit to the original object
         h.commit();
-        
+
         return real;
     }
-    
-    protected void afterSaved(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+
+    protected void afterSaved(
+            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event
@@ -119,18 +120,20 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 PublishedInfo resolved;
                 if (l instanceof LayerGroupInfo) {
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerGroupInfo) l));
-                    //special case to handle catalog loading, when nested publishibles might not be loaded.
+                    // special case to handle catalog loading, when nested publishibles might not be
+                    // loaded.
                     if (resolved == null) {
                         resolved = l;
                     }
                 } else if (l instanceof LayerInfo) {
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerInfo) l));
-                    //special case to handle catalog loading, when nested publishibles might not be loaded.
+                    // special case to handle catalog loading, when nested publishibles might not be
+                    // loaded.
                     if (resolved == null) {
                         resolved = l;
                     }
                 } else {
-                    //Special case for null layer (style group)
+                    // Special case for null layer (style group)
                     resolved = unwrap(ResolvingProxy.resolve(getCatalog(), l));
                 }
                 lg.getLayers().set(i, resolved);
@@ -144,7 +147,6 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 lg.getStyles().set(i, resolved);
             }
         }
-
     }
 
     protected void resolve(StyleInfo style) {
@@ -158,8 +160,11 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 resolved = unwrap(resolved);
                 style.setWorkspace(resolved);
             } else {
-                LOGGER.log(Level.INFO, "Failed to resolve workspace for style \""+style.getName()+
-                        "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to resolve workspace for style \""
+                                + style.getName()
+                                + "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
             }
         }
     }
@@ -186,8 +191,11 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             resolved = unwrap(resolved);
             s.setWorkspace(resolved);
         } else {
-            LOGGER.log(Level.INFO, "Failed to resolve workspace for store \""+store.getName()+
-                    "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
+            LOGGER.log(
+                    Level.INFO,
+                    "Failed to resolve workspace for store \""
+                            + store.getName()
+                            + "\". This means the workspace has not yet been added to the catalog, keep the proxy around");
         }
     }
 

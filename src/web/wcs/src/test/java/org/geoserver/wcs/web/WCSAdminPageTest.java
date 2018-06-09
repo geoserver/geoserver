@@ -15,12 +15,12 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
     public void test() throws Exception {
         login();
         WCSInfo wcs = getGeoServerApplication().getGeoServer().getService(WCSInfo.class);
-        
+
         // start the page
         tester.startPage(new WCSAdminPage());
-        
+
         tester.assertRenderedPage(WCSAdminPage.class);
-        
+
         // test that components have been filled as expected
         tester.assertComponent("form:keywords", KeywordsEditor.class);
         tester.assertModelValue("form:keywords", wcs.getKeywords());

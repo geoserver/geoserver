@@ -5,15 +5,13 @@
 
 package org.geoserver.notification.common;
 
-import org.geoserver.notification.common.sender.NotificationSender;
-
 import com.thoughtworks.xstream.XStream;
+import org.geoserver.notification.common.sender.NotificationSender;
 
 /**
  * Base class for notifier Xstream configuration mapper
- * 
- * @author Xandros
  *
+ * @author Xandros
  */
 public class NotificationXStreamDefaultInitializer implements NotificationXStreamInitializer {
 
@@ -22,10 +20,16 @@ public class NotificationXStreamDefaultInitializer implements NotificationXStrea
         xs.alias("notificationConfiguration", NotificationConfiguration.class);
         xs.alias("notificator", Notificator.class);
         xs.alias("genericProcessor", NotificationProcessor.class);
-        xs.addDefaultImplementation(DefaultNotificationProcessor.class, NotificationProcessor.class);
+        xs.addDefaultImplementation(
+                DefaultNotificationProcessor.class, NotificationProcessor.class);
         xs.addImplicitCollection(NotificationConfiguration.class, "notificators");
-        xs.allowTypes(new Class[] { NotificationConfiguration.class, Notificator.class,
-                NotificationProcessor.class, NotificationEncoder.class, NotificationSender.class });
+        xs.allowTypes(
+                new Class[] {
+                    NotificationConfiguration.class,
+                    Notificator.class,
+                    NotificationProcessor.class,
+                    NotificationEncoder.class,
+                    NotificationSender.class
+                });
     }
-
 }

@@ -4,6 +4,21 @@
  */
 package org.geoserver.cluster.integration;
 
+import static org.geoserver.cluster.integration.IntegrationTestsUtils.checkNoDifferences;
+import static org.geoserver.cluster.integration.IntegrationTestsUtils.differences;
+import static org.geoserver.cluster.integration.IntegrationTestsUtils.equalizeInstances;
+import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetEventsCount;
+import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetJmsConfiguration;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -49,25 +64,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import static org.geoserver.cluster.integration.IntegrationTestsUtils.checkNoDifferences;
-import static org.geoserver.cluster.integration.IntegrationTestsUtils.differences;
-import static org.geoserver.cluster.integration.IntegrationTestsUtils.equalizeInstances;
-import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetEventsCount;
-import static org.geoserver.cluster.integration.IntegrationTestsUtils.resetJmsConfiguration;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 /**
- * Integration tests for JMS that tests that GeoServer configurations events and GeoServer
- * catalog events are correctly propagated and handled.
+ * Integration tests for JMS that tests that GeoServer configurations events and GeoServer catalog
+ * events are correctly propagated and handled.
  */
 public final class IntegrationTest {
 
@@ -78,17 +77,18 @@ public final class IntegrationTest {
     private static final GeoServerInstance INSTANCE_C = new GeoServerInstance("INSTANCE-C");
     private static final GeoServerInstance INSTANCE_D = new GeoServerInstance("INSTANCE-D");
 
-    private static final GeoServerInstance[] INSTANCES = new GeoServerInstance[]{
-            INSTANCE_A, INSTANCE_B, INSTANCE_C, INSTANCE_D
-    };
+    private static final GeoServerInstance[] INSTANCES =
+            new GeoServerInstance[] {INSTANCE_A, INSTANCE_B, INSTANCE_C, INSTANCE_D};
 
     @Before
     public void resetInstances() {
         // disable JMS before equalizing the instances configuration and catalog
-        Arrays.stream(INSTANCES).forEach(instance -> {
-            instance.disableJmsMaster();
-            instance.disableJmsSlave();
-        });
+        Arrays.stream(INSTANCES)
+                .forEach(
+                        instance -> {
+                            instance.disableJmsMaster();
+                            instance.disableJmsSlave();
+                        });
         // equalize the configuration and the catalog
         equalizeInstances(INSTANCES);
         // reset JMS configuration and events count
@@ -240,8 +240,7 @@ public final class IntegrationTest {
     }
 
     /**
-     * Helper methods that waits a specified amount of time and checks
-     * that no events were consumed.
+     * Helper methods that waits a specified amount of time and checks that no events were consumed.
      */
     private void waitNoEvents(GeoServerInstance instance, int waitTimeMs) {
         try {
@@ -256,9 +255,8 @@ public final class IntegrationTest {
     }
 
     /**
-     * Waits for the expected number of events to be consumed or for the timeout
-     * of two seconds to be reached and then checks if the expected number of
-     * events were consumed.
+     * Waits for the expected number of events to be consumed or for the timeout of two seconds to
+     * be reached and then checks if the expected number of events were consumed.
      */
     private void waitAndCheckEvents(GeoServerInstance instance, int expectedEvents) {
         instance.waitEvents(expectedEvents, 2000);
@@ -267,8 +265,8 @@ public final class IntegrationTest {
     }
 
     /**
-     * Helper method that adds some new services and settings to the provided
-     * GeoServer instance and also modifies some existing ones.
+     * Helper method that adds some new services and settings to the provided GeoServer instance and
+     * also modifies some existing ones.
      */
     private void applyAddModifyConfigurationChanges(GeoServerInstance instance) {
         GeoServer geoServer = instance.getGeoServer();
@@ -301,8 +299,7 @@ public final class IntegrationTest {
     }
 
     /**
-     * Helper method that removes some services and settings from the provided
-     * GeoServer instance.
+     * Helper method that removes some services and settings from the provided GeoServer instance.
      */
     private void applyDeleteConfigurationChanges(GeoServerInstance instance) {
         GeoServer geoServer = instance.getGeoServer();
@@ -314,9 +311,7 @@ public final class IntegrationTest {
         geoServer.remove(geoServer.getService(workspace, WMSInfo.class));
     }
 
-    /**
-     * Helper method that add some new catalog elements to the provided GeoServer instance.
-     */
+    /** Helper method that add some new catalog elements to the provided GeoServer instance. */
     private void applyAddCatalogChanges(GeoServerInstance instance) {
         // instantiate some common objects
         Catalog catalog = instance.getCatalog();
@@ -454,9 +449,7 @@ public final class IntegrationTest {
         catalog.add(layerGroup);
     }
 
-    /**
-     * Helper method that apply some catalog changes to the provided GeoServer instance.
-     */
+    /** Helper method that apply some catalog changes to the provided GeoServer instance. */
     private void applyModifyCatalogChanges(GeoServerInstance instance) {
         Catalog catalog = instance.getCatalog();
         // change namespace
@@ -501,9 +494,7 @@ public final class IntegrationTest {
         catalog.save(layerGroup);
     }
 
-    /**
-     * Helper method that removes some elements from the catalog of the provided instance.
-     */
+    /** Helper method that removes some elements from the catalog of the provided instance. */
     private void applyDeleteCatalogChanges(GeoServerInstance instance) {
         Catalog catalog = instance.getCatalog();
         // delete group
@@ -538,23 +529,19 @@ public final class IntegrationTest {
         catalog.remove(namespace);
     }
 
-    /**
-     * Helper method that copies a style file to the provided GeoServer instance.
-     */
+    /** Helper method that copies a style file to the provided GeoServer instance. */
     private void copyStyle(GeoServerInstance instance, String resource, String fileName) {
-        Resource styleResource = instance.getDataDirectory()
-                .get("styles" + File.separator + fileName);
+        Resource styleResource =
+                instance.getDataDirectory().get("styles" + File.separator + fileName);
         try (OutputStream output = styleResource.out();
-             InputStream input = this.getClass().getResourceAsStream(resource)) {
+                InputStream input = this.getClass().getResourceAsStream(resource)) {
             IOUtils.copy(input, output);
         } catch (Exception exception) {
             throw new RuntimeException("Error copying test style.", exception);
         }
     }
 
-    /**
-     * Helper method that simply returns a random string.
-     */
+    /** Helper method that simply returns a random string. */
     public static String randomString() {
         return UUID.randomUUID().toString();
     }

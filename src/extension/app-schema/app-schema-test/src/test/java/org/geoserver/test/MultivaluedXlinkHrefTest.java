@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 
 /**
  * Tests for a multivalued xlink:href ClientProperty mapping without feature chaining.
- * 
+ *
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
 public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
@@ -21,25 +21,31 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Test that GetFeature returns a single feature with two gsml:occurrence, each with expected xlink:href.
+     * Test that GetFeature returns a single feature with two gsml:occurrence, each with expected
+     * xlink:href.
      */
     @Test
     public void testGetFeature() {
-        Document doc = getAsDOM(
-                "wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
+        Document doc =
+                getAsDOM(
+                        "wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature, typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo("gu.1", "//gsml:GeologicUnit/@gml:id", doc);
         assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.2",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.3",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.2",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href",
+                doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.3",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href",
+                doc);
     }
 
     /**
-     * Test that GetFeature filter on first gsml:occurrence/@xlink:href returns a single feature with two gsml:occurrence, each with expected
-     * xlink:href.
+     * Test that GetFeature filter on first gsml:occurrence/@xlink:href returns a single feature
+     * with two gsml:occurrence, each with expected xlink:href.
      */
     @Test
     public void testGetFeatureFilterFirstXlinkHref() throws Exception {
@@ -66,15 +72,19 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo("gu.1", "//gsml:GeologicUnit/@gml:id", doc);
         assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.2",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.3",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.2",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href",
+                doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.3",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href",
+                doc);
     }
 
     /**
-     * Test that GetFeature filter on second gsml:occurrence/@xlink:href returns a single feature with two gsml:occurrence, each with expected
-     * xlink:href.
+     * Test that GetFeature filter on second gsml:occurrence/@xlink:href returns a single feature
+     * with two gsml:occurrence, each with expected xlink:href.
      */
     @Test
     public void testGetFeatureFilterSecondXlinkHref() throws Exception {
@@ -101,10 +111,14 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo("gu.1", "//gsml:GeologicUnit/@gml:id", doc);
         assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.2",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href", doc);
-        assertXpathEvaluatesTo("http://resource.example.org/mapped-feature/mf.3",
-                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.2",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[1]/@xlink:href",
+                doc);
+        assertXpathEvaluatesTo(
+                "http://resource.example.org/mapped-feature/mf.3",
+                "//gsml:GeologicUnit[@gml:id='gu.1']/gsml:occurrence[2]/@xlink:href",
+                doc);
     }
 
     /**
@@ -134,5 +148,4 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
         LOGGER.info(prettyString(doc));
         assertXpathCount(0, "//gsml:GeologicUnit", doc);
     }
-
 }

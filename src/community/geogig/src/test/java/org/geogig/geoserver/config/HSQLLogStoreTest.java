@@ -16,12 +16,8 @@ import static org.geogig.geoserver.config.LogStore.PROP_USER;
 import java.io.File;
 import java.util.Properties;
 
-import org.geoserver.platform.resource.FileSystemResourceStore;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceStore;
-
 public class HSQLLogStoreTest extends AbstractLogStoreTest {
-	
+
     @Override
     protected void populateConfigProperties(Properties props) {
 
@@ -40,5 +36,4 @@ public class HSQLLogStoreTest extends AbstractLogStoreTest {
 
         // runScript(driverClassName, jdbcUrl, getClass().getResource("hsqldb.sql"), "sa", null);
     }
-
 }

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -29,14 +28,15 @@ public class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
     public void testAppSchemaGmlLinks() {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
-        
-        DataView items = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        DataView items =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertNotNull(items);
         assertEquals(EXPECTED_GML_LINKS.size(), items.size());
 
         // collect GML links model objects
         List<String> gmlLinks = new ArrayList<String>();
-        for (int i=1; i<=EXPECTED_GML_LINKS.size(); i++) {
+        for (int i = 1; i <= EXPECTED_GML_LINKS.size(); i++) {
             ExternalLink gmlLink = (ExternalLink) items.get(i + ":itemProperties:3:component:gml");
             assertNotNull(gmlLink);
             gmlLinks.add(gmlLink.getDefaultModelObjectAsString());
@@ -45,6 +45,7 @@ public class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
         Collections.sort(EXPECTED_GML_LINKS);
         Collections.sort(gmlLinks);
         // check the two lists match
-        assertArrayEquals(EXPECTED_GML_LINKS.toArray(new String[] {}), gmlLinks.toArray(new String[] {}));
+        assertArrayEquals(
+                EXPECTED_GML_LINKS.toArray(new String[] {}), gmlLinks.toArray(new String[] {}));
     }
 }

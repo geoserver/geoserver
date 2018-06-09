@@ -4,6 +4,21 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.net.URL;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -16,23 +31,6 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.net.URL;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
 public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Override
@@ -40,14 +38,17 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         super.registerNamespaces(namespaces);
         namespaces.put("kml", "http://www.opengis.net/kml/2.2");
     }
-    
+
     @Test
     public void testDescribeProcess() throws Exception {
-        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:DownloadMap");
+        Document d =
+                getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:DownloadMap");
         // print(d);
         assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/png']", d);
         assertXpathExists("//ComplexOutput/Supported/Format[MimeType='image/jpeg']", d);
-        assertXpathExists("//ComplexOutput/Supported/Format[MimeType='" + KMZMapOutputFormat.MIME_TYPE + "']", d);
+        assertXpathExists(
+                "//ComplexOutput/Supported/Format[MimeType='" + KMZMapOutputFormat.MIME_TYPE + "']",
+                d);
     }
 
     @Test
@@ -55,8 +56,9 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimple.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        ImageAssert.assertEquals(new File(SAMPLES +  "mapSimple.png"), image, 100);
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
     }
 
     @Test
@@ -64,7 +66,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimpleFilter.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapSimpleFilter.png"), image, 100);
     }
 
@@ -73,8 +76,9 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimpleDecorated.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        ImageAssert.assertEquals(new File(SAMPLES +  "watermarked.png"), image, 100);
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(new File(SAMPLES + "watermarked.png"), image, 100);
     }
 
     @Test
@@ -83,7 +87,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         assertEquals("inline; filename=result.png", response.getHeader("Content-disposition"));
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
     }
 
@@ -92,7 +97,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         // not a typo, the output should indeed be the same as testExecuteMultiName
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
     }
@@ -123,7 +129,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
         assertEquals("inline; filename=result.kmz", response.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ZipInputStream zis =
+                new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
         try {
             // first entry, the kml document itself
             ZipEntry entry = zis.getNextEntry();
@@ -132,8 +139,9 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
             Document dom = dom(new ByteArrayInputStream(data));
             // print(dom);
             assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
-            String href = XMLUnit.newXpathEngine().evaluate(
-                    "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
+            String href =
+                    XMLUnit.newXpathEngine()
+                            .evaluate("//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
             assertEquals("image.png", href);
             zis.closeEntry();
 
@@ -156,7 +164,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilter.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
 
         // same test as DimensionRasterGetMapTest#testTime
         assertPixel(image, 36, 31, new Color(246, 246, 255));
@@ -168,29 +177,36 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testTimeFilterTimestamped() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"));
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilterTimestamped.png"), image, 200);
     }
 
     @Test
     public void testTimeFilterFormattedTimestamp() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"));
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"));
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
-        ImageAssert.assertEquals(new File(SAMPLES + "mapTimeFilterFormattedTimestamp.png"), image, 200);
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        ImageAssert.assertEquals(
+                new File(SAMPLES + "mapTimeFilterFormattedTimestamp.png"), image, 200);
     }
-    
+
     @Test
     public void downloadMapGif() throws Exception {
         String request = IOUtils.toString(getClass().getResourceAsStream("mapSimple.xml"));
         request = request.replaceAll("image/png", "image/gif");
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals("image/gif", response.getContentType());
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+        BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
         ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 200);
     }
 
@@ -201,14 +217,18 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
-        client.expectGet(new URL("http://geoserver" +
-                ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"), new
-                MockHttpResponse(caps111, "text/xml"));
+        client.expectGet(
+                new URL(
+                        "http://geoserver"
+                                + ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"),
+                new MockHttpResponse(caps111, "text/xml"));
         // check it follows the links in the caps document
-        client.expectGet(new URL("http://mock.test.geoserver" +
-                ".org/wms11?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false" +
-                "&REQUEST=GetMap&WIDTH=256&BBOX=-2.4,1.4,0.4,4.2&SRS=EPSG:4326&VERSION=1.1.1"), new
-                MockHttpResponse(getMapBytes, "image/png"));
+        client.expectGet(
+                new URL(
+                        "http://mock.test.geoserver"
+                                + ".org/wms11?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false"
+                                + "&REQUEST=GetMap&WIDTH=256&BBOX=-2.4,1.4,0.4,4.2&SRS=EPSG:4326&VERSION=1.1.1"),
+                new MockHttpResponse(getMapBytes, "image/png"));
         // switch from the standard supplier to one using the mock client prepared above
         Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
         try {
@@ -216,7 +236,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
             MockHttpServletResponse response = postAsServletResponse("wps", request);
             assertEquals("image/png", response.getContentType());
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            BufferedImage image =
+                    ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
             ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
         } finally {
             process.setHttpClientSupplier(oldSupplier);
@@ -230,13 +251,17 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
-        client.expectGet(new URL("http://geoserver.org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0"), new
-                MockHttpResponse(caps130, "text/xml"));
+        client.expectGet(
+                new URL(
+                        "http://geoserver.org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0"),
+                new MockHttpResponse(caps130, "text/xml"));
         // check it follows the links in the caps document and does axis flipping as required
-        client.expectGet(new URL("http://mock.test.geoserver" +
-                ".org/wms13?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false" +
-                "&REQUEST=GetMap&WIDTH=256&BBOX=1.4,-2.4,4.2,0.4&CRS=EPSG:4326&VERSION=1.3.0"), new
-                MockHttpResponse(getMapBytes, "image/png"));
+        client.expectGet(
+                new URL(
+                        "http://mock.test.geoserver"
+                                + ".org/wms13?SERVICE=WMS&LAYERS=cite:BasicPolygons&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=false"
+                                + "&REQUEST=GetMap&WIDTH=256&BBOX=1.4,-2.4,4.2,0.4&CRS=EPSG:4326&VERSION=1.3.0"),
+                new MockHttpResponse(getMapBytes, "image/png"));
         // switch from the standard supplier to one using the mock client prepared above
         Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
         try {
@@ -244,7 +269,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
             MockHttpServletResponse response = postAsServletResponse("wps", request);
             assertEquals("image/png", response.getContentType());
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            BufferedImage image =
+                    ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
             ImageAssert.assertEquals(new File(SAMPLES + "mapSimple.png"), image, 100);
         } finally {
             process.setHttpClientSupplier(oldSupplier);
@@ -258,14 +284,18 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "lakes.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
         MockHttpClient client = new MockHttpClient();
-        client.expectGet(new URL("http://geoserver" +
-                ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"), new
-                MockHttpResponse(caps111, "text/xml"));
+        client.expectGet(
+                new URL(
+                        "http://geoserver"
+                                + ".org/geoserver/wms?service=WMS&request=GetCapabilities&version=1.1.0"),
+                new MockHttpResponse(caps111, "text/xml"));
         // check it follows the links in the caps document
-        client.expectGet(new URL("http://mock.test.geoserver" +
-                ".org/wms11?SERVICE=WMS&LAYERS=cite:Lakes&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=true" +
-                "&REQUEST=GetMap&WIDTH=256&BBOX=0.0,-0.003,0.004,0.001&SRS=EPSG:4326&VERSION=1.1.1"), new
-                MockHttpResponse(getMapBytes, "image/png"));
+        client.expectGet(
+                new URL(
+                        "http://mock.test.geoserver"
+                                + ".org/wms11?SERVICE=WMS&LAYERS=cite:Lakes&FORMAT=image%2Fpng&HEIGHT=256&TRANSPARENT=true"
+                                + "&REQUEST=GetMap&WIDTH=256&BBOX=0.0,-0.003,0.004,0.001&SRS=EPSG:4326&VERSION=1.1.1"),
+                new MockHttpResponse(getMapBytes, "image/png"));
         // switch from the standard supplier to one using the mock client prepared above
         Supplier<HTTPClient> oldSupplier = process.getHttpClientSupplier();
         try {
@@ -273,7 +303,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
             MockHttpServletResponse response = postAsServletResponse("wps", request);
             assertEquals("image/png", response.getContentType());
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
+            BufferedImage image =
+                    ImageIO.read(new ByteArrayInputStream(response.getContentAsByteArray()));
             ImageAssert.assertEquals(new File(SAMPLES + "localRemote.png"), image, 100);
         } finally {
             process.setHttpClientSupplier(oldSupplier);

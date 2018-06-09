@@ -5,7 +5,6 @@
 package org.geoserver.backuprestore.writer;
 
 import java.util.List;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -23,16 +22,15 @@ import org.springframework.core.io.Resource;
 
 /**
  * Concrete Spring Batch {@link ItemWriter}.
- * 
- * Writes unmarshalled items into the temporary {@link Catalog} in memory.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * <p>Writes unmarshalled items into the temporary {@link Catalog} in memory.
+ *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
-    public CatalogItemWriter(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
+    public CatalogItemWriter(
+            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
     }
 
@@ -78,12 +76,11 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     /**
      * Setter for resource. Represents a file that can be written.
-     * 
+     *
      * @param resource
      */
     @Override
     public void setResource(Resource resource) {
         // Nothing to do
     }
-
 }

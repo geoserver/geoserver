@@ -7,11 +7,11 @@ package org.geoserver.gwc.layer;
 
 import static org.geoserver.gwc.GWC.tileLayerName;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
@@ -30,12 +30,10 @@ import org.geoserver.gwc.GWC;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * Listens to changes in {@link StyleInfo styles} for the GeoServer {@link Catalog} and applies the
  * needed {@link ParameterFilter} changes to the corresponding {@link GeoServerTileLayer}.
- * 
+ *
  * @author Arne Kepp
  * @author Gabriel Roldan
  */
@@ -48,7 +46,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
      * necessary to perform any action on the cache based on the changed properties
      */
-    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT = new ThreadLocal<CatalogModifyEvent>();
+    private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT =
+            new ThreadLocal<CatalogModifyEvent>();
 
     private final GWC mediator;
 
@@ -60,7 +59,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
     }
 
     /**
-     * @see org.geoserver.catalog.event.CatalogListener#handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent)
+     * @see
+     *     org.geoserver.catalog.event.CatalogListener#handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent)
      */
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         // no need to handle style additions, they are added before being attached to a layerinfo
@@ -68,10 +68,10 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
     /**
      * Handles the rename of a style, truncating the cache for any layer that has it as a cached
-     * alternate style; modifications to the actual style are handled at
-     * {@link #handlePostModifyEvent(CatalogPostModifyEvent)}.
-     * <p>
-     * When a style is renamed, the {@link LayerInfo} and {@link LayerGroupInfo} that refer to it
+     * alternate style; modifications to the actual style are handled at {@link
+     * #handlePostModifyEvent(CatalogPostModifyEvent)}.
+     *
+     * <p>When a style is renamed, the {@link LayerInfo} and {@link LayerGroupInfo} that refer to it
      * are not modified, since they refer to the {@link StyleInfo} by id, so they don't really care
      * about the name of the style. For the tiled layer its different, because styles are referred
      * to by {@link GeoServerTileLayerInfoImpl#cachedStyles() name} in order to create the
@@ -81,9 +81,11 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * layer/style. This is so because there's no way in GWC to just rename a style (that would
      * imply getting to the parameter filters that refer to that style in the meta-store and change
      * it's value preserving the parametersId)
+     *
      * <p>
-     * 
-     * @see org.geoserver.catalog.event.CatalogListener#handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent)
+     *
+     * @see
+     *     org.geoserver.catalog.event.CatalogListener#handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent)
      */
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         CatalogInfo source = event.getSource();
@@ -93,19 +95,22 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 return;
             }
             final int nameIdx = propertyNames.indexOf("name");
-            final String oldName = nameIdx != -1 ? (String) event.getOldValues().get(nameIdx) : null;
-            final String newName = nameIdx != -1 ? (String) event.getNewValues().get(nameIdx) : null;
+            final String oldName =
+                    nameIdx != -1 ? (String) event.getOldValues().get(nameIdx) : null;
+            final String newName =
+                    nameIdx != -1 ? (String) event.getNewValues().get(nameIdx) : null;
             final int workspaceIdx = propertyNames.indexOf("wokspace");
-            final String oldWorkspaceName = workspaceIdx != -1 ? (String) event.getOldValues().get(
-                    workspaceIdx) : null;
-            final String newWorkspaceName = workspaceIdx != -1 ? (String) event.getNewValues().get(
-                    workspaceIdx) : null;
+            final String oldWorkspaceName =
+                    workspaceIdx != -1 ? (String) event.getOldValues().get(workspaceIdx) : null;
+            final String newWorkspaceName =
+                    workspaceIdx != -1 ? (String) event.getNewValues().get(workspaceIdx) : null;
             final String oldStyleName = getPrefixedName(oldWorkspaceName, oldName);
             final String newStyleName = getPrefixedName(newWorkspaceName, newName);
 
             if (nameIdx != -1) {
-                //for now, only handle the even if the name changes. most likely we should also do the truncate if
-                //the workspace changes too, but that needs a more thorough investigation
+                // for now, only handle the even if the name changes. most likely we should also do
+                // the truncate if
+                // the workspace changes too, but that needs a more thorough investigation
                 handleStyleRenamed(oldStyleName, newStyleName);
             }
         } else if (source instanceof WorkspaceInfo) {
@@ -136,8 +141,10 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 Set<String> newStyles = new HashSet<String>(styleNames);
                 newStyles.remove(oldStyleName);
                 newStyles.add(newStyleName);
-                String defaultStyle = layerInfo.getDefaultStyle() == null ? null : layerInfo
-                        .getDefaultStyle().prefixedName();
+                String defaultStyle =
+                        layerInfo.getDefaultStyle() == null
+                                ? null
+                                : layerInfo.getDefaultStyle().prefixedName();
                 TileLayerInfoUtil.setCachedStyles(info, defaultStyle, newStyles);
 
                 mediator.save(tl);
@@ -155,7 +162,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
     /**
      * Truncates all tile sets referring the modified {@link StyleInfo}
-     * 
+     *
      * @see org.geoserver.catalog.event.CatalogListener#handlePostModifyEvent
      */
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
@@ -184,8 +191,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
         String newWorkspaceName = (String) preModifyEvent.getNewValues().get(nameIdx);
 
         // grab the styles
-        CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class,
-                Predicates.equal("workspace.name", newWorkspaceName));
+        CloseableIterator<StyleInfo> styles =
+                catalog.list(StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName));
         try {
             while (styles.hasNext()) {
                 StyleInfo style = styles.next();
@@ -197,18 +204,18 @@ public class CatalogStyleChangeListener implements CatalogListener {
         } finally {
             styles.close();
         }
-
     }
 
     /**
      * Options are:
+     *
      * <ul>
-     * <li>A {@link LayerInfo} has {@code modifiedStyle} as either its default or style or as one of
-     * its alternate styles
-     * <li>A {@link LayerGroupInfo} contains a layer using {@code modifiedStyle}
-     * <li>{@code modifiedStyle} is explicitly assigned to a {@link LayerGroupInfo}
+     *   <li>A {@link LayerInfo} has {@code modifiedStyle} as either its default or style or as one
+     *       of its alternate styles
+     *   <li>A {@link LayerGroupInfo} contains a layer using {@code modifiedStyle}
+     *   <li>{@code modifiedStyle} is explicitly assigned to a {@link LayerGroupInfo}
      * </ul>
-     * 
+     *
      * @param modifiedStyle
      */
     private void handleStyleChange(final StyleInfo modifiedStyle) {
@@ -219,16 +226,24 @@ public class CatalogStyleChangeListener implements CatalogListener {
         for (LayerInfo affectedLayer : layers) {
             // If the style name changes, we need to update the layer's parameter filter
             String prefixedName = tileLayerName(affectedLayer);
-            log.info("Truncating layer '" + prefixedName + "' due to a change in style '"
-                    + styleName + "'");
+            log.info(
+                    "Truncating layer '"
+                            + prefixedName
+                            + "' due to a change in style '"
+                            + styleName
+                            + "'");
             mediator.truncateByLayerAndStyle(prefixedName, styleName);
         }
 
         // Now we check for layer groups that are affected
         for (LayerGroupInfo layerGroup : mediator.getLayerGroupsFor(modifiedStyle)) {
             String layerGroupName = tileLayerName(layerGroup);
-            log.info("Truncating layer group '" + layerGroupName + "' due to a change in style '"
-                    + styleName + "'");
+            log.info(
+                    "Truncating layer group '"
+                            + layerGroupName
+                            + "' due to a change in style '"
+                            + styleName
+                            + "'");
             mediator.truncate(layerGroupName);
         }
     }
@@ -236,18 +251,15 @@ public class CatalogStyleChangeListener implements CatalogListener {
     /**
      * No need to do anything here, when a style is removed all the layers that reference it are
      * updated first
-     * 
+     *
      * @see org.geoserver.catalog.event.CatalogListener#handleRemoveEvent
      */
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         //
     }
 
-    /**
-     * 
-     */
+    /** */
     public void reloaded() {
         //
     }
-
 }

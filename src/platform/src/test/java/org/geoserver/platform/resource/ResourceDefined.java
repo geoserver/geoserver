@@ -10,18 +10,17 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
 public class ResourceDefined extends BaseMatcher<Resource> {
-    
+
     @Override
     public boolean matches(Object item) {
-        if(item instanceof Resource) {
-            return ((Resource) item).getType()!=Type.UNDEFINED;
+        if (item instanceof Resource) {
+            return ((Resource) item).getType() != Type.UNDEFINED;
         }
         return false;
     }
-    
+
     @Override
     public void describeTo(Description description) {
         description.appendText("resource that is defined");
     }
-    
 }

@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import net.opengis.wcs20.DescribeCoverageType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -23,7 +21,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
-import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -50,16 +47,16 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the
- * job of encoding a WCS 2.0.1 DescribeCoverage document.
- * 
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WCS
+ * 2.0.1 DescribeCoverage document.
+ *
  * @author Emanuele Tajariol (etj) - GeoSolutions
  * @author Simone Giannecchini, GeoSolutions
  */
 public class WCS20DescribeCoverageTransformer extends GMLTransformer {
-    public static final Logger LOGGER = Logging.getLogger(WCS20DescribeCoverageTransformer.class
-            .getPackage().getName());
-    
+    public static final Logger LOGGER =
+            Logging.getLogger(WCS20DescribeCoverageTransformer.class.getPackage().getName());
+
     private MIMETypeMapper mimemapper;
     private WCSInfo wcs;
 
@@ -67,17 +64,26 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
     private CoverageResponseDelegateFinder responseFactory;
 
-    /** Available extension points for DescribeCoverage*/
+    /** Available extension points for DescribeCoverage */
     private List<WCS20DescribeCoverageExtension> wcsDescribeCoverageExtensions;
 
-    /** Boolean indicating that at least an extension point for the DescribeCoverage operation is available */
+    /**
+     * Boolean indicating that at least an extension point for the DescribeCoverage operation is
+     * available
+     */
     private boolean availableDescribeCoverageExtensions;
-    
+
     /**
      * Creates a new WFSCapsTransformer object.
-     * @param mimemapper 
+     *
+     * @param mimemapper
      */
-    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimemapper) {
+    public WCS20DescribeCoverageTransformer(
+            WCSInfo wcs,
+            Catalog catalog,
+            CoverageResponseDelegateFinder responseFactory,
+            EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
+            MIMETypeMapper mimemapper) {
         super(envelopeDimensionsMapper);
         this.wcs = wcs;
         this.catalog = catalog;
@@ -85,10 +91,10 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
         this.mimemapper = mimemapper;
         setNamespaceDeclarationEnabled(false);
         setIndentation(2);
-        this.wcsDescribeCoverageExtensions = GeoServerExtensions
-                .extensions(WCS20DescribeCoverageExtension.class);
-        this.availableDescribeCoverageExtensions = wcsDescribeCoverageExtensions != null
-                && !wcsDescribeCoverageExtensions.isEmpty();
+        this.wcsDescribeCoverageExtensions =
+                GeoServerExtensions.extensions(WCS20DescribeCoverageExtension.class);
+        this.availableDescribeCoverageExtensions =
+                wcsDescribeCoverageExtensions != null && !wcsDescribeCoverageExtensions.isEmpty();
     }
 
     public WCS20DescribeCoverageTranslator createTranslator(ContentHandler handler) {
@@ -104,16 +110,13 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             super(handler);
         }
 
-        /**
-         * Encode the object.
-
-         */
+        /** Encode the object. */
         @Override
         public void encode(Object o) throws IllegalArgumentException {
-            
+
             if (!(o instanceof DescribeCoverageType)) {
-                throw new IllegalArgumentException(new StringBuffer("Not a DescribeCoverageType: ")
-                        .append(o).toString());
+                throw new IllegalArgumentException(
+                        new StringBuffer("Not a DescribeCoverageType: ").append(o).toString());
             }
 
             this.request = (DescribeCoverageType) o;
@@ -122,7 +125,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             List<CoverageInfo> coverages = new ArrayList<CoverageInfo>();
 
             List<String> covIds = new ArrayList<String>();
-            for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
+            for (String encodedCoverageId : (List<String>) request.getCoverageId()) {
                 String newCoverageID = encodedCoverageId;
                 // Extension point for encoding the coverageId
                 if (availableDescribeCoverageExtensions) {
@@ -131,18 +134,20 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     }
                 }
                 LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, newCoverageID);
-                if(layer != null) {
+                if (layer != null) {
                     coverages.add((CoverageInfo) layer.getResource());
                     covIds.add(encodedCoverageId);
                 } else {
                     // if we get there there is an internal error, the coverage existence is
                     // checked before creating the transformer
-                    throw new IllegalArgumentException("Failed to locate coverage " 
-                            + encodedCoverageId + ", unexpected, the coverage existance has been " +
-                            		"checked earlier in the request lifecycle");
+                    throw new IllegalArgumentException(
+                            "Failed to locate coverage "
+                                    + encodedCoverageId
+                                    + ", unexpected, the coverage existance has been "
+                                    + "checked earlier in the request lifecycle");
                 }
             }
-            
+
             // register namespaces provided by extended capabilities
             NamespaceSupport namespaces = getNamespaceSupport();
             namespaces.declarePrefix("swe", "http://www.opengis.net/swe/2.0");
@@ -151,11 +156,14 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 cp.registerNamespaces(namespaces);
             }
 
-
             // ok: build the response
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             helper.registerNamespaces(getNamespaceSupport(), attributes);
-            String location = buildSchemaLocation(request.getBaseUrl(), WCS.NAMESPACE, "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd");
+            String location =
+                    buildSchemaLocation(
+                            request.getBaseUrl(),
+                            WCS.NAMESPACE,
+                            "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd");
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
             start("wcs:CoverageDescriptions", attributes);
             int coverageIndex = 0;
@@ -176,12 +184,13 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     handleCoverageDescription(newCoverageID, ciNew);
                     coverageIndex++;
                 } catch (Exception e) {
-                    throw new RuntimeException("Unexpected error occurred during describe coverage xml encoding", e);
+                    throw new RuntimeException(
+                            "Unexpected error occurred during describe coverage xml encoding", e);
                 }
             }
             end("wcs:CoverageDescriptions");
         }
-        
+
         String buildSchemaLocation(String schemaBaseURL, String... locations) {
             for (WCS20CoverageMetadataProvider cp : extensions) {
                 locations = helper.append(locations, cp.getSchemaLocations(schemaBaseURL));
@@ -190,48 +199,49 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             return helper.buildSchemaLocation(locations);
         }
 
-
-        /**
-         * 
-         * @param ci
-         */
+        /** @param ci */
         public void handleCoverageDescription(String encodedId, CoverageInfo ci) {
 
-             try {
+            try {
                 // see if we have to handle time, elevation and additional dimensions
                 WCSDimensionsHelper dimensionsHelper = null;
                 MetadataMap metadata = ci.getMetadata();
-                Map<String, DimensionInfo> dimensionsMap = WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
+                Map<String, DimensionInfo> dimensionsMap =
+                        WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
 
                 // Setup a dimension helper in case we found some dimensions for that coverage
                 if (!dimensionsMap.isEmpty()) {
-                    dimensionsHelper = new WCSDimensionsHelper(dimensionsMap, RequestUtils.getCoverageReader(ci), encodedId);
+                    dimensionsHelper =
+                            new WCSDimensionsHelper(
+                                    dimensionsMap, RequestUtils.getCoverageReader(ci), encodedId);
                 }
 
-                GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
-                if (reader== null) {
+                GridCoverage2DReader reader =
+                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+                if (reader == null) {
                     throw new WCS20Exception("Unable to read sample coverage for " + ci.getName());
                 }
                 // get the crs and look for an EPSG code
                 final CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
-                List<String> axesNames = envelopeDimensionsMapper.getAxesNames(
-                        reader.getOriginalEnvelope(), true);
+                List<String> axesNames =
+                        envelopeDimensionsMapper.getAxesNames(reader.getOriginalEnvelope(), true);
 
                 // lookup EPSG code
                 Integer EPSGCode = null;
                 try {
                     EPSGCode = CRS.lookupEpsgCode(crs, false);
                 } catch (FactoryException e) {
-                    throw new IllegalStateException("Unable to lookup epsg code for this CRS:"
-                            + crs, e);
+                    throw new IllegalStateException(
+                            "Unable to lookup epsg code for this CRS:" + crs, e);
                 }
                 if (EPSGCode == null) {
-                    throw new IllegalStateException("Unable to lookup epsg code for this CRS:"
-                            + crs);
+                    throw new IllegalStateException(
+                            "Unable to lookup epsg code for this CRS:" + crs);
                 }
                 final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
                 // handle axes swap for geographic crs
-                final boolean axisSwap = !CRS.getAxisOrder(CRS.decode(srsName)).equals(AxisOrder.EAST_NORTH);
+                final boolean axisSwap =
+                        !CRS.getAxisOrder(CRS.decode(srsName)).equals(AxisOrder.EAST_NORTH);
 
                 // encoding ID of the coverage
                 final AttributesImpl coverageAttributes = new AttributesImpl();
@@ -248,7 +258,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 if (dimensionsHelper != null && dimensionsHelper.getElevationDimension() != null) {
                     builder.append("elevation ");
                 }
-                
+
                 if (dimensionsHelper != null && dimensionsHelper.getTimeDimension() != null) {
                     builder.append("time ");
                 }
@@ -267,13 +277,17 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
                 // handle domain
                 builder.setLength(0);
-                axesNames = envelopeDimensionsMapper.getAxesNames(reader.getOriginalEnvelope(), false);
+                axesNames =
+                        envelopeDimensionsMapper.getAxesNames(reader.getOriginalEnvelope(), false);
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }
                 axesLabel = builder.substring(0, builder.length() - 1);
-                GridGeometry2D gg = new GridGeometry2D(reader.getOriginalGridRange(), 
-                        reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCoordinateReferenceSystem());
+                GridGeometry2D gg =
+                        new GridGeometry2D(
+                                reader.getOriginalGridRange(),
+                                reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
+                                reader.getCoordinateReferenceSystem());
                 handleDomainSet(gg, 2, encodedId, srsName, axisSwap);
 
                 // handle rangetype
@@ -285,38 +299,38 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 end("wcs:CoverageDescription");
             } catch (Exception e) {
                 throw new WcsException(e);
-            } 
+            }
         }
 
-        private GridSampleDimension[] getSampleDimensions(GridCoverage2DReader reader) throws Exception {
+        private GridSampleDimension[] getSampleDimensions(GridCoverage2DReader reader)
+                throws Exception {
             GridCoverage2D coverage = null;
             try {
                 coverage = RequestUtils.readSampleGridCoverage(reader);
                 return coverage.getSampleDimensions();
             } finally {
-                if(coverage != null) {
+                if (coverage != null) {
                     CoverageCleanerCallback.addCoverages(coverage);
                 }
             }
-            
         }
 
         private void handleServiceParameters(CoverageInfo ci) throws IOException {
             start("wcs:ServiceParameters");
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
-            
+
             String mapNativeFormat = mimemapper.mapNativeFormat(ci);
-            element("wcs:nativeFormat",mapNativeFormat);
+            element("wcs:nativeFormat", mapNativeFormat);
             end("wcs:ServiceParameters");
         }
 
         /**
-         * Encodes the RangeType as per the {@link DescribeCoverageType}WCS spec of the provided {@link GridCoverage2D}
-         * 
-         * e.g.:
-         * 
-         * <pre>
-         * {@code
+         * Encodes the RangeType as per the {@link DescribeCoverageType}WCS spec of the provided
+         * {@link GridCoverage2D}
+         *
+         * <p>e.g.:
+         *
+         * <pre>{@code
          * <gmlcov:rangeType>
          *    <swe:DataRecord>
          *        <swe:field name="singleBand">
@@ -334,23 +348,22 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          *        </swe:field>
          *    </swe:DataRecord>
          * </gmlcov:rangeType>
-         * }
-         * </pre>
-         * 
+         * }</pre>
+         *
          * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
         public void handleRangeType(final List<CoverageDimensionInfo> bands) {
             start("gmlcov:rangeType");
             start("swe:DataRecord");
-            
+
             // handle bands
-            for(CoverageDimensionInfo sd : bands){
+            for (CoverageDimensionInfo sd : bands) {
                 final AttributesImpl fieldAttr = new AttributesImpl();
-                fieldAttr.addAttribute("", "name", "name", "", sd.getName());                
-                start("swe:field",fieldAttr);
-                
+                fieldAttr.addAttribute("", "name", "name", "", sd.getName());
+                start("swe:field", fieldAttr);
+
                 start("swe:Quantity");
-                
+
                 // Description
                 start("swe:description");
                 chars(sd.getName()); // TODO can we make up something better??
@@ -367,29 +380,26 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     handleSampleDimensionNilValues(null, noDataValues);
                 }
 
-                //UoM
+                // UoM
                 final AttributesImpl uomAttr = new AttributesImpl();
-                final String unit =sd.getUnit();
-                uomAttr.addAttribute("", "code", "code", "", unit == null ? "W.m-2.Sr-1" : unit); 
-                start("swe:uom",uomAttr);
+                final String unit = sd.getUnit();
+                uomAttr.addAttribute("", "code", "code", "", unit == null ? "W.m-2.Sr-1" : unit);
+                start("swe:uom", uomAttr);
                 end("swe:uom");
-                
+
                 // constraint on values
                 start("swe:constraint");
                 start("swe:AllowedValues");
-                handleSampleDimensionRange(sd);// TODO make  this generic
+                handleSampleDimensionRange(sd); // TODO make  this generic
                 end("swe:AllowedValues");
                 end("swe:constraint");
-                
+
                 end("swe:Quantity");
                 end("swe:field");
             }
-        
+
             end("swe:DataRecord");
             end("gmlcov:rangeType");
-            
         }
-
     }
-
 }

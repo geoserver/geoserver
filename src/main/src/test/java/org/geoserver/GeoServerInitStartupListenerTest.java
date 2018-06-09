@@ -14,13 +14,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
-
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.servlet.ServletContextEvent;
-
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
@@ -81,9 +79,8 @@ public class GeoServerInitStartupListenerTest {
         final Object executorService = hints.get(Hints.EXECUTOR_SERVICE);
         assertNotNull(executorService);
         assertTrue(executorService instanceof ExecutorService);
-
     }
-    
+
     @Test
     public void testJPEG2000Registration() {
         IIORegistry registry = IIORegistry.getDefaultInstance();
@@ -91,12 +88,13 @@ public class GeoServerInitStartupListenerTest {
         assertNoSunJPEG2000(registry, ImageWriterSpi.class);
     }
 
-    private <T extends ImageReaderWriterSpi> void assertNoSunJPEG2000(IIORegistry registry,
-            Class<T> category) {
+    private <T extends ImageReaderWriterSpi> void assertNoSunJPEG2000(
+            IIORegistry registry, Class<T> category) {
         Iterator<T> it = registry.getServiceProviders(category, false);
         while (it.hasNext()) {
             T spi = it.next();
-            assertThat(spi.getClass().getPackage().getName(),
+            assertThat(
+                    spi.getClass().getPackage().getName(),
                     not(startsWith(GeoserverInitStartupListener.COM_SUN_JPEG2000_PACKAGE)));
         }
     }

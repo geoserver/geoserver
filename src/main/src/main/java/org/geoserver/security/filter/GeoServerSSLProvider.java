@@ -12,7 +12,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
  * Security provider for {@link GeoServerSSLFilter}
- * 
+ *
  * @author mcr
  */
 public class GeoServerSSLProvider extends AbstractFilterProvider {
@@ -32,5 +32,4 @@ public class GeoServerSSLProvider extends AbstractFilterProvider {
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerSSLFilter();
     }
-
 }

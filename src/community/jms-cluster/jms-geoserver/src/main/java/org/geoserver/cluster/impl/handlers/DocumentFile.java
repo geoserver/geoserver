@@ -8,18 +8,15 @@ package org.geoserver.cluster.impl.handlers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.jdom2.JDOMException;
 
 /**
- * 
  * Class used to handle a text file
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
+ * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public class DocumentFile {
 
@@ -28,16 +25,14 @@ public class DocumentFile {
 
     private final String body;
 
-    /**
-     * @return the body containing the parsed file
-     */
+    /** @return the body containing the parsed file */
     public final String getBody() {
         return body;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param path the path referring to this file
      * @param document the string containing the body of the file (should be a valid JDOM document)
      * @throws JDOMException
@@ -73,7 +68,7 @@ public class DocumentFile {
 
     /**
      * write the body to the passed file argument
-     * 
+     *
      * @param file
      * @throws JDOMException
      * @throws IOException

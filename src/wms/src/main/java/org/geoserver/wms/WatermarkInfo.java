@@ -9,15 +9,12 @@ import java.io.Serializable;
 
 /**
  * Configuration object for WMS water marking.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
-public interface WatermarkInfo extends Serializable{
+public interface WatermarkInfo extends Serializable {
 
-    /**
-     * The position of a watermark logo.
-     */
+    /** The position of a watermark logo. */
     public static enum Position {
         TOP_LEFT {
 
@@ -87,20 +84,17 @@ public interface WatermarkInfo extends Serializable{
         }
     };
 
-    /**
-     * Flag indicating if water marking is enabled.
-     */
+    /** Flag indicating if water marking is enabled. */
     boolean isEnabled();
 
-    /**
-     * Sets flag indicating if water marking is enabled.
-     */
+    /** Sets flag indicating if water marking is enabled. */
     void setEnabled(boolean enabled);
 
     /**
      * The position of the watermark on resulting wms images.
+     *
      * <p>
-     * 
+     *
      * <pre>
      * O -- O -- O      0 -- 1 -- 2
      * |    |    |      |    |    |
@@ -111,31 +105,22 @@ public interface WatermarkInfo extends Serializable{
      */
     Position getPosition();
 
-    /**
-     * Sets the watermark position.
-     */
+    /** Sets the watermark position. */
     void setPosition(Position position);
 
     /**
      * The url of the watermark.
-     * <p>
-     * This is usually the location of some logo.
-     * </p>
+     *
+     * <p>This is usually the location of some logo.
      */
     String getURL();
 
-    /**
-     * Sets the url of the watermark.
-     */
+    /** Sets the url of the watermark. */
     void setURL(String url);
 
-    /**
-     * The transparency of the watermark logo, ranging from 0 to 255.
-     */
+    /** The transparency of the watermark logo, ranging from 0 to 255. */
     int getTransparency();
 
-    /**
-     * Sets the transparanecy of the watermark logo.
-     */
+    /** Sets the transparanecy of the watermark logo. */
     void setTransparency(int transparency);
 }

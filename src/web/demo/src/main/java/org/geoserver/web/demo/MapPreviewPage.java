@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -46,23 +45,21 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.GetMapOutputFormat;
 
-/**
- * Shows a paged list of the available layers and points to previews
- * in various formats 
- */
+/** Shows a paged list of the available layers and points to previews in various formats */
 public class MapPreviewPage extends GeoServerBasePage {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	PreviewLayerProvider provider = new PreviewLayerProvider();
+    PreviewLayerProvider provider = new PreviewLayerProvider();
 
     GeoServerTablePanel<PreviewLayer> table;
-    
+
     private transient List<String> availableWMSFormats;
-    //private transient List<String> availableWFSFormats;
+    // private transient List<String> availableWFSFormats;
 
     /** GML output params computation may be expensive, results are cached in this map */
-    private transient Map<String, GMLOutputParams> gmlParamsCache = new HashMap<String, GMLOutputParams>();
+    private transient Map<String, GMLOutputParams> gmlParamsCache =
+            new HashMap<String, GMLOutputParams>();
 
     public MapPreviewPage() {
         // output formats for the drop downs
@@ -70,76 +67,82 @@ public class MapPreviewPage extends GeoServerBasePage {
         final List<String> wfsOutputFormats = getAvailableWFSFormats();
 
         // build the table
-        table = new GeoServerTablePanel<PreviewLayer>("table", provider) {
+        table =
+                new GeoServerTablePanel<PreviewLayer>("table", provider) {
 
-			private static final long serialVersionUID = 1L;
+                    private static final long serialVersionUID = 1L;
 
-			@Override
-            protected Component getComponentForProperty(String id, IModel<PreviewLayer> itemModel, Property<PreviewLayer> property) {
-                PreviewLayer layer = itemModel.getObject();
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id,
+                            IModel<PreviewLayer> itemModel,
+                            Property<PreviewLayer> property) {
+                        PreviewLayer layer = itemModel.getObject();
 
-                if (property == TYPE) {
-                    Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
-                    f.add(new Image("layerIcon", layer.getIcon()));
-                    return f;
-                } else if (property == NAME) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if (property == TITLE) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if (property == COMMON) {
-                    // openlayers preview
-                    Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
-                    final String olUrl = layer.getWmsLink() + "&format=application/openlayers";
-                    f.add(new ExternalLink("ol", olUrl, "OpenLayers"));
-                    // kml preview
-                    final String kmlUrl = layer.getBaseUrl("wms") + "/kml?layers=" + layer.getName();
-                    f.add(new ExternalLink("kml", kmlUrl, "KML"));
-                    // gml preview (we actually want it only for vector layers)
-                    final String gmlUrl = layer.getGmlLink(gmlParamsCache) + getMaxFeatures();
-                    Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
-                    f.add(gmlLink);
-                    gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);
-                    
-                    return f;
-                } else if (property == ALL) {
-                    return buildJSWMSSelect(id, wmsOutputFormats, wfsOutputFormats, layer);
-                } 
-                throw new IllegalArgumentException(
-                        "Don't know a property named " + property.getName());
-            }
+                        if (property == TYPE) {
+                            Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
+                            f.add(new Image("layerIcon", layer.getIcon()));
+                            return f;
+                        } else if (property == NAME) {
+                            return new Label(id, property.getModel(itemModel));
+                        } else if (property == TITLE) {
+                            return new Label(id, property.getModel(itemModel));
+                        } else if (property == COMMON) {
+                            // openlayers preview
+                            Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
+                            final String olUrl =
+                                    layer.getWmsLink() + "&format=application/openlayers";
+                            f.add(new ExternalLink("ol", olUrl, "OpenLayers"));
+                            // kml preview
+                            final String kmlUrl =
+                                    layer.getBaseUrl("wms") + "/kml?layers=" + layer.getName();
+                            f.add(new ExternalLink("kml", kmlUrl, "KML"));
+                            // gml preview (we actually want it only for vector layers)
+                            final String gmlUrl =
+                                    layer.getGmlLink(gmlParamsCache) + getMaxFeatures();
+                            Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
+                            f.add(gmlLink);
+                            gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);
 
-        };
+                            return f;
+                        } else if (property == ALL) {
+                            return buildJSWMSSelect(id, wmsOutputFormats, wfsOutputFormats, layer);
+                        }
+                        throw new IllegalArgumentException(
+                                "Don't know a property named " + property.getName());
+                    }
+                };
         table.setOutputMarkupId(true);
         add(table);
     }
-    
+
     /**
-     * Generates the maxFeatures element of the WFS request using the value of 
+     * Generates the maxFeatures element of the WFS request using the value of
      * maxNumberOfFeaturesForPreview. Values <= 0 give no limit.
-     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if 
-     * maxNumberOfFeaturesForPreview <= 0"
+     *
+     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if
+     *     maxNumberOfFeaturesForPreview <= 0"
      */
     private String getMaxFeatures() {
         GeoServer geoserver = getGeoServer();
         WFSInfo service = geoserver.getService(WFSInfo.class);
         if (service.getMaxNumberOfFeaturesForPreview() > 0) {
-            return "&maxFeatures="+service.getMaxNumberOfFeaturesForPreview();
+            return "&maxFeatures=" + service.getMaxNumberOfFeaturesForPreview();
         }
         return "";
     }
 
     /**
-     * Finds out the list of available WMS output formats supported bye the enable
-     * {@link GetMapOutputFormat} implementations in the application context.
-     * <p>
-     * For format, either its {@link GetMapOutputFormat#getMimeType() MIME-Type} or one of its
+     * Finds out the list of available WMS output formats supported bye the enable {@link
+     * GetMapOutputFormat} implementations in the application context.
+     *
+     * <p>For format, either its {@link GetMapOutputFormat#getMimeType() MIME-Type} or one of its
      * {@link GetMapOutputFormat#getOutputFormatNames() alias} will be added to the resulting list.
      * If one of them is found to have a translation, that'll be used, otherwise the MIME-Type will
      * be used as default.
-     * </p>
-     * 
+     *
      * @return the list of available WMS GetMap output formats, giving precedence to the ones for
-     *         which there is a translation.
+     *     which there is a translation.
      */
     private List<String> getAvailableWMSFormats() {
         List<String> formats = this.availableWMSFormats;
@@ -174,97 +177,114 @@ public class MapPreviewPage extends GeoServerBasePage {
         List<String> formats = new ArrayList<String>();
 
         final GeoServerApplication application = getGeoServerApplication();
-        for (WFSGetFeatureOutputFormat producer : application
-                .getBeansOfType(WFSGetFeatureOutputFormat.class)) {
+        for (WFSGetFeatureOutputFormat producer :
+                application.getBeansOfType(WFSGetFeatureOutputFormat.class)) {
             for (String format : producer.getOutputFormats()) {
                 formats.add(format);
             }
         }
         prepareFormatList(formats, new FormatComparator("format.wfs."));
-        
+
         return formats;
     }
-    
+
     private void prepareFormatList(List<String> formats, FormatComparator comparator) {
         Collections.sort(formats, comparator);
         String prev = null;
-        for (Iterator<String> it = formats.iterator(); it.hasNext();) {
+        for (Iterator<String> it = formats.iterator(); it.hasNext(); ) {
             String format = it.next();
-            if(prev != null && comparator.compare(format, prev) == 0)
-                it.remove();
+            if (prev != null && comparator.compare(format, prev) == 0) it.remove();
             prev = format;
         }
     }
 
-    /**
-     * Builds a select that reacts like a menu, fully javascript based, for wms outputs 
-     */
-    private Component buildJSWMSSelect(String id,
-            List<String> wmsOutputFormats, List<String> wfsOutputFormats, PreviewLayer layer) {
+    /** Builds a select that reacts like a menu, fully javascript based, for wms outputs */
+    private Component buildJSWMSSelect(
+            String id,
+            List<String> wmsOutputFormats,
+            List<String> wfsOutputFormats,
+            PreviewLayer layer) {
         Fragment f = new Fragment(id, "menuFragment", MapPreviewPage.this);
         WebMarkupContainer menu = new WebMarkupContainer("menu");
-        
+
         RepeatingView wmsFormats = new RepeatingView("wmsFormats");
         for (int i = 0; i < wmsOutputFormats.size(); i++) {
             String wmsOutputFormat = wmsOutputFormats.get(i);
             String label = translateFormat("format.wms.", wmsOutputFormat);
             // build option with text and value
             Label format = new Label(i + "", label);
-            format.add(new AttributeModifier("value", new Model<String>(ResponseUtils.urlEncode(wmsOutputFormat))));
+            format.add(
+                    new AttributeModifier(
+                            "value", new Model<String>(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
         menu.add(wmsFormats);
-        
+
         // the vector ones, it depends, we might have to hide them
-        boolean vector = layer.groupInfo == null && (layer.layerInfo.getType() == PublishedType.VECTOR 
-                || layer.layerInfo.getType() == PublishedType.REMOTE);
+        boolean vector =
+                layer.groupInfo == null
+                        && (layer.layerInfo.getType() == PublishedType.VECTOR
+                                || layer.layerInfo.getType() == PublishedType.REMOTE);
         WebMarkupContainer wfsFormatsGroup = new WebMarkupContainer("wfs");
         RepeatingView wfsFormats = new RepeatingView("wfsFormats");
-        if(vector) {
+        if (vector) {
             for (int i = 0; i < wfsOutputFormats.size(); i++) {
                 String wfsOutputFormat = wfsOutputFormats.get(i);
                 String label = translateFormat("format.wfs.", wfsOutputFormat);
                 // build option with text and value
                 Label format = new Label(i + "", label);
-                format.add(new AttributeModifier("value", new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
+                format.add(
+                        new AttributeModifier(
+                                "value",
+                                new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
                 wfsFormats.add(format);
             }
         }
         wfsFormatsGroup.add(wfsFormats);
         menu.add(wfsFormatsGroup);
-        
+
         // build the wms request, redirect to it in a new window, reset the selection
-        String wmsUrl = "'" + layer.getWmsLink()
-                + "&format=' + this.options[this.selectedIndex].value";
-        String wfsUrl = "'" + layer.getBaseUrl("ows") + "?service=WFS&version=1.0.0&request=GetFeature&typeName="
-          + layer.getName()
-          + getMaxFeatures()
-          + "&outputFormat=' + this.options[this.selectedIndex].value";
-        String choice = "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? " + wmsUrl + " : " + wfsUrl;
-        menu.add(new AttributeAppender("onchange", new Model<String>("window.open("
-                + choice + ");this.selectedIndex=0"), ";"));
+        String wmsUrl =
+                "'" + layer.getWmsLink() + "&format=' + this.options[this.selectedIndex].value";
+        String wfsUrl =
+                "'"
+                        + layer.getBaseUrl("ows")
+                        + "?service=WFS&version=1.0.0&request=GetFeature&typeName="
+                        + layer.getName()
+                        + getMaxFeatures()
+                        + "&outputFormat=' + this.options[this.selectedIndex].value";
+        String choice =
+                "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? "
+                        + wmsUrl
+                        + " : "
+                        + wfsUrl;
+        menu.add(
+                new AttributeAppender(
+                        "onchange",
+                        new Model<String>("window.open(" + choice + ");this.selectedIndex=0"),
+                        ";"));
         f.add(menu);
         return f;
     }
-    
+
     private String translateFormat(String prefix, String format) {
         try {
             return getLocalizer().getString(prefix + format, this);
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getMessage());
             return format;
         }
     }
-    
+
     /**
      * Sorts the formats using the i18n translated name
-     * @author aaime
      *
+     * @author aaime
      */
     private class FormatComparator implements Comparator<String> {
-        
+
         String prefix;
-        
+
         public FormatComparator(String prefix) {
             this.prefix = prefix;
         }
@@ -274,6 +294,5 @@ public class MapPreviewPage extends GeoServerBasePage {
             String t2 = translateFormat(prefix, f2);
             return t1.compareTo(t2);
         }
-        
     }
 }

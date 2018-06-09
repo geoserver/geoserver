@@ -7,19 +7,16 @@ package org.geoserver.catalog.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geotools.util.NumberRange;
 import org.opengis.coverage.SampleDimensionType;
 
 public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 2993765933856195894L;
+    /** */
+    private static final long serialVersionUID = 2993765933856195894L;
 
-	String id;
+    String id;
 
     String name;
 
@@ -28,18 +25,17 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
     NumberRange range;
 
     List<Double> nullValues = new ArrayList<Double>();
-    
+
     String unit;
-    
+
     SampleDimensionType dimensionType;
-    
-    public CoverageDimensionImpl() {
-    }
+
+    public CoverageDimensionImpl() {}
 
     public CoverageDimensionImpl(String id) {
         this.id = id;
     }
-    
+
     public CoverageDimensionImpl(CoverageDimensionInfo other) {
         this.id = other.getId();
         this.name = other.getName();
@@ -50,7 +46,6 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
         this.dimensionType = other.getDimensionType();
     }
 
-
     public void setId(String id) {
         this.id = id;
     }
@@ -58,7 +53,7 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
     public String getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -90,7 +85,7 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
     public void setNullValues(List<Double> nullValues) {
         this.nullValues = nullValues;
     }
-    
+
     public String getUnit() {
         return unit;
     }
@@ -111,9 +106,21 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
     @Override
     public String toString() {
-        return "CoverageDimensionImpl [id=" + id + ", name=" + name + ", description="
-                + description + ", range=" + range + ", nullValues=" + nullValues + ", unit="
-                + unit + ", dimensionType=" + dimensionType + "]";
+        return "CoverageDimensionImpl [id="
+                + id
+                + ", name="
+                + name
+                + ", description="
+                + description
+                + ", range="
+                + range
+                + ", nullValues="
+                + nullValues
+                + ", unit="
+                + unit
+                + ", dimensionType="
+                + dimensionType
+                + "]";
     }
 
     @Override
@@ -132,50 +139,31 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         CoverageDimensionImpl other = (CoverageDimensionImpl) obj;
         if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
+            if (other.description != null) return false;
+        } else if (!description.equals(other.description)) return false;
         if (dimensionType == null) {
-            if (other.dimensionType != null)
-                return false;
-        } else if (!dimensionType.equals(other.dimensionType))
-            return false;
+            if (other.dimensionType != null) return false;
+        } else if (!dimensionType.equals(other.dimensionType)) return false;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
         if (nullValues == null) {
-            if (other.nullValues != null)
-                return false;
-        } else if (!nullValues.equals(other.nullValues))
-            return false;
+            if (other.nullValues != null) return false;
+        } else if (!nullValues.equals(other.nullValues)) return false;
         if (range == null) {
-            if (other.range != null)
-                return false;
-        } else if (!range.equals(other.range))
-            return false;
+            if (other.range != null) return false;
+        } else if (!range.equals(other.range)) return false;
         if (unit == null) {
-            if (other.unit != null)
-                return false;
-        } else if (!unit.equals(other.unit))
-            return false;
+            if (other.unit != null) return false;
+        } else if (!unit.equals(other.unit)) return false;
         return true;
     }
-    
-    
 }

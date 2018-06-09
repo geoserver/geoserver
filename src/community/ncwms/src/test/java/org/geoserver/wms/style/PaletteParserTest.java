@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
-
 import javax.xml.transform.TransformerException;
-
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
@@ -29,8 +27,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 
 public class PaletteParserTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Rule public ExpectedException exception = ExpectedException.none();
 
     PaletteParser parser = new PaletteParser();
 
@@ -95,7 +92,8 @@ public class PaletteParserTest {
     public void testParseBlackWhiteTranslucentToStyle() throws IOException, TransformerException {
         StyledLayerDescriptor sld = parser.parseStyle(toReader("#64000000\n#64FFFFFF"));
         Function cm = assertDynamicColorColormap(sld);
-        assertEquals("rgba(0,0,0,0.39);rgba(255,255,255,0.39)",
+        assertEquals(
+                "rgba(0,0,0,0.39);rgba(255,255,255,0.39)",
                 cm.getParameters().get(0).evaluate(null));
     }
 
@@ -161,5 +159,4 @@ public class PaletteParserTest {
     private Reader toReader(String palette) {
         return new StringReader(palette);
     }
-
 }

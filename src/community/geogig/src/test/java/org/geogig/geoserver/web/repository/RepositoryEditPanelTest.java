@@ -4,10 +4,10 @@
  */
 package org.geogig.geoserver.web.repository;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextField;
@@ -23,17 +23,13 @@ import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.locationtech.geogig.test.TestPlatform;
 
-import com.google.common.collect.Lists;
-
-/**
- *
- */
+/** */
 public class RepositoryEditPanelTest extends CommonPanelTest {
 
     private static final String FORM_PREFIX = "panel:repoForm:";
 
-    private static final String SETTINGS_PREFIX = FORM_PREFIX
-            + "repo:repositoryConfig:settingsContainer:";
+    private static final String SETTINGS_PREFIX =
+            FORM_PREFIX + "repo:repositoryConfig:settingsContainer:";
 
     private static final String SAVE_LINK = FORM_PREFIX + "save";
 
@@ -84,8 +80,11 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
         FeedbackPanel c = (FeedbackPanel) tester.getComponentFromLastRenderedPage(FEEDBACK);
         List<FeedbackMessage> list = c.getFeedbackMessagesModel().getObject();
         // by default, 3 required fields will be emtpy: repo name, database and password
-        List<String> expectedMsgs = Lists.newArrayList("Field 'Repository Name' is required.",
-                "Field 'Database Name' is required.", "Field 'Password' is required.");
+        List<String> expectedMsgs =
+                Lists.newArrayList(
+                        "Field 'Repository Name' is required.",
+                        "Field 'Database Name' is required.",
+                        "Field 'Password' is required.");
         assertFeedbackMessages(list, expectedMsgs);
     }
 
@@ -103,8 +102,10 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
         FeedbackPanel c = (FeedbackPanel) tester.getComponentFromLastRenderedPage(FEEDBACK);
         List<FeedbackMessage> list = c.getFeedbackMessagesModel().getObject();
         // by default, repo parent directory and repo name will be empty
-        List<String> expectedMsgs = Lists.newArrayList("Field 'Repository Name' is required.",
-                "Field 'Parent directory' is required.");
+        List<String> expectedMsgs =
+                Lists.newArrayList(
+                        "Field 'Repository Name' is required.",
+                        "Field 'Parent directory' is required.");
         assertFeedbackMessages(list, expectedMsgs);
     }
 
@@ -118,12 +119,16 @@ public class RepositoryEditPanelTest extends CommonPanelTest {
         // get the form
         FormTester formTester = tester.newFormTester(getFrom());
         // now set a name
-        TextParamPanel repoNamePanel = (TextParamPanel) tester
-                .getComponentFromLastRenderedPage(SETTINGS_PREFIX + "repositoryNamePanel");
+        TextParamPanel repoNamePanel =
+                (TextParamPanel)
+                        tester.getComponentFromLastRenderedPage(
+                                SETTINGS_PREFIX + "repositoryNamePanel");
         formTester.setValue(repoNamePanel.getFormComponent(), "temp_repo");
         // and a directory
-        TextField parentDirectory = (TextField) tester.getComponentFromLastRenderedPage(
-                SETTINGS_PREFIX + "parentDirectory:wrapper:wrapper_body:value");
+        TextField parentDirectory =
+                (TextField)
+                        tester.getComponentFromLastRenderedPage(
+                                SETTINGS_PREFIX + "parentDirectory:wrapper:wrapper_body:value");
         formTester.setValue(parentDirectory, temp.getRoot().getCanonicalPath());
         // click the Save button
         tester.executeAjaxEvent(SAVE_LINK, "click");

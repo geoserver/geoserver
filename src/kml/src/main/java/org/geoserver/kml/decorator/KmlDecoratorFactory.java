@@ -5,37 +5,33 @@
  */
 package org.geoserver.kml.decorator;
 
-import org.geoserver.kml.KmlEncodingContext;
-
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import org.geoserver.kml.KmlEncodingContext;
 
 /**
  * Builds {@link KmlDecorator} instances based on a target KML Feature class and the current
  * encoding context
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public interface KmlDecoratorFactory {
-    
+
     KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context);
 
-    
     /**
      * Decorates/alters the specified KML {@link Feature}
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     public interface KmlDecorator {
-        
+
         /**
-         * Decorates/alters the specified feature. If the return value is null, the feature has
-         * to be skipped and won't be encoded
+         * Decorates/alters the specified feature. If the return value is null, the feature has to
+         * be skipped and won't be encoded
+         *
          * @param feature
          * @param context
-         *
          */
         public Feature decorate(Feature feature, KmlEncodingContext context);
-        
     }
 }

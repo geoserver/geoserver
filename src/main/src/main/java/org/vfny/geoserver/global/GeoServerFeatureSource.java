@@ -5,6 +5,14 @@
  */
 package org.vfny.geoserver.global;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Logger;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.data.DataSourceException;
@@ -46,51 +54,34 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.OperationNotFoundException;
 import org.opengis.referencing.operation.TransformException;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.logging.Logger;
-
-
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
  *
- * <p>
- * Support FeatureSource decorator for FeatureTypeInfo that takes care of
- * mapping the FeatureTypeInfo's FeatureSource with the schema and definition
- * query configured for it.
- * </p>
+ * <p>Support FeatureSource decorator for FeatureTypeInfo that takes care of mapping the
+ * FeatureTypeInfo's FeatureSource with the schema and definition query configured for it.
  *
- * <p>
- * Because GeoServer requires that attributes always be returned in the same
- * order we need a way to smoothly inforce this. Could we use this class to do
- * so?
- * </p>
+ * <p>Because GeoServer requires that attributes always be returned in the same order we need a way
+ * to smoothly inforce this. Could we use this class to do so?
  *
  * @author Gabriel Roldan
  * @version $Id$
  */
 public class GeoServerFeatureSource implements SimpleFeatureSource {
     /** Shared package logger */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
 
     /** FeatureSource being served up */
     protected SimpleFeatureSource source;
-    
+
     /** The single filter factory for this source (grabbing it has a high sync penalty */
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
 
     /**
      * GeoTools2 Schema information
      *
-     * <p>
-     * Is this the same as source.getSchema() or is it used supply the order
-     * that GeoServer requires attributes to be returned in?
-     * </p>
+     * <p>Is this the same as source.getSchema() or is it used supply the order that GeoServer
+     * requires attributes to be returned in?
      */
     protected SimpleFeatureType schema;
 
@@ -100,10 +91,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /** Geometries will be forced to this CRS (or null, if no forcing is needed) */
     protected CoordinateReferenceSystem declaredCRS;
 
-    /** How to handle SRS   */
+    /** How to handle SRS */
     protected ProjectionPolicy srsHandling;
 
-    /** FeatureTypeInfo metadata to pass to extensions within the Query **/
+    /** FeatureTypeInfo metadata to pass to extensions within the Query * */
     protected MetadataMap metadata;
 
     /**
@@ -114,17 +105,31 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
 
     /**
      * Creates a new GeoServerFeatureSource object.
-     * 
+     *
      * @param source GeoTools2 FeatureSource
      * @param schema SimpleFeatureType returned by this FeatureSource
      * @param definitionQuery Filter used to limit results
      * @param declaredCRS Geometries will be forced or projected to this CRS
      * @param linearizationTolerance Distance used for curve linearization tolerance, as an absolute
-     *        value expressed in the data native CRS
+     *     value expressed in the data native CRS
      */
-    GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, MetadataMap metadata) {
-        this(source, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    GeoServerFeatureSource(
+            FeatureSource<SimpleFeatureType, SimpleFeature> source,
+            SimpleFeatureType schema,
+            Filter definitionQuery,
+            CoordinateReferenceSystem declaredCRS,
+            int srsHandling,
+            Double linearizationTolerance,
+            MetadataMap metadata) {
+        this(
+                source,
+                new Settings(
+                        schema,
+                        definitionQuery,
+                        declaredCRS,
+                        srsHandling,
+                        linearizationTolerance,
+                        metadata));
     }
 
     /**
@@ -133,12 +138,13 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param source GeoTools2 FeatureSource
      * @param settings Settings for this source
      */
-    GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, Settings settings) {
+    GeoServerFeatureSource(
+            FeatureSource<SimpleFeatureType, SimpleFeature> source, Settings settings) {
         this.source = DataUtilities.simple(source);
         this.schema = settings.schema;
         this.definitionQuery = settings.definitionQuery;
         this.declaredCRS = settings.declaredCRS;
-        this.srsHandling = ProjectionPolicy.get( settings.srsHandling );
+        this.srsHandling = ProjectionPolicy.get(settings.srsHandling);
         this.linearizationTolerance = settings.linearizationTolerance;
         this.metadata = settings.metadata;
 
@@ -148,10 +154,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     }
 
     /**
-     * Returns the same name than the feature type (ie,
-     * {@code getSchema().getName()} to honor the simple feature land common
-     * practice of calling the same both the Features produces and their types
-     * 
+     * Returns the same name than the feature type (ie, {@code getSchema().getName()} to honor the
+     * simple feature land common practice of calling the same both the Features produces and their
+     * types
+     *
      * @since 1.7
      * @see FeatureSource#getName()
      */
@@ -162,42 +168,47 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Factory that make the correct decorator for the provided featureSource.
      *
-     * <p>
-     * This factory method is public and will be used to create all required
-     * subclasses. By comparison the constructors for this class have package
-     * visibility.
-     * </p>
-     * 
-     * @deprecated
+     * <p>This factory method is public and will be used to create all required subclasses. By
+     * comparison the constructors for this class have package visibility.
      *
+     * @deprecated
      * @param featureSource
      * @param schema DOCUMENT ME!
      * @param definitionQuery DOCUMENT ME!
-     * @param declaredCRS 
+     * @param declaredCRS
      * @param linearizationTolerance TODO
      * @param metadata Feature type metadata
-     *
      */
-    public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
-        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
-        MetadataMap metadata) {
-        return create(featureSource, new Settings(schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata));
+    public static GeoServerFeatureSource create(
+            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
+            SimpleFeatureType schema,
+            Filter definitionQuery,
+            CoordinateReferenceSystem declaredCRS,
+            int srsHandling,
+            Double linearizationTolerance,
+            MetadataMap metadata) {
+        return create(
+                featureSource,
+                new Settings(
+                        schema,
+                        definitionQuery,
+                        declaredCRS,
+                        srsHandling,
+                        linearizationTolerance,
+                        metadata));
     }
 
     /**
      * Factory that make the correct decorator for the provided featureSource.
      *
-     * <p>
-     * This factory method is public and will be used to create all required
-     * subclasses. By comparison the constructors for this class have package
-     * visibility.
-     * </p>
+     * <p>This factory method is public and will be used to create all required subclasses. By
+     * comparison the constructors for this class have package visibility.
      *
      * @param featureSource
      * @param settings Settings for this store
-     *
      */
-    public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
+    public static GeoServerFeatureSource create(
+            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Settings settings) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
                     (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, settings);
@@ -210,17 +221,13 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     }
 
     /**
-     * Takes a query and adapts it to match re definitionQuery filter
-     * configured for a feature type.
+     * Takes a query and adapts it to match re definitionQuery filter configured for a feature type.
      *
      * @param query Query against this DataStore
      * @param schema TODO
-     *
      * @return Query restricted to the limits of definitionQuery
-     *
      * @throws IOException See DataSourceException
-     * @throws DataSourceException If query could not meet the restrictions of
-     *         definitionQuery
+     * @throws DataSourceException If query could not meet the restrictions of definitionQuery
      */
     protected Query makeDefinitionQuery(Query query, SimpleFeatureType schema) throws IOException {
         if ((query == Query.ALL) || query.equals(Query.ALL)) {
@@ -250,27 +257,22 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             return defQuery;
         } catch (Exception ex) {
             throw new DataSourceException(
-                "Could not restrict the query to the definition criteria: " + ex.getMessage(), ex);
+                    "Could not restrict the query to the definition criteria: " + ex.getMessage(),
+                    ex);
         }
     }
 
     /**
      * List of allowed attributes.
      *
-     * <p>
-     * Creates a list of FeatureTypeInfo's attribute names based on the
-     * attributes requested by <code>query</code> and making sure they not
-     * contain any non exposed attribute.
-     * </p>
+     * <p>Creates a list of FeatureTypeInfo's attribute names based on the attributes requested by
+     * <code>query</code> and making sure they not contain any non exposed attribute.
      *
-     * <p>
-     * Exposed attributes are those configured in the "attributes" element of
-     * the FeatureTypeInfo's configuration
-     * </p>
+     * <p>Exposed attributes are those configured in the "attributes" element of the
+     * FeatureTypeInfo's configuration
      *
      * @param query User's origional query
      * @param schema TODO
-     *
      * @return List of allowed attribute types
      */
     private String[] extractAllowedAttributes(Query query, SimpleFeatureType schema) {
@@ -278,18 +280,17 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
 
         if (query.retrieveAllProperties()) {
             List<String> props = new ArrayList();
-            
 
             for (int i = 0; i < schema.getAttributeCount(); i++) {
                 AttributeDescriptor att = schema.getDescriptor(i);
-                
-                //if this is a joined attribute, don't include it
-                //TODO: make this a better check, actually verify it vs the query object
-                if (Feature.class.isAssignableFrom(att.getType().getBinding()) 
-                    && !query.getJoins().isEmpty()) {
+
+                // if this is a joined attribute, don't include it
+                // TODO: make this a better check, actually verify it vs the query object
+                if (Feature.class.isAssignableFrom(att.getType().getBinding())
+                        && !query.getJoins().isEmpty()) {
                     continue;
                 }
-                
+
                 props.add(att.getLocalName());
             }
             propNames = props.toArray(new String[props.size()]);
@@ -302,8 +303,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
                 if (schema.getDescriptor(queriedAtts[i]) != null) {
                     allowedAtts.add(queriedAtts[i]);
                 } else {
-                    LOGGER.info("queried a not allowed property: " + queriedAtts[i]
-                        + ". Ommitting it from query");
+                    LOGGER.info(
+                            "queried a not allowed property: "
+                                    + queriedAtts[i]
+                                    + ". Ommitting it from query");
                 }
             }
 
@@ -314,19 +317,15 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     }
 
     /**
-     * If a definition query has been configured for the FeatureTypeInfo, makes
-     * and return a new Filter that contains both the query's filter and the
-     * layer's definition one, by logic AND'ing them.
+     * If a definition query has been configured for the FeatureTypeInfo, makes and return a new
+     * Filter that contains both the query's filter and the layer's definition one, by logic AND'ing
+     * them.
      *
      * @param filter Origional user supplied Filter
-     *
      * @return Filter adjusted to the limitations of definitionQuery
-     *
-     * @throws DataSourceException If the filter could not meet the limitations
-     *         of definitionQuery
+     * @throws DataSourceException If the filter could not meet the limitations of definitionQuery
      */
-    protected Filter makeDefinitionFilter(Filter filter)
-        throws DataSourceException {
+    protected Filter makeDefinitionFilter(Filter filter) throws DataSourceException {
         Filter newFilter = filter;
 
         try {
@@ -343,11 +342,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Implement getDataStore.
      *
-     * <p>
-     * Description ...
-     * </p>
-     *
-     *
+     * <p>Description ...
      *
      * @see org.geotools.data.FeatureSource#getDataStore()
      */
@@ -358,12 +353,9 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Implement addFeatureListener.
      *
-     * <p>
-     * Description ...
-     * </p>
+     * <p>Description ...
      *
      * @param listener
-     *
      * @see org.geotools.data.FeatureSource#addFeatureListener(org.geotools.data.FeatureListener)
      */
     public void addFeatureListener(FeatureListener listener) {
@@ -373,12 +365,9 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Implement removeFeatureListener.
      *
-     * <p>
-     * Description ...
-     * </p>
+     * <p>Description ...
      *
      * @param listener
-     *
      * @see org.geotools.data.FeatureSource#removeFeatureListener(org.geotools.data.FeatureListener)
      */
     public void removeFeatureListener(FeatureListener listener) {
@@ -388,48 +377,43 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Implement getFeatures.
      *
-     * <p>
-     * Description ...
-     * </p>
+     * <p>Description ...
      *
      * @param query
-     *
-     *
-     *
      * @throws IOException
-     *
      * @see org.geotools.data.FeatureSource#getFeatures(org.geotools.data.Query)
      */
-    public SimpleFeatureCollection getFeatures(Query query)
-            throws IOException {
+    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         // check for a sort in the query, if the underlying store does not do sorting
         // then we need to apply it after the fact
         SortBy[] sortBy = query.getSortBy();
         Integer offset = null, maxFeatures = null;
-        if(sortBy != null && sortBy != SortBy.UNSORTED) {
-            if(!source.getQueryCapabilities().supportsSorting(sortBy)) {
+        if (sortBy != null && sortBy != SortBy.UNSORTED) {
+            if (!source.getQueryCapabilities().supportsSorting(sortBy)) {
                 query.setSortBy(null);
-                
+
                 // if paging is in and we cannot do sorting natively
                 // we should not let the datastore handle it: we need to sort first, then
                 // page on it
                 offset = query.getStartIndex();
-                maxFeatures = query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
-                
+                maxFeatures =
+                        query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
+
                 query.setStartIndex(null);
                 query.setMaxFeatures(Query.DEFAULT_MAX);
             } else {
                 sortBy = null;
             }
         }
-        
-        //check for an offset in the query, if the underlying store does not do offsets then 
+
+        // check for an offset in the query, if the underlying store does not do offsets then
         // we need to apply it after the fact along with max features
         if (query.getStartIndex() != null) {
             if (!source.getQueryCapabilities().isOffsetSupported()) {
                 offset = query.getStartIndex();
-                maxFeatures = query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
-                
+                maxFeatures =
+                        query.getMaxFeatures() == Integer.MAX_VALUE ? null : query.getMaxFeatures();
+
                 query.setStartIndex(null);
                 query.setMaxFeatures(Query.DEFAULT_MAX);
             }
@@ -437,7 +421,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
 
         Query reprojected = reprojectFilter(query);
         Query newQuery = adaptQuery(reprojected, schema);
-        
+
         // Merge configuration metadata into query hints. This ensures that all
         // metadata for a particular FeatureType is available in the actual data store.
         // All String keys in the featuretype.xml metadata will be transformed into
@@ -446,29 +430,31 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             try {
                 ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
                 newQuery.getHints().put(key, e.getValue());
-            }
-            catch (IllegalArgumentException ignore){
-              LOGGER.fine("Hint "+e.getKey()+": "+ignore);
+            } catch (IllegalArgumentException ignore) {
+                LOGGER.fine("Hint " + e.getKey() + ": " + ignore);
             }
         }
 
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
         try {
-            //this is the raw "unprojected" feature collection
+            // this is the raw "unprojected" feature collection
             SimpleFeatureCollection fc = source.getFeatures(newQuery);
-            
+
             // apply sorting if necessary
             if (sortBy != null && sortBy != SortBy.UNSORTED) {
                 fc = new SortedSimpleFeatureCollection(fc, sortBy);
             }
-            
-            //apply limit offset if necessary
+
+            // apply limit offset if necessary
             if (offset != null || maxFeatures != null) {
-                fc = new MaxSimpleFeatureCollection(fc, offset == null ? 0 : offset, 
-                        maxFeatures == null ? Integer.MAX_VALUE : maxFeatures);
+                fc =
+                        new MaxSimpleFeatureCollection(
+                                fc,
+                                offset == null ? 0 : offset,
+                                maxFeatures == null ? Integer.MAX_VALUE : maxFeatures);
             }
-            
-            //apply reprojection 
+
+            // apply reprojection
             return applyProjectionPolicies(targetCRS, fc);
         } catch (Exception e) {
             throw new DataSourceException(e);
@@ -479,9 +465,8 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         SimpleFeatureType nativeFeatureType = source.getSchema();
         final GeometryDescriptor geom = nativeFeatureType.getGeometryDescriptor();
         // if no geometry involved, no reprojection needed
-        if(geom == null)
-            return query;
-        
+        if (geom == null) return query;
+
         try {
             // default CRS: the CRS we can assume geometry and bbox elements in filter are
             // that is, usually the declared one, but the native one in the leave case
@@ -491,32 +476,33 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // that case we completely ignore the native one)
             CoordinateReferenceSystem targetCRS = null;
             CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
-            if(srsHandling == ProjectionPolicy.FORCE_DECLARED) {
+            if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
                 defaultCRS = declaredCRS;
                 targetCRS = declaredCRS;
                 nativeFeatureType = FeatureTypes.transform(nativeFeatureType, declaredCRS);
-            } else if(srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {
+            } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 defaultCRS = declaredCRS;
                 targetCRS = nativeCRS;
             } else { // FeatureTypeInfo.LEAVE
                 defaultCRS = nativeCRS;
                 targetCRS = nativeCRS;
             }
-            
+
             // now we apply a default to all geometries and bbox in the filter
             DefaultCRSFilterVisitor defaultCRSVisitor = new DefaultCRSFilterVisitor(ff, defaultCRS);
             Filter filter = query.getFilter() != null ? query.getFilter() : Filter.INCLUDE;
             Filter defaultedFilter = (Filter) filter.accept(defaultCRSVisitor, null);
-            
+
             // and then we reproject all geometries so that the datastore receives
-            // them in the native projection system (or the forced one, in case of force) 
-            ReprojectingFilterVisitor reprojectingVisitor = new ReprojectingFilterVisitor(ff, nativeFeatureType);
+            // them in the native projection system (or the forced one, in case of force)
+            ReprojectingFilterVisitor reprojectingVisitor =
+                    new ReprojectingFilterVisitor(ff, nativeFeatureType);
             Filter reprojectedFilter = (Filter) defaultedFilter.accept(reprojectingVisitor, null);
-            
+
             Query reprojectedQuery = new Query(query);
             reprojectedQuery.setFilter(reprojectedFilter);
             return reprojectedQuery;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new DataSourceException("Had troubles handling filter reprojection...", e);
         }
     }
@@ -526,43 +512,43 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * target CRS, if any (can be null, in that case only the projection policy is applied)
      */
     protected SimpleFeatureCollection applyProjectionPolicies(
-            CoordinateReferenceSystem targetCRS,
-            SimpleFeatureCollection fc)
-            throws IOException, SchemaException, TransformException,
-            OperationNotFoundException, FactoryException {
-        if ( fc.getSchema().getGeometryDescriptor() == null ) {
+            CoordinateReferenceSystem targetCRS, SimpleFeatureCollection fc)
+            throws IOException, SchemaException, TransformException, OperationNotFoundException,
+                    FactoryException {
+        if (fc.getSchema().getGeometryDescriptor() == null) {
             // reprojection and crs forcing do not make sense, bail out
             return fc;
-        } 
-        CoordinateReferenceSystem nativeCRS = fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
-        
-        if(nativeCRS == null) {
-            if(declaredCRS != null) {
-                fc =  new ForceCoordinateSystemFeatureResults(fc, declaredCRS);
+        }
+        CoordinateReferenceSystem nativeCRS =
+                fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
+
+        if (nativeCRS == null) {
+            if (declaredCRS != null) {
+                fc = new ForceCoordinateSystemFeatureResults(fc, declaredCRS);
                 nativeCRS = declaredCRS;
             }
-        } else if(srsHandling == ProjectionPolicy.FORCE_DECLARED && !nativeCRS.equals(declaredCRS)) {
-            fc =  new ForceCoordinateSystemFeatureResults(fc, declaredCRS);
-            nativeCRS = declaredCRS;
-        } else if(srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED && targetCRS == null
+        } else if (srsHandling == ProjectionPolicy.FORCE_DECLARED
                 && !nativeCRS.equals(declaredCRS)) {
-            fc = new ReprojectFeatureResults(fc,declaredCRS);
+            fc = new ForceCoordinateSystemFeatureResults(fc, declaredCRS);
+            nativeCRS = declaredCRS;
+        } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED
+                && targetCRS == null
+                && !nativeCRS.equals(declaredCRS)) {
+            fc = new ReprojectFeatureResults(fc, declaredCRS);
         }
 
-        
-        //was reproject specified as part of the query?
-        if (targetCRS != null ) {
-            //reprojection is occuring
-            if ( nativeCRS == null ) {
-                //we do not know what the native crs which means we can 
-                // not be sure if we should reproject or not... so we go 
+        // was reproject specified as part of the query?
+        if (targetCRS != null) {
+            // reprojection is occuring
+            if (nativeCRS == null) {
+                // we do not know what the native crs which means we can
+                // not be sure if we should reproject or not... so we go
                 // ahead and reproject regardless
-                fc = new ReprojectFeatureResults(fc,targetCRS);
-            }
-            else {
-                //only reproject if native != target
+                fc = new ReprojectFeatureResults(fc, targetCRS);
+            } else {
+                // only reproject if native != target
                 if (!CRS.equalsIgnoreMetadata(nativeCRS, targetCRS)) {
-                    fc = new ReprojectFeatureResults(fc,targetCRS);                        
+                    fc = new ReprojectFeatureResults(fc, targetCRS);
                 }
             }
         }
@@ -570,55 +556,55 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     }
 
     /**
-     * Transforms the query applying the definition query in this layer, removes reprojection
-     * since data stores cannot be trusted
+     * Transforms the query applying the definition query in this layer, removes reprojection since
+     * data stores cannot be trusted
+     *
      * @param query
      * @param schema TODO
-     *
      * @throws IOException
      */
     protected Query adaptQuery(Query query, SimpleFeatureType schema) throws IOException {
         // if needed, reproject the filter to the native srs
-        
-        
+
         Query newQuery = makeDefinitionQuery(query, schema);
 
-//        // see if the CRS got xfered over
-//        // a. old had a CRS, new doesnt
-//        boolean requireXferCRS = (newQuery.getCoordinateSystem() == null)
-//            && (query.getCoordinateSystem() != null);
-//
-//        if ((newQuery.getCoordinateSystem() != null) && (query.getCoordinateSystem() != null)) {
-//            //b. both have CRS, but they're different
-//            requireXferCRS = !(newQuery.getCoordinateSystem().equals(query.getCoordinateSystem()));
-//        }
-//
-//        if (requireXferCRS) {
-//            //carry along the CRS
-//            if (!(newQuery instanceof Query)) {
-//                newQuery = new Query(newQuery);
-//            }
-//
-//            ((Query) newQuery).setCoordinateSystem(query.getCoordinateSystem());
-//        }
-        
-        //JD: this is a huge hack... but its the only way to ensure that we 
-        // we get what we ask for ... which is not reprojection, since 
+        //        // see if the CRS got xfered over
+        //        // a. old had a CRS, new doesnt
+        //        boolean requireXferCRS = (newQuery.getCoordinateSystem() == null)
+        //            && (query.getCoordinateSystem() != null);
+        //
+        //        if ((newQuery.getCoordinateSystem() != null) && (query.getCoordinateSystem() !=
+        // null)) {
+        //            //b. both have CRS, but they're different
+        //            requireXferCRS =
+        // !(newQuery.getCoordinateSystem().equals(query.getCoordinateSystem()));
+        //        }
+        //
+        //        if (requireXferCRS) {
+        //            //carry along the CRS
+        //            if (!(newQuery instanceof Query)) {
+        //                newQuery = new Query(newQuery);
+        //            }
+        //
+        //            ((Query) newQuery).setCoordinateSystem(query.getCoordinateSystem());
+        //        }
+
+        // JD: this is a huge hack... but its the only way to ensure that we
+        // we get what we ask for ... which is not reprojection, since
         // datastores are unreliable in this aspect we dont know if they will
         // reproject or not.
         // AA: added force coordinate system reset as well, since we cannot
         // trust GT2 datastores there neither.
-        if ( newQuery.getCoordinateSystemReproject() != null ) {
+        if (newQuery.getCoordinateSystemReproject() != null) {
             newQuery.setCoordinateSystemReproject(null);
         }
-        if ( newQuery.getCoordinateSystem() != null ) {
+        if (newQuery.getCoordinateSystem() != null) {
             newQuery.setCoordinateSystem(null);
         }
         return newQuery;
     }
 
-    public SimpleFeatureCollection getFeatures(Filter filter)
-            throws IOException {
+    public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return getFeatures(new Query(schema.getTypeName(), filter));
     }
 
@@ -629,11 +615,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Implement getSchema.
      *
-     * <p>
-     * Description ...
-     * </p>
-     *
-     *
+     * <p>Description ...
      *
      * @see org.geotools.data.FeatureSource#getSchema()
      */
@@ -644,13 +626,9 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Retrieves the total extent of this FeatureSource.
      *
-     * <p>
-     * Please note this extent will reflect the provided definitionQuery.
-     * </p>
+     * <p>Please note this extent will reflect the provided definitionQuery.
      *
-     * @return Extent of this FeatureSource, or <code>null</code> if no
-     *         optimizations exist.
-     *
+     * @return Extent of this FeatureSource, or <code>null</code> if no optimizations exist.
      * @throws IOException If bounds of definitionQuery
      */
     public ReferencedEnvelope getBounds() throws IOException {
@@ -667,22 +645,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Retrive the extent of the Query.
      *
-     * <p>
-     * This method provides access to an optimized getBounds opperation. If no
-     * optimized opperation is available <code>null</code> will be returned.
-     * </p>
+     * <p>This method provides access to an optimized getBounds opperation. If no optimized
+     * opperation is available <code>null</code> will be returned.
      *
-     * <p>
-     * You may still make use of getFeatures( Query ).getCount() which will
-     * return the correct answer (even if it has to itterate through all the
-     * results to do so.
-     * </p>
+     * <p>You may still make use of getFeatures( Query ).getCount() which will return the correct
+     * answer (even if it has to itterate through all the results to do so.
      *
      * @param query User's query
-     *
-     * @return Extend of Query or <code>null</code> if no optimization is
-     *         available
-     *
+     * @return Extend of Query or <code>null</code> if no optimization is available
      * @throws IOException If a problem is encountered with source
      */
     public ReferencedEnvelope getBounds(Query query) throws IOException {
@@ -699,21 +669,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /**
      * Adjust query and forward to source.
      *
-     * <p>
-     * This method provides access to an optimized getCount opperation. If no
-     * optimized opperation is available <code>-1</code> will be returned.
-     * </p>
+     * <p>This method provides access to an optimized getCount opperation. If no optimized
+     * opperation is available <code>-1</code> will be returned.
      *
-     * <p>
-     * You may still make use of getFeatures( Query ).getCount() which will
-     * return the correct answer (even if it has to itterate through all the
-     * results to do so).
-     * </p>
+     * <p>You may still make use of getFeatures( Query ).getCount() which will return the correct
+     * answer (even if it has to itterate through all the results to do so).
      *
      * @param query User's query.
-     *
-     * @return Number of Features for Query, or -1 if no optimization is
-     *         available.
+     * @return Number of Features for Query, or -1 if no optimization is available.
      */
     public int getCount(Query query) {
         try {
@@ -728,7 +691,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             return 0;
         }
     }
-    
+
     public Set getSupportedHints() {
         return source.getSupportedHints();
     }
@@ -744,13 +707,12 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             public boolean isOffsetSupported() {
                 return true;
             }
-            
+
             @Override
             public boolean supportsSorting(SortBy[] sortAttributes) {
                 return true;
             }
         };
-        
     }
 
     protected static class Settings {
@@ -763,7 +725,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
 
         /**
          * Constructor parameter for GeoServerFeatureSource.
-         * 
+         *
          * @param schema
          * @param definitionQuery
          * @param declaredCRS
@@ -771,9 +733,13 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
          * @param linearizationTolerance
          * @param metadata Feature type metadata
          */
-        protected Settings(SimpleFeatureType schema, Filter definitionQuery,
-                CoordinateReferenceSystem declaredCRS, int srsHandling,
-                Double linearizationTolerance, MetadataMap metadata) {
+        protected Settings(
+                SimpleFeatureType schema,
+                Filter definitionQuery,
+                CoordinateReferenceSystem declaredCRS,
+                int srsHandling,
+                Double linearizationTolerance,
+                MetadataMap metadata) {
             this.schema = schema;
             this.definitionQuery = definitionQuery;
             this.declaredCRS = declaredCRS;

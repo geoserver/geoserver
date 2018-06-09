@@ -9,11 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -42,44 +40,52 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller responsible for freemarker templates.
- * 
+ *
  * <ul>
- * <li>templates</li>
- * <li>templates/{templateName}.ftl</li>
- * <li>workspaces/{workspaceName}/templates</li>
- * <li>workspaces/{workspaceName}/templates/{template>.ftl</li>
- * <li>workspaces/{workspaceName}/datastores/{storeName}/templates</li>
- * <li>workspaces/{workspaceName}/datastores/{storeName}/templates/{templateName}.ftl</li>
- * <li>workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates</li>
- * <li>workspaces/{workspaceName}/datastores/{storeName}/teaturetypes/{featureTypeName}/templates/{templateName}.ftl</li>
- * <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates</li>
- * <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates/{templateName}.ftl</li>
+ *   <li>templates
+ *   <li>templates/{templateName}.ftl
+ *   <li>workspaces/{workspaceName}/templates
+ *   <li>workspaces/{workspaceName}/templates/{template>.ftl
+ *   <li>workspaces/{workspaceName}/datastores/{storeName}/templates
+ *   <li>workspaces/{workspaceName}/datastores/{storeName}/templates/{templateName}.ftl
+ *   <li>workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates
+ *   <li>workspaces/{workspaceName}/datastores/{storeName}/teaturetypes/{featureTypeName}/templates/{templateName}.ftl
+ *   <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates
+ *   <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates/{templateName}.ftl
  * </ul>
+ *
  * @author Jody Garnett (Boundless)
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = {
+@RequestMapping(
+    path = {
         RestBaseController.ROOT_PATH + "/templates",
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/templates",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"})
+        RestBaseController.ROOT_PATH
+                + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
+        RestBaseController.ROOT_PATH
+                + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
+        RestBaseController.ROOT_PATH
+                + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
+        RestBaseController.ROOT_PATH
+                + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"
+    }
+)
 public class TemplateController extends AbstractCatalogController {
-    
+
     private GeoServerResourceLoader resources;
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
-    
+
     @Autowired
     public TemplateController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
         resources = catalog.getResourceLoader();
     }
-    
+
     /**
      * Template definition.
-     * 
+     *
      * @return Template definition
      */
     @DeleteMapping(value = "/{templateName}")
@@ -90,26 +96,29 @@ public class TemplateController extends AbstractCatalogController {
             @PathVariable(required = false) String featureTypeName,
             @PathVariable String templateName) {
 
-        String filename = templateName+"."+ MediaTypeExtensions.FTL_EXTENSION;
-        String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
+        String filename = templateName + "." + MediaTypeExtensions.FTL_EXTENSION;
+        String path = Paths.path(path(workspaceName, storeName, featureTypeName), filename);
         Resource resource = resources.get(path);
-        
-        if( resource.getType() != Type.RESOURCE ){
-            throw new ResourceNotFoundException("Template not found: '"+path+"'");
+
+        if (resource.getType() != Type.RESOURCE) {
+            throw new ResourceNotFoundException("Template not found: '" + path + "'");
         }
         boolean removed = resource.delete();
         if (!removed) {
-            throw new RestException("Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException(
+                    "Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Template definition.
-     * 
+     *
      * @return Template Definitin
      */
-    @GetMapping(value = "/{templateName}", produces = {
-            MediaTypeExtensions.TEXT_FTL_VALUE})
+    @GetMapping(
+        value = "/{templateName}",
+        produces = {MediaTypeExtensions.TEXT_FTL_VALUE}
+    )
     public void templateGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -117,37 +126,39 @@ public class TemplateController extends AbstractCatalogController {
             @PathVariable String templateName,
             HttpServletResponse response) {
 
-        String filename = templateName+"."+ MediaTypeExtensions.FTL_EXTENSION;
-        String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
+        String filename = templateName + "." + MediaTypeExtensions.FTL_EXTENSION;
+        String path = Paths.path(path(workspaceName, storeName, featureTypeName), filename);
         Resource resource = resources.get(path);
-        
-        if( resource.getType() != Type.RESOURCE ){
-            throw new ResourceNotFoundException("Template not found: '"+path+"'");
+
+        if (resource.getType() != Type.RESOURCE) {
+            throw new ResourceNotFoundException("Template not found: '" + path + "'");
         }
         byte[] bytes;
         try {
             bytes = resource.getContents();
-            
+
             response.setContentType(MediaTypeExtensions.TEXT_FTL_VALUE);
             response.setContentLength(bytes.length);
-            
-            try( ServletOutputStream output = response.getOutputStream() ){
+
+            try (ServletOutputStream output = response.getOutputStream()) {
                 output.write(bytes);
                 output.flush();
             }
         } catch (IOException problem) {
-            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,problem);
+            throw new RestException(
+                    problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
         }
     }
 
     /**
      * All templates as JSON, XML or HTML.
-     * 
+     *
      * @return All templates
      */
-    @PutMapping(value = "/{templateName}", consumes = {
-            MediaTypeExtensions.TEXT_FTL_VALUE,
-            MediaType.TEXT_PLAIN_VALUE})
+    @PutMapping(
+        value = "/{templateName}",
+        consumes = {MediaTypeExtensions.TEXT_FTL_VALUE, MediaType.TEXT_PLAIN_VALUE}
+    )
     @ResponseStatus(HttpStatus.CREATED)
     public void templatePut(
             @PathVariable(required = false) String workspaceName,
@@ -159,7 +170,7 @@ public class TemplateController extends AbstractCatalogController {
         String filename = templateName + "." + MediaTypeExtensions.FTL_EXTENSION;
         String path = path(workspaceName, storeName, featureTypeName);
         Resource directory = resources.get(path);
-    
+
         Resource resource = fileUpload(directory, filename, request);
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("PUT template: " + resource.path());
@@ -169,39 +180,45 @@ public class TemplateController extends AbstractCatalogController {
     //
     // List Templates
     //
-    // These endpoints return a list of FreeMarkerTemplateInfo, that is converted to the appropriate output.
+    // These endpoints return a list of FreeMarkerTemplateInfo, that is converted to the appropriate
+    // output.
     //
     /**
      * All templates as JSON, XML or HTML.
-     * 
+     *
      * @return All templates
      */
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.TEXT_HTML_VALUE, // this is the default
             MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE})
+            MediaType.APPLICATION_XML_VALUE
+        }
+    )
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
-            @PathVariable(required = false) String featureTypeName){
+            @PathVariable(required = false) String featureTypeName) {
 
-        String path = path(workspaceName, storeName, featureTypeName );
+        String path = path(workspaceName, storeName, featureTypeName);
         Resource directory = resources.get(path);
-        switch( directory.getType() ){
-        case RESOURCE:
-        case UNDEFINED:
-            throw new ResourceNotFoundException("Directory not found: '"+path+"'"); 
-        default:
-            List<Resource> files = Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
-            List<TemplateInfo> list = new ArrayList<>();
-            for (Resource file : files) {
-                list.add(new TemplateInfo(file));
-            }
-            return wrapList(list, TemplateInfo.class);
+        switch (directory.getType()) {
+            case RESOURCE:
+            case UNDEFINED:
+                throw new ResourceNotFoundException("Directory not found: '" + path + "'");
+            default:
+                List<Resource> files =
+                        Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
+                List<TemplateInfo> list = new ArrayList<>();
+                for (Resource file : files) {
+                    list.add(new TemplateInfo(file));
+                }
+                return wrapList(list, TemplateInfo.class);
         }
     }
     /**
      * Verifies mime type
+     *
      * @param directory
      * @param filename
      * @param request
@@ -209,19 +226,23 @@ public class TemplateController extends AbstractCatalogController {
      */
     private Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path="
-                    + directory.path());
+            LOGGER.info(
+                    "PUT file: mimetype="
+                            + request.getContentType()
+                            + ", path="
+                            + directory.path());
         }
         try {
             return RESTUtils.handleBinUpload(filename, directory, false, request);
         } catch (IOException problem) {
-            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
-                    problem);
+            throw new RestException(
+                    problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
         }
     }
 
     /**
      * Construct "get directory path"
+     *
      * @param workspace Workspace, optional
      * @param store DataStore or Coverage store, requires workspace
      * @param type FeatureType or Coverage, requires store
@@ -230,7 +251,7 @@ public class TemplateController extends AbstractCatalogController {
     public static String path(String workspace, String store, String type) {
         List<String> path = new ArrayList<>();
         path.add("workspaces");
-        
+
         if (workspace != null) {
             path.add(workspace);
             if (store != null) {
@@ -240,7 +261,6 @@ public class TemplateController extends AbstractCatalogController {
                 }
             }
         }
-        return Paths.path( path.toArray(new String[] {}) );
+        return Paths.path(path.toArray(new String[] {}));
     }
-    
 }

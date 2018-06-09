@@ -7,12 +7,11 @@ package org.geoserver.rest.security;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.apache.commons.lang.StringUtils;
-import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.logging.Logging;
@@ -24,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Master password controller
- */
+/** Master password controller */
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/masterpw")
 public class MasterPasswordController extends RestBaseController {
@@ -43,11 +40,14 @@ public class MasterPasswordController extends RestBaseController {
         return GeoServerExtensions.bean(GeoServerSecurityManager.class);
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public NamedMap<String, String> masterPasswordGet() throws IOException {
 
         if (!getManager().checkAuthenticationForAdminRole()) {
@@ -63,27 +63,32 @@ public class MasterPasswordController extends RestBaseController {
         return m;
     }
 
-    @PutMapping(consumes = {
+    @PutMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public void masterPasswordPut(@RequestBody Map<String, String> putMap) throws IOException {
         if (!getManager().checkAuthenticationForAdminRole()) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
-            throw new RestException("Amdinistrative privelges required",
-                    HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException(
+                    "Amdinistrative privelges required", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         String providerName;
         try {
             providerName = getManager().loadMasterPasswordConfig().getProviderName();
             if (getManager().loadMasterPassswordProviderConfig(providerName).isReadOnly()) {
-                throw new RestException("Master password provider does not allow writes",
+                throw new RestException(
+                        "Master password provider does not allow writes",
                         HttpStatus.METHOD_NOT_ALLOWED);
             }
         } catch (IOException e) {
-            throw new RestException("Master password provider does not allow writes",
+            throw new RestException(
+                    "Master password provider does not allow writes",
                     HttpStatus.METHOD_NOT_ALLOWED);
         }
 
@@ -101,15 +106,14 @@ public class MasterPasswordController extends RestBaseController {
 
         GeoServerSecurityManager m = getManager();
         try {
-            m.saveMasterPasswordConfig(m.loadMasterPasswordConfig(), currentArray, newpassArray,
-                    newpassArray);
+            m.saveMasterPasswordConfig(
+                    m.loadMasterPasswordConfig(), currentArray, newpassArray, newpassArray);
         } catch (Exception e) {
-            throw new RestException("Cannot change master password",
-                    HttpStatus.UNPROCESSABLE_ENTITY, e);
+            throw new RestException(
+                    "Cannot change master password", HttpStatus.UNPROCESSABLE_ENTITY, e);
         } finally {
             m.disposePassword(currentArray);
             m.disposePassword(newpassArray);
         }
     }
-
 }

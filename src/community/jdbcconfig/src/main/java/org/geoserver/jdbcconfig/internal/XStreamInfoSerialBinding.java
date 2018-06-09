@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
 import org.geoserver.config.util.XStreamPersister;
@@ -23,7 +22,7 @@ public class XStreamInfoSerialBinding {
     public XStreamInfoSerialBinding(final XStreamPersisterFactory xspf) {
         this.xstreamPersister = xspf.createXMLPersister();
         this.xstreamPersister.setLoggingLevel(Level.WARNING);
-        //new JDBCConfigXStreamPersisterInitializer().init(this.xstreamPersister);
+        // new JDBCConfigXStreamPersisterInitializer().init(this.xstreamPersister);
     }
 
     public <T extends Info> T entryToObject(InputStream in, Class<T> target) {
@@ -64,5 +63,4 @@ public class XStreamInfoSerialBinding {
     public void setCatalog(Catalog catalog) {
         xstreamPersister.setCatalog(catalog);
     }
-
 }

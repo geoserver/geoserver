@@ -6,13 +6,11 @@
 package org.geoserver.ows.kvp;
 
 import java.net.URL;
-
 import org.geoserver.ows.KvpParser;
-
 
 /**
  * Parses url kvp's of the form 'key=&lt;url&gt;'.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class URLKvpParser extends KvpParser {
@@ -30,10 +28,10 @@ public class URLKvpParser extends KvpParser {
     }
 
     /**
-     * URLEncoder.encode does not respect the RFC 2396, so we rolled our own little
-     * encoder. It's not complete, but should work in most cases
-     * @param url
+     * URLEncoder.encode does not respect the RFC 2396, so we rolled our own little encoder. It's
+     * not complete, but should work in most cases
      *
+     * @param url
      */
     public static String fixURL(String url) {
         StringBuffer sb = new StringBuffer();
@@ -41,8 +39,8 @@ public class URLKvpParser extends KvpParser {
         for (int i = 0; i < url.length(); i++) {
             char c = url.charAt(i);
 
-            // From RFC, "Only alphanumerics [0-9a-zA-Z], the special 
-            // characters "$-_.+!*'(),", and reserved characters used 
+            // From RFC, "Only alphanumerics [0-9a-zA-Z], the special
+            // characters "$-_.+!*'(),", and reserved characters used
             // for their reserved purposes may be used unencoded within a URL
             // Here we keep all the good ones, and remove the few uneeded in their
             // ascii range. We also keep / and : to make sure basic URL elements

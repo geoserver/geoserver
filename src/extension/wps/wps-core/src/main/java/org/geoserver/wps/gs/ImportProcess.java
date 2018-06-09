@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
 import javax.media.jai.Interpolation;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -70,16 +68,18 @@ import org.vfny.geoserver.util.WCSUtils;
 
 /**
  * Imports a feature collection into the GeoServer catalog
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
-@DescribeProcess(title = "Import to Catalog", description = "Imports a feature collection into the catalog")
+@DescribeProcess(
+    title = "Import to Catalog",
+    description = "Imports a feature collection into the catalog"
+)
 public class ImportProcess implements GSProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
 
-    private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
+    private static final GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
 
     static {
         // setting the write parameters (we my want to make these configurable in the future
@@ -99,17 +99,54 @@ public class ImportProcess implements GSProcess {
 
     @DescribeResult(name = "layerName", description = "Name of the new featuretype, with workspace")
     public String execute(
-            @DescribeParameter(name = "features", min = 0, description = "Input feature collection") SimpleFeatureCollection features,
-            @DescribeParameter(name = "coverage", min = 0, description = "Input raster") GridCoverage2D coverage,
-            @DescribeParameter(name = "workspace", min = 0, description = "Target workspace (default is the system default)") String workspace,
-            @DescribeParameter(name = "store", min = 0, description = "Target store (default is the workspace default)") String store,
-            @DescribeParameter(name = "name", min = 0, description = "Name of the new featuretype/coverage (default is the name of the features in the collection)") String name,
-            @DescribeParameter(name = "srs", min = 0, description = "Target coordinate reference system (default is based on source when possible)") CoordinateReferenceSystem srs,
-            @DescribeParameter(name = "srsHandling", min = 0, description = "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)") ProjectionPolicy srsHandling,
-            @DescribeParameter(name = "styleName", min = 0, description = "Name of the style to be associated with the layer (default is a standard geometry-specific style)") String styleName,
-            ProgressListener listener) throws ProcessException {
+            @DescribeParameter(name = "features", min = 0, description = "Input feature collection")
+                    SimpleFeatureCollection features,
+            @DescribeParameter(name = "coverage", min = 0, description = "Input raster")
+                    GridCoverage2D coverage,
+            @DescribeParameter(
+                        name = "workspace",
+                        min = 0,
+                        description = "Target workspace (default is the system default)"
+                    )
+                    String workspace,
+            @DescribeParameter(
+                        name = "store",
+                        min = 0,
+                        description = "Target store (default is the workspace default)"
+                    )
+                    String store,
+            @DescribeParameter(
+                        name = "name",
+                        min = 0,
+                        description =
+                                "Name of the new featuretype/coverage (default is the name of the features in the collection)"
+                    )
+                    String name,
+            @DescribeParameter(
+                        name = "srs",
+                        min = 0,
+                        description =
+                                "Target coordinate reference system (default is based on source when possible)"
+                    )
+                    CoordinateReferenceSystem srs,
+            @DescribeParameter(
+                        name = "srsHandling",
+                        min = 0,
+                        description =
+                                "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)"
+                    )
+                    ProjectionPolicy srsHandling,
+            @DescribeParameter(
+                        name = "styleName",
+                        min = 0,
+                        description =
+                                "Name of the style to be associated with the layer (default is a standard geometry-specific style)"
+                    )
+                    String styleName,
+            ProgressListener listener)
+            throws ProcessException {
         // avoid null checks
-        if(listener == null) {
+        if (listener == null) {
             listener = new NullProgressListener();
         }
         listener.started();
@@ -148,8 +185,8 @@ public class ImportProcess implements GSProcess {
                 if (features != null) {
                     storeInfo = catalog.getDefaultDataStore(ws);
                     if (storeInfo == null) {
-                        throw new ProcessException("Could not find a default store in workspace "
-                                + ws.getName());
+                        throw new ProcessException(
+                                "Could not find a default store in workspace " + ws.getName());
                     }
                 } else if (coverage != null) {
                     // since the store doesn't exist, create it
@@ -162,22 +199,23 @@ public class ImportProcess implements GSProcess {
         } else if (features != null) {
             storeInfo = catalog.getDefaultDataStore(ws);
             if (storeInfo == null) {
-                throw new ProcessException("Could not find a default store in workspace "
-                        + ws.getName());
+                throw new ProcessException(
+                        "Could not find a default store in workspace " + ws.getName());
             }
         } else if (coverage != null) {
             // create a new coverage store
-            LOGGER.info("Auto-configuring coverage store: "
-                    + (name != null ? name : coverage.getName().toString()));
+            LOGGER.info(
+                    "Auto-configuring coverage store: "
+                            + (name != null ? name : coverage.getName().toString()));
 
-            storeInfo = cb
-                    .buildCoverageStore((name != null ? name : coverage.getName().toString()));
+            storeInfo =
+                    cb.buildCoverageStore((name != null ? name : coverage.getName().toString()));
             add = true;
             store = (name != null ? name : coverage.getName().toString());
 
             if (storeInfo == null) {
-                throw new ProcessException("Could not find a default store in workspace "
-                        + ws.getName());
+                throw new ProcessException(
+                        "Could not find a default store in workspace " + ws.getName());
             }
         }
 
@@ -205,8 +243,8 @@ public class ImportProcess implements GSProcess {
                 tentativeTargetName = ws.getName() + ":" + features.getSchema().getTypeName();
             }
             if (catalog.getLayer(tentativeTargetName) != null) {
-                throw new ProcessException("Target layer " + tentativeTargetName
-                        + " already exists");
+                throw new ProcessException(
+                        "Target layer " + tentativeTargetName + " already exists");
             }
 
             // check the target crs
@@ -232,14 +270,17 @@ public class ImportProcess implements GSProcess {
                 } else {
                     CoordinateReferenceSystem nativeCrs = gd.getCoordinateReferenceSystem();
                     if (nativeCrs == null) {
-                        throw new ProcessException("The original data has no native CRS, "
-                                + "you need to specify the srs parameter");
+                        throw new ProcessException(
+                                "The original data has no native CRS, "
+                                        + "you need to specify the srs parameter");
                     } else {
                         try {
                             Integer code = CRS.lookupEpsgCode(nativeCrs, true);
                             if (code == null) {
-                                throw new ProcessException("Could not find an EPSG code for data "
-                                        + "native spatial reference system: " + nativeCrs);
+                                throw new ProcessException(
+                                        "Could not find an EPSG code for data "
+                                                + "native spatial reference system: "
+                                                + nativeCrs);
                             } else {
                                 targetSRSCode = "EPSG:" + code;
                             }
@@ -247,7 +288,8 @@ public class ImportProcess implements GSProcess {
                             throw new ProcessException(
                                     "Failed to loookup an official EPSG code for "
                                             + "the source data native "
-                                            + "spatial reference system", e);
+                                            + "spatial reference system",
+                                    e);
                         }
                     }
                 }
@@ -258,7 +300,8 @@ public class ImportProcess implements GSProcess {
             // import the data into the target store
             SimpleFeatureType targetType;
             try {
-                targetType = importDataIntoStore(features, name, (DataStoreInfo) storeInfo, listener);
+                targetType =
+                        importDataIntoStore(features, name, (DataStoreInfo) storeInfo, listener);
             } catch (IOException e) {
                 throw new ProcessException("Failed to import data into the target store", e);
             }
@@ -291,7 +334,7 @@ public class ImportProcess implements GSProcess {
 
                 listener.progress(100);
                 listener.complete();
-                
+
                 return layerInfo.prefixedName();
             } catch (Exception e) {
                 throw new ProcessException(
@@ -299,8 +342,8 @@ public class ImportProcess implements GSProcess {
             }
         } else if (coverage != null) {
             try {
-                final Resource directory = catalog.getResourceLoader().get(
-                        Paths.path("data", workspace, store));
+                final Resource directory =
+                        catalog.getResourceLoader().get(Paths.path("data", workspace, store));
                 final File file = File.createTempFile(store, ".tif", directory.dir());
                 ((CoverageStoreInfo) storeInfo).setURL(file.toURL().toExternalForm());
                 ((CoverageStoreInfo) storeInfo).setType("GeoTIFF");
@@ -329,8 +372,9 @@ public class ImportProcess implements GSProcess {
                     } else {
                         CoordinateReferenceSystem nativeCrs = cvCrs;
                         if (nativeCrs == null) {
-                            throw new ProcessException("The original data has no native CRS, "
-                                    + "you need to specify the srs parameter");
+                            throw new ProcessException(
+                                    "The original data has no native CRS, "
+                                            + "you need to specify the srs parameter");
                         } else {
                             try {
                                 Integer code = CRS.lookupEpsgCode(nativeCrs, true);
@@ -347,7 +391,8 @@ public class ImportProcess implements GSProcess {
                                 throw new ProcessException(
                                         "Failed to loookup an official EPSG code for "
                                                 + "the source data native "
-                                                + "spatial reference system", e);
+                                                + "spatial reference system",
+                                        e);
                             }
                         }
                     }
@@ -358,8 +403,13 @@ public class ImportProcess implements GSProcess {
                 MathTransform tx = CRS.findMathTransform(cvCrs, srs);
 
                 if (!tx.isIdentity() || !CRS.equalsIgnoreMetadata(cvCrs, srs)) {
-                    coverage = WCSUtils.resample(coverage, cvCrs, srs, null,
-                            Interpolation.getInstance(Interpolation.INTERP_NEAREST));
+                    coverage =
+                            WCSUtils.resample(
+                                    coverage,
+                                    cvCrs,
+                                    srs,
+                                    null,
+                                    Interpolation.getInstance(Interpolation.INTERP_NEAREST));
                 }
 
                 GeoTiffWriter writer = new GeoTiffWriter(file);
@@ -368,8 +418,9 @@ public class ImportProcess implements GSProcess {
                 final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
                 params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
                         .setValue(DEFAULT_WRITE_PARAMS);
-                final GeneralParameterValue[] wps = (GeneralParameterValue[]) params.values()
-                        .toArray(new GeneralParameterValue[1]);
+                final GeneralParameterValue[] wps =
+                        (GeneralParameterValue[])
+                                params.values().toArray(new GeneralParameterValue[1]);
 
                 try {
                     writer.write(coverage, wps);
@@ -415,13 +466,14 @@ public class ImportProcess implements GSProcess {
 
                 if (!add) {
                     // update the existing
-                    CoverageInfo existing = catalog.getCoverageByCoverageStore(
-                            (CoverageStoreInfo) storeInfo, name != null ? name : coverage.getName()
-                                    .toString());
+                    CoverageInfo existing =
+                            catalog.getCoverageByCoverageStore(
+                                    (CoverageStoreInfo) storeInfo,
+                                    name != null ? name : coverage.getName().toString());
                     if (existing == null) {
                         // grab the first if there is only one
-                        List<CoverageInfo> coverages = catalog
-                                .getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
+                        List<CoverageInfo> coverages =
+                                catalog.getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
                         if (coverages.size() == 1) {
                             existing = coverages.get(0);
                         }
@@ -430,7 +482,8 @@ public class ImportProcess implements GSProcess {
                             add = true;
                         } else {
                             // multiple coverages, and one to configure not specified
-                            throw new ProcessException("Unable to determine coverage to configure.");
+                            throw new ProcessException(
+                                    "Unable to determine coverage to configure.");
                         }
                     }
 
@@ -443,7 +496,8 @@ public class ImportProcess implements GSProcess {
 
                 // do some post configuration, if srs is not known or unset, transform to 4326
                 if ("UNKNOWN".equals(cinfo.getSRS())) {
-                    // CoordinateReferenceSystem sourceCRS = cinfo.getBoundingBox().getCoordinateReferenceSystem();
+                    // CoordinateReferenceSystem sourceCRS =
+                    // cinfo.getBoundingBox().getCoordinateReferenceSystem();
                     // CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326", true);
                     // ReferencedEnvelope re = cinfo.getBoundingBox().transform(targetCRS, true);
                     cinfo.setSRS("EPSG:4326");
@@ -469,7 +523,7 @@ public class ImportProcess implements GSProcess {
                      * ); if ( style != null ) { layerInfo.setDefaultStyle( style ); if ( !layerInfo.getStyles().contains( style ) ) {
                      * layerInfo.getStyles().add( style ); } } else { LOGGER.warning( "Client specified style '" + styleName +
                      * "'but no such style exists."); } }
-                     * 
+                     *
                      * String path = form.getFirstValue( "path"); if ( path != null ) { layerInfo.setPath( path ); }
                      */
 
@@ -493,7 +547,6 @@ public class ImportProcess implements GSProcess {
                     if (styleName != null && targetStyle != null) {
                         layerInfo.setDefaultStyle(targetStyle);
                     }
-
                 }
                 listener.progress(100);
                 listener.complete();
@@ -511,8 +564,12 @@ public class ImportProcess implements GSProcess {
         return null;
     }
 
-    private SimpleFeatureType importDataIntoStore(SimpleFeatureCollection features, String name,
-            DataStoreInfo storeInfo, ProgressListener listener) throws IOException, ProcessException {
+    private SimpleFeatureType importDataIntoStore(
+            SimpleFeatureCollection features,
+            String name,
+            DataStoreInfo storeInfo,
+            ProgressListener listener)
+            throws IOException, ProcessException {
         SimpleFeatureType targetType;
         // grab the data store
         DataStore ds = (DataStore) storeInfo.getDataStore(null);
@@ -544,14 +601,14 @@ public class ImportProcess implements GSProcess {
                             + "that we cannot relate to the one we provided the data store. Cannot proceeed further");
         } else {
             // check the layer is not already there
-            String newLayerName = storeInfo.getWorkspace().getName() + ":"
-                    + targetType.getTypeName();
+            String newLayerName =
+                    storeInfo.getWorkspace().getName() + ":" + targetType.getTypeName();
             LayerInfo layer = catalog.getLayerByName(newLayerName);
             // todo: we should not really reach here and know beforehand what the targetType
             // name is, but if we do we should at least get a way to drop it
             if (layer != null) {
-                throw new ProcessException("Target layer " + newLayerName
-                        + " already exists in the catalog");
+                throw new ProcessException(
+                        "Target layer " + newLayerName + " already exists in the catalog");
             }
         }
 
@@ -561,12 +618,12 @@ public class ImportProcess implements GSProcess {
         Map<String, String> mapping = buildAttributeMapping(sourceType, targetType);
 
         // start a transaction and fill the target with the input features
-        SimpleFeatureStore fstore = (SimpleFeatureStore) ds.getFeatureSource(targetType
-                .getTypeName());
+        SimpleFeatureStore fstore =
+                (SimpleFeatureStore) ds.getFeatureSource(targetType.getTypeName());
         Transaction t = new DefaultTransaction();
         fstore.setTransaction(t);
         boolean complete = false;
-        try(SimpleFeatureIterator fi = features.features()) {
+        try (SimpleFeatureIterator fi = features.features()) {
             SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
             while (fi.hasNext()) {
                 SimpleFeature source = fi.next();
@@ -576,7 +633,7 @@ public class ImportProcess implements GSProcess {
                 }
                 SimpleFeature target = fb.buildFeature(null);
                 fstore.addFeatures(DataUtilities.collection(target));
-                
+
                 // we do no report progress as we'd need the collection size
                 // and the collection might be streaming
                 checkForCancellation(listener);
@@ -584,7 +641,7 @@ public class ImportProcess implements GSProcess {
             t.commit();
             complete = true;
         } finally {
-            if(!complete) {
+            if (!complete) {
                 t.rollback();
             }
             t.close();
@@ -600,14 +657,14 @@ public class ImportProcess implements GSProcess {
     }
 
     /**
-     * Applies a set of heuristics to find which target attribute corresponds to a certain input attribute
-     * 
+     * Applies a set of heuristics to find which target attribute corresponds to a certain input
+     * attribute
+     *
      * @param sourceType
      * @param targetType
-     *
      */
-    Map<String, String> buildAttributeMapping(SimpleFeatureType sourceType,
-            SimpleFeatureType targetType) {
+    Map<String, String> buildAttributeMapping(
+            SimpleFeatureType sourceType, SimpleFeatureType targetType) {
         // look for the typical manglings. For example, if the target is a
         // shapefile store it will move the geometry and name it the_geom
 
@@ -654,14 +711,18 @@ public class ImportProcess implements GSProcess {
         // consider the shapefile geometry descriptor mangling
         if (targetType.getGeometryDescriptor() != null
                 && "the_geom".equals(targetType.getGeometryDescriptor().getLocalName())
-                && !"the_geom".equalsIgnoreCase(sourceType.getGeometryDescriptor().getLocalName())) {
+                && !"the_geom"
+                        .equalsIgnoreCase(sourceType.getGeometryDescriptor().getLocalName())) {
             result.put(sourceType.getGeometryDescriptor().getLocalName(), "the_geom");
         }
 
         // and finally we return with as much as we can match
         if (!sourceNames.isEmpty()) {
-            LOGGER.warning("Could not match the following attributes " + sourceNames
-                    + " to the target feature type ones: " + targetType);
+            LOGGER.warning(
+                    "Could not match the following attributes "
+                            + sourceNames
+                            + " to the target feature type ones: "
+                            + targetType);
         }
         return result;
     }

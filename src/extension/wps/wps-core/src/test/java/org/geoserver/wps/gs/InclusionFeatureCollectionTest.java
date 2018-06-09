@@ -8,6 +8,12 @@ package org.geoserver.wps.gs;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -15,17 +21,10 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.junit.Test;
 import org.geotools.process.vector.InclusionFeatureCollection;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class InclusionFeatureCollectionTest extends WPSTestSupport {
 
@@ -43,8 +42,8 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b
-                .getFeatureType());
+        DefaultFeatureCollection secondFeatures =
+                new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate firstArray[] = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -58,7 +57,6 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
             b.add(0);
 
             features.add(b.buildFeature(numFeatures + ""));
-
         }
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
             Coordinate array[] = new Coordinate[5];
@@ -81,7 +79,6 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
         SimpleFeature sf = iterator.next();
         assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
-
     }
 
     @Test
@@ -95,8 +92,8 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b
-                .getFeatureType());
+        DefaultFeatureCollection secondFeatures =
+                new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate firstArray[] = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -110,11 +107,12 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
             b.add(0);
 
             secondFeatures.add(b.buildFeature(numFeatures + ""));
-
         }
 
-        Coordinate centre = ((Polygon) secondFeatures.features().next().getDefaultGeometry())
-                .getCentroid().getCoordinate();
+        Coordinate centre =
+                ((Polygon) secondFeatures.features().next().getDefaultGeometry())
+                        .getCentroid()
+                        .getCoordinate();
         Point p = gf.createPoint(centre);
         b.add(p);
         b.add(0);
@@ -129,6 +127,5 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         Geometry expected = (Geometry) features.features().next().getDefaultGeometry();
         SimpleFeature sf = iterator.next();
         assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
-
     }
 }

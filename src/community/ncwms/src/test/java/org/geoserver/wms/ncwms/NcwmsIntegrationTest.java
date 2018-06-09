@@ -4,6 +4,17 @@
  */
 package org.geoserver.wms.ncwms;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -20,18 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
 
 public class NcwmsIntegrationTest extends WMSTestSupport {
 
@@ -59,10 +58,14 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        testData.addRasterLayer(RAIN, "rain.tif", ".tif", null, NcwmsIntegrationTest.class,
-                getCatalog());
-        testData.addStyle(getCatalog().getDefaultWorkspace(), GRAY_BLUE_STYLE, "grayToBlue.palette",
-                NcwmsIntegrationTest.class, getCatalog(),
+        testData.addRasterLayer(
+                RAIN, "rain.tif", ".tif", null, NcwmsIntegrationTest.class, getCatalog());
+        testData.addStyle(
+                getCatalog().getDefaultWorkspace(),
+                GRAY_BLUE_STYLE,
+                "grayToBlue.palette",
+                NcwmsIntegrationTest.class,
+                getCatalog(),
                 Collections.singletonMap(StyleProperty.FORMAT, PaletteStyleHandler.FORMAT));
 
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(RAIN));
@@ -99,8 +102,8 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     @Test
     public void testLogarithmic() throws Exception {
         // the log application skews the map a lot towards the blues
-        BufferedImage image = getAsImage(requestBase() + "&COLORSCALERANGE=1,6000&LOGSCALE=true",
-                "image/png");
+        BufferedImage image =
+                getAsImage(requestBase() + "&COLORSCALERANGE=1,6000&LOGSCALE=true", "image/png");
         // RenderedImageBrowser.showChain(image);
         // System.in.read();
         // heavy rain here
@@ -124,10 +127,11 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testBeforeAfterColor() throws Exception {
-        BufferedImage image = getAsImage(
-                requestBase()
-                        + "&COLORSCALERANGE=100,4000&BELOWMINCOLOR=0xFF0000&ABOVEMAXCOLOR=0x00FF00",
-                "image/png");
+        BufferedImage image =
+                getAsImage(
+                        requestBase()
+                                + "&COLORSCALERANGE=100,4000&BELOWMINCOLOR=0xFF0000&ABOVEMAXCOLOR=0x00FF00",
+                        "image/png");
         // RenderedImageBrowser.showChain(image);
         // System.in.read();
         // cut away both low and high
@@ -144,14 +148,16 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     }
 
     private String requestBase() {
-        return "wms?service=WMS&version=1.1.1&request=GetMap&layers=" + getLayerId(RAIN)
-                + "&styles=" + GRAY_BLUE_STYLE
+        return "wms?service=WMS&version=1.1.1&request=GetMap&layers="
+                + getLayerId(RAIN)
+                + "&styles="
+                + GRAY_BLUE_STYLE
                 + "&format=image/png&srs=EPSG:4326&bbox=-180,-90,180,90&transparent=true&width=320&height=160";
     }
 
     private void assertUniqueColorCount(BufferedImage image, int count) {
-        int[] rgb = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0,
-                image.getWidth());
+        int[] rgb =
+                image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
         Set<Integer> colors = new HashSet<>();
         for (int i = 0; i < rgb.length; i++) {
             int curr = rgb[i];
@@ -164,16 +170,16 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     @Test
     public void testDatasetFiltering() throws Exception {
         // filter by workspace
-        Document dom = getAsDOM(
-                "wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
+        Document dom =
+                getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
         assertDatasetWithCapabilities(dom);
     }
-    
+
     @Test
     public void testDatasetFilteringPOST() throws Exception {
         // filter by workspace
-        Document dom = postAsDOM(
-                "wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
+        Document dom =
+                postAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
         assertDatasetWithCapabilities(dom);
     }
 
@@ -182,15 +188,17 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         for (LayerInfo layer : getCatalog().getLayers()) {
             if ("cite".equals(layer.getResource().getStore().getWorkspace().getName())
                     && !"Geometryless".equals(layer.getName())) {
-                assertEquals("Did not find " + layer.getName(),
-                        1, xpath
-                                .getMatchingNodes(
+                assertEquals(
+                        "Did not find " + layer.getName(),
+                        1,
+                        xpath.getMatchingNodes(
                                         "//wms:Layer[wms:Name = '" + layer.getName() + "']", dom)
                                 .getLength());
             } else {
-                assertEquals("Found unexpected " + layer.getName(),
-                        0, xpath
-                                .getMatchingNodes(
+                assertEquals(
+                        "Found unexpected " + layer.getName(),
+                        0,
+                        xpath.getMatchingNodes(
                                         "//wms:Layer[wms:Name = '" + layer.getName() + "']", dom)
                                 .getLength());
             }
@@ -202,35 +210,39 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // root container and the layer itself
         assertEquals(2, xpath.getMatchingNodes("//wms:Layer", dom).getLength());
     }
-    
-    
+
     @Test
     public void testPostRequest() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-            "<ogc:GetMap xmlns:ogc=\"http://www.opengis.net/ows\"\n" + 
-            "            xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
-            "   version=\"1.1.1\" service=\"WMS\">\n" + 
-            "   <StyledLayerDescriptor version=\"1.0.0\">\n" + 
-            "      <NamedLayer>\n" + 
-            "        <Name>" + getLayerId(RAIN) + "</Name>\n" + 
-            "        <NamedStyle><Name>" + GRAY_BLUE_STYLE + "</Name></NamedStyle> \n" + 
-            "      </NamedLayer> \n" + 
-            "   </StyledLayerDescriptor>\n" + 
-            "   <BoundingBox srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n" + 
-            "      <gml:coord><gml:X>-180</gml:X><gml:Y>-90</gml:Y></gml:coord>\n" + 
-            "      <gml:coord><gml:X>180</gml:X><gml:Y>90</gml:Y></gml:coord>\n" + 
-            "   </BoundingBox>\n" + 
-            "   <Output>\n" + 
-            "      <Format>image/png</Format>\n" + 
-            "      <Size><Width>320</Width><Height>160</Height></Size>\n" + 
-            "   </Output>\n" + 
-            "</ogc:GetMap>";
-        
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<ogc:GetMap xmlns:ogc=\"http://www.opengis.net/ows\"\n"
+                        + "            xmlns:gml=\"http://www.opengis.net/gml\"\n"
+                        + "   version=\"1.1.1\" service=\"WMS\">\n"
+                        + "   <StyledLayerDescriptor version=\"1.0.0\">\n"
+                        + "      <NamedLayer>\n"
+                        + "        <Name>"
+                        + getLayerId(RAIN)
+                        + "</Name>\n"
+                        + "        <NamedStyle><Name>"
+                        + GRAY_BLUE_STYLE
+                        + "</Name></NamedStyle> \n"
+                        + "      </NamedLayer> \n"
+                        + "   </StyledLayerDescriptor>\n"
+                        + "   <BoundingBox srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                        + "      <gml:coord><gml:X>-180</gml:X><gml:Y>-90</gml:Y></gml:coord>\n"
+                        + "      <gml:coord><gml:X>180</gml:X><gml:Y>90</gml:Y></gml:coord>\n"
+                        + "   </BoundingBox>\n"
+                        + "   <Output>\n"
+                        + "      <Format>image/png</Format>\n"
+                        + "      <Size><Width>320</Width><Height>160</Height></Size>\n"
+                        + "   </Output>\n"
+                        + "</ogc:GetMap>";
+
         MockHttpServletResponse resp = postAsServletResponse("wms", xml);
         assertEquals("image/png", resp.getContentType());
         InputStream is = getBinaryInputStream(resp);
         BufferedImage image = ImageIO.read(is);
-        
+
         // heavy rain here
         assertPixel(image, 32, 74, new Color(37, 37, 236));
         // mid value here
@@ -238,14 +250,15 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // dry here
         assertPixel(image, 160, 60, new Color(170, 170, 170));
     }
-    
+
     @Test
     public void testWfsCapabilitiesPostRequest() throws Exception {
         // run a WFS 2.0 capabilities request, used to NPE in the NcWmsDatasetCallback
-        String xml = "<GetCapabilities xmlns=\"http://www.opengis.net/wfs/2.0\" "
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                + "service=\"WFS\" "
-                + "xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd\"/>";
+        String xml =
+                "<GetCapabilities xmlns=\"http://www.opengis.net/wfs/2.0\" "
+                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                        + "service=\"WFS\" "
+                        + "xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd\"/>";
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
         assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
@@ -254,11 +267,17 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     @Test
     public void testGetLegendGraphic() throws Exception {
         // get legend graphic
-        BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&layer=" + getLayerId(RAIN)
-                        + "&style=" + GRAY_BLUE_STYLE + "&request=GetLegendGraphic&format=image/png&width=20&height=20",
-                "image/png");
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&layer="
+                                + getLayerId(RAIN)
+                                + "&style="
+                                + GRAY_BLUE_STYLE
+                                + "&request=GetLegendGraphic&format=image/png&width=20&height=20",
+                        "image/png");
         // compare the obtained image with the expect result
-        try (InputStream inputStream = this.getClass().getResourceAsStream("gray_blue_legend.png")) {
+        try (InputStream inputStream =
+                this.getClass().getResourceAsStream("gray_blue_legend.png")) {
             ImageAssert.assertEquals(ImageIO.read(inputStream), image, 1000);
         }
     }

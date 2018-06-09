@@ -6,7 +6,6 @@ package org.geoserver.backuprestore.writer;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
@@ -25,11 +24,10 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Abstract Spring Batch {@link ItemReader}.
- * 
- * Configures the {@link Catalog} and initizializes the {@link XStreamPersister}.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * <p>Configures the {@link Catalog} and initizializes the {@link XStreamPersister}.
+ *
+ * @author Alessio Fabiani, GeoSolutions
  */
 @SuppressWarnings("rawtypes")
 public abstract class CatalogWriter<T> extends BackupRestoreItem
@@ -37,47 +35,46 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
 
     protected Class clazz;
 
-    public CatalogWriter(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
+    public CatalogWriter(
+            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
         super(backupFacade, xStreamPersisterFactory);
         this.clazz = clazz;
 
         this.setExecutionContextName(ClassUtils.getShortName(clazz));
     }
 
-    private final ExecutionContextUserSupport executionContextUserSupport = new ExecutionContextUserSupport();
+    private final ExecutionContextUserSupport executionContextUserSupport =
+            new ExecutionContextUserSupport();
 
     /**
      * No-op.
-     * 
+     *
      * @see org.springframework.batch.item.ItemStream#close()
      */
     @Override
-    public void close() {
-    }
+    public void close() {}
 
     /**
      * No-op.
-     * 
+     *
      * @see org.springframework.batch.item.ItemStream#open(ExecutionContext)
      */
     @Override
-    public void open(ExecutionContext executionContext) {
-    }
+    public void open(ExecutionContext executionContext) {}
 
     /**
      * Return empty {@link ExecutionContext}.
-     * 
+     *
      * @see org.springframework.batch.item.ItemStream#update(ExecutionContext)
      */
     @Override
-    public void update(ExecutionContext executionContext) {
-    }
+    public void update(ExecutionContext executionContext) {}
 
     /**
-     * The name of the component which will be used as a stem for keys in the {@link ExecutionContext}. Subclasses should provide a default value,
-     * e.g. the short form of the class name.
-     * 
+     * The name of the component which will be used as a stem for keys in the {@link
+     * ExecutionContext}. Subclasses should provide a default value, e.g. the short form of the
+     * class name.
+     *
      * @param name the name for the component
      */
     public void setName(String name) {
@@ -98,13 +95,13 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
 
     @SuppressWarnings("unchecked")
     protected void firePostWrite(T item, Resource resource) throws IOException {
-        List<CatalogAdditionalResourcesWriter> additionalResourceWriters = GeoServerExtensions
-                .extensions(CatalogAdditionalResourcesWriter.class);
+        List<CatalogAdditionalResourcesWriter> additionalResourceWriters =
+                GeoServerExtensions.extensions(CatalogAdditionalResourcesWriter.class);
 
         for (CatalogAdditionalResourcesWriter wr : additionalResourceWriters) {
             if (wr.canHandle(item)) {
-                wr.writeAdditionalResources(backupFacade, Files.asResource(resource.getFile()),
-                        item);
+                wr.writeAdditionalResources(
+                        backupFacade, Files.asResource(resource.getFile()), item);
             }
         }
     }

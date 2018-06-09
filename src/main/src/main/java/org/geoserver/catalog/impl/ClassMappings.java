@@ -119,7 +119,12 @@ public enum ClassMappings {
 
         @Override
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] { CoverageStoreInfo.class, DataStoreInfo.class, WMSStoreInfo.class, WMTSStoreInfo.class };
+            return new Class[] {
+                CoverageStoreInfo.class,
+                DataStoreInfo.class,
+                WMSStoreInfo.class,
+                WMTSStoreInfo.class
+            };
         }
     },
 
@@ -181,7 +186,9 @@ public enum ClassMappings {
 
         @Override
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] { CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class, WMTSLayerInfo.class };
+            return new Class[] {
+                CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class, WMTSLayerInfo.class
+            };
         }
     },
     PUBLISHED {
@@ -197,7 +204,7 @@ public enum ClassMappings {
 
         @Override
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] { LayerInfo.class, LayerGroupInfo.class };
+            return new Class[] {LayerInfo.class, LayerGroupInfo.class};
         }
     },
     LAYER {
@@ -316,10 +323,10 @@ public enum ClassMappings {
 
     public abstract Class<? extends Info> getImpl();
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Class<? extends Info>[] concreteInterfaces() {
         Class interf = getInterface();
-        return new Class[] { interf };
+        return new Class[] {interf};
     }
 
     public static ClassMappings fromInterface(Class<? extends Info> interfce) {
@@ -339,10 +346,8 @@ public enum ClassMappings {
             return SERVICE;
         }
         for (ClassMappings cm : values()) {
-            if (clazz == cm.getImpl())
-                return cm;
+            if (clazz == cm.getImpl()) return cm;
         }
         return null;
     }
-
 }

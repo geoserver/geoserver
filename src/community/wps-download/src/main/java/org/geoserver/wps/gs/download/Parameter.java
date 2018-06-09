@@ -4,20 +4,17 @@
  */
 package org.geoserver.wps.gs.download;
 
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-/**
- * The key and value pair
- */
-@XmlRootElement(name="Parameter")
+/** The key and value pair */
+@XmlRootElement(name = "Parameter")
 public class Parameter {
-    @XmlAttribute
-    public String key;
+    @XmlAttribute public String key;
+
     @XmlValue
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public String value;

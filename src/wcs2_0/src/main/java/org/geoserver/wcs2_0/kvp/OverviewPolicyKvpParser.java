@@ -7,17 +7,13 @@ package org.geoserver.wcs2_0.kvp;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.Wcs20Factory;
-
 import org.geoserver.ows.KvpParser;
-import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
-import org.geoserver.wcs2_0.exception.WCS20Exception;
-import org.geotools.coverage.grid.io.OverviewPolicy;
 
 /**
  * Parses overview policy from KVP
- * @author Daniele Romagnoli - GeoSolutions
  *
+ * @author Daniele Romagnoli - GeoSolutions
  */
 public class OverviewPolicyKvpParser extends KvpParser {
 
@@ -35,6 +31,5 @@ public class OverviewPolicyKvpParser extends KvpParser {
         se.setNamespace(WCS20Const.OVERVIEW_POLICY_EXTENSION_NAMESPACE);
         se.setSimpleContent(value);
         return se;
-
     }
 }

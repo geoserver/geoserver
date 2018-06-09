@@ -4,16 +4,14 @@
  */
 package org.geogig.geoserver.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.locationtech.geogig.repository.RepositoryResolver;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Data model for the drop-down choice for GeoGig repository configuration. Currently, either a
@@ -28,6 +26,7 @@ public class DropDownModel implements IModel<Serializable> {
     public static final String DIRECTORY_CONFIG = "Directory";
     static String DEFAULT_CONFIG;
     public static final List<String> CONFIG_LIST = new ArrayList<>(2);
+
     static {
         if (RepositoryResolver.resolverAvailableForURIScheme("file")) {
             CONFIG_LIST.add(DIRECTORY_CONFIG);
@@ -47,8 +46,9 @@ public class DropDownModel implements IModel<Serializable> {
 
     public DropDownModel(IModel<RepositoryInfo> repoModel) {
         this.repoModel = repoModel;
-        if (null == repoModel || null == repoModel.getObject() || null == repoModel.getObject()
-                .getLocation()) {
+        if (null == repoModel
+                || null == repoModel.getObject()
+                || null == repoModel.getObject().getLocation()) {
             type = DEFAULT_CONFIG;
         }
     }

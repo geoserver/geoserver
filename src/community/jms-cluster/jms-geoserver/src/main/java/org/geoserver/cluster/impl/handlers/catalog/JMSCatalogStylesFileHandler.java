@@ -5,8 +5,7 @@
  */
 package org.geoserver.cluster.impl.handlers.catalog;
 
-import java.io.File;
-
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.configuration.JMSConfiguration;
@@ -17,60 +16,56 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 
-import com.thoughtworks.xstream.XStream;
-
-/**
- * 
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
- */
+/** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
 public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
-	private final Catalog catalog;
+    private final Catalog catalog;
 
-	private JMSConfiguration config;
-	private final GeoServerResourceLoader loader;
+    private JMSConfiguration config;
+    private final GeoServerResourceLoader loader;
 
-	public JMSCatalogStylesFileHandler(Catalog catalog, XStream xstream,
-			Class clazz, GeoServerResourceLoader loader) {
-		super(xstream, clazz);
-		this.catalog = catalog;
-		this.loader = loader;
-	}
+    public JMSCatalogStylesFileHandler(
+            Catalog catalog, XStream xstream, Class clazz, GeoServerResourceLoader loader) {
+        super(xstream, clazz);
+        this.catalog = catalog;
+        this.loader = loader;
+    }
 
-	public void setConfig(JMSConfiguration config) {
-		this.config = config;
-	}
+    public void setConfig(JMSConfiguration config) {
+        this.config = config;
+    }
 
-	@Override
-	public boolean synchronize(DocumentFile event) throws Exception {
-		if (event == null) {
-			throw new NullArgumentException("Incoming object is null");
-		}
-		if (config == null) {
-			throw new IllegalStateException("Unable to load configuration");
-		} else if (!ReadOnlyConfiguration.isReadOnly(config)) {
-			try {
-				Resource file = loader.get("styles").get(event.getResourceName());
-				
-				if ( !Resources.exists(file) ) {
-					final String styleAbsolutePath = event.getResourcePath();
-					if ( styleAbsolutePath.indexOf("workspaces") > 0 ) {
-						file = loader.get(styleAbsolutePath.substring(styleAbsolutePath.indexOf("workspaces")));
-					}
-				}
-				
-				event.writeTo(file);
-				return true;
-			} catch (Exception e) {
-				if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-					LOGGER.severe(this.getClass()
-							+ " is unable to synchronize the incoming event: "
-							+ event);
-				throw e;
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean synchronize(DocumentFile event) throws Exception {
+        if (event == null) {
+            throw new NullArgumentException("Incoming object is null");
+        }
+        if (config == null) {
+            throw new IllegalStateException("Unable to load configuration");
+        } else if (!ReadOnlyConfiguration.isReadOnly(config)) {
+            try {
+                Resource file = loader.get("styles").get(event.getResourceName());
 
+                if (!Resources.exists(file)) {
+                    final String styleAbsolutePath = event.getResourcePath();
+                    if (styleAbsolutePath.indexOf("workspaces") > 0) {
+                        file =
+                                loader.get(
+                                        styleAbsolutePath.substring(
+                                                styleAbsolutePath.indexOf("workspaces")));
+                    }
+                }
+
+                event.writeTo(file);
+                return true;
+            } catch (Exception e) {
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
+                    LOGGER.severe(
+                            this.getClass()
+                                    + " is unable to synchronize the incoming event: "
+                                    + event);
+                throw e;
+            }
+        }
+        return true;
+    }
 }

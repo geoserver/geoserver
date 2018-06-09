@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.workspace;
 
+import java.util.function.Supplier;
+import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -27,56 +29,55 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.URIValidator;
 import org.geoserver.web.wicket.XMLNameValidator;
 
-import java.util.function.Supplier;
-import java.util.logging.Level;
-
-/**
- * Allows creation of a new workspace
- */
+/** Allows creation of a new workspace */
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -4355978268880701910L;
-	
+
     Form<WorkspaceInfo> form;
     TextField<String> nsUriTextField;
     boolean defaultWs;
-    
+
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
-        
-        form = new Form<WorkspaceInfo>( "form", new CompoundPropertyModel<WorkspaceInfo>(ws) ) {
-            private static final long serialVersionUID = 6088042051374665053L;
-    
-            @Override
-            protected void onSubmit() {
-                handleOnSubmit(form);
-            }
-        };
+
+        form =
+                new Form<WorkspaceInfo>("form", new CompoundPropertyModel<WorkspaceInfo>(ws)) {
+                    private static final long serialVersionUID = 6088042051374665053L;
+
+                    @Override
+                    protected void onSubmit() {
+                        handleOnSubmit(form);
+                    }
+                };
         add(form);
-        
+
         TextField<String> nameTextField = new TextField<String>("name");
         nameTextField.setRequired(true);
         nameTextField.add(new XMLNameValidator());
-        nameTextField.add(new StringValidator() {
+        nameTextField.add(
+                new StringValidator() {
 
-            private static final long serialVersionUID = -5475431734680134780L;
+                    private static final long serialVersionUID = -5475431734680134780L;
 
-            @Override
-            public void validate(IValidatable<String> validatable) {
-                if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
-                    validatable.error(new ValidationError("defaultWsError").addKey("defaultWsError"));
-                }
-            }
-        });
-        form.add( nameTextField.setRequired(true) );
-        
-        nsUriTextField = new TextField<String>( "uri", new Model<String>() );
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        if (CatalogImpl.DEFAULT.equals(validatable.getValue())) {
+                            validatable.error(
+                                    new ValidationError("defaultWsError").addKey("defaultWsError"));
+                        }
+                    }
+                });
+        form.add(nameTextField.setRequired(true));
+
+        nsUriTextField = new TextField<String>("uri", new Model<String>());
         // maybe a bit too restrictive, but better than not validation at all
         nsUriTextField.setRequired(true);
         nsUriTextField.add(new URIValidator());
-        form.add( nsUriTextField );
-        
-        CheckBox defaultChk = new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
+        form.add(nsUriTextField);
+
+        CheckBox defaultChk =
+                new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
         form.add(defaultChk);
 
         // add checkbox for isolated workspaces
@@ -87,25 +88,26 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         }
         form.add(isolatedChk);
 
-        SubmitLink submitLink = new SubmitLink( "submit", form );
-        form.add( submitLink );
+        SubmitLink submitLink = new SubmitLink("submit", form);
+        form.add(submitLink);
         form.setDefaultButton(submitLink);
-        
-        AjaxLink<Void> cancelLink = new AjaxLink<Void>( "cancel" ) {
-            private static final long serialVersionUID = -1731475076965108576L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                doReturn(WorkspacePage.class);
-            }
-        };
+        AjaxLink<Void> cancelLink =
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = -1731475076965108576L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        doReturn(WorkspacePage.class);
+                    }
+                };
         form.add(new FeedbackPanel("feedback"));
-        form.add( cancelLink );
+        form.add(cancelLink);
     }
     /**
-     * Helper method that takes care of storing the user entered workspace information
-     * and associated namespace. This method makes sure that or both the workspace
-     * and namespace are successfully stored or none is stored.
+     * Helper method that takes care of storing the user entered workspace information and
+     * associated namespace. This method makes sure that or both the workspace and namespace are
+     * successfully stored or none is stored.
      *
      * @param form apache wicket form that contains the workspace information
      */
@@ -118,7 +120,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         namespace.setURI(nsUriTextField.getDefaultModelObjectAsString());
         namespace.setIsolated(workspace.isIsolated());
         // validate the workspace information adn associated namespace
-        if(!validateAndReport(() -> catalog.validate(workspace, true), form)
+        if (!validateAndReport(() -> catalog.validate(workspace, true), form)
                 || !validateAndReport(() -> catalog.validate(namespace, true), form)) {
             // at least one validation fail
             return;
@@ -132,15 +134,15 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
             cleanAndReport(exception, form);
         }
         // let's see if we need to tag this workspace as the default one
-        if(defaultWs) {
+        if (defaultWs) {
             catalog.setDefaultWorkspace(workspace);
         }
         doReturn(WorkspacePage.class);
     }
 
     /**
-     * Executes a validation and in the case of a failure reports the found errors in the
-     * provided form, this method will log the found exception too.
+     * Executes a validation and in the case of a failure reports the found errors in the provided
+     * form, this method will log the found exception too.
      *
      * @param validation validation to be executed
      * @param form form where to report the exception
@@ -158,7 +160,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
             return false;
         }
         // if the validation was not successful report the found exceptions
-        if(!validationResult.isValid()) {
+        if (!validationResult.isValid()) {
             String message = validationResult.getErrosAsString(System.lineSeparator());
             LOGGER.log(Level.INFO, message);
             form.error(message);
@@ -170,8 +172,8 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     /**
      * Helper method that checks in the case of an exception if both the workspace and namespace
-     * where created or removed, if it is not the case then removes the remaining one. The
-     * invoker is responsible to log the exception as needed.
+     * where created or removed, if it is not the case then removes the remaining one. The invoker
+     * is responsible to log the exception as needed.
      *
      * @param exception exception that happen
      * @param form form where to report the exception

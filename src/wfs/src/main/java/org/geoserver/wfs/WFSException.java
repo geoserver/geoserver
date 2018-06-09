@@ -11,9 +11,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo.Version;
 import org.geoserver.wfs.request.RequestObject;
 
-/**
- * WFS application specific exception.
- */
+/** WFS application specific exception. */
 public class WFSException extends ServiceException {
     public static final String NOT_FOUND = "NotFound";
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
@@ -29,7 +27,7 @@ public class WFSException extends ServiceException {
     };
 
     public WFSException(RequestObject request, String message) {
-        this(message); 
+        this(message);
         init(request);
     }
 
@@ -57,7 +55,7 @@ public class WFSException extends ServiceException {
         this(cause);
         init(request);
     }
-    
+
     public WFSException(EObject request, String message) {
         this(message);
         init(request);
@@ -95,11 +93,11 @@ public class WFSException extends ServiceException {
                 Object ver = OwsUtils.get(request, "version");
                 Version version = Version.negotiate(ver != null ? ver.toString() : null);
                 if (version != null && version.compareTo(Version.V_20) < 0) {
-                    return this; //not 2.0
+                    return this; // not 2.0
                 }
             }
             if (locator == null && OwsUtils.has(request, "handle")) {
-                //check the request object
+                // check the request object
                 locator = (String) OwsUtils.get(request, "handle");
             }
 
@@ -119,11 +117,11 @@ public class WFSException extends ServiceException {
         // operation
         String className = request.getClass().getSimpleName();
         if (request instanceof RequestObject) {
-            //request object adapter
-            
+            // request object adapter
+
             className = request.getClass().getSuperclass().getSimpleName();
-            if(className.endsWith("Request")){
-                return className.substring(0, className.length()-"Request".length());
+            if (className.endsWith("Request")) {
+                return className.substring(0, className.length() - "Request".length());
             }
             RequestObject requestObject = (RequestObject) request;
             EObject adaptee = requestObject.getAdaptee();
@@ -132,10 +130,9 @@ public class WFSException extends ServiceException {
                 return className;
             }
             return null;
-        }
-        else if (className.endsWith("TypeImpl")) {
-            //underlying emf request object
-            return className.substring(0, className.length()-"TypeImpl".length());
+        } else if (className.endsWith("TypeImpl")) {
+            // underlying emf request object
+            return className.substring(0, className.length() - "TypeImpl".length());
         }
         return null;
     }

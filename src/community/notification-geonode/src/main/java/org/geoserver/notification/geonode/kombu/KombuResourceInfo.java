@@ -47,5 +47,4 @@ public abstract class KombuResourceInfo extends KombuWorkspaceItemInfo {
     public void setBounds(Bounds bounds) {
         this.bounds = bounds;
     }
-
 }

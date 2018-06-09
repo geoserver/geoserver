@@ -9,10 +9,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -22,19 +20,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-
 public class AtomGeoRSSTransformerTest extends WMSTestSupport {
     static WMSMapContent map;
-    
- 
+
     @Before
     public void initializeMap() throws Exception {
-       
 
         map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
     }
-    
+
     @org.junit.Test
     public void testLatLongInternal() throws Exception {
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(getWMS());
@@ -65,10 +60,12 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testLatLongWMS() throws Exception {
-        Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:latlong&format=application/atom+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+        Document document =
+                getAsDOM(
+                        "wms/reflect?format_options=encoding:latlong&format=application/atom+xml&layers="
+                                + MockData.BASIC_POLYGONS.getPrefix()
+                                + ":"
+                                + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("feed", element.getNodeName());
@@ -85,7 +82,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("geo:long").getLength());
         }
     }
-    
+
     @org.junit.Test
     public void testSimpleInternal() throws Exception {
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(getWMS());
@@ -113,12 +110,15 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("georss:polygon").getLength());
         }
     }
+
     @org.junit.Test
     public void testSimpleWMS() throws Exception {
-        Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:simple&format=application/atom+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+        Document document =
+                getAsDOM(
+                        "wms/reflect?format_options=encoding:simple&format=application/atom+xml&layers="
+                                + MockData.BASIC_POLYGONS.getPrefix()
+                                + ":"
+                                + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("feed", element.getNodeName());
@@ -135,12 +135,15 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
             assertEquals(1, entry.getElementsByTagName("georss:polygon").getLength());
         }
     }
+
     @org.junit.Test
     public void testGmlWMS() throws Exception {
-        Document document = getAsDOM(
-                "wms/reflect?format_options=encoding:gml&format=application/atom+xml&layers=" 
-                + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart()
-                );
+        Document document =
+                getAsDOM(
+                        "wms/reflect?format_options=encoding:gml&format=application/atom+xml&layers="
+                                + MockData.BASIC_POLYGONS.getPrefix()
+                                + ":"
+                                + MockData.BASIC_POLYGONS.getLocalPart());
 
         Element element = document.getDocumentElement();
         assertEquals("feed", element.getNodeName());

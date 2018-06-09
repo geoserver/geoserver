@@ -4,6 +4,16 @@
  */
 package org.geoserver.h2;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.List;
+import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -23,20 +33,7 @@ import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.List;
-import java.util.zip.ZipOutputStream;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-/**
- * Contains tests that invoke REST resources that will use H2 data store.
- */
+/** Contains tests that invoke REST resources that will use H2 data store. */
 public final class RestTest extends GeoServerSystemTestSupport {
 
     private static final String WORKSPACE_NAME = "h2-tests";
@@ -98,11 +95,14 @@ public final class RestTest extends GeoServerSystemTestSupport {
         genericCreateDataStoreUsingRestTest(dataStoreName, "application/zip", content);
     }
 
-    public void genericCreateDataStoreUsingRestTest(String dataStoreName, String mimeType, byte[] content) throws Exception {
+    public void genericCreateDataStoreUsingRestTest(
+            String dataStoreName, String mimeType, byte[] content) throws Exception {
         // perform a PUT request, a new H2 data store should be created
         // we also require that all available feature types should be created
-        String path = String.format(
-                "/rest/workspaces/%s/datastores/%s/file.h2?configure=all", WORKSPACE_NAME, dataStoreName);
+        String path =
+                String.format(
+                        "/rest/workspaces/%s/datastores/%s/file.h2?configure=all",
+                        WORKSPACE_NAME, dataStoreName);
         MockHttpServletResponse response = putAsServletResponse(path, content, mimeType);
         // we should get a HTTP 201 status code meaning that the data store was created
         assertThat(response.getStatus(), is(201));
@@ -114,9 +114,11 @@ public final class RestTest extends GeoServerSystemTestSupport {
         List<Name> names = store.getNames();
         assertThat(store, notNullValue());
         // check that at least the table points is available
-        Name found = names.stream()
-                .filter(name -> name != null && name.getLocalPart().equals("points"))
-                .findFirst().orElse(null);
+        Name found =
+                names.stream()
+                        .filter(name -> name != null && name.getLocalPart().equals("points"))
+                        .findFirst()
+                        .orElse(null);
         assertThat(found, notNullValue());
         // check that the points layer was correctly created
         LayerInfo layerInfo = getCatalog().getLayerByName(new NameImpl(WORKSPACE_URI, "points"));
@@ -130,8 +132,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that just reads the test H2 database file
-     * and stores it in a array of bytes.
+     * Helper method that just reads the test H2 database file and stores it in a array of bytes.
      */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
@@ -141,15 +142,13 @@ public final class RestTest extends GeoServerSystemTestSupport {
             // copy the input stream to the output stream
             IOUtils.copy(input, output);
         } catch (Exception exception) {
-            throw new RuntimeException("Error reading SQLite database file to byte array.", exception);
+            throw new RuntimeException(
+                    "Error reading SQLite database file to byte array.", exception);
         }
         return output.toByteArray();
     }
 
-    /**
-     * Helper method that zips the H2 data directory and returns it as
-     * an array of bytes.
-     */
+    /** Helper method that zips the H2 data directory and returns it as an array of bytes. */
     private static byte[] readSqLiteDatabaseDir() throws Exception {
         // copy database file to database directory
         File outputFile = new File(DATABASE_DIR, "test-database.data.db");
@@ -159,7 +158,8 @@ public final class RestTest extends GeoServerSystemTestSupport {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(output);
         // ignore the lock files
-        IOUtils.zipDirectory(DATABASE_DIR, zip, (dir, name) -> !name.toLowerCase().contains("lock"));
+        IOUtils.zipDirectory(
+                DATABASE_DIR, zip, (dir, name) -> !name.toLowerCase().contains("lock"));
         zip.close();
         // just return the output stream content
         return output.toByteArray();

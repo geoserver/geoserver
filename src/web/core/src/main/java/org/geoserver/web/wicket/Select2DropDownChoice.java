@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -15,23 +16,21 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.wicketstuff.select2.Select2Behavior;
 
-import java.util.List;
-
-/**
- * Auto-complete version of a {@link org.apache.wicket.markup.html.form.DropDownChoice}
- */
+/** Auto-complete version of a {@link org.apache.wicket.markup.html.form.DropDownChoice} */
 public class Select2DropDownChoice<T> extends DropDownChoice<T> {
 
-    private static final PackageResourceReference SELECT2_KEYBOARD_JS = new PackageResourceReference(
-            Select2DropDownChoice.class, "js/select2/select2-keyboard.js");
+    private static final PackageResourceReference SELECT2_KEYBOARD_JS =
+            new PackageResourceReference(
+                    Select2DropDownChoice.class, "js/select2/select2-keyboard.js");
 
-
-    public Select2DropDownChoice(String id, IModel<T> model, IModel<List<T>> choices, IChoiceRenderer<T> renderer) {
+    public Select2DropDownChoice(
+            String id, IModel<T> model, IModel<List<T>> choices, IChoiceRenderer<T> renderer) {
         super(id, model, choices, renderer);
         initBehaviors();
     }
 
-    public Select2DropDownChoice(String id, IModel<T> model, List<T> choices, IChoiceRenderer<T> renderer) {
+    public Select2DropDownChoice(
+            String id, IModel<T> model, List<T> choices, IChoiceRenderer<T> renderer) {
         super(id, model, choices, renderer);
         initBehaviors();
     }
@@ -41,7 +40,8 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
         initBehaviors();
     }
 
-    public Select2DropDownChoice(String id, List<? extends T> choices, IChoiceRenderer<? super T> renderer) {
+    public Select2DropDownChoice(
+            String id, List<? extends T> choices, IChoiceRenderer<? super T> renderer) {
         super(id, choices, renderer);
         initBehaviors();
     }
@@ -56,13 +56,16 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
         initBehaviors();
     }
 
-    public Select2DropDownChoice(String id, IModel<T> model, IModel<? extends List<? extends T>> choices) {
+    public Select2DropDownChoice(
+            String id, IModel<T> model, IModel<? extends List<? extends T>> choices) {
         super(id, model, choices);
         initBehaviors();
     }
 
-    public Select2DropDownChoice(String id, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T>
-            renderer) {
+    public Select2DropDownChoice(
+            String id,
+            IModel<? extends List<? extends T>> choices,
+            IChoiceRenderer<? super T> renderer) {
         super(id, choices, renderer);
         initBehaviors();
     }
@@ -72,14 +75,10 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
         add(new KeyboardBehavior());
     }
 
-
-    /**
-     * Mimics keyboard behavior of native drop down choices
-     */
+    /** Mimics keyboard behavior of native drop down choices */
     private static class KeyboardBehavior extends Behavior {
 
-        public KeyboardBehavior() {
-        }
+        public KeyboardBehavior() {}
 
         public void renderHead(Component component, IHeaderResponse response) {
             super.renderHead(component, response);
@@ -88,5 +87,4 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
             response.render(OnLoadHeaderItem.forScript(enabler));
         }
     }
-
 }

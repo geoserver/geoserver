@@ -13,7 +13,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -25,47 +24,41 @@ import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
 /**
- * Basic property file based {@link DownloadServiceConfigurationGenerator} implementation with ability to reload config when the file changes. If
- * property file is not present, a new one will be created.
- * 
+ * Basic property file based {@link DownloadServiceConfigurationGenerator} implementation with
+ * ability to reload config when the file changes. If property file is not present, a new one will
+ * be created.
+ *
  * @author Simone Giannecchini, GeoSolutions
  */
-public class DownloadServiceConfigurationWatcher extends TimerTask implements
-        DownloadServiceConfigurationGenerator {
+public class DownloadServiceConfigurationWatcher extends TimerTask
+        implements DownloadServiceConfigurationGenerator {
 
     public static final String DOWNLOAD_PROCESS_DIR = "download-process";
 
     public static final String PROPERTYFILENAME = "download.properties";
 
-    public final static String DEFAULT_PROPERTY_PATH = Paths.path(DOWNLOAD_PROCESS_DIR,         
-            PROPERTYFILENAME);
+    public static final String DEFAULT_PROPERTY_PATH =
+            Paths.path(DOWNLOAD_PROCESS_DIR, PROPERTYFILENAME);
 
-    public final static Logger LOGGER = Logging
-            .getLogger(DownloadServiceConfigurationWatcher.class);
+    public static final Logger LOGGER =
+            Logging.getLogger(DownloadServiceConfigurationWatcher.class);
 
-    /**
-     * {@link PropertyFileWatcher} used for loading the property file.
-     */
+    /** {@link PropertyFileWatcher} used for loading the property file. */
     private PropertyFileWatcher watcher;
 
-    /**
-     * time in seconds between successive task executions
-     */
+    /** time in seconds between successive task executions */
     private long period = 60 * 2;
 
-    /**
-     * delay in seconds before task is to be executed
-     */
+    /** delay in seconds before task is to be executed */
     private long delay = 60 * 2;
 
     /**
-     * The new {@link DownloadServiceConfiguration} object containing the properties load from the properties file.
+     * The new {@link DownloadServiceConfiguration} object containing the properties load from the
+     * properties file.
      */
     private DownloadServiceConfiguration configuration = new DownloadServiceConfiguration();
 
-    /**
-     * {@link Timer} object used for periodically watching the properties file
-     */
+    /** {@link Timer} object used for periodically watching the properties file */
     private Timer timer;
 
     /** Default watches controlflow.properties */
@@ -84,12 +77,14 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             }
             try {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
+                    LOGGER.log(
+                            Level.FINE,
                             "Copying the default properties file inside the data directory");
                 }
                 // Copy the default property file into the data directory
-                InputStream is = DownloadServiceConfigurationWatcher.class
-                        .getResourceAsStream(DEFAULT_PROPERTY_PATH);
+                InputStream is =
+                        DownloadServiceConfigurationWatcher.class.getResourceAsStream(
+                                DEFAULT_PROPERTY_PATH);
                 if (is != null) {
                     IOUtils.copy(is, properties.out());
                 }
@@ -113,7 +108,7 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
 
     /**
      * Initialization method for loading the {@link DownloadServiceConfiguration}.
-     * 
+     *
      * @param propertyFileWatcher Watcher of the property file
      */
     private void init(PropertyFileWatcher propertyFileWatcher) {
@@ -131,12 +126,11 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
         // start background checks
         timer = new Timer(true);
         timer.scheduleAtFixedRate(this, delay * 1000, period * 1000);
-
     }
 
     /**
      * Loads the configuration from disk.
-     * 
+     *
      * @return an instance of {@link DownloadServiceConfiguration}.
      */
     private DownloadServiceConfiguration loadConfiguration() {
@@ -152,9 +146,11 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
                 newConfiguration = parseConfigurationValues(properties);
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info("Unable to read confguration file for download service: "
-                            + file.path()
-                            + " continuing with default configuration-->\n" + configuration);
+                    LOGGER.info(
+                            "Unable to read confguration file for download service: "
+                                    + file.path()
+                                    + " continuing with default configuration-->\n"
+                                    + configuration);
                 }
             }
         } catch (Exception e) {
@@ -162,19 +158,21 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
                 LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
             }
             if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info("Unable to read confguration file for download service: "
-                        + file.path() + " continuing with default configuration-->\n"
-                        + configuration);
+                LOGGER.info(
+                        "Unable to read confguration file for download service: "
+                                + file.path()
+                                + " continuing with default configuration-->\n"
+                                + configuration);
             }
         }
         // return
         return newConfiguration;
-
     }
 
     /**
-     * Parses the properties file for the download process configuration. When it runs into problems it uses default values
-     * 
+     * Parses the properties file for the download process configuration. When it runs into problems
+     * it uses default values
+     *
      * @param downloadProcessProperties the {@link Properties} file to parse. Cannot be null.
      * @return an instance of {@link DownloadServiceConfiguration}.
      */
@@ -200,8 +198,10 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             // max features
             if (prop.equalsIgnoreCase(DownloadServiceConfiguration.MAX_FEATURES_NAME)) {
                 // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.MAX_FEATURES_NAME);
+                String value =
+                        (String)
+                                downloadProcessProperties.get(
+                                        DownloadServiceConfiguration.MAX_FEATURES_NAME);
 
                 // check and assign
                 try {
@@ -226,8 +226,10 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             // raster size limits
             if (prop.equalsIgnoreCase(DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME)) {
                 // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME);
+                String value =
+                        (String)
+                                downloadProcessProperties.get(
+                                        DownloadServiceConfiguration.RASTER_SIZE_LIMITS_NAME);
 
                 // check and assign
                 try {
@@ -252,8 +254,10 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
             // writeLimits
             if (prop.equalsIgnoreCase(DownloadServiceConfiguration.WRITE_LIMITS_NAME)) {
                 // get value
-                String value = (String) downloadProcessProperties
-                        .get(DownloadServiceConfiguration.WRITE_LIMITS_NAME);
+                String value =
+                        (String)
+                                downloadProcessProperties.get(
+                                        DownloadServiceConfiguration.WRITE_LIMITS_NAME);
 
                 // check and assign
                 try {
@@ -327,8 +331,8 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
         }
 
         // create the configuration object
-        return new DownloadServiceConfiguration(maxFeatures, rasterSizeLimits, writeLimits,
-                hardOutputLimit, compressionLevel);
+        return new DownloadServiceConfiguration(
+                maxFeatures, rasterSizeLimits, writeLimits, hardOutputLimit, compressionLevel);
     }
 
     @Override
@@ -343,21 +347,16 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements
                         LOGGER.fine("New configuration loaded:\n" + configuration);
                     }
                 }
-
             }
         }
     }
 
-    /**
-     * Returns the {@link DownloadServiceConfiguration} instance.
-     */
+    /** Returns the {@link DownloadServiceConfiguration} instance. */
     public DownloadServiceConfiguration getConfiguration() {
         return configuration;
     }
 
-    /**
-     * Stop the configuration watcher.
-     */
+    /** Stop the configuration watcher. */
     public void stop() {
         try {
             timer.cancel();

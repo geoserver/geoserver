@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
-
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:GetCapabilitiesType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="GetCapabilitiesType"&gt;
  *      &lt;xsd:annotation&gt;
@@ -46,6 +44,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
@@ -59,14 +58,13 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
         return AFTER;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.GETCAPABILITIESTYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -77,14 +75,15 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
-        net.opengis.ows10.GetCapabilitiesType owsGetCapabilities = (net.opengis.ows10.GetCapabilitiesType) value;
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
+        net.opengis.ows10.GetCapabilitiesType owsGetCapabilities =
+                (net.opengis.ows10.GetCapabilitiesType) value;
         GetCapabilitiesType getCapabilities = wfsfactory.createGetCapabilitiesType();
 
         getCapabilities.setAcceptFormats(owsGetCapabilities.getAcceptFormats());

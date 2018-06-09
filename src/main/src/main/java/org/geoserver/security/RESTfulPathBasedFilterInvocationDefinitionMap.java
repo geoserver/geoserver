@@ -5,67 +5,69 @@
  */
 package org.geoserver.security;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Arrays;
-
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.util.StringUtils;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 
-/**
- * 
- * @author Chris Berry
- * http://opensource.atlassian.com/projects/spring/browse/SEC-531
- *
- */
+/** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
+public class RESTfulPathBasedFilterInvocationDefinitionMap
+        implements FilterInvocationSecurityMetadataSource {
 
-public class RESTfulPathBasedFilterInvocationDefinitionMap 
-    implements FilterInvocationSecurityMetadataSource {
-       
-    static private Log log = LogFactory.getLog(RESTfulPathBasedFilterInvocationDefinitionMap.class);
+    private static Log log = LogFactory.getLog(RESTfulPathBasedFilterInvocationDefinitionMap.class);
 
-    //~ Instance fields ================================================================================================
+    // ~ Instance fields
+    // ================================================================================================
 
     private Collection<EntryHolder> requestMap = new Vector<EntryHolder>();
     private PathMatcher pathMatcher = new AntPathMatcher();
     private boolean convertUrlToLowercaseBeforeComparison = false;
 
-    //~ Methods ========================================================================================================
+    // ~ Methods
+    // ========================================================================================================
     public boolean supports(Class clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
     }
 
-    
-    public void addSecureUrl(String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
-        requestMap.add( new EntryHolder(antPath, httpMethods, attrs) );
+    public void addSecureUrl(
+            String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
+        requestMap.add(new EntryHolder(antPath, httpMethods, attrs));
 
         if (log.isDebugEnabled()) {
-            log.debug("Added Ant path: " + antPath + "; attributes: " + attrs + ", httpMethods: " + Arrays.toString(httpMethods));
+            log.debug(
+                    "Added Ant path: "
+                            + antPath
+                            + "; attributes: "
+                            + attrs
+                            + ", httpMethods: "
+                            + Arrays.toString(httpMethods));
         }
     }
 
     public void addSecureUrl(String antPath, Collection<ConfigAttribute> attrs) {
-        throw new IllegalArgumentException( "addSecureUrl(String, Collection<ConfigAttribute> ) is INVALID for RESTfulDefinitionSource" );
+        throw new IllegalArgumentException(
+                "addSecureUrl(String, Collection<ConfigAttribute> ) is INVALID for RESTfulDefinitionSource");
     }
 
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         Set<ConfigAttribute> set = new HashSet<ConfigAttribute>();
-        
+
         for (EntryHolder h : requestMap) {
             set.addAll(h.getConfigAttributes());
         }
-            
+
         return set;
-        //return set.iterator();
+        // return set.iterator();
     }
 
     public int getMapSize() {
@@ -76,12 +78,13 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         return convertUrlToLowercaseBeforeComparison;
     }
 
-    public void setConvertUrlToLowercaseBeforeComparison(boolean convertUrlToLowercaseBeforeComparison) {
+    public void setConvertUrlToLowercaseBeforeComparison(
+            boolean convertUrlToLowercaseBeforeComparison) {
         this.convertUrlToLowercaseBeforeComparison = convertUrlToLowercaseBeforeComparison;
     }
 
     public Collection<ConfigAttribute> getAttributes(Object object)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if ((object == null) || !this.supports(object.getClass())) {
             throw new IllegalArgumentException("Object must be a FilterInvocation");
         }
@@ -89,14 +92,15 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         String url = ((FilterInvocation) object).getRequestUrl();
         String method = ((FilterInvocation) object).getHttpRequest().getMethod();
 
-        return this.lookupAttributes( url, method );
+        return this.lookupAttributes(url, method);
     }
 
-    public Collection<ConfigAttribute> lookupAttributes( String url ) { 
-        throw new IllegalArgumentException( "lookupAttributes(String url) is INVALID for RESTfulDefinitionSource" );
+    public Collection<ConfigAttribute> lookupAttributes(String url) {
+        throw new IllegalArgumentException(
+                "lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
     }
 
-    public Collection<ConfigAttribute> lookupAttributes( String url, String httpMethod ) {
+    public Collection<ConfigAttribute> lookupAttributes(String url, String httpMethod) {
         // Strip anything after a question mark symbol, as per SEC-161. See also SEC-321
         int firstQuestionMarkIndex = url.indexOf("?");
 
@@ -108,8 +112,13 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             url = url.toLowerCase();
 
             if (log.isDebugEnabled()) {
-                log.debug("Converted URL to lowercase, from: '" + url + "'; to: '" + url 
-                          + "'  and httpMethod= " + httpMethod );
+                log.debug(
+                        "Converted URL to lowercase, from: '"
+                                + url
+                                + "'; to: '"
+                                + url
+                                + "'  and httpMethod= "
+                                + httpMethod);
             }
         }
 
@@ -120,43 +129,59 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             String antPath = entryHolder.getAntPath();
             String[] methodList = entryHolder.getHttpMethodList();
             if (log.isDebugEnabled()) {
-                log.debug( "~~~~~~~~~~ antPath= " + antPath + " methodList= " + Arrays.toString(methodList) );
+                log.debug(
+                        "~~~~~~~~~~ antPath= "
+                                + antPath
+                                + " methodList= "
+                                + Arrays.toString(methodList));
             }
 
-            boolean matchedPath = pathMatcher.match( antPath, url );
-            boolean matchedMethods = true; 
-            if ( methodList != null ) {
+            boolean matchedPath = pathMatcher.match(antPath, url);
+            boolean matchedMethods = true;
+            if (methodList != null) {
                 matchedMethods = false;
-                for( int ii=0; ii < methodList.length; ii++ ) {
-                    if ( methodList[ii].equals( httpMethod ) ) {
+                for (int ii = 0; ii < methodList.length; ii++) {
+                    if (methodList[ii].equals(httpMethod)) {
                         matchedMethods = true;
                         break;
                     }
-                } 
+                }
             }
-            if ( log.isDebugEnabled() ) 
-                log.debug("Candidate is: '" + url + "'; antPath is " + antPath
-                          + "; matchedPath=" + matchedPath  + "; matchedMethods=" + matchedMethods );
+            if (log.isDebugEnabled())
+                log.debug(
+                        "Candidate is: '"
+                                + url
+                                + "'; antPath is "
+                                + antPath
+                                + "; matchedPath="
+                                + matchedPath
+                                + "; matchedMethods="
+                                + matchedMethods);
 
-            if ( matchedPath && matchedMethods ) {
-                log.debug("returning " + StringUtils.collectionToCommaDelimitedString(entryHolder.getConfigAttributes()));
+            if (matchedPath && matchedMethods) {
+                log.debug(
+                        "returning "
+                                + StringUtils.collectionToCommaDelimitedString(
+                                        entryHolder.getConfigAttributes()));
                 return entryHolder.getConfigAttributes();
             }
         }
         return null;
     }
 
-    //~ Inner Classes ==================================================================================================
+    // ~ Inner Classes
+    // ==================================================================================================
 
     protected class EntryHolder {
-        private Collection <ConfigAttribute>  configAttributes;
+        private Collection<ConfigAttribute> configAttributes;
         private String antPath;
-        private String[] httpMethodList; 
+        private String[] httpMethodList;
 
-        public EntryHolder( String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs ) {
+        public EntryHolder(
+                String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs) {
             this.antPath = antPath;
             this.configAttributes = attrs;
-            this.httpMethodList = httpMethodList; 
+            this.httpMethodList = httpMethodList;
         }
 
         protected EntryHolder() {
@@ -171,7 +196,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             return httpMethodList;
         }
 
-        public Collection <ConfigAttribute> getConfigAttributes() {
+        public Collection<ConfigAttribute> getConfigAttributes() {
             return configAttributes;
         }
     }

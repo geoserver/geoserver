@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.gwc.config.GWCConfig;
@@ -25,12 +24,12 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.storage.BlobStore;
 import org.geowebcache.storage.BlobStoreListener;
 import org.geowebcache.storage.TileObject;
+import org.geowebcache.storage.blobstore.file.FileBlobStore;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
-import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 import org.geowebcache.storage.blobstore.memory.MemoryBlobStore;
 import org.geowebcache.storage.blobstore.memory.NullBlobStore;
-import org.geowebcache.storage.blobstore.file.FileBlobStore;
+import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,7 +38,7 @@ import org.mockito.Mockito;
 
 /**
  * This class tests the functionalities of the {@link ConfigurableBlobStore} class.
- * 
+ *
  * @author Nicola Lagomarsini Geosolutions
  */
 public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
@@ -60,7 +59,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
     /** Directory containing files for the {@link FileBlobStore} */
     private File directory;
-    
+
     @BeforeClass
     public static void initialSetup() {
         cache = new GuavaCacheProvider(new CacheConfiguration());
@@ -109,17 +108,19 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
-        long[] xyz = { 1L, 2L, 3L };
+        long[] xyz = {1L, 2L, 3L};
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
-        TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters, bytes);
+        TileObject to =
+                TileObject.createCompleteTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
-        TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters);
+        TileObject to2 =
+                TileObject.createQueryTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check formats
@@ -156,17 +157,19 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
-        long[] xyz = { 1L, 2L, 3L };
+        long[] xyz = {1L, 2L, 3L};
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
-        TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters, bytes);
+        TileObject to =
+                TileObject.createCompleteTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
-        TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters);
+        TileObject to2 =
+                TileObject.createQueryTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check formats
@@ -202,14 +205,16 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
-        long[] xyz = { 5L, 6L, 7L };
-        TileObject to = TileObject.createCompleteTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters, bytes);
+        long[] xyz = {5L, 6L, 7L};
+        TileObject to =
+                TileObject.createCompleteTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
-        TileObject to2 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters);
+        TileObject to2 =
+                TileObject.createQueryTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check if the resources are equals
@@ -218,13 +223,15 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         checkInputStreams(is, is2);
 
         // Remove TileObject
-        TileObject to3 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters);
+        TileObject to3 =
+                TileObject.createQueryTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.delete(to3);
 
         // Ensure TileObject is no more present
-        TileObject to4 = TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326",
-                "image/jpeg", parameters);
+        TileObject to4 =
+                TileObject.createQueryTileObject(
+                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         assertFalse(blobStore.get(to4));
     }
 
@@ -235,18 +242,19 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         gwcConfig.setInnerCachingEnabled(true);
         gwcConfig.setEnabledPersistence(true);
         blobStore.setChanged(gwcConfig, false);
-        
+
         BlobStoreListener l1 = Mockito.mock(BlobStoreListener.class);
         BlobStoreListener l2 = Mockito.mock(BlobStoreListener.class);
-        
+
         assertTrue(blobStore.getDelegate() instanceof MemoryBlobStore);
 
         blobStore.addListener(l1);
         blobStore.addListener(l2);
 
-        Mockito.verify(defaultStore, Mockito.times(2)).addListener(Mockito.any(BlobStoreListener.class));
+        Mockito.verify(defaultStore, Mockito.times(2))
+                .addListener(Mockito.any(BlobStoreListener.class));
         Mockito.reset(defaultStore);
-        
+
         // change the configuration
         GWCConfig newConfig = new GWCConfig();
         newConfig.setInnerCachingEnabled(false);
@@ -255,14 +263,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertFalse(blobStore.getDelegate() instanceof MemoryBlobStore);
 
-        Mockito.verify(defaultStore, Mockito.times(2)).removeListener(Mockito.any(BlobStoreListener.class));
-        Mockito.verify(defaultStore, Mockito.times(2)).addListener(Mockito.any(BlobStoreListener.class));
-
+        Mockito.verify(defaultStore, Mockito.times(2))
+                .removeListener(Mockito.any(BlobStoreListener.class));
+        Mockito.verify(defaultStore, Mockito.times(2))
+                .addListener(Mockito.any(BlobStoreListener.class));
     }
 
-    /**
-     * Checks if the streams are equals, note that the {@link InputStream}s are also closed.
-     */
+    /** Checks if the streams are equals, note that the {@link InputStream}s are also closed. */
     private void checkInputStreams(InputStream is, InputStream is2) throws IOException {
         try {
             assertTrue(IOUtils.contentEquals(is, is2));

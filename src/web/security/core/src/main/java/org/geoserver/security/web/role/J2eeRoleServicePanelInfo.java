@@ -7,16 +7,14 @@ package org.geoserver.security.web.role;
 
 import org.geoserver.security.config.J2eeRoleServiceConfig;
 import org.geoserver.security.impl.GeoServerJ2eeRoleService;
-import org.geoserver.security.xml.XMLRoleService;
-import org.geoserver.security.xml.XMLRoleServiceConfig;
 
 /**
  * Configuration panel extension for {@link GeoServerJ2eeRoleService}.
- *  
+ *
  * @author christian
  */
-public class J2eeRoleServicePanelInfo 
-    extends RoleServicePanelInfo<J2eeRoleServiceConfig, J2eeRoleServicePanel> {
+public class J2eeRoleServicePanelInfo
+        extends RoleServicePanelInfo<J2eeRoleServiceConfig, J2eeRoleServicePanel> {
 
     public J2eeRoleServicePanelInfo() {
         setComponentClass(J2eeRoleServicePanel.class);

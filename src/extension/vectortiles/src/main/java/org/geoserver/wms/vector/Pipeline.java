@@ -9,35 +9,31 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-/**
- * A chainable unary operation on a geometry.
- *
- */
+/** A chainable unary operation on a geometry. */
 abstract class Pipeline {
 
     protected static final Geometry EMPTY = new GeometryFactory().createPoint((Coordinate) null);
 
-    /**
-     * Pipeline terminator which returns the geometry without change.
-     */
-    static final Pipeline END = new Pipeline() {
+    /** Pipeline terminator which returns the geometry without change. */
+    static final Pipeline END =
+            new Pipeline() {
 
-        @Override
-        protected final Geometry execute(Geometry geom) {
-            return geom;
-        }
+                @Override
+                protected final Geometry execute(Geometry geom) {
+                    return geom;
+                }
 
-        @Override
-        protected final Geometry _run(Geometry geom) {
-            throw new UnsupportedOperationException();
-        }
-
-    };
+                @Override
+                protected final Geometry _run(Geometry geom) {
+                    throw new UnsupportedOperationException();
+                }
+            };
 
     private Pipeline next = END;
 
     /**
      * Set the next operation in the pipeline
+     *
      * @param step
      */
     void setNext(Pipeline step) {
@@ -47,6 +43,7 @@ abstract class Pipeline {
 
     /**
      * Execute pipeline including all downstream pipelines.
+     *
      * @param geom
      * @return
      * @throws Exception
@@ -61,7 +58,8 @@ abstract class Pipeline {
     }
 
     /**
-     * Implementation of the pipeline.  A unary operation on a geometry.
+     * Implementation of the pipeline. A unary operation on a geometry.
+     *
      * @param geom
      * @return
      * @throws Exception

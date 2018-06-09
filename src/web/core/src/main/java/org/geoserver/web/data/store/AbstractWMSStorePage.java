@@ -17,8 +17,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -30,7 +28,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
  * Supports coverage store configuration
- * 
+ *
  * @author Andrea Aime
  * @see StoreEditPanel
  */
@@ -40,18 +38,18 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
     protected WorkspacePanel workspacePanel;
 
     private Form form;
-    
+
     GeoServerDialog dialog;
 
     TextParamPanel capabilitiesURL;
 
     protected TextParamPanel usernamePanel;
-    
+
     protected PasswordParamPanel password;
-    
+
     void initUI(final WMSStoreInfo store) {
         IModel model = new Model(store);
-        
+
         add(dialog = new GeoServerDialog("dialog"));
 
         // build the form
@@ -60,73 +58,120 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
         // name
         PropertyModel nameModel = new PropertyModel(model, "name");
-        final TextParamPanel namePanel = new TextParamPanel("namePanel", nameModel,
-                new ResourceModel("AbstractWMSStorePage.dataSrcName", "Data Source Name"), true);
+        final TextParamPanel namePanel =
+                new TextParamPanel(
+                        "namePanel",
+                        nameModel,
+                        new ResourceModel("AbstractWMSStorePage.dataSrcName", "Data Source Name"),
+                        true);
 
         form.add(namePanel);
 
         // description and enabled
-        form.add(new TextParamPanel("descriptionPanel", new PropertyModel(model,
-                "description"), new ResourceModel("AbstractWMSStorePage.description", "Description"), false));
-        form.add(new CheckBoxParamPanel("enabledPanel", new PropertyModel(model, "enabled"),
-                new ResourceModel("enabled", "Enabled")));
+        form.add(
+                new TextParamPanel(
+                        "descriptionPanel",
+                        new PropertyModel(model, "description"),
+                        new ResourceModel("AbstractWMSStorePage.description", "Description"),
+                        false));
+        form.add(
+                new CheckBoxParamPanel(
+                        "enabledPanel",
+                        new PropertyModel(model, "enabled"),
+                        new ResourceModel("enabled", "Enabled")));
         // a custom converter will turn this into a namespace url
-        workspacePanel = new WorkspacePanel("workspacePanel",
-                new PropertyModel(model, "workspace"), new ResourceModel("workspace", "Workspace"),
-                true);
+        workspacePanel =
+                new WorkspacePanel(
+                        "workspacePanel",
+                        new PropertyModel(model, "workspace"),
+                        new ResourceModel("workspace", "Workspace"),
+                        true);
         form.add(workspacePanel);
-        
-        capabilitiesURL = new TextParamPanel("capabilitiesURL", new PropertyModel(model, "capabilitiesURL"),
-                new ParamResourceModel("capabilitiesURL", AbstractWMSStorePage.this), true);
+
+        capabilitiesURL =
+                new TextParamPanel(
+                        "capabilitiesURL",
+                        new PropertyModel(model, "capabilitiesURL"),
+                        new ParamResourceModel("capabilitiesURL", AbstractWMSStorePage.this),
+                        true);
         form.add(capabilitiesURL);
 
         // user name
         PropertyModel userModel = new PropertyModel(model, "username");
-        usernamePanel = new TextParamPanel("userNamePanel", userModel, new ResourceModel(
-                "AbstractWMSStorePage.userName"), false);
+        usernamePanel =
+                new TextParamPanel(
+                        "userNamePanel",
+                        userModel,
+                        new ResourceModel("AbstractWMSStorePage.userName"),
+                        false);
 
         form.add(usernamePanel);
 
         // password
         PropertyModel passwordModel = new PropertyModel(model, "password");
-        form.add(password = new PasswordParamPanel("passwordPanel", passwordModel, new ResourceModel(
-                "AbstractWMSStorePage.password"), false));
-        
+        form.add(
+                password =
+                        new PasswordParamPanel(
+                                "passwordPanel",
+                                passwordModel,
+                                new ResourceModel("AbstractWMSStorePage.password"),
+                                false));
+
         // max concurrent connections
-        final PropertyModel<Boolean> useHttpConnectionPoolModel = new PropertyModel<Boolean>(model,
-                "useConnectionPooling");
-        CheckBoxParamPanel useConnectionPooling = new CheckBoxParamPanel(
-                "useConnectionPoolingPanel", useHttpConnectionPoolModel, new ResourceModel(
-                        "AbstractWMSStorePage.useHttpConnectionPooling"));
+        final PropertyModel<Boolean> useHttpConnectionPoolModel =
+                new PropertyModel<Boolean>(model, "useConnectionPooling");
+        CheckBoxParamPanel useConnectionPooling =
+                new CheckBoxParamPanel(
+                        "useConnectionPoolingPanel",
+                        useHttpConnectionPoolModel,
+                        new ResourceModel("AbstractWMSStorePage.useHttpConnectionPooling"));
         form.add(useConnectionPooling);
 
         PropertyModel<String> connectionsModel = new PropertyModel<String>(model, "maxConnections");
-        final TextParamPanel maxConnections = new TextParamPanel("maxConnectionsPanel",
-                connectionsModel, new ResourceModel("AbstractWMSStorePage.maxConnections"), true,
-                new RangeValidator<Integer>(1, 128));
+        final TextParamPanel maxConnections =
+                new TextParamPanel(
+                        "maxConnectionsPanel",
+                        connectionsModel,
+                        new ResourceModel("AbstractWMSStorePage.maxConnections"),
+                        true,
+                        new RangeValidator<Integer>(1, 128));
         maxConnections.setOutputMarkupId(true);
         maxConnections.setEnabled(useHttpConnectionPoolModel.getObject());
         form.add(maxConnections);
 
-        useConnectionPooling.getFormComponent().add(new OnChangeAjaxBehavior() {
+        useConnectionPooling
+                .getFormComponent()
+                .add(
+                        new OnChangeAjaxBehavior() {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                boolean enabled = useHttpConnectionPoolModel.getObject();
-                maxConnections.setEnabled(enabled);
-                target.add(maxConnections);
-            }
-        });
-        
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {
+                                boolean enabled = useHttpConnectionPoolModel.getObject();
+                                maxConnections.setEnabled(enabled);
+                                target.add(maxConnections);
+                            }
+                        });
+
         // connect timeout
-        PropertyModel<Integer> connectTimeoutModel = new PropertyModel<Integer>(model, "connectTimeout");
-        form.add(new TextParamPanel("connectTimeoutPanel", connectTimeoutModel, new ResourceModel(
-                "AbstractWMSStorePage.connectTimeout"), true, new RangeValidator<Integer>(1, 240)));
+        PropertyModel<Integer> connectTimeoutModel =
+                new PropertyModel<Integer>(model, "connectTimeout");
+        form.add(
+                new TextParamPanel(
+                        "connectTimeoutPanel",
+                        connectTimeoutModel,
+                        new ResourceModel("AbstractWMSStorePage.connectTimeout"),
+                        true,
+                        new RangeValidator<Integer>(1, 240)));
 
         // read timeout
         PropertyModel<Integer> readTimeoutModel = new PropertyModel<Integer>(model, "readTimeout");
-        form.add(new TextParamPanel("readTimeoutPanel", readTimeoutModel, new ResourceModel(
-                "AbstractWMSStorePage.readTimeout"), true, new RangeValidator<Integer>(1, 360)));
+        form.add(
+                new TextParamPanel(
+                        "readTimeoutPanel",
+                        readTimeoutModel,
+                        new ResourceModel("AbstractWMSStorePage.readTimeout"),
+                        true,
+                        new RangeValidator<Integer>(1, 360)));
 
         // cancel/submit buttons
         form.add(new BookmarkablePageLink("cancel", StorePage.class));
@@ -136,8 +181,11 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         // feedback panel for error messages
         form.add(new FeedbackPanel("feedback"));
 
-        StoreNameValidator storeNameValidator = new StoreNameValidator(workspacePanel
-                .getFormComponent(), namePanel.getFormComponent(), store.getId());
+        StoreNameValidator storeNameValidator =
+                new StoreNameValidator(
+                        workspacePanel.getFormComponent(),
+                        namePanel.getFormComponent(),
+                        store.getId());
         form.add(storeNameValidator);
     }
 
@@ -167,12 +215,10 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
     /**
      * Template method for subclasses to take the appropriate action when the coverage store page
      * "save" button is pressed.
-     * 
-     * @param info
-     *            the StoreInfo to save
-     * @throws IllegalArgumentException
-     *             with an appropriate error message if the save action can't be successfully
-     *             performed
+     *
+     * @param info the StoreInfo to save
+     * @throws IllegalArgumentException with an appropriate error message if the save action can't
+     *     be successfully performed
      */
     protected abstract void onSave(WMSStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException;

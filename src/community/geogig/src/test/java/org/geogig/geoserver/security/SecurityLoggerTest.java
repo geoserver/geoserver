@@ -66,12 +66,19 @@ public class SecurityLoggerTest {
 
         String fetchurl = "http://demo.example.com/testrepo";
         String pushurl = fetchurl;
-        String fetch = "+" + Ref.append(Ref.HEADS_PREFIX, mappedBranch) + ":"
-                + Ref.append(Ref.append(Ref.REMOTES_PREFIX, remoteName), mappedBranch);
+        String fetch =
+                "+"
+                        + Ref.append(Ref.HEADS_PREFIX, mappedBranch)
+                        + ":"
+                        + Ref.append(Ref.append(Ref.REMOTES_PREFIX, remoteName), mappedBranch);
         boolean mapped = true;
 
-        command.setName(remoteName).setBranch(mappedBranch).setMapped(mapped).setPassword(password)
-                .setURL(username).setURL(fetchurl);
+        command.setName(remoteName)
+                .setBranch(mappedBranch)
+                .setMapped(mapped)
+                .setPassword(password)
+                .setURL(username)
+                .setURL(fetchurl);
 
         ArgumentCaptor<CharSequence> arg = ArgumentCaptor.forClass(CharSequence.class);
         SecurityLogger.logPre(command);
@@ -83,8 +90,16 @@ public class SecurityLoggerTest {
         assertTrue(msg.contains(remoteName));
         assertTrue(msg.contains(fetchurl));
 
-        Remote retVal = new Remote(remoteName, fetchurl, pushurl, fetch, mapped, mappedBranch,
-                username, password);
+        Remote retVal =
+                new Remote(
+                        remoteName,
+                        fetchurl,
+                        pushurl,
+                        fetch,
+                        mapped,
+                        mappedBranch,
+                        username,
+                        password);
         SecurityLogger.logPost(command, retVal, null);
         verify(mockStore).info(anyString(), arg.capture());
 

@@ -5,8 +5,14 @@
 
 package org.geoserver.status.monitoring;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.status.monitoring.collector.MetricInfo;
 import org.geoserver.status.monitoring.collector.MetricValue;
@@ -17,19 +23,12 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class MonitorRestTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testDefaultCallback() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/about/monitoring");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/about/monitoring");
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
         XStream xs = new XStream(new JettisonMappedXmlDriver());
@@ -43,8 +42,8 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testXmlCallback() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/about/monitoring.xml");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/about/monitoring.xml");
         assertEquals(200, response.getStatus());
         assertEquals("application/xml", response.getContentType());
         XStream xs = new XStream();
@@ -57,8 +56,8 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testJsonCallback() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                RestBaseController.ROOT_PATH + "/about/monitoring.json");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/about/monitoring.json");
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
         XStream xs = new XStream(new JettisonMappedXmlDriver());
@@ -74,9 +73,8 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
     public void testHtmlCallback() throws Exception {
         Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/about/monitoring.html");
         XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList nodes = (NodeList) xpath.evaluate("/html/body/table/tr", doc,
-                XPathConstants.NODESET);
+        NodeList nodes =
+                (NodeList) xpath.evaluate("/html/body/table/tr", doc, XPathConstants.NODESET);
         assertTrue(nodes.getLength() >= MetricInfo.values().length);
     }
-
 }

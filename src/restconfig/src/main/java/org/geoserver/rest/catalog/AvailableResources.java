@@ -14,20 +14,20 @@ import java.util.stream.Stream;
 
 /**
  * A named collection of strings, for output.
- * 
+ *
  * @author Kevin Smith (Boundless)
  */
 // TODO: This is a duplicate of StringsList
 public class AvailableResources extends AbstractCollection<String> {
     final Collection<String> delegate;
-    final String name; 
-    
+    final String name;
+
     public AvailableResources(Collection<String> delegate, String name) {
         super();
         this.delegate = Collections.unmodifiableCollection(delegate);
         this.name = name;
     }
-    
+
     /** Name of collection */
     public String getName() {
         return name;
@@ -37,7 +37,7 @@ public class AvailableResources extends AbstractCollection<String> {
     public Iterator<String> iterator() {
         return delegate.iterator();
     }
-    
+
     @Override
     public int size() {
         return delegate.size();
@@ -90,9 +90,9 @@ public class AvailableResources extends AbstractCollection<String> {
     public Stream<String> parallelStream() {
         return delegate.parallelStream();
     }
-    
+
     @Override
     public String toString() {
-        return "AvailableResources name='"+name+"' "+delegate.toString();
+        return "AvailableResources name='" + name + "' " + delegate.toString();
     }
 }

@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.ows.GetCapabilitiesRequest;
@@ -15,8 +14,8 @@ import org.geotools.data.ows.GetCapabilitiesResponse;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.request.GetFeatureInfoRequest;
 import org.geotools.data.wms.response.GetFeatureInfoResponse;
-import org.geotools.data.wmts.model.WMTSCapabilities;
 import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.data.wmts.model.WMTSCapabilities;
 import org.geotools.data.wmts.request.GetTileRequest;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.ows.ServiceException;
@@ -53,12 +52,11 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     //
     // -------------------------------------------------------------------------------------------
 
-
-    public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request) throws IOException,
-            ServiceException {
-        if(delegate!=null) {
+    public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request)
+            throws IOException, ServiceException {
+        if (delegate != null) {
             return delegate.issueRequest(request);
-        }else {
+        } else {
             return null;
         }
     }
@@ -112,5 +110,4 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     public String toString() {
         return "SecuredWebMapTileServer " + delegate.toString();
     }
-
 }

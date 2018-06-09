@@ -14,11 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.*;
-
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.*;
 import org.geoserver.wfs.request.TransactionRequest;
@@ -36,30 +33,25 @@ import org.opengis.referencing.operation.TransformException;
 /**
  * Listens to transactions (so far only issued by WFS) and truncates the cache for the affected area
  * of the layers involved in the transaction.
- * <p>
- * A Spring bean singleton of this class needs to be declared in order for GeoServer transactions to
- * pick it up automatically and forward transaction events to it.
- * </p>
- * <p>
- * TODO: upon deletion, only truncate if feature count > 0
- * </p>
- * 
+ *
+ * <p>A Spring bean singleton of this class needs to be declared in order for GeoServer transactions
+ * to pick it up automatically and forward transaction events to it.
+ *
+ * <p>TODO: upon deletion, only truncate if feature count > 0
+ *
  * @author Arne Kepp
  * @author Gabriel Roldan
  * @version $Id$
- * 
  */
 public class GWCTransactionListener implements TransactionCallback {
 
     private static Logger log = Logging.getLogger(GWCTransactionListener.class);
 
-    final private GWC gwc;
+    private final GWC gwc;
 
     static final String GWC_TRANSACTION_INFO_PLACEHOLDER = "GWC_TRANSACTION_INFO_PLACEHOLDER";
 
-    /**
-     * @param gwc
-     */
+    /** @param gwc */
     public GWCTransactionListener(final GWC gwc) {
         this.gwc = gwc;
     }
@@ -76,7 +68,7 @@ public class GWCTransactionListener implements TransactionCallback {
     /**
      * Not used, we're interested in the {@link #dataStoreChange} and {@link #afterTransaction}
      * hooks
-     * 
+     *
      * @see org.geoserver.wfs.TransactionPlugin#beforeCommit(net.opengis.wfs.TransactionRequest)
      */
     public void beforeCommit(TransactionRequest request) throws WFSException {
@@ -86,10 +78,11 @@ public class GWCTransactionListener implements TransactionCallback {
     /**
      * If transaction's succeeded then truncate the affected layers at the transaction affected
      * bounds
-     * 
+     *
      * @see org.geoserver.wfs.TransactionPlugin#afterTransaction
      */
-    public void afterTransaction(final TransactionRequest request, TransactionResponse result, boolean committed) {
+    public void afterTransaction(
+            final TransactionRequest request, TransactionResponse result, boolean committed) {
         if (!committed) {
             return;
         }
@@ -103,7 +96,8 @@ public class GWCTransactionListener implements TransactionCallback {
 
     private void afterTransactionInternal(final TransactionRequest transaction, boolean committed) {
 
-        final Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);
+        final Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions =
+                getByLayerDirtyRegions(transaction);
         if (byLayerDirtyRegions.isEmpty()) {
             return;
         }
@@ -122,23 +116,30 @@ public class GWCTransactionListener implements TransactionCallback {
             try {
                 gwc.truncate(tileLayerName, dirtyRegion);
             } catch (GeoWebCacheException e) {
-                log.warning("Error truncating tile layer " + tileLayerName
-                        + " for transaction affected bounds " + dirtyRegion);
+                log.warning(
+                        "Error truncating tile layer "
+                                + tileLayerName
+                                + " for transaction affected bounds "
+                                + dirtyRegion);
             }
         }
     }
 
-    private ReferencedEnvelope merge(final String tileLayerName,
-            final List<ReferencedEnvelope> dirtyList) throws TransformException, FactoryException {
+    private ReferencedEnvelope merge(
+            final String tileLayerName, final List<ReferencedEnvelope> dirtyList)
+            throws TransformException, FactoryException {
         if (dirtyList.size() == 0) {
             return null;
         }
 
-        final CoordinateReferenceSystem declaredCrs = CRS.getHorizontalCRS(gwc.getDeclaredCrs(tileLayerName));
+        final CoordinateReferenceSystem declaredCrs =
+                CRS.getHorizontalCRS(gwc.getDeclaredCrs(tileLayerName));
         ReferencedEnvelope merged = new ReferencedEnvelope(declaredCrs);
         for (ReferencedEnvelope env : dirtyList) {
-            if(env instanceof ReferencedEnvelope3D) {
-                env = new ReferencedEnvelope(env, CRS.getHorizontalCRS(env.getCoordinateReferenceSystem()));
+            if (env instanceof ReferencedEnvelope3D) {
+                env =
+                        new ReferencedEnvelope(
+                                env, CRS.getHorizontalCRS(env.getCoordinateReferenceSystem()));
             }
             ReferencedEnvelope transformedDirtyRegion = env.transform(declaredCrs, true, 1000);
             merged.expandToInclude(transformedDirtyRegion);
@@ -156,8 +157,9 @@ public class GWCTransactionListener implements TransactionCallback {
 
     /**
      * Collects the per TileLayer affected bounds
-     * 
-     * @see org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
+     *
+     * @see
+     *     org.geoserver.wfs.TransactionListener#dataStoreChange(org.geoserver.wfs.TransactionEvent)
      */
     public void dataStoreChange(final TransactionEvent event) throws WFSException {
         log.info("DataStoreChange: " + event.getLayerName() + " " + event.getType());
@@ -171,7 +173,9 @@ public class GWCTransactionListener implements TransactionCallback {
 
     private void dataStoreChangeInternal(final TransactionEvent event) {
         final Object source = event.getSource();
-        if (!(source instanceof InsertElementType || source instanceof UpdateElementType || source instanceof DeleteElementType)) {
+        if (!(source instanceof InsertElementType
+                || source instanceof UpdateElementType
+                || source instanceof DeleteElementType)) {
             return;
         }
 
@@ -183,8 +187,9 @@ public class GWCTransactionListener implements TransactionCallback {
             return;
         }
         final QName featureTypeName = event.getLayerName();
-        final Set<String> affectedTileLayers = gwc.getTileLayersByFeatureType(
-                featureTypeName.getNamespaceURI(), featureTypeName.getLocalPart());
+        final Set<String> affectedTileLayers =
+                gwc.getTileLayersByFeatureType(
+                        featureTypeName.getNamespaceURI(), featureTypeName.getLocalPart());
         if (affectedTileLayers.isEmpty()) {
             // event didn't touch a cached layer
             return;
@@ -207,8 +212,9 @@ public class GWCTransactionListener implements TransactionCallback {
 
         final Map<Object, Object> extendedProperties = transaction.getExtendedProperties();
         Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions;
-        byLayerDirtyRegions = (Map<String, List<ReferencedEnvelope>>) extendedProperties
-                .get(GWC_TRANSACTION_INFO_PLACEHOLDER);
+        byLayerDirtyRegions =
+                (Map<String, List<ReferencedEnvelope>>)
+                        extendedProperties.get(GWC_TRANSACTION_INFO_PLACEHOLDER);
         if (byLayerDirtyRegions == null) {
             byLayerDirtyRegions = new HashMap<String, List<ReferencedEnvelope>>();
             extendedProperties.put(GWC_TRANSACTION_INFO_PLACEHOLDER, byLayerDirtyRegions);
@@ -216,10 +222,13 @@ public class GWCTransactionListener implements TransactionCallback {
         return byLayerDirtyRegions;
     }
 
-    private void addLayerDirtyRegion(final TransactionRequest transaction, final String tileLayerName,
+    private void addLayerDirtyRegion(
+            final TransactionRequest transaction,
+            final String tileLayerName,
             final ReferencedEnvelope affectedBounds) {
 
-        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions = getByLayerDirtyRegions(transaction);
+        Map<String, List<ReferencedEnvelope>> byLayerDirtyRegions =
+                getByLayerDirtyRegions(transaction);
 
         List<ReferencedEnvelope> layerDirtyRegion = byLayerDirtyRegions.get(tileLayerName);
         if (layerDirtyRegion == null) {

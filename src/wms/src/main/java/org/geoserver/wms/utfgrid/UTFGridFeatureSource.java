@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -18,7 +17,7 @@ import org.opengis.feature.type.FeatureType;
 
 /**
  * A tiny wrapper that forces the attributes needed by UTFGrid
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class UTFGridFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
@@ -49,5 +48,4 @@ class UTFGridFeatureSource extends DecoratingFeatureSource<FeatureType, Feature>
         }
         return super.getFeatures(q);
     }
-
 }

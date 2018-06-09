@@ -6,7 +6,6 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -29,9 +28,8 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     private int readTimeout;
     private int connectTimeout;
 
-    protected WMSStoreInfoImpl() {
-    }
-    
+    protected WMSStoreInfoImpl() {}
+
     public WMSStoreInfoImpl(Catalog catalog) {
         super(catalog);
     }
@@ -71,7 +69,7 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
 
     @Override
     public void setMaxConnections(int maxConcurrentConnections) {
-        this.maxConnections = maxConcurrentConnections;        
+        this.maxConnections = maxConcurrentConnections;
     }
 
     @Override

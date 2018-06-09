@@ -5,15 +5,18 @@
  */
 package org.geoserver.flow.controller;
 
-import net.sf.ehcache.search.aggregator.Count;
+import java.util.concurrent.CountDownLatch;
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 
-import java.util.concurrent.CountDownLatch;
-
 public class FlowControllerTestingThread extends Thread {
-    enum ThreadState {STARTED, TIMED_OUT, PROCESSING, COMPLETE}; 
-    
+    enum ThreadState {
+        STARTED,
+        TIMED_OUT,
+        PROCESSING,
+        COMPLETE
+    };
+
     FlowController[] controllers;
     boolean proceed;
     Request request;
@@ -22,16 +25,15 @@ public class FlowControllerTestingThread extends Thread {
     ThreadState state;
     Throwable error;
     CountDownLatch waitLatch;
-            
-    
-    
-    public FlowControllerTestingThread(Request request, long timeout, long processingDelay, FlowController... controllers) {
+
+    public FlowControllerTestingThread(
+            Request request, long timeout, long processingDelay, FlowController... controllers) {
         this.controllers = controllers;
         this.request = request;
         this.timeout = timeout;
         this.processingDelay = processingDelay;
     }
-    
+
     public void setWaitLatch(CountDownLatch waitLatch) {
         this.waitLatch = waitLatch;
     }
@@ -42,16 +44,16 @@ public class FlowControllerTestingThread extends Thread {
         try {
             System.out.println(this + " calling requestIncoming");
             for (FlowController controller : controllers) {
-                if(!controller.requestIncoming(request, timeout)) {
+                if (!controller.requestIncoming(request, timeout)) {
                     state = ThreadState.TIMED_OUT;
                     return;
                 }
             }
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             this.error = t;
         }
         state = ThreadState.PROCESSING;
-        
+
         try {
             // wait on wait latch if available
             if (waitLatch != null) {
@@ -62,17 +64,17 @@ public class FlowControllerTestingThread extends Thread {
             if (processingDelay > 0) {
                 sleep(processingDelay);
             }
-        } catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             System.out.println(e.getLocalizedMessage());
             Thread.currentThread().interrupt();
         }
-        
+
         try {
             System.out.println(this + " calling requestComplete");
             for (FlowController controller : controllers) {
                 controller.requestComplete(request);
             }
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             this.error = t;
         }
         state = ThreadState.COMPLETE;

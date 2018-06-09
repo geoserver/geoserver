@@ -5,7 +5,6 @@
 package org.geogig.geoserver.spring.config;
 
 import java.io.IOException;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geoserver.rest.util.IOUtils;
@@ -14,9 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 
-/**
- * Converter that supports the conversion of a json request body to String.
- */
+/** Converter that supports the conversion of a json request body to String. */
 @Component
 public class JsonStringConverter extends BaseMessageConverter<String> {
 
@@ -29,23 +26,23 @@ public class JsonStringConverter extends BaseMessageConverter<String> {
     protected boolean supports(Class clazz) {
         return String.class.isAssignableFrom(clazz);
     }
-    
+
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return String.class.isAssignableFrom(clazz) && canRead(mediaType);
     }
-    
+
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false;
     }
 
     @Override
-    protected String readInternal(Class<? extends String> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected String readInternal(Class<? extends String> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         return IOUtils.getStringFromStream(inputMessage.getBody());
     }
-    
+
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
     }

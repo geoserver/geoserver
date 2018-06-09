@@ -9,12 +9,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-
 import org.geotools.util.DateRange;
 
 /**
  * Formats date/times into ISO8601
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ISO8601Formatter {
@@ -41,18 +40,17 @@ public class ISO8601Formatter {
         }
         buf.append(value);
     }
-    
+
     /**
      * Formats the specified object either as a single time, if it's a Date, or as a continuous
      * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
-     * 
-     * @param date
      *
+     * @param date
      */
     public String format(Object date) {
-        if(date instanceof Date) {
+        if (date instanceof Date) {
             return format((Date) date);
-        } else if(date instanceof DateRange){
+        } else if (date instanceof DateRange) {
             DateRange range = (DateRange) date;
             StringBuilder sb = new StringBuilder();
             format(range.getMinValue(), sb);
@@ -61,16 +59,17 @@ public class ISO8601Formatter {
             sb.append("/PT1S");
             return sb.toString();
         } else {
-            throw new IllegalArgumentException("Date argument should be either a Date or a " +
-                    "DateRange, however this one is neither: " + date);
+            throw new IllegalArgumentException(
+                    "Date argument should be either a Date or a "
+                            + "DateRange, however this one is neither: "
+                            + date);
         }
     }
 
     /**
      * Formats the specified Date in ISO8601 format
-     * 
-     * @param date
      *
+     * @param date
      */
     public String format(Date date) {
         return format(date, new StringBuilder()).toString();
@@ -102,5 +101,4 @@ public class ISO8601Formatter {
 
         return buf;
     }
-
 }

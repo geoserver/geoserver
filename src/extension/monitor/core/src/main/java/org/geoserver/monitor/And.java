@@ -16,5 +16,4 @@ public class And extends CompositeFilter {
     public And(List<Filter> filters) {
         super(filters);
     }
-
 }

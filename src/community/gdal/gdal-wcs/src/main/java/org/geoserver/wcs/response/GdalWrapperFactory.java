@@ -5,13 +5,12 @@
 package org.geoserver.wcs.response;
 
 import java.util.Map;
-
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 
 /**
  * Factory to create {@link GdalWrapper} instances.
- * 
+ *
  * @author Stefano Costa, GeoSolutions
  */
 public class GdalWrapperFactory implements ToolWrapperFactory {
@@ -20,5 +19,4 @@ public class GdalWrapperFactory implements ToolWrapperFactory {
     public ToolWrapper createWrapper(String executable, Map<String, String> environment) {
         return new GdalWrapper(executable, environment);
     }
-
 }

@@ -5,23 +5,17 @@
 package org.geoserver.security.oauth2;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GitHubOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, OAuth2FilterConfig {
-
 
     /** serialVersionUID */
     private static final long serialVersionUID = 8748033204628673178L;
@@ -44,13 +38,13 @@ public class GitHubOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
     protected String scopes = "user";
 
     protected Boolean enableRedirectAuthenticationEntryPoint = false;
-    
+
     protected Boolean forceAccessTokenUriHttps = true;
-    
+
     protected Boolean forceUserAuthorizationUriHttps = true;
-    
+
     protected String loginEndpoint = "/j_spring_oauth2_github_login";
-    
+
     protected String logoutEndpoint = "/j_spring_oauth2_github_logout";
     // DEFAULT VALUES - END -
 
@@ -59,127 +53,94 @@ public class GitHubOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
         return true;
     }
 
-    /**
-     * @return the cliendId
-     */
+    /** @return the cliendId */
     public String getCliendId() {
         return cliendId;
     }
 
-    /**
-     * @param cliendId the cliendId to set
-     */
+    /** @param cliendId the cliendId to set */
     public void setCliendId(String cliendId) {
         this.cliendId = cliendId;
     }
 
-    /**
-     * @return the clientSecret
-     */
+    /** @return the clientSecret */
     public String getClientSecret() {
         return clientSecret;
     }
 
-    /**
-     * @param clientSecret the clientSecret to set
-     */
+    /** @param clientSecret the clientSecret to set */
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
-    /**
-     * @return the accessTokenUri
-     */
+    /** @return the accessTokenUri */
     public String getAccessTokenUri() {
         return accessTokenUri;
     }
 
-    /**
-     * @param accessTokenUri the accessTokenUri to set
-     */
+    /** @param accessTokenUri the accessTokenUri to set */
     public void setAccessTokenUri(String accessTokenUri) {
         this.accessTokenUri = accessTokenUri;
     }
 
-    /**
-     * @return the userAuthorizationUri
-     */
+    /** @return the userAuthorizationUri */
     public String getUserAuthorizationUri() {
         return userAuthorizationUri;
     }
 
-    /**
-     * @param userAuthorizationUri the userAuthorizationUri to set
-     */
+    /** @param userAuthorizationUri the userAuthorizationUri to set */
     public void setUserAuthorizationUri(String userAuthorizationUri) {
         this.userAuthorizationUri = userAuthorizationUri;
     }
 
-    /**
-     * @return the redirectUri
-     */
+    /** @return the redirectUri */
     public String getRedirectUri() {
         return redirectUri;
     }
 
-    /**
-     * @param redirectUri the redirectUri to set
-     */
+    /** @param redirectUri the redirectUri to set */
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
     }
 
-    /**
-     * @return the checkTokenEndpointUrl
-     */
+    /** @return the checkTokenEndpointUrl */
     public String getCheckTokenEndpointUrl() {
         return checkTokenEndpointUrl;
     }
 
-    /**
-     * @param checkTokenEndpointUrl the checkTokenEndpointUrl to set
-     */
+    /** @param checkTokenEndpointUrl the checkTokenEndpointUrl to set */
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
         this.checkTokenEndpointUrl = checkTokenEndpointUrl;
     }
 
-    /**
-     * @return the logoutUri
-     */
+    /** @return the logoutUri */
     public String getLogoutUri() {
         return logoutUri;
     }
 
-    /**
-     * @param logoutUri the logoutUri to set
-     */
+    /** @param logoutUri the logoutUri to set */
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
     }
 
-    /**
-     * @return the scopes
-     */
+    /** @return the scopes */
     public String getScopes() {
         return scopes;
     }
 
-    /**
-     * @param scopes the scopes to set
-     */
+    /** @param scopes the scopes to set */
     public void setScopes(String scopes) {
         this.scopes = scopes;
     }
 
-    /**
-     * @return the enableRedirectAuthenticationEntryPoint
-     */
+    /** @return the enableRedirectAuthenticationEntryPoint */
     public Boolean getEnableRedirectAuthenticationEntryPoint() {
         return enableRedirectAuthenticationEntryPoint;
     }
 
     /**
-     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set
+     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to
+     *     set
      */
     public void setEnableRedirectAuthenticationEntryPoint(
             Boolean enableRedirectAuthenticationEntryPoint) {
@@ -191,12 +152,22 @@ public class GitHubOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
         return new AuthenticationEntryPoint() {
 
             @Override
-            public void commence(HttpServletRequest request, HttpServletResponse response,
-                    AuthenticationException authException) throws IOException, ServletException {
+            public void commence(
+                    HttpServletRequest request,
+                    HttpServletResponse response,
+                    AuthenticationException authException)
+                    throws IOException, ServletException {
                 final StringBuilder loginUri = new StringBuilder(getUserAuthorizationUri());
-                loginUri.append("?").append("response_type=code").append("&").append("client_id=")
-                        .append(getCliendId()).append("&").append("scope=")
-                        .append(getScopes().replace(",", "%20")).append("&").append("redirect_uri=")
+                loginUri.append("?")
+                        .append("response_type=code")
+                        .append("&")
+                        .append("client_id=")
+                        .append(getCliendId())
+                        .append("&")
+                        .append("scope=")
+                        .append(getScopes().replace(",", "%20"))
+                        .append("&")
+                        .append("redirect_uri=")
                         .append(getRedirectUri());
 
                 if (getEnableRedirectAuthenticationEntryPoint()
@@ -246,5 +217,4 @@ public class GitHubOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
     public void setLogoutEndpoint(String logoutEndpoint) {
         this.logoutEndpoint = logoutEndpoint;
     }
-
 }

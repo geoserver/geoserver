@@ -9,9 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-/**
- * Configure the geogig content negotiation strategy.
- */
+/** Configure the geogig content negotiation strategy. */
 @Configuration
 public class GeogigSpringConfig {
 
@@ -21,15 +19,14 @@ public class GeogigSpringConfig {
     }
 
     static final String FILTER_MULTIPART_RESOLVER_NAME = "geogigFilterMultipartResolver";
+
     @Bean(name = FILTER_MULTIPART_RESOLVER_NAME)
     MultipartResolver geogigFilterMultipartResolver() {
         return new CommonsMultipartResolver();
     }
-
 
     @Bean
     GeogigMultipartFilter geogigMultipartFilter() {
         return new GeogigMultipartFilter();
     }
 }
-

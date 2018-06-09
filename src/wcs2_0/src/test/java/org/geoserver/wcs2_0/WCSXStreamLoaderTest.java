@@ -5,7 +5,6 @@
 package org.geoserver.wcs2_0;
 
 import java.io.InputStream;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
@@ -30,6 +29,5 @@ public class WCSXStreamLoaderTest extends WCSTestSupport {
         try (InputStream is = getClass().getResourceAsStream("/wcs-test.xml")) {
             xp.load(is, WCSInfo.class);
         }
-
     }
 }

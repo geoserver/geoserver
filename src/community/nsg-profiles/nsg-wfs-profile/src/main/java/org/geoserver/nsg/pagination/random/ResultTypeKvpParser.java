@@ -13,5 +13,4 @@ public class ResultTypeKvpParser extends org.geoserver.wfs.kvp.v2_0.ResultTypeKv
         super();
         setVersion(new Version("2.0.2"));
     }
-
 }

@@ -7,8 +7,8 @@
  * <p>
  * <H2>Truncate GWC tiles<H2>
  * <p>
- * The {@link org.geogig.geoserver.gwc.TruncateTilesOnUpdateRefHook} command hook is declared 
- * in {@code src/main/resources/META-INF/services/org.geogig.api.hooks.CommandHook}, following GeoGIG's 
+ * The {@link org.geogig.geoserver.gwc.TruncateTilesOnUpdateRefHook} command hook is declared
+ * in {@code src/main/resources/META-INF/services/org.geogig.api.hooks.CommandHook}, following GeoGIG's
  * SPI mechanism to declare "classpath" command hooks.
  * <p>
  * This command hook captures calls to {@link org.locationtech.geogig.api.plumbing.UpdateRef} commands in any

@@ -8,8 +8,9 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -29,42 +30,41 @@ import org.opengis.filter.FilterFactory2;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-
 public class OSEORestTestSupport extends OSEOTestSupport {
-    
+
     protected static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     @Before
     public void loginAdmin() {
         login("admin", "geoserver", GeoServerRole.ADMIN_ROLE.getAuthority());
     }
-    
+
     @Before
     public void cleanupTestCollection() throws IOException {
         DataStoreInfo ds = getCatalog().getDataStoreByName("oseo");
         OpenSearchAccess access = (OpenSearchAccess) ds.getDataStore(null);
         FeatureStore store = (FeatureStore) access.getCollectionSource();
         store.removeFeatures(
-                FF.equal(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
-                        FF.literal("TEST123"), true));
+                FF.equal(
+                        FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
+                        FF.literal("TEST123"),
+                        true));
     }
-    
+
     @Before
     public void cleanupTestCollectionPublishing() throws IOException {
         Catalog catalog = getCatalog();
         CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
         CoverageStoreInfo store = catalog.getStoreByName("gs", "test123", CoverageStoreInfo.class);
-        if(store != null) {
+        if (store != null) {
             visitor.visit(store);
         }
         StyleInfo style = catalog.getStyleByName("gs", "test123");
-        if(style != null) {
+        if (style != null) {
             visitor.visit(style);
         }
         Resource data = catalog.getResourceLoader().get("data/gs/test123");
-        if(data != null && Resources.exists(data)) {
+        if (data != null && Resources.exists(data)) {
             data.delete();
         }
     }
@@ -79,19 +79,21 @@ public class OSEORestTestSupport extends OSEOTestSupport {
         assertThat(response.getContentType(), startsWith("application/json"));
         return JsonPath.parse(response.getContentAsString());
     }
-    
+
     protected byte[] getTestData(String location) throws IOException {
         return IOUtils.toByteArray(getClass().getResourceAsStream(location));
     }
-    
+
     protected void createTest123Collection() throws Exception, IOException {
         // create the collection
-        MockHttpServletResponse response = postAsServletResponse("rest/oseo/collections",
-                getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections",
+                        getTestData("/collection.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
-        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
                 response.getHeader("location"));
     }
-
-
 }

@@ -4,16 +4,13 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs20.BaseRequestType;
 import org.geoserver.wfs.WFSException;
 import org.geotools.util.logging.Logging;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * Simple timeout checker
- */
+/** Simple timeout checker */
 class TimeoutVerifier {
 
     static final Logger LOGGER = Logging.getLogger(TimeoutVerifier.class);
@@ -40,10 +37,11 @@ class TimeoutVerifier {
     public void cancel() {
         if (!this.cancelled) {
             if (!this.thrown) {
-                LOGGER.log(Level.FINE, "Timeout cancelled (presumably as GeoServer started to write out the response)");
+                LOGGER.log(
+                        Level.FINE,
+                        "Timeout cancelled (presumably as GeoServer started to write out the response)");
             }
             this.cancelled = true;
         }
-
     }
 }

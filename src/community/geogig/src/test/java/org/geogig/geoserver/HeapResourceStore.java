@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver;
 
+import com.google.common.collect.Lists;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,21 +19,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.SimpleResourceNotificationDispatcher;
-
-import com.google.common.collect.Lists;
-
-import org.geoserver.platform.resource.Resource.Type;
 
 public class HeapResourceStore implements ResourceStore {
 
@@ -102,7 +99,7 @@ public class HeapResourceStore implements ResourceStore {
         @Override
         public void changed(ResourceNotification notification) {
             List<ResourceListener> originalListeners = listeners.get(notification.getPath());
-            //Copy list, since some handlers try to remove themselves on notifications
+            // Copy list, since some handlers try to remove themselves on notifications
             if (originalListeners != null) {
                 List<ResourceListener> resourceListeners = new ArrayList<>(originalListeners);
 
@@ -111,18 +108,23 @@ public class HeapResourceStore implements ResourceStore {
                 }
             }
 
-            //if delete, propagate delete notifications to children, which can be found in the events (see {@link createEvents})
+            // if delete, propagate delete notifications to children, which can be found in the
+            // events (see {@link createEvents})
             if (notification.getKind() == ResourceNotification.Kind.ENTRY_DELETE) {
                 for (ResourceNotification.Event event : notification.events()) {
                     if (!notification.getPath().equals(event.getPath())) {
-                        this.changed(new ResourceNotification(event.getPath(),
-                                ResourceNotification.Kind.ENTRY_DELETE,
-                                notification.getTimestamp(), Collections.emptyList()));
+                        this.changed(
+                                new ResourceNotification(
+                                        event.getPath(),
+                                        ResourceNotification.Kind.ENTRY_DELETE,
+                                        notification.getTimestamp(),
+                                        Collections.emptyList()));
                     }
                 }
             }
 
-            //if create, propagate CREATE events to its created parents, which can be found in the events (see {@link createEvents})
+            // if create, propagate CREATE events to its created parents, which can be found in the
+            // events (see {@link createEvents})
             Set<String> createdParents = new HashSet<>();
             if (notification.getKind() == ResourceNotification.Kind.ENTRY_CREATE) {
                 for (ResourceNotification.Event event : notification.events()) {
@@ -132,21 +134,25 @@ public class HeapResourceStore implements ResourceStore {
                 }
             }
 
-            //propagate any event to its direct parent (as MODIFY if not a created parent)
+            // propagate any event to its direct parent (as MODIFY if not a created parent)
             List<String> paths = Lists.newArrayList(Paths.names(notification.getPath()));
             paths.remove(paths.size() - 1);
             while (paths.size() > 0) {
                 String path = Paths.path(paths.toArray(new String[0]));
                 boolean isCreate = createdParents.contains(path);
-                this.changed(new ResourceNotification(path,
-                        isCreate ? ResourceNotification.Kind.ENTRY_CREATE : ResourceNotification.Kind.ENTRY_MODIFY,
-                        notification.getTimestamp(), notification.events()));
+                this.changed(
+                        new ResourceNotification(
+                                path,
+                                isCreate
+                                        ? ResourceNotification.Kind.ENTRY_CREATE
+                                        : ResourceNotification.Kind.ENTRY_MODIFY,
+                                notification.getTimestamp(),
+                                notification.events()));
 
-                //stop propagating after first modify
+                // stop propagating after first modify
                 paths.remove(paths.size() - 1);
             }
         }
-
     }
 
     class HeapResource implements Resource {
@@ -162,10 +168,10 @@ public class HeapResourceStore implements ResourceStore {
         private Type type;
 
         private byte[] bytes;
-        
+
         private long lastModified;
 
-        final private HeapResourceStore store;
+        private final HeapResourceStore store;
 
         public HeapResource(HeapResourceStore store) {
             this(store, null, null);
@@ -183,7 +189,7 @@ public class HeapResourceStore implements ResourceStore {
                 this.parent = parent;
                 this.path = buildPath();
             }
-            this.lastModified = 0L;// no timestamp until it's first written
+            this.lastModified = 0L; // no timestamp until it's first written
             this.bytes = null;
             this.children = new LinkedList<>();
         }
@@ -216,14 +222,10 @@ public class HeapResourceStore implements ResourceStore {
         }
 
         @Override
-        public void addListener(ResourceListener listener) {
-
-        }
+        public void addListener(ResourceListener listener) {}
 
         @Override
-        public void removeListener(ResourceListener listener) {
-
-        }
+        public void removeListener(ResourceListener listener) {}
 
         @Override
         public InputStream in() {
@@ -237,10 +239,15 @@ public class HeapResourceStore implements ResourceStore {
         public OutputStream out() {
             final ResourceNotification createNotification;
             if (bytes == null && getType().equals(Type.UNDEFINED)) {
-                List<Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
-                        ResourceNotification.Kind.ENTRY_CREATE);
-                createNotification = new ResourceNotification(path,
-                        ResourceNotification.Kind.ENTRY_CREATE, System.currentTimeMillis(), events);
+                List<Event> events =
+                        SimpleResourceNotificationDispatcher.createEvents(
+                                this, ResourceNotification.Kind.ENTRY_CREATE);
+                createNotification =
+                        new ResourceNotification(
+                                path,
+                                ResourceNotification.Kind.ENTRY_CREATE,
+                                System.currentTimeMillis(),
+                                events);
                 this.type = Type.RESOURCE;
             } else {
                 createNotification = null;
@@ -264,13 +271,16 @@ public class HeapResourceStore implements ResourceStore {
                             dispatcher.changed(createNotification);
                         }
                         // now fire the modified events
-                        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(
-                                HeapResource.this,
-                                ResourceNotification.Kind.ENTRY_MODIFY);
+                        List<Event> events =
+                                SimpleResourceNotificationDispatcher.createEvents(
+                                        HeapResource.this, ResourceNotification.Kind.ENTRY_MODIFY);
 
-                        dispatcher.changed(new ResourceNotification(path(),
-                                ResourceNotification.Kind.ENTRY_MODIFY,
-                                System.currentTimeMillis(), events));
+                        dispatcher.changed(
+                                new ResourceNotification(
+                                        path(),
+                                        ResourceNotification.Kind.ENTRY_MODIFY,
+                                        System.currentTimeMillis(),
+                                        events));
                     } finally {
                         lock.release();
                     }
@@ -344,7 +354,6 @@ public class HeapResourceStore implements ResourceStore {
                 pathIndex++;
             }
             return resource;
-
         }
 
         @Override
@@ -369,11 +378,15 @@ public class HeapResourceStore implements ResourceStore {
                 children.clear();
                 bytes = null;
                 deleted = true;
-                List<Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
-                        ResourceNotification.Kind.ENTRY_DELETE);
-                dispatcher.changed(new ResourceNotification(path,
-                        ResourceNotification.Kind.ENTRY_DELETE,
-                        System.currentTimeMillis(), events));
+                List<Event> events =
+                        SimpleResourceNotificationDispatcher.createEvents(
+                                this, ResourceNotification.Kind.ENTRY_DELETE);
+                dispatcher.changed(
+                        new ResourceNotification(
+                                path,
+                                ResourceNotification.Kind.ENTRY_DELETE,
+                                System.currentTimeMillis(),
+                                events));
             }
             return deleted;
         }
@@ -383,24 +396,29 @@ public class HeapResourceStore implements ResourceStore {
             if (dest == this) {
                 return false;
             }
-            List<ResourceNotification.Event> eventsDelete = SimpleResourceNotificationDispatcher.createEvents(
-                    this,
-                    ResourceNotification.Kind.ENTRY_DELETE);
-            List<ResourceNotification.Event> eventsRename = SimpleResourceNotificationDispatcher.createRenameEvents(
-                    this, dest);
+            List<ResourceNotification.Event> eventsDelete =
+                    SimpleResourceNotificationDispatcher.createEvents(
+                            this, ResourceNotification.Kind.ENTRY_DELETE);
+            List<ResourceNotification.Event> eventsRename =
+                    SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
             this.path = dest.path();
             this.name = dest.name();
             this.parent = (HeapResource) dest.parent();
-            this.parent.children.remove((HeapResource)dest);
+            this.parent.children.remove((HeapResource) dest);
             this.parent.children.add(this);
-            dispatcher.changed(new ResourceNotification(path(),
-                    ResourceNotification.Kind.ENTRY_DELETE,
-                    System.currentTimeMillis(), eventsDelete));
-            dispatcher.changed(new ResourceNotification(path(), eventsRename.get(0).getKind(),
-                    System.currentTimeMillis(), eventsRename));
+            dispatcher.changed(
+                    new ResourceNotification(
+                            path(),
+                            ResourceNotification.Kind.ENTRY_DELETE,
+                            System.currentTimeMillis(),
+                            eventsDelete));
+            dispatcher.changed(
+                    new ResourceNotification(
+                            path(),
+                            eventsRename.get(0).getKind(),
+                            System.currentTimeMillis(),
+                            eventsRename));
             return true;
         }
-
     }
-
 }

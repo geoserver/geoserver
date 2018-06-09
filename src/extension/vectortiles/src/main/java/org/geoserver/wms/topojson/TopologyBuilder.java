@@ -6,32 +6,6 @@ package org.geoserver.wms.topojson;
 
 import static org.geoserver.wms.topojson.TopoJSONBuilderFactory.MIME_TYPE;
 
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.io.output.DeferredFileOutputStream;
-import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.map.RawMap;
-import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
-import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
-import org.geoserver.wms.vector.VectorTileBuilder;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.operation.TransformException;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -48,6 +22,29 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.apache.commons.io.output.DeferredFileOutputStream;
+import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.map.RawMap;
+import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
+import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
+import org.geoserver.wms.vector.VectorTileBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.renderer.lite.RendererUtilities;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.operation.TransformException;
 
 public class TopologyBuilder implements VectorTileBuilder {
 
@@ -75,8 +72,12 @@ public class TopologyBuilder implements VectorTileBuilder {
     }
 
     @Override
-    public void addFeature(String layerName, String featureId, String geometryName,
-            Geometry geometry, Map<String, Object> properties) {
+    public void addFeature(
+            String layerName,
+            String featureId,
+            String geometryName,
+            Geometry geometry,
+            Map<String, Object> properties) {
         TopoGeom topoObj;
         try {
             topoObj = createObject(featureId, geometry, properties);
@@ -106,8 +107,8 @@ public class TopologyBuilder implements VectorTileBuilder {
         Topology topology = new Topology(screenToWorld, arcs, layers);
 
         final int threshold = 8096;
-        DeferredFileOutputStream out = new DeferredFileOutputStream(threshold, "topology",
-                ".topojson", null);
+        DeferredFileOutputStream out =
+                new DeferredFileOutputStream(threshold, "topology", ".topojson", null);
         TopoJSONEncoder encoder = new TopoJSONEncoder();
 
         Writer writer = new OutputStreamWriter(out, Charsets.UTF_8);
@@ -236,5 +237,4 @@ public class TopologyBuilder implements VectorTileBuilder {
     private TopoGeom.Point createPoint(Point geom) {
         return new TopoGeom.Point(geom.getX(), geom.getY());
     }
-
 }

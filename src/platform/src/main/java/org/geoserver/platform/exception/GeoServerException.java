@@ -7,12 +7,11 @@ package org.geoserver.platform.exception;
 
 /**
  * Base class for exceptions whose messages can be localized.
- * <p>
- * This class overrides the {{@link #getMessage()} function and uses {@link #getId()} to 
- * locate a localized version of the message via a {@link GeoServerExceptions#localize(IGeoServerException)}.
- * </p>
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>This class overrides the {{@link #getMessage()} function and uses {@link #getId()} to locate a
+ * localized version of the message via a {@link GeoServerExceptions#localize(IGeoServerException)}.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerException extends Exception implements IGeoServerException {
 

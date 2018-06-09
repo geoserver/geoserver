@@ -11,7 +11,6 @@ import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOS
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
 import org.geogig.geoserver.config.RepositoryManager;
@@ -35,26 +34,28 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSupport {
 
-    @Rule
-    public GeoGigTestData geogigData = new GeoGigTestData();
+    @Rule public GeoGigTestData geogigData = new GeoGigTestData();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        geogigData.init()//
-                .config("user.name", "gabriel")//
-                .config("user.email", "gabriel@test.com")//
-                .createTypeTree("lines", "geom:LineString:srid=4326")//
-                .createTypeTree("points", "geom:Point:srid=4326")//
-                .add()//
-                .commit("created type trees")//
+        geogigData
+                .init() //
+                .config("user.name", "gabriel") //
+                .config("user.email", "gabriel@test.com") //
+                .createTypeTree("lines", "geom:LineString:srid=4326") //
+                .createTypeTree("points", "geom:Point:srid=4326") //
+                .add() //
+                .commit("created type trees") //
                 .get();
 
-        geogigData.insert("points", //
+        geogigData.insert(
+                "points", //
                 "p1=geom:POINT(0 0)", //
                 "p2=geom:POINT(1 1)", //
                 "p3=geom:POINT(2 2)");
 
-        geogigData.insert("lines", //
+        geogigData.insert(
+                "lines", //
                 "l1=geom:LINESTRING(-10 0, 10 0)", //
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
@@ -64,7 +65,6 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
         geogigData.branch("fakeBranch");
         // need to instantiate the listerner so it can register with the test GeoServer instance
         new GeogigLayerIntegrationListener(getGeoServer());
-
     }
 
     @After
@@ -218,5 +218,4 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
         CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         catalogBuilder.addAllRepoLayers().build();
     }
-
 }

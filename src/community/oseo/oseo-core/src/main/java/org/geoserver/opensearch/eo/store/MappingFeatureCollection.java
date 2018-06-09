@@ -7,7 +7,6 @@ package org.geoserver.opensearch.eo.store;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.logging.Logger;
-
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.BaseFeatureCollection;
@@ -18,9 +17,8 @@ import org.opengis.feature.type.FeatureType;
 
 /**
  * Similar to gt-transform code, but building complex features on a custom transformation
- * 
+ *
  * @author Andrea Aime - GeoSolution
- * 
  */
 class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Feature> {
 
@@ -30,7 +28,9 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
 
     private Function<PushbackFeatureIterator<SimpleFeature>, Feature> mapper;
 
-    public MappingFeatureCollection(FeatureType schema, SimpleFeatureCollection features,
+    public MappingFeatureCollection(
+            FeatureType schema,
+            SimpleFeatureCollection features,
             Function<PushbackFeatureIterator<SimpleFeature>, Feature> mapper) {
         super(schema);
         this.features = features;
@@ -39,8 +39,8 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
 
     @Override
     public FeatureIterator<Feature> features() {
-        PushbackFeatureIterator<SimpleFeature> iterator = new PushbackFeatureIterator<>(
-                features.features());
+        PushbackFeatureIterator<SimpleFeature> iterator =
+                new PushbackFeatureIterator<>(features.features());
         // scan through the joined features and map them
         return new FeatureIterator<Feature>() {
 
@@ -61,5 +61,4 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
             }
         };
     }
-
 }

@@ -6,7 +6,6 @@ package org.geoserver.security.oauth2.services;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -25,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Remote Token Services for GeoNode token details.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
@@ -33,15 +32,18 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
     public GeoNodeTokenServices() {
         tokenConverter = new GeoNodeAccessTokenConverter();
         restTemplate = new RestTemplate();
-        ((RestTemplate) restTemplate).setErrorHandler(new DefaultResponseErrorHandler() {
-            @Override
-            // Ignore 400
-            public void handleError(ClientHttpResponse response) throws IOException {
-                if (response.getRawStatusCode() != 400) {
-                    super.handleError(response);
-                }
-            }
-        });
+        ((RestTemplate) restTemplate)
+                .setErrorHandler(
+                        new DefaultResponseErrorHandler() {
+                            @Override
+                            // Ignore 400
+                            public void handleError(ClientHttpResponse response)
+                                    throws IOException {
+                                if (response.getRawStatusCode() != 400) {
+                                    super.handleError(response);
+                                }
+                            }
+                        });
     }
 
     @Override
@@ -56,7 +58,8 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
 
         transformNonStandardValuesToStandardValues(checkTokenResponse);
 
-        Assert.state(checkTokenResponse.containsKey("client_id"),
+        Assert.state(
+                checkTokenResponse.containsKey("client_id"),
                 "Client id must be present in response from auth server");
         return tokenConverter.extractAuthentication(checkTokenResponse);
     }
@@ -66,8 +69,11 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
         formData.add("token", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(accessToken));
-        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl).append("?access_token=")
-                .append(accessToken).toString();
+        String accessTokenUrl =
+                new StringBuilder(checkTokenEndpointUrl)
+                        .append("?access_token=")
+                        .append(accessToken)
+                        .toString();
         return postForMap(accessTokenUrl, formData, headers);
     }
 
@@ -80,14 +86,14 @@ public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
     private String getAuthorizationHeader(String accessToken) {
         return "Bearer " + accessToken;
     }
-    
-    private Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData,
-            HttpHeaders headers) {
+
+    private Map<String, Object> postForMap(
+            String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
         if (headers.getContentType() == null) {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
-        ParameterizedTypeReference<Map<String, Object>> map = new ParameterizedTypeReference<Map<String, Object>>() {
-        };
+        ParameterizedTypeReference<Map<String, Object>> map =
+                new ParameterizedTypeReference<Map<String, Object>>() {};
         return restTemplate
                 .exchange(path, HttpMethod.POST, new HttpEntity<>(formData, headers), map)
                 .getBody();

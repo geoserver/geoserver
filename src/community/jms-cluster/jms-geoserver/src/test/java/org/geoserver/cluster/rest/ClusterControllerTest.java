@@ -4,6 +4,13 @@
  */
 package org.geoserver.cluster.rest;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -12,13 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class ClusterControllerTest extends GeoServerSystemTestSupport {
 
@@ -32,13 +32,14 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         Document dom = getAsDOM("rest/cluster.xml");
         // print(dom);
         // checking a property that's unlikely to change
-        assertXpathEvaluatesTo("VirtualTopic.geoserver", "/properties/property[@name='topicName']/@value", dom);
+        assertXpathEvaluatesTo(
+                "VirtualTopic.geoserver", "/properties/property[@name='topicName']/@value", dom);
     }
 
     @Test
     public void testGetConfigurationHTML() throws Exception {
         Document dom = getAsDOM("rest/cluster.html");
-        assertEquals( "html", dom.getDocumentElement().getNodeName() );
+        assertEquals("html", dom.getDocumentElement().getNodeName());
     }
 
     @Test
@@ -51,7 +52,9 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         assertThat(jsonObject.get("properties"), notNullValue());
         assertThat(jsonObject.get("properties"), instanceOf(JSONObject.class));
         assertThat(jsonObject.getJSONObject("properties").get("property"), notNullValue());
-        assertThat(jsonObject.getJSONObject("properties").get("property"), instanceOf(JSONArray.class));
+        assertThat(
+                jsonObject.getJSONObject("properties").get("property"),
+                instanceOf(JSONArray.class));
         JSONArray properties = jsonObject.getJSONObject("properties").getJSONArray("property");
         assertThat(properties.size(), is(15));
         // check properties exist
@@ -83,9 +86,7 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("false", "/properties/property[@name='toggleSlave']/@value", dom);
     }
 
-    /**
-     * Helper method that checks if a property exists.
-     */
+    /** Helper method that checks if a property exists. */
     private void checkPropertyExists(JSONArray properties, String expectedName) {
         boolean found = false;
         for (Object json : properties) {

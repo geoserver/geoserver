@@ -4,6 +4,11 @@
  */
 package org.geoserver.rest.catalog;
 
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -14,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -58,13 +62,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.vfny.geoserver.util.DataStoreUtils;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
-import freemarker.template.ObjectWrapper;
-import freemarker.template.SimpleHash;
-import freemarker.template.TemplateModelException;
-
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores")
@@ -81,56 +78,68 @@ public class DataStoreController extends AbstractCatalogController {
     Get Mappings
      */
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE })
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<DataStoreInfo> dataStoresGet(@PathVariable String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
-        if(ws == null) {
+        if (ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
         }
-        List<DataStoreInfo> dataStores = catalog
-                .getDataStoresByWorkspace(ws);
+        List<DataStoreInfo> dataStores = catalog.getDataStoresByWorkspace(ws);
         return wrapList(dataStores, DataStoreInfo.class);
     }
 
-    @GetMapping(path = "{storeName}", produces = {
+    @GetMapping(
+        path = "{storeName}",
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE })
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<DataStoreInfo> dataStoreGet(
-            @PathVariable String workspaceName,
-            @PathVariable String storeName) {
+            @PathVariable String workspaceName, @PathVariable String storeName) {
 
         DataStoreInfo dataStore = getExistingDataStore(workspaceName, storeName);
         return wrapObject(dataStore, DataStoreInfo.class);
     }
 
-    @PostMapping(consumes = {
+    @PostMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public ResponseEntity<String> dataStorePost(
             @RequestBody DataStoreInfo dataStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
 
-        if ( dataStore.getWorkspace() != null ) {
-             //ensure the specifried workspace matches the one dictated by the uri
-             WorkspaceInfo ws = dataStore.getWorkspace();
-             if ( !workspaceName.equals( ws.getName() ) ) {
-                 throw new RestException( "Expected workspace " + workspaceName + 
-                     " but client specified " + ws.getName(), HttpStatus.FORBIDDEN );
-             }
+        if (dataStore.getWorkspace() != null) {
+            // ensure the specifried workspace matches the one dictated by the uri
+            WorkspaceInfo ws = dataStore.getWorkspace();
+            if (!workspaceName.equals(ws.getName())) {
+                throw new RestException(
+                        "Expected workspace "
+                                + workspaceName
+                                + " but client specified "
+                                + ws.getName(),
+                        HttpStatus.FORBIDDEN);
+            }
         } else {
-             dataStore.setWorkspace( catalog.getWorkspaceByName(workspaceName) );
-        } 
+            dataStore.setWorkspace(catalog.getWorkspaceByName(workspaceName));
+        }
         dataStore.setEnabled(true);
-        
-        //if no namespace parameter set, set it
-        //TODO: we should really move this sort of thing to be something central
+
+        // if no namespace parameter set, set it
+        // TODO: we should really move this sort of thing to be something central
         if (!dataStore.getConnectionParameters().containsKey("namespace")) {
             WorkspaceInfo ws = dataStore.getWorkspace();
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
@@ -142,36 +151,40 @@ public class DataStoreController extends AbstractCatalogController {
             }
         }
 
-        //attempt to set the datastore type
+        // attempt to set the datastore type
         try {
-            DataAccessFactory factory = 
-                DataStoreUtils.aquireFactory(dataStore.getConnectionParameters());
+            DataAccessFactory factory =
+                    DataStoreUtils.aquireFactory(dataStore.getConnectionParameters());
             dataStore.setType(factory.getDisplayName());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.warning("Unable to determine datastore type from connection parameters");
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "", e);
             }
         }
-        
+
         catalog.validate(dataStore, true).throwIfInvalid();
         catalog.add(dataStore);
 
         String storeName = dataStore.getName();
         LOGGER.info("POST data store " + storeName);
-        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/datastores/{storeName}")
-                .buildAndExpand(workspaceName, storeName);
+        UriComponents uriComponents =
+                builder.path("/workspaces/{workspaceName}/datastores/{storeName}")
+                        .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "{storeName}", consumes = {
+    @PutMapping(
+        value = "{storeName}",
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE })
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public void dataStorePut(
             @RequestBody DataStoreInfo info,
             @PathVariable String workspaceName,
@@ -199,14 +212,18 @@ public class DataStoreController extends AbstractCatalogController {
     public void dataStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
-            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
-            @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+            @RequestParam(name = "recurse", required = false, defaultValue = "false")
+                    boolean recurse,
+            @RequestParam(name = "purge", required = false, defaultValue = "none")
+                    String deleteType)
+            throws IOException {
 
         DataStoreInfo ds = getExistingDataStore(workspaceName, storeName);
         if (!recurse) {
             if (!catalog.getStoresByWorkspace(workspaceName, DataStoreInfo.class).isEmpty()) {
-                for (DataStoreInfo dataStoreInfo : catalog.getStoresByWorkspace(workspaceName, DataStoreInfo.class)) {
-                    if (dataStoreInfo.getName().equalsIgnoreCase(storeName)){
+                for (DataStoreInfo dataStoreInfo :
+                        catalog.getStoresByWorkspace(workspaceName, DataStoreInfo.class)) {
+                    if (dataStoreInfo.getName().equalsIgnoreCase(storeName)) {
                         break;
                     }
                     throw new RestException("datastore not empty", HttpStatus.FORBIDDEN);
@@ -224,7 +241,7 @@ public class DataStoreController extends AbstractCatalogController {
 
     private DataStoreInfo getExistingDataStore(String workspaceName, String storeName) {
         DataStoreInfo original = catalog.getDataStoreByName(workspaceName, storeName);
-        if(original == null) {
+        if (original == null) {
             throw new ResourceNotFoundException(
                     "No such datastore: " + workspaceName + "," + storeName);
         }
@@ -236,47 +253,63 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return DataStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(new XStreamPersister.Callback() {
-            @Override
-            protected Class<DataStoreInfo> getObjectClass() {
-                return DataStoreInfo.class;
-            }
+        persister.setCallback(
+                new XStreamPersister.Callback() {
+                    @Override
+                    protected Class<DataStoreInfo> getObjectClass() {
+                        return DataStoreInfo.class;
+                    }
 
-            @Override
-            protected CatalogInfo getCatalogObject() {
-                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspaceName");
-                String datastore = uriTemplateVars.get("storeName");
+                    @Override
+                    protected CatalogInfo getCatalogObject() {
+                        Map<String, String> uriTemplateVars =
+                                (Map<String, String>)
+                                        RequestContextHolder.getRequestAttributes()
+                                                .getAttribute(
+                                                        HandlerMapping
+                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+                                                        RequestAttributes.SCOPE_REQUEST);
+                        String workspace = uriTemplateVars.get("workspaceName");
+                        String datastore = uriTemplateVars.get("storeName");
 
-                if (workspace == null || datastore == null) {
-                    return null;
-                }
-                return catalog.getDataStoreByName(workspace, datastore);
-            }
+                        if (workspace == null || datastore == null) {
+                            return null;
+                        }
+                        return catalog.getDataStoreByName(workspace, datastore);
+                    }
 
-            @Override
-            protected void postEncodeDataStore(DataStoreInfo ds,
-                                                   HierarchicalStreamWriter writer, MarshallingContext context) {
-                // add a link to the featuretypes
-                writer.startNode("featureTypes");
-                converter.encodeCollectionLink("featuretypes", writer);
-                writer.endNode();
-            }
+                    @Override
+                    protected void postEncodeDataStore(
+                            DataStoreInfo ds,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
+                        // add a link to the featuretypes
+                        writer.startNode("featureTypes");
+                        converter.encodeCollectionLink("featuretypes", writer);
+                        writer.endNode();
+                    }
 
-            @Override
-            protected void postEncodeReference(Object obj, String ref, String prefix,
-                                               HierarchicalStreamWriter writer, MarshallingContext context) {
-                if (obj instanceof WorkspaceInfo) {
-                    converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-                }
-            }
-        });
+                    @Override
+                    protected void postEncodeReference(
+                            Object obj,
+                            String ref,
+                            String prefix,
+                            HierarchicalStreamWriter writer,
+                            MarshallingContext context) {
+                        if (obj instanceof WorkspaceInfo) {
+                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -292,7 +325,8 @@ public class DataStoreController extends AbstractCatalogController {
         return new ObjectToMapWrapper<DataStoreInfo>(DataStoreInfo.class) {
 
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, DataStoreInfo dataStoreInfo) {
+            protected void wrapInternal(
+                    Map properties, SimpleHash model, DataStoreInfo dataStoreInfo) {
                 if (properties == null) {
                     try {
                         properties = model.toMap();
@@ -303,24 +337,23 @@ public class DataStoreController extends AbstractCatalogController {
                 }
                 List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 
-                List<FeatureTypeInfo> featureTypes = catalog.getFeatureTypesByDataStore(dataStoreInfo);
-                for (FeatureTypeInfo ft : featureTypes){
+                List<FeatureTypeInfo> featureTypes =
+                        catalog.getFeatureTypesByDataStore(dataStoreInfo);
+                for (FeatureTypeInfo ft : featureTypes) {
                     Map<String, String> names = new HashMap<>();
                     names.put("name", ft.getName());
                     dsProps.add(Collections.singletonMap("properties", names));
                 }
-                if (!dsProps.isEmpty())
-                    properties.putIfAbsent("featureTypes", dsProps);
-
+                if (!dsProps.isEmpty()) properties.putIfAbsent("featureTypes", dsProps);
             }
 
             @Override
-            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+            protected void wrapInternal(
+                    SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
                 for (Object w : object) {
                     DataStoreInfo wk = (DataStoreInfo) w;
                     wrapInternal(null, model, wk);
                 }
-
             }
         };
     }

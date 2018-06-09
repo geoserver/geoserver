@@ -7,10 +7,11 @@ package org.geogig.geoserver.spring.service;
 import static org.locationtech.geogig.porcelain.ConfigOp.ConfigAction.CONFIG_SET;
 import static org.locationtech.geogig.porcelain.ConfigOp.ConfigScope.LOCAL;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import java.io.File;
 import java.net.URI;
 import java.util.Map;
-
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.locationtech.geogig.plumbing.ResolveGeogigURI;
@@ -28,27 +29,25 @@ import org.locationtech.geogig.web.api.CommandSpecException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-/**
- * Replace the default {@link RepositoryInitService} with one that saves the repository info.
- */
+/** Replace the default {@link RepositoryInitService} with one that saves the repository info. */
 @Service("repositoryInitService")
 public class GeoserverRepositoryInitService extends RepositoryInitService {
-    
+
     @Override
-    public RepositoryInitRepo initRepository(RepositoryProvider provider, String repositoryName,
-            Map<String, String> parameters) throws RepositoryConnectionException {
+    public RepositoryInitRepo initRepository(
+            RepositoryProvider provider, String repositoryName, Map<String, String> parameters)
+            throws RepositoryConnectionException {
         if (provider.hasGeoGig(repositoryName)) {
-            throw new CommandSpecException("The specified repository name is already in use, please try a different name",
+            throw new CommandSpecException(
+                    "The specified repository name is already in use, please try a different name",
                     HttpStatus.CONFLICT);
         }
 
         Repository newRepo = provider.createGeogig(repositoryName, parameters);
-        
+
         if (newRepo.isOpen()) {
-            throw new CommandSpecException("Cannot run init on an already initialized repository.", HttpStatus.CONFLICT);
+            throw new CommandSpecException(
+                    "Cannot run init on an already initialized repository.", HttpStatus.CONFLICT);
         }
 
         InitOp command = newRepo.command(InitOp.class);
@@ -60,17 +59,23 @@ public class GeoserverRepositoryInitService extends RepositoryInitService {
         String authorEmail = parameters.get(InitRequest.AUTHOREMAIL);
         if (authorName != null || authorEmail != null) {
             ConfigOp configOp = newRepo.command(ConfigOp.class);
-            configOp.setAction(CONFIG_SET).setScope(LOCAL).setName("user.name")
-                    .setValue(authorName).call();
-            configOp.setAction(CONFIG_SET).setScope(LOCAL).setName("user.email")
-                    .setValue(authorEmail).call();
+            configOp.setAction(CONFIG_SET)
+                    .setScope(LOCAL)
+                    .setName("user.name")
+                    .setValue(authorName)
+                    .call();
+            configOp.setAction(CONFIG_SET)
+                    .setScope(LOCAL)
+                    .setName("user.email")
+                    .setValue(authorEmail)
+                    .call();
         }
         Optional<URI> repoUri = newRepo.command(ResolveGeogigURI.class).call();
-        Preconditions.checkState(repoUri.isPresent(),
-                "Unable to resolve URI of newly created repository.");
+        Preconditions.checkState(
+                repoUri.isPresent(), "Unable to resolve URI of newly created repository.");
 
-        final String repoName = RepositoryResolver.load(repoUri.get())
-                .command(ResolveRepositoryName.class).call();
+        final String repoName =
+                RepositoryResolver.load(repoUri.get()).command(ResolveRepositoryName.class).call();
         RepositoryInitRepo info = new RepositoryInitRepo();
         info.setName(repoName);
         // set the Web API Atom Link, not the repository URI link
@@ -78,7 +83,7 @@ public class GeoserverRepositoryInitService extends RepositoryInitService {
         saveRepository(newRepo);
         return info;
     }
-    
+
     private RepositoryInfo saveRepository(Repository geogig) {
         // repo was just created, need to register it with an ID in the manager
         // create a RepositoryInfo object

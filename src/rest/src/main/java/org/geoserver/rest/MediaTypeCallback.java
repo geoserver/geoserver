@@ -6,9 +6,7 @@ package org.geoserver.rest;
 
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 
-/**
- * Extension point to register extra media types in Spring MVC
- */
+/** Extension point to register extra media types in Spring MVC */
 public interface MediaTypeCallback {
 
     void configure(ContentNegotiationConfigurer configurer);

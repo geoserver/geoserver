@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms.staticRasterStore;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.media.jai.ImageLayout;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -15,19 +18,15 @@ import org.opengis.coverage.grid.Format;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.datum.PixelInCell;
 
-import javax.media.jai.ImageLayout;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
 /**
- * This reader will always return the same static image, in the future it may be
- * configured to return more static images based on the read parameters.
+ * This reader will always return the same static image, in the future it may be configured to
+ * return more static images based on the read parameters.
  */
 final class StaticRasterReader extends AbstractGridCoverage2DReader {
 
     // static image to return
-    private static final BufferedImage STATIC_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-
+    private static final BufferedImage STATIC_IMAGE =
+            new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     StaticRasterReader(Object source) {
         coverageFactory = new GridCoverageFactory();
@@ -47,7 +46,8 @@ final class StaticRasterReader extends AbstractGridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] readParameters) throws IOException {
+    public GridCoverage2D read(String coverageName, GeneralParameterValue[] readParameters)
+            throws IOException {
         // return he static image
         return coverageFactory.create(coverageName, STATIC_IMAGE, originalEnvelope);
     }
@@ -61,7 +61,7 @@ final class StaticRasterReader extends AbstractGridCoverage2DReader {
     @Override
     public String[] getGridCoverageNames() {
         // we only have the static image
-        return new String[]{"STATIC_IMAGE"};
+        return new String[] {"STATIC_IMAGE"};
     }
 
     @Override

@@ -9,22 +9,19 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
 import javax.xml.transform.TransformerException;
-
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.WCSInfo;
 
 /**
- * A data handler for the fake "geoserver/coverage" mime type. In fact, it
- * encodes the WCS 1.1 coverages document (an xml document)
- * 
+ * A data handler for the fake "geoserver/coverage" mime type. In fact, it encodes the WCS 1.1
+ * coverages document (an xml document)
+ *
  * @author Andrea Aime - TOPP
  */
 public class CoveragesHandler implements DataContentHandler {
@@ -46,7 +43,8 @@ public class CoveragesHandler implements DataContentHandler {
 
     public void writeTo(Object value, String mimeType, OutputStream os) throws IOException {
         CoveragesData data = (CoveragesData) value;
-        final WCSInfo wcs = ((GeoServer) GeoServerExtensions.bean("geoServer")).getService(WCSInfo.class);
+        final WCSInfo wcs =
+                ((GeoServer) GeoServerExtensions.bean("geoServer")).getService(WCSInfo.class);
         CoveragesTransformer ct = new CoveragesTransformer(wcs, data.request);
         try {
             ct.transform(data.info, os);
@@ -59,6 +57,7 @@ public class CoveragesHandler implements DataContentHandler {
 
     /**
      * Just a data holder to keep togheter the informations needed to encode the coverages response
+     *
      * @author Andrea Aime - TOPP
      */
     static class CoveragesData {
@@ -71,7 +70,5 @@ public class CoveragesHandler implements DataContentHandler {
             this.info = info;
             this.request = request;
         }
-
     }
-
 }

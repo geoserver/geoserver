@@ -6,44 +6,45 @@ package org.geogig.geoserver.web.repository;
 
 import static com.google.common.base.Objects.equal;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
 
-import org.locationtech.geogig.repository.Remote;
-
-import com.google.common.base.Objects;
-
-/**
- * A config entry representation for the presentation layer
- *
- */
+/** A config entry representation for the presentation layer */
 public class ConfigEntry implements Serializable {
-	private static final long serialVersionUID = -8750588422623774302L;
+    private static final long serialVersionUID = -8750588422623774302L;
 
     private Integer id;
-    
-	private String name;
-	
-	private String value;
-	
-	private static String[] RESTRICTED_KEYS = {"repo.name", "storage.graph", "storage.refs",
-			"storage.objects", "storage.index", "postgres.version", "rocksdb.version", "file.version"};
-	
-	public ConfigEntry() {
-		this.name = "";
-		this.value = "";
-		this.id = null;
-	}
-	
-	public ConfigEntry(String name, String value) {
-		this.name = name;
-		this.value = value;
-		this.id = hashCode();
-	}
+
+    private String name;
+
+    private String value;
+
+    private static String[] RESTRICTED_KEYS = {
+        "repo.name",
+        "storage.graph",
+        "storage.refs",
+        "storage.objects",
+        "storage.index",
+        "postgres.version",
+        "rocksdb.version",
+        "file.version"
+    };
+
+    public ConfigEntry() {
+        this.name = "";
+        this.value = "";
+        this.id = null;
+    }
+
+    public ConfigEntry(String name, String value) {
+        this.name = name;
+        this.value = value;
+        this.id = hashCode();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -77,19 +78,19 @@ public class ConfigEntry implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     @Nullable
     Integer getId() {
         return id;
     }
-    
+
     public static boolean isRestricted(String key) {
-    	for (String restricted : RESTRICTED_KEYS) {
-    		if (restricted.equals(key)) {
-    			return true;
-    		}
-    	}
-    	return false;
+        for (String restricted : RESTRICTED_KEYS) {
+            if (restricted.equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static ArrayList<ConfigEntry> fromConfig(Map<String, String> config) {

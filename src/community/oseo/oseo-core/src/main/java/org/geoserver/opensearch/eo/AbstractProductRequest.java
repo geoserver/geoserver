@@ -9,11 +9,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * A generic request by collection and product id
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class AbstractProductRequest {
-    
+
     String parentId;
 
     String id;

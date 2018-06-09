@@ -25,7 +25,8 @@ public final class CatalogCapabilities {
     /**
      * Specifies if isolated workspaces are supported or not.
      *
-     * @param supportsIsolatedWorkspaces TRUE or FALSE, specifying if isolated workspaces are supported
+     * @param supportsIsolatedWorkspaces TRUE or FALSE, specifying if isolated workspaces are
+     *     supported
      */
     public void setIsolatedWorkspacesSupport(boolean supportsIsolatedWorkspaces) {
         this.supportsIsolatedWorkspaces = supportsIsolatedWorkspaces;

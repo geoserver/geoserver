@@ -13,7 +13,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * Expands the paths referring to SimpleLiteral instances so that they contain the dc:value ending,
  * and moves the filter against the bbox to the internal geometry
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CRSRecordProjectyPathAdapter extends DuplicatingFilterVisitor {
@@ -27,9 +27,7 @@ public class CRSRecordProjectyPathAdapter extends DuplicatingFilterVisitor {
     public Object visit(PropertyName expression, Object extraData) {
         FilterFactory2 filterFactory = getFactory(extraData);
         NamespaceSupport nss = expression.getNamespaceContext();
-        
+
         return extender.extendProperty(expression, filterFactory, nss);
     }
-
-    
 }

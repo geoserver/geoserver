@@ -6,14 +6,13 @@
 package org.geoserver.wms.legendgraphic;
 
 import java.awt.image.BufferedImage;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
 
 /**
  * Producer of legend graphics in image/gif format.
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -41,5 +40,4 @@ public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
     public String getContentType() {
         return MIME_TYPE;
     }
-
 }

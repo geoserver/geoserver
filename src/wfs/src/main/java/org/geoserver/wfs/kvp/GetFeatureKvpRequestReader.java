@@ -5,6 +5,12 @@
  */
 package org.geoserver.wfs.kvp;
 
+import java.math.BigInteger;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.ParameterType;
@@ -24,51 +30,42 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.xml.EMFUtils;
 import org.opengis.filter.FilterFactory;
 
-import java.math.BigInteger;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-/**
- * 
- * @author Niels Charlier : added 3D BBOX support
- *
- */
+/** @author Niels Charlier : added 3D BBOX support */
 public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
-    public GetFeatureKvpRequestReader(Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+    public GetFeatureKvpRequestReader(
+            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
-    public GetFeatureKvpRequestReader(Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
+    public GetFeatureKvpRequestReader(
+            Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
         super(requestBean, factory, geoServer, filterFactory);
     }
 
     protected WFSInfo getWFS() {
         return geoServer.getService(WFSInfo.class);
     }
-    
-    /**
-     * Performs additional GetFeature/GetFeatureWithLock kvp parsing requirements
-     */
+
+    /** Performs additional GetFeature/GetFeatureWithLock kvp parsing requirements */
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        //hack but startIndex conflicts with WMS startIndex... which parses to different type, so 
+        // hack but startIndex conflicts with WMS startIndex... which parses to different type, so
         // we just parse manually
         if (rawKvp.containsKey("startIndex")) {
-            kvp.put("startIndex", 
-                new NumericKvpParser(null, BigInteger.class).parse((String)rawKvp.get("startIndex")));
+            kvp.put(
+                    "startIndex",
+                    new NumericKvpParser(null, BigInteger.class)
+                            .parse((String) rawKvp.get("startIndex")));
         }
-        
+
         request = super.read(request, kvp, rawKvp);
-        
-        //get feature has some additional parsing requirements
+
+        // get feature has some additional parsing requirements
         EObject eObject = (EObject) request;
 
-        //outputFormat
+        // outputFormat
         if (!EMFUtils.isSet(eObject, "outputFormat")) {
-            //set the default
+            // set the default
             String version = (String) EMFUtils.get(eObject, "version");
             switch (WFSInfo.Version.negotiate(version)) {
                 case V_10:
@@ -84,68 +81,72 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             ;
         }
 
-        //aliases
+        // aliases
         if (kvp.containsKey("aliases")) {
             querySet(eObject, "aliases", (List) kvp.get("aliases"));
         }
 
-        //propertyName
+        // propertyName
         if (kvp.containsKey("propertyName")) {
             List<String> propertyNames = new ArrayList<String>();
-            if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof List ) 
-            {
+            if (kvp.get("propertyName") != null && kvp.get("propertyName") instanceof List) {
                 propertyNames = (List) kvp.get("propertyName");
-            }
-            else if( kvp.get("propertyName") != null && kvp.get("propertyName") instanceof String ) 
-            {
+            } else if (kvp.get("propertyName") != null
+                    && kvp.get("propertyName") instanceof String) {
                 propertyNames.addAll(KvpUtils.readFlat((String) kvp.get("propertyName")));
-            } 
+            }
             querySet(eObject, "propertyName", propertyNames);
         }
 
-        //sortBy
+        // sortBy
         if (kvp.containsKey("sortBy")) {
             querySet(eObject, "sortBy", (List) kvp.get("sortBy"));
         }
 
-        //srsName
+        // srsName
         if (kvp.containsKey("srsName")) {
-            querySet(eObject, "srsName",Collections.singletonList((URI)kvp.get("srsName")));
+            querySet(eObject, "srsName", Collections.singletonList((URI) kvp.get("srsName")));
         }
 
-        //featureversion
+        // featureversion
         if (kvp.containsKey("featureVersion")) {
-            querySet(eObject, "featureVersion",
-                Collections.singletonList((String) kvp.get("featureVersion")));
+            querySet(
+                    eObject,
+                    "featureVersion",
+                    Collections.singletonList((String) kvp.get("featureVersion")));
         }
-        
+
         GetFeatureRequest req = GetFeatureRequest.adapt(request);
-        if(kvp.containsKey("format_options")) {
+        if (kvp.containsKey("format_options")) {
             req.getFormatOptions().putAll((Map) kvp.get("format_options"));
         }
-        
+
         // sql view params
-        if(kvp.containsKey("viewParams")) {
-            
-            if(req.getViewParams() == null) {
-                req.setViewParams(new ArrayList<Map<String,String>>());
+        if (kvp.containsKey("viewParams")) {
+
+            if (req.getViewParams() == null) {
+                req.setViewParams(new ArrayList<Map<String, String>>());
             }
 
             // fan out over all layers if necessary
-            List<Map<String, String>> viewParams = (List<Map<String, String>>) kvp.get("viewParams");
-            if(viewParams.size() > 0) {                
+            List<Map<String, String>> viewParams =
+                    (List<Map<String, String>>) kvp.get("viewParams");
+            if (viewParams.size() > 0) {
                 int layerCount = req.getQueries().size();
 
                 // if we have just one replicate over all layers
-                if(viewParams.size() == 1 && layerCount > 1) {
-                    List<Map<String, String>> replacement = new ArrayList<Map<String,String>>();
+                if (viewParams.size() == 1 && layerCount > 1) {
+                    List<Map<String, String>> replacement = new ArrayList<Map<String, String>>();
                     for (int i = 0; i < layerCount; i++) {
                         replacement.add(viewParams.get(0));
                     }
                     viewParams = replacement;
-                } else if(viewParams.size() != layerCount) {
-                    String msg = layerCount + " feature types requested, but found " + viewParams.size()
-                   + " view params specified. ";
+                } else if (viewParams.size() != layerCount) {
+                    String msg =
+                            layerCount
+                                    + " feature types requested, but found "
+                                    + viewParams.size()
+                                    + " view params specified. ";
                     throw new WFSException(eObject, msg, getClass().getName());
                 }
             }
@@ -156,9 +157,8 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         return request;
     }
 
-    protected void querySet(EObject request, String property, List values)
-            throws WFSException {
-        //no values specified, do nothing
+    protected void querySet(EObject request, String property, List values) throws WFSException {
+        // no values specified, do nothing
         if (values == null) {
             return;
         }
@@ -181,22 +181,22 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         int n = query.size();
 
         if ((m == 1) && (n > 1)) {
-            //apply single value to all queries
+            // apply single value to all queries
             EMFUtils.set(query, property, values.get(0));
 
             return;
         }
 
-        //WfsFactory wfsFactory = (WfsFactory) getFactory();
-        //match up sizes
+        // WfsFactory wfsFactory = (WfsFactory) getFactory();
+        // match up sizes
         if (m > n) {
             if (n == 0) {
-                //make same size, with empty objects
+                // make same size, with empty objects
                 for (int i = 0; i < m; i++) {
                     query.add(req.createQuery().getAdaptee());
                 }
             } else if (n == 1) {
-                //clone single object up to 
+                // clone single object up to
                 EObject q = (EObject) query.get(0);
 
                 for (int i = 1; i < m; i++) {
@@ -205,7 +205,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
                 return;
             } else {
-                //illegal
+                // illegal
                 String msg = "Specified " + m + " " + property + " for " + n + " queries.";
                 throw new WFSException(request, msg);
             }
@@ -234,20 +234,25 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         for (URI storedQueryId : storedQueryIds) {
             StoredQuery sq = sqp.getStoredQuery(storedQueryId.toString());
             if (sq == null) {
-                WFSException exception = new WFSException(req, "No such stored query: " + storedQueryId,
-                        ServiceException.INVALID_PARAMETER_VALUE);
+                WFSException exception =
+                        new WFSException(
+                                req,
+                                "No such stored query: " + storedQueryId,
+                                ServiceException.INVALID_PARAMETER_VALUE);
                 exception.setLocator("STOREDQUERY_ID");
                 throw exception;
             }
 
-            //JD: since stored queries are 2.0 only we will create 2.0 model objects directly... once
-            // the next version of wfs comes out (and if they keep stored queries around) we will have
+            // JD: since stored queries are 2.0 only we will create 2.0 model objects directly...
+            // once
+            // the next version of wfs comes out (and if they keep stored queries around) we will
+            // have
             // to abstract stored query away with a request object adapter
             Wfs20Factory factory = (Wfs20Factory) req.getFactory();
             StoredQueryType storedQuery = factory.createStoredQueryType();
             storedQuery.setId(storedQueryId.toString());
 
-            //look for parameters in the kvp map
+            // look for parameters in the kvp map
             for (ParameterExpressionType p : sq.getQuery().getParameter()) {
                 if (kvp.containsKey(p.getName())) {
                     ParameterType param = factory.createParameterType();
@@ -260,6 +265,4 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             req.getAdaptedQueries().add(storedQuery);
         }
     }
-
-   
 }

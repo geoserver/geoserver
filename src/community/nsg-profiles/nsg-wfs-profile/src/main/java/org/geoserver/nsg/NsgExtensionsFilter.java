@@ -7,13 +7,12 @@ package org.geoserver.nsg;
 import org.geoserver.platform.ExtensionFilter;
 import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
 
-/**
- * Filter GeoServer extensions that are override by NSG extensions.
- */
+/** Filter GeoServer extensions that are override by NSG extensions. */
 public class NsgExtensionsFilter implements ExtensionFilter {
 
     @Override
     public boolean exclude(String beanId, Object bean) {
-        return bean instanceof WfsXmlReader && ((WfsXmlReader) bean).getElement().getLocalPart().equalsIgnoreCase("GetFeature");
+        return bean instanceof WfsXmlReader
+                && ((WfsXmlReader) bean).getElement().getLocalPart().equalsIgnoreCase("GetFeature");
     }
 }

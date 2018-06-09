@@ -12,10 +12,10 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 @SuppressWarnings("serial")
 public class ScriptPage extends GeoServerSecuredPage {
@@ -29,28 +29,34 @@ public class ScriptPage extends GeoServerSecuredPage {
 
     public ScriptPage() {
         // the middle table
-        add(table = new GeoServerTablePanel<Script>("table", provider, true) {
-            @Override
-            protected Component getComponentForProperty(String id, IModel<Script> itemModel,
-                    Property<Script> property) {
-                if (property == ScriptProvider.NAME) {
-                    return scriptLink(id, itemModel);
-                } else if (property == ScriptProvider.TYPE) {
-                    return new Label(id, ScriptProvider.TYPE.getModel(itemModel));
-                } else if (property == ScriptProvider.EXTENSION) {
-                    return new Label(id, ScriptProvider.EXTENSION.getModel(itemModel));
-                } else if (property == ScriptProvider.FILE) {
-                    return new Label(id, ScriptProvider.FILE.getModel(itemModel));
-                }
-                throw new IllegalArgumentException("No such property " + property.getName());
-            }
+        add(
+                table =
+                        new GeoServerTablePanel<Script>("table", provider, true) {
+                            @Override
+                            protected Component getComponentForProperty(
+                                    String id,
+                                    IModel<Script> itemModel,
+                                    Property<Script> property) {
+                                if (property == ScriptProvider.NAME) {
+                                    return scriptLink(id, itemModel);
+                                } else if (property == ScriptProvider.TYPE) {
+                                    return new Label(id, ScriptProvider.TYPE.getModel(itemModel));
+                                } else if (property == ScriptProvider.EXTENSION) {
+                                    return new Label(
+                                            id, ScriptProvider.EXTENSION.getModel(itemModel));
+                                } else if (property == ScriptProvider.FILE) {
+                                    return new Label(id, ScriptProvider.FILE.getModel(itemModel));
+                                }
+                                throw new IllegalArgumentException(
+                                        "No such property " + property.getName());
+                            }
 
-            @Override
-            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                removal.setEnabled(table.getSelection().size() > 0);
-                target.add(removal);
-            }
-        });
+                            @Override
+                            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                                removal.setEnabled(table.getSelection().size() > 0);
+                                target.add(removal);
+                            }
+                        });
         table.setOutputMarkupId(true);
 
         // the confirm dialog
@@ -75,9 +81,12 @@ public class ScriptPage extends GeoServerSecuredPage {
     Component scriptLink(String id, final IModel<Script> itemModel) {
         IModel<?> nameModel = ScriptProvider.NAME.getModel(itemModel);
         IModel<?> fileModel = ScriptProvider.FILE.getModel(itemModel);
-        return new SimpleBookmarkableLink(id, ScriptEditPage.class, nameModel,
-        // @TODO type and extension instead of file
-                "file", fileModel.getObject().toString());
+        return new SimpleBookmarkableLink(
+                id,
+                ScriptEditPage.class,
+                nameModel,
+                // @TODO type and extension instead of file
+                "file",
+                fileModel.getObject().toString());
     }
-
 }

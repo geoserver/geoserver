@@ -5,14 +5,6 @@
  */
 package org.geoserver.inspire.wms;
 
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.inspire.ViewServicesTestSupport;
-import org.geoserver.wms.WMSInfo;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
@@ -22,10 +14,20 @@ import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
 
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.inspire.ViewServicesTestSupport;
+import org.geoserver.wms.WMSInfo;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
 public class WMSExtendedCapabilitiesTest extends ViewServicesTestSupport {
 
-    private static final String WMS_1_1_1_GETCAPREQUEST = "wms?request=GetCapabilities&service=WMS&version=1.1.1";
-    private static final String WMS_1_3_0_GETCAPREQUEST = "wms?request=GetCapabilities&service=WMS&version=1.3.0";
+    private static final String WMS_1_1_1_GETCAPREQUEST =
+            "wms?request=GetCapabilities&service=WMS&version=1.1.1";
+    private static final String WMS_1_3_0_GETCAPREQUEST =
+            "wms?request=GetCapabilities&service=WMS&version=1.3.0";
 
     @Override
     protected String getGetCapabilitiesRequestPath() {

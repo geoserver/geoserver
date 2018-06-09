@@ -12,5 +12,4 @@ public class ASpatialFile extends FileData {
     public ASpatialFile(File file) {
         super(file);
     }
-
 }

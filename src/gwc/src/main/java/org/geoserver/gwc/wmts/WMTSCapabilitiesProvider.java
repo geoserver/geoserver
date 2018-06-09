@@ -11,9 +11,7 @@ import org.geowebcache.config.meta.ServiceInformation;
 import org.geowebcache.config.meta.ServiceProvider;
 import org.geowebcache.service.wmts.WMTSExtensionImpl;
 
-/**
- * Makes WMTS service metadata configured in GeoServer available to GWC
- */
+/** Makes WMTS service metadata configured in GeoServer available to GWC */
 public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
 
     private final GeoServer geoserver;

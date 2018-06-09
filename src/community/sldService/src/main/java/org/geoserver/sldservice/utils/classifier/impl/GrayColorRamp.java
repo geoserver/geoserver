@@ -10,14 +10,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
 
 /**
  * Gray Color Ramp Implementation
- * 
- * @author Alessio Fabiani, GeoSolutions SAS
  *
+ * @author Alessio Fabiani, GeoSolutions SAS
  */
 public class GrayColorRamp implements ColorRamp {
 
@@ -37,12 +35,10 @@ public class GrayColorRamp implements ColorRamp {
     public void setNumClasses(int numClass) {
         classNum = numClass + 1; // +1 for transparent
         createRamp();
-
     }
 
     public List<Color> getRamp() throws Exception {
-        if (colors == null)
-            throw new Exception("Class num not setted, color ramp null");
+        if (colors == null) throw new Exception("Class num not setted, color ramp null");
         return colors;
     }
 
@@ -53,5 +49,4 @@ public class GrayColorRamp implements ColorRamp {
             colors.add(
                     new Color((int) (step * i + 30), (int) (step * i + 30), (int) (step * i + 30)));
     }
-
 }

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
@@ -25,6 +24,7 @@ import org.geotools.ows.ServiceException;
 
 /**
  * Wraps a GetFeatureInfo request enforcing GetFeatureInfo limits for each of the layers
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
@@ -55,40 +55,41 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
         this.y = y;
         delegate.setQueryPoint(x, y);
     }
-    
+
     public URL getFinalURL() {
         // scan and check the layers
-        for(int i = 0; i < queryLayers.size(); i++) {
+        for (int i = 0; i < queryLayers.size(); i++) {
             Layer layer = queryLayers.get(i);
-            if(layer instanceof SecuredWMSLayer) {
+            if (layer instanceof SecuredWMSLayer) {
                 SecuredWMSLayer secured = (SecuredWMSLayer) layer;
                 final WrapperPolicy policy = secured.getPolicy();
                 // check if we can cascade GetFeatureInfo
-                if(policy.getLimits() instanceof WMSAccessLimits) {
+                if (policy.getLimits() instanceof WMSAccessLimits) {
                     WMSAccessLimits limits = (WMSAccessLimits) policy.getLimits();
-                    if(!limits.isAllowFeatureInfo()) {
-                        if(policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
+                    if (!limits.isAllowFeatureInfo()) {
+                        if (policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
                             SecureCatalogImpl.unauthorizedAccess(layer.getName());
                         } else {
-                            throw new IllegalArgumentException("Layer " + layer.getName() + " is not queriable");
+                            throw new IllegalArgumentException(
+                                    "Layer " + layer.getName() + " is not queriable");
                         }
                     }
                 }
-                
+
                 // add into the request
                 delegate.addQueryLayer(layer);
             }
         }
-        
+
         // add the cql filters
-        if(getMap instanceof SecuredGetMapRequest) {
+        if (getMap instanceof SecuredGetMapRequest) {
             SecuredGetMapRequest sgm = (SecuredGetMapRequest) getMap;
             String encodedFilter = sgm.buildCQLFilter();
-            if(encodedFilter != null) {
+            if (encodedFilter != null) {
                 delegate.setProperty("CQL_FILTER", encodedFilter);
             }
         }
-        
+
         return delegate.getFinalURL();
     }
 
@@ -96,8 +97,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
     // Pure delegate methods
     // ----------------------------------------------------------------------------------------
 
-    public Response createResponse(HTTPResponse response)
-            throws ServiceException, IOException {
+    public Response createResponse(HTTPResponse response) throws ServiceException, IOException {
         return delegate.createResponse(response);
     }
 
@@ -132,5 +132,4 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
     public void setProperty(String name, String value) {
         delegate.setProperty(name, value);
     }
-
 }

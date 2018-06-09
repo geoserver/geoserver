@@ -10,21 +10,14 @@ import java.io.InputStream;
 
 /**
  * Represents a CSW repository item, that is, the eventual data associated to a certain CSW Record.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public interface RepositoryItem {
 
-    /**
-     * The MIME type describing the repository item contents
-     * 
-     *
-     */
+    /** The MIME type describing the repository item contents */
     public String getMime();
-    
-    
-    /**
-     * The repository item contents
-     */
+
+    /** The repository item contents */
     public InputStream getContents() throws IOException;
 }

@@ -4,15 +4,14 @@
  */
 package org.geoserver.wps.gs.download;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public abstract class AbstractParametricEntity {
 
@@ -21,8 +20,7 @@ public abstract class AbstractParametricEntity {
     String name;
     List<Parameter> parameters = new ArrayList<>();
 
-
-    @XmlElement(name="Name")
+    @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public String getName() {
         return name;
@@ -32,7 +30,7 @@ public abstract class AbstractParametricEntity {
         this.name = name;
     }
 
-    @XmlElement(name="Parameter")
+    @XmlElement(name = "Parameter")
     public List<Parameter> getParameters() {
         return parameters;
     }
@@ -41,12 +39,12 @@ public abstract class AbstractParametricEntity {
         this.parameters = parameters;
     }
 
-    public Map<String,String> getParametersMap() {
+    public Map<String, String> getParametersMap() {
         Map<String, String> result = new HashMap<>();
         for (Parameter parameter : parameters) {
             result.put(parameter.key, parameter.value);
         }
-        
+
         return result;
     }
 

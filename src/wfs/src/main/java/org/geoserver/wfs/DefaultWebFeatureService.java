@@ -14,7 +14,6 @@ import net.opengis.wfs.LockFeatureResponseType;
 import net.opengis.wfs.LockFeatureType;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -30,31 +29,23 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-
 /**
  * Web Feature Service implementation.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public class DefaultWebFeatureService implements WebFeatureService, ApplicationContextAware {
-    /**
-     * GeoServer configuration
-     */
+    /** GeoServer configuration */
     protected GeoServer geoServer;
-    /**
-     * The catalog
-     */
+    /** The catalog */
     protected Catalog catalog;
 
-    /**
-     * Filter factory
-     */
+    /** Filter factory */
     protected FilterFactory2 filterFactory;
 
     /**
-     * The spring application context, used to look up transaction listeners, plugins and
-     * element handlers
+     * The spring application context, used to look up transaction listeners, plugins and element
+     * handlers
      */
     protected ApplicationContext context;
 
@@ -63,9 +54,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         this.catalog = gs.getCatalog();
     }
 
-    /**
-     * Sets the fitler factory.
-     */
+    /** Sets the fitler factory. */
     public void setFilterFactory(FilterFactory2 filterFactory) {
         this.filterFactory = filterFactory;
     }
@@ -73,49 +62,43 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
     public WFSInfo getServiceInfo() {
         return geoServer.getService(WFSInfo.class);
     }
-    
+
     /**
      * WFS GetCapabilities operation.
      *
      * @param request The get capabilities request.
-     *
-     * @return A transformer instance capable of serializing a wfs capabilities
-     * document.
-     *
+     * @return A transformer instance capable of serializing a wfs capabilities document.
      * @throws WFSException Any service exceptions.
      */
-    public TransformerBase getCapabilities(GetCapabilitiesType request)
-        throws WFSException {
-        return new GetCapabilities(getServiceInfo(), catalog, WFSExtensions.findExtendedCapabilitiesProviders(context))
-            .run(new GetCapabilitiesRequest.WFS11(request));
+    public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
+        return new GetCapabilities(
+                        getServiceInfo(),
+                        catalog,
+                        WFSExtensions.findExtendedCapabilitiesProviders(context))
+                .run(new GetCapabilitiesRequest.WFS11(request));
     }
-    
+
     /**
      * WFS DescribeFeatureType operation.
      *
      * @param request The describe feature type request.
-     *
      * @return A set of feature type metadata objects.
-     *
      * @throws WFSException Any service exceptions.
      */
     public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request)
-        throws WFSException {
+            throws WFSException {
         return new DescribeFeatureType(getServiceInfo(), catalog)
-            .run(new DescribeFeatureTypeRequest.WFS11(request));
+                .run(new DescribeFeatureTypeRequest.WFS11(request));
     }
 
     /**
      * WFS GetFeature operation.
      *
      * @param request The get feature request.
-     *
      * @return A feature collection type instance.
-     *
      * @throws WFSException Any service exceptions.
      */
-    public FeatureCollectionResponse getFeature(GetFeatureType request)
-        throws WFSException {
+    public FeatureCollectionResponse getFeature(GetFeatureType request) throws WFSException {
         GetFeature getFeature = new GetFeature(getServiceInfo(), catalog);
         getFeature.setFilterFactory(filterFactory);
 
@@ -126,13 +109,11 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * WFS GetFeatureWithLock operation.
      *
      * @param request The get feature with lock request.
-     *
-      * @return A feature collection type instance.
-     *
+     * @return A feature collection type instance.
      * @throws WFSException Any service exceptions.
      */
     public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
-        throws WFSException {
+            throws WFSException {
         return getFeature(request);
     }
 
@@ -140,57 +121,48 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * WFS LockFeatureType operation.
      *
      * @param request The lock feature request.
-     *
      * @return A lock feature response type.
-     *
      * @throws WFSException An service exceptions.
      */
-    public LockFeatureResponseType lockFeature(LockFeatureType request)
-        throws WFSException {
+    public LockFeatureResponseType lockFeature(LockFeatureType request) throws WFSException {
         LockFeature lockFeature = new LockFeature(getServiceInfo(), catalog);
         lockFeature.setFilterFactory(filterFactory);
 
-        return (LockFeatureResponseType) 
-            lockFeature.lockFeature(new LockFeatureRequest.WFS11(request)).getAdaptee();
+        return (LockFeatureResponseType)
+                lockFeature.lockFeature(new LockFeatureRequest.WFS11(request)).getAdaptee();
     }
 
     /**
      * WFS transaction operation.
      *
      * @param request The transaction request.
-     *
      * @return A transaction response instance.
-     *
      * @throws WFSException Any service exceptions.
      */
-    public TransactionResponseType transaction(TransactionType request)
-        throws WFSException {
+    public TransactionResponseType transaction(TransactionType request) throws WFSException {
         Transaction transaction = new Transaction(getServiceInfo(), catalog, context);
         transaction.setFilterFactory(filterFactory);
 
-        return (TransactionResponseType) 
-            transaction.transaction(new TransactionRequest.WFS11(request)).getAdaptee();
+        return (TransactionResponseType)
+                transaction.transaction(new TransactionRequest.WFS11(request)).getAdaptee();
     }
-    
+
     /**
      * WFS GetGmlObject operation.
-     * 
+     *
      * @param request The GetGmlObject request.
-     *
      * @return The gml object request.
-     * 
      * @throws WFSException Any service exceptions.
-     *
      */
     public Object getGmlObject(GetGmlObjectType request) throws WFSException {
-        
-        GetGmlObject getGmlObject = new GetGmlObject(getServiceInfo(),catalog);
-        getGmlObject.setFilterFactory( filterFactory );
-        
-        return getGmlObject.run( request );
+
+        GetGmlObject getGmlObject = new GetGmlObject(getServiceInfo(), catalog);
+        getGmlObject.setFilterFactory(filterFactory);
+
+        return getGmlObject.run(request);
     }
-    
-    //the following operations are not part of the spec
+
+    // the following operations are not part of the spec
     public void releaseLock(String lockId) throws WFSException {
         new LockFeature(getServiceInfo(), catalog).release(lockId);
     }
@@ -199,8 +171,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         new LockFeature(getServiceInfo(), catalog).releaseAll();
     }
 
-    public void setApplicationContext(ApplicationContext context)
-        throws BeansException {
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
 }

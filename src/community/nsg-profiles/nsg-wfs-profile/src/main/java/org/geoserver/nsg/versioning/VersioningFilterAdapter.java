@@ -4,6 +4,9 @@
  */
 package org.geoserver.nsg.versioning;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.Filter;
@@ -12,10 +15,6 @@ import org.opengis.filter.Id;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.filter.identity.ResourceId;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 final class VersioningFilterAdapter extends DuplicatingFilterVisitor {
 
@@ -53,7 +52,8 @@ final class VersioningFilterAdapter extends DuplicatingFilterVisitor {
 
     private Filter buildVersioningFilter(FilterFactory filterFactory, ResourceId resourceId) {
         Filter idFilter = buildIdFilter(filterFactory, resourceId.getID());
-        Filter timeFilter = buildTimeFilter(filterFactory, resourceId.getStartTime(), resourceId.getEndTime());
+        Filter timeFilter =
+                buildTimeFilter(filterFactory, resourceId.getStartTime(), resourceId.getEndTime());
         if (idFilter != null && timeFilter != null) {
             return filterFactory.and(idFilter, timeFilter);
         }

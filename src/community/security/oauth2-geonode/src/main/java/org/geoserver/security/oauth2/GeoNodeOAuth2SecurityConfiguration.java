@@ -5,7 +5,6 @@
 package org.geoserver.security.oauth2;
 
 import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -25,45 +24,44 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 /**
  * GeoNode specific REST templates for OAuth2 protocol.
- * <p>
- * First of all the user must create an OAuth2 Application throught the GeoNode Admin GUI <br/>
+ *
+ * <p>First of all the user must create an OAuth2 Application throught the GeoNode Admin GUI <br>
  * See: <string>GeoNode docs: Admin Tutorial</strong>
- * </p>
- * <p>
- * The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
- * </p>
- * <p>
- * Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer instances <br/>
+ *
+ * <p>The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
+ *
+ * <p>Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer
+ * instances <br>
  * Example:
+ *
  * <ul>
- * <li>http://localhost:8080/geoserver</li>
- * <li>http://localhost:8080/geoserver/</li>
+ *   <li>http://localhost:8080/geoserver
+ *   <li>http://localhost:8080/geoserver/
  * </ul>
- * </p>
- * <p>
- * The GeoNode OAuth2 Filter Endpoint will automatically redirect the users to an URL like the following one at first login <br/>
- * </p>
- * <p>
- * Tipically a correct configuration for the GeoNode OAuth2 Provider is like the following one:
- * </p>
+ *
+ * <p>The GeoNode OAuth2 Filter Endpoint will automatically redirect the users to an URL like the
+ * following one at first login <br>
+ *
+ * <p>Tipically a correct configuration for the GeoNode OAuth2 Provider is like the following one:
+ *
  * <ul>
- * <li>Cliend Id: <b>my_client_id</b></li>
- * <li>Cliend Secret: <b>my_client_secret</b></li>
- * <li>Access Token URI: <b>https://geonode_host/o/token/</b></li>
- * <li>User Authorization URI: <b>https://geonode_host_port/o/authorize/</b></li>
- * <li>Redirect URI: <b>http://localhost:8080/geoserver</b></li>
- * <li>Check Token Endpoint URL: <b>https://geonode_host_port/api/o/v4/tokeninfo/</b></li>
- * <li>Logout URI: <b>https://geonode_host_port/account/logout/</b></li>
- * <li>Scopes: <b>read,write,groups</b></li>
+ *   <li>Cliend Id: <b>my_client_id</b>
+ *   <li>Cliend Secret: <b>my_client_secret</b>
+ *   <li>Access Token URI: <b>https://geonode_host/o/token/</b>
+ *   <li>User Authorization URI: <b>https://geonode_host_port/o/authorize/</b>
+ *   <li>Redirect URI: <b>http://localhost:8080/geoserver</b>
+ *   <li>Check Token Endpoint URL: <b>https://geonode_host_port/api/o/v4/tokeninfo/</b>
+ *   <li>Logout URI: <b>https://geonode_host_port/account/logout/</b>
+ *   <li>Scopes: <b>read,write,groups</b>
  * </ul>
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-@Configuration(value="geoNodeOAuth2SecurityConfiguration")
+@Configuration(value = "geoNodeOAuth2SecurityConfiguration")
 @EnableOAuth2Client
 class GeoNodeOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
-    @Bean(name="geoNodeOAuth2Resource")
+    @Bean(name = "geoNodeOAuth2Resource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setId("geonode-oauth2-client");
@@ -74,29 +72,31 @@ class GeoNodeOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfigur
 
         return details;
     }
-    
-    /**
-     * Must have "session" scope
-     */
-    @Bean(name="geoNodeOauth2RestTemplate")
+
+    /** Must have "session" scope */
+    @Bean(name = "geoNodeOauth2RestTemplate")
     @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {
 
-        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(geoServerOAuth2Resource(),
-                new DefaultOAuth2ClientContext(getAccessTokenRequest()));
+        OAuth2RestTemplate oAuth2RestTemplate =
+                new OAuth2RestTemplate(
+                        geoServerOAuth2Resource(),
+                        new DefaultOAuth2ClientContext(getAccessTokenRequest()));
 
-        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider = new AuthorizationCodeAccessTokenProvider();
+        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider =
+                new AuthorizationCodeAccessTokenProvider();
         authorizationCodeAccessTokenProvider.setStateMandatory(false);
 
-        AccessTokenProvider accessTokenProviderChain = new AccessTokenProviderChain(
-                Arrays.<AccessTokenProvider> asList(authorizationCodeAccessTokenProvider,
-                        new ImplicitAccessTokenProvider(),
-                        new ResourceOwnerPasswordAccessTokenProvider(),
-                        new ClientCredentialsAccessTokenProvider()));
+        AccessTokenProvider accessTokenProviderChain =
+                new AccessTokenProviderChain(
+                        Arrays.<AccessTokenProvider>asList(
+                                authorizationCodeAccessTokenProvider,
+                                new ImplicitAccessTokenProvider(),
+                                new ResourceOwnerPasswordAccessTokenProvider(),
+                                new ClientCredentialsAccessTokenProvider()));
 
         oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
 
         return oAuth2RestTemplate;
     }
-
 }

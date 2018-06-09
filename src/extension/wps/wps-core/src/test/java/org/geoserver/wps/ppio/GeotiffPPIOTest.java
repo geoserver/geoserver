@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -30,49 +29,57 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class GeotiffPPIOTest {
-    
+
     File geotiff = new File("./target/test.tiff");
     File target = new File("./target/target.tiff");
     GeoTiffReader reader;
     GridCoverage2D coverage;
-    
+
     @Before
     public void prepareGeoTiff() throws IOException {
-        try(InputStream is = SystemTestData.class.getResourceAsStream("tazbm.tiff")) {
+        try (InputStream is = SystemTestData.class.getResourceAsStream("tazbm.tiff")) {
             FileUtils.copyInputStreamToFile(is, geotiff);
         }
         reader = new GeoTiffReader(geotiff);
     }
-    
-    @After 
+
+    @After
     public void cleanup() {
-        if(coverage != null) {
+        if (coverage != null) {
             ImageUtilities.disposeImage(coverage.getRenderedImage());
         }
-        if(reader != null) {
+        if (reader != null) {
             reader.dispose();
         }
     }
-    
+
     private GridCoverage2D getCoverage() throws IOException {
         coverage = reader.read(null);
         Map properties = new HashMap<>(coverage.getProperties());
-        properties.put(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, geotiff.getCanonicalPath());
-        return new GridCoverageFactory().create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, properties);
+        properties.put(
+                AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, geotiff.getCanonicalPath());
+        return new GridCoverageFactory()
+                .create(
+                        coverage.getName(),
+                        coverage.getRenderedImage(),
+                        coverage.getEnvelope(),
+                        coverage.getSampleDimensions(),
+                        null,
+                        properties);
     }
 
     @Test
     public void testRawCopy() throws Exception {
         GridCoverage2D coverage = getCoverage();
         GeoTiffPPIO ppio = new GeoTiffPPIO();
-        try(FileOutputStream fos = new FileOutputStream(target)) {
+        try (FileOutputStream fos = new FileOutputStream(target)) {
             ppio.encode(coverage, fos);
         }
         // was a straight copy (a re-encoding would change the size as the input
         // is compressed, the output is not)
         assertEquals(geotiff.length(), target.length());
     }
-    
+
     @Test
     public void testCropped() throws Exception {
         GridCoverage2D cov = getCoverage();
@@ -80,7 +87,7 @@ public class GeotiffPPIOTest {
         re.expandBy(-0.1);
         this.coverage = new CropCoverage().execute(coverage, JTS.toGeometry(re), null);
         GeoTiffPPIO ppio = new GeoTiffPPIO();
-        try(FileOutputStream fos = new FileOutputStream(target)) {
+        try (FileOutputStream fos = new FileOutputStream(target)) {
             ppio.encode(coverage, fos);
         }
         // not a straight copy, size is different

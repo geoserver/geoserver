@@ -7,9 +7,7 @@ package org.geoserver.wms;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geotools.styling.Graphic;
-import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.StyleFactoryImpl;
 import org.geotools.styling.Symbolizer;
@@ -19,7 +17,7 @@ import org.opengis.style.Description;
 
 /**
  * Base class for style visitors that copies styles but removes certain symbolizers
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor {
@@ -38,8 +36,7 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         List<Symbolizer> symArray = new ArrayList<Symbolizer>();
         for (Symbolizer sym : rule.symbolizers()) {
             Symbolizer symcopy = copy(sym);
-            if (symcopy != null)
-                symArray.add(symcopy);
+            if (symcopy != null) symArray.add(symcopy);
         }
         Symbolizer[] symsCopy = (Symbolizer[]) symArray.toArray(new Symbolizer[symArray.size()]);
 
@@ -51,14 +48,21 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         Description descCopy = rule.getDescription();
         descCopy = copy(descCopy);
 
-        copy = new StyleFactoryImpl().createRule(symsCopy, descCopy, legendCopy, rule.getName(),
-                filterCopy, rule.isElseFilter(), rule.getMaxScaleDenominator(), rule
-                        .getMinScaleDenominator());
+        copy =
+                new StyleFactoryImpl()
+                        .createRule(
+                                symsCopy,
+                                descCopy,
+                                legendCopy,
+                                rule.getName(),
+                                filterCopy,
+                                rule.isElseFilter(),
+                                rule.getMaxScaleDenominator(),
+                                rule.getMinScaleDenominator());
 
         if (STRICT && !copy.equals(rule)) {
             throw new IllegalStateException("Was unable to duplicate provided Rule:" + rule);
         }
         pages.push(copy);
     }
-
 }

@@ -14,7 +14,7 @@ import org.geoserver.security.web.usergroup.UserGroupServicePanel;
 
 /**
  * Configuration panel for {@link JDBCUserGroupService}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class JDBCUserGroupServicePanel extends UserGroupServicePanel<JDBCUserGroupServiceConfig> {

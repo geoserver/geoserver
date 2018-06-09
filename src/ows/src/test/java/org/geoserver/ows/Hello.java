@@ -54,41 +54,31 @@ public class Hello implements OWS {
         return false;
     }
 
-    public void setAbstract(String serverAbstract) {
-    }
+    public void setAbstract(String serverAbstract) {}
 
-    public void setAccessConstraints(String accessConstraints) {
-    }
+    public void setAccessConstraints(String accessConstraints) {}
 
-    public void setEnabled(boolean enabled) {
-    }
+    public void setEnabled(boolean enabled) {}
 
-    public void setFees(String fees) {
-    }
+    public void setFees(String fees) {}
 
-    public void setMaintainer(String maintainer) {
-    }
+    public void setMaintainer(String maintainer) {}
 
-    public void setName(String name) {
-    }
+    public void setName(String name) {}
 
-    public void setOnlineResource(URL onlineResource) {
-    }
+    public void setOnlineResource(URL onlineResource) {}
 
-    public void setTitle(String title) {
-    }
+    public void setTitle(String title) {}
 
     public String getSchemaBaseURL() {
         return null;
     }
 
-    public void setSchemaBaseURL(String schemaBaseURL) {
-    }
+    public void setSchemaBaseURL(String schemaBaseURL) {}
 
     public boolean isVerbose() {
         return false;
     }
 
-    public void setVerbose(boolean verbose) {
-    }
+    public void setVerbose(boolean verbose) {}
 }

@@ -6,14 +6,14 @@ package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
 import java.util.Collection;
-
 import org.geotools.data.Parameter;
 
 public interface OpenSearchEoService {
 
     /**
-     * Returns the request for the response object to produce either the global or the collection specific response
-     * 
+     * Returns the request for the response object to produce either the global or the collection
+     * specific response
+     *
      * @param request
      * @return
      * @throws IOException
@@ -22,7 +22,7 @@ public interface OpenSearchEoService {
 
     /**
      * Searches either collection or products, returned as complex features
-     * 
+     *
      * @param request
      * @return
      * @throws IOException
@@ -31,7 +31,7 @@ public interface OpenSearchEoService {
 
     /**
      * Retrieves a product/collection metadata in a particular format
-     * 
+     *
      * @param request
      * @return
      * @throws IOException
@@ -40,7 +40,7 @@ public interface OpenSearchEoService {
 
     /**
      * Returns the search parameters applicable to collections
-     * 
+     *
      * @param service
      * @return
      * @throws IOException
@@ -49,7 +49,7 @@ public interface OpenSearchEoService {
 
     /**
      * Returns the search parameters applicable to products of a certain collection
-     * 
+     *
      * @param service
      * @param parentId
      * @return
@@ -57,9 +57,6 @@ public interface OpenSearchEoService {
      */
     Collection<Parameter<?>> getProductSearchParameters(String parentId) throws IOException;
 
-    /**
-     * Returns the quicklook of a product (a PNG or JPEG image normally)
-     */
+    /** Returns the quicklook of a product (a PNG or JPEG image normally) */
     QuicklookResults quicklook(QuicklookRequest request) throws IOException;
-
 }

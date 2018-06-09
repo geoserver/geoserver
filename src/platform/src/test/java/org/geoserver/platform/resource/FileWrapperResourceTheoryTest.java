@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -17,22 +16,22 @@ import org.junit.rules.TemporaryFolder;
 
 public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     @DataPoints
     public static String[] testPaths() {
-        return new String[] { "FileA", "FileB", "DirC", "DirE", "DirC/FileD", "UndefF",
-                "DirC/UndefF", "DirE/UndefF" };
+        return new String[] {
+            "FileA", "FileB", "DirC", "DirE", "DirC/FileD", "UndefF", "DirC/UndefF", "DirE/UndefF"
+        };
     }
 
     @Override
     protected Resource getResource(String path) throws Exception {
         File file = Paths.toFile(null, path);
         if (!file.isAbsolute()) {
-            //in linux, an absolute path might appear relative if the root slash has been removed.
-            if (folder.getRoot().getPath().startsWith("/") &&
-                    path.startsWith(folder.getRoot().getPath().substring(1))) {
+            // in linux, an absolute path might appear relative if the root slash has been removed.
+            if (folder.getRoot().getPath().startsWith("/")
+                    && path.startsWith(folder.getRoot().getPath().substring(1))) {
                 file = Paths.toFile(new File("/"), path);
             } else {
                 file = Paths.toFile(folder.getRoot(), path);
@@ -72,14 +71,11 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
     @Override
     protected Resource getUndefined() {
-        return Files.asResource(new File(folder.getRoot(),"NonTestUndef"));
+        return Files.asResource(new File(folder.getRoot(), "NonTestUndef"));
     }
-    
+
     // paths for file wrapper are special so ignore this test
-    @Override @Ignore
-    public void theoryHaveSamePath(String path)
-            throws Exception {
-        
-    }
-    
+    @Override
+    @Ignore
+    public void theoryHaveSamePath(String path) throws Exception {}
 }

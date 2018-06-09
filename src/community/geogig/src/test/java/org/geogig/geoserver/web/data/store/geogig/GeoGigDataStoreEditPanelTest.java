@@ -14,12 +14,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Suppliers;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -44,8 +44,6 @@ import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
-
-import com.google.common.base.Suppliers;
 
 public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
 
@@ -80,7 +78,8 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
 
         editForm = getComponent("dataStoreForm", Form.class);
 
-        editForm.getModelObject().getConnectionParameters()
+        editForm.getModelObject()
+                .getConnectionParameters()
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, null);
         GeoGigDataStoreEditPanel panel = getComponent(BASE, GeoGigDataStoreEditPanel.class);
 
@@ -120,8 +119,8 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         editForm = new Form("formid");
         editForm.setModel(new Model(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
-        StoreEditPanel storeEditPanel = StoreExtensionPoints.getStoreEditPanel("id", editForm,
-                storeInfo, app);
+        StoreEditPanel storeEditPanel =
+                StoreExtensionPoints.getStoreEditPanel("id", editForm, storeInfo, app);
         assertNotNull(storeEditPanel);
         assertTrue(storeEditPanel instanceof GeoGigDataStoreEditPanel);
     }
@@ -142,11 +141,13 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testRefreshBranchListWithBadConnectionParams() throws Exception {
         startPanelForNewStore();
-        editForm.getModelObject().getConnectionParameters()
+        editForm.getModelObject()
+                .getConnectionParameters()
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_2"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
-        BranchSelectionPanel branchPanel = getComponent(BASE + ":branch", BranchSelectionPanel.class);
+        BranchSelectionPanel branchPanel =
+                getComponent(BASE + ":branch", BranchSelectionPanel.class);
         RepositoryInfo repoInfo = mock(RepositoryInfo.class);
         when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
         when(mockManager.getByRepoName("dummy_repo_2")).thenReturn(repoInfo);
@@ -165,15 +166,20 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testRefreshBranchList() throws Exception {
         startPanelForNewStore();
-        editForm.getModelObject().getConnectionParameters()
+        editForm.getModelObject()
+                .getConnectionParameters()
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_3"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
-        BranchSelectionPanel branchPanel = getComponent(BASE + ":branch", BranchSelectionPanel.class);
+        BranchSelectionPanel branchPanel =
+                getComponent(BASE + ":branch", BranchSelectionPanel.class);
         assertNotNull(branchPanel);
         ObjectId dummyId = hashString("dummy");
-        final List<Ref> branches = Arrays.asList(new Ref("master", dummyId),
-                new Ref("alpha", dummyId), new Ref("sandbox", dummyId));
+        final List<Ref> branches =
+                Arrays.asList(
+                        new Ref("master", dummyId),
+                        new Ref("alpha", dummyId),
+                        new Ref("sandbox", dummyId));
         RepositoryInfo repoInfo = mock(RepositoryInfo.class);
         when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
 

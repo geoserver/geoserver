@@ -11,9 +11,8 @@ import org.apache.wicket.model.Model;
 
 /**
  * Panel for renaming.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class PanelRename extends Panel {
 
@@ -21,17 +20,16 @@ public class PanelRename extends Panel {
 
     public PanelRename(String id, String name) {
         super(id);
-        
+
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("name", new Model<String>(name)));    
+        add(new TextField<String>("name", new Model<String>(name)));
     }
-    
+
     public String getName() {
         return get("name").getDefaultModelObjectAsString();
     }
-        
+
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
     }
-
 }

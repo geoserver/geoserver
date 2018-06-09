@@ -9,40 +9,35 @@ import java.io.Serializable;
 import java.util.EventObject;
 
 /**
- * Defining Event type example, each event points (source) to an object which represents
- * the incoming event.
- * 
+ * Defining Event type example, each event points (source) to an object which represents the
+ * incoming event.
+ *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
 public abstract class JMSEventType<S extends Serializable> extends EventObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8413744049417938375L;
+    /** */
+    private static final long serialVersionUID = 8413744049417938375L;
 
-	/**
-	 * {@link EventObject#EventObject(Object)}
-	 */
-	public JMSEventType(S source) {
-		super(source);
-	}
+    /** {@link EventObject#EventObject(Object)} */
+    public JMSEventType(S source) {
+        super(source);
+    }
 
-	@Override
-	public S getSource() {
-		return getSource();
-	}
+    @Override
+    public S getSource() {
+        return getSource();
+    }
 
-	// the key of the property stored into message
-	private final static String PROPERTY_KEY = "JMSEventType";
+    // the key of the property stored into message
+    private static final String PROPERTY_KEY = "JMSEventType";
 
-	public static String getKeyName() {
-		return PROPERTY_KEY;
-	}
+    public static String getKeyName() {
+        return PROPERTY_KEY;
+    }
 
-	// the name of the type of the represented message
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+    // the name of the type of the represented message
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
 }

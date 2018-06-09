@@ -5,13 +5,10 @@
 package org.geoserver.security.decorators;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-
 import javax.media.jai.ImageLayout;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -30,12 +27,13 @@ import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 
 /**
- * Delegates every method to the delegate structured grid coverage reader. 
- * Subclasses will override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the delegate structured grid coverage reader. Subclasses will override
+ * selected methods to perform their "decoration" job
+ *
  * @author Daniele Romagnoli
  */
-public abstract class DecoratingStructuredGridCoverage2DReader implements StructuredGridCoverage2DReader {
+public abstract class DecoratingStructuredGridCoverage2DReader
+        implements StructuredGridCoverage2DReader {
 
     StructuredGridCoverage2DReader delegate;
 
@@ -91,8 +89,8 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
-            IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters)
+            throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
@@ -143,8 +141,9 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
-    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy,
-            double[] requestedResolution) throws IOException {
+    public double[] getReadingResolutions(
+            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+            throws IOException {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
@@ -181,8 +180,8 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
     }
 
     @Override
-    public GranuleSource getGranules(String coverageName, boolean readOnly) throws IOException,
-            UnsupportedOperationException {
+    public GranuleSource getGranules(String coverageName, boolean readOnly)
+            throws IOException, UnsupportedOperationException {
         return delegate.getGranules(coverageName, readOnly);
     }
 
@@ -192,20 +191,20 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
     }
 
     @Override
-    public void createCoverage(String coverageName, SimpleFeatureType schema) throws IOException,
-            UnsupportedOperationException {
+    public void createCoverage(String coverageName, SimpleFeatureType schema)
+            throws IOException, UnsupportedOperationException {
         delegate.createCoverage(coverageName, schema);
     }
 
     @Override
-    public boolean removeCoverage(String coverageName) throws IOException,
-            UnsupportedOperationException {
+    public boolean removeCoverage(String coverageName)
+            throws IOException, UnsupportedOperationException {
         return delegate.removeCoverage(coverageName);
     }
 
     @Override
-    public boolean removeCoverage(String coverageName, boolean delete) throws IOException,
-            UnsupportedOperationException {
+    public boolean removeCoverage(String coverageName, boolean delete)
+            throws IOException, UnsupportedOperationException {
         return delegate.removeCoverage(coverageName, delete);
     }
 
@@ -235,5 +234,4 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
     public DatasetLayout getDatasetLayout(String coverageName) {
         return delegate.getDatasetLayout(coverageName);
     }
-
 }

@@ -4,6 +4,14 @@
  */
 package org.geoserver.wfs;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -16,19 +24,10 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
 /**
- * Contains tests related to isolated workspaces, this tests exercise WFS operations.
- * An workspace in GeoServer is composed of the workspace information and a namespace
- * which has a special relevance in WFS.
+ * Contains tests related to isolated workspaces, this tests exercise WFS operations. An workspace
+ * in GeoServer is composed of the workspace information and a namespace which has a special
+ * relevance in WFS.
  */
 public final class WfsIsolatedWorkspacesTest extends IsolatedWorkspacesTest {
 
@@ -77,21 +76,32 @@ public final class WfsIsolatedWorkspacesTest extends IsolatedWorkspacesTest {
         WorkspaceInfo workspace2 = catalog.getWorkspaceByName("test_a2");
         NamespaceInfo namespace2 = catalog.getNamespaceByPrefix("test_a2");
         // add a layer with the same name to both workspaces, layers have different content
-        LayerInfo clonedLayer1 = cloneVectorLayerIntoWorkspace(workspace1, namespace1, "Lines", "layer_e");
-        LayerInfo clonedLayer2 = cloneVectorLayerIntoWorkspace(workspace2, namespace2, "Points", "layer_e");
+        LayerInfo clonedLayer1 =
+                cloneVectorLayerIntoWorkspace(workspace1, namespace1, "Lines", "layer_e");
+        LayerInfo clonedLayer2 =
+                cloneVectorLayerIntoWorkspace(workspace2, namespace2, "Points", "layer_e");
         assertThat(clonedLayer1.getId(), not(clonedLayer2.getId()));
         // test get feature requests for WFS 1.1.0
-        MockHttpServletResponse response = getAsServletResponse(
-                "test_a1/wfs?SERVICE=wfs&VERSION=1.1.0&REQUEST=getFeature&typeName=layer_e&maxFeatures=1");
-        evaluateAndCheckXpath(mergeNamespaces(NAMESPACES_WFS11, "test_a1", "https://www.test_a.com"), response,
-                "count(//wfs:FeatureCollection/gml:featureMembers/test_a1:layer_e/test_a1:lineStringProperty)", "1");
-        response = getAsServletResponse(
-                "test_a2/wfs?SERVICE=wfs&VERSION=1.1.0&REQUEST=getFeature&typeName=layer_e&maxFeatures=1");
-        evaluateAndCheckXpath(mergeNamespaces(NAMESPACES_WFS11, "test_a2", "https://www.test_a.com"), response,
-                "count(//wfs:FeatureCollection/gml:featureMembers/test_a2:layer_e/test_a2:pointProperty)", "1");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "test_a1/wfs?SERVICE=wfs&VERSION=1.1.0&REQUEST=getFeature&typeName=layer_e&maxFeatures=1");
+        evaluateAndCheckXpath(
+                mergeNamespaces(NAMESPACES_WFS11, "test_a1", "https://www.test_a.com"),
+                response,
+                "count(//wfs:FeatureCollection/gml:featureMembers/test_a1:layer_e/test_a1:lineStringProperty)",
+                "1");
+        response =
+                getAsServletResponse(
+                        "test_a2/wfs?SERVICE=wfs&VERSION=1.1.0&REQUEST=getFeature&typeName=layer_e&maxFeatures=1");
+        evaluateAndCheckXpath(
+                mergeNamespaces(NAMESPACES_WFS11, "test_a2", "https://www.test_a.com"),
+                response,
+                "count(//wfs:FeatureCollection/gml:featureMembers/test_a2:layer_e/test_a2:pointProperty)",
+                "1");
     }
 
-    private Map<String, String> mergeNamespaces(Map<String, String> namespaces, String... extraNamespaces) {
+    private Map<String, String> mergeNamespaces(
+            Map<String, String> namespaces, String... extraNamespaces) {
         Map<String, String> finalNamespaces = new HashMap<>();
         finalNamespaces.putAll(namespaces);
         for (int i = 0; i < extraNamespaces.length; i += 2) {
@@ -100,11 +110,16 @@ public final class WfsIsolatedWorkspacesTest extends IsolatedWorkspacesTest {
         return finalNamespaces;
     }
 
-    private void evaluateAndCheckXpath(Map<String, String> namespaces, MockHttpServletResponse response,
-                                       String xpath, String expectResult) throws Exception {
+    private void evaluateAndCheckXpath(
+            Map<String, String> namespaces,
+            MockHttpServletResponse response,
+            String xpath,
+            String expectResult)
+            throws Exception {
         // convert response to document
         Document document = null;
-        try (InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes())) {
+        try (InputStream input =
+                new ByteArrayInputStream(response.getContentAsString().getBytes())) {
             // create the DOM document
             document = dom(input, true);
         }

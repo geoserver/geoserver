@@ -9,11 +9,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -31,18 +34,11 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Base class for WFS-T curve test, it expects to find the test requests in the same package as its
  * implementing subclasses
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport {
 
@@ -61,7 +57,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
         assertTrue(g instanceof SingleCurvedGeometry);
         SingleCurvedGeometry<?> curved = (SingleCurvedGeometry<?>) g;
         double[] cp = curved.getControlPoints();
-        assertArrayEquals(new double[] { 10, 15, 15, 20, 20, 15 }, cp, 0d);
+        assertArrayEquals(new double[] {10, 15, 15, 20, 20, 15}, cp, 0d);
     }
 
     @Test
@@ -87,15 +83,15 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
         assertEquals(new Coordinate(20, 45), ls1.getCoordinateN(1));
 
         CircularString cs = (CircularString) components.get(1);
-        assertArrayEquals(new double[] { 20.0, 45.0, 23.0, 48.0, 20.0, 51.0 },
-                cs.getControlPoints(), 0d);
+        assertArrayEquals(
+                new double[] {20.0, 45.0, 23.0, 48.0, 20.0, 51.0}, cs.getControlPoints(), 0d);
 
         LineString ls2 = components.get(2);
         assertEquals(2, ls2.getNumPoints());
         assertEquals(new Coordinate(20, 51), ls2.getCoordinateN(0));
         assertEquals(new Coordinate(10, 51), ls2.getCoordinateN(1));
     }
-    
+
     @Test
     public void testInsertCurvePolygon() throws Exception {
         String xml = IOUtils.toString(getClass().getResourceAsStream("insertCurvePolygon.xml"));
@@ -141,28 +137,33 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
         assertEquals(new Coordinate(5, 5), ls.getCoordinateN(1));
 
         CircularString cs = (CircularString) mc.getGeometryN(1);
-        assertArrayEquals(new double[] { 4, 0, 4, 4, 8, 4 }, cs.getControlPoints(), 0d);
+        assertArrayEquals(new double[] {4, 0, 4, 4, 8, 4}, cs.getControlPoints(), 0d);
     }
 
-    private SimpleFeature getSingleFeature(QName typeName, String featureName) throws IOException,
-            CQLException {
+    private SimpleFeature getSingleFeature(QName typeName, String featureName)
+            throws IOException, CQLException {
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(typeName));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
-        SimpleFeature first = DataUtilities.first(fs.getFeatures(ECQL.toFilter("name = '"
-                + featureName + "'")));
+        SimpleFeature first =
+                DataUtilities.first(fs.getFeatures(ECQL.toFilter("name = '" + featureName + "'")));
         assertNotNull(first);
         return first;
     }
 
     private String checkSuccesfulTransaction(Document dom, int inserted, int updated, int deleted)
             throws XpathException {
-        assertEquals(String.valueOf(inserted), xpath.evaluate(
-                "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalInserted", dom));
-        assertEquals(String.valueOf(updated), xpath.evaluate(
-                "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalUpdated", dom));
-        assertEquals(String.valueOf(deleted), xpath.evaluate(
-                "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalDeleted", dom));
+        assertEquals(
+                String.valueOf(inserted),
+                xpath.evaluate(
+                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalInserted", dom));
+        assertEquals(
+                String.valueOf(updated),
+                xpath.evaluate(
+                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalUpdated", dom));
+        assertEquals(
+                String.valueOf(deleted),
+                xpath.evaluate(
+                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalDeleted", dom));
         return xpath.evaluate("//ogc:FeatureId/@fid", dom);
     }
-
 }

@@ -5,14 +5,13 @@
  */
 package org.geoserver.script.bsh;
 
-import org.geoserver.script.ScriptPlugin;
 import bsh.BshScriptEngineFactory;
+import org.geoserver.script.ScriptPlugin;
 
 /**
  * Script plugin for BeanShell.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class BeanShellPlugin extends ScriptPlugin {
 

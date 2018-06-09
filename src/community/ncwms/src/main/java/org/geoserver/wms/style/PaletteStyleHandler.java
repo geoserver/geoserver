@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.catalog.StyleHandler;
 import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.SLDTransformer;
@@ -25,7 +23,8 @@ import org.geotools.util.logging.Logging;
 import org.xml.sax.EntityResolver;
 
 /**
- * Handler for the dynamic palette style language. See {@link PaletteParser} for details on the grammar
+ * Handler for the dynamic palette style language. See {@link PaletteParser} for details on the
+ * grammar
  */
 public class PaletteStyleHandler extends StyleHandler {
     static final Logger LOGGER = Logging.getLogger(PaletteStyleHandler.class);
@@ -44,8 +43,12 @@ public class PaletteStyleHandler extends StyleHandler {
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, Version version,
-            ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
+    public StyledLayerDescriptor parse(
+            Object input,
+            Version version,
+            ResourceLocator resourceLocator,
+            EntityResolver entityResolver)
+            throws IOException {
         try (Reader reader = toReader(input)) {
             StyledLayerDescriptor sld = new PaletteParser().parseStyle(reader);
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -58,7 +61,6 @@ public class PaletteStyleHandler extends StyleHandler {
 
             return sld;
         }
-
     }
 
     String toSLD(StyledLayerDescriptor sld) throws TransformerException {
@@ -68,8 +70,9 @@ public class PaletteStyleHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty,
-            OutputStream output) throws IOException {
+    public void encode(
+            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+            throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -90,5 +93,4 @@ public class PaletteStyleHandler extends StyleHandler {
     public String mimeType(Version version) {
         return MIME_TYPE;
     }
-
 }

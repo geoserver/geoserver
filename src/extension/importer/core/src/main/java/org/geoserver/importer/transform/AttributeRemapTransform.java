@@ -15,11 +15,11 @@ import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Attribute that maps an attribute from one type to another.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class AttributeRemapTransform extends AbstractTransform implements InlineVectorTransform {
-    
+
     private static final long serialVersionUID = 1L;
 
     /** field to remap */
@@ -27,15 +27,13 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
 
     /** type to remap to */
     protected Class type;
-    
+
     public AttributeRemapTransform(String field, Class type) {
         this.field = field;
         this.type = type;
     }
-    
-    protected AttributeRemapTransform() {
-        
-    }
+
+    protected AttributeRemapTransform() {}
 
     public String getField() {
         return field;
@@ -53,19 +51,24 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         this.type = type;
     }
 
-    public SimpleFeatureType apply(ImportTask task, DataStore dataStore,
-            SimpleFeatureType featureType) throws Exception {
-        //remap the type
+    public SimpleFeatureType apply(
+            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+        // remap the type
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.init(featureType);
 
         int index = featureType.indexOf(field);
         if (index < 0) {
-            throw new Exception("FeatureType " + featureType.getName() + " does not have attribute named '" + field + "'");
+            throw new Exception(
+                    "FeatureType "
+                            + featureType.getName()
+                            + " does not have attribute named '"
+                            + field
+                            + "'");
         }
-        
-        //remap the attribute to type date and ensure schema ordering is the same
-        //@todo improve FeatureTypeBuilder to support this directly
+
+        // remap the attribute to type date and ensure schema ordering is the same
+        // @todo improve FeatureTypeBuilder to support this directly
         AttributeDescriptor existing = builder.remove(field);
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         attBuilder.init(existing);
@@ -75,9 +78,9 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         return builder.buildFeatureType();
     }
 
-    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, 
-        SimpleFeature feature) throws Exception {
+    public SimpleFeature apply(
+            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+            throws Exception {
         return feature;
     }
-
 }

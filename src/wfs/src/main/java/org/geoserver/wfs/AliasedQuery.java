@@ -4,6 +4,14 @@
  */
 package org.geoserver.wfs;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.xml.namespace.QName;
 import net.opengis.wfs.XlinkPropertyNameType;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.request.Query;
@@ -31,30 +39,20 @@ import org.opengis.filter.spatial.Overlaps;
 import org.opengis.filter.spatial.Touches;
 import org.opengis.filter.spatial.Within;
 
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Support class checking that the aliases are present, and not in conflict with feature type names
  * or field names (such conflicts might cause issues down the road). In case of conflicts, the class
  * will create/alter the aliases to avoid them, and modify filters and property name selection
  * accordingly
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class AliasedQuery extends Query {
 
     /**
      * Renames property names following an alias rename map
-     * 
-     * @author Andrea Aime - GeoSolutions
      *
+     * @author Andrea Aime - GeoSolutions
      */
     class AliasRenameVisitor extends DuplicatingFilterVisitor {
 
@@ -70,14 +68,12 @@ class AliasedQuery extends Query {
             String renamed = rename(renameMap, name);
             return ff.property(renamed);
         }
-
     }
 
     /**
      * Renames property names following an alias rename map
      *
      * @author Andrea Aime - GeoSolutions
-     *
      */
     class SelfJoinRenameVisitor extends DuplicatingFilterVisitor {
 
@@ -92,8 +88,8 @@ class AliasedQuery extends Query {
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             double distance = filter.getDistance();
             String units = filter.getDistanceUnits();
-            return getFactory(extraData).beyond(geometry1, geometry2, distance, units, filter
-                    .getMatchAction());
+            return getFactory(extraData)
+                    .beyond(geometry1, geometry2, distance, units, filter.getMatchAction());
         }
 
         public Object visit(Contains filter, Object extraData) {
@@ -119,8 +115,8 @@ class AliasedQuery extends Query {
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             double distance = filter.getDistance();
             String units = filter.getDistanceUnits();
-            return getFactory(extraData).dwithin(geometry1, geometry2, distance, units, filter
-                    .getMatchAction());
+            return getFactory(extraData)
+                    .dwithin(geometry1, geometry2, distance, units, filter.getMatchAction());
         }
 
         public Object visit(Equals filter, Object extraData) {
@@ -180,40 +176,39 @@ class AliasedQuery extends Query {
         public Object visit(PropertyIsGreaterThan filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
-            return getFactory(extraData).greater(expr1, expr2, filter.isMatchingCase(), filter
-                    .getMatchAction());
+            return getFactory(extraData)
+                    .greater(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
         public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
-            return getFactory(extraData).greaterOrEqual(expr1, expr2, filter.isMatchingCase(), 
-                    filter.getMatchAction());
+            return getFactory(extraData)
+                    .greaterOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
         public Object visit(PropertyIsLessThan filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
-            return getFactory(extraData).less(expr1, expr2, filter.isMatchingCase(), filter
-                    .getMatchAction());
+            return getFactory(extraData)
+                    .less(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
         public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
-            return getFactory(extraData).lessOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
-        }        
-
+            return getFactory(extraData)
+                    .lessOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
+        }
     }
 
     /**
      * Checks the aliases in the query are present, and not in conflict with feature type names or
      * field names (such conflicts might cause issues down the road). In case of conflicts a new
      * Query object will be returned in which the conflicts have been resolved.
-     * 
+     *
      * @param metas
      * @param query
-     *
      * @throws IOException
      */
     static Query fixAliases(List<FeatureTypeInfo> metas, Query query) throws IOException {
@@ -275,8 +270,8 @@ class AliasedQuery extends Query {
         this.aliases = aliases;
         if (originalAliases != null && !originalAliases.isEmpty()) {
             Map<String, String> renameMap = buildRenameMap(originalAliases, aliases);
-            this.filter = (Filter) query.getFilter()
-                    .accept(new AliasRenameVisitor(renameMap), null);
+            this.filter =
+                    (Filter) query.getFilter().accept(new AliasRenameVisitor(renameMap), null);
             if (query.getPropertyNames() != null) {
                 this.propertyNames = new ArrayList<>();
                 for (String name : query.getPropertyNames()) {
@@ -287,8 +282,8 @@ class AliasedQuery extends Query {
             // CITE tests hack, was is a self join query with no aliases?
             List<QName> typeNames = query.getTypeNames();
             if (typeNames.size() == 2 && new HashSet<>(typeNames).size() == 1) {
-                this.filter = (Filter) query.getFilter()
-                        .accept(new SelfJoinRenameVisitor(aliases), null);   
+                this.filter =
+                        (Filter) query.getFilter().accept(new SelfJoinRenameVisitor(aliases), null);
             } else {
                 this.filter = query.getFilter();
             }
@@ -296,7 +291,8 @@ class AliasedQuery extends Query {
         }
     }
 
-    private Map<String, String> buildRenameMap(List<String> originalAliases, List<String> newAliases) {
+    private Map<String, String> buildRenameMap(
+            List<String> originalAliases, List<String> newAliases) {
         Map<String, String> map = new HashMap<String, String>();
         for (int i = 0; i < originalAliases.size(); i++) {
             String a1 = originalAliases.get(i);
@@ -317,7 +313,6 @@ class AliasedQuery extends Query {
             if (renamed != null) {
                 name = renamed + name.substring(idx);
             }
-
         }
         return name;
     }
@@ -359,5 +354,4 @@ class AliasedQuery extends Query {
     public List<XlinkPropertyNameType> getXlinkPropertyNames() {
         return delegate.getXlinkPropertyNames();
     }
-
 }

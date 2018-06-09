@@ -4,31 +4,25 @@
  */
 package org.geoserver.wfs.kvp;
 
-
 import com.vividsolutions.jts.geom.Envelope;
-import net.opengis.wfs.LockFeatureType;
-import net.opengis.wfs.LockType;
-import net.opengis.wfs.WfsFactory;
-import net.opengis.wfs20.Wfs20Factory;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.geoserver.config.GeoServer;
-import org.geoserver.wfs.LockFeature;
-import org.geoserver.wfs.WFSException;
-import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geoserver.wfs.request.LockFeatureRequest;
-import org.geoserver.wfs.request.Query;
-import org.geotools.xml.EMFUtils;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-
-import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.xml.namespace.QName;
+import net.opengis.wfs.LockFeatureType;
+import net.opengis.wfs.LockType;
+import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.geoserver.config.GeoServer;
+import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.request.Query;
+import org.geotools.xml.EMFUtils;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
@@ -36,18 +30,18 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
-    protected void querySet(EObject request, String property, List values)
-            throws WFSException {
+    protected void querySet(EObject request, String property, List values) throws WFSException {
         // no values specified, do nothing
         if (values == null) {
             return;
         }
-        
+
         if ("typeName".equalsIgnoreCase(property)) {
             // in lock typename is not a list, it's a single qname
-            values = (List) values.stream().map(o -> ((List) o).get(0)).collect(Collectors.toList());
+            values =
+                    (List) values.stream().map(o -> ((List) o).get(0)).collect(Collectors.toList());
         }
-        
+
         LockFeatureType lockFeature = (LockFeatureType) request;
         EList lock = lockFeature.getLock();
 
@@ -55,22 +49,22 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         int n = lock.size();
 
         if ((m == 1) && (n > 1)) {
-            //apply single value to all queries
+            // apply single value to all queries
             EMFUtils.set(lock, property, values.get(0));
 
             return;
         }
 
-        //WfsFactory wfsFactory = (WfsFactory) getFactory();
-        //match up sizes
+        // WfsFactory wfsFactory = (WfsFactory) getFactory();
+        // match up sizes
         if (m > n) {
             if (n == 0) {
-                //make same size, with empty objects
+                // make same size, with empty objects
                 for (int i = 0; i < m; i++) {
                     lock.add(WfsFactory.eINSTANCE.createLockType());
                 }
             } else if (n == 1) {
-                //clone single object up to 
+                // clone single object up to
                 EObject q = (EObject) lock.get(0);
 
                 for (int i = 1; i < m; i++) {
@@ -79,7 +73,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
                 return;
             } else {
-                //illegal
+                // illegal
                 String msg = "Specified " + m + " " + property + " for " + n + " locks.";
                 throw new WFSException(request, msg);
             }
@@ -106,7 +100,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
     }
 
     protected void handleBBOX(Map kvp, EObject eObject) throws Exception {
-        //set filter from bbox 
+        // set filter from bbox
         Envelope bbox = (Envelope) kvp.get("bbox");
 
         List<LockType> queries = ((LockFeatureType) eObject).getLock();
@@ -120,5 +114,4 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             lock.setFilter(filter);
         }
     }
-    
 }

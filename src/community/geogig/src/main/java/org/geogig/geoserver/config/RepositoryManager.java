@@ -8,6 +8,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Objects;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import org.geogig.geoserver.config.ConfigStore.RepositoryInfoChangedCallback;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
@@ -54,14 +59,6 @@ import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.DisposableBean;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-
 public class RepositoryManager implements GeoServerInitializer, DisposableBean {
     static {
         if (GlobalContextBuilder.builder() == null
@@ -92,7 +89,7 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
         return INSTANCE;
     }
 
-    public synchronized static void close() {
+    public static synchronized void close() {
         if (INSTANCE != null) {
             INSTANCE.dispose();
             INSTANCE = null;
@@ -104,9 +101,7 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
     }
 
     @VisibleForTesting
-    RepositoryManager() {
-
-    }
+    RepositoryManager() {}
 
     @VisibleForTesting
     void init(ConfigStore configStore, ResourceStore resourceStore) {
@@ -188,7 +183,6 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
      * Retrieves a RepositoryInfo with a specified name.
      *
      * @param name The name of the repository desired.
-     *
      * @return a RepositoryInfo object, if found. If not found, returns null.
      */
     public @Nullable RepositoryInfo getByRepoName(final String name) {
@@ -226,11 +220,11 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
         return findGeoGigStores(catalog, filter);
     }
 
-    private static List<DataStoreInfo> findGeoGigStores(Catalog catalog,
-            org.opengis.filter.Filter filter) {
+    private static List<DataStoreInfo> findGeoGigStores(
+            Catalog catalog, org.opengis.filter.Filter filter) {
         List<DataStoreInfo> geogigStores;
-        try (CloseableIterator<DataStoreInfo> dataStores = catalog.list(DataStoreInfo.class,
-                filter)) {
+        try (CloseableIterator<DataStoreInfo> dataStores =
+                catalog.list(DataStoreInfo.class, filter)) {
             geogigStores = Lists.newArrayList(dataStores);
         }
 
@@ -248,11 +242,11 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
         Filter filter = equal("type", GeoGigDataStoreFactory.DISPLAY_NAME);
 
         String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
-        filter = and(filter,
-                equal(locationKey, GeoServerGeoGigRepositoryResolver.getURI(repoName)));
+        filter =
+                and(filter, equal(locationKey, GeoServerGeoGigRepositoryResolver.getURI(repoName)));
         List<DataStoreInfo> dependent;
-        try (CloseableIterator<DataStoreInfo> stores = this.catalog.list(DataStoreInfo.class,
-                filter)) {
+        try (CloseableIterator<DataStoreInfo> stores =
+                this.catalog.list(DataStoreInfo.class, filter)) {
             dependent = Lists.newArrayList(stores);
         }
         return dependent;
@@ -281,8 +275,8 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
 
     public List<FeatureTypeInfo> findFeatureTypes(DataStoreInfo store) {
         Filter filter = equal("store.id", store.getId());
-        try (CloseableIterator<FeatureTypeInfo> it = this.catalog.list(FeatureTypeInfo.class,
-                filter)) {
+        try (CloseableIterator<FeatureTypeInfo> it =
+                this.catalog.list(FeatureTypeInfo.class, filter)) {
             return Lists.newArrayList(it);
         }
     }
@@ -304,9 +298,13 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
             if (!Objects.equal(oldName, newName)) {
                 // name has been changed, update the repo
                 try {
-                    getRepository(oldRepo.getId()).command(ConfigOp.class)
-                            .setAction(ConfigOp.ConfigAction.CONFIG_SET).setName("repo.name")
-                            .setScope(ConfigOp.ConfigScope.LOCAL).setValue(newName).call();
+                    getRepository(oldRepo.getId())
+                            .command(ConfigOp.class)
+                            .setAction(ConfigOp.ConfigAction.CONFIG_SET)
+                            .setName("repo.name")
+                            .setScope(ConfigOp.ConfigScope.LOCAL)
+                            .setValue(newName)
+                            .call();
                 } catch (IOException ioe) {
                     // log?
                 }
@@ -382,13 +380,14 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
 
     /**
      * Utility class to connect to a remote to see if its alive and we're able to connect.
-     * 
+     *
      * @return the remote's head ref if succeeded
      * @throws Exception if can't connect for any reason; the exception message should be indicative
-     *         of the problem
+     *     of the problem
      */
-    public static Ref pingRemote(final String location, @Nullable String user,
-            @Nullable String password) throws Exception {
+    public static Ref pingRemote(
+            final String location, @Nullable String user, @Nullable String password)
+            throws Exception {
 
         if (Strings.isNullOrEmpty(location)) {
             throw new IllegalArgumentException("Please indicate the remote repository URL");
@@ -401,8 +400,9 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
             String fetch = "+" + Ref.HEADS_PREFIX + "*:" + Ref.REMOTES_PREFIX + name + "/*";
             boolean mapped = false;
             String mappedBranch = null;
-            remote = new Remote(name, fetchurl, pushurl, fetch, mapped, mappedBranch, user,
-                    password);
+            remote =
+                    new Remote(
+                            name, fetchurl, pushurl, fetch, mapped, mappedBranch, user, password);
         }
 
         return pingRemote(remote);
@@ -456,8 +456,8 @@ public class RepositoryManager implements GeoServerInitializer, DisposableBean {
     public Repository findRepository(LayerInfo geogigLayer) {
         Preconditions.checkArgument(isGeogigLayer(geogigLayer));
 
-        Map<String, Serializable> params = geogigLayer.getResource().getStore()
-                .getConnectionParameters();
+        Map<String, Serializable> params =
+                geogigLayer.getResource().getStore().getConnectionParameters();
         String repoUriStr = String.valueOf(params.get(GeoGigDataStoreFactory.REPOSITORY.key));
         URI repoURI = URI.create(repoUriStr);
         RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);

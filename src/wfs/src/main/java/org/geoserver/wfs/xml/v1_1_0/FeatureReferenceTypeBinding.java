@@ -7,9 +7,7 @@ package org.geoserver.wfs.xml.v1_1_0;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
@@ -20,44 +18,42 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.Name;
 
 /**
- * Binding object for the type
- * http://cite.opengeospatial.org/gmlsf:FeatureReferenceType.
+ * Binding object for the type http://cite.opengeospatial.org/gmlsf:FeatureReferenceType.
+ *
+ * <p>This is a special binding for wfs 1.1 cite tests. Its is a type defined in the application
+ * schema for the test suite.
+ *
  * <p>
- * This is a special binding for wfs 1.1 cite tests. Its is a type defined in
- * the application schema for the test suite.
- * </p>
- * 
- * <p>
- * 
+ *
  * <pre>
- *	 <code>
+ *  <code>
  *  &lt;xsd:complexType name=&quot;FeatureReferenceType&quot;&gt;
  *     &lt;xsd:sequence minOccurs=&quot;0&quot;&gt;
  *       &lt;xsd:element ref=&quot;gml:_Feature&quot; /&gt;
  *     &lt;/xsd:sequence&gt;
  *    &lt;xsd:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
  *  &lt;/xsd:complexType&gt;
- * 	
+ *
  * </code>
- *	 </pre>
- * 
+ *  </pre>
+ *
  * @generated
  */
 public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
 
-    public static final QName FeatureReferenceType = new QName(
-            "http://cite.opengeospatial.org/gmlsf", "FeatureReferenceType");
+    public static final QName FeatureReferenceType =
+            new QName("http://cite.opengeospatial.org/gmlsf", "FeatureReferenceType");
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return FeatureReferenceType;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     *
      * @generated modifiable
      */
     public Class getType() {
@@ -65,12 +61,13 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-            throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         // TODO: implement and remove call to super
         return super.parse(instance, node, value);
@@ -102,17 +99,15 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
             if (associated instanceof SimpleFeature) {
                 SimpleFeature feature = (SimpleFeature) associated;
                 Name typeName = feature.getType().getName();
-                QName name = new QName(typeName.getNamespaceURI(), typeName
-                        .getLocalPart());
+                QName name = new QName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
                 List properties = new ArrayList();
 
                 // return a comment which is hte xlink href
-                properties.add(new Object[] { Encoder.COMMENT,
-                        "#" + feature.getID() });
+                properties.add(new Object[] {Encoder.COMMENT, "#" + feature.getID()});
 
                 // first return the feature
-                properties.add(new Object[] { name, feature });
+                properties.add(new Object[] {name, feature});
 
                 return properties;
             }
@@ -120,5 +115,4 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
 
         return null;
     }
-
 }

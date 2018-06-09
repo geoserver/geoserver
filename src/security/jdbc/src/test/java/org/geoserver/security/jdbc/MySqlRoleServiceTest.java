@@ -12,5 +12,4 @@ public class MySqlRoleServiceTest extends JDBCRoleServiceTest {
     protected String getFixtureId() {
         return "mysql";
     }
-
 }

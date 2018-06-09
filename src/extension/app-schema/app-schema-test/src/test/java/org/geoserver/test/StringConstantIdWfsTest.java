@@ -7,25 +7,21 @@
 package org.geoserver.test;
 
 import org.junit.Test;
-
 import org.w3c.dom.Document;
 
 /**
  * WFS GetFeature to test testing GEOT-4567: using String constants in idExpression with joining.
- * 
+ *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
 public class StringConstantIdWfsTest extends AbstractAppSchemaTestSupport {
-
 
     @Override
     protected StringConstantIdMockData createTestData() {
         return new StringConstantIdMockData();
     }
 
-    /**
-     * Test whether GetFeature returns wfs:FeatureCollection.
-     */
+    /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");

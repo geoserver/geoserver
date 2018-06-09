@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
-
 import net.opengis.wcs10.GetCoverageType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -26,16 +24,16 @@ import org.vfny.geoserver.wcs.WcsException;
 /**
  * Response object for the store=true path, that is, one that stores the coverage on disk and
  * returns its path thru the Coverages document
- * 
+ *
  * @author Andrea Aime - TOPP
  */
 public class Wcs10GetCoverageResponse extends Response {
-    private final static Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
+    private static final Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
 
     // private final static Hints IGNORE_OVERVIEWS = new Hints(
     // Hints.IGNORE_COVERAGE_OVERVIEW, Boolean.TRUE);
 
-    private final static Hints hints = new Hints(new HashMap(5));
+    private static final Hints hints = new Hints(new HashMap(5));
 
     static {
         // ///////////////////////////////////////////////////////////////////
@@ -51,17 +49,18 @@ public class Wcs10GetCoverageResponse extends Response {
 
     private CoverageResponseDelegateFinder responseFactory;
 
-    public Wcs10GetCoverageResponse(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
+    public Wcs10GetCoverageResponse(
+            Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.catalog = catalog;
         this.responseFactory = responseFactory;
     }
-    
+
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         if (!(operation.getParameters()[0] instanceof GetCoverageType))
-            throw new WcsException("Cannot handle object of type: "
-                    + operation.getParameters()[0].getClass());
+            throw new WcsException(
+                    "Cannot handle object of type: " + operation.getParameters()[0].getClass());
 
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = getCoverage.getOutput().getFormat().getValue();
@@ -72,8 +71,8 @@ public class Wcs10GetCoverageResponse extends Response {
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         if (!(operation.getParameters()[0] instanceof GetCoverageType))
-            throw new WcsException("Cannot handle object of type: "
-                    + operation.getParameters()[0].getClass());
+            throw new WcsException(
+                    "Cannot handle object of type: " + operation.getParameters()[0].getClass());
 
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = getCoverage.getOutput().getFormat().getValue();
@@ -92,8 +91,7 @@ public class Wcs10GetCoverageResponse extends Response {
 
     @Override
     public boolean canHandle(Operation operation) {
-        if (!(operation.getParameters()[0] instanceof GetCoverageType))
-            return false;
+        if (!(operation.getParameters()[0] instanceof GetCoverageType)) return false;
 
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = getCoverage.getOutput().getFormat().getValue();
@@ -103,8 +101,8 @@ public class Wcs10GetCoverageResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         GridCoverage[] coverages = (GridCoverage[]) value;
 
         // grab the delegate for coverage encoding
@@ -118,11 +116,10 @@ public class Wcs10GetCoverageResponse extends Response {
 
         // write the coverage
         try {
-            delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, output);
+            delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, output);
             output.flush();
         } finally {
             // if(output != null) output.close();
         }
     }
-
 }

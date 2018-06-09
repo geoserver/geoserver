@@ -6,7 +6,6 @@ package org.geoserver.security;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -16,9 +15,9 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
 /**
- * Wraps a CatalogFacade delegating all access methods to the {@link SecureCatalogImpl}, to ensure the facade cannot be used by accident to breach the
- * security restrictions
- * 
+ * Wraps a CatalogFacade delegating all access methods to the {@link SecureCatalogImpl}, to ensure
+ * the facade cannot be used by accident to breach the security restrictions
+ *
  * @author Andrea Aime
  */
 class SecureCatalogFacade implements CatalogFacade {
@@ -208,13 +207,13 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getStoreByName(name, clazz);
     }
 
-    public <T extends StoreInfo> T getStoreByName(String workspaceName, String name,
-            Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(
+            String workspaceName, String name, Class<T> clazz) {
         return catalog.getStoreByName(workspaceName, name, clazz);
     }
 
-    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name,
-            Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(
+            WorkspaceInfo workspace, String name, Class<T> clazz) {
         return catalog.getStoreByName(workspace, name, clazz);
     }
 
@@ -222,13 +221,13 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getStores(clazz);
     }
 
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace,
-            Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            WorkspaceInfo workspace, Class<T> clazz) {
         return catalog.getStoresByWorkspace(workspace, clazz);
     }
 
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName,
-            Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(
+            String workspaceName, Class<T> clazz) {
         return catalog.getStoresByWorkspace(workspaceName, clazz);
     }
 
@@ -300,8 +299,8 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getResourceByName(ns, name, clazz);
     }
 
-    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByName(
+            NamespaceInfo ns, String name, Class<T> clazz) {
         return catalog.getResourceByName(ns, name, clazz);
     }
 
@@ -317,18 +316,18 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getResources(clazz);
     }
 
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            NamespaceInfo namespace, Class<T> clazz) {
         return catalog.getResourcesByNamespace(namespace, clazz);
     }
 
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(String namespace,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
+            String namespace, Class<T> clazz) {
         return catalog.getResourcesByNamespace(namespace, clazz);
     }
 
-    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name,
-            Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(
+            StoreInfo store, String name, Class<T> clazz) {
         return catalog.getResourceByStore(store, name, clazz);
     }
 
@@ -569,8 +568,8 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.list(of, filter);
     }
 
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy sortBy) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
         return catalog.list(of, filter, offset, count, sortBy);
     }
 
@@ -580,8 +579,8 @@ class SecureCatalogFacade implements CatalogFacade {
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy... sortOrder) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(
+            Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortOrder) {
         return catalog.list(of, filter, offset, count, sortOrder);
     }
 

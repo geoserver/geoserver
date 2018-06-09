@@ -11,6 +11,9 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
+import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.config.util.XStreamPersister;
@@ -29,31 +32,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-
 /**
  * REST endpoint that return the available system information.
- * <p>
- * Every time this endpoint is hitted the informations are retrieved from the system, no cached information is used.
- * <p>
- * HTML, XML and JSON are supported.
+ *
+ * <p>Every time this endpoint is hitted the informations are retrieved from the system, no cached
+ * information is used.
+ *
+ * <p>HTML, XML and JSON are supported.
  *
  * @author sandr
  */
-
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/about/monitoring")
 public class MonitorRest extends RestBaseController {
 
     private static Log log = LogFactory.getLog(MonitorRest.class);
 
-    @Autowired
-    SystemInfoCollector systemInfoCollector;
+    @Autowired SystemInfoCollector systemInfoCollector;
 
-    @GetMapping(value = "", produces = {MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    @GetMapping(
+        value = "",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     @ResponseStatus(HttpStatus.OK)
     public RestWrapper<Metrics> getData(HttpServletRequest request, HttpServletResponse response) {
         Metrics si = systemInfoCollector.retrieveAllSystemInfo();
@@ -76,9 +80,7 @@ public class MonitorRest extends RestBaseController {
         return new ObjectToMapWrapper<>(clazz, Arrays.asList(MetricValue.class));
     }
 
-    /**
-     * Will convert a metric value to is correct representation.
-     */
+    /** Will convert a metric value to is correct representation. */
     private static final class ValueHolderConverter implements Converter {
 
         @Override
@@ -87,7 +89,8 @@ public class MonitorRest extends RestBaseController {
         }
 
         @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             Object value = ((MetricValue.ValueHolder) source).getValue();
             writer.setValue(value != null ? value.toString() : "");
         }

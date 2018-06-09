@@ -9,9 +9,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMS;
 
-/**
- * Represents an elevation dimension of a vector (feature type).
- */
+/** Represents an elevation dimension of a vector (feature type). */
 public class VectorElevationDimension extends VectorDimension {
 
     public VectorElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
@@ -22,5 +20,4 @@ public class VectorElevationDimension extends VectorDimension {
     protected String getDefaultValueFallbackAsString() {
         return "0";
     }
-   
 }

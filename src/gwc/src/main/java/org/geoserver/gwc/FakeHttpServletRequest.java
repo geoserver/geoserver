@@ -15,7 +15,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -30,25 +29,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import org.geoserver.config.GeoServerInfo;
-
 @SuppressWarnings("rawtypes")
 class FakeHttpServletRequest implements HttpServletRequest {
 
-    private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
-        @Override
-        public boolean hasMoreElements() {
-            // TODO Auto-generated method stub
-            return false;
-        }
+    private static final Enumeration EMPTY_ENUMERATION =
+            new Enumeration() {
+                @Override
+                public boolean hasMoreElements() {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
 
-        @Override
-        public Object nextElement() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    };
-    
+                @Override
+                public Object nextElement() {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+            };
+
     private String workspace;
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
@@ -58,17 +56,15 @@ class FakeHttpServletRequest implements HttpServletRequest {
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
         this(parameterMap, cookies, null);
     }
-    
-    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
+
+    public FakeHttpServletRequest(
+            Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
         this.workspace = workspace;
     }
 
-    /**
-     * Standard interface
-     */
-
+    /** Standard interface */
     public String getAuthType() {
         throw new ServletDebugException();
     }
@@ -122,8 +118,8 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRequestURI() {
-        if(workspace != null && !workspace.isEmpty()) {
-            return "/geoserver/"+workspace+"/wms";
+        if (workspace != null && !workspace.isEmpty()) {
+            return "/geoserver/" + workspace + "/wms";
         } else {
             return "/geoserver/wms";
         }
@@ -171,14 +167,10 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public void login(String username, String password) throws ServletException {
-
-    }
+    public void login(String username, String password) throws ServletException {}
 
     @Override
-    public void logout() throws ServletException {
-
-    }
+    public void logout() throws ServletException {}
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
@@ -246,7 +238,8 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+            throws IllegalStateException {
         return null;
     }
 
@@ -351,5 +344,4 @@ class FakeHttpServletRequest implements HttpServletRequest {
             throw new ServletDebugException();
         }
     }
-
 }

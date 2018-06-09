@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -37,7 +35,7 @@ import org.w3c.dom.Document;
 
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ResourceAccessManagerCSWTest extends CSWTestSupport {
@@ -51,9 +49,7 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         this.xpath = XMLUnit.newXpathEngine();
     }
 
-    /**
-     * Add the test resource access manager in the spring context
-     */
+    /** Add the test resource access manager in the spring context */
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
@@ -67,11 +63,18 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         testData.addStyle("raster", "raster.sld", SystemTestData.class, getCatalog());
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE, "raster");
-        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),
-                "raster-filter-test.zip", null, properties, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(
+                new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),
+                "raster-filter-test.zip",
+                null,
+                properties,
+                SystemTestData.class,
+                getCatalog());
 
-        GeoServerUserGroupStore ugStore = getSecurityManager()
-                .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME).createStore();
+        GeoServerUserGroupStore ugStore =
+                getSecurityManager()
+                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                        .createStore();
 
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
         ugStore.addUser(ugStore.createUserObject("citeChallenge", "citeChallenge", true));
@@ -85,8 +88,8 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
 
         // populate the access manager
         Catalog catalog = getCatalog();
-        TestResourceAccessManager tam = (TestResourceAccessManager) applicationContext
-                .getBean("testResourceAccessManager");
+        TestResourceAccessManager tam =
+                (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
 
         // setup hide mode, we should not see the records
         for (ResourceInfo ri : catalog.getResources(ResourceInfo.class)) {
@@ -98,7 +101,9 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         // setup challenge mode, the metadata should be visible anyways
         for (ResourceInfo ri : catalog.getResources(ResourceInfo.class)) {
             if (!"cite".equals(ri.getStore().getWorkspace().getName())) {
-                tam.putLimits("citeChallenge", ri,
+                tam.putLimits(
+                        "citeChallenge",
+                        ri,
                         new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE));
             }
         }
@@ -107,19 +112,25 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
     @Test
     public void testAllRecordsCite() throws Exception {
         authenticate("cite", "cite");
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&maxRecords=100";
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         // expected number
-        List<ResourceInfo> citeResources = getCatalog().getResourcesByNamespace(MockData.CITE_URI,
-                ResourceInfo.class);
-        assertEquals(citeResources.size(),
-                xpath.getMatchingNodes("//csw:SummaryRecord", d).getLength());
+        List<ResourceInfo> citeResources =
+                getCatalog().getResourcesByNamespace(MockData.CITE_URI, ResourceInfo.class);
+        assertEquals(
+                citeResources.size(), xpath.getMatchingNodes("//csw:SummaryRecord", d).getLength());
         // check they indeed all start by cite:
         for (ResourceInfo ri : citeResources) {
-            assertEquals(1, xpath.getMatchingNodes(
-                    String.format("//csw:SummaryRecord[dc:identifier='%s']", ri.prefixedName()), d)
-                    .getLength());
+            assertEquals(
+                    1,
+                    xpath.getMatchingNodes(
+                                    String.format(
+                                            "//csw:SummaryRecord[dc:identifier='%s']",
+                                            ri.prefixedName()),
+                                    d)
+                            .getLength());
         }
     }
 
@@ -129,17 +140,23 @@ public class ResourceAccessManagerCSWTest extends CSWTestSupport {
         List<ResourceInfo> citeResources = getCatalog().getResources(ResourceInfo.class);
         // authenticate
         authenticate("citeChallenge", "citeChallenge");
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&maxRecords=100";
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         // expected number
-        assertEquals(citeResources.size(),
-                xpath.getMatchingNodes("//csw:SummaryRecord", d).getLength());
+        assertEquals(
+                citeResources.size(), xpath.getMatchingNodes("//csw:SummaryRecord", d).getLength());
         // check they indeed all start by cite:
         for (ResourceInfo ri : citeResources) {
-            assertEquals(1, xpath.getMatchingNodes(
-                    String.format("//csw:SummaryRecord[dc:identifier='%s']", ri.prefixedName()), d)
-                    .getLength());
+            assertEquals(
+                    1,
+                    xpath.getMatchingNodes(
+                                    String.format(
+                                            "//csw:SummaryRecord[dc:identifier='%s']",
+                                            ri.prefixedName()),
+                                    d)
+                            .getLength());
         }
     }
 

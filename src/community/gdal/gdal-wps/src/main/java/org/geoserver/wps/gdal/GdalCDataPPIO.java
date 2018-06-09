@@ -7,21 +7,19 @@ package org.geoserver.wps.gdal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.geoserver.wcs.response.GdalCoverageResponseDelegate;
 import org.geoserver.wps.ppio.CDataPPIO;
 import org.geotools.coverage.grid.GridCoverage2D;
 
-/**
- * Encode text based output parameter using gdal_translate command
- */
+/** Encode text based output parameter using gdal_translate command */
 public class GdalCDataPPIO extends CDataPPIO {
 
     private GdalCoverageResponseDelegate delegate;
     private String outputFormat;
     private String fileExtension;
 
-    protected GdalCDataPPIO(String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
+    protected GdalCDataPPIO(
+            String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
         super(GridCoverage2D.class, GridCoverage2D.class, mimeType);
         this.delegate = delegate;
         this.outputFormat = outputFormat;
@@ -52,5 +50,4 @@ public class GdalCDataPPIO extends CDataPPIO {
     public Object decode(InputStream input) throws Exception {
         return null;
     }
-
 }

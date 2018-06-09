@@ -5,12 +5,11 @@
 package org.geoserver.wps.resource;
 
 import java.util.Map;
-
 import org.geoserver.threadlocals.ThreadLocalTransfer;
 
 /**
  * Transfers the {@link WPSResourceManager} executionId thread local between threads
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ExecutionIdThreadLocalTransfer implements ThreadLocalTransfer {
@@ -43,5 +42,4 @@ public class ExecutionIdThreadLocalTransfer implements ThreadLocalTransfer {
     public void cleanup() {
         manager.clearExecutionId();
     }
-
 }

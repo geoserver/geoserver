@@ -4,16 +4,17 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 class TimeoutCancellingResponse extends HttpServletResponseWrapper {
     TimeoutVerifier timeoutVerifier;
 
-    public TimeoutCancellingResponse(HttpServletResponse response, TimeoutVerifier timeoutVerifier) {
+    public TimeoutCancellingResponse(
+            HttpServletResponse response, TimeoutVerifier timeoutVerifier) {
         super(response);
         this.timeoutVerifier = timeoutVerifier;
     }

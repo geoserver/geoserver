@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -16,7 +18,6 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Set;
-
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
 import org.geogig.geoserver.config.RepositoryInfo;
@@ -38,12 +39,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
-
-/**
- * Context for running GeoGIG web API functional tests from the plugin endpoints.
- */
+/** Context for running GeoGIG web API functional tests from the plugin endpoints. */
 public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     private static final SecureRandom rnd = new SecureRandom();
@@ -58,9 +54,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
     // instance helper is shared among all feature scenarios
     static GeoServerTestSupport helper;
 
-    /**
-     * Set up the context for a scenario.
-     */
+    /** Set up the context for a scenario. */
     @Override
     protected void setUp() throws Exception {
         testData = new GeoGigTestData(this.tempFolder);
@@ -70,9 +64,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         setVariable("@systemTempPath", tempFolder.getRoot().getCanonicalPath().replace("\\", "/"));
     }
 
-    /**
-     * Clean up resources used in the scenario.
-     */
+    /** Clean up resources used in the scenario. */
     @Override
     protected void tearDown() throws Exception {
         try {
@@ -96,7 +88,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * Return the {@link GeoGIG} that corresponds to the given repository name.
      *
      * @param name the repository to get
-     *
      * @return the repository
      */
     @Override
@@ -109,7 +100,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * associate it to a DataStore.
      *
      * @param name the repository name
-     *
      * @throws Exception
      */
     void initRepo(String name) throws Exception {
@@ -134,9 +124,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * Create a repository with the given name for testing.
      *
      * @param name the repository name
-     *
      * @return a newly created {@link TestData} for the repository.
-     *
      * @throws Exception
      */
     @Override
@@ -147,7 +135,9 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         Catalog catalog = helper.getCatalog();
         CatalogBuilder catalogBuilder = testData.newCatalogBuilder(catalog);
         int i = rnd.nextInt();
-        catalogBuilder.namespace("geogig.org/" + i).workspace("geogigws" + i)
+        catalogBuilder
+                .namespace("geogig.org/" + i)
+                .workspace("geogigws" + i)
                 .store("geogigstore" + i);
         catalogBuilder.addAllRepoLayers().build();
 
@@ -160,8 +150,9 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         assertNotNull(dataStore);
         assertTrue(dataStore instanceof GeoGigDataStore);
 
-        String repoStr = (String) dsInfo.getConnectionParameters()
-                .get(GeoGigDataStoreFactory.REPOSITORY.key);
+        String repoStr =
+                (String)
+                        dsInfo.getConnectionParameters().get(GeoGigDataStoreFactory.REPOSITORY.key);
         // resolve the repo
         URI repoURI = new URI(repoStr);
         RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
@@ -215,9 +206,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         }
     }
 
-    /**
-     * @return the content of the last response as text
-     */
+    /** @return the content of the last response as text */
     @Override
     public String getLastResponseText() {
         try {
@@ -228,17 +217,13 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         return null;
     }
 
-    /**
-     * @return the content type of the last response
-     */
+    /** @return the content type of the last response */
     @Override
     public String getLastResponseContentType() {
         return getLastResponse().getContentType();
     }
 
-    /**
-     * @return the content of the last response as a {@link Document}
-     */
+    /** @return the content of the last response as a {@link Document} */
     @Override
     public Document getLastResponseAsDom() {
         Document result = null;
@@ -250,9 +235,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         return result;
     }
 
-    /**
-     * @return the status code of the last response
-     */
+    /** @return the status code of the last response */
     @Override
     public int getLastResponseStatus() {
         MockHttpServletResponse response = getLastResponse();
@@ -266,7 +249,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     /**
      * @return the content of the last response as an {@link InputStream}
-     *
      * @throws Exception
      */
     @Override
@@ -274,9 +256,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         return new ByteArrayInputStream(getBinary(getLastResponse()));
     }
 
-    /**
-     * @return the allowed http methods of the last response
-     */
+    /** @return the allowed http methods of the last response */
     @Override
     public Set<String> getLastResponseAllowedMethods() {
         return Sets.newHashSet(getLastResponse().getHeader("ALLOW").replace(" ", "").split(","));
@@ -293,19 +273,20 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     /**
      * Invokes URI request with specified Content-Type.
-     * 
+     *
      * @param method HTTP Method to invoke
      * @param resourceUri URI address to which to send the request
      * @param payload payload to encode into the request
      * @param contentType Specific Content-Type header value to send
      */
     @Override
-    public void callInternal(HttpMethod method, String resourceUri, String payload,
-            String contentType) {
+    public void callInternal(
+            HttpMethod method, String resourceUri, String payload, String contentType) {
         try {
             resourceUri = replaceVariables(resourceUri);
-            this.lastResponse = helper.callWithContentTypeInternal(method, "/geogig" + resourceUri,
-                    payload, contentType);
+            this.lastResponse =
+                    helper.callWithContentTypeInternal(
+                            method, "/geogig" + resourceUri, payload, contentType);
         } catch (Exception e) {
             Throwables.propagate(e);
         }
@@ -331,5 +312,4 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
     protected void serveHttpRepos() throws Exception {
         // Do Nothing
     }
-
 }

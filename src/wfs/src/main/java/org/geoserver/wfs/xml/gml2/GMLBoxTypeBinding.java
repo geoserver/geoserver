@@ -5,20 +5,18 @@
  */
 package org.geoserver.wfs.xml.gml2;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.net.URI;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
- * Subclass of {@link GMLBoxTypeBinding} that parses srsName and 
- * can inherit the CRS from the containing elements
- * 
+ * Subclass of {@link GMLBoxTypeBinding} that parses srsName and can inherit the CRS from the
+ * containing elements
+ *
  * @author Andrea Aime
  */
 public class GMLBoxTypeBinding extends org.geotools.gml2.bindings.GMLBoxTypeBinding {
@@ -39,8 +37,8 @@ public class GMLBoxTypeBinding extends org.geotools.gml2.bindings.GMLBoxTypeBind
             URI srs = (URI) node.getAttributeValue("srsName");
             crs = CRS.decode(srs.toString());
         }
-        
-        if(crs != null) {
+
+        if (crs != null) {
             return new ReferencedEnvelope(envelope, crs);
         } else {
             return envelope;

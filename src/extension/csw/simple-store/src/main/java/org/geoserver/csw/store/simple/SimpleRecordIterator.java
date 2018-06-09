@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.opengis.cat.csw20.RecordType;
 import net.opengis.cat.csw20.SimpleLiteral;
 import net.opengis.ows10.BoundingBoxType;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.csw.records.CSWRecordBuilder;
 import org.geoserver.platform.resource.Resource;
@@ -32,7 +30,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /**
  * Builds features scanning xml files in the specified folder, and parsing them as CSW Record
  * objects
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class SimpleRecordIterator implements Iterator<Feature> {
@@ -42,7 +40,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
     Iterator<Resource> files;
 
     RecordType record;
-    
+
     Resource lastFile;
 
     Parser parser;
@@ -72,8 +70,10 @@ class SimpleRecordIterator implements Iterator<Feature> {
                     record = null;
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Failed to parse the contents of " + file.path()
-                        + " as a CSW Record", e);
+                LOGGER.log(
+                        Level.INFO,
+                        "Failed to parse the contents of " + file.path() + " as a CSW Record",
+                        e);
             } finally {
                 IOUtils.closeQuietly(is);
             }
@@ -120,9 +120,13 @@ class SimpleRecordIterator implements Iterator<Feature> {
                         LOGGER.log(Level.INFO, "Failed to parse original record bbox");
                     }
                 }
-                ReferencedEnvelope re = new ReferencedEnvelope((Double) bbox.getLowerCorner()
-                        .get(0), (Double) bbox.getUpperCorner().get(0), (Double) bbox
-                        .getLowerCorner().get(1), (Double) bbox.getUpperCorner().get(1), crs);
+                ReferencedEnvelope re =
+                        new ReferencedEnvelope(
+                                (Double) bbox.getLowerCorner().get(0),
+                                (Double) bbox.getUpperCorner().get(0),
+                                (Double) bbox.getLowerCorner().get(1),
+                                (Double) bbox.getUpperCorner().get(1),
+                                crs);
                 builder.addBoundingBox(re);
             }
         }
@@ -134,9 +138,8 @@ class SimpleRecordIterator implements Iterator<Feature> {
     public void remove() {
         throw new UnsupportedOperationException("This iterator is read only");
     }
-    
+
     public Resource getLastFile() {
         return lastFile;
     }
-
 }

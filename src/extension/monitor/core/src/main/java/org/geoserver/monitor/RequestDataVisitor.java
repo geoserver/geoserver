@@ -5,5 +5,4 @@
  */
 package org.geoserver.monitor;
 
-public interface RequestDataVisitor extends MonitorVisitor<RequestData> {
-}
+public interface RequestDataVisitor extends MonitorVisitor<RequestData> {}

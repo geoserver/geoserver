@@ -13,9 +13,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.List;
-
 import net.opengis.cat.csw20.DescribeRecordType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.ows.Response;
@@ -26,7 +24,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Encodes the DescribeRecord response
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DescribeRecordResponse extends Response {
@@ -44,8 +42,8 @@ public class DescribeRecordResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         AttributeDescriptor[] descriptors = (AttributeDescriptor[]) value;
 
         Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8"));
@@ -61,14 +59,16 @@ public class DescribeRecordResponse extends Response {
         }
 
         // write out the container
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<csw:DescribeRecordResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" "
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                + "xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 " + schemaLocationRoot
-                + "/CSW-discovery.xsd\">\n");
+        writer.write(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<csw:DescribeRecordResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" "
+                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                        + "xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 "
+                        + schemaLocationRoot
+                        + "/CSW-discovery.xsd\">\n");
 
-        List<SchemaComponentDelegate> delegates = GeoServerExtensions
-                .extensions(SchemaComponentDelegate.class);
+        List<SchemaComponentDelegate> delegates =
+                GeoServerExtensions.extensions(SchemaComponentDelegate.class);
 
         // write out all the schemas
         for (AttributeDescriptor descriptor : descriptors) {
@@ -84,5 +84,4 @@ public class DescribeRecordResponse extends Response {
         writer.write("</csw:DescribeRecordResponse>");
         writer.flush();
     }
-
 }

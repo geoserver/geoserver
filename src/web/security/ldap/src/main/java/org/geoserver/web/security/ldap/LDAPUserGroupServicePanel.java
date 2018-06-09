@@ -14,11 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.security.ldap.LDAPUserGroupServiceConfig;
 import org.geoserver.security.web.usergroup.UserGroupServicePanel;
 
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGroupServiceConfig> {
     private static final long serialVersionUID = -5052166946618920800L;
 
@@ -36,7 +32,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
             pwdField.setResetPassword(false);
             add(pwdField);
         }
-        
+
         public void resetModel() {
             get("user").setDefaultModelObject(null);
             get("password").setDefaultModelObject(null);
@@ -64,19 +60,21 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
         add(new TextField<String>("populatedAttributes"));
 
         /** privileged account for querying the LDAP server (if needed) */
-        add(new AjaxCheckBox("bindBeforeGroupSearch") {
-            private static final long serialVersionUID = -6388847010436939988L;
+        add(
+                new AjaxCheckBox("bindBeforeGroupSearch") {
+                    private static final long serialVersionUID = -6388847010436939988L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                //reset any values that were set
-                LDAPAuthenticationPanel ldapAuthenticationPanel = 
-                        (LDAPAuthenticationPanel) LDAPUserGroupServicePanel.this.get("authenticationPanel");
-                ldapAuthenticationPanel.resetModel();
-                ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
-                target.add(ldapAuthenticationPanel);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        // reset any values that were set
+                        LDAPAuthenticationPanel ldapAuthenticationPanel =
+                                (LDAPAuthenticationPanel)
+                                        LDAPUserGroupServicePanel.this.get("authenticationPanel");
+                        ldapAuthenticationPanel.resetModel();
+                        ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
+                        target.add(ldapAuthenticationPanel);
+                    }
+                });
         LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
         authPanel.setOutputMarkupPlaceholderTag(true);

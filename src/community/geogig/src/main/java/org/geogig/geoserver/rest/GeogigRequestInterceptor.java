@@ -6,7 +6,6 @@ package org.geogig.geoserver.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -16,18 +15,17 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 @Component
 public class GeogigRequestInterceptor extends HandlerInterceptorAdapter {
-    
+
     public static RepositoryProvider repoProvider = null;
-    
+
     @Override
-    public boolean preHandle(HttpServletRequest request,
-            HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         if (repoProvider == null) {
             repoProvider = new GeoServerRepositoryProvider();
         }
         request.setAttribute(RepositoryProvider.KEY, repoProvider);
         return true;
     }
- 
 }
-

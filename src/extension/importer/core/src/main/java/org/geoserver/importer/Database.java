@@ -5,35 +5,29 @@
  */
 package org.geoserver.importer;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.importer.job.ProgressMonitor;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.geoserver.importer.job.ProgressMonitor;
 import org.vfny.geoserver.util.DataStoreUtils;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 
 public class Database extends ImportData {
 
-    /**
-     * Database connection parameters
-     */
-    Map<String,Serializable> parameters;
+    /** Database connection parameters */
+    Map<String, Serializable> parameters;
 
-    /**
-     * List of tables
-     */
+    /** List of tables */
     List<Table> tables = new ArrayList<Table>();
 
-    public Database(Map<String,Serializable> parameters) {
+    public Database(Map<String, Serializable> parameters) {
         this.parameters = parameters;
     }
 
@@ -47,22 +41,20 @@ public class Database extends ImportData {
 
     @Override
     public String getName() {
-        String database = (String) parameters.get(JDBCDataStoreFactory.DATABASE.key); 
+        String database = (String) parameters.get(JDBCDataStoreFactory.DATABASE.key);
         if (database != null) {
-            //file based databases might be a full path to a file (sqlite, h2, etc..) use only 
+            // file based databases might be a full path to a file (sqlite, h2, etc..) use only
             // the last part
             database = FilenameUtils.getBaseName(database);
         }
         return database;
     }
 
-    /**
-     * Loads the available tables from this database.
-     */
+    /** Loads the available tables from this database. */
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
         tables = new ArrayList<Table>();
-        DataStoreFactorySpi factory = 
+        DataStoreFactorySpi factory =
                 (DataStoreFactorySpi) DataStoreUtils.aquireFactory(parameters);
         if (factory == null) {
             throw new IOException("Unable to find data store for specified parameters");
@@ -82,12 +74,10 @@ public class Database extends ImportData {
                 tbl.setFormat(format);
                 tables.add(tbl);
             }
-        }
-        finally {
-            //TODO: cache the datastore for subsquent calls
+        } finally {
+            // TODO: cache the datastore for subsquent calls
             store.dispose();
         }
-        
     }
 
     @Override
@@ -118,14 +108,16 @@ public class Database extends ImportData {
 
     @Override
     public Table part(final String name) {
-        return Iterables.find(tables, new Predicate<Table>() {
-            @Override
-            public boolean apply(Table input) {
-                return name.equals(input.getName());
-            }
-        });
+        return Iterables.find(
+                tables,
+                new Predicate<Table>() {
+                    @Override
+                    public boolean apply(Table input) {
+                        return name.equals(input.getName());
+                    }
+                });
     }
-    
+
     private Object readResolve() {
         tables = tables != null ? tables : new ArrayList();
         return this;

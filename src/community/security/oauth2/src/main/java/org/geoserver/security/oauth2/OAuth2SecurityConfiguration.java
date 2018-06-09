@@ -9,21 +9,22 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 
 /**
  * Interface for {@link GeoServerOAuth2SecurityConfiguration}
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public interface OAuth2SecurityConfiguration {
 
     /**
      * Details for an OAuth2-protected resource.
-     * 
+     *
      * @return {@link OAuth2ProtectedResourceDetails} geoServerOAuth2Resource
      */
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
 
     /**
-     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of the provided resource.
-     * 
+     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of
+     * the provided resource.
+     *
      * @return {@link OAuth2RestTemplate} geoServerOauth2RestTemplate
      */
     public OAuth2RestTemplate geoServerOauth2RestTemplate();

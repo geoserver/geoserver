@@ -12,6 +12,7 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 
+import com.google.common.collect.ImmutableSet;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -19,8 +20,6 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableSet;
 
 public class LegacyTileLayerInfoLoaderTest {
 
@@ -38,12 +37,12 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testLoadLayerInfo() {
-        LayerInfoImpl layer = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfoImpl layer = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
 
         assertNull(LegacyTileLayerInfoLoader.load(layer));
 
         TileLayerInfoUtil.checkAutomaticStyles(layer, defaultVectorInfo);
-        
+
         LegacyTileLayerInfoLoader.save(defaultVectorInfo, layer.getMetadata());
 
         GeoServerTileLayerInfo info2 = LegacyTileLayerInfoLoader.load(layer);
@@ -59,7 +58,8 @@ public class LegacyTileLayerInfoLoaderTest {
         info.setAutoCacheStyles(false);
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1"));
 
-        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
+        LayerInfoImpl layer =
+                mockLayer("testLayer", new String[] {"style1", "style2"}, PublishedType.RASTER);
         TileLayerInfoUtil.checkAutomaticStyles(layer, info);
 
         assertNull(LegacyTileLayerInfoLoader.load(layer));
@@ -85,7 +85,8 @@ public class LegacyTileLayerInfoLoaderTest {
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setAutoCacheStyles(true);
 
-        LayerInfoImpl layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
+        LayerInfoImpl layer =
+                mockLayer("testLayer", new String[] {"style1", "style2"}, PublishedType.RASTER);
         assertNull(LegacyTileLayerInfoLoader.load(layer));
 
         TileLayerInfoUtil.checkAutomaticStyles(layer, defaultVectorInfo);
@@ -110,7 +111,11 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testLoadLayerGroup() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1", new String[]{}, PublishedType.RASTER), mockLayer("L2", new String[]{}, PublishedType.RASTER));
+        LayerGroupInfoImpl lg =
+                mockGroup(
+                        "tesGroup",
+                        mockLayer("L1", new String[] {}, PublishedType.RASTER),
+                        mockLayer("L2", new String[] {}, PublishedType.RASTER));
 
         assertNull(LegacyTileLayerInfoLoader.load(lg));
         GeoServerTileLayerInfo info = defaultVectorInfo;
@@ -129,7 +134,11 @@ public class LegacyTileLayerInfoLoaderTest {
 
     @Test
     public void testClear() {
-        LayerGroupInfoImpl lg = mockGroup("tesGroup", mockLayer("L1", new String[]{}, PublishedType.RASTER), mockLayer("L2", new String[]{}, PublishedType.RASTER));
+        LayerGroupInfoImpl lg =
+                mockGroup(
+                        "tesGroup",
+                        mockLayer("L1", new String[] {}, PublishedType.RASTER),
+                        mockLayer("L2", new String[] {}, PublishedType.RASTER));
 
         assertNull(LegacyTileLayerInfoLoader.load(lg));
         GeoServerTileLayerInfo info = defaultVectorInfo;
@@ -145,5 +154,4 @@ public class LegacyTileLayerInfoLoaderTest {
         LegacyTileLayerInfoLoader.clear(lg.getMetadata());
         assertNull(LegacyTileLayerInfoLoader.load(lg));
     }
-
 }

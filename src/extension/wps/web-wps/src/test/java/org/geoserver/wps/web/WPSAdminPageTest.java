@@ -5,8 +5,6 @@
  */
 package org.geoserver.wps.web;
 
-import java.util.Collections;
-
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -34,7 +32,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
     @Test
     public void test() throws Exception {
         login();
-        
+
         // start the page
         tester.startPage(new WPSAdminPage());
         // print(tester.getLastRenderedPage(), true, true);
@@ -53,13 +51,12 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
         tester.assertModelValue("form:maxSynchronousTotalTime:", 120);
         tester.assertModelValue("form:maxAsynchronousTotalTime:", 6000);
-
     }
 
     @Test
     public void testUpgrade() throws Exception {
         login();
-        
+
         // start the page
         tester.startPage(new WPSAdminPage());
 
@@ -71,7 +68,6 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
         tester.assertModelValue("form:maxSynchronousTotalTime:", 60);
         tester.assertModelValue("form:maxAsynchronousTotalTime:", 600);
-
     }
 
     @Test
@@ -88,12 +84,11 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
 
         // start the page with the custom workspace
         login();
-        tester.startPage(WPSAdminPage.class,
-                new PageParameters().add("workspace", defaultWs.getName()));
+        tester.startPage(
+                WPSAdminPage.class, new PageParameters().add("workspace", defaultWs.getName()));
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // test that components have been filled as expected
         tester.assertModelValue("form:maintainer", "TestMaintainer");
-
     }
 }

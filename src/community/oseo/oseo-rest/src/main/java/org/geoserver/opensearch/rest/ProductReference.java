@@ -19,7 +19,7 @@ class ProductReference {
 
     public ProductReference(String id, String href, String search) {
         super();
-        this.id = id ;
+        this.id = id;
         this.href = href;
         this.rss = search;
     }
@@ -35,5 +35,4 @@ class ProductReference {
     public String getRss() {
         return rss;
     }
-
 }

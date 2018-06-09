@@ -4,8 +4,8 @@
  */
 package org.geoserver.importer;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.NoSuchElementException;
-
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geotools.data.DataStore;
@@ -19,14 +19,14 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * FeatureCollection that does two things required by the importer; a) provide cancel functionality b) Do some FeatureType Transforming
+ * FeatureCollection that does two things required by the importer; a) provide cancel functionality
+ * b) Do some FeatureType Transforming
  *
- * This class is simply wraps the FeatureIterator with two iterators wrappers that provide the above functionality.
+ * <p>This class is simply wraps the FeatureIterator with two iterators wrappers that provide the
+ * above functionality.
  */
-  class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
+class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
 
     ProgressMonitor monitor;
 
@@ -40,9 +40,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
     DataStore dataStoreDestination;
 
-    public ImportTransformFeatureCollection(FeatureCollection fc, 
-            FeatureDataConverter featureDataConverter, FeatureType resultingFT,
-            VectorTransformChain vectorTransformChain, ImportTask task, DataStore dataStoreDestination) {
+    public ImportTransformFeatureCollection(
+            FeatureCollection fc,
+            FeatureDataConverter featureDataConverter,
+            FeatureType resultingFT,
+            VectorTransformChain vectorTransformChain,
+            ImportTask task,
+            DataStore dataStoreDestination) {
         super(fc);
         this.monitor = task.progress();
         this.featureDataConverter = featureDataConverter;
@@ -55,14 +59,19 @@ import com.vividsolutions.jts.geom.Geometry;
     @Override
     public FeatureIterator features() {
         FeatureIterator fi = super.features();
-        return new TransformingFeatureIterator(new CancelableFeatureIterator(fi, monitor),
-                resultingFT, featureDataConverter, vectorTransformChain, task, dataStoreDestination);
+        return new TransformingFeatureIterator(
+                new CancelableFeatureIterator(fi, monitor),
+                resultingFT,
+                featureDataConverter,
+                vectorTransformChain,
+                task,
+                dataStoreDestination);
     }
 
     /**
      * Simple FeatureIterator that does some transforming of the features.
-     * 
-     * The emulates the behavior of the Importer's low-level feature transformation.
+     *
+     * <p>The emulates the behavior of the Importer's low-level feature transformation.
      */
     private class TransformingFeatureIterator extends DecoratingFeatureIterator {
 
@@ -78,8 +87,12 @@ import com.vividsolutions.jts.geom.Geometry;
 
         int cnt = 0;
 
-        public TransformingFeatureIterator(FeatureIterator fi, FeatureType resultingFT,
-                FeatureDataConverter featureDataConverter, VectorTransformChain vectorTransformChain, ImportTask task,
+        public TransformingFeatureIterator(
+                FeatureIterator fi,
+                FeatureType resultingFT,
+                FeatureDataConverter featureDataConverter,
+                VectorTransformChain vectorTransformChain,
+                ImportTask task,
                 DataStore dataStore) {
             super(fi);
             this.featureBuilder = new SimpleFeatureBuilder((SimpleFeatureType) resultingFT);
@@ -125,8 +138,8 @@ import com.vividsolutions.jts.geom.Geometry;
     }
 
     /**
-     * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will say there are no more elementss (hasNext() will be
-     * false)
+     * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will
+     * say there are no more elementss (hasNext() will be false)
      */
     private class CancelableFeatureIterator extends DecoratingFeatureIterator {
         ProgressMonitor monitor;
@@ -136,9 +149,7 @@ import com.vividsolutions.jts.geom.Geometry;
             this.monitor = monitor;
         }
 
-        /**
-         * if cancelled, then report no more features
-         */
+        /** if cancelled, then report no more features */
         @Override
         public boolean hasNext() {
             if (monitor.isCanceled()) {

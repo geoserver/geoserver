@@ -6,5 +6,7 @@
 package org.geoserver.cluster.impl.events.configuration;
 
 public enum JMSEventType {
-    ADDED, REMOVED, MODIFIED
+    ADDED,
+    REMOVED,
+    MODIFIED
 }

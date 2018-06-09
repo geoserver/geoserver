@@ -9,13 +9,13 @@ import org.geoserver.security.onelogin.OneloginAuthenticationFilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
- * 
  * Configuration panel extension for {@link OneloginAuthFilterPanel}.
- * 
+ *
  * @author Xandros
  */
-public class OneloginAuthFilterPanelInfo extends
-        AuthenticationFilterPanelInfo<OneloginAuthenticationFilterConfig, OneloginAuthFilterPanel> {
+public class OneloginAuthFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                OneloginAuthenticationFilterConfig, OneloginAuthFilterPanel> {
 
     private static final long serialVersionUID = 2786521869232176111L;
 
@@ -24,5 +24,4 @@ public class OneloginAuthFilterPanelInfo extends
         setServiceClass(OneloginAuthenticationFilter.class);
         setServiceConfigClass(OneloginAuthenticationFilterConfig.class);
     }
-
 }

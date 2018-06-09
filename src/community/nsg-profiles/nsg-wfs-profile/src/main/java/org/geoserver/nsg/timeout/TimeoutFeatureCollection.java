@@ -4,6 +4,8 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.io.IOException;
+import java.util.Collection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
@@ -18,21 +20,19 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.util.ProgressListener;
 
-import java.io.IOException;
-import java.util.Collection;
-
 /**
  * A {@link FeatureCollection} decorator that checks if the timeout expired, and throws an exception
  * in case it is
+ *
  * @param <T>
  * @param <F>
  */
-class TimeoutFeatureCollection<T extends FeatureType, F extends Feature> implements FeatureCollection<T, F> {
-
+class TimeoutFeatureCollection<T extends FeatureType, F extends Feature>
+        implements FeatureCollection<T, F> {
 
     /**
-     * Wraps a feature collection into a timing out decorator, keeping its {@link SimpleFeature} nature
-     * if possible
+     * Wraps a feature collection into a timing out decorator, keeping its {@link SimpleFeature}
+     * nature if possible
      *
      * @param <R>
      * @param timeoutVerifier
@@ -47,20 +47,21 @@ class TimeoutFeatureCollection<T extends FeatureType, F extends Feature> impleme
         }
     }
 
-    /**
-     * Simple feature version of {@link TimeoutFeatureCollection}
-     */
-    static class SimpleTimeoutCollection extends TimeoutFeatureCollection<SimpleFeatureType, SimpleFeature> implements SimpleFeatureCollection {
+    /** Simple feature version of {@link TimeoutFeatureCollection} */
+    static class SimpleTimeoutCollection
+            extends TimeoutFeatureCollection<SimpleFeatureType, SimpleFeature>
+            implements SimpleFeatureCollection {
 
-
-        public SimpleTimeoutCollection(TimeoutVerifier timeoutVerifier, FeatureCollection<SimpleFeatureType,
-                SimpleFeature> delegate) {
+        public SimpleTimeoutCollection(
+                TimeoutVerifier timeoutVerifier,
+                FeatureCollection<SimpleFeatureType, SimpleFeature> delegate) {
             super(timeoutVerifier, delegate);
         }
 
         @Override
         public SimpleFeatureIterator features() {
-            return new TimeoutFeatureIterator.SimpleTimeoutFeatureIterator(timeoutVerifier, super.features());
+            return new TimeoutFeatureIterator.SimpleTimeoutFeatureIterator(
+                    timeoutVerifier, super.features());
         }
 
         @Override
@@ -78,7 +79,8 @@ class TimeoutFeatureCollection<T extends FeatureType, F extends Feature> impleme
     TimeoutVerifier timeoutVerifier;
     FeatureCollection<T, F> delegate;
 
-    public TimeoutFeatureCollection(TimeoutVerifier timeoutVerifier, FeatureCollection<T, F> delegate) {
+    public TimeoutFeatureCollection(
+            TimeoutVerifier timeoutVerifier, FeatureCollection<T, F> delegate) {
         this.timeoutVerifier = timeoutVerifier;
         this.delegate = delegate;
     }

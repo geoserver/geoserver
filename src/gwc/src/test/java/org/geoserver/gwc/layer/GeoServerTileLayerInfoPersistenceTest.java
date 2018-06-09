@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import com.thoughtworks.xstream.XStream;
 import java.beans.Introspector;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.function.Function;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.config.util.SecureXStream;
@@ -36,8 +36,6 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.thoughtworks.xstream.XStream;
 
 public class GeoServerTileLayerInfoPersistenceTest {
 
@@ -55,43 +53,51 @@ public class GeoServerTileLayerInfoPersistenceTest {
         defaultVectorInfo.getMimeFormats().clear();
         defaultVectorInfo.getMimeFormats().addAll(defaults.getDefaultVectorCacheFormats());
     }
-    
+
     <T> Matcher<T> sameProperty(T expected, String property) throws Exception {
         return sameProperty(expected, property, Matchers::is);
     }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
-        Object value = Arrays.stream(
-                    Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())
-                .filter(p->p.getName().equals(property))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("bean expected lacks the property "+property))
-                .getReadMethod()
-                .invoke(expected);
-        return hasProperty(property, (Matcher<?>)((Function)valueMatcher).apply(value));
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher)
+            throws Exception {
+        Object value =
+                Arrays.stream(
+                                Introspector.getBeanInfo(expected.getClass())
+                                        .getPropertyDescriptors())
+                        .filter(p -> p.getName().equals(property))
+                        .findAny()
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "bean expected lacks the property " + property))
+                        .getReadMethod()
+                        .invoke(expected);
+        return hasProperty(property, (Matcher<?>) ((Function) valueMatcher).apply(value));
     }
-    
+
     private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) throws Exception {
 
-        XStream xstream = XMLConfiguration.getConfiguredXStream(new SecureXStream(), (WebApplicationContext) null);
+        XStream xstream =
+                XMLConfiguration.getConfiguredXStream(
+                        new SecureXStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
-        xstream.allowTypes(new Class[] { GeoServerTileLayerInfo.class, SortedSet.class });
+        xstream.allowTypes(new Class[] {GeoServerTileLayerInfo.class, SortedSet.class});
 
         String marshalled = xstream.toXML(info);
-        GeoServerTileLayerInfo unmarshalled = (GeoServerTileLayerInfo) xstream
-                .fromXML(new StringReader(marshalled));
+        GeoServerTileLayerInfo unmarshalled =
+                (GeoServerTileLayerInfo) xstream.fromXML(new StringReader(marshalled));
 
         assertThat(unmarshalled, notNullValue());
-        
-        assertThat(unmarshalled, sameProperty(info ,"enabled"));
-        assertThat(unmarshalled, sameProperty(info ,"autoCacheStyles"));
-        
-        assertThat(unmarshalled, sameProperty(info ,"gutter"));
-        assertThat(unmarshalled, sameProperty(info ,"metaTilingX"));
-        assertThat(unmarshalled, sameProperty(info ,"metaTilingY"));
-        assertThat(unmarshalled, sameProperty(info ,"gridSubsets"));
-        assertThat(unmarshalled, sameProperty(info ,"mimeFormats"));
+
+        assertThat(unmarshalled, sameProperty(info, "enabled"));
+        assertThat(unmarshalled, sameProperty(info, "autoCacheStyles"));
+
+        assertThat(unmarshalled, sameProperty(info, "gutter"));
+        assertThat(unmarshalled, sameProperty(info, "metaTilingX"));
+        assertThat(unmarshalled, sameProperty(info, "metaTilingY"));
+        assertThat(unmarshalled, sameProperty(info, "gridSubsets"));
+        assertThat(unmarshalled, sameProperty(info, "mimeFormats"));
         assertThat(unmarshalled, sameProperty(info, "parameterFilters"));
         assertThat(unmarshalled, equalTo(info));
 
@@ -103,7 +109,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
     @Test
     public void testMarshallingDefaults() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layerInfo = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
     }
@@ -111,7 +117,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
     @Test
     public void testMarshallingBlobStoreId() throws Exception {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layerInfo = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         info.setBlobStoreId("myBlobStore");
         GeoServerTileLayerInfo unmarshalled = testMarshaling(info);

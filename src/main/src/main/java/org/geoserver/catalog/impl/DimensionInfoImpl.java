@@ -6,7 +6,6 @@
 package org.geoserver.catalog.impl;
 
 import java.math.BigDecimal;
-
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -14,9 +13,8 @@ import org.geoserver.catalog.DimensionPresentation;
 /**
  * Configuration about a dimension, such as time or elevation (theoretically could be a custom one
  * too)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DimensionInfoImpl implements DimensionInfo {
 
@@ -26,31 +24,30 @@ public class DimensionInfoImpl implements DimensionInfo {
     boolean enabled;
 
     String attribute;
-    
+
     String endAttribute;
 
     DimensionPresentation presentation;
 
     BigDecimal resolution;
-    
+
     String units;
-    
+
     String unitSymbol;
 
     DimensionDefaultValueSetting defaultValue;
-    
-    /**
-     * The default constructor
-     */
-    public DimensionInfoImpl(){
+
+    /** The default constructor */
+    public DimensionInfoImpl() {
         super();
     }
-    
+
     /**
      * Creates a shallow copy of the given Dimension object
+     *
      * @param info
      */
-    public DimensionInfoImpl(DimensionInfo info){
+    public DimensionInfoImpl(DimensionInfo info) {
         super();
         this.enabled = info.isEnabled();
         this.attribute = info.getAttribute();
@@ -62,7 +59,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         this.defaultValue = info.getDefaultValue();
         this.enabled = info.isEnabled();
     }
-    
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -78,7 +75,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-        
+
     public String getEndAttribute() {
         return this.endAttribute;
     }
@@ -102,7 +99,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setResolution(BigDecimal resolution) {
         this.resolution = resolution;
     }
-    
+
     public String getUnits() {
         return units;
     }
@@ -118,7 +115,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setUnitSymbol(String unitSymbol) {
         this.unitSymbol = unitSymbol;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -148,45 +145,29 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         DimensionInfoImpl other = (DimensionInfoImpl) obj;
         if (attribute == null) {
-            if (other.attribute != null)
-                return false;
-        } else if (!attribute.equals(other.attribute))
-            return false;
+            if (other.attribute != null) return false;
+        } else if (!attribute.equals(other.attribute)) return false;
         if (units == null) {
-            if (other.units != null)
-                return false;
-        } else if (!units.equals(other.units))
-            return false;
+            if (other.units != null) return false;
+        } else if (!units.equals(other.units)) return false;
         if (unitSymbol == null) {
-            if (other.unitSymbol != null)
-                return false;
-        } else if (!unitSymbol.equals(other.unitSymbol))
-            return false;
-        if (enabled != other.enabled)
-            return false;
+            if (other.unitSymbol != null) return false;
+        } else if (!unitSymbol.equals(other.unitSymbol)) return false;
+        if (enabled != other.enabled) return false;
         if (presentation == null) {
-            if (other.presentation != null)
-                return false;
-        } else if (!presentation.equals(other.presentation))
-            return false;
+            if (other.presentation != null) return false;
+        } else if (!presentation.equals(other.presentation)) return false;
         if (resolution == null) {
-            if (other.resolution != null)
-                return false;
-        } else if (!resolution.equals(other.resolution))
-            return false;
+            if (other.resolution != null) return false;
+        } else if (!resolution.equals(other.resolution)) return false;
         if (endAttribute == null) {
-            if (other.endAttribute != null)
-                return false;
-        } else if (!endAttribute.equals(other.endAttribute))
-            return false;
+            if (other.endAttribute != null) return false;
+        } else if (!endAttribute.equals(other.endAttribute)) return false;
         return true;
     }
 
@@ -197,7 +178,6 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
-       this.defaultValue = defaultValue;        
+        this.defaultValue = defaultValue;
     }
-
 }

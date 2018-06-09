@@ -4,16 +4,16 @@
  */
 package org.geoserver.security.decorators;
 
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
 
-public class SecuredCoverageInfoTest extends SecuredResourceInfoTest<CoverageInfo, SecuredCoverageInfo> {
+public class SecuredCoverageInfoTest
+        extends SecuredResourceInfoTest<CoverageInfo, SecuredCoverageInfo> {
 
     @Override
-    CoverageInfo createDelegate()  {
+    CoverageInfo createDelegate() {
         final CoverageInfo info = new CoverageInfoImpl(getCatalog());
         final CoverageStoreInfo storeInfo = new CoverageStoreInfoImpl(getCatalog());
         info.setStore(storeInfo);
@@ -44,6 +44,4 @@ public class SecuredCoverageInfoTest extends SecuredResourceInfoTest<CoverageInf
     int getStackOverflowCount() {
         return 500;
     }
-
-
 }

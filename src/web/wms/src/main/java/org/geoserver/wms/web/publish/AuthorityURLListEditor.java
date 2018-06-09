@@ -7,11 +7,10 @@ package org.geoserver.wms.web.publish;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -33,11 +32,10 @@ import org.geoserver.wms.WMSInfo;
 import org.springframework.util.Assert;
 
 /**
- * Shows and allows editing of the {@link AuthorityURLInfo} attached to a {@link WMSInfo}, a
- * {@link LayerInfo}, or a {@link LayerGroupInfo}.
- * 
+ * Shows and allows editing of the {@link AuthorityURLInfo} attached to a {@link WMSInfo}, a {@link
+ * LayerInfo}, or a {@link LayerGroupInfo}.
+ *
  * @author groldan
- * 
  */
 public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURLInfo>> {
 
@@ -51,8 +49,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
     /**
      * @param id
-     * @param model
-     *            the model over the appropriate cataloginfo's list of {@link AuthorityURLInfo}
+     * @param model the model over the appropriate cataloginfo's list of {@link AuthorityURLInfo}
      * @see WMSInfo#getAuthorityURLs()
      * @see LayerInfo#getAuthorityURLs()
      * @see LayerGroupInfo#getAuthorityURLs()
@@ -70,59 +67,67 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         table = new WebMarkupContainer("table");
         table.setOutputMarkupId(true);
         container.add(table);
-        authorityURLs = new ListView<AuthorityURLInfo>("authorities",
-                new ArrayList<AuthorityURLInfo>(list.getObject())) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void populateItem(final ListItem<AuthorityURLInfo> item) {
-                // odd/even style
-                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even"
-                        : "odd"));
-
-                // Authority name
-                TextField<String> authName;
-                authName = new TextField<String>("authName", new PropertyModel<String>(
-                        item.getModel(), "name"));
-                authName.setRequired(true);
-
-                FormComponentFeedbackBorder authNameBorder = new FormComponentFeedbackBorder("authNameBorder");
-                item.add(authNameBorder);
-                authNameBorder.add(authName);
-
-                // Authority URL
-                TextField<String> authURL;
-                authURL = new TextField<String>("authorityURL", new PropertyModel<String>(
-                        item.getModel(), "href"));
-                authURL.setRequired(true);
-                authURL.add(new UrlValidator());
-                FormComponentFeedbackBorder urlBorder = new FormComponentFeedbackBorder("urlBorder");
-                item.add(urlBorder);
-                urlBorder.add(authURL);
-
-                // remove link
-                AjaxLink<Integer> link = new AjaxLink<Integer>("removeLink", new Model<Integer>(
-                        item.getIndex())) {
+        authorityURLs =
+                new ListView<AuthorityURLInfo>(
+                        "authorities", new ArrayList<AuthorityURLInfo>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>(
-                                authorityURLs.getModelObject());
-                        int index = getModelObject();
-                        list.remove(index);
-                        authorityURLs.setModelObject(list);
-                        updateLinksVisibility();
-                        target.add(container);
+                    protected void populateItem(final ListItem<AuthorityURLInfo> item) {
+                        // odd/even style
+                        item.add(
+                                AttributeModifier.replace(
+                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+                        // Authority name
+                        TextField<String> authName;
+                        authName =
+                                new TextField<String>(
+                                        "authName",
+                                        new PropertyModel<String>(item.getModel(), "name"));
+                        authName.setRequired(true);
+
+                        FormComponentFeedbackBorder authNameBorder =
+                                new FormComponentFeedbackBorder("authNameBorder");
+                        item.add(authNameBorder);
+                        authNameBorder.add(authName);
+
+                        // Authority URL
+                        TextField<String> authURL;
+                        authURL =
+                                new TextField<String>(
+                                        "authorityURL",
+                                        new PropertyModel<String>(item.getModel(), "href"));
+                        authURL.setRequired(true);
+                        authURL.add(new UrlValidator());
+                        FormComponentFeedbackBorder urlBorder =
+                                new FormComponentFeedbackBorder("urlBorder");
+                        item.add(urlBorder);
+                        urlBorder.add(authURL);
+
+                        // remove link
+                        AjaxLink<Integer> link =
+                                new AjaxLink<Integer>(
+                                        "removeLink", new Model<Integer>(item.getIndex())) {
+
+                                    private static final long serialVersionUID = 1L;
+
+                                    @Override
+                                    public void onClick(AjaxRequestTarget target) {
+                                        List<AuthorityURLInfo> list =
+                                                new ArrayList<AuthorityURLInfo>(
+                                                        authorityURLs.getModelObject());
+                                        int index = getModelObject();
+                                        list.remove(index);
+                                        authorityURLs.setModelObject(list);
+                                        updateLinksVisibility();
+                                        target.add(container);
+                                    }
+                                };
+                        item.add(link);
                     }
-
                 };
-                item.add(link);
-            }
-
-        };
         // this is necessary to avoid loosing item contents on edit/validation checks
         authorityURLs.setReuseItems(true);
         table.add(authorityURLs);
@@ -133,21 +138,21 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         updateLinksVisibility();
 
         // add new link button
-        AjaxButton button = new AjaxButton("addURL") {
-            private static final long serialVersionUID = 1L;
+        AjaxButton button =
+                new AjaxButton("addURL") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<AuthorityURLInfo> list = authorityURLs.getModelObject();
-                AuthorityURLInfo authorityURL = new AuthorityURL();
-                list.add(authorityURL);
-                authorityURLs.setModelObject(list);
-                AuthorityURLListEditor.this.convertInput();
-                updateLinksVisibility();
-                target.add(container);
-            }
-
-        };
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        List<AuthorityURLInfo> list = authorityURLs.getModelObject();
+                        AuthorityURLInfo authorityURL = new AuthorityURL();
+                        list.add(authorityURL);
+                        authorityURLs.setModelObject(list);
+                        AuthorityURLListEditor.this.convertInput();
+                        updateLinksVisibility();
+                        target.add(container);
+                    }
+                };
         add(button);
     }
 
@@ -169,8 +174,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         setConvertedInput(info);
     }
 
-    /**
-     */
+    /** */
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();

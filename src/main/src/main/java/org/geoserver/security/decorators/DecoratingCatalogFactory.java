@@ -29,14 +29,13 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
 /**
- * 
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
- * 
- * @author Niels Charlier
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
  *
+ * @author Niels Charlier
  */
-public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> implements CatalogFactory {
+public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory>
+        implements CatalogFactory {
 
     public DecoratingCatalogFactory(CatalogFactory delegate) {
         super(delegate);
@@ -146,5 +145,4 @@ public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> 
     public <T> T create(Class<T> clazz) {
         return delegate.create(clazz);
     }
-
 }

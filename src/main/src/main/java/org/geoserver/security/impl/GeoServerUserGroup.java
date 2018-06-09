@@ -9,9 +9,8 @@ import java.io.Serializable;
 
 /**
  * Implementation of {@link UserGroup}
- * 
- * @author christian
  *
+ * @author christian
  */
 public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Serializable {
 
@@ -21,8 +20,8 @@ public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Seria
     private boolean enabled;
 
     public GeoServerUserGroup(String name) {
-        this.groupname=name;
-        this.enabled=true;
+        this.groupname = name;
+        this.enabled = true;
     }
 
     public GeoServerUserGroup(GeoServerUserGroup other) {
@@ -53,14 +52,14 @@ public class GeoServerUserGroup implements Comparable<GeoServerUserGroup>, Seria
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return getGroupname().hashCode();
     }
-    
+
     public int compareTo(GeoServerUserGroup o) {
-        if (o==null) return 1;
+        if (o == null) return 1;
         return getGroupname().compareTo(o.getGroupname());
     }
 

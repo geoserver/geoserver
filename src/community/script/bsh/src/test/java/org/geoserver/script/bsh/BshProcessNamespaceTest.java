@@ -13,5 +13,4 @@ public class BshProcessNamespaceTest extends ScriptProcessNamespaceTest {
     public String getExtension() {
         return "bsh";
     }
-
 }

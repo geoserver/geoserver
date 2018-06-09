@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * Holds on the properties used as arguments for the TestWfsPost servlet
- * 
+ *
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
  * @since 2.0.x
@@ -17,9 +17,7 @@ import java.io.Serializable;
 public class DemoRequest implements Serializable {
     private static final long serialVersionUID = -6605104556907827822L;
 
-    /**
-     * The directory containing the demo files
-     */
+    /** The directory containing the demo files */
     private final String demoDir;
 
     private String requestFileName;

@@ -7,152 +7,106 @@ package org.geoserver.security.oauth2;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
- * The GeoServer OAuth2 Filter Configuration. This POJO contains the properties needed to correctly configure the Spring Auth Filter.
- * 
+ * The GeoServer OAuth2 Filter Configuration. This POJO contains the properties needed to correctly
+ * configure the Spring Auth Filter.
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public interface OAuth2FilterConfig {
 
-    /**
-     * @return the cliendId
-     */
+    /** @return the cliendId */
     public String getCliendId();
 
-    /**
-     * @param cliendId the cliendId to set
-     */
+    /** @param cliendId the cliendId to set */
     public void setCliendId(String cliendId);
 
-    /**
-     * @return the clientSecret
-     */
+    /** @return the clientSecret */
     public String getClientSecret();
 
-    /**
-     * @param clientSecret the clientSecret to set
-     */
+    /** @param clientSecret the clientSecret to set */
     public void setClientSecret(String clientSecret);
 
-    /**
-     * @return
-     */
+    /** @return */
     public Boolean getForceAccessTokenUriHttps();
 
-    /**
-     * @param forceAccessTokenUriHttps
-     */
+    /** @param forceAccessTokenUriHttps */
     public void setForceAccessTokenUriHttps(Boolean forceAccessTokenUriHttps);
 
-    /**
-     * @return the accessTokenUri
-     */
+    /** @return the accessTokenUri */
     public String getAccessTokenUri();
 
-    /**
-     * @param accessTokenUri the accessTokenUri to set
-     */
+    /** @param accessTokenUri the accessTokenUri to set */
     public void setAccessTokenUri(String accessTokenUri);
 
-    /**
-     * @return
-     */
+    /** @return */
     public Boolean getForceUserAuthorizationUriHttps();
 
-    /**
-     * @param forceAccessTokenUriHttps
-     */
+    /** @param forceAccessTokenUriHttps */
     public void setForceUserAuthorizationUriHttps(Boolean forceUserAuthorizationUriHttps);
 
-    /**
-     * @return the userAuthorizationUri
-     */
+    /** @return the userAuthorizationUri */
     public String getUserAuthorizationUri();
 
-    /**
-     * @param userAuthorizationUri the userAuthorizationUri to set
-     */
+    /** @param userAuthorizationUri the userAuthorizationUri to set */
     public void setUserAuthorizationUri(String userAuthorizationUri);
 
-    /**
-     * @return the redirectUri
-     */
+    /** @return the redirectUri */
     public String getRedirectUri();
 
-    /**
-     * @param redirectUri the redirectUri to set
-     */
+    /** @param redirectUri the redirectUri to set */
     public void setRedirectUri(String redirectUri);
 
-    /**
-     * @return the checkTokenEndpointUrl
-     */
+    /** @return the checkTokenEndpointUrl */
     public String getCheckTokenEndpointUrl();
 
-    /**
-     * @param checkTokenEndpointUrl the checkTokenEndpointUrl to set
-     */
+    /** @param checkTokenEndpointUrl the checkTokenEndpointUrl to set */
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl);
 
-    /**
-     * @return the logoutUri
-     */
+    /** @return the logoutUri */
     public String getLogoutUri();
 
-    /**
-     * @param logoutUri the logoutUri to set
-     */
+    /** @param logoutUri the logoutUri to set */
     public void setLogoutUri(String logoutUri);
 
-    /**
-     * @return the scopes
-     */
+    /** @return the scopes */
     public String getScopes();
 
-    /**
-     * @param scopes the scopes to set
-     */
+    /** @param scopes the scopes to set */
     public void setScopes(String scopes);
 
     /**
      * **THIS MUST** be different for every OAuth2 Plugin
-     * 
+     *
      * @return
      */
     public String getLoginEndpoint();
-    
+
     /**
      * **THIS MUST** be different for every OAuth2 Plugin
-     * 
+     *
      * @return
      */
     public String getLogoutEndpoint();
 
-    /**
-     * 
-     * @param loginEndpoint
-     */
+    /** @param loginEndpoint */
     public void setLoginEndpoint(String loginEndpoint);
-    
-    /**
-     * 
-     * @param logoutEndpoint
-     */
+
+    /** @param logoutEndpoint */
     public void setLogoutEndpoint(String logoutEndpoint);
 
-    /**
-     * @return the enableRedirectAuthenticationEntryPoint
-     */
+    /** @return the enableRedirectAuthenticationEntryPoint */
     public Boolean getEnableRedirectAuthenticationEntryPoint();
 
     /**
-     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set
+     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to
+     *     set
      */
     public void setEnableRedirectAuthenticationEntryPoint(
             Boolean enableRedirectAuthenticationEntryPoint);
 
     /**
      * Returns filter {@link AuthenticationEntryPoint} actual implementation
-     * 
+     *
      * @return {@link AuthenticationEntryPoint}
      */
     public AuthenticationEntryPoint getAuthenticationEntryPoint();

@@ -1,20 +1,19 @@
 package org.geoserver.wps.gs.download;
 
-import org.geoserver.util.EntityResolverProvider;
-import org.geoserver.wps.ppio.ComplexPPIO;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.wps.ppio.ComplexPPIO;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 public class JaxbPPIO extends ComplexPPIO {
 
@@ -22,11 +21,12 @@ public class JaxbPPIO extends ComplexPPIO {
     private JAXBContext context;
     private EntityResolverProvider resolverProvider;
 
-    public JaxbPPIO(Class targetClass, EntityResolverProvider resolverProvider) throws JAXBException, TransformerException {
+    public JaxbPPIO(Class targetClass, EntityResolverProvider resolverProvider)
+            throws JAXBException, TransformerException {
         super(targetClass, targetClass, "text/xml");
         this.targetClass = targetClass;
         this.resolverProvider = resolverProvider;
-        
+
         // this creation is expensive, do it once and cache it
         this.context = JAXBContext.newInstance((targetClass));
     }
@@ -43,8 +43,9 @@ public class JaxbPPIO extends ComplexPPIO {
     public Object decode(InputStream input) throws Exception {
         Unmarshaller unmarshaller = this.context.createUnmarshaller();
 
-        EntityResolver resolver = resolverProvider != null ? resolverProvider.getEntityResolver() : null;
-        if( resolver == null) {
+        EntityResolver resolver =
+                resolverProvider != null ? resolverProvider.getEntityResolver() : null;
+        if (resolver == null) {
             return unmarshaller.unmarshal(input);
         } else {
             // setup the entity resolver
@@ -69,7 +70,4 @@ public class JaxbPPIO extends ComplexPPIO {
         // this is the easy implementation, but requires tests to support it
         // this.context.createMarshaller().marshal(value, os);
     }
-
-    
-
 }

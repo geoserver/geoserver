@@ -13,7 +13,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 import java.util.List;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -69,13 +68,14 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         internalSubset = doctype.getInternalSubset();
 
         assertNotNull(internalSubset);
-        assertTrue(internalSubset,
+        assertTrue(
+                internalSubset,
                 internalSubset.trim().startsWith("<!ELEMENT VendorSpecificCapabilities"));
         assertTrue(internalSubset, internalSubset.contains("(TileSet*)"));
         assertTrue(
                 internalSubset,
-                internalSubset
-                        .contains("<!ELEMENT TileSet (SRS,BoundingBox?,Resolutions,Width,Height,Format,Layers*,Styles*)>"));
+                internalSubset.contains(
+                        "<!ELEMENT TileSet (SRS,BoundingBox?,Resolutions,Width,Height,Format,Layers*,Styles*)>"));
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Resolutions (#PCDATA)>"));
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Width (#PCDATA)>"));
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Height (#PCDATA)>"));
@@ -127,7 +127,8 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
     @Test
     public void testLocalWorkspaceIntegration() throws Exception {
 
-        final String tileSetPath = "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
+        final String tileSetPath =
+                "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";
         final String localName = MockData.BASIC_POLYGONS.getLocalPart();
         final String qualifiedName = super.getLayerId(MockData.BASIC_POLYGONS);
 

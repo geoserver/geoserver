@@ -5,6 +5,21 @@
 
 package org.geoserver.nsg.pagination.random;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
@@ -29,31 +44,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-
 /**
- * This output format handles requests if the original requested result type was "index"
- * See {@link IndexResultTypeDispatcherCallback}
+ * This output format handles requests if the original requested result type was "index" See {@link
+ * IndexResultTypeDispatcherCallback}
  *
  * @author sandr
  */
 public class IndexOutputFormat extends HitsOutputFormat {
 
-    private final static Logger LOGGER = Logging.getLogger(IndexOutputFormat.class);
+    private static final Logger LOGGER = Logging.getLogger(IndexOutputFormat.class);
 
     private String resultSetId;
 
@@ -89,8 +88,8 @@ public class IndexOutputFormat extends HitsOutputFormat {
         // instantiate the XML encoder
         Encoder encoder = new Encoder(new WFSConfiguration());
         encoder.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
-        encoder.setSchemaLocation(WFS.NAMESPACE,
-                ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/2.0/wfs.xsd"));
+        encoder.setSchemaLocation(
+                WFS.NAMESPACE, ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/2.0/wfs.xsd"));
         Document document;
         try {
             // encode the HITS result using FeatureCollection as the root XML element
@@ -117,8 +116,9 @@ public class IndexOutputFormat extends HitsOutputFormat {
             IndexConfigurationManager.READ_WRITE_LOCK.writeLock().lock();
             DataStore dataStore = this.indexConfiguration.getCurrentDataStore();
             // Create and store new feature
-            SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore
-                    .getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
+            SimpleFeatureStore featureStore =
+                    (SimpleFeatureStore)
+                            dataStore.getFeatureSource(IndexConfigurationManager.STORE_SCHEMA_NAME);
             SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureStore.getSchema());
             Long now = System.currentTimeMillis();
             // Add ID field value (see IndexInitializer.STORE_SCHEMA)
@@ -128,8 +128,8 @@ public class IndexOutputFormat extends HitsOutputFormat {
             // Add updated field value (see IndexInitializer.STORE_SCHEMA)
             builder.add(now);
             SimpleFeature feature = builder.buildFeature(null);
-            SimpleFeatureCollection collection = new ListFeatureCollection(featureStore.getSchema(),
-                    Arrays.asList(feature));
+            SimpleFeatureCollection collection =
+                    new ListFeatureCollection(featureStore.getSchema(), Arrays.asList(feature));
             featureStore.addFeatures(collection);
             // Create and store file
             Resource storageResource = this.indexConfiguration.getStorageResource();
@@ -144,8 +144,10 @@ public class IndexOutputFormat extends HitsOutputFormat {
                 data.setPostRequest((String) kvp.get("POST_REQUEST"));
             }
 
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
-                    new File(storageResource.dir(), resultSetId + ".feature")))) {
+            try (ObjectOutputStream oos =
+                    new ObjectOutputStream(
+                            new FileOutputStream(
+                                    new File(storageResource.dir(), resultSetId + ".feature")))) {
                 oos.writeObject(data);
             }
         } catch (Exception exception) {
@@ -181,9 +183,7 @@ public class IndexOutputFormat extends HitsOutputFormat {
         }
     }
 
-    /**
-     * Helper method that just writes a XML document to a given output stream.
-     */
+    /** Helper method that just writes a XML document to a given output stream. */
     private static void writeDocument(Document document, OutputStream output) {
         // instantiate a new XML transformer
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -199,9 +199,8 @@ public class IndexOutputFormat extends HitsOutputFormat {
         try {
             transformer.transform(source, result);
         } catch (Exception exception) {
-            throw new RuntimeException("Error writing INDEX result to the output stream.",
-                    exception);
+            throw new RuntimeException(
+                    "Error writing INDEX result to the output stream.", exception);
         }
     }
-
 }

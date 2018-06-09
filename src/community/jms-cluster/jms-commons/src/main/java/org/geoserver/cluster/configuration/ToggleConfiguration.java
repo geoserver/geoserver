@@ -7,10 +7,10 @@ package org.geoserver.cluster.configuration;
 
 /**
  * Defines the configuration parameters and defaults for the Master and the Slave toggles.
- * 
+ *
  * @author carlo cancellieri - GeoSolutions SAS
  */
-final public class ToggleConfiguration implements JMSConfigurationExt {
+public final class ToggleConfiguration implements JMSConfigurationExt {
 
     public static final String TOGGLE_MASTER_KEY = "toggleMaster";
 
@@ -33,5 +33,4 @@ final public class ToggleConfiguration implements JMSConfigurationExt {
         return config.override(TOGGLE_MASTER_KEY, DEFAULT_MASTER_STATUS)
                 || config.override(TOGGLE_SLAVE_KEY, DEFAULT_SLAVE_STATUS);
     }
-
 }

@@ -8,13 +8,11 @@ package org.geoserver.csw.feature.sort;
 import java.util.Comparator;
 import java.util.List;
 
-
 /**
  * A composite comparator that applies the provided comparators as a hierarchical list, the first
  * comparator that returns a non zero value "wins"
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class CompositeComparator<T> implements Comparator<T> {
 
@@ -33,5 +31,4 @@ class CompositeComparator<T> implements Comparator<T> {
         }
         return 0;
     }
-
 }

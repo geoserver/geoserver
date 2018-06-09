@@ -11,12 +11,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
-
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -74,5 +72,4 @@ public class IpBlacklistFilterTest {
             return serviceCalled;
         }
     }
-
 }

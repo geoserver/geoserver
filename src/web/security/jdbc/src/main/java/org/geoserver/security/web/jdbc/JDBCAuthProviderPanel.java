@@ -8,7 +8,6 @@ package org.geoserver.security.web.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.logging.Level;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -26,14 +25,15 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 
 /**
  * Configuration panel for {@link JDBCConnectAuthProvider}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
-    
+public class JDBCAuthProviderPanel
+        extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
+
     private static final long serialVersionUID = 1L;
     FeedbackPanel feedbackPanel;
-    String username,password;
+    String username, password;
 
     public JDBCAuthProviderPanel(String id, IModel<JDBCConnectAuthProviderConfig> model) {
         super(id, model);
@@ -41,54 +41,58 @@ public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConne
         add(new UserGroupServiceChoice("userGroupServiceName"));
         add(new JDBCDriverChoice("driverClassName"));
         add(new TextField<String>("connectURL"));
-        
-        TextField<String> userNameField = new TextField<String>("username");        
+
+        TextField<String> userNameField = new TextField<String>("username");
         userNameField.setModel(new PropertyModel<String>(this, "username"));
         userNameField.setRequired(false);
         add(userNameField);
-        
+
         PasswordTextField pwdField = new PasswordTextField("password");
         pwdField.setModel(new PropertyModel<String>(this, "password"));
         pwdField.setRequired(false);
-        pwdField.setResetPassword(true);        
-        add(pwdField);        
-        
-        
-        add(new AjaxSubmitLink("cxTest") {
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                try {
-                    test();
-                    info(new StringResourceModel("connectionSuccessful",JDBCAuthProviderPanel.this, null).getObject());
-                }
-                catch(Exception e) {
-                    error(e);
-                    LOGGER.log(Level.WARNING, "Connection error", e);
-                }
-                finally {
-                    target.add(feedbackPanel);
-                }
-            }
-        }.setDefaultFormProcessing(false));
+        pwdField.setResetPassword(true);
+        add(pwdField);
+
+        add(
+                new AjaxSubmitLink("cxTest") {
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        try {
+                            test();
+                            info(
+                                    new StringResourceModel(
+                                                    "connectionSuccessful",
+                                                    JDBCAuthProviderPanel.this,
+                                                    null)
+                                            .getObject());
+                        } catch (Exception e) {
+                            error(e);
+                            LOGGER.log(Level.WARNING, "Connection error", e);
+                        } finally {
+                            target.add(feedbackPanel);
+                        }
+                    }
+                }.setDefaultFormProcessing(false));
 
         add(feedbackPanel = new FeedbackPanel("feedback"));
         feedbackPanel.setOutputMarkupId(true);
     }
-    
-    public void test() throws Exception {
-        //since this wasn't a regular form submission, we need to manually update component
-        // models
-        ((FormComponent)get("driverClassName")).processInput();
-        ((FormComponent)get("connectURL")).processInput();
-        ((FormComponent)get("username")).processInput();
-        ((FormComponent)get("password")).processInput();
 
-        //do the test
+    public void test() throws Exception {
+        // since this wasn't a regular form submission, we need to manually update component
+        // models
+        ((FormComponent) get("driverClassName")).processInput();
+        ((FormComponent) get("connectURL")).processInput();
+        ((FormComponent) get("username")).processInput();
+        ((FormComponent) get("password")).processInput();
+
+        // do the test
         Class.forName(get("driverClassName").getDefaultModelObjectAsString());
-        Connection cx = DriverManager.getConnection(
-            get("connectURL").getDefaultModelObjectAsString(), 
-            get("username").getDefaultModelObjectAsString(), 
-            get("password").getDefaultModelObjectAsString());
+        Connection cx =
+                DriverManager.getConnection(
+                        get("connectURL").getDefaultModelObjectAsString(),
+                        get("username").getDefaultModelObjectAsString(),
+                        get("password").getDefaultModelObjectAsString());
         cx.close();
     }
 
@@ -99,6 +103,4 @@ public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConne
     public void setUsername(String username) {
         this.username = username;
     }
-
-
 }

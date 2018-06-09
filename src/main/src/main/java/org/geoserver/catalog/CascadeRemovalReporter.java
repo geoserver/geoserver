@@ -13,15 +13,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 
 /**
- * Visits the specified objects cascading down to contained/related objects,
- * and collects information about which objects will be removed or modified
- * once the root objects are cascade deleted with {@link CascadeDeleteVisitor} 
+ * Visits the specified objects cascading down to contained/related objects, and collects
+ * information about which objects will be removed or modified once the root objects are cascade
+ * deleted with {@link CascadeDeleteVisitor}
  */
 public class CascadeRemovalReporter implements CatalogVisitor {
 
@@ -30,22 +29,21 @@ public class CascadeRemovalReporter implements CatalogVisitor {
      * removal. They are ordered from stronger to weaker.
      */
     public enum ModificationType {
-        DELETE, STYLE_RESET, EXTRA_STYLE_REMOVED, GROUP_CHANGED;
+        DELETE,
+        STYLE_RESET,
+        EXTRA_STYLE_REMOVED,
+        GROUP_CHANGED;
     }
 
-    /**
-     * The catalog used to drill down into the containment hierarchy
-     */
+    /** The catalog used to drill down into the containment hierarchy */
     Catalog catalog;
 
-    /**
-     * The set of objects collected during the scan
-     */
+    /** The set of objects collected during the scan */
     Map<CatalogInfo, ModificationType> objects;
-    
+
     /**
-     * Used to track which layers are going to be removed from a group, if
-     * we remove them all the group will have to be removed as well
+     * Used to track which layers are going to be removed from a group, if we remove them all the
+     * group will have to be removed as well
      */
     Map<LayerGroupInfo, Set<LayerInfo>> groups;
 
@@ -53,13 +51,10 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         this.catalog = catalog;
         reset();
     }
-    
-    public void visit(Catalog catalog) {
-    }
-    
-    /**
-     * Resets the visitor so that it can be reused for another search
-     */
+
+    public void visit(Catalog catalog) {}
+
+    /** Resets the visitor so that it can be reused for another search */
     public void reset() {
         this.objects = new HashMap<CatalogInfo, ModificationType>();
         this.groups = new HashMap<LayerGroupInfo, Set<LayerInfo>>();
@@ -68,31 +63,31 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     /**
      * Returns the objects that will be affected by the removal, filtering them by type and by kind
      * of modification they will sustain as a consequence of the removal
-     * 
-     * @param <T>
-     * @param catalogClass
-     *            The type of object to be searched for, or null if no type filtering is desired
-     * @param modification
-     *            The kind of modification to be searched for, or null if no modification type
-     *            filtering is desired
      *
+     * @param <T>
+     * @param catalogClass The type of object to be searched for, or null if no type filtering is
+     *     desired
+     * @param modification The kind of modification to be searched for, or null if no modification
+     *     type filtering is desired
      */
     public <T> List<T> getObjects(Class<T> catalogClass, ModificationType... modifications) {
         List<T> result = new ArrayList<T>();
-        List<ModificationType> mods = (modifications == null || modifications.length == 0) ? 
-                                      null : Arrays.asList(modifications); 
+        List<ModificationType> mods =
+                (modifications == null || modifications.length == 0)
+                        ? null
+                        : Arrays.asList(modifications);
         for (CatalogInfo ci : objects.keySet()) {
             if (catalogClass == null || catalogClass.isAssignableFrom(ci.getClass())) {
-                if (mods == null || mods.contains(objects.get(ci)))
-                    result.add((T) ci);
+                if (mods == null || mods.contains(objects.get(ci))) result.add((T) ci);
             }
         }
         return result;
     }
-    
+
     /**
-     * Allows removal of the specified objects from the reachable set (usually, the user
-     * will not want the roots to be part of the set)
+     * Allows removal of the specified objects from the reachable set (usually, the user will not
+     * want the roots to be part of the set)
+     *
      * @param objects
      */
     public void removeAll(Collection<? extends CatalogInfo> objects) {
@@ -102,17 +97,16 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     }
 
     /**
-     * Adds a CatalogInfo into the objects map, eventually overriding the
-     * type if the modification is stronger that the one already registered
+     * Adds a CatalogInfo into the objects map, eventually overriding the type if the modification
+     * is stronger that the one already registered
      */
     void add(CatalogInfo ci, ModificationType type) {
         ModificationType oldType = objects.get(ci);
-        if(oldType == null || oldType.compareTo(type) > 0) {
+        if (oldType == null || oldType.compareTo(type) > 0) {
             objects.put(ci, type);
         }
     }
-    
-    
+
     public void visit(WorkspaceInfo workspace) {
         // drill down on stores
         List<StoreInfo> stores = catalog.getStoresByWorkspace(workspace, StoreInfo.class);
@@ -147,7 +141,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     public void visit(CoverageStoreInfo coverageStore) {
         visitStore(coverageStore);
     }
-    
+
     public void visit(WMSStoreInfo store) {
         visitStore(store);
     }
@@ -155,7 +149,6 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     @Override
     public void visit(WMTSStoreInfo store) {
         visitStore(store);
-        
     }
 
     void visitStore(StoreInfo dataStore) {
@@ -167,8 +160,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 for (LayerInfo li : layers) {
                     li.accept(this);
                 }
-            }
-            else {
+            } else {
                 ri.accept(this);
             }
         }
@@ -183,7 +175,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     public void visit(CoverageInfo coverage) {
         add(coverage, ModificationType.DELETE);
     }
-    
+
     public void visit(WMSLayerInfo wmsLayer) {
         add(wmsLayer, ModificationType.DELETE);
     }
@@ -191,33 +183,32 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     @Override
     public void visit(WMTSLayerInfo wmtsLayer) {
         add(wmtsLayer, ModificationType.DELETE);
-        
     }
 
     public void visit(LayerInfo layer) {
         // mark layer and resource as removed
         add(layer.getResource(), ModificationType.DELETE);
         add(layer, ModificationType.DELETE);
-        
+
         // scan the layer groups and find those that do use the
         // current layer
         Filter groupContainsLayer = Predicates.equal("layers", layer, MatchAction.ANY);
-        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class,
-                groupContainsLayer)) {
+        try (CloseableIterator<LayerGroupInfo> it =
+                catalog.list(LayerGroupInfo.class, groupContainsLayer)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 // mark the layer as one that will be removed
                 Set<LayerInfo> layers = groups.get(group);
-                if(layers == null) {
+                if (layers == null) {
                     layers = new HashSet<LayerInfo>();
                     groups.put(group, layers);
                 }
                 layers.add(layer);
-                
+
                 // a group can contain the same layer multiple times. We want to
                 // make sure to mark the group as removed if all the layers inside of
                 // it are going to be removed, just changed otherwise
-                if(layers.size() == new HashSet<PublishedInfo>(group.getLayers()).size()) {
+                if (layers.size() == new HashSet<PublishedInfo>(group.getLayers()).size()) {
                     visit(group);
                 } else {
                     add(group, ModificationType.GROUP_CHANGED);
@@ -235,17 +226,16 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         try (CloseableIterator<LayerInfo> it = catalog.list(LayerInfo.class, layersAssociated)) {
             while (it.hasNext()) {
                 LayerInfo li = it.next();
-                if (style.equals(li.getDefaultStyle()))
-                    add(li, ModificationType.STYLE_RESET);
-                else if(li.getStyles().contains(style))
+                if (style.equals(li.getDefaultStyle())) add(li, ModificationType.STYLE_RESET);
+                else if (li.getStyles().contains(style))
                     add(li, ModificationType.EXTRA_STYLE_REMOVED);
             }
         }
         // groups can also refer to style, reset each reference to the
         // associated layer default style
         Filter groupAssociated = Predicates.or(Predicates.equal("rootLayerStyle", style), anyStyle);
-        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class,
-                groupAssociated)) {
+        try (CloseableIterator<LayerGroupInfo> it =
+                catalog.list(LayerGroupInfo.class, groupAssociated)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 if (style.equals(group.getRootLayerStyle())) {
@@ -257,15 +247,15 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 }
             }
         }
-        
+
         // add the style
         add(style, ModificationType.DELETE);
     }
 
     public void visit(LayerGroupInfo layerGroupToRemove) {
         Filter associatedTo = Predicates.equal("layers", layerGroupToRemove, MatchAction.ANY);
-        try (CloseableIterator<LayerGroupInfo> it = catalog
-                .list(LayerGroupInfo.class, associatedTo)) {
+        try (CloseableIterator<LayerGroupInfo> it =
+                catalog.list(LayerGroupInfo.class, associatedTo)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 if (group.getLayers().contains(layerGroupToRemove)) {
@@ -279,7 +269,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 }
             }
         }
-        
+
         add(layerGroupToRemove, ModificationType.DELETE);
     }
 }

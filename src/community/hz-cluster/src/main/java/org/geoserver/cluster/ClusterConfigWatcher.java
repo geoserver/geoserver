@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
@@ -21,20 +20,21 @@ public class ClusterConfigWatcher {
 
     ClusterConfig config;
     PropertyFileWatcher watcher;
-    
+
     protected ClusterConfig getNewClusterConfig() {
         return new ClusterConfig();
     }
 
     public ClusterConfigWatcher(Resource file) {
-        watcher = new PropertyFileWatcher(file) {
-            @Override
-            protected Properties parseFileContents(InputStream in) throws IOException {
-                ClusterConfig config = getNewClusterConfig();
-                config.putAll(super.parseFileContents(in));
-                return config;
-            }
-        };
+        watcher =
+                new PropertyFileWatcher(file) {
+                    @Override
+                    protected Properties parseFileContents(InputStream in) throws IOException {
+                        ClusterConfig config = getNewClusterConfig();
+                        config.putAll(super.parseFileContents(in));
+                        return config;
+                    }
+                };
     }
 
     public ClusterConfig get() {

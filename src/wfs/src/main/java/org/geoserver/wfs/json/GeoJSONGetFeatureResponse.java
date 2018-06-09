@@ -6,6 +6,17 @@
 package org.geoserver.wfs.json;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
@@ -30,24 +41,12 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
- * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.
- * 
+ * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a
+ * GetFeatureInfo request.
+ *
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
- * 
  */
 public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
@@ -63,33 +62,28 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             jsonp = true;
         } else {
             throw new IllegalArgumentException(
-                    "Unable to create the JSON Response handler using format: " + format
+                    "Unable to create the JSON Response handler using format: "
+                            + format
                             + " supported mymetype are: "
                             + Arrays.toString(JSONType.getSupportedTypes()));
         }
     }
 
-    /**
-     * capabilities output format string.
-     */
+    /** capabilities output format string. */
     public String getCapabilitiesElementName() {
         return JSONType.getJSONType(getOutputFormat()).toString();
     }
 
-    /**
-     * Returns the mime type
-     */
+    /** Returns the mime type */
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        if(jsonp) {
+        if (jsonp) {
             return JSONType.JSONP.getMimeType();
         } else {
             return JSONType.JSON.getMimeType();
         }
     }
 
-    /**
-     * Helper method that checks if the results feature collections contain complex features.
-     */
+    /** Helper method that checks if the results feature collections contain complex features. */
     private static boolean isComplexFeature(FeatureCollectionResponse results) {
         for (FeatureCollection featureCollection : results.getFeatures()) {
             if (!(featureCollection.getSchema() instanceof SimpleFeatureType)) {
@@ -102,23 +96,26 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
-            Operation describeFeatureType) throws IOException {
+    protected void write(
+            FeatureCollectionResponse featureCollection,
+            OutputStream output,
+            Operation describeFeatureType)
+            throws IOException {
 
         int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
 
-        if (LOGGER.isLoggable(Level.INFO))
-            LOGGER.info("about to encode JSON");
+        if (LOGGER.isLoggable(Level.INFO)) LOGGER.info("about to encode JSON");
         // Generate bounds for every feature?
         WFSInfo wfs = getInfo();
         boolean featureBounding = wfs.isFeatureBounding();
-        
+
         // include fid?
         String id_option = null; // null - default, "" - none, or "property"
-        //GetFeatureRequest request = GetFeatureRequest.adapt(describeFeatureType.getParameters()[0]);
+        // GetFeatureRequest request =
+        // GetFeatureRequest.adapt(describeFeatureType.getParameters()[0]);
         Request request = Dispatcher.REQUEST.get();
         if (request != null) {
-            id_option = JSONType.getIdPolicy( request.getKvp() );
+            id_option = JSONType.getIdPolicy(request.getKvp());
         }
         // prepare to write out
         OutputStreamWriter osw = null;
@@ -126,8 +123,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
         // get feature count for request
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
-        BigInteger featureCount = (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
-                ? null : totalNumberOfFeatures;
+        BigInteger featureCount =
+                (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
+                        ? null
+                        : totalNumberOfFeatures;
 
         try {
             osw = new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
@@ -140,14 +139,15 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             // currently complex features count always return zero
             boolean isComplex = isComplexFeature(featureCollection);
             if (featureCount != null && isComplex && featureCount.equals(BigInteger.ZERO)) {
-                // a zero count when dealing with complex features means that features count is not supported
+                // a zero count when dealing with complex features means that features count is not
+                // supported
                 featureCount = null;
             }
-            
+
             final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
             jsonWriter.setNumberOfDecimals(numDecimals);
             jsonWriter.object().key("type").value("FeatureCollection");
-            if(featureCount != null) {
+            if (featureCount != null) {
                 jsonWriter.key("totalFeatures").value(featureCount);
             } else {
                 jsonWriter.key("totalFeatures").value("unknown");
@@ -164,7 +164,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             boolean hasGeom = false;
             CoordinateReferenceSystem crs;
             if (!isComplex) {
-                FeaturesInfo featuresInfo = encodeSimpleFeatures(jsonWriter, resultsList, id_option, featureBounding);
+                FeaturesInfo featuresInfo =
+                        encodeSimpleFeatures(jsonWriter, resultsList, id_option, featureBounding);
                 hasGeom = featuresInfo.hasGeometry;
                 crs = featuresInfo.crs;
             } else {
@@ -178,7 +179,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
             // Coordinate Reference System
             try {
-                if ("true".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))){
+                if ("true"
+                        .equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))) {
                     // This is wrong, but GeoServer used to do it this way.
                     writeCrsLegacy(jsonWriter, crs);
                 } else {
@@ -187,7 +189,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             } catch (FactoryException e) {
                 throw (IOException) new IOException("Error looking up crs identifier").initCause(e);
             }
-            
+
             // Bounding box for featurecollection
             if (hasGeom && featureBounding) {
                 ReferencedEnvelope e = null;
@@ -198,7 +200,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                     } else {
                         e.expandToInclude(collection.getBounds());
                     }
-
                 }
 
                 if (e != null) {
@@ -216,16 +217,14 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             outWriter.flush();
 
         } catch (JSONException jsonException) {
-            ServiceException serviceException = new ServiceException("Error: "
-                    + jsonException.getMessage());
+            ServiceException serviceException =
+                    new ServiceException("Error: " + jsonException.getMessage());
             serviceException.initCause(jsonException);
             throw serviceException;
         }
     }
 
-    /**
-     * Container class for information related with a group of features.
-     */
+    /** Container class for information related with a group of features. */
     private class FeaturesInfo {
 
         final CoordinateReferenceSystem crs;
@@ -237,8 +236,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
     }
 
-    private FeaturesInfo encodeSimpleFeatures(GeoJSONBuilder jsonWriter, List<FeatureCollection> resultsList,
-                                              String id_option, boolean featureBounding) {
+    private FeaturesInfo encodeSimpleFeatures(
+            GeoJSONBuilder jsonWriter,
+            List<FeatureCollection> resultsList,
+            String id_option,
+            boolean featureBounding) {
         CoordinateReferenceSystem crs = null;
         boolean hasGeom = false;
         for (FeatureCollection collection : resultsList) {
@@ -322,9 +324,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         }
                     }
                     // Bounding box for feature in properties
-                    ReferencedEnvelope refenv = ReferencedEnvelope.reference(simpleFeature.getBounds());
-                    if (featureBounding && !refenv.isEmpty())
-                        jsonWriter.writeBoundingBox(refenv);
+                    ReferencedEnvelope refenv =
+                            ReferencedEnvelope.reference(simpleFeature.getBounds());
+                    if (featureBounding && !refenv.isEmpty()) jsonWriter.writeBoundingBox(refenv);
                     jsonWriter.endObject(); // end the properties
                     jsonWriter.endObject(); // end the feature
                 }
@@ -333,19 +335,19 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return new FeaturesInfo(crs, hasGeom);
     }
 
-    private void writeCrs(final GeoJSONBuilder jsonWriter,
-            CoordinateReferenceSystem crs) throws FactoryException {
+    private void writeCrs(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
+            throws FactoryException {
         if (crs != null) {
             String identifier = null;
             Integer code = CRS.lookupEpsgCode(crs, true);
-            if(code != null) {
+            if (code != null) {
                 if (code != null) {
                     identifier = SrsSyntax.OGC_URN.getPrefix() + code;
                 }
             } else {
                 identifier = CRS.lookupIdentifier(crs, true);
             }
-            
+
             jsonWriter.key("crs");
             jsonWriter.object();
             jsonWriter.key("type").value("name");
@@ -360,10 +362,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             jsonWriter.value(null);
         }
     }
-    
+
     // Doesn't follow spec, but GeoServer used to do this.
-    private void writeCrsLegacy(final GeoJSONBuilder jsonWriter,
-            CoordinateReferenceSystem crs) {
+    private void writeCrsLegacy(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) {
         // Coordinate Reference System, currently only if the namespace is
         // EPSG
         if (crs != null) {
@@ -396,9 +397,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return JSONType.getCallbackFunction(request.getKvp());
     }
 
-    
     @Override
-    public String getCharset(Operation operation){
+    public String getCharset(Operation operation) {
         return gs.getGlobal().getSettings().getCharset();
     }
 }

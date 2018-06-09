@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -20,9 +19,7 @@ import org.geoserver.security.validation.PasswordPolicyException;
 import org.geoserver.security.validation.RoleStoreValidationWrapper;
 import org.geoserver.security.validation.UserGroupStoreValidationWrapper;
 
-/**
- * Allows editing an existing user
- */
+/** Allows editing an existing user */
 public class EditUserPage extends AbstractUserPage {
 
     public EditUserPage(String userGroupServiceName, GeoServerUser user) {
@@ -31,15 +28,14 @@ public class EditUserPage extends AbstractUserPage {
     }
 
     @Override
-    protected void onFormSubmit(GeoServerUser user) 
-        throws IOException,PasswordPolicyException {
-        
+    protected void onFormSubmit(GeoServerUser user) throws IOException, PasswordPolicyException {
+
         GeoServerUserGroupService ugService = getUserGroupService(ugServiceName);
         GeoServerUserGroupStore ugStore = null;
         try {
             if (ugService.canCreateStore()) {
                 ugStore = new UserGroupStoreValidationWrapper(ugService.createStore());
-    
+
                 Set<GeoServerUserGroup> orig = ugStore.getGroupsForUser(user);
                 Set<GeoServerUserGroup> add = new HashSet<GeoServerUserGroup>();
                 Set<GeoServerUserGroup> remove = new HashSet<GeoServerUserGroup>();
@@ -48,25 +44,33 @@ public class EditUserPage extends AbstractUserPage {
                 ugStore.updateUser(user);
 
                 for (GeoServerUserGroup g : add) ugStore.associateUserToGroup(user, g);
-                for (GeoServerUserGroup g : remove) ugStore.disAssociateUserFromGroup(user,g);
+                for (GeoServerUserGroup g : remove) ugStore.disAssociateUserFromGroup(user, g);
 
                 ugStore.store();
             }
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, ex.getLocalizedMessage(), ex);
-            try { ugStore.load(); } catch (IOException ex2) {};
+            try {
+                ugStore.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         } catch (PasswordPolicyException ex) {
-            try { ugStore.load(); } catch (IOException ex2) {};
+            try {
+                ugStore.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         }
 
-        GeoServerRoleStore roleStore=null;
+        GeoServerRoleStore roleStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
                 roleStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
                 roleStore = new RoleStoreValidationWrapper(roleStore);
-                
+
                 Set<GeoServerRole> orig = roleStore.getRolesForUser(user.getUsername());
                 Set<GeoServerRole> add = new HashSet<GeoServerRole>();
                 Set<GeoServerRole> remove = new HashSet<GeoServerRole>();
@@ -81,9 +85,12 @@ public class EditUserPage extends AbstractUserPage {
                 roleStore.store();
             }
         } catch (IOException ex) {
-            try { roleStore.load(); } catch (IOException ex2) {};
+            try {
+                roleStore.load();
+            } catch (IOException ex2) {
+            }
+            ;
             throw ex;
         }
     }
-
 }

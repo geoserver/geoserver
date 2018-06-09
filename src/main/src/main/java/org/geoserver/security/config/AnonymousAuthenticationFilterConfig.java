@@ -12,8 +12,8 @@ import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
  *
  * @author mcr
  */
-public class AnonymousAuthenticationFilterConfig extends SecurityFilterConfig 
-    implements SecurityAuthFilterConfig {
+public class AnonymousAuthenticationFilterConfig extends SecurityFilterConfig
+        implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
 }

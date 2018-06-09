@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.resource.Files;
@@ -18,23 +17,21 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.template.GeoServerTemplateLoader;
 
 /**
- * On a {@link CatalogFireWriter} firePostWrite event call, dumps additional
- * resources related to the {@link ResourceInfo}, like for instance the "ftl"
- * Freemarker Templates definitions. 
- * 
- * @author Alessio Fabiani, GeoSolutions
+ * On a {@link CatalogFireWriter} firePostWrite event call, dumps additional resources related to
+ * the {@link ResourceInfo}, like for instance the "ftl" Freemarker Templates definitions.
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class ResourceInfoAdditionalResourceWriter
         implements CatalogAdditionalResourcesWriter<ResourceInfo> {
 
     /*
-     * 
+     *
      */
     static List<String> templates = new ArrayList<String>();
 
     /*
-     * 
+     *
      */
     static {
         templates.add("header.ftl");
@@ -49,8 +46,9 @@ public class ResourceInfoAdditionalResourceWriter
         templates.add("time.ftl");
 
         templates.add("shapezip.ftl");
-        
-        templates.add("schema.xsd"); // http://docs.geoserver.org/latest/en/user/services/wfs/schemamapping.html
+
+        templates.add(
+                "schema.xsd"); // http://docs.geoserver.org/latest/en/user/services/wfs/schemamapping.html
     }
 
     @Override
@@ -64,8 +62,8 @@ public class ResourceInfoAdditionalResourceWriter
 
         final Resource rootDataDir = backupFacade.getGeoServerDataDirectory().getRoot(Paths.BASE);
 
-        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(item.getClass(),
-                backupFacade.getResourceLoader());
+        GeoServerTemplateLoader templateLoader =
+                new GeoServerTemplateLoader(item.getClass(), backupFacade.getResourceLoader());
         templateLoader.setResource(item);
 
         if (templateLoader != null) {
@@ -76,8 +74,12 @@ public class ResourceInfoAdditionalResourceWriter
                     Resource templateResource = Files.asResource((File) ftl);
 
                     if (Resources.exists(templateResource)) {
-                        final String relative = rootDataDir.dir().toURI()
-                                .relativize(templateResource.file().toURI()).getPath();
+                        final String relative =
+                                rootDataDir
+                                        .dir()
+                                        .toURI()
+                                        .relativize(templateResource.file().toURI())
+                                        .getPath();
 
                         Resource targetFtl = Resources.fromPath(relative, base.parent());
 
@@ -91,5 +93,4 @@ public class ResourceInfoAdditionalResourceWriter
             }
         }
     }
-
 }

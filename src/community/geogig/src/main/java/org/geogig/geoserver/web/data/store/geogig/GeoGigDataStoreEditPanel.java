@@ -8,6 +8,9 @@ import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.AUTO_
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.BRANCH;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -42,10 +44,6 @@ import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-
 public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
     private static final long serialVersionUID = 330172801498702374L;
@@ -66,17 +64,17 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
     /**
      * @param componentId the wicket component id
      * @param storeEditForm the data store edit form, as provided by {@link DataAccessEditPage} and
-     *        {@link DataAccessNewPage}
+     *     {@link DataAccessNewPage}
      */
     @SuppressWarnings("unchecked")
-    public GeoGigDataStoreEditPanel(final String componentId,
-            final Form<DataStoreInfo> storeEditForm) {
+    public GeoGigDataStoreEditPanel(
+            final String componentId, final Form<DataStoreInfo> storeEditForm) {
         super(componentId, storeEditForm);
         final IModel<DataStoreInfo> model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        final IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model,
-                "connectionParameters");
+        final IModel<Map<String, Serializable>> paramsModel =
+                new PropertyModel<>(model, "connectionParameters");
 
         this.repositoryUriModel = new MapModel(paramsModel, REPOSITORY.key);
         this.branchNameModel = new MapModel(paramsModel, BRANCH.key);
@@ -95,8 +93,11 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
     }
 
     private CheckBoxParamPanel createAutoIndexingPanel() {
-        CheckBoxParamPanel checkBoxParamPanel = new CheckBoxParamPanel("autoIndexing", autoIndexingModel,
-                new ResourceModel("autoIndexing", "Auto-Indexing"));
+        CheckBoxParamPanel checkBoxParamPanel =
+                new CheckBoxParamPanel(
+                        "autoIndexing",
+                        autoIndexingModel,
+                        new ResourceModel("autoIndexing", "Auto-Indexing"));
         checkBoxParamPanel.setOutputMarkupId(true);
         return checkBoxParamPanel;
     }
@@ -106,28 +107,31 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         IModel<List<String>> choices = new RepositoryListDettachableModel();
 
         RepoInfoChoiceRenderer choiceRenderer = new RepoInfoChoiceRenderer();
-        DropDownChoice<String> choice = new DropDownChoice<>("geogig_repository", repositoryUriModel,
-                choices, choiceRenderer);
+        DropDownChoice<String> choice =
+                new DropDownChoice<>(
+                        "geogig_repository", repositoryUriModel, choices, choiceRenderer);
         choice.setLabel(new ResourceModel("repository"));
         choice.setNullValid(true);
         choice.setRequired(true);
         choice.setOutputMarkupId(true);
 
-        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 6182000388125500580L;
+        choice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    private static final long serialVersionUID = 6182000388125500580L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                String branchName = null;
-                // do not lose the original branch if the user is moving around the repo choices
-                if (Objects.equal(originalRepo, repositoryUriModel.getObject())) {
-                    branchName = originalBranch;
-                }
-                branchNameModel.setObject(branchName);
-                branch.updateChoices(true, GeoGigDataStoreEditPanel.this.storeEditForm);
-                target.add(branch);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        String branchName = null;
+                        // do not lose the original branch if the user is moving around the repo
+                        // choices
+                        if (Objects.equal(originalRepo, repositoryUriModel.getObject())) {
+                            branchName = originalBranch;
+                        }
+                        branchNameModel.setObject(branchName);
+                        branch.updateChoices(true, GeoGigDataStoreEditPanel.this.storeEditForm);
+                        target.add(branch);
+                    }
+                });
         return choice;
     }
 
@@ -135,97 +139,104 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
         final String panelId = "branch";
         BranchSelectionPanel selectionPanel;
-        selectionPanel = new BranchSelectionPanel(panelId, repositoryUriModel, branchNameModel,
-                form);
+        selectionPanel =
+                new BranchSelectionPanel(panelId, repositoryUriModel, branchNameModel, form);
         selectionPanel.setOutputMarkupId(true);
         return selectionPanel;
     }
 
     private Component addNewLink(final Form<DataStoreInfo> storeEditForm) {
-        AjaxSubmitLink link = new AjaxSubmitLink("addNew", storeEditForm) {
+        AjaxSubmitLink link =
+                new AjaxSubmitLink("addNew", storeEditForm) {
 
-            private static final long serialVersionUID = 1242472443848716943L;
+                    private static final long serialVersionUID = 1242472443848716943L;
 
-            @Override
-            public boolean getDefaultFormProcessing() {
-                return false;
-            }
-
-            @Override
-            public void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
-
-                final RepositoryEditFormPanel panel;
-                panel = new RepositoryEditFormPanel(modalWindow.getContentId()) {
-                    private static final long serialVersionUID = -2629733074852452891L;
-
-                    @SuppressWarnings("unchecked")
                     @Override
-                    protected void saved(final RepositoryInfo info,
-                            final AjaxRequestTarget target) {
-                        modalWindow.close(target);
-                        updateRepository((Form<DataStoreInfo>) form, target, info);
+                    public boolean getDefaultFormProcessing() {
+                        return false;
                     }
 
                     @Override
-                    protected void cancelled(AjaxRequestTarget target) {
-                        modalWindow.close(target);
+                    public void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
+
+                        final RepositoryEditFormPanel panel;
+                        panel =
+                                new RepositoryEditFormPanel(modalWindow.getContentId()) {
+                                    private static final long serialVersionUID =
+                                            -2629733074852452891L;
+
+                                    @SuppressWarnings("unchecked")
+                                    @Override
+                                    protected void saved(
+                                            final RepositoryInfo info,
+                                            final AjaxRequestTarget target) {
+                                        modalWindow.close(target);
+                                        updateRepository((Form<DataStoreInfo>) form, target, info);
+                                    }
+
+                                    @Override
+                                    protected void cancelled(AjaxRequestTarget target) {
+                                        modalWindow.close(target);
+                                    }
+                                };
+
+                        modalWindow.setContent(panel);
+                        modalWindow.setTitle(
+                                new ResourceModel(
+                                        "GeoGigDirectoryFormComponent.chooser.browseTitle"));
+                        modalWindow.show(target);
                     }
                 };
-
-                modalWindow.setContent(panel);
-                modalWindow.setTitle(
-                        new ResourceModel("GeoGigDirectoryFormComponent.chooser.browseTitle"));
-                modalWindow.show(target);
-            }
-
-        };
         return link;
     }
 
     private Component importExistingLink(Form<DataStoreInfo> storeEditForm) {
 
-        AjaxSubmitLink link = new AjaxSubmitLink("importExisting", storeEditForm) {
+        AjaxSubmitLink link =
+                new AjaxSubmitLink("importExisting", storeEditForm) {
 
-            private static final long serialVersionUID = 1242472443848716943L;
+                    private static final long serialVersionUID = 1242472443848716943L;
 
-            @Override
-            public boolean getDefaultFormProcessing() {
-                return false;
-            }
-
-            @Override
-            public void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
-                final RepositoryImportFormPanel panel;
-                panel = new RepositoryImportFormPanel(modalWindow.getContentId()) {
-                    private static final long serialVersionUID = 1L;
-
-                    @SuppressWarnings("unchecked")
                     @Override
-                    protected void saved(final RepositoryInfo info,
-                            final AjaxRequestTarget target) {
-                        modalWindow.close(target);
-                        updateRepository((Form<DataStoreInfo>) form, target, info);
+                    public boolean getDefaultFormProcessing() {
+                        return false;
                     }
 
                     @Override
-                    protected void cancelled(AjaxRequestTarget target) {
-                        modalWindow.close(target);
+                    public void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
+                        final RepositoryImportFormPanel panel;
+                        panel =
+                                new RepositoryImportFormPanel(modalWindow.getContentId()) {
+                                    private static final long serialVersionUID = 1L;
+
+                                    @SuppressWarnings("unchecked")
+                                    @Override
+                                    protected void saved(
+                                            final RepositoryInfo info,
+                                            final AjaxRequestTarget target) {
+                                        modalWindow.close(target);
+                                        updateRepository((Form<DataStoreInfo>) form, target, info);
+                                    }
+
+                                    @Override
+                                    protected void cancelled(AjaxRequestTarget target) {
+                                        modalWindow.close(target);
+                                    }
+                                };
+
+                        modalWindow.setContent(panel);
+                        modalWindow.setTitle(
+                                new ResourceModel(
+                                        "GeoGigDirectoryFormComponent.chooser.browseTitle"));
+                        modalWindow.show(target);
                     }
                 };
-
-                modalWindow.setContent(panel);
-                modalWindow.setTitle(
-                        new ResourceModel("GeoGigDirectoryFormComponent.chooser.browseTitle"));
-                modalWindow.show(target);
-            }
-
-        };
         return link;
     }
 
     @SuppressWarnings("unchecked")
-    private void updateRepository(final Form<DataStoreInfo> form, AjaxRequestTarget target,
-            RepositoryInfo info) {
+    private void updateRepository(
+            final Form<DataStoreInfo> form, AjaxRequestTarget target, RepositoryInfo info) {
         repository.setModelObject(GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
         branchNameModel.setObject(null);
         branch.updateChoices(true, form);
@@ -268,8 +279,9 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
             try {
                 URI repoUri = new URI(repoUriStr);
                 RepositoryResolver resolver = RepositoryResolver.lookup(repoUri);
-                RepositoryInfo info = RepositoryManager.get().getByRepoName(resolver.getName(repoUri));
-                return info.getRepoName() + " (" + info.getMaskedLocation()+ ")";
+                RepositoryInfo info =
+                        RepositoryManager.get().getByRepoName(resolver.getName(repoUri));
+                return info.getRepoName() + " (" + info.getMaskedLocation() + ")";
             } catch (URISyntaxException e) {
                 throw Throwables.propagate(e);
             }
@@ -280,5 +292,4 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
             return id;
         }
     }
-
 }

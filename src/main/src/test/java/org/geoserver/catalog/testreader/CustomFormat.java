@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -24,27 +23,31 @@ import org.opengis.coverage.grid.GridCoverageWriter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.ParameterDescriptor;
 
-
 /**
  * Coverage format for custom dimensions tests.
- * 
+ *
  * @author Mike Benowitz
  */
 public final class CustomFormat extends AbstractGridFormat {
-    
+
     public static final String CUSTOM_DIMENSION_NAME = "MY_DIMENSION";
     private static final String TYPE_NAME = "org.geoserver.catalog.testreader.CustomFormat";
-    
+
     @SuppressWarnings("rawtypes")
     private static final ParameterDescriptor<List> CUSTOM_DIMENSION =
-        DefaultParameterDescriptor.create(CUSTOM_DIMENSION_NAME,
-                "Optional list of nonstandard dimension values", List.class, null, false);
+            DefaultParameterDescriptor.create(
+                    CUSTOM_DIMENSION_NAME,
+                    "Optional list of nonstandard dimension values",
+                    List.class,
+                    null,
+                    false);
 
-    
     public CustomFormat() {
         this.mInfo = new HashMap<String, String>();
         this.mInfo.put("name", TYPE_NAME);
-        this.mInfo.put("description", "Test custom coverage format - only visible with test jars in the classpath");
+        this.mInfo.put(
+                "description",
+                "Test custom coverage format - only visible with test jars in the classpath");
         this.mInfo.put("docURL", "");
         this.mInfo.put("version", "1.0");
 
@@ -52,21 +55,26 @@ public final class CustomFormat extends AbstractGridFormat {
         this.writeParameters = null;
 
         // reading parameters
-        this.readParameters = new ParameterGroup(
-                new DefaultParameterDescriptorGroup(this.mInfo,
-                        new GeneralParameterDescriptor[] { READ_GRIDGEOMETRY2D,
-                                INPUT_TRANSPARENT_COLOR, CUSTOM_DIMENSION }));
+        this.readParameters =
+                new ParameterGroup(
+                        new DefaultParameterDescriptorGroup(
+                                this.mInfo,
+                                new GeneralParameterDescriptor[] {
+                                    READ_GRIDGEOMETRY2D, INPUT_TRANSPARENT_COLOR, CUSTOM_DIMENSION
+                                }));
     }
 
-    @Override public boolean accepts(Object source) {
+    @Override
+    public boolean accepts(Object source) {
         return accepts(source, null);
     }
 
-    @Override public boolean accepts(Object source, Hints hints) {
+    @Override
+    public boolean accepts(Object source, Hints hints) {
         if (!(source instanceof File)) {
             return false;
         }
-        File dir = (File)source;
+        File dir = (File) source;
         if (dir.isDirectory()) {
             // Look for datastore.properties file with 'type' property
             // specifying this format
@@ -88,16 +96,18 @@ public final class CustomFormat extends AbstractGridFormat {
         return false;
     }
 
-    @Override public GeoToolsWriteParams getDefaultImageIOWriteParameters() {
+    @Override
+    public GeoToolsWriteParams getDefaultImageIOWriteParameters() {
         throw new UnsupportedOperationException();
     }
 
-    @Override public AbstractGridCoverage2DReader getReader(Object source) {
+    @Override
+    public AbstractGridCoverage2DReader getReader(Object source) {
         return getReader(source, null);
     }
 
-    @Override public AbstractGridCoverage2DReader getReader(Object source,
-            Hints hints) {
+    @Override
+    public AbstractGridCoverage2DReader getReader(Object source, Hints hints) {
         try {
             return new CustomFormatReader(source, hints);
         } catch (IOException e) {
@@ -106,12 +116,13 @@ public final class CustomFormat extends AbstractGridFormat {
         }
     }
 
-    @Override public GridCoverageWriter getWriter(Object source) {
+    @Override
+    public GridCoverageWriter getWriter(Object source) {
         return getWriter(source, null);
     }
 
-    @Override public GridCoverageWriter getWriter(Object source, Hints hints) {
-        throw new UnsupportedOperationException(
-                "This plugin does not support writing");
+    @Override
+    public GridCoverageWriter getWriter(Object source, Hints hints) {
+        throw new UnsupportedOperationException("This plugin does not support writing");
     }
 }

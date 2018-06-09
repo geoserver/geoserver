@@ -12,11 +12,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
-
 import javax.xml.transform.TransformerException;
-
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
@@ -35,17 +32,19 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * Response object for the store=true path, that is, one that stores the coverage
- * on disk and returns its path thru the Coverages document
+ * Response object for the store=true path, that is, one that stores the coverage on disk and
+ * returns its path thru the Coverages document
+ *
  * @author Andrea Aime - TOPP
  */
 public class WCSGetCoverageStoreResponse extends Response {
-    
+
     GeoServer geoServer;
     Catalog catalog;
     CoverageResponseDelegateFinder responseFactory;
-    
-    public WCSGetCoverageStoreResponse(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
+
+    public WCSGetCoverageStoreResponse(
+            GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.geoServer = gs;
         this.catalog = gs.getCatalog();
@@ -56,20 +55,19 @@ public class WCSGetCoverageStoreResponse extends Response {
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "application/xml";
     }
-    
+
     @Override
     public boolean canHandle(Operation operation) {
         // this one can handle GetCoverage responses where store = false
-        if(!(operation.getParameters()[0] instanceof GetCoverageType))
-            return false;
-        
+        if (!(operation.getParameters()[0] instanceof GetCoverageType)) return false;
+
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         return getCoverage.getOutput().isStore();
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         GridCoverage[] coverages = (GridCoverage[]) value;
 
         // grab the delegate for coverage encoding
@@ -82,37 +80,47 @@ public class WCSGetCoverageStoreResponse extends Response {
         // grab the coverage info for Coverages document encoding
         final GridCoverage2D coverage = (GridCoverage2D) coverages[0];
         CoverageInfo coverageInfo = catalog.getCoverageByName(request.getIdentifier().getValue());
-        
+
         // write the coverage to temporary storage in the data dir
         Resource wcsStore = null;
         try {
             GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
             wcsStore = loader.get("temp/wcs");
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new WcsException("Could not create the temporary storage directory for WCS");
         }
-        
-        // Make sure we create a file name that's not already there (even if splitting the same nanosecond
+
+        // Make sure we create a file name that's not already there (even if splitting the same
+        // nanosecond
         // with two requests should not ever happen...)
         Resource coverageFile = null;
-        while(true) {
+        while (true) {
             // TODO: find a way to get good extensions
-            coverageFile = wcsStore.get(coverageInfo.getName().replace(':', '_') + "_" + System.nanoTime() + "." + delegate.getFileExtension(outputFormat));
-            if(!Resources.exists(coverageFile))
-                break;
+            coverageFile =
+                    wcsStore.get(
+                            coverageInfo.getName().replace(':', '_')
+                                    + "_"
+                                    + System.nanoTime()
+                                    + "."
+                                    + delegate.getFileExtension(outputFormat));
+            if (!Resources.exists(coverageFile)) break;
         }
-       
+
         // store the coverage
         try (OutputStream os = new BufferedOutputStream(coverageFile.out())) {
-            delegate.encode(coverage, outputFormat,Collections.EMPTY_MAP, os);
+            delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, os);
             os.flush();
-        } 
+        }
         System.out.println(coverageFile);
-        
+
         // build the path where the clients will be able to retrieve the coverage files
-        final String coverageLocation = buildURL(request.getBaseUrl(), 
-                appendPath("temp/wcs", coverageFile.name()), null, URLType.RESOURCE);
-        
+        final String coverageLocation =
+                buildURL(
+                        request.getBaseUrl(),
+                        appendPath("temp/wcs", coverageFile.name()),
+                        null,
+                        URLType.RESOURCE);
+
         // build the response
         WCSInfo wcs = geoServer.getService(WCSInfo.class);
         CoveragesTransformer tx = new CoveragesTransformer(wcs, request, coverageLocation);
@@ -122,5 +130,4 @@ public class WCSGetCoverageStoreResponse extends Response {
             throw new WcsException("Failure trying to encode Coverages response", e);
         }
     }
-
 }

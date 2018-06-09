@@ -7,40 +7,30 @@ package org.geoserver.ows;
 
 import java.io.Reader;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.geotools.util.Version;
 
-
 /**
  * Creates a request bean from xml.
- * <p>
- * A request bean is an object which captures the parameters of an operation being requested to a service.
- * </p>
- * <p>
- * An xml request reader must declare the root element of xml documents that it is capable of reading. This is accomplished with {@link #getElement()}
- * and {@link QName#getNamespaceURI()}.
- * </p>
+ *
+ * <p>A request bean is an object which captures the parameters of an operation being requested to a
+ * service.
+ *
+ * <p>An xml request reader must declare the root element of xml documents that it is capable of
+ * reading. This is accomplished with {@link #getElement()} and {@link QName#getNamespaceURI()}.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public abstract class XmlRequestReader {
-    /**
-     * the qualified name of the element this reader can read.
-     */
+    /** the qualified name of the element this reader can read. */
     final QName element;
 
-    /**
-     * Appliction specific version number.
-     */
+    /** Appliction specific version number. */
     final Version version;
 
-    /**
-     * Service identifier
-     */
+    /** Service identifier */
     final String serviceId;
 
     /**
@@ -63,12 +53,11 @@ public abstract class XmlRequestReader {
     }
 
     /**
-     *
      * Creates the xml reader for the specified element of a particular version.
      *
      * @param element The qualified name of the element the reader reads.
-     * @param version The version of the element in which the reader supports,
-     * may be <code>null</code>.
+     * @param version The version of the element in which the reader supports, may be <code>null
+     *     </code>.
      */
     public XmlRequestReader(QName element, Version version, String serviceId) {
         this.element = element;
@@ -80,43 +69,33 @@ public abstract class XmlRequestReader {
         }
     }
 
-      /**
-     * @return The qualified name of the element that this reader reads.
-     */
+    /** @return The qualified name of the element that this reader reads. */
     public QName getElement() {
         return element;
     }
 
-    /**
-     * @return The version of hte element that this reader reads.
-     */
+    /** @return The version of hte element that this reader reads. */
     public Version getVersion() {
         return version;
     }
 
-
     /**
      * Reads the xml and initializes the request object.
-     * <p>
-     * The <tt>request</tt> parameter may be <code>null</code>, so in this case
-     * the request reader would be responsible for creating the request object, 
-     * or throwing an exception if this is not supported. 
-     * </p>
-     * <p>
-     * In the case of the <tt>request</tt> being non <code>null</code>, the 
-     * request reader may chose to modify and return <tt>request</tt>, or create
-     * a new request object and return it.
-     * </p>
-     * <p>
-     * The <tt>kvp</tt> is used to support mixed style reading of the request 
-     * object from xml and from a set of key value pairs. This map is often empty. 
-     * </p>
+     *
+     * <p>The <tt>request</tt> parameter may be <code>null</code>, so in this case the request
+     * reader would be responsible for creating the request object, or throwing an exception if this
+     * is not supported.
+     *
+     * <p>In the case of the <tt>request</tt> being non <code>null</code>, the request reader may
+     * chose to modify and return <tt>request</tt>, or create a new request object and return it.
+     *
+     * <p>The <tt>kvp</tt> is used to support mixed style reading of the request object from xml and
+     * from a set of key value pairs. This map is often empty.
      */
     public abstract Object read(Object request, Reader reader, Map kvp) throws Exception;
-    
+
     /**
-     * Two XmlReaders considered equal if namespace,element, and version properties
-     * are the same.
+     * Two XmlReaders considered equal if namespace,element, and version properties are the same.
      */
     public boolean equals(Object obj) {
         if (!(obj instanceof XmlRequestReader)) {
@@ -125,18 +104,19 @@ public abstract class XmlRequestReader {
 
         XmlRequestReader other = (XmlRequestReader) obj;
 
-        return new EqualsBuilder().append(element, other.element).append(version, other.version)
-                                  .append(serviceId, other.serviceId).isEquals();
+        return new EqualsBuilder()
+                .append(element, other.element)
+                .append(version, other.version)
+                .append(serviceId, other.serviceId)
+                .isEquals();
     }
-    
+
     @Override
     public String toString() {
         return getClass().getName() + "(" + element + ", " + serviceId + ", " + version + ")";
     }
 
-    /**
-     * Implementation of hashcode.
-     */
+    /** Implementation of hashcode. */
     public int hashCode() {
         return new HashCodeBuilder().append(element).append(version).append(serviceId).toHashCode();
     }

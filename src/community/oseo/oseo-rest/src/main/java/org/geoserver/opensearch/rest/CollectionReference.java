@@ -35,5 +35,4 @@ class CollectionReference {
     public String getSearch() {
         return search;
     }
-
 }

@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
@@ -32,7 +31,7 @@ public class RasterSymbolizerVisitorTest {
         assertNotNull(tx);
         assertEquals("ras:CropCoverage", tx.getName());
     }
-    
+
     @Test
     public void testRasterToVectorTransformation() throws IOException {
         Style style = parseStyle("ContourTransform.sld");
@@ -43,7 +42,7 @@ public class RasterSymbolizerVisitorTest {
         Function tx = (Function) visitor.getRasterRenderingTransformation();
         assertNull(tx);
     }
-    
+
     @Test
     public void testVectorToRasterRenderingTransformation() throws IOException {
         Style style = parseStyle("HeatmapTransform.sld");

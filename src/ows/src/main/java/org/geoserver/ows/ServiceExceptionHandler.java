@@ -8,19 +8,17 @@ package org.geoserver.ows;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
-
 /**
  * Handles an exception thrown by a service.
- * <p>
- * A service exception handler must declare the services in which it is capable
- * of handling exceptions for, see {@link #getServices()}.
- * </p>
- * <p>
- * Instances must be declared in a spring context as follows:
+ *
+ * <p>A service exception handler must declare the services in which it is capable of handling
+ * exceptions for, see {@link #getServices()}.
+ *
+ * <p>Instances must be declared in a spring context as follows:
+ *
  * <pre>
  *         <code>
  *  &lt;bean id="myServiceExcepionHandler" class="com.xyz.MyServiceExceptionHandler"&gt;
@@ -28,26 +26,21 @@ import org.geoserver.platform.ServiceException;
  *  &lt;/bean&gt;
  * </code>
  * </pre>
- * <p>
- * Where <code>myService</code> is the id of another bean somewhere in the
- * context.</p>
+ *
+ * <p>Where <code>myService</code> is the id of another bean somewhere in the context.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
 public abstract class ServiceExceptionHandler {
-    /**
-     * Logger
-     */
-    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    /** Logger */
+    protected static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
-    /**
-     * The services this handler handles exceptions for.
-     */
+    /** The services this handler handles exceptions for. */
     List /*<Service>*/ services;
 
     /**
-     * Constructs the handler with the list of {@link Service}'s that it
-     * handles exceptions for.
+     * Constructs the handler with the list of {@link Service}'s that it handles exceptions for.
      *
      * @param services A list of {@link Service}.
      */
@@ -56,8 +49,7 @@ public abstract class ServiceExceptionHandler {
     }
 
     /**
-     * Constructs the handler for a single {@link Service} that it handles
-     * exceptions for.
+     * Constructs the handler for a single {@link Service} that it handles exceptions for.
      *
      * @param service The service to handle exceptions for.
      */
@@ -65,9 +57,7 @@ public abstract class ServiceExceptionHandler {
         this.services = Collections.singletonList(service);
     }
 
-    /**
-     * @return The services this handler handles exceptions for.
-     */
+    /** @return The services this handler handles exceptions for. */
     public List getServices() {
         return services;
     }

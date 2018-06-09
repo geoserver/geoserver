@@ -5,14 +5,13 @@
 package org.geoserver.security.oauth2.services;
 
 import java.util.Map;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
 /**
  * User Authentication Converter for GitHub token details.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GitHubUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
@@ -21,16 +20,16 @@ public class GitHubUserAuthenticationConverter extends DefaultUserAuthentication
 
     /**
      * Default Constructor.
-     * 
+     *
      * @param username_key
      */
     public GitHubUserAuthenticationConverter() {
         super();
     }
-    
+
     /**
      * Default Constructor.
-     * 
+     *
      * @param username_key
      */
     public GitHubUserAuthenticationConverter(String username_key) {

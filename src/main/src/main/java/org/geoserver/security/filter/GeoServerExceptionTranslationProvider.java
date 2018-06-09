@@ -12,7 +12,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
  * Security provider for j2ee authentication
- * 
+ *
  * @author mcr
  */
 public class GeoServerExceptionTranslationProvider extends AbstractFilterProvider {
@@ -32,5 +32,4 @@ public class GeoServerExceptionTranslationProvider extends AbstractFilterProvide
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerExceptionTranslationFilter();
     }
-
 }

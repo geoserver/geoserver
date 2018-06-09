@@ -6,6 +6,10 @@ package org.geoserver.cluster.impl.rest;
 
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Properties;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
@@ -37,39 +41,38 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Properties;
-
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/cluster")
 public class ClusterController extends AbstractCatalogController {
 
-    @Autowired
-    private Controller controller;
+    @Autowired private Controller controller;
 
-    @Autowired
-    private JMSConfiguration config;
+    @Autowired private JMSConfiguration config;
 
     public ClusterController(Catalog catalog) {
         super(catalog);
     }
 
-    @GetMapping(produces = {
+    @GetMapping(
+        produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE})
+            MediaType.TEXT_HTML_VALUE
+        }
+    )
     public RestWrapper<Properties> getClusterConfiguration() {
         return wrapObject(config.getConfigurations(), Properties.class);
     }
 
-    @PostMapping(consumes = {
+    @PostMapping(
+        consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE})
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     public ResponseEntity<String> postClusterConfiguration(
             @RequestBody Properties props, UriComponentsBuilder builder) throws IOException {
         for (Object key : props.keySet()) {
@@ -113,25 +116,27 @@ public class ClusterController extends AbstractCatalogController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType,
-                            Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return Properties.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-        template.setObjectWrapper(new ObjectToMapWrapper<Properties>(
-                Properties.class) {
-            @Override
-            protected void wrapInternal(Map properties, SimpleHash model,
-                                        Properties props) {
-                properties.putAll(props);
-            }
-        });
+        template.setObjectWrapper(
+                new ObjectToMapWrapper<Properties>(Properties.class) {
+                    @Override
+                    protected void wrapInternal(
+                            Map properties, SimpleHash model, Properties props) {
+                        properties.putAll(props);
+                    }
+                });
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.getXStream().allowTypes(new Class[]{Properties.class});
+        persister.getXStream().allowTypes(new Class[] {Properties.class});
     }
 }

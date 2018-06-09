@@ -8,9 +8,7 @@ package org.geoserver.cluster.server;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Properties;
-
 import javax.jms.JMSException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
@@ -22,7 +20,6 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.utils.BeanUtils;
@@ -37,15 +34,14 @@ import org.geotools.util.logging.Logging;
 
 /**
  * JMS MASTER (Producer) Listener used to send GeoServer Catalog events over the JMS channel.
- * 
+ *
  * @see {@link JMSApplicationListener}
- * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
 public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements CatalogListener {
 
-    private final static java.util.logging.Logger LOGGER = Logging.getLogger(JMSCatalogListener.class);
+    private static final java.util.logging.Logger LOGGER =
+            Logging.getLogger(JMSCatalogListener.class);
 
     private final JMSPublisher jmsPublisher;
     private final GeoServerResourceLoader loader;
@@ -53,12 +49,14 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
 
     /**
      * Constructor
-     * 
+     *
      * @param topicTemplate the getJmsTemplate() object used to send message to the topic queue
-     * 
      */
-    public JMSCatalogListener(final Catalog catalog, final JMSPublisher jmsPublisher,
-                              GeoServerResourceLoader loader, GeoServerDataDirectory dataDirectory) {
+    public JMSCatalogListener(
+            final Catalog catalog,
+            final JMSPublisher jmsPublisher,
+            GeoServerResourceLoader loader,
+            GeoServerDataDirectory dataDirectory) {
         super();
         this.jmsPublisher = jmsPublisher;
         this.loader = loader;
@@ -69,8 +67,8 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
     @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine("Incoming event of type " + event.getClass().getSimpleName()
-                    + " from Catalog");
+            LOGGER.fine(
+                    "Incoming event of type " + event.getClass().getSimpleName() + " from Catalog");
         }
 
         // skip incoming events if producer is not Enabled
@@ -88,33 +86,37 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
             // check if we may publish also the file
             final CatalogInfo info = event.getSource();
             if (info instanceof StyleInfo) {
-                final StyleInfo sInfo=((StyleInfo) info);
-                WorkspaceInfo wInfo =sInfo.getWorkspace();
-                Resource styleFile=null;
-                
+                final StyleInfo sInfo = ((StyleInfo) info);
+                WorkspaceInfo wInfo = sInfo.getWorkspace();
+                Resource styleFile = null;
+
                 // make sure we work fine with workspace specific styles
-                if(wInfo!=null){
-                    styleFile=loader.get(
-                            File.separator+
-                            "workspaces"+
-                            File.separator+
-                            wInfo.getName()+
-                            File.separator+
-                            "styles"+
-                            File.separator+
-                            sInfo.getFilename());
-                    
-                }else{
-                    styleFile=loader.get("styles/" + sInfo.getFilename());
+                if (wInfo != null) {
+                    styleFile =
+                            loader.get(
+                                    File.separator
+                                            + "workspaces"
+                                            + File.separator
+                                            + wInfo.getName()
+                                            + File.separator
+                                            + "styles"
+                                            + File.separator
+                                            + sInfo.getFilename());
+
+                } else {
+                    styleFile = loader.get("styles/" + sInfo.getFilename());
                 }
                 // checks
-                if(!Resources.exists(styleFile)||!Resources.canRead(styleFile)||!(styleFile.getType() == Type.RESOURCE)){
-                    throw new IllegalStateException("Unable to find style for event: "+sInfo.toString());
+                if (!Resources.exists(styleFile)
+                        || !Resources.canRead(styleFile)
+                        || !(styleFile.getType() == Type.RESOURCE)) {
+                    throw new IllegalStateException(
+                            "Unable to find style for event: " + sInfo.toString());
                 }
 
                 // transmit the file
-                jmsPublisher.publish(getTopic(), getJmsTemplate(), options,
-                        new DocumentFile(styleFile));
+                jmsPublisher.publish(
+                        getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
             }
 
             // propagate the event
@@ -131,8 +133,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine("Incoming message event of type " + event.getClass().getSimpleName()
-                    + " from Catalog");
+            LOGGER.fine(
+                    "Incoming message event of type "
+                            + event.getClass().getSimpleName()
+                            + " from Catalog");
         }
 
         // skip incoming events until context is loaded
@@ -159,8 +163,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine("Incoming message event of type " + event.getClass().getSimpleName()
-                    + " from Catalog");
+            LOGGER.fine(
+                    "Incoming message event of type "
+                            + event.getClass().getSimpleName()
+                            + " from Catalog");
         }
 
         // skip incoming events until context is loaded
@@ -187,17 +193,20 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                 BeanUtils.smartUpdate(styleInfo, event.getPropertyNames(), event.getNewValues());
             } catch (Exception exception) {
                 // there is nothing we can do about this
-                throw new RuntimeException(String.format(
-                        "Error setting proxy of style '%s' new values.",
-                        styleInfo.getName()), exception);
+                throw new RuntimeException(
+                        String.format(
+                                "Error setting proxy of style '%s' new values.",
+                                styleInfo.getName()),
+                        exception);
             }
             // get style associated resource
             Resource resource = dataDirectory.get(styleInfo, styleInfo.getFilename());
             if (!resource.file().exists()) {
                 // this should not happen we throw an exception
-                throw new RuntimeException(String.format(
-                        "Style file '%s' for style '%s' could not be found.",
-                        styleInfo.getFilename(), styleInfo.getName()));
+                throw new RuntimeException(
+                        String.format(
+                                "Style file '%s' for style '%s' could not be found.",
+                                styleInfo.getFilename(), styleInfo.getName()));
             }
             try {
                 // read the style file to an array of bytes
@@ -205,25 +214,35 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                 try {
                     IOUtils.copy(resource.in(), output);
                 } catch (Exception exception) {
-                    throw new RuntimeException(String.format(
-                            "Error reading style '%s' file '%s'.",
-                            styleInfo.getName(), resource.file().getAbsolutePath()), exception);
+                    throw new RuntimeException(
+                            String.format(
+                                    "Error reading style '%s' file '%s'.",
+                                    styleInfo.getName(), resource.file().getAbsolutePath()),
+                            exception);
                 }
                 // publish the style event
-                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new StyleModifyEvent(event, output.toByteArray()));
+                jmsPublisher.publish(
+                        getTopic(),
+                        getJmsTemplate(),
+                        options,
+                        new StyleModifyEvent(event, output.toByteArray()));
             } catch (Exception exception) {
-                throw new RuntimeException(String.format(
-                        "Error publishing file associated with style '%s'.",
-                        styleInfo.getName()), exception);
+                throw new RuntimeException(
+                        String.format(
+                                "Error publishing file associated with style '%s'.",
+                                styleInfo.getName()),
+                        exception);
             }
         } else {
             // propagate the catalog modified event
             try {
                 jmsPublisher.publish(getTopic(), getJmsTemplate(), options, event);
             } catch (Exception exception) {
-                throw new RuntimeException(String.format(
-                        "Error publishing catalog modified event of type '%s'.",
-                        info.getClass().getSimpleName()), exception);
+                throw new RuntimeException(
+                        String.format(
+                                "Error publishing catalog modified event of type '%s'.",
+                                info.getClass().getSimpleName()),
+                        exception);
             }
         }
     }
@@ -231,8 +250,10 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
     @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine("Incoming message event of type " + event.getClass().getSimpleName()
-                    + " from Catalog");
+            LOGGER.fine(
+                    "Incoming message event of type "
+                            + event.getClass().getSimpleName()
+                            + " from Catalog");
         }
 
         // EAT EVENT

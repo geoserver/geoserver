@@ -6,6 +6,9 @@
 package org.geoserver.jdbcconfig;
 
 import com.google.common.base.Stopwatch;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -24,10 +27,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
-
 public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     @SuppressWarnings("unused")
@@ -41,7 +40,8 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     private int importSteps = 2;
 
-    public JDBCGeoServerLoader(GeoServerResourceLoader resourceLoader, JDBCConfigProperties config) throws Exception {
+    public JDBCGeoServerLoader(GeoServerResourceLoader resourceLoader, JDBCConfigProperties config)
+            throws Exception {
         super(resourceLoader);
         this.config = config;
     }
@@ -54,7 +54,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
 
         ConfigDatabase configDatabase = ((JDBCCatalogFacade) catalogFacade).getConfigDatabase();
-        
+
         Resource initScript = config.isInitDb() ? config.getInitScript() : null;
         configDatabase.initDb(initScript);
 
@@ -76,7 +76,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         Stopwatch sw = Stopwatch.createStarted();
         loadCatalogInternal(catalog, xp);
         sw.stop();
-        //System.err.println("Loaded catalog in " + sw.toString());
+        // System.err.println("Loaded catalog in " + sw.toString());
     }
 
     private void loadCatalogInternal(Catalog catalog, XStreamPersister xp) throws Exception {
@@ -90,7 +90,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     protected void loadGeoServer(GeoServer geoServer, XStreamPersister xp) throws Exception {
         if (!config.isEnabled()) {
@@ -117,9 +117,9 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             geoServer.setLogging(geoServer.getFactory().createLogging());
         }
 
-        //also ensure we have a service configuration for every service we know about
-        final List<XStreamServiceLoader> loaders = 
-            GeoServerExtensions.extensions( XStreamServiceLoader.class );
+        // also ensure we have a service configuration for every service we know about
+        final List<XStreamServiceLoader> loaders =
+                GeoServerExtensions.extensions(XStreamServiceLoader.class);
         for (XStreamServiceLoader l : loaders) {
             ServiceInfo s = geoServer.getService(l.getServiceClass());
             if (s == null) {
@@ -131,7 +131,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
     private void decImportStep() throws IOException {
         if (--importSteps == 0) {
 
-            //import completed, reset flag
+            // import completed, reset flag
             config.setImport(false);
             config.save();
         }

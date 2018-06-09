@@ -4,6 +4,9 @@
  */
 package org.geoserver.nsg.timeout;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ExtensionPriority;
@@ -17,18 +20,16 @@ import org.geotools.feature.collection.DecoratingSimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-public class GetFeatureWaitOnEncodeCallback extends AbstractDispatcherCallback implements ExtensionPriority {
+public class GetFeatureWaitOnEncodeCallback extends AbstractDispatcherCallback
+        implements ExtensionPriority {
 
     long delaySeconds = 0;
     int delayAfterFeatures = 0;
 
     class DelayFeatureCollection extends DecoratingSimpleFeatureCollection {
 
-        protected DelayFeatureCollection(FeatureCollection<SimpleFeatureType, SimpleFeature> delegate) {
+        protected DelayFeatureCollection(
+                FeatureCollection<SimpleFeatureType, SimpleFeature> delegate) {
             super(delegate);
         }
 
@@ -63,19 +64,20 @@ public class GetFeatureWaitOnEncodeCallback extends AbstractDispatcherCallback i
     @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         if (delaySeconds > 0 && result instanceof FeatureCollectionResponse) {
-            FeatureCollectionResponse featureCollectionResponse = (FeatureCollectionResponse) result;
+            FeatureCollectionResponse featureCollectionResponse =
+                    (FeatureCollectionResponse) result;
             List<FeatureCollection> collections = featureCollectionResponse.getFeatures();
-            List<FeatureCollection> wrappers = collections.stream().map(fc -> new DelayFeatureCollection(
-                    (SimpleFeatureCollection) fc)).collect(Collectors
-                    .toList());
+            List<FeatureCollection> wrappers =
+                    collections
+                            .stream()
+                            .map(fc -> new DelayFeatureCollection((SimpleFeatureCollection) fc))
+                            .collect(Collectors.toList());
 
             featureCollectionResponse.setFeatures(wrappers);
         }
 
-
         return super.operationExecuted(request, operation, result);
     }
-
 
     @Override
     public int getPriority() {

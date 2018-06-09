@@ -10,7 +10,7 @@ import org.geotools.map.Layer;
 /**
  * Convenience base class for writing {@link GetMapCallback} that are only interested in a small
  * subset of the supported events.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GetMapCallbackAdapter implements GetMapCallback {
@@ -44,5 +44,4 @@ public class GetMapCallbackAdapter implements GetMapCallback {
     public void failed(Throwable t) {
         // nothing to do
     }
-
 }

@@ -8,7 +8,6 @@ import net.opengis.wcs11.GetCoverageType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
-
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
@@ -20,15 +19,15 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Handles an internal reference to a local Coverage by a WCS request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class InternalWCSInputProvider extends AbstractInputProvider {
 
     private ApplicationContext context;
 
-    public InternalWCSInputProvider(InputType input, ProcessParameterIO ppio,
-            ApplicationContext context) {
+    public InternalWCSInputProvider(
+            InputType input, ProcessParameterIO ppio, ApplicationContext context) {
         super(input, ppio);
         this.context = context;
     }
@@ -44,32 +43,30 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
             // what WCS version?
             String version = getVersion(ref.getHref());
             KvpRequestReader reader;
-	    if ("1.0.0".equals(version) || "1.0".equals(version)) {
-		reader = (KvpRequestReader) context.getBean("wcs100GetCoverageRequestReader");
-	    } else if ("2.0.1".equals(version) || "2.0.0".equals(version)) {
-		reader = (KvpRequestReader) context.getBean("wcs20getCoverageKvpParser");
-	    } else {
-		reader = (KvpRequestReader) context.getBean("wcs111GetCoverageRequestReader");
-	    }
+            if ("1.0.0".equals(version) || "1.0".equals(version)) {
+                reader = (KvpRequestReader) context.getBean("wcs100GetCoverageRequestReader");
+            } else if ("2.0.1".equals(version) || "2.0.0".equals(version)) {
+                reader = (KvpRequestReader) context.getBean("wcs20getCoverageKvpParser");
+            } else {
+                reader = (KvpRequestReader) context.getBean("wcs111GetCoverageRequestReader");
+            }
 
             getCoverage = kvpParse(ref.getHref(), reader);
         }
 
         // perform GetCoverage
         if (getCoverage instanceof GetCoverageType) {
-            WebCoverageService111 wcs = (WebCoverageService111) context
-                    .getBean("wcs111ServiceTarget");
+            WebCoverageService111 wcs =
+                    (WebCoverageService111) context.getBean("wcs111ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs11.GetCoverageType) getCoverage)[0];
         } else if (getCoverage instanceof net.opengis.wcs10.GetCoverageType) {
-            WebCoverageService100 wcs = (WebCoverageService100) context
-                    .getBean("wcs100ServiceTarget");
+            WebCoverageService100 wcs =
+                    (WebCoverageService100) context.getBean("wcs100ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) getCoverage)[0];
         } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType) {
-            WebCoverageService20 wcs = (WebCoverageService20) context
-                    .getBean("wcs20ServiceTarget");
+            WebCoverageService20 wcs = (WebCoverageService20) context.getBean("wcs20ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs20.GetCoverageType) getCoverage);
-        } 
-        else {
+        } else {
             throw new WPSException("Unrecognized request type " + getCoverage);
         }
     }
@@ -78,5 +75,4 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
     public int longStepCount() {
         return 0;
     }
-
 }

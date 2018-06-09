@@ -5,11 +5,12 @@
  */
 package org.geoserver.wms.georss;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -19,23 +20,19 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-
 /**
  * Encodes an RSS feed tagged with geo information.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
-    
+
     private WMS wms;
 
-    public RSSGeoRSSTransformer(WMS wms){
+    public RSSGeoRSSTransformer(WMS wms) {
         this.wms = wms;
     }
-    
+
     public Translator createTranslator(ContentHandler handler) {
         return new RSSGeoRSSTranslator(wms, handler);
     }
@@ -58,20 +55,20 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
 
             start("rss", atts);
             start("channel");
-            
-            element( "title", AtomUtils.getFeedTitle(map) );
-            element("description", AtomUtils.getFeedDescription(map) );
-            
-            start( "link" );
+
+            element("title", AtomUtils.getFeedTitle(map));
+            element("description", AtomUtils.getFeedDescription(map));
+
+            start("link");
             cdata(AtomUtils.getFeedURL(map));
-            end( "link" );
-            
+            end("link");
+
             atts = new AttributesImpl();
             atts.addAttribute(null, "href", "href", null, AtomUtils.getFeedURL(map));
             atts.addAttribute(null, "rel", "rel", null, "self");
             element("atom:link", null, atts);
 
-            //items
+            // items
             try {
                 encodeItems(map);
             } catch (IOException e) {
@@ -86,7 +83,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             List featureCollections = loadFeatureCollections(map);
             for (Iterator f = featureCollections.iterator(); f.hasNext(); ) {
                 SimpleFeatureCollection features = (SimpleFeatureCollection) f.next();
-                FeatureIterator <SimpleFeature> iterator = null;
+                FeatureIterator<SimpleFeature> iterator = null;
 
                 try {
                     iterator = features.features();
@@ -94,43 +91,39 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
                     while (iterator.hasNext()) {
                         SimpleFeature feature = iterator.next();
                         try {
-                            encodeItem(feature, map);    
-                        }
-                        catch( Exception e ) {
+                            encodeItem(feature, map);
+                        } catch (Exception e) {
                             LOGGER.warning("Encoding failed for feature: " + feature.getID());
-                            LOGGER.log(Level.FINE, "", e );
+                            LOGGER.log(Level.FINE, "", e);
                         }
-                        
                     }
                 } finally {
                     if (iterator != null) {
                         iterator.close();
                     }
                 }
-                
             }
         }
 
-        void encodeItem(SimpleFeature feature, WMSMapContent map)
-            throws IOException {
+        void encodeItem(SimpleFeature feature, WMSMapContent map) throws IOException {
             start("item");
 
             String title = feature.getID();
-            String link = null; 
+            String link = null;
             String description = "[Error while loading description]";
 
             try {
                 title = AtomUtils.getFeatureTitle(feature);
                 link = AtomUtils.getEntryURL(wms, feature, map);
                 description = AtomUtils.getFeatureDescription(feature);
-            } catch( Exception e ) {
+            } catch (Exception e) {
                 String msg = "Error occured executing title template for: " + feature.getID();
-                LOGGER.log( Level.WARNING, msg, e );
+                LOGGER.log(Level.WARNING, msg, e);
             }
 
             element("title", title);
-            
-            //create the link as getFeature request with fid filter
+
+            // create the link as getFeature request with fid filter
             start("link");
             cdata(link);
             end("link");
@@ -142,26 +135,27 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             start("description");
             cdata(AtomUtils.getFeatureDescription(feature));
             end("description");
-            
-            GeometryCollection col = feature.getDefaultGeometry() instanceof GeometryCollection 
-                ? (GeometryCollection) feature.getDefaultGeometry()
-                : null;
 
-            if (geometryEncoding == GeometryEncoding.LATLONG 
-                || (col == null && feature.getDefaultGeometry() != null)) {
-                geometryEncoding.encode((Geometry)feature.getDefaultGeometry(), this);
+            GeometryCollection col =
+                    feature.getDefaultGeometry() instanceof GeometryCollection
+                            ? (GeometryCollection) feature.getDefaultGeometry()
+                            : null;
+
+            if (geometryEncoding == GeometryEncoding.LATLONG
+                    || (col == null && feature.getDefaultGeometry() != null)) {
+                geometryEncoding.encode((Geometry) feature.getDefaultGeometry(), this);
                 end("item");
             } else {
                 geometryEncoding.encode(col.getGeometryN(0), this);
                 end("item");
 
-                for (int i = 1; i < col.getNumGeometries(); i++){
+                for (int i = 1; i < col.getNumGeometries(); i++) {
                     encodeRelatedGeometryItem(col.getGeometryN(i), title, link, i);
                 }
             }
         }
 
-        void encodeRelatedGeometryItem(Geometry g, String title, String link, int count){
+        void encodeRelatedGeometryItem(Geometry g, String title, String link, int count) {
             start("item");
             element("title", "Continuation of " + title);
             element("link", link);

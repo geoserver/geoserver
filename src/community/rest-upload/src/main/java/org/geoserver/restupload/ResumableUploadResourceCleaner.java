@@ -9,14 +9,13 @@ import java.io.IOException;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.util.logging.Logging;
 
 /**
- * Class used for cleaning the resources in the temporary directory after that the "expirationDelay" has passed
- * 
+ * Class used for cleaning the resources in the temporary directory after that the "expirationDelay"
+ * has passed
+ *
  * @author Nicola Lagomarsini
- * 
  */
 public class ResumableUploadResourceCleaner extends TimerTask {
     /** LOGGER class */
@@ -28,8 +27,9 @@ public class ResumableUploadResourceCleaner extends TimerTask {
     /** Manager handling all the REST upload operations */
     private ResumableUploadResourceManager resourceManager;
 
-    public ResumableUploadResourceCleaner(ResumableUploadResourceManager resourceManager,
-            Long expirationDelay) throws IOException {
+    public ResumableUploadResourceCleaner(
+            ResumableUploadResourceManager resourceManager, Long expirationDelay)
+            throws IOException {
         this.resourceManager = resourceManager;
         this.expirationDelay = expirationDelay;
     }
@@ -44,15 +44,16 @@ public class ResumableUploadResourceCleaner extends TimerTask {
             long expirationThreshold = System.currentTimeMillis() - expirationDelay;
             resourceManager.cleanExpiredResources(expirationThreshold);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error occurred while trying to clean up "
-                    + "old coverages from temp storage", e);
+            LOGGER.log(
+                    Level.WARNING,
+                    "Error occurred while trying to clean up " + "old coverages from temp storage",
+                    e);
         }
     }
 
     /**
-     * The file expiration delay in milliseconds. A file will be deleted when it's been around more than expirationDelay
-     *
-     *
+     * The file expiration delay in milliseconds. A file will be deleted when it's been around more
+     * than expirationDelay
      */
     public long getExpirationDelay() {
         return expirationDelay;
@@ -66,5 +67,4 @@ public class ResumableUploadResourceCleaner extends TimerTask {
     public void setExpirationDelay(long expirationDelay) {
         this.expirationDelay = expirationDelay;
     }
-
 }

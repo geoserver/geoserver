@@ -4,51 +4,49 @@
  */
 package org.geoserver.rest.converters;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Logger;
-
 import org.geoserver.rest.RequestInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-
-/**
- * Base class for XStream based message converters
- */
+/** Base class for XStream based message converters */
 public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T> {
 
     static final Logger LOGGER = Logging.getLogger(XStreamMessageConverter.class);
-    
+
     public XStreamMessageConverter(MediaType... supportedMediaTypes) {
         super(supportedMediaTypes);
     }
 
     /**
      * Encode the given link
+     *
      * @param link
      * @param writer
      */
-    public abstract void encodeLink( String link, HierarchicalStreamWriter writer);
-    
+    public abstract void encodeLink(String link, HierarchicalStreamWriter writer);
+
     /**
      * Encode the given link
+     *
      * @param link
      * @param writer
      */
-    public abstract void encodeCollectionLink( String link, HierarchicalStreamWriter writer);
-
+    public abstract void encodeCollectionLink(String link, HierarchicalStreamWriter writer);
 
     /**
      * Create the instance of XStream needed to do encoding
+     *
      * @return
      */
     protected abstract XStream createXStreamInstance();
 
     protected void encodeAlternateAtomLink(String link, HierarchicalStreamWriter writer) {
-        writer.startNode( "atom:link");
+        writer.startNode("atom:link");
         writer.addAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
         writer.addAttribute("rel", "alternate");
         writer.addAttribute("href", href(link));
@@ -57,23 +55,22 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
         writer.endNode();
     }
 
-    protected String href( String link) {
+    protected String href(String link) {
         final RequestInfo pg = RequestInfo.get();
         String ext = getExtension();
 
-        if(ext != null && ext.length() > 0)
-            link = link+ "." + ext;
+        if (ext != null && ext.length() > 0) link = link + "." + ext;
 
         // encode as relative or absolute depending on the link type
-        if ( link.startsWith( "/") ) {
+        if (link.startsWith("/")) {
             // absolute, encode from "root"
             return pg.servletURI(link);
         } else {
-            //encode as relative
+            // encode as relative
             return pg.pageURI(link);
         }
     }
-    
+
     public String encode(String component) {
         try {
             return URLEncoder.encode(component, "UTF-8");
@@ -85,6 +82,7 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
 
     /**
      * The extension used for resources of the type being encoded
+     *
      * @return
      */
     public abstract String getExtension();
@@ -92,6 +90,7 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
     /**
      * Get the text representation of the mime type being encoded. Only used in link encoding for
      * xml
+     *
      * @return
      */
     public abstract String getMediaType();

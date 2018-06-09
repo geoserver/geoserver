@@ -8,14 +8,13 @@ import org.opengis.feature.type.Name;
 
 /**
  * Just a utility class to store info associated to the remote processing machines
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class RemoteMachineDescriptor {
 
     private String nodeJID;
-    
+
     private Name serviceName;
 
     private Boolean available;
@@ -25,13 +24,16 @@ public class RemoteMachineDescriptor {
     private Double loadAverage;
 
     /**
-     * 
      * @param name
      * @param available
      * @param memPercUsed
      * @param loadAverage
      */
-    public RemoteMachineDescriptor(String nodeJID, Name serviceName, Boolean available, Double memPercUsed,
+    public RemoteMachineDescriptor(
+            String nodeJID,
+            Name serviceName,
+            Boolean available,
+            Double memPercUsed,
             Double loadAverage) {
         super();
         this.nodeJID = nodeJID;
@@ -41,74 +43,53 @@ public class RemoteMachineDescriptor {
         this.loadAverage = loadAverage;
     }
 
-    /**
-     * @return the nodeJID
-     */
+    /** @return the nodeJID */
     public String getNodeJID() {
         return nodeJID;
     }
 
-    /**
-     * @param nodeJID the nodeJID to set
-     */
+    /** @param nodeJID the nodeJID to set */
     public void setNodeJID(String nodeJID) {
         this.nodeJID = nodeJID;
     }
 
-    /**
-     * @return the serviceName
-     */
+    /** @return the serviceName */
     public Name getServiceName() {
         return serviceName;
     }
 
-    /**
-     * @param serviceName the serviceName to set
-     */
+    /** @param serviceName the serviceName to set */
     public void setServiceName(Name serviceName) {
         this.serviceName = serviceName;
     }
 
-    /**
-     * @return the available
-     */
+    /** @return the available */
     public Boolean getAvailable() {
         return available;
     }
 
-    /**
-     * @param available the available to set
-     */
+    /** @param available the available to set */
     public void setAvailable(Boolean available) {
         this.available = available;
     }
 
-    /**
-     * @return the memPercUsed
-     */
+    /** @return the memPercUsed */
     public Double getMemPercUsed() {
         return memPercUsed;
     }
 
-    /**
-     * @param memPercUsed the memPercUsed to set
-     */
+    /** @param memPercUsed the memPercUsed to set */
     public void setMemPercUsed(Double memPercUsed) {
         this.memPercUsed = memPercUsed;
     }
 
-    /**
-     * @return the loadAverage
-     */
+    /** @return the loadAverage */
     public Double getLoadAverage() {
         return loadAverage;
     }
 
-    /**
-     * @param loadAverage the loadAverage to set
-     */
+    /** @param loadAverage the loadAverage to set */
     public void setLoadAverage(Double loadAverage) {
         this.loadAverage = loadAverage;
     }
-
 }

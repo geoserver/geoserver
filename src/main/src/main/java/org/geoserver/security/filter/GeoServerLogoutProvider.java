@@ -12,7 +12,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
  * Security provider for {@link GeoServerUserNamePasswordAuthenticationFilter}
- * 
+ *
  * @author mcr
  */
 public class GeoServerLogoutProvider extends AbstractFilterProvider {
@@ -32,5 +32,4 @@ public class GeoServerLogoutProvider extends AbstractFilterProvider {
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerLogoutFilter();
     }
-
 }

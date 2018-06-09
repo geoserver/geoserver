@@ -8,9 +8,7 @@ package org.geoserver.wms.web.publish;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StyleInfo;
 
-/**
- * Style name rendered, displays the style, uses the id as the select id
- */
+/** Style name rendered, displays the style, uses the id as the select id */
 @SuppressWarnings("serial")
 public class StyleNameRenderer extends ChoiceRenderer {
 
@@ -21,5 +19,4 @@ public class StyleNameRenderer extends ChoiceRenderer {
     public String getIdValue(Object object, int index) {
         return ((StyleInfo) object).getId();
     }
-
 }

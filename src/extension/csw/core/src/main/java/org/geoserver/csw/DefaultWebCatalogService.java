@@ -7,7 +7,6 @@ package org.geoserver.csw;
 
 import java.io.File;
 import java.util.List;
-
 import net.opengis.cat.csw20.CapabilitiesType;
 import net.opengis.cat.csw20.DescribeRecordType;
 import net.opengis.cat.csw20.GetCapabilitiesType;
@@ -17,7 +16,6 @@ import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.HarvestResponseType;
 import net.opengis.cat.csw20.HarvestType;
 import net.opengis.cat.csw20.TransactionType;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.RecordDescriptor;
@@ -33,7 +31,7 @@ import org.springframework.context.ApplicationContextAware;
 
 /**
  * The default CSW implementation
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DefaultWebCatalogService implements WebCatalogService, ApplicationContextAware {
@@ -50,7 +48,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         this.csw = gs.getService(CSWInfo.class);
         this.gs = gs;
     }
-    
+
     public CSWInfo getServiceInfo() {
         return gs.getService(CSWInfo.class);
     }
@@ -58,19 +56,21 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     @Override
     public CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException {
         checkStore();
-        CapabilitiesType caps = new GetCapabilities(getServiceInfo(), this.store, context).run(request);
-        
+        CapabilitiesType caps =
+                new GetCapabilities(getServiceInfo(), this.store, context).run(request);
+
         // check for decorator extensions
-        for(CapabilitiesDecorator decorator : GeoServerExtensions.extensions(CapabilitiesDecorator.class))
-        {
+        for (CapabilitiesDecorator decorator :
+                GeoServerExtensions.extensions(CapabilitiesDecorator.class)) {
             caps = decorator.decorate(caps, this.store);
         }
-        
+
         return caps;
     }
 
     @Override
-    public AttributeDescriptor[] describeRecord(DescribeRecordType request) throws ServiceException {
+    public AttributeDescriptor[] describeRecord(DescribeRecordType request)
+            throws ServiceException {
         checkStore();
 
         return new DescribeRecord(getServiceInfo(), store).run(request);
@@ -79,14 +79,16 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     @Override
     public CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException {
         checkStore();
-        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        List<RecordDescriptor> descriptors =
+                GeoServerExtensions.extensions(RecordDescriptor.class, context);
         return new GetRecords(getServiceInfo(), store, descriptors).run(request);
     }
 
     @Override
     public CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException {
         checkStore();
-        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        List<RecordDescriptor> descriptors =
+                GeoServerExtensions.extensions(RecordDescriptor.class, context);
         return new GetRecordById(getServiceInfo(), store, descriptors).run(request);
     }
 
@@ -119,10 +121,8 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         checkStore();
         return new DirectDownload(getServiceInfo(), this.store).run(request);
     }
-    
-    /**
-     * Checks we have a store to use
-     */
+
+    /** Checks we have a store to use */
     private void checkStore() {
         if (store == null) {
             throw new ServiceException(
@@ -135,23 +135,23 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
         // pick the implementation of CatalogStore that has the higher priority
-        List<CatalogStore> storeCandidates = GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
-        
+        List<CatalogStore> storeCandidates =
+                GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
+
         if (storeCandidates != null && storeCandidates.size() > 0) {
-        	String defaultStore = System.getProperty("DefaultCatalogStore");            
-	        if (defaultStore != null) {
-		        for (CatalogStore store : storeCandidates) {
-		        	if (store.getClass().getName().equals(defaultStore)) {
-		        		this.store = store;
-		        		break;
-		        	}
-		        }
-	        }
-	        
-	        if (store == null) {
-	        	store = storeCandidates.get(0);
-	        }
+            String defaultStore = System.getProperty("DefaultCatalogStore");
+            if (defaultStore != null) {
+                for (CatalogStore store : storeCandidates) {
+                    if (store.getClass().getName().equals(defaultStore)) {
+                        this.store = store;
+                        break;
+                    }
+                }
+            }
+
+            if (store == null) {
+                store = storeCandidates.get(0);
+            }
         }
     }
-
 }

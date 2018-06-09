@@ -9,10 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.geoserver.wcs.response.GdalCoverageResponseDelegate;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -21,9 +19,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-/**
- * Encode XML based output parameter using gdal_translate command
- */
+/** Encode XML based output parameter using gdal_translate command */
 public class GdalXMLPPIO extends XMLPPIO {
 
     private GdalCoverageResponseDelegate delegate;
@@ -69,5 +65,4 @@ public class GdalXMLPPIO extends XMLPPIO {
         parser.setContentHandler(handler);
         parser.parse(new InputSource(bis));
     }
-
 }

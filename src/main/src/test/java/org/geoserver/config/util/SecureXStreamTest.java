@@ -18,8 +18,7 @@ import org.junit.rules.ExpectedException;
 
 public class SecureXStreamTest {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Rule public ExpectedException exception = ExpectedException.none();
 
     @Rule
     public PropertyRule whitelistProperty = PropertyRule.system("GEOSERVER_XSTREAM_WHITELIST");
@@ -68,8 +67,10 @@ public class SecureXStreamTest {
         try {
             xs.fromXML("<" + org.easymock.Capture.class.getCanonicalName() + " />");
         } catch (ForbiddenClassExceptionEx e) {
-            assertEquals("Unauthorized class found, see logs for more details on how to handle it: "
-                    + "org.easymock.Capture", e.getMessage());
+            assertEquals(
+                    "Unauthorized class found, see logs for more details on how to handle it: "
+                            + "org.easymock.Capture",
+                    e.getMessage());
         }
     }
 }

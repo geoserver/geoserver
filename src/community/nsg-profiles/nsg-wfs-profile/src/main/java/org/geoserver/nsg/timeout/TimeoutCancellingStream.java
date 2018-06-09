@@ -4,15 +4,11 @@
  */
 package org.geoserver.nsg.timeout;
 
-import org.geotools.util.logging.Logging;
-
-import javax.servlet.ServletOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
+import javax.servlet.ServletOutputStream;
 
 /**
- * A simple stream that will clear the timeout verifier when the first byte
- * is written to the output
+ * A simple stream that will clear the timeout verifier when the first byte is written to the output
  */
 public class TimeoutCancellingStream extends ServletOutputStream {
     TimeoutVerifier timeoutVerifier;
@@ -22,7 +18,6 @@ public class TimeoutCancellingStream extends ServletOutputStream {
         this.timeoutVerifier = timeoutVerifier;
         this.delegate = delegate;
     }
-
 
     @Override
     public void write(int b) throws IOException {

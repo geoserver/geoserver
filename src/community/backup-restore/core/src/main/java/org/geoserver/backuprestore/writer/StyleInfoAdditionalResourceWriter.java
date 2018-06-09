@@ -5,7 +5,6 @@
 package org.geoserver.backuprestore.writer;
 
 import java.io.IOException;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.catalog.StyleInfo;
@@ -13,15 +12,13 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 
 /**
- * On a {@link CatalogFireWriter} firePostWrite event call, dumps styles main resources into
- * the backup target folder.
- * <br>
- * Notice that this one does check actually for icons and everything <b>different</b> from
- * "sld", "ysld", "xml" or "css" (depending on which kind of style the resource is). 
- * Those are managed separately by the {@link AbstractCatalogBackupRestoreTasklet}. 
- * 
- * @author Alessio Fabiani, GeoSolutions
+ * On a {@link CatalogFireWriter} firePostWrite event call, dumps styles main resources into the
+ * backup target folder. <br>
+ * Notice that this one does check actually for icons and everything <b>different</b> from "sld",
+ * "ysld", "xml" or "css" (depending on which kind of style the resource is). Those are managed
+ * separately by the {@link AbstractCatalogBackupRestoreTasklet}.
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class StyleInfoAdditionalResourceWriter
         implements CatalogAdditionalResourcesWriter<StyleInfo> {
@@ -40,5 +37,4 @@ public class StyleInfoAdditionalResourceWriter
             Resources.copy(styleFile.file(), BackupUtils.dir(base.parent(), "styles"));
         }
     }
-
 }

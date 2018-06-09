@@ -7,12 +7,10 @@
 package org.geoserver.wps;
 
 import java.util.logging.Logger;
-
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.OutputDefinitionType;
 import net.opengis.wps10.ResponseDocumentType;
-
 import org.geoserver.wps.executor.ExecuteRequest;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geotools.util.logging.Logging;
@@ -20,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Main class used to handle Execute requests
- * 
+ *
  * @author Lucas Reed, Refractions Research Inc
  * @author Andrea Aime, OpenGeo
  */
@@ -43,7 +41,7 @@ public class Execute {
 
     /**
      * Main method for performing decoding, execution, and response
-     * 
+     *
      * @param object
      * @param output
      * @throws IllegalArgumentException
@@ -57,8 +55,9 @@ public class Execute {
         }
 
         if (responseDocument != null && rawDataOutput != null) {
-            throw new WPSException("Invalid request, only one of the raw data output or the "
-                    + "response document should be specified in the request");
+            throw new WPSException(
+                    "Invalid request, only one of the raw data output or the "
+                            + "response document should be specified in the request");
         }
 
         ExecuteRequest request = new ExecuteRequest(execute);
@@ -66,5 +65,4 @@ public class Execute {
         ExecuteResponseType response = executionManager.submit(request, !request.isAsynchronous());
         return response;
     }
-
 }

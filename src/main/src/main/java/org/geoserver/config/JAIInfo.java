@@ -6,112 +6,104 @@
 package org.geoserver.config;
 
 import java.io.Serializable;
-
 import javax.media.jai.JAI;
 import javax.media.jai.TileCache;
 
 /**
  * Java Advanced Imaging configuration.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public interface JAIInfo extends Cloneable, Serializable {
-    
-    static enum PngEncoderType { JDK, NATIVE, PNGJ }; 
 
-    /**
-     * Flag controlling image interpolation.
-     */
+    static enum PngEncoderType {
+        JDK,
+        NATIVE,
+        PNGJ
+    };
+
+    /** Flag controlling image interpolation. */
     boolean getAllowInterpolation();
+
     void setAllowInterpolation(boolean allowInterpolation);
 
-    /**
-     * Flag controlling the recycling of image tiles during jai operations.
-     */
+    /** Flag controlling the recycling of image tiles during jai operations. */
     boolean isRecycling();
+
     void setRecycling(boolean recycling);
 
-    /**
-     * The priority of the jai processing thread.
-     */
+    /** The priority of the jai processing thread. */
     int getTilePriority();
+
     void setTilePriority(int tilePriority);
 
-    /**
-     * The number of threads allocated for jai image processing. 
-     */
+    /** The number of threads allocated for jai image processing. */
     int getTileThreads();
+
     void setTileThreads(int tileThreads);
 
-    /**
-     * The maximum percentage of memory allocated to jai for image processing. 
-     */
+    /** The maximum percentage of memory allocated to jai for image processing. */
     double getMemoryCapacity();
+
     void setMemoryCapacity(double memoryCapacity);
 
-    /**
-     * @uml.property name="memoryThreshold"
-     */
+    /** @uml.property name="memoryThreshold" */
     double getMemoryThreshold();
+
     void setMemoryThreshold(double memoryThreshold);
 
     /**
      * Flag controlling native PNG image processing.
+     *
      * @deprecated Use {@link #getPngEncoderType()} instead
      */
     @Deprecated
     boolean isPngAcceleration();
+
     @Deprecated
     void setPngAcceleration(boolean pngAcceleration);
-    
+
     PngEncoderType getPngEncoderType();
+
     void setPngEncoderType(PngEncoderType type);
 
-    /**
-     * Flag controlling native JPEG image processing.
-     */
+    /** Flag controlling native JPEG image processing. */
     boolean isJpegAcceleration();
+
     void setJpegAcceleration(boolean jpegAcceleration);
 
-    /**
-     * Flag controlling native mosaicing operations.
-     */
+    /** Flag controlling native mosaicing operations. */
     boolean isAllowNativeMosaic();
+
     void setAllowNativeMosaic(boolean allowNativeMosaic);
-    
-    /**
-     * Flag controlling native warping operations.
-     */
+
+    /** Flag controlling native warping operations. */
     boolean isAllowNativeWarp();
+
     void setAllowNativeWarp(boolean allowNativeWarp);
-    
+
     /**
      * Flag controlling the image io cache.
+     *
      * @deprecated Replaced by {@link CoverageAccessInfo#getImageIOCacheThreshold()}
      */
     void setImageIOCache(boolean imageIOCache);
-    /**
-     * @deprecated
-     */
+    /** @deprecated */
     boolean isImageIOCache();
 
-    /**
-     * The jai instance.
-     */
+    /** The jai instance. */
     JAI getJAI();
+
     void setJAI(JAI jai);
 
-    /**
-     * The jai tile cache.
-     */
+    /** The jai tile cache. */
     TileCache getTileCache();
+
     void setTileCache(TileCache tileCache);
-    
-    /**
-     * JAI-EXT section
-     */
+
+    /** JAI-EXT section */
     JAIEXTInfo getJAIEXTInfo();
+
     void setJAIEXTInfo(JAIEXTInfo jaiext);
 
     public JAIInfo clone();

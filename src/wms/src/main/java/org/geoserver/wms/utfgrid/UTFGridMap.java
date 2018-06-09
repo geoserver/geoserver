@@ -13,7 +13,8 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import net.sf.json.util.JSONBuilder;
+import net.sf.json.util.JSONStringer;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.utfgrid.UTFGridEntries.UTFGridEntry;
 import org.geotools.util.Converters;
@@ -24,19 +25,15 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 
-import net.sf.json.util.JSONBuilder;
-import net.sf.json.util.JSONStringer;
-
 public class UTFGridMap extends RawMap {
 
     private RenderedImage image;
-
 
     public UTFGridMap(final UTFGridMapContent mapContent, RenderedImage image) {
         super(mapContent, (byte[]) null, UTFGridMapOutputFormat.MIME_TYPE);
         this.image = image;
     }
-    
+
     public void writeTo(java.io.OutputStream out) throws java.io.IOException {
         UTFGridEntries entries = getEntries();
 
@@ -46,11 +43,11 @@ public class UTFGridMap extends RawMap {
         List<UTFGridEntry> encodedEntries = writeGrid(pw, image, entries);
         pw.println("],");
         pw.println("\"keys\": [");
-        if(encodedEntries.isEmpty()) {
+        if (encodedEntries.isEmpty()) {
             pw.println("  \"\"");
         } else {
             pw.println("  \"\",");
-            for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext();) {
+            for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
                 UTFGridEntry entry = (UTFGridEntry) it.next();
                 pw.print("  \"");
                 pw.print(entry.getKey());
@@ -63,7 +60,7 @@ public class UTFGridMap extends RawMap {
         }
         pw.println("],");
         pw.println("\"data\": {");
-        for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext();) {
+        for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
             UTFGridEntry entry = (UTFGridEntry) it.next();
             pw.print("  \"");
             pw.print(entry.getKey());
@@ -115,16 +112,15 @@ public class UTFGridMap extends RawMap {
     }
 
     /**
-     * Writes the grid, and maps the original values into a compact sequence of keys (the original values might be sparse due to features being fully
-     * overwritten by other features)
-     * 
+     * Writes the grid, and maps the original values into a compact sequence of keys (the original
+     * values might be sparse due to features being fully overwritten by other features)
+     *
      * @param pw
      * @param image
      * @param entries
-     *
      */
-    private List<UTFGridEntry> writeGrid(PrintWriter pw, RenderedImage image,
-            UTFGridEntries entries) {
+    private List<UTFGridEntry> writeGrid(
+            PrintWriter pw, RenderedImage image, UTFGridEntries entries) {
         Map<Integer, UTFGridEntry> keyToFeature = entries.getEntryMap();
         List<UTFGridEntry> result = new ArrayList<UTFGridEntry>();
 
@@ -143,9 +139,11 @@ public class UTFGridMap extends RawMap {
                 } else {
                     UTFGridEntry entry = keyToFeature.get(pixel);
                     if (entry == null) {
-                        throw new RuntimeException("Could not find entry for pixel value " + pixel
-                                + ". This normally means there is some color altering option at work "
-                                + "that the UTFGrid code failed to remove, like opacity, blending and the like");
+                        throw new RuntimeException(
+                                "Could not find entry for pixel value "
+                                        + pixel
+                                        + ". This normally means there is some color altering option at work "
+                                        + "that the UTFGrid code failed to remove, like opacity, blending and the like");
                     }
                     int entryKey = entry.getKey();
                     if (entryKey == -1) {
@@ -177,10 +175,11 @@ public class UTFGridMap extends RawMap {
 
     /**
      * From the spec, the encoding works as follows:
+     *
      * <ul>
-     * <li>Add 32.</li>
-     * <li>If the result is >= 34, add 1.</li>
-     * <li>If the result is >= 92, add 1.</li>
+     *   <li>Add 32.
+     *   <li>If the result is >= 34, add 1.
+     *   <li>If the result is >= 92, add 1.
      * </ul>
      */
     private char getGridChar(int val) {
@@ -194,10 +193,8 @@ public class UTFGridMap extends RawMap {
         return (char) result;
     }
 
-    
     UTFGridEntries getEntries() {
         UTFGridMapContent mc = (UTFGridMapContent) mapContent;
         return mc.getEntries();
     }
-
 }

@@ -6,15 +6,11 @@ package org.geoserver.wps.remote;
 
 /**
  * Simple interface to get the {@link RemoteProcessFactoryConfiguration}.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public interface RemoteProcessFactoryConfigurationGenerator {
 
-    /**
-     * @return the {@link RemoteProcessFactoryConfiguration} object
-     */
+    /** @return the {@link RemoteProcessFactoryConfiguration} object */
     public RemoteProcessFactoryConfiguration getConfiguration();
-
 }

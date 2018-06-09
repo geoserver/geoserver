@@ -7,31 +7,26 @@ package org.geoserver.rest.security.xml;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.geoserver.security.impl.GeoServerUser;
 
-@XmlRootElement(name="users")
+@XmlRootElement(name = "users")
 public class JaxbUserList {
-	
-	protected List<JaxbUser> users;
 
-	public JaxbUserList() {
-		
-	}
+    protected List<JaxbUser> users;
 
-	public JaxbUserList( Collection<GeoServerUser> users ) {
-		this.users = new ArrayList<JaxbUser>();
-		for (GeoServerUser user : users) {
-			this.users.add(new JaxbUser(user));
-		}		
-	}
+    public JaxbUserList() {}
 
-	@XmlElement(name="user")
-	public List<JaxbUser> getUsers() {
-		return users;
-	}
+    public JaxbUserList(Collection<GeoServerUser> users) {
+        this.users = new ArrayList<JaxbUser>();
+        for (GeoServerUser user : users) {
+            this.users.add(new JaxbUser(user));
+        }
+    }
 
+    @XmlElement(name = "user")
+    public List<JaxbUser> getUsers() {
+        return users;
+    }
 }

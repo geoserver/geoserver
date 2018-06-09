@@ -4,20 +4,18 @@
  */
 package org.geoserver.wps.validator;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import java.util.Date;
-
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-
 /**
  * Estimates the size of a feature collection by guessing how bit an average feature will be by
  * checking its feature type
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class FeatureSizeEstimator implements ObjectSizeEstimator {
@@ -46,7 +44,7 @@ public class FeatureSizeEstimator implements ObjectSizeEstimator {
             bytes += 4 + 12;
             Class<?> type = ad.getType().getBinding();
             if (Point.class.isAssignableFrom(type)) {
-                bytes += 12 + 16 + 16; // assuming a packed coordinate sequence   
+                bytes += 12 + 16 + 16; // assuming a packed coordinate sequence
             } else if (Geometry.class.isAssignableFrom(type)) {
                 bytes += 12 + 16 + 16 * 64; // assuming 64 coordinates per geometry
             } else if (Number.class.isAssignableFrom(type)) {
@@ -73,5 +71,4 @@ public class FeatureSizeEstimator implements ObjectSizeEstimator {
 
         return bytes;
     }
-
 }

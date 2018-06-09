@@ -9,11 +9,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.geoserver.cluster.client.JMSContainerHandlerExceptionListener;
 
-/**
- * 
- * @author carlo cancellieri - geosolutions sas
- *
- */
+/** @author carlo cancellieri - geosolutions sas */
 public class JMSContainerHandlerExceptionListenerImpl
         implements JMSContainerHandlerExceptionListener {
 
@@ -21,8 +17,7 @@ public class JMSContainerHandlerExceptionListenerImpl
 
     private Session session;
 
-    public JMSContainerHandlerExceptionListenerImpl() {
-    }
+    public JMSContainerHandlerExceptionListenerImpl() {}
 
     public void setFeedbackPanel(FeedbackPanel fp) {
         this.fp = fp;
@@ -53,16 +48,14 @@ public class JMSContainerHandlerExceptionListenerImpl
 
                 if (fp != null) {
                     if (alreadyRecovered) {
-                        fp.warn("There was an error which seems already fixed: "
-                                + ex.getLocalizedMessage());
+                        fp.warn(
+                                "There was an error which seems already fixed: "
+                                        + ex.getLocalizedMessage());
                     } else {
                         fp.error(ex.getLocalizedMessage());
-
                     }
                 }
             }
         }
-
     }
-
 }

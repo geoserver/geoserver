@@ -41,5 +41,4 @@ public class GridSetNewPage extends AbstractGridSetPage {
             target.add(form);
         }
     }
-
 }

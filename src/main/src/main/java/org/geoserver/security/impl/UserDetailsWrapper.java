@@ -7,31 +7,29 @@
 package org.geoserver.security.impl;
 
 import java.util.Collection;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Simple wrapper class for a {@link UserDetails} object.
- * Subclasses should override individual methods.
- * 
- * @author christian
+ * Simple wrapper class for a {@link UserDetails} object. Subclasses should override individual
+ * methods.
  *
+ * @author christian
  */
 public class UserDetailsWrapper implements UserDetails {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     private UserDetails details;
 
     public UserDetails getWrappedObject() {
         return details;
     }
-    
+
     public UserDetailsWrapper(UserDetails details) {
         this.details = details;
     }
-    
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return details.getAuthorities();
     }
@@ -59,5 +57,4 @@ public class UserDetailsWrapper implements UserDetails {
     public boolean isEnabled() {
         return details.isEnabled();
     }
-
 }

@@ -4,6 +4,19 @@
  */
 package org.geoserver.spatialite;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -36,26 +49,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-/**
- * Contains tests that invoke REST resources that will use SpatiaLite data store.
- */
+/** Contains tests that invoke REST resources that will use SpatiaLite data store. */
 public final class RestTest extends GeoServerSystemTestSupport {
 
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(RestTest.class);
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(RestTest.class);
 
     private static final String SQLITE_MIME_TYPE = "application/x-sqlite3";
 
@@ -86,8 +84,9 @@ public final class RestTest extends GeoServerSystemTestSupport {
         boolean available = new SpatiaLiteDataStoreFactory().isAvailable();
         if (!available) {
             // SpatiaLite requires some native libraries to be installed
-            LOGGER.warning("SpatialLite data store is not available REST tests will not run, " +
-                    "this is probably due to missing native libraries.");
+            LOGGER.warning(
+                    "SpatialLite data store is not available REST tests will not run, "
+                            + "this is probably due to missing native libraries.");
         }
         Assume.assumeTrue(available);
         // create root tests directory
@@ -119,9 +118,12 @@ public final class RestTest extends GeoServerSystemTestSupport {
         String dataStoreName = UUID.randomUUID().toString();
         // perform a PUT request, a new SpatiaLite data store should be created
         // we require that all available feature types should be created
-        String path = String.format(
-                "/rest/workspaces/%s/datastores/%s/file.spatialite?configure=all", WORKSPACE_NAME, dataStoreName);
-        MockHttpServletResponse response = putAsServletResponse(path, DATABASE_FILE_AS_BYTES, SQLITE_MIME_TYPE);
+        String path =
+                String.format(
+                        "/rest/workspaces/%s/datastores/%s/file.spatialite?configure=all",
+                        WORKSPACE_NAME, dataStoreName);
+        MockHttpServletResponse response =
+                putAsServletResponse(path, DATABASE_FILE_AS_BYTES, SQLITE_MIME_TYPE);
         // we should get a HTTP 201 status code meaning that the data store was created
         assertThat(response.getStatus(), is(201));
         // let's see if the data store was correctly created
@@ -132,9 +134,11 @@ public final class RestTest extends GeoServerSystemTestSupport {
         List<Name> names = store.getNames();
         assertThat(store, notNullValue());
         // check that at least the table points is available
-        Name found = names.stream()
-                .filter(name -> name != null && name.getLocalPart().equals("points"))
-                .findFirst().orElse(null);
+        Name found =
+                names.stream()
+                        .filter(name -> name != null && name.getLocalPart().equals("points"))
+                        .findFirst()
+                        .orElse(null);
         assertThat(found, notNullValue());
         // check that the points layer was correctly created
         LayerInfo layerInfo = getCatalog().getLayerByName(new NameImpl(WORKSPACE_URI, "points"));
@@ -147,9 +151,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
         assertThat(count, is(4));
     }
 
-    /**
-     * Helper method that just creates the test data store using GeoTools APIs.
-     */
+    /** Helper method that just creates the test data store using GeoTools APIs. */
     private static void createTestDatabase() throws Exception {
         // connect to the test data store
         Map<String, String> params = new HashMap<>();
@@ -157,7 +159,9 @@ public final class RestTest extends GeoServerSystemTestSupport {
         params.put("database", DATABASE_FILE.getAbsolutePath());
         DataStore datastore = DataStoreFinder.getDataStore(params);
         // create the points table (feature type)
-        SimpleFeatureType featureType = DataUtilities.createType("points", "id:Integer,name:String,geometry:Point:srid=4326");
+        SimpleFeatureType featureType =
+                DataUtilities.createType(
+                        "points", "id:Integer,name:String,geometry:Point:srid=4326");
         datastore.createSchema(featureType);
         // get write access to the data store
         SimpleFeatureSource featureSource = datastore.getFeatureSource("points");
@@ -168,13 +172,15 @@ public final class RestTest extends GeoServerSystemTestSupport {
         Transaction transaction = new DefaultTransaction("create");
         featureStore.setTransaction(transaction);
         // create some features
-        SimpleFeatureCollection features = new ListFeatureCollection(featureType,
-                new SimpleFeature[]{
-                        DataUtilities.createFeature(featureType, "1|point_a|POINT(-1,1)"),
-                        DataUtilities.createFeature(featureType, "2|point_b|POINT(-1,-1)"),
-                        DataUtilities.createFeature(featureType, "3|point_c|POINT(1,-1)"),
-                        DataUtilities.createFeature(featureType, "4|point_d|POINT(1,1)"),
-                });
+        SimpleFeatureCollection features =
+                new ListFeatureCollection(
+                        featureType,
+                        new SimpleFeature[] {
+                            DataUtilities.createFeature(featureType, "1|point_a|POINT(-1,1)"),
+                            DataUtilities.createFeature(featureType, "2|point_b|POINT(-1,-1)"),
+                            DataUtilities.createFeature(featureType, "3|point_c|POINT(1,-1)"),
+                            DataUtilities.createFeature(featureType, "4|point_d|POINT(1,1)"),
+                        });
         try {
             // insert the features
             featureStore.addFeatures(features);
@@ -185,8 +191,8 @@ public final class RestTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that just reads the test SpatiaLite database file
-     * and stores it in a array of bytes.
+     * Helper method that just reads the test SpatiaLite database file and stores it in a array of
+     * bytes.
      */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
@@ -196,7 +202,8 @@ public final class RestTest extends GeoServerSystemTestSupport {
             // copy the input stream to the output stream
             IOUtils.copy(input, output);
         } catch (Exception exception) {
-            throw new RuntimeException("Error reading SQLite database file to byte array.", exception);
+            throw new RuntimeException(
+                    "Error reading SQLite database file to byte array.", exception);
         }
         return output.toByteArray();
     }

@@ -14,7 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.wps.WPSException;
@@ -30,14 +29,16 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-public class DefaultProcessManager implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
+public class DefaultProcessManager
+        implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
 
-    ConcurrentHashMap<String, Future<Map<String, Object>>> executions = new ConcurrentHashMap<String, Future<Map<String, Object>>>();
+    ConcurrentHashMap<String, Future<Map<String, Object>>> executions =
+            new ConcurrentHashMap<String, Future<Map<String, Object>>>();
 
     ThreadPoolExecutor synchService;
 
     ThreadPoolExecutor asynchService;
-    
+
     WPSResourceManager resourceManager;
 
     public DefaultProcessManager(WPSResourceManager resourceManager) {
@@ -45,12 +46,17 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     }
 
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
-        if(asynchService == null) {
-            // create a fixed size pool. If we allow a delta between core and max 
-            // the pool will create new threads only if the queue is full, but the linked queue never is
-            asynchService = new ThreadPoolExecutor(maxAsynchronousProcesses, maxAsynchronousProcesses, 
-                                      0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>());
+        if (asynchService == null) {
+            // create a fixed size pool. If we allow a delta between core and max
+            // the pool will create new threads only if the queue is full, but the linked queue
+            // never is
+            asynchService =
+                    new ThreadPoolExecutor(
+                            maxAsynchronousProcesses,
+                            maxAsynchronousProcesses,
+                            0L,
+                            TimeUnit.MILLISECONDS,
+                            new LinkedBlockingQueue<Runnable>());
         } else {
             asynchService.setCorePoolSize(maxAsynchronousProcesses);
             asynchService.setMaximumPoolSize(maxAsynchronousProcesses);
@@ -58,18 +64,23 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     }
 
     public void setMaxSynchronousProcesses(int maxSynchronousProcesses) {
-        if(synchService == null) {
-            // create a fixed size pool. If we allow a delta between core and max 
-            // the pool will create new threads only if the queue is full, but the linked queue never is
-            synchService = new ThreadPoolExecutor(maxSynchronousProcesses, maxSynchronousProcesses, 
-                                      0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>());
+        if (synchService == null) {
+            // create a fixed size pool. If we allow a delta between core and max
+            // the pool will create new threads only if the queue is full, but the linked queue
+            // never is
+            synchService =
+                    new ThreadPoolExecutor(
+                            maxSynchronousProcesses,
+                            maxSynchronousProcesses,
+                            0L,
+                            TimeUnit.MILLISECONDS,
+                            new LinkedBlockingQueue<Runnable>());
         } else {
             synchService.setCorePoolSize(maxSynchronousProcesses);
             synchService.setMaximumPoolSize(maxSynchronousProcesses);
         }
     }
-    
+
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
@@ -89,8 +100,12 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     }
 
     @Override
-    public Map<String, Object> submitChained(String executionId, Name processName,
-            Map<String, Object> inputs, ProgressListener listener) throws ProcessException {
+    public Map<String, Object> submitChained(
+            String executionId,
+            Name processName,
+            Map<String, Object> inputs,
+            ProgressListener listener)
+            throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
         if (pf == null) {
@@ -104,11 +119,16 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     }
 
     @Override
-    public void submit(String executionId, Name processName, Map<String, Object> inputs,
-            ProgressListener listener, boolean background) throws ProcessException {
+    public void submit(
+            String executionId,
+            Name processName,
+            Map<String, Object> inputs,
+            ProgressListener listener,
+            boolean background)
+            throws ProcessException {
         ProcessCallable callable = new ProcessCallable(processName, inputs, listener);
         Future<Map<String, Object>> future;
-        if(background) {
+        if (background) {
             future = asynchService.submit(callable);
         } else {
             future = synchService.submit(callable);
@@ -135,7 +155,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             timedOut = true;
             throw new ProcessException(e);
         } catch (Exception e) {
-            if(e instanceof ExecutionException && e.getCause() instanceof Exception) {
+            if (e instanceof ExecutionException && e.getCause() instanceof Exception) {
                 e = (Exception) e.getCause();
             }
             if (e instanceof ProcessException) {
@@ -176,8 +196,8 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
 
         ProgressListener listener;
 
-        public ProcessCallable(Name processName, Map<String, Object> inputs,
-                ProgressListener listener) {
+        public ProcessCallable(
+                Name processName, Map<String, Object> inputs, ProgressListener listener) {
             this.processName = processName;
             this.inputs = inputs;
             this.listener = listener;
@@ -189,12 +209,12 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
             try {
                 // transfer the thread locals to this execution context
                 threadLocalTransfer.apply();
-                
+
                 ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
                 if (pf == null) {
                     throw new WPSException("No such process: " + processName);
                 }
-    
+
                 // execute the process
                 Map<String, Object> result = null;
                 Process p = pf.create(processName);
@@ -205,8 +225,5 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
                 threadLocalTransfer.cleanup();
             }
         }
-
     }
-   
-
 }

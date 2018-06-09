@@ -7,21 +7,18 @@ package org.geoserver.test.onlineTest;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
-/**
- * 
- * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
- *
- */
+
+/** @author Victor Tey(CSIRO Earth Science and Resource Engineering) */
 public class DataReferenceWfsOracleTest extends DataReferenceWfsOracleWithJoiningTest {
 
     public DataReferenceWfsOracleTest() throws Exception {
         super();
     }
-    
+
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-    	AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");                
+        AppSchemaDataAccessRegistry.getAppSchemaProperties()
+                .setProperty("app-schema.joining", "false");
         super.setUpTestData(testData);
     }
-
 }

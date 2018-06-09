@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
@@ -18,13 +17,14 @@ import org.geotools.data.wmts.WebMapTileServer;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates every method to the delegate wmts store info. 
- * 
- * Subclasses will override selected methods to perform their "decoration" job.
- * 
+ * Delegates every method to the delegate wmts store info.
+ *
+ * <p>Subclasses will override selected methods to perform their "decoration" job.
+ *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
-public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> implements WMTSStoreInfo {
+public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo>
+        implements WMTSStoreInfo {
 
     public DecoratingWMTSStoreInfo(WMTSStoreInfo delegate) {
         super(delegate);
@@ -73,8 +73,6 @@ public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> im
     public String getType() {
         return delegate.getType();
     }
-
-   
 
     public WorkspaceInfo getWorkspace() {
         return delegate.getWorkspace();
@@ -139,7 +137,7 @@ public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> im
 
     @Override
     public void setMaxConnections(int maxConcurrentConnections) {
-        delegate.setMaxConnections(maxConcurrentConnections);        
+        delegate.setMaxConnections(maxConcurrentConnections);
     }
 
     public int getReadTimeout() {
@@ -168,32 +166,27 @@ public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> im
 
     @Override
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
-       
+
         return delegate.getWebMapTileServer(listener);
     }
 
     @Override
-    public String getHeaderName()
-    {
+    public String getHeaderName() {
         return delegate.getHeaderName();
     }
 
     @Override
-    public void setHeaderName(String headerName)
-    {
+    public void setHeaderName(String headerName) {
         delegate.setHeaderName(headerName);
     }
 
     @Override
-    public String getHeaderValue()
-    {
+    public String getHeaderValue() {
         return delegate.getHeaderValue();
     }
 
     @Override
-    public void setHeaderValue(String headerValue)
-    {
+    public void setHeaderValue(String headerValue) {
         delegate.setHeaderValue(headerValue);
     }
-
 }

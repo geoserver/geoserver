@@ -7,7 +7,6 @@ package org.geoserver.rest.security;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -17,24 +16,21 @@ import org.junit.Before;
 
 public abstract class SecurityRESTTestSupport extends GeoServerSystemTestSupport {
 
-    
     protected static XpathEngine xp;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
-        
+
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
     }
-
 
     @Before
     public void login() throws Exception {

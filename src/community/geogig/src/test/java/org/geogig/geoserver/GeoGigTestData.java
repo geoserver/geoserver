@@ -11,6 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,9 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.annotation.Nullable;
-
 import org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
@@ -81,12 +84,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class GeoGigTestData extends ExternalResource {
 
@@ -198,8 +195,11 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public GeoGigTestData config(String key, String value) {
-        run(geogig.command(ConfigOp.class).setAction(ConfigAction.CONFIG_SET).setName(key)
-                .setValue(value));
+        run(
+                geogig.command(ConfigOp.class)
+                        .setAction(ConfigAction.CONFIG_SET)
+                        .setName(key)
+                        .setValue(value));
         return this;
     }
 
@@ -258,15 +258,15 @@ public class GeoGigTestData extends ExternalResource {
 
     /**
      * Inserts features in the working tree under the given parent tree path.
-     * <p>
-     * The parent tree must exist. The {@code featureSpecs} are of the form {@code  featureSpec := 
+     *
+     * <p>The parent tree must exist. The {@code featureSpecs} are of the form {@code featureSpec :=
      * <id>=<attname>:<value>[;<attname>:<value>]+} . The parsing routine is as naive as it can be
      * so do not use any '=', ':', or ';' in the values.
-     * <p>
-     * An empty value string is assumed to mean {@code null}. Any {@code <attname>} not provided
+     *
+     * <p>An empty value string is assumed to mean {@code null}. Any {@code <attname>} not provided
      * (wrt. its type) will be left as {@code null} in the built feature.
-     * <p>
-     * An {@code <attname>} that doesn't exist in the feature type throws an unchecked exception.
+     *
+     * <p>An {@code <attname>} that doesn't exist in the feature type throws an unchecked exception.
      */
     public GeoGigTestData insert(String parentTreePath, String... featureSpecs) {
         SimpleFeatureType type = getType(parentTreePath);
@@ -285,8 +285,11 @@ public class GeoGigTestData extends ExternalResource {
                 AttributeDescriptor descriptor = type.getDescriptor(att);
                 Class<?> binding = descriptor.getType().getBinding();
                 Object value = Converters.convert(sval, binding);
-                checkArgument(sval == null || value != null, "Unable to convert value '%s' to %s",
-                        sval, binding.getName());
+                checkArgument(
+                        sval == null || value != null,
+                        "Unable to convert value '%s' to %s",
+                        sval,
+                        binding.getName());
                 fb.set(att, value);
             }
             SimpleFeature feature = fb.buildFeature(fid);
@@ -302,7 +305,8 @@ public class GeoGigTestData extends ExternalResource {
             RevFeatureType type = RevFeatureTypeBuilder.build(feature.getType());
             geogig.getRepository().objectDatabase().put(type);
             String path = NodeRef.appendChild(parentTreePath, feature.getIdentifier().getID());
-            FeatureInfo info = FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), path);
+            FeatureInfo info =
+                    FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), path);
             workingTree.insert(info);
         }
         return this;
@@ -314,25 +318,40 @@ public class GeoGigTestData extends ExternalResource {
         Map<String, Map<String, String>> specs = Maps.newHashMap();
         for (String spec : featureSpecs) {
             String[] split = spec.split("=");
-            checkArgument(split.length == 2, "invalid feature spec. Expected '%s', got '%s'",
-                    format, spec);
+            checkArgument(
+                    split.length == 2,
+                    "invalid feature spec. Expected '%s', got '%s'",
+                    format,
+                    spec);
             String fid = split[0];
-            checkArgument(!isNullOrEmpty(fid), "invalid feature fid. Expected '%s', got '%s'",
-                    format, spec);
-            checkArgument(!specs.containsKey(fid), "Duplicate fid '%s' in feature spec '%s'", fid,
+            checkArgument(
+                    !isNullOrEmpty(fid),
+                    "invalid feature fid. Expected '%s', got '%s'",
+                    format,
+                    spec);
+            checkArgument(
+                    !specs.containsKey(fid),
+                    "Duplicate fid '%s' in feature spec '%s'",
+                    fid,
                     Arrays.asList(featureSpecs));
             String atts = split[1];
             String[] attSpecs = atts.split(";");
             Map<String, String> attributes = Maps.newHashMap();
             for (String attSpec : attSpecs) {
                 String[] attval = attSpec.split(":");
-                checkArgument(attval.length == 2,
-                        "invalid attribute spec '%s'. Expected '%s', got '%s'", attSpec, format,
+                checkArgument(
+                        attval.length == 2,
+                        "invalid attribute spec '%s'. Expected '%s', got '%s'",
+                        attSpec,
+                        format,
                         spec);
                 String attName = attval[0];
-                checkArgument(!isNullOrEmpty(attName),
+                checkArgument(
+                        !isNullOrEmpty(attName),
                         "empty attribute name in attribute spec '%s'. Expected '%s', got '%s'",
-                        attSpec, format, spec);
+                        attSpec,
+                        format,
+                        spec);
                 String attValue = attval[1];
                 if (isNullOrEmpty(attValue)) {
                     attValue = null;
@@ -349,18 +368,25 @@ public class GeoGigTestData extends ExternalResource {
         Context context = geogig.getContext();
 
         List<NodeRef> featureTypeTrees = context.workingTree().getFeatureTypeTrees();
-        List<String> treeNames = Lists.transform(featureTypeTrees, new Function<NodeRef, String>() {
-            @Override
-            public String apply(NodeRef input) {
-                return input.path();
-            }
-        });
+        List<String> treeNames =
+                Lists.transform(
+                        featureTypeTrees,
+                        new Function<NodeRef, String>() {
+                            @Override
+                            public String apply(NodeRef input) {
+                                return input.path();
+                            }
+                        });
         for (int i = 0; i < treeNames.size(); i++) {
             String treeName = treeNames.get(i);
             if (treeName.equals(parentTreePath)) {
                 ObjectId metadataId = featureTypeTrees.get(i).getMetadataId();
-                RevFeatureType revType = ((Optional<RevFeatureType>) run(
-                        geogig.command(RevObjectParse.class).setObjectId(metadataId))).get();
+                RevFeatureType revType =
+                        ((Optional<RevFeatureType>)
+                                        run(
+                                                geogig.command(RevObjectParse.class)
+                                                        .setObjectId(metadataId)))
+                                .get();
                 SimpleFeatureType featureType = (SimpleFeatureType) revType.type();
                 return featureType;
             }
@@ -377,14 +403,18 @@ public class GeoGigTestData extends ExternalResource {
         AttributeDescriptor descriptor = featureType.getDescriptor(attributeName);
         Class<?> binding = descriptor.getType().getBinding();
         Object actualValue = Converters.convert(value, binding);
-        checkArgument(value == null || actualValue != null, "Unable to convert value '%s' to %s",
-                value, binding.getName());
+        checkArgument(
+                value == null || actualValue != null,
+                "Unable to convert value '%s' to %s",
+                value,
+                binding.getName());
 
         feature.setAttribute(attributeName, actualValue);
         Context context = geogig.getContext();
         WorkingTree workingTree = context.workingTree();
         RevFeatureType type = RevFeatureTypeBuilder.build(featureType);
-        FeatureInfo info = FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), featurePath);
+        FeatureInfo info =
+                FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), featurePath);
         workingTree.insert(info);
         return this;
     }
@@ -395,8 +425,12 @@ public class GeoGigTestData extends ExternalResource {
         RevTree rootWorkingTree = workingTree.getTree();
 
         @SuppressWarnings("unchecked")
-        Optional<NodeRef> ref = (Optional<NodeRef>) run(context.command(FindTreeChild.class)
-                .setParent(rootWorkingTree).setChildPath(featurePath));
+        Optional<NodeRef> ref =
+                (Optional<NodeRef>)
+                        run(
+                                context.command(FindTreeChild.class)
+                                        .setParent(rootWorkingTree)
+                                        .setChildPath(featurePath));
         checkArgument(ref.isPresent(), "No feature ref found: '%s'", featurePath);
 
         NodeRef featureRef = ref.get();
@@ -404,11 +438,15 @@ public class GeoGigTestData extends ExternalResource {
         SimpleFeatureType type = getType(featureRef.getParentPath());
 
         @SuppressWarnings("unchecked")
-        Optional<RevFeature> revFeature = (Optional<RevFeature>) run(
-                context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
+        Optional<RevFeature> revFeature =
+                (Optional<RevFeature>)
+                        run(
+                                context.command(RevObjectParse.class)
+                                        .setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
-        Feature feature = new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
+        Feature feature =
+                new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
         return (SimpleFeature) feature;
     }
 
@@ -470,8 +508,8 @@ public class GeoGigTestData extends ExternalResource {
         }
 
         public CatalogBuilder addAllRepoLayers() {
-            List<NodeRef> featureTypeTrees = geogig.getContext().workingTree()
-                    .getFeatureTypeTrees();
+            List<NodeRef> featureTypeTrees =
+                    geogig.getContext().workingTree().getFeatureTypeTrees();
             for (NodeRef ref : featureTypeTrees) {
                 layer(ref.name());
             }
@@ -525,13 +563,15 @@ public class GeoGigTestData extends ExternalResource {
             ft.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
 
             WorkingTree workingTree = geogig.getRepository().workingTree();
-            Map<String, NodeRef> trees = Maps.uniqueIndex(workingTree.getFeatureTypeTrees(),
-                    new Function<NodeRef, String>() {
-                        @Override
-                        public String apply(NodeRef treeRef) {
-                            return treeRef.name();
-                        }
-                    });
+            Map<String, NodeRef> trees =
+                    Maps.uniqueIndex(
+                            workingTree.getFeatureTypeTrees(),
+                            new Function<NodeRef, String>() {
+                                @Override
+                                public String apply(NodeRef treeRef) {
+                                    return treeRef.name();
+                                }
+                            });
             NodeRef treeRef = trees.get(layerName);
             FeatureType featureType = getType(treeRef.path());
             CoordinateReferenceSystem nativeCRS = featureType.getCoordinateReferenceSystem();
@@ -576,7 +616,8 @@ public class GeoGigTestData extends ExternalResource {
             RepositoryInfo info = new RepositoryInfo();
             info.setLocation(geogig.getRepository().getLocation());
             RepositoryManager.get().save(info);
-            connParams.put(GeoGigDataStoreFactory.REPOSITORY.key,
+            connParams.put(
+                    GeoGigDataStoreFactory.REPOSITORY.key,
                     GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
             connParams.put(GeoGigDataStoreFactory.DEFAULT_NAMESPACE.key, ns.getURI());
             catalog.add(ds);

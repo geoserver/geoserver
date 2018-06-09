@@ -11,6 +11,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -19,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -32,14 +34,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
-
 public class ConfigStoreTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     private ResourceStore dataDir;
 
@@ -80,13 +77,18 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(info.getId());
         Resource resource = dataDir.get(path);
         assertEquals(Type.RESOURCE, resource.getType());
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<location>" + info.getLocation().toString() + "</location>"//
-                + "</RepositoryInfo>";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<location>"
+                        + info.getLocation().toString()
+                        + "</location>" //
+                        + "</RepositoryInfo>";
 
-        XMLAssert.assertXMLEqual(new StringReader(expected),
-                new InputStreamReader(resource.in(), Charsets.UTF_8));
+        XMLAssert.assertXMLEqual(
+                new StringReader(expected), new InputStreamReader(resource.in(), Charsets.UTF_8));
     }
 
     @Test
@@ -99,13 +101,16 @@ public class ConfigStoreTest {
         String path = ConfigStore.path(info.getId());
         Resource resource = dataDir.get(path);
         assertEquals(Type.RESOURCE, resource.getType());
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<location>file:/home/test/repo</location>"//
-                + "</RepositoryInfo>";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<location>file:/home/test/repo</location>" //
+                        + "</RepositoryInfo>";
 
-        XMLAssert.assertXMLEqual(new StringReader(expected),
-                new InputStreamReader(resource.in(), Charsets.UTF_8));
+        XMLAssert.assertXMLEqual(
+                new StringReader(expected), new InputStreamReader(resource.in(), Charsets.UTF_8));
     }
 
     @Test
@@ -142,11 +147,14 @@ public class ConfigStoreTest {
     @Test
     public void loadDeprecatedFormat() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<parentDirectory>/home/test</parentDirectory>"//
-                + "<name>repo</name>"//
-                + "</RepositoryInfo>";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<parentDirectory>/home/test</parentDirectory>" //
+                        + "<name>repo</name>" //
+                        + "</RepositoryInfo>";
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
@@ -164,10 +172,13 @@ public class ConfigStoreTest {
     @Test
     public void get() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<location>file:/home/test/repo</location>"//
-                + "</RepositoryInfo>";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<location>file:/home/test/repo</location>" //
+                        + "</RepositoryInfo>";
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
@@ -185,11 +196,14 @@ public class ConfigStoreTest {
     public void loadMalformed() throws Exception {
         // this xml has a missing > character at the end
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<parentDirectory>/home/test</parentDirectory>"//
-                + "<name>repo</name>"//
-                + "</RepositoryInfo";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<parentDirectory>/home/test</parentDirectory>" //
+                        + "<name>repo</name>" //
+                        + "</RepositoryInfo";
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
@@ -250,11 +264,14 @@ public class ConfigStoreTest {
     @Test
     public void delete() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
-        String expected = "<RepositoryInfo>"//
-                + "<id>" + dummyId + "</id>"//
-                + "<parentDirectory>/home/test</parentDirectory>"//
-                + "<name>repo</name>"//
-                + "</RepositoryInfo>";
+        String expected =
+                "<RepositoryInfo>" //
+                        + "<id>"
+                        + dummyId
+                        + "</id>" //
+                        + "<parentDirectory>/home/test</parentDirectory>" //
+                        + "<name>repo</name>" //
+                        + "</RepositoryInfo>";
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);

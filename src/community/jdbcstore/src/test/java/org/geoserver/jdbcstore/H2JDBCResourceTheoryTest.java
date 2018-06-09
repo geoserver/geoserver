@@ -14,35 +14,31 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * 
  * @author Kevin Smith, Boundless
  * @author Niels Charlier
- *
  */
 public class H2JDBCResourceTheoryTest extends AbstractJDBCResourceTheoryTest {
 
     JDBCResourceStore store;
-    
+
     @Override
     protected JDBCResourceStore getStore() {
         return store;
     }
-    
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
-    
+
+    @Rule public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
     public void setUp() throws Exception {
         support = new H2TestSupport();
-        
+
         standardData();
-        
+
         JDBCResourceStoreProperties config = mockConfig(true, false);
         replay(config);
-        
+
         store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         store.setCache(new SimpleResourceCache(folder.getRoot()));
     }
-
 }

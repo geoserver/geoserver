@@ -12,17 +12,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_1_1.WcsXmlReader;
 import org.geotools.wcs.v1_1.WCSConfiguration;
-import org.geoserver.util.EntityResolverProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
@@ -38,42 +36,41 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     WCSConfiguration configuration;
 
     WcsXmlReader xmlReader;
-    
+
     List<GridCoverage> coverages = new ArrayList<GridCoverage>();
 
     @Before
     public void setup() {
-        kvpreader = (GetCoverageRequestReader) applicationContext
-                .getBean("wcs111GetCoverageRequestReader");
+        kvpreader =
+                (GetCoverageRequestReader)
+                        applicationContext.getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService111) applicationContext.getBean("wcs111ServiceTarget");
         configuration = new WCSConfiguration();
-        xmlReader = new WcsXmlReader("GetCoverage", "1.1.1", configuration,
-                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-    }
-    
-    @After
-    public void cleanCoverages() {
-    	for (GridCoverage coverage : coverages) {
-			CoverageCleanerCallback.disposeCoverage(coverage);
-		}
+        xmlReader =
+                new WcsXmlReader(
+                        "GetCoverage",
+                        "1.1.1",
+                        configuration,
+                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
-    /**
-     * Runs GetCoverage on the specified parameters and returns an array of coverages
-     */
+    @After
+    public void cleanCoverages() {
+        for (GridCoverage coverage : coverages) {
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
+    }
+
+    /** Runs GetCoverage on the specified parameters and returns an array of coverages */
     protected GridCoverage[] executeGetCoverageKvp(Map<String, Object> raw) throws Exception {
-        GetCoverageType getCoverage = (GetCoverageType) kvpreader.read(kvpreader.createRequest(),
-                parseKvp(raw), raw);
+        GetCoverageType getCoverage =
+                (GetCoverageType) kvpreader.read(kvpreader.createRequest(), parseKvp(raw), raw);
         GridCoverage[] result = service.getCoverage(getCoverage);
         coverages.addAll(Arrays.asList(result));
         return result;
     }
 
-    /**
-     * Prepares the basic KVP map (service, version, request)
-     * 
-     *
-     */
+    /** Prepares the basic KVP map (service, version, request) */
     protected Map<String, Object> baseMap() {
         Map<String, Object> raw = new HashMap<String, Object>();
         raw.put("service", "WCS");
@@ -82,12 +79,10 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
         return raw;
     }
 
-    /**
-     * Runs GetCoverage on the specified parameters and returns an array of coverages
-     */
+    /** Runs GetCoverage on the specified parameters and returns an array of coverages */
     protected GridCoverage[] executeGetCoverageXml(String request) throws Exception {
-        GetCoverageType getCoverage = (GetCoverageType) xmlReader.read(null, new StringReader(
-                request), null);
+        GetCoverageType getCoverage =
+                (GetCoverageType) xmlReader.read(null, new StringReader(request), null);
         return service.getCoverage(getCoverage);
     }
 
@@ -105,13 +100,12 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
         gs.save(info);
     }
 
-    protected Map parseKvp(Map /* <String,String> */raw) throws Exception {
+    protected Map parseKvp(Map /* <String,String> */ raw) throws Exception {
 
         // parse like the dispatcher but make sure we don't change the original map
         HashMap input = new HashMap(raw);
         List<Throwable> errors = KvpUtils.parse(input);
-        if (errors != null && errors.size() > 0)
-            throw (Exception) errors.get(0);
+        if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
@@ -119,11 +113,10 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     protected Map caseInsensitiveKvp(HashMap input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map result = new HashMap();
-        for (Iterator it = input.keySet().iterator(); it.hasNext();) {
+        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
             String key = (String) it.next();
             result.put(key.toUpperCase(), input.get(key));
         }
         return new CaseInsensitiveMap(result);
     }
-
 }

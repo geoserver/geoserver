@@ -4,11 +4,9 @@
  * application directory.
  */
 
-
 package org.geoserver.security.cas;
 
 import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -17,18 +15,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.util.CommonUtils;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
- * a singleton {@link Filter} object receiving
- * callbacks for proxy granting tickets from a cas
- * server 
- * 
- * @author christian
+ * a singleton {@link Filter} object receiving callbacks for proxy granting tickets from a cas
+ * server
  *
+ * @author christian
  */
 public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware {
 
@@ -49,26 +44,20 @@ public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware 
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    public void init(FilterConfig filterConfig) throws ServletException {}
 
-    /** 
-     * extract a proxy granting tickets and store it in the global
-     * {@link ProxyGrantingTicketStorage} object
-     * 
+    /**
+     * extract a proxy granting tickets and store it in the global {@link
+     * ProxyGrantingTicketStorage} object
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         CommonUtils.readAndRespondToProxyReceptorRequest(
-                (HttpServletRequest)request,
-                (HttpServletResponse) response, pgtStorageFilter);
+                (HttpServletRequest) request, (HttpServletResponse) response, pgtStorageFilter);
         return;
     }
 
     @Override
-    public void destroy() {
-    }
-
-
+    public void destroy() {}
 }

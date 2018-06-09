@@ -11,9 +11,7 @@ import org.geotools.data.Query;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
-/**
- * {@link GetFeatureCallback} context object.
- */
+/** {@link GetFeatureCallback} context object. */
 public final class GetFeatureContext {
 
     private final GetFeatureRequest request;
@@ -24,13 +22,16 @@ public final class GetFeatureContext {
     /**
      * Builds the {@link GetFeatureCallback} context
      *
-     * @param request         The full GetFeature request
+     * @param request The full GetFeature request
      * @param featureTypeInfo The feature type being queried
-     * @param featureSource   The feature source used for this query
-     * @param query           The query that will be run
+     * @param featureSource The feature source used for this query
+     * @param query The query that will be run
      */
-    GetFeatureContext(GetFeatureRequest request, FeatureTypeInfo featureTypeInfo, FeatureSource<? extends
-            FeatureType, ? extends Feature> featureSource, Query query) {
+    GetFeatureContext(
+            GetFeatureRequest request,
+            FeatureTypeInfo featureTypeInfo,
+            FeatureSource<? extends FeatureType, ? extends Feature> featureSource,
+            Query query) {
         this.request = request;
         this.featureSource = featureSource;
         this.query = query;
@@ -38,46 +39,45 @@ public final class GetFeatureContext {
     }
 
     /**
-     * The full GetFeature request being run. The object returned may be mutable, but the callback is strongly
-     * suggested not to attempt any modification, the behavior of doing so is undefined and might change over time
+     * The full GetFeature request being run. The object returned may be mutable, but the callback
+     * is strongly suggested not to attempt any modification, the behavior of doing so is undefined
+     * and might change over time
      */
     public GetFeatureRequest getRequest() {
         return request;
     }
 
     /**
-     * The feature type being queried. The object returned may be mutable, but the callback is strongly
-     * suggested not to attempt any modification, the behavior of doing so is undefined and might change over time
+     * The feature type being queried. The object returned may be mutable, but the callback is
+     * strongly suggested not to attempt any modification, the behavior of doing so is undefined and
+     * might change over time
+     *
      * @return
      */
     public FeatureTypeInfo getFeatureTypeInfo() {
         return featureTypeInfo;
     }
 
-
     /**
-     * The feature source being queried. The object returned may be mutable, but the callback is strongly
-     * suggested not to attempt any modification, the behavior of doing so is undefined and might change
-     * over time
+     * The feature source being queried. The object returned may be mutable, but the callback is
+     * strongly suggested not to attempt any modification, the behavior of doing so is undefined and
+     * might change over time
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource() {
         return featureSource;
     }
 
-    /**
-     * The query being run
-     */
+    /** The query being run */
     public Query getQuery() {
         return query;
     }
 
     /**
      * Allows to replace the query being run with another one
+     *
      * @param query
      */
     public void setQuery(Query query) {
         this.query = query;
     }
-
-
 }

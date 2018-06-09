@@ -10,19 +10,18 @@ import java.util.Properties;
 
 /**
  * Rule which allows a property to be set, and will return it to its original value.
- * 
- * @author Kevin Smith, Boundless
  *
+ * @author Kevin Smith, Boundless
  */
 public class PropertyRule extends org.junit.rules.ExternalResource {
     final Properties props;
     final String name;
     String oldValue;
-    
+
     public static PropertyRule system(String name) {
         return new PropertyRule(System.getProperties(), name);
     }
-    
+
     public PropertyRule(Properties props, String name) {
         super();
         this.props = props;
@@ -48,11 +47,10 @@ public class PropertyRule extends org.junit.rules.ExternalResource {
 
     @Override
     protected void after() {
-        if(this.oldValue==null) {
+        if (this.oldValue == null) {
             props.remove(name);
         } else {
             props.setProperty(name, oldValue);
         }
     }
-    
 }

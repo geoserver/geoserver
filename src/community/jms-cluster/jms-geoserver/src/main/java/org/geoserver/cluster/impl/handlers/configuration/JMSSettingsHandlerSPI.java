@@ -11,16 +11,16 @@ import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSSettingsModifyEvent;
 import org.geoserver.config.GeoServer;
 
-/**
- * SPI class used by the JMS manager to instantiate the proper handler for a certain event type.
- */
-public final class JMSSettingsHandlerSPI extends JMSEventHandlerSPI<String, JMSSettingsModifyEvent> {
+/** SPI class used by the JMS manager to instantiate the proper handler for a certain event type. */
+public final class JMSSettingsHandlerSPI
+        extends JMSEventHandlerSPI<String, JMSSettingsModifyEvent> {
 
     private final GeoServer geoserver;
     private final XStream xstream;
     private final ToggleSwitch producer;
 
-    public JMSSettingsHandlerSPI(int priority, GeoServer geo, XStream xstream, ToggleSwitch producer) {
+    public JMSSettingsHandlerSPI(
+            int priority, GeoServer geo, XStream xstream, ToggleSwitch producer) {
         super(priority);
         this.geoserver = geo;
         this.xstream = xstream;

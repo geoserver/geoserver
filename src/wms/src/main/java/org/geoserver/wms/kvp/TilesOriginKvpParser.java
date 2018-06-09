@@ -7,11 +7,9 @@ package org.geoserver.wms.kvp;
 
 import java.awt.geom.Point2D;
 import java.util.List;
-
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-
 
 public class TilesOriginKvpParser extends KvpParser {
     public TilesOriginKvpParser() {
@@ -31,8 +29,10 @@ public class TilesOriginKvpParser extends KvpParser {
 
             return new Point2D.Double(minx, miny);
         } catch (NumberFormatException ex) {
-            throw new ServiceException(ex, "Illegal value for TILESORIGIN parameter: " + value,
-                getClass().getName() + "::parseTilesOrigin()");
+            throw new ServiceException(
+                    ex,
+                    "Illegal value for TILESORIGIN parameter: " + value,
+                    getClass().getName() + "::parseTilesOrigin()");
         }
     }
 }

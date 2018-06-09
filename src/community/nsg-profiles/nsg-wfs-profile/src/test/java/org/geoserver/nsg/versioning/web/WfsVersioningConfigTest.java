@@ -4,18 +4,17 @@
  */
 package org.geoserver.nsg.versioning.web;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.web.WFSAdminPage;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class WfsVersioningConfigTest extends GeoServerWicketTestSupport {
 
@@ -25,16 +24,16 @@ public class WfsVersioningConfigTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(WFSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("maxNumberOfFeaturesForPreview", (String)testValue1);
+        ft.setValue("maxNumberOfFeaturesForPreview", (String) testValue1);
         ft.submit("submit");
         WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertEquals("testValue1 = 100", 100, (int)wfs.getMaxNumberOfFeaturesForPreview());
+        assertEquals("testValue1 = 100", 100, (int) wfs.getMaxNumberOfFeaturesForPreview());
         tester.startPage(WFSAdminPage.class);
         ft = tester.newFormTester("form");
-        ft.setValue("maxNumberOfFeaturesForPreview", (String)testValue2);
+        ft.setValue("maxNumberOfFeaturesForPreview", (String) testValue2);
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertEquals("testValue2 = 0", 0, (int)wfs.getMaxNumberOfFeaturesForPreview());
+        assertEquals("testValue2 = 0", 0, (int) wfs.getMaxNumberOfFeaturesForPreview());
     }
 
     @Test
@@ -50,7 +49,8 @@ public class WfsVersioningConfigTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         // check that GML MIME type overriding is disabled
         tester.assertComponent("form:gml32:forceGmlMimeType", CheckBox.class);
-        CheckBox checkbox = (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
+        CheckBox checkbox =
+                (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
         assertThat(checkbox.getModelObject(), is(false));
         // MIME type drop down choice should be invisible
         tester.assertInvisible("form:gml32:mimeTypeToForce");

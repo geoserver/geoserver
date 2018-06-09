@@ -4,19 +4,13 @@
  */
 package org.geoserver.wms.mapbox;
 
+import com.google.common.collect.ImmutableSet;
 import java.awt.Rectangle;
 import java.util.Set;
-
 import org.geoserver.wms.vector.VectorTileBuilderFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
-import com.google.common.collect.ImmutableSet;
-
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
 
     public static final String MIME_TYPE = "application/x-protobuf;type=mapbox-vector";
@@ -37,5 +31,4 @@ public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
     public MapBoxTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
         return new MapBoxTileBuilder(screenSize, mapArea);
     }
-
 }

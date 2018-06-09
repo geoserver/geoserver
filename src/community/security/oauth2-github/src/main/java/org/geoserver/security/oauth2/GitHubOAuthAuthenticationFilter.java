@@ -5,21 +5,17 @@
 package org.geoserver.security.oauth2;
 
 import java.util.logging.Level;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GitHubOAuthAuthenticationFilter extends GeoServerOAuthAuthenticationFilter {
 
-    public GitHubOAuthAuthenticationFilter(SecurityNamedServiceConfig config,
+    public GitHubOAuthAuthenticationFilter(
+            SecurityNamedServiceConfig config,
             RemoteTokenServices tokenServices,
             GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration,
             OAuth2RestOperations oauth2RestTemplate) {
@@ -52,5 +48,4 @@ public class GitHubOAuthAuthenticationFilter extends GeoServerOAuthAuthenticatio
 
         return null;
     }
-
 }

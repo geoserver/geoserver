@@ -5,17 +5,15 @@
  */
 package org.geoserver.wcs2_0.eo.response;
 
+import com.vividsolutions.jts.geom.Geometry;
 import it.geosolutions.imageio.maskband.DatasetLayout;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.media.jai.ImageLayout;
-
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
@@ -38,12 +36,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * Provides a view of a single granule to the DescribeCoverage encoder (to be used in 
+ * Provides a view of a single granule to the DescribeCoverage encoder (to be used in
  * DescribeOECoverageSet response)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2DReader {
@@ -58,8 +54,10 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
 
     Map<String, DimensionDescriptor> dimensionDescriptors;
 
-    public SingleGranuleGridCoverageReader(StructuredGridCoverage2DReader reader,
-            SimpleFeature feature, List<DimensionDescriptor> dimensionDescriptors) {
+    public SingleGranuleGridCoverageReader(
+            StructuredGridCoverage2DReader reader,
+            SimpleFeature feature,
+            List<DimensionDescriptor> dimensionDescriptors) {
         this.reader = reader;
         this.feature = feature;
         this.dimensionDescriptors = new HashMap<String, DimensionDescriptor>();
@@ -67,12 +65,12 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
             this.dimensionDescriptors.put(descriptor.getName().toUpperCase(), descriptor);
         }
         Geometry featureGeometry = lookupFeatureGeometry();
-        ReferencedEnvelope re = new ReferencedEnvelope(featureGeometry.getEnvelopeInternal(),
-                reader.getCoordinateReferenceSystem());
+        ReferencedEnvelope re =
+                new ReferencedEnvelope(
+                        featureGeometry.getEnvelopeInternal(),
+                        reader.getCoordinateReferenceSystem());
         this.granuleEnvelope = new GeneralEnvelope(re);
     }
-    
-    
 
     private Geometry lookupFeatureGeometry() {
         return (Geometry) feature.getDefaultGeometry();
@@ -90,8 +88,8 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.getMetadataNames();
     }
 
-    public GranuleSource getGranules(String coverageName, boolean readOnly) throws IOException,
-            UnsupportedOperationException {
+    public GranuleSource getGranules(String coverageName, boolean readOnly)
+            throws IOException, UnsupportedOperationException {
         return reader.getGranules(coverageName, readOnly);
     }
 
@@ -103,50 +101,52 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.isReadOnly();
     }
 
-    public void createCoverage(String coverageName, SimpleFeatureType schema) throws IOException,
-            UnsupportedOperationException {
+    public void createCoverage(String coverageName, SimpleFeatureType schema)
+            throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
-    public boolean removeCoverage(String coverageName) throws IOException,
-            UnsupportedOperationException {
+    public boolean removeCoverage(String coverageName)
+            throws IOException, UnsupportedOperationException {
         return reader.removeCoverage(coverageName);
     }
 
-    public boolean removeCoverage(String coverageName, boolean delete) throws IOException,
-            UnsupportedOperationException {
+    public boolean removeCoverage(String coverageName, boolean delete)
+            throws IOException, UnsupportedOperationException {
         return reader.removeCoverage(coverageName, delete);
     }
 
     public String getMetadataValue(String name) throws IOException {
-        if(name.endsWith("_DOMAIN_MINIMUM") || name.endsWith("_DOMAIN_MAXIMUM") || name.endsWith("_DOMAIN")) {
+        if (name.endsWith("_DOMAIN_MINIMUM")
+                || name.endsWith("_DOMAIN_MAXIMUM")
+                || name.endsWith("_DOMAIN")) {
             String dimensionName = name.substring(0, name.indexOf("_DOMAIN"));
             DimensionDescriptor descriptor = dimensionDescriptors.get(dimensionName);
-            if(descriptor != null) {
+            if (descriptor != null) {
                 Object start = feature.getAttribute(descriptor.getStartAttribute());
                 Object end = null;
-                if(descriptor.getEndAttribute() != null) {
+                if (descriptor.getEndAttribute() != null) {
                     end = feature.getAttribute(descriptor.getEndAttribute());
                 }
-                if(dimensionName.equalsIgnoreCase("TIME")) {
+                if (dimensionName.equalsIgnoreCase("TIME")) {
                     start = formatter.format((Date) start);
-                    if(end != null) {
+                    if (end != null) {
                         end = formatter.format((Date) end);
                     }
                 }
-                
+
                 if (name.endsWith("_DOMAIN_MINIMUM")) {
                     return String.valueOf(start);
                 }
                 if (name.endsWith("_DOMAIN_MAXIMUM")) {
-                    if(end != null) {
+                    if (end != null) {
                         return String.valueOf(end);
                     } else {
                         return String.valueOf(start);
                     }
                 }
                 if (name.endsWith("_DOMAIN")) {
-                    if(end != null) {
+                    if (end != null) {
                         return start + "/" + end;
                     } else {
                         return String.valueOf(start);
@@ -250,8 +250,9 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.getReadingResolutions(policy, requestedResolution);
     }
 
-    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy,
-            double[] requestedResolution) throws IOException {
+    public double[] getReadingResolutions(
+            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+            throws IOException {
         return reader.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
@@ -280,7 +281,8 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
     }
 
     @Override
-    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
+    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName)
+            throws IOException {
         return reader.getDimensionDescriptors(coverageName);
     }
 

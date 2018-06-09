@@ -11,11 +11,11 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -28,8 +28,6 @@ import org.geoserver.gwc.GWC;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableSet;
 
 public class CatalogStyleChangeListenerTest {
 
@@ -76,8 +74,8 @@ public class CatalogStyleChangeListenerTest {
         when(mockTileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
         when(mockTileLayer.getInfo()).thenReturn(mockTileLayerInfo);
         when(mockTileLayer.getName()).thenReturn(PREFIXED_RESOURCE_NAME);
-        when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME))).thenReturn(
-                Collections.singletonList(mockTileLayer));
+        when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME)))
+                .thenReturn(Collections.singletonList(mockTileLayer));
 
         Catalog mockCatalog = mock(Catalog.class);
         listener = new CatalogStyleChangeListener(mockMediator, mockCatalog);
@@ -89,7 +87,8 @@ public class CatalogStyleChangeListenerTest {
         styleNameModifyEvent.setNewValues(Arrays.asList(STYLE_NAME_MODIFIED));
     }
 
-    @Test public void testIgnorableChange() throws Exception {
+    @Test
+    public void testIgnorableChange() throws Exception {
 
         // not a name change
         styleNameModifyEvent.setPropertyNames(Arrays.asList("fileName"));
@@ -114,7 +113,8 @@ public class CatalogStyleChangeListenerTest {
         verify(mockTileLayerInfo, never()).cachedStyles();
     }
 
-    @Test public void testRenameDefaultStyle() throws Exception {
+    @Test
+    public void testRenameDefaultStyle() throws Exception {
         // this is another case of an ignorable change. Renaming the default style shall have no
         // impact.
         listener.handleModifyEvent(styleNameModifyEvent);
@@ -127,52 +127,73 @@ public class CatalogStyleChangeListenerTest {
         verify(mockTileLayerInfo, atLeastOnce()).cachedStyles();
     }
 
-    @Test public void testRenameAlternateStyle() throws Exception {
+    @Test
+    public void testRenameAlternateStyle() throws Exception {
 
         Set<ParameterFilter> params = new HashSet<ParameterFilter>();
         StyleParameterFilter newStyleFilter = new StyleParameterFilter();
         newStyleFilter.setStyles(ImmutableSet.of(STYLE_NAME));
         params.add(newStyleFilter);
-        
+
         TileLayerInfoUtil.setCachedStyles(mockTileLayerInfo, null, ImmutableSet.of(STYLE_NAME));
-        
-        verify(mockTileLayerInfo).addParameterFilter((ParameterFilter) argThat(allOf(hasProperty("key", is("STYLES")), hasProperty("styles", is(ImmutableSet.of(STYLE_NAME))))));
+
+        verify(mockTileLayerInfo)
+                .addParameterFilter(
+                        (ParameterFilter)
+                                argThat(
+                                        allOf(
+                                                hasProperty("key", is("STYLES")),
+                                                hasProperty(
+                                                        "styles",
+                                                        is(ImmutableSet.of(STYLE_NAME))))));
 
         ImmutableSet<String> styles = ImmutableSet.of(STYLE_NAME);
         when(mockTileLayerInfo.cachedStyles()).thenReturn(styles);
 
         listener.handleModifyEvent(styleNameModifyEvent);
 
-        verify(mockTileLayerInfo).addParameterFilter((ParameterFilter) argThat(allOf(hasProperty("key", is("STYLES")), hasProperty("styles", is(ImmutableSet.of(STYLE_NAME_MODIFIED))))));
+        verify(mockTileLayerInfo)
+                .addParameterFilter(
+                        (ParameterFilter)
+                                argThat(
+                                        allOf(
+                                                hasProperty("key", is("STYLES")),
+                                                hasProperty(
+                                                        "styles",
+                                                        is(
+                                                                ImmutableSet.of(
+                                                                        STYLE_NAME_MODIFIED))))));
 
         verify(mockTileLayer, times(1)).resetParameterFilters();
-        verify(mockMediator, times(1)).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME),
-                eq(STYLE_NAME));
+        verify(mockMediator, times(1))
+                .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
         verify(mockMediator, times(1)).save(same(mockTileLayer));
     }
 
     @SuppressWarnings("unchecked")
-    @Test public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
-        when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(
-                Collections.singleton(mockLayerInfo));
+    @Test
+    public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
+        when(mockMediator.getLayerInfosFor(same(mockStyle)))
+                .thenReturn(Collections.singleton(mockLayerInfo));
         when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
 
         CatalogPostModifyEventImpl postModifyEvent = new CatalogPostModifyEventImpl();
         postModifyEvent.setSource(mockStyle);
         listener.handlePostModifyEvent(postModifyEvent);
 
-        verify(mockMediator, times(1)).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME),
-                eq(STYLE_NAME));
+        verify(mockMediator, times(1))
+                .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
     }
 
     @SuppressWarnings("unchecked")
-    @Test public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
+    @Test
+    public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
         LayerGroupInfo mockGroup = mock(LayerGroupInfo.class);
         when(GWC.tileLayerName(mockGroup)).thenReturn("mockGroup");
 
         when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.EMPTY_LIST);
-        when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(
-                Collections.singleton(mockGroup));
+        when(mockMediator.getLayerGroupsFor(same(mockStyle)))
+                .thenReturn(Collections.singleton(mockGroup));
 
         CatalogPostModifyEventImpl postModifyEvent = new CatalogPostModifyEventImpl();
         postModifyEvent.setSource(mockStyle);
@@ -189,7 +210,7 @@ public class CatalogStyleChangeListenerTest {
         modifyEvent.setOldValues(Collections.singletonList(""));
         modifyEvent.setNewValues(Collections.singletonList("test"));
 
-        //should occur without exception
+        // should occur without exception
         listener.handleModifyEvent(modifyEvent);
     }
 }

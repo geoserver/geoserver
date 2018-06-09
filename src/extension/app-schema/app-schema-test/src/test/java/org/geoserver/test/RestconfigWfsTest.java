@@ -16,13 +16,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -48,7 +46,7 @@ import org.w3c.dom.Document;
 /**
  * Test REST configuration of app-schema. Note that the mapping and properties file are still copied
  * locally.
- * 
+ *
  * @author Ben Caradoc-Davies (CSIRO Earth Science and Resource Engineering)
  */
 public class RestconfigWfsTest extends CatalogRESTTestSupport {
@@ -64,7 +62,6 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         SchemaCache.disableAutomaticConfiguration();
     }
 
-    
     @Override
     @SuppressWarnings("deprecated")
     protected void onTearDown(SystemTestData testData) throws Exception {
@@ -74,102 +71,109 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         AppSchemaXSDRegistry.getInstance().dispose();
     }
 
-    private static final String WORKSPACE = "<workspace>" //
-            + "<name>gsml</name>"//
-            + "</workspace>";
+    private static final String WORKSPACE =
+            "<workspace>" //
+                    + "<name>gsml</name>" //
+                    + "</workspace>";
 
-    private static final String NAMESPACE = "<namespace>" //
-            + "<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>" //
-            + "</namespace>";
+    private static final String NAMESPACE =
+            "<namespace>" //
+                    + "<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>" //
+                    + "</namespace>";
 
-    private static final String DATASTORE = "<dataStore>" //
-            + "<name>MappedFeature</name>" //
-            + "<enabled>true</enabled>" //
-            + "<workspace>" //
-            + "<name>gsml</name>" //
-            + "</workspace>" //
-            + "<connectionParameters>" //
-            + "<entry key='dbtype'>app-schema</entry>" //
-            + "<entry key='url'>file:workspaces/gsml/MappedFeature/MappedFeature.xml</entry>" //
-            + "<entry key='namespace'>urn:cgi:xmlns:CGI:GeoSciML:2.0</entry>" //
-            + "</connectionParameters>" //
-            + "</dataStore>";
+    private static final String DATASTORE =
+            "<dataStore>" //
+                    + "<name>MappedFeature</name>" //
+                    + "<enabled>true</enabled>" //
+                    + "<workspace>" //
+                    + "<name>gsml</name>" //
+                    + "</workspace>" //
+                    + "<connectionParameters>" //
+                    + "<entry key='dbtype'>app-schema</entry>" //
+                    + "<entry key='url'>file:workspaces/gsml/MappedFeature/MappedFeature.xml</entry>" //
+                    + "<entry key='namespace'>urn:cgi:xmlns:CGI:GeoSciML:2.0</entry>" //
+                    + "</connectionParameters>" //
+                    + "</dataStore>";
 
-    private static final String FEATURETYPE = "<featureType>" //
-            + "<name>MappedFeature</name>" //
-            + "<nativeName>MappedFeature</nativeName>" //
-            + "<namespace>" //
-            + "<prefix>gsml</prefix>" //
-            + "</namespace>" //
-            + "<title>... TITLE ...</title>" //
-            + "<abstract>... ABSTRACT ...</abstract>" //
-            + "<srs>EPSG:4326</srs>" //
-            + "<latLonBoundingBox>" //
-            + "<minx>-180</minx>" //
-            + "<maxx>180</maxx>" //
-            + "<miny>-90</miny>" //
-            + "<maxy>90</maxy>" //
-            + "<crs>EPSG:4326</crs>" //
-            + "</latLonBoundingBox>" //
-            + "<projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>" //
-            + "<enabled>true</enabled>" //
-            + "<metadata>" //
-            + "<entry key='kml.regionateFeatureLimit'>10</entry>" //
-            + "<entry key='indexingEnabled'>false</entry>" //
-            + "<entry key='cachingEnabled'>false</entry>" //
-            + "</metadata>" //
-            + "<store class='dataStore'>" //
-            + "<name>MappedFeature</name>" //
-            + "</store>" //
-            + "<maxFeatures>0</maxFeatures>" //
-            + "<numDecimals>0</numDecimals>" //
-            + "</featureType>";
+    private static final String FEATURETYPE =
+            "<featureType>" //
+                    + "<name>MappedFeature</name>" //
+                    + "<nativeName>MappedFeature</nativeName>" //
+                    + "<namespace>" //
+                    + "<prefix>gsml</prefix>" //
+                    + "</namespace>" //
+                    + "<title>... TITLE ...</title>" //
+                    + "<abstract>... ABSTRACT ...</abstract>" //
+                    + "<srs>EPSG:4326</srs>" //
+                    + "<latLonBoundingBox>" //
+                    + "<minx>-180</minx>" //
+                    + "<maxx>180</maxx>" //
+                    + "<miny>-90</miny>" //
+                    + "<maxy>90</maxy>" //
+                    + "<crs>EPSG:4326</crs>" //
+                    + "</latLonBoundingBox>" //
+                    + "<projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>" //
+                    + "<enabled>true</enabled>" //
+                    + "<metadata>" //
+                    + "<entry key='kml.regionateFeatureLimit'>10</entry>" //
+                    + "<entry key='indexingEnabled'>false</entry>" //
+                    + "<entry key='cachingEnabled'>false</entry>" //
+                    + "</metadata>" //
+                    + "<store class='dataStore'>" //
+                    + "<name>MappedFeature</name>" //
+                    + "</store>" //
+                    + "<maxFeatures>0</maxFeatures>" //
+                    + "<numDecimals>0</numDecimals>" //
+                    + "</featureType>";
 
-    public static final String DS_PARAMETERS = "<parameters>" //
-            + "<Parameter>" //
-            + "<name>directory</name>" //
-            + "<value>file:./</value>" //
-            + "</Parameter>" //
-            + "</parameters>"; //
-    
-    public static final String MAPPING = "<as:AppSchemaDataAccess xmlns:as='http://www.geotools.org/app-schema'>" //
-            + "<namespaces>" //
-            + "<Namespace>" //
-            + "<prefix>gsml</prefix>" //
-            + "<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>" //
-            + "</Namespace>" //
-            + "</namespaces>" //
-            + "<sourceDataStores>" //
-            + "<DataStore>" //
-            + "<id>datastore</id>" //
-            + DS_PARAMETERS
-            + "</DataStore>" //
-            + "</sourceDataStores>" //
-            + "<targetTypes>" //
-            + "<FeatureType>" //
-            + "<schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>" //
-            + "</FeatureType>" //
-            + "</targetTypes>" //
-            + "<typeMappings>" //
-            + "<FeatureTypeMapping>" //
-            + "<sourceDataStore>datastore</sourceDataStore>" //
-            + "<sourceType>MAPPEDFEATURE</sourceType>" //
-            + "<targetElement>gsml:MappedFeature</targetElement>" //
-            + "<attributeMappings>" //
-            + "<AttributeMapping>" //
-            + "<targetAttribute>gsml:shape</targetAttribute>" //
-            + "<sourceExpression>" //
-            + "<OCQL>SHAPE</OCQL>"//
-            + "</sourceExpression>" //
-            + "</AttributeMapping>" //
-            + "</attributeMappings>" //
-            + "</FeatureTypeMapping>" //
-            + "</typeMappings>" //
-            + "</as:AppSchemaDataAccess>";
+    public static final String DS_PARAMETERS =
+            "<parameters>" //
+                    + "<Parameter>" //
+                    + "<name>directory</name>" //
+                    + "<value>file:./</value>" //
+                    + "</Parameter>" //
+                    + "</parameters>"; //
 
-    public static final String PROPERTIES = "_=SHAPE:Geometry:srid=4326\n" //
-            + "mf.1=POINT(0 1)\n" //
-            + "mf.2=POINT(2 3)\n";
+    public static final String MAPPING =
+            "<as:AppSchemaDataAccess xmlns:as='http://www.geotools.org/app-schema'>" //
+                    + "<namespaces>" //
+                    + "<Namespace>" //
+                    + "<prefix>gsml</prefix>" //
+                    + "<uri>urn:cgi:xmlns:CGI:GeoSciML:2.0</uri>" //
+                    + "</Namespace>" //
+                    + "</namespaces>" //
+                    + "<sourceDataStores>" //
+                    + "<DataStore>" //
+                    + "<id>datastore</id>" //
+                    + DS_PARAMETERS
+                    + "</DataStore>" //
+                    + "</sourceDataStores>" //
+                    + "<targetTypes>" //
+                    + "<FeatureType>" //
+                    + "<schemaUri>http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd</schemaUri>" //
+                    + "</FeatureType>" //
+                    + "</targetTypes>" //
+                    + "<typeMappings>" //
+                    + "<FeatureTypeMapping>" //
+                    + "<sourceDataStore>datastore</sourceDataStore>" //
+                    + "<sourceType>MAPPEDFEATURE</sourceType>" //
+                    + "<targetElement>gsml:MappedFeature</targetElement>" //
+                    + "<attributeMappings>" //
+                    + "<AttributeMapping>" //
+                    + "<targetAttribute>gsml:shape</targetAttribute>" //
+                    + "<sourceExpression>" //
+                    + "<OCQL>SHAPE</OCQL>" //
+                    + "</sourceExpression>" //
+                    + "</AttributeMapping>" //
+                    + "</attributeMappings>" //
+                    + "</FeatureTypeMapping>" //
+                    + "</typeMappings>" //
+                    + "</as:AppSchemaDataAccess>";
+
+    public static final String PROPERTIES =
+            "_=SHAPE:Geometry:srid=4326\n" //
+                    + "mf.1=POINT(0 1)\n" //
+                    + "mf.2=POINT(2 3)\n";
 
     /**
      * Test that REST can be used to configure an app-schema datastore and that this datastore can
@@ -198,9 +202,11 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         // copy the mapping and properties files
         copyFiles();
         // create featuretype
-        response = postAsServletResponse(
-                "/rest/workspaces/gsml/datastores/MappedFeature/featuretypes", FEATURETYPE,
-                "text/xml");
+        response =
+                postAsServletResponse(
+                        "/rest/workspaces/gsml/datastores/MappedFeature/featuretypes",
+                        FEATURETYPE,
+                        "text/xml");
         assertEquals(201, response.getStatus());
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
         assertNotNull(ft);
@@ -211,16 +217,18 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         assertXpathCount(2, "//gsml:MappedFeature", doc);
     }
 
-    /**
-     * Copy the mapping and properties files to the data directory.
-     */
+    /** Copy the mapping and properties files to the data directory. */
     private void copyFiles() throws Exception {
-        File dir = new File(new File(new File(getTestData().getDataDirectoryRoot(), "workspaces"),
-                "gsml"), "MappedFeature");
+        File dir =
+                new File(
+                        new File(
+                                new File(getTestData().getDataDirectoryRoot(), "workspaces"),
+                                "gsml"),
+                        "MappedFeature");
         dir.mkdirs();
         File propertiesFile = new File(dir, "MAPPEDFEATURE.properties");
         IOUtils.copy(new ByteArrayInputStream(PROPERTIES.getBytes("UTF-8")), propertiesFile);
-        
+
         String mapping = MAPPING;
         String onlineTestId = System.getProperty("testDatabase");
         if (onlineTestId != null) {
@@ -231,28 +239,32 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
             AbstractReferenceDataSetup setup;
             if (onlineTestId.equals("oracle")) {
                 // oracle
-                mapping = mapping.replaceAll(DS_PARAMETERS, Matcher
-                        .quoteReplacement(AppSchemaTestOracleSetup.DB_PARAMS));
+                mapping =
+                        mapping.replaceAll(
+                                DS_PARAMETERS,
+                                Matcher.quoteReplacement(AppSchemaTestOracleSetup.DB_PARAMS));
                 setup = AppSchemaTestOracleSetup.getInstance(propertyFiles);
             } else {
                 // postgis
-                mapping = mapping.replaceAll(DS_PARAMETERS, Matcher
-                        .quoteReplacement(AppSchemaTestPostgisSetup.DB_PARAMS));
+                mapping =
+                        mapping.replaceAll(
+                                DS_PARAMETERS,
+                                Matcher.quoteReplacement(AppSchemaTestPostgisSetup.DB_PARAMS));
                 setup = AppSchemaTestPostgisSetup.getInstance(propertyFiles);
             }
             // Run the sql script to create the tables from properties files
             setup.setUp();
             setup.tearDown();
         }
-        IOUtils.copy(new ByteArrayInputStream(mapping.getBytes("UTF-8")), new File(dir,
-                "MappedFeature.xml"));
+        IOUtils.copy(
+                new ByteArrayInputStream(mapping.getBytes("UTF-8")),
+                new File(dir, "MappedFeature.xml"));
     }
 
     /**
      * Return {@link Document} as a pretty-printed string.
-     * 
-     * @param document
-     *            document to be prettified
+     *
+     * @param document document to be prettified
      * @return the prettified string
      */
     private String prettyString(Document document) {
@@ -263,11 +275,9 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
 
     /**
      * Pretty-print a {@link Document} to an {@link OutputStream}.
-     * 
-     * @param document
-     *            document to be prettified
-     * @param output
-     *            stream to which output is written
+     *
+     * @param document document to be prettified
+     * @param output stream to which output is written
      */
     private void prettyPrint(Document document, OutputStream output) {
         try {
@@ -281,7 +291,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
 
     /**
      * Assert that there are count occurrences of xpath.
-     * 
+     *
      * @param count
      * @param xpath
      * @param document
@@ -294,5 +304,4 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));
         assertEquals(count, xpathEngine.getMatchingNodes(xpath, document).getLength());
     }
-
 }

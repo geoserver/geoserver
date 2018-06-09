@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.geoserver.security.Response;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
@@ -35,14 +34,13 @@ import org.opengis.filter.identity.FeatureId;
 
 /**
  * A feature store wrapper enforcing the access policy contained in the WrapperPolicy.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  * @param <T>
  * @param <F>
  */
-public class SecuredFeatureStore<T extends FeatureType, F extends Feature> extends
-        SecuredFeatureSource<T, F> implements FeatureStore<T, F> {
+public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
+        extends SecuredFeatureSource<T, F> implements FeatureStore<T, F> {
 
     Transaction transaction;
 
@@ -66,8 +64,8 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
         } else {
             // check if any of the inserted features does not pass the write filters
             if (writeQuery.getFilter() != null && writeQuery.getFilter() != Filter.INCLUDE) {
-                final FilteringFeatureCollection<T, F> filtered = new FilteringFeatureCollection<T, F>(
-                        collection, writeQuery.getFilter());
+                final FilteringFeatureCollection<T, F> filtered =
+                        new FilteringFeatureCollection<T, F>(collection, writeQuery.getFilter());
                 if (filtered.size() < collection.size()) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.response == Response.CHALLENGE) {
@@ -86,19 +84,23 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
                 if (collection.getSchema() instanceof SimpleFeatureType
                         && storeDelegate instanceof SimpleFeatureStore) {
                     // see if the user specified the value of any attribute she cannot write
-                    final SimpleFeatureCollection simpleCollection = (SimpleFeatureCollection) collection;
+                    final SimpleFeatureCollection simpleCollection =
+                            (SimpleFeatureCollection) collection;
 
                     // wrap it with a collection that will check if any non writable attribute has
                     // been given a value
                     List<String> writableAttributes = Arrays.asList(writeQuery.getPropertyNames());
-                    CheckAttributesFeatureCollection checker = new CheckAttributesFeatureCollection(
-                            simpleCollection, writableAttributes, policy.getResponse());
+                    CheckAttributesFeatureCollection checker =
+                            new CheckAttributesFeatureCollection(
+                                    simpleCollection, writableAttributes, policy.getResponse());
                     return ((SimpleFeatureStore) storeDelegate).addFeatures(checker);
                 } else {
                     // TODO: add retyping to shave off attributes we cannot write
-                    LOGGER.log(Level.SEVERE, "Unfinished implementation, we need to shave off "
-                            + "the attributes one cannot write off complex features. "
-                            + "However at this time there is no writable complex feature!");
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Unfinished implementation, we need to shave off "
+                                    + "the attributes one cannot write off complex features. "
+                                    + "However at this time there is no writable complex feature!");
                     return storeDelegate.addFeatures(collection);
                 }
             }
@@ -116,7 +118,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
 
     public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
             throws IOException {
-        modifyFeatures(new AttributeDescriptor[] { type }, new Object[] { value }, filter);
+        modifyFeatures(new AttributeDescriptor[] {type}, new Object[] {value}, filter);
     }
 
     public void modifyFeatures(Name[] names, Object[] values, Filter filter) throws IOException {
@@ -139,8 +141,8 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
             storeDelegate.modifyFeatures(names, values, mixed.getFilter());
         } else {
             // get the writable attribute set
-            Set<String> queryNames = new HashSet<String>(Arrays.asList(writeQuery
-                    .getPropertyNames()));
+            Set<String> queryNames =
+                    new HashSet<String>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
             for (int i = 0; i < names.length; i++) {
@@ -162,7 +164,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
 
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
-        modifyFeatures(new Name[] { attributeName }, new Object[] { attributeValue }, filter);
+        modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
     }
 
     public void removeFeatures(Filter filter) throws IOException {
@@ -182,8 +184,8 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
     }
 
     public void setFeatures(FeatureReader<T, F> reader) throws IOException {
-        throw new UnsupportedOperationException("Unaware of any GS api using this, "
-                + "so it has not been implemented");
+        throw new UnsupportedOperationException(
+                "Unaware of any GS api using this, " + "so it has not been implemented");
     }
 
     public Transaction getTransaction() {
@@ -195,10 +197,10 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
     }
 
     /**
-     * Notifies the caller the requested operation is not supported, using a plain
-     * {@link UnsupportedOperationException} in case we have to conceal the fact the data is
-     * actually writable, using an Spring security exception otherwise to force an authentication
-     * from the user
+     * Notifies the caller the requested operation is not supported, using a plain {@link
+     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
+     * writable, using an Spring security exception otherwise to force an authentication from the
+     * user
      */
     protected RuntimeException unsupportedOperation() {
         String typeName = getSchema().getName().getLocalPart();
@@ -208,5 +210,4 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature> exten
             return new UnsupportedOperationException(typeName + " is read only");
         }
     }
-
 }

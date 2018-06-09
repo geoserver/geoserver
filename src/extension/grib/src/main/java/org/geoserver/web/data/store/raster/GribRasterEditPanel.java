@@ -11,8 +11,11 @@ import org.apache.wicket.markup.html.form.Form;
 public class GribRasterEditPanel extends AbstractRasterFileEditPanel {
 
     public GribRasterEditPanel(String componentId, Form storeEditForm) {
-        super(componentId, storeEditForm, new String[] { ".gr", ".gr1", ".grb", ".grib", ".grb1",
-                ".grib1", ".gr2", ".grib2", ".grb2" });
+        super(
+                componentId,
+                storeEditForm,
+                new String[] {
+                    ".gr", ".gr1", ".grb", ".grib", ".grb1", ".grib1", ".gr2", ".grib2", ".grb2"
+                });
     }
-
 }

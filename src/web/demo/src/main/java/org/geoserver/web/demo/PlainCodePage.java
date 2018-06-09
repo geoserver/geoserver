@@ -14,12 +14,12 @@ import org.apache.wicket.model.PropertyModel;
  * Shows the text in a <pre> section
  */
 public class PlainCodePage extends WebPage {
-	String code;
+    String code;
 
-	public PlainCodePage(final ModalWindow container, final ModalWindow responseWindow, String initialXml) {
-		this.code = initialXml;
-		
-		add(new Label("code", new PropertyModel(this, "code")));
-	}
-	
+    public PlainCodePage(
+            final ModalWindow container, final ModalWindow responseWindow, String initialXml) {
+        this.code = initialXml;
+
+        add(new Label("code", new PropertyModel(this, "code")));
+    }
 }

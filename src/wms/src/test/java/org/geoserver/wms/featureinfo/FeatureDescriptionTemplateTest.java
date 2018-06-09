@@ -7,21 +7,18 @@ package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.*;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
-
 import org.geoserver.template.FeatureWrapper;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class FeatureDescriptionTemplateTest {
 
@@ -36,11 +33,20 @@ public class FeatureDescriptionTemplateTest {
 
         // create some data
         GeometryFactory gf = new GeometryFactory();
-        SimpleFeatureType featureType = DataUtilities.createType("testType",
-                "string:String,int:Integer,double:Double,geom:Point");
+        SimpleFeatureType featureType =
+                DataUtilities.createType(
+                        "testType", "string:String,int:Integer,double:Double,geom:Point");
 
-        SimpleFeature f = SimpleFeatureBuilder.build(featureType, new Object[] { "three",
-                new Integer(3), new Double(3.3), gf.createPoint(new Coordinate(3, 3)) }, "fid.3");
+        SimpleFeature f =
+                SimpleFeatureBuilder.build(
+                        featureType,
+                        new Object[] {
+                            "three",
+                            new Integer(3),
+                            new Double(3.3),
+                            gf.createPoint(new Coordinate(3, 3))
+                        },
+                        "fid.3");
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         template.process(f, new OutputStreamWriter(output));

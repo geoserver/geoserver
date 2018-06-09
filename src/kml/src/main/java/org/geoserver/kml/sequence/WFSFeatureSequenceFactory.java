@@ -5,21 +5,19 @@
  */
 package org.geoserver.kml.sequence;
 
+import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import java.util.List;
-
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
-
 /**
- * Creates a sequence of Placemark objects mapping the vector contents of a layer. 
- * This one is geared towards WFS, as such it ignores styles 
- * 
+ * Creates a sequence of Placemark objects mapping the vector contents of a layer. This one is
+ * geared towards WFS, as such it ignores styles
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
@@ -95,7 +93,5 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
             }
             return null;
         }
-
     }
-
 }

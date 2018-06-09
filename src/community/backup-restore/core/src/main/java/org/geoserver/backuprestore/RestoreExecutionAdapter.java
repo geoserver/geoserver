@@ -8,10 +8,10 @@ import org.geoserver.catalog.Catalog;
 import org.springframework.batch.core.JobExecution;
 
 /**
- * Wraps a Spring Batch Restore {@link JobExecution} by adding specific {@link Backup} I/O parameters.
- * 
- * @author Alessio Fabiani, GeoSolutions
+ * Wraps a Spring Batch Restore {@link JobExecution} by adding specific {@link Backup} I/O
+ * parameters.
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class RestoreExecutionAdapter extends AbstractExecutionAdapter {
 
@@ -21,18 +21,13 @@ public class RestoreExecutionAdapter extends AbstractExecutionAdapter {
         super(jobExecution, totalNumberOfSteps);
     }
 
-    /**
-     * @return the restoreCatalog
-     */
+    /** @return the restoreCatalog */
     public Catalog getRestoreCatalog() {
         return restoreCatalog;
     }
 
-    /**
-     * @param restoreCatalog the restoreCatalog to set
-     */
+    /** @param restoreCatalog the restoreCatalog to set */
     public void setRestoreCatalog(Catalog catalog) {
         this.restoreCatalog = catalog;
     }
-
 }

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wfs.response;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OWS11ServiceExceptionHandler;
 import org.geoserver.ows.Request;
@@ -12,17 +14,12 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.json.JSONType;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
 /**
  * Handles a WFS 2.0 service exception by producing an exception report.
  *
  * @author Brad Hards, Sigma Bravo
- *
- * Based on WfsExceptionHandler by Justin Deoliveira - The Open Planning Project
- * and Carlo Cancellieri - GeoSolutions.
- *
+ *     <p>Based on WfsExceptionHandler by Justin Deoliveira - The Open Planning Project and Carlo
+ *     Cancellieri - GeoSolutions.
  */
 public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
 
@@ -39,17 +36,15 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
         this.gs = gs;
     }
 
-    /**
-     * Encodes a ogc:ServiceExceptionReport to output.
-     */
+    /** Encodes a ogc:ServiceExceptionReport to output. */
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
 
         boolean verbose = gs.getSettings().isVerboseExceptions();
         String charset = gs.getSettings().getCharset();
-        
+
         setHttpHeaders(exception, request);
-        
+
         // first of all check what kind of exception handling we must perform
         final String exceptions;
         try {
@@ -77,7 +72,7 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
     private void setHttpHeaders(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
         String code = exception.getCode();
-        
+
         if (code == null) {
             exception.setCode(WFSException.NO_APPLICABLE_CODE);
         }
@@ -92,6 +87,5 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
             // all other codes use 400
             response.setStatus(400);
         }
-
     }
 }

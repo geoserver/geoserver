@@ -7,9 +7,7 @@ package org.geoserver.rest.catalog;
 
 import org.geoserver.platform.resource.Resource;
 
-/**
- * Data transfer info object, used to transport template name.
- */
+/** Data transfer info object, used to transport template name. */
 public class TemplateInfo {
 
     private String name;

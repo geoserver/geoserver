@@ -5,7 +5,6 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.ResourcePool;
@@ -29,12 +28,11 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     private int readTimeout;
     private int connectTimeout;
 
-    //Map<String, String> headers;
+    // Map<String, String> headers;
     private String headerName; // todo: replace with Map<String, String>
-    private String headerValue;// todo: replace with Map<String, String>
+    private String headerValue; // todo: replace with Map<String, String>
 
-    protected WMTSStoreInfoImpl() {
-    }
+    protected WMTSStoreInfoImpl() {}
 
     public WMTSStoreInfoImpl(Catalog catalog) {
         super(catalog);
@@ -75,7 +73,7 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
 
     @Override
     public void setMaxConnections(int maxConcurrentConnections) {
-        this.maxConnections = maxConcurrentConnections;        
+        this.maxConnections = maxConcurrentConnections;
     }
 
     @Override
@@ -98,28 +96,24 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
         this.connectTimeout = timeoutSeconds;
     }
 
-    public String getHeaderName()
-    {
+    public String getHeaderName() {
         return headerName;
     }
 
-    public void setHeaderName(String headerName)
-    {
+    public void setHeaderName(String headerName) {
         this.headerName = headerName;
     }
 
-    public String getHeaderValue()
-    {
+    public String getHeaderValue() {
         return headerValue;
     }
 
-    public void setHeaderValue(String headerValue)
-    {
+    public void setHeaderValue(String headerValue) {
         this.headerValue = headerValue;
     }
 
     public void accept(CatalogVisitor visitor) {
-        visitor.visit( this);
+        visitor.visit(this);
     }
 
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
@@ -139,6 +133,4 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     public void setUseConnectionPooling(boolean useHttpConnectionPooling) {
         getMetadata().put("useConnectionPooling", Boolean.valueOf(useHttpConnectionPooling));
     }
-
-    
 }

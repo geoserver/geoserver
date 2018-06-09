@@ -17,5 +17,4 @@ public class MonitorMediaTypeCallback implements MediaTypeCallback {
         configurer.mediaType("zip", MonitorRequestController.ZIP_MEDIATYPE);
         configurer.mediaType("xls", MonitorRequestController.EXCEL_MEDIATYPE);
     }
-
 }

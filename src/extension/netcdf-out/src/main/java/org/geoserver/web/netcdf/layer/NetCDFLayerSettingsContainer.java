@@ -8,8 +8,8 @@ package org.geoserver.web.netcdf.layer;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 
 /**
- * Extension for {@link NetCDFSettingsContainer} class for supporting Layer name and Unit of Measure. This class stores the NetCDF output settings for
- * a single layer.
+ * Extension for {@link NetCDFSettingsContainer} class for supporting Layer name and Unit of
+ * Measure. This class stores the NetCDF output settings for a single layer.
  */
 @SuppressWarnings("serial")
 public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
@@ -20,8 +20,7 @@ public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
     /** Layer Unit of Measure */
     private String layerUOM;
 
-    public NetCDFLayerSettingsContainer() {
-    }
+    public NetCDFLayerSettingsContainer() {}
 
     public NetCDFLayerSettingsContainer(NetCDFSettingsContainer globalContainer) {
         setCompressionLevel(globalContainer.getCompressionLevel());
@@ -49,5 +48,4 @@ public class NetCDFLayerSettingsContainer extends NetCDFSettingsContainer {
     public void setLayerUOM(String layerUOM) {
         this.layerUOM = layerUOM;
     }
-
 }

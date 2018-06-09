@@ -5,6 +5,9 @@
  */
 package org.geoserver.rest.service;
 
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -24,30 +27,36 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerMapping;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.logging.Logger;
-
-/**
- * WCS Settings controller
- */
+/** WCS Settings controller */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wcs", produces = {
+@RequestMapping(
+    path = RestBaseController.ROOT_PATH + "/services/wcs",
+    produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE})
+        MediaType.TEXT_HTML_VALUE
+    }
+)
 public class WCSSettingsController extends ServiceSettingsController {
     private static final Logger LOGGER = Logging.getLogger(WCSSettingsController.class);
 
     @Autowired
-    public WCSSettingsController(GeoServer geoServer) { super(geoServer, WCSInfo.class); }
+    public WCSSettingsController(GeoServer geoServer) {
+        super(geoServer, WCSInfo.class);
+    }
 
-    @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void serviceSettingsPut(@RequestBody WCSInfo info,
-                                   @PathVariable(required = false) String workspaceName) {
+    @PutMapping(
+        value = {"/settings", "/workspaces/{workspaceName}/settings"},
+        consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE
+        }
+    )
+    public void serviceSettingsPut(
+            @RequestBody WCSInfo info, @PathVariable(required = false) String workspaceName) {
         super.serviceSettingsPut(info, workspaceName);
     }
 
@@ -57,34 +66,43 @@ public class WCSSettingsController extends ServiceSettingsController {
     }
 
     @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return WCSInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setHideFeatureTypeAttributes();
-        persister.setCallback( new XStreamPersister.Callback() {
-            @Override
-            protected ServiceInfo getServiceObject() {
-                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspaceName");
-                ServiceInfo service;
-                if (workspace != null) {
-                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                    service = geoServer.getService(ws, WCSInfo.class);
-                } else {
-                    service = geoServer.getService(WCSInfo.class);
-                }
-                return service;
-            }
-            @Override
-            protected Class<WCSInfo> getObjectClass() {
-                return WCSInfo.class;
-            }
-        });
+        persister.setCallback(
+                new XStreamPersister.Callback() {
+                    @Override
+                    protected ServiceInfo getServiceObject() {
+                        Map<String, String> uriTemplateVars =
+                                (Map<String, String>)
+                                        RequestContextHolder.getRequestAttributes()
+                                                .getAttribute(
+                                                        HandlerMapping
+                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+                                                        RequestAttributes.SCOPE_REQUEST);
+                        String workspace = uriTemplateVars.get("workspaceName");
+                        ServiceInfo service;
+                        if (workspace != null) {
+                            WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                            service = geoServer.getService(ws, WCSInfo.class);
+                        } else {
+                            service = geoServer.getService(WCSInfo.class);
+                        }
+                        return service;
+                    }
+
+                    @Override
+                    protected Class<WCSInfo> getObjectClass() {
+                        return WCSInfo.class;
+                    }
+                });
         WCSXStreamLoader.initXStreamPersister(persister);
     }
-
-
 }

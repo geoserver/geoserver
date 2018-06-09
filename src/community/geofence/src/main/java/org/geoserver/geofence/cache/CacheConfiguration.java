@@ -20,14 +20,10 @@
 
 package org.geoserver.geofence.cache;
 
+import com.google.common.base.Ticker;
 import java.io.Serializable;
 
-import com.google.common.base.Ticker;
-
-/**
- * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
- *
- */
+/** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
 public class CacheConfiguration implements Serializable, Cloneable {
 
     private long size = 100;
@@ -72,13 +68,17 @@ public class CacheConfiguration implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[size=" + size + " refrMsec=" + refreshMilliSec
-                + ", expMsec=" + expireMilliSec + ']';
+        return getClass().getSimpleName()
+                + "[size="
+                + size
+                + " refrMsec="
+                + refreshMilliSec
+                + ", expMsec="
+                + expireMilliSec
+                + ']';
     }
 
-    /**
-     * Creates a copy of the configuration object.
-     */
+    /** Creates a copy of the configuration object. */
     @Override
     public CacheConfiguration clone() {
         try {

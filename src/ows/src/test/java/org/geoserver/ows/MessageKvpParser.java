@@ -5,8 +5,6 @@
  */
 package org.geoserver.ows;
 
-
-
 public class MessageKvpParser extends KvpParser {
     public MessageKvpParser() {
         super("message", Message.class);

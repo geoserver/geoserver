@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -27,18 +26,16 @@ import org.geotools.renderer.lite.StreamingRenderer;
 /**
  * Extends DefaultMapContext to provide the whole set of request parameters a WMS GetMap request can
  * have.
- * 
- * <p>
- * In particular, adds holding for the following parameter values:
- * 
+ *
+ * <p>In particular, adds holding for the following parameter values:
+ *
  * <ul>
- * <li>WIDTH</li>
- * <li>HEIGHT</li>
- * <li>BGCOLOR</li>
- * <li>TRANSPARENT</li>
+ *   <li>WIDTH
+ *   <li>HEIGHT
+ *   <li>BGCOLOR
+ *   <li>TRANSPARENT
  * </ul>
- * </p>
- * 
+ *
  * @author Gabriel Roldan
  * @author Simone Giannecchini - GeoSolutions SAS
  * @version $Id$
@@ -61,11 +58,11 @@ public class WMSMapContent extends MapContent {
 
     /** map rotation in degrees */
     private double angle;
-    
+
     private List<GetMapCallback> callbacks;
-    
+
     private Map<String, Object> metadata = new HashMap<>();
-    
+
     private Integer maxRenderingTime;
 
     public int getTileSize() {
@@ -82,9 +79,7 @@ public class WMSMapContent extends MapContent {
      */
     private int buffer;
 
-    /**
-     * The {@link IndexColorModel} the user required for the resulting map
-     */
+    /** The {@link IndexColorModel} the user required for the resulting map */
     private IndexColorModel icm;
 
     private GetMapRequest request; // hold onto it so we can grab info from it
@@ -99,7 +94,7 @@ public class WMSMapContent extends MapContent {
         super();
         request = req;
     }
-    
+
     public WMSMapContent(WMSMapContent other, boolean copyLayers) {
         this.mapWidth = other.mapWidth;
         this.mapHeight = other.mapHeight;
@@ -111,7 +106,7 @@ public class WMSMapContent extends MapContent {
         this.buffer = other.buffer;
         this.icm = other.icm;
         this.request = other.request;
-        if(copyLayers) {
+        if (copyLayers) {
             this.layers().addAll(other.layers());
         }
         this.getViewport().setBounds(other.getViewport().getBounds());
@@ -173,11 +168,7 @@ public class WMSMapContent extends MapContent {
         this.icm = paletteInverter;
     }
 
-    /**
-     * The clockwise rotation angle of the map, in degrees
-     * 
-     *
-     */
+    /** The clockwise rotation angle of the map, in degrees */
     public double getAngle() {
         return angle;
     }
@@ -185,31 +176,31 @@ public class WMSMapContent extends MapContent {
     public void setAngle(double rotation) {
         this.angle = rotation;
     }
-    
+
     @Override
     public boolean addLayer(Layer layer) {
         layer = fireLayerCallbacks(layer);
-        if(layer != null) {
+        if (layer != null) {
             return super.addLayer(layer);
         } else {
             return false;
         }
     }
-    
+
     private Layer fireLayerCallbacks(Layer layer) {
         // if no callbacks, return the layer as is
-        if(callbacks == null) {
+        if (callbacks == null) {
             return layer;
         }
-        
+
         // process through the callbacks
         for (GetMapCallback callback : callbacks) {
             layer = callback.beforeLayer(this, layer);
-            if(layer == null) {
+            if (layer == null) {
                 return null;
             }
         }
-        
+
         return layer;
     }
 
@@ -218,12 +209,12 @@ public class WMSMapContent extends MapContent {
         List<Layer> filtered = new ArrayList<Layer>(layers.size());
         for (Layer layer : layers) {
             layer = fireLayerCallbacks(layer);
-            if(layer != null) {
+            if (layer != null) {
                 filtered.add(layer);
             }
         }
-        
-        if(filtered.size() > 0) {
+
+        if (filtered.size() > 0) {
             return super.addLayers(filtered);
         } else {
             return 0;
@@ -233,8 +224,6 @@ public class WMSMapContent extends MapContent {
     /**
      * Returns the transformation going from the map area space to the screen space taking into
      * account map rotation
-     * 
-     *
      */
     public AffineTransform getRenderingTransform() {
         Rectangle paintArea = new Rectangle(0, 0, getMapWidth(), getMapHeight());
@@ -255,13 +244,10 @@ public class WMSMapContent extends MapContent {
     /**
      * Returns the actual area that should be drawn taking into account the map rotation account map
      * rotation
-     * 
-     *
      */
     public ReferencedEnvelope getRenderingArea() {
-        ReferencedEnvelope dataArea = getViewport().getBounds(); 
-        if (getAngle() == 0)
-            return dataArea;
+        ReferencedEnvelope dataArea = getViewport().getBounds();
+        if (getAngle() == 0) return dataArea;
 
         AffineTransform tx = new AffineTransform();
         double offsetX = dataArea.getMinX() + dataArea.getWidth() / 2;
@@ -269,42 +255,44 @@ public class WMSMapContent extends MapContent {
         tx.translate(offsetX, offsetY);
         tx.rotate(Math.toRadians(getAngle()));
         tx.translate(-offsetX, -offsetY);
-        Rectangle2D dataAreaShape = new Rectangle2D.Double(dataArea.getMinX(), dataArea.getMinY(),
-                dataArea.getWidth(), dataArea.getHeight());
+        Rectangle2D dataAreaShape =
+                new Rectangle2D.Double(
+                        dataArea.getMinX(),
+                        dataArea.getMinY(),
+                        dataArea.getWidth(),
+                        dataArea.getHeight());
         Rectangle2D transformedBounds = tx.createTransformedShape(dataAreaShape).getBounds2D();
         return new ReferencedEnvelope(transformedBounds, dataArea.getCoordinateReferenceSystem());
     }
-    
+
     /**
      * Get the contact information associated with this context, returns an empty string if
      * contactInformation has not been set.
-     * 
+     *
      * @return the ContactInformation or an empty string if not present
      */
-    public String getContactInformation(){
-        String contact =  (String) getUserData().get("contact");
+    public String getContactInformation() {
+        String contact = (String) getUserData().get("contact");
         return contact == null ? "" : contact;
     }
 
     /**
      * Set contact information associated with this class.
-     * 
-     * @param contactInformation
-     *            the ContactInformation.
+     *
+     * @param contactInformation the ContactInformation.
      */
-    public void setContactInformation(final String contactInformation){
+    public void setContactInformation(final String contactInformation) {
         getUserData().put("contact", contactInformation);
     }
 
-    
     /**
      * Get an array of keywords associated with this context, returns an empty array if no keywords
      * have been set. The array returned is a copy, changes to the returned array won't influence
      * the MapContextState
-     * 
+     *
      * @return array of keywords
      */
-    public String[] getKeywords(){
+    public String[] getKeywords() {
         Object obj = getUserData().get("keywords");
         if (obj == null) {
             return new String[0];
@@ -326,46 +314,44 @@ public class WMSMapContent extends MapContent {
 
     /**
      * Set an array of keywords to associate with this context.
-     * 
-     * @param keywords
-     *            the Keywords.
+     *
+     * @param keywords the Keywords.
      */
-    public void setKeywords(final String[] keywords){
+    public void setKeywords(final String[] keywords) {
         getUserData().put("keywords", keywords);
     }
-    
+
     /**
      * Get the abstract which describes this interface, returns an empty string if this has not been
      * set yet.
-     * 
+     *
      * @return The Abstract or an empty string if not present
      */
-    public String getAbstract(){
+    public String getAbstract() {
         String description = (String) getUserData().get("abstract");
         return description == null ? "" : description;
     }
 
     /**
      * Set an abstract which describes this context.
-     * 
-     * @param conAbstract
-     *            the Abstract.
+     *
+     * @param conAbstract the Abstract.
      */
-    public void setAbstract(final String contextAbstract){
+    public void setAbstract(final String contextAbstract) {
         getUserData().put("abstract", contextAbstract);
     }
 
     public void setGetMapCallbacks(final List<GetMapCallback> callbacks) {
         this.callbacks = callbacks;
     }
-    
+
     public double getScaleDenominator() {
         return getScaleDenominator(false);
     }
 
     public double getScaleDenominator(boolean considerDPI) {
         java.util.Map hints = new HashMap();
-        if(considerDPI) {
+        if (considerDPI) {
             // compute the DPI
             if (request.getFormatOptions().get("dpi") != null) {
                 hints.put(StreamingRenderer.DPI_KEY, (request.getFormatOptions().get("dpi")));
@@ -378,28 +364,27 @@ public class WMSMapContent extends MapContent {
                                 + "This functionality could be added, please provide a pull request for it ;-)");
             }
             try {
-                return RendererUtilities.calculateScale(getViewport().getBounds(), getMapWidth(),
-                        getMapHeight(), hints);
+                return RendererUtilities.calculateScale(
+                        getViewport().getBounds(), getMapWidth(), getMapHeight(), hints);
             } catch (Exception e) {
                 throw new ServiceException("Failed to compute accurate scale denominator", e);
             }
         } else {
             AffineTransform at = getRenderingTransform();
             if (Math.abs(XAffineTransform.getRotation(at)) != 0.0) {
-                return RendererUtilities.calculateOGCScaleAffine(getCoordinateReferenceSystem(),
-                        at, hints);
+                return RendererUtilities.calculateOGCScaleAffine(
+                        getCoordinateReferenceSystem(), at, hints);
             } else {
-                return RendererUtilities.calculateOGCScale(getViewport().getBounds(),
-                        getMapWidth(), hints);
+                return RendererUtilities.calculateOGCScale(
+                        getViewport().getBounds(), getMapWidth(), hints);
             }
         }
     }
 
     /**
      * Computes the StreamingRenderer scale computation method hint based on the current request
-     * 
-     * @param request
      *
+     * @param request
      */
     public String getRendererScaleMethod() {
         if (request.getScaleMethod() == ScaleComputationMethod.Accurate) {
@@ -408,16 +393,18 @@ public class WMSMapContent extends MapContent {
             return StreamingRenderer.SCALE_OGC;
         }
     }
-    
+
     /**
-     * Generic map attached to the map content, can be used to persist information around the life cycle
-     * when the {@link WebMap} is not appropriate, or to persist state across the various response callbacks
+     * Generic map attached to the map content, can be used to persist information around the life
+     * cycle when the {@link WebMap} is not appropriate, or to persist state across the various
+     * response callbacks
+     *
      * @return
      */
     public Map<String, Object> getMetadata() {
         return metadata;
     }
-    
+
     @Override
     public void dispose() {
         this.request = null;
@@ -425,5 +412,4 @@ public class WMSMapContent extends MapContent {
         this.metadata = null;
         super.dispose();
     }
-    
 }

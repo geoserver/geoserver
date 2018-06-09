@@ -9,16 +9,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.geoserver.wms.WMS;
 
 class SVG {
 
     public static final String MIME_TYPE = "image/svg+xml";
 
-    public static final Set<String> OUTPUT_FORMATS = Collections
-            .unmodifiableSet(new HashSet<String>(Arrays.asList(MIME_TYPE, "image/svg xml",
-                    "image/svg")));
+    public static final Set<String> OUTPUT_FORMATS =
+            Collections.unmodifiableSet(
+                    new HashSet<String>(Arrays.asList(MIME_TYPE, "image/svg xml", "image/svg")));
 
     private SVG() {
         //

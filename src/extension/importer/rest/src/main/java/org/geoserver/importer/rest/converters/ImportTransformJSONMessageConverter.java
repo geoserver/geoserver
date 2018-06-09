@@ -6,7 +6,7 @@ package org.geoserver.importer.rest.converters;
 
 import java.io.IOException;
 import java.io.InputStream;
-
+import net.sf.json.JSONObject;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.ImportTransform;
@@ -18,11 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 
-import net.sf.json.JSONObject;
-
-/**
- * Convert {@link ImportTask} to/from JSON.
- */
+/** Convert {@link ImportTask} to/from JSON. */
 @Component
 public class ImportTransformJSONMessageConverter extends BaseMessageConverter<ImportTransform> {
 
@@ -48,8 +44,9 @@ public class ImportTransformJSONMessageConverter extends BaseMessageConverter<Im
     // Reading
     //
     @Override
-    protected ImportTransform readInternal(Class<? extends ImportTransform> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected ImportTransform readInternal(
+            Class<? extends ImportTransform> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);
             JSONObject json = reader.parse(in);

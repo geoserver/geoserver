@@ -9,9 +9,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.management.RuntimeErrorException;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
@@ -38,13 +36,14 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
     public WMTSStoreNewPage() {
         try {
             CatalogBuilder builder = new CatalogBuilder(getCatalog());
-            
+
             WMTSStoreInfo store = builder.buildWMTSStore(null);
 
             initUI(store);
-            
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-            
+
+            final GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
             if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
                 capabilitiesURL.getFormComponent().add(new WMTSCapabilitiesURLValidator());
@@ -61,7 +60,8 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
-        WMTSStoreInfo expandedStore = (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, true);
+        WMTSStoreInfo expandedStore =
+                (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, true);
         WMTSStoreInfo savedStore = getCatalog().getFactory().createWebMapTileServer();
 
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
@@ -71,7 +71,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
             // GeoServer Env substitution; validate first
             ValidationResult validate = getCatalog().validate(expandedStore, false);
             validate.throwIfInvalid();
-            
+
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
             savedStore = (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, false);
             // ... and save
@@ -89,9 +89,12 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
             // The ID is assigned by the catalog and therefore cannot be cloned
             layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
-            LOGGER.log(Level.INFO, "Getting list of layers for the WMTS store " + info.getCapabilitiesURL(), e);
+            LOGGER.log(
+                    Level.INFO,
+                    "Getting list of layers for the WMTS store " + info.getCapabilitiesURL(),
+                    e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.
-            try {// be extra cautious
+            try { // be extra cautious
                 getCatalog().remove(expandedStore);
                 getCatalog().remove(savedStore);
             } catch (RuntimeErrorException shouldNotHappen) {
@@ -103,7 +106,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
 
         setResponsePage(layerChooserPage);
     }
-    
+
     final class WMTSCapabilitiesURLValidator implements IValidator {
 
         @Override
@@ -120,26 +123,26 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
                     client.setPassword(pwd);
                 }
                 Map<String, Object> hints = new HashMap<>();
-              
+
                 hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-                EntityResolverProvider provider = getCatalog().getResourcePool().getEntityResolverProvider();
-                if(provider != null) {
+                EntityResolverProvider provider =
+                        getCatalog().getResourcePool().getEntityResolverProvider();
+                if (provider != null) {
                     EntityResolver entityResolver = provider.getEntityResolver();
-                    if(entityResolver != null) {
+                    if (entityResolver != null) {
                         hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
                     }
                 }
-                
+
                 WebMapTileServer server = new WebMapTileServer(new URL(url));
                 server.getCapabilities();
-            } catch(IOException | ServiceException e) {
-                IValidationError err = new ValidationError("WMTSCapabilitiesValidator.connectionFailure")
-                        .addKey("WMTSCapabilitiesValidator.connectionFailure")
-                        .setVariable("error", e.getMessage());
+            } catch (IOException | ServiceException e) {
+                IValidationError err =
+                        new ValidationError("WMTSCapabilitiesValidator.connectionFailure")
+                                .addKey("WMTSCapabilitiesValidator.connectionFailure")
+                                .setVariable("error", e.getMessage());
                 validatable.error(err);
             }
         }
-        
     }
-
 }

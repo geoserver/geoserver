@@ -8,16 +8,14 @@ package org.geoserver.catalog;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.Utilities;
 
 /**
- * Class containing main definition of a Coverage View, such as, originating coverageStore and composing coverageNames/bands.
- * 
+ * Class containing main definition of a Coverage View, such as, originating coverageStore and
+ * composing coverageNames/bands.
+ *
  * @author Daniele Romagnoli, GeoSolutions SAS
- * 
  */
 public class CoverageView implements Serializable {
 
@@ -32,54 +30,49 @@ public class CoverageView implements Serializable {
             output.append("\t").append(band.toString());
         }
         return output.toString();
-
     }
 
     public static final String BAND_SEPARATOR = "@";
 
-    /**
-     * Type of Envelope Composition, used to expose the bounding box of the CoverageView
-     */
+    /** Type of Envelope Composition, used to expose the bounding box of the CoverageView */
     public static enum EnvelopeCompositionType {
-        UNION, INTERSECTION;
+        UNION,
+        INTERSECTION;
     }
 
-    /**
-     * Which Resolution to be used in composition
-     */
+    /** Which Resolution to be used in composition */
     public static enum SelectedResolution {
-        BEST, WORST;
+        BEST,
+        WORST;
     }
 
     /**
      * Composition Type, used to specify how output bands should be composed.
-     * 
-     * BAND_SELECT: The output band is simply a band selected from the input bands.
-     * FORMULA: The output band is computed by applying a formula on the input selected band(s).
-     * As an instance, the output band could be defined like this:
-     * Speed = SQRT(SELECTED_BAND_1^2 + SELECTED_BAND_2^2)
      *
+     * <p>BAND_SELECT: The output band is simply a band selected from the input bands. FORMULA: The
+     * output band is computed by applying a formula on the input selected band(s). As an instance,
+     * the output band could be defined like this: Speed = SQRT(SELECTED_BAND_1^2 +
+     * SELECTED_BAND_2^2)
      */
     public static enum CompositionType {
 
         // Some pieces here have been commented. They should be uncommented once
-        // we enable complex output bands definition using formula. 
+        // we enable complex output bands definition using formula.
         BAND_SELECT {
             @Override
             public String displayValue() {
                 return BAND_SELECTION_STRING;
             }
+        } /*,
 
-        }/*,
+          FORMULA {
+              @Override
+              public String displayValue() {
+                  return FORMULA_STRING;
+              }
 
-        FORMULA {
-            @Override
-            public String displayValue() {
-                return FORMULA_STRING;
-            }
-
-        }
-        */;
+          }
+          */;
 
         public static CompositionType getDefault() {
             return BAND_SELECT;
@@ -91,22 +84,22 @@ public class CoverageView implements Serializable {
             return this.toString();
         }
 
-        final static String BAND_SELECTION_STRING = "Band Selection";
+        static final String BAND_SELECTION_STRING = "Band Selection";
         /* final static String FORMULA_STRING = "Formula"; */
     }
 
     /**
-     * Definition of Input Coverage Bands composing a single {@link CoverageBand} A {@link CoverageBand} may be composed of different
-     * {@link InputCoverageBand}s.
-     * 
-     * Current implementation only deal with {@link CoverageBand}s made of a single {@link InputCoverageBand}. Once we allows for Scripts and
-     * Math on bands compositions (like WindSpeedBand = SQRT(UBand^2 + VBand^2)) we will have a {@link CoverageBand} built on top of multiple
-     * {@link InputCoverageBand}s
+     * Definition of Input Coverage Bands composing a single {@link CoverageBand} A {@link
+     * CoverageBand} may be composed of different {@link InputCoverageBand}s.
+     *
+     * <p>Current implementation only deal with {@link CoverageBand}s made of a single {@link
+     * InputCoverageBand}. Once we allows for Scripts and Math on bands compositions (like
+     * WindSpeedBand = SQRT(UBand^2 + VBand^2)) we will have a {@link CoverageBand} built on top of
+     * multiple {@link InputCoverageBand}s
      */
     public static class InputCoverageBand implements Serializable {
 
-        public InputCoverageBand() {
-        }
+        public InputCoverageBand() {}
 
         /** serialVersionUID */
         private static final long serialVersionUID = -2200641260788001394L;
@@ -132,23 +125,16 @@ public class CoverageView implements Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             InputCoverageBand other = (InputCoverageBand) obj;
             if (band == null) {
-                if (other.band != null)
-                    return false;
-            } else if (!band.equals(other.band))
-                return false;
+                if (other.band != null) return false;
+            } else if (!band.equals(other.band)) return false;
             if (coverageName == null) {
-                if (other.coverageName != null)
-                    return false;
-            } else if (!coverageName.equals(other.coverageName))
-                return false;
+                if (other.coverageName != null) return false;
+            } else if (!coverageName.equals(other.coverageName)) return false;
             return true;
         }
 
@@ -176,26 +162,31 @@ public class CoverageView implements Serializable {
     }
 
     /**
-     * Definition of a {@link CoverageView}'s Band composing the {@link CoverageView}.
-     * A {@link CoverageBand} is made of
-     * <ul> 
-     *   <li> a list of {@link InputCoverageBand}s defining which coverages and which bands have been used to compose this band </li>
-     *   <li> the type of composition used to configure this band (Currently, only BAND_SELECT is supported) </li>
-     *   <li> the definition of this band (It may contain the script, or the RULE to compose that band) </li> 
-     *   <li> the index in the output coverage (Wondering if this can be removed) </li>
+     * Definition of a {@link CoverageView}'s Band composing the {@link CoverageView}. A {@link
+     * CoverageBand} is made of
+     *
+     * <ul>
+     *   <li>a list of {@link InputCoverageBand}s defining which coverages and which bands have been
+     *       used to compose this band
+     *   <li>the type of composition used to configure this band (Currently, only BAND_SELECT is
+     *       supported)
+     *   <li>the definition of this band (It may contain the script, or the RULE to compose that
+     *       band)
+     *   <li>the index in the output coverage (Wondering if this can be removed)
      * </ul>
-     * */
+     */
     public static class CoverageBand implements Serializable {
 
         /** serialVersionUID */
         private static final long serialVersionUID = -7223081117287911988L;
 
-        public CoverageBand() {
+        public CoverageBand() {}
 
-        }
-
-        public CoverageBand(List<InputCoverageBand> inputCoverageBands, String definition,
-                int index, CompositionType compositionType) {
+        public CoverageBand(
+                List<InputCoverageBand> inputCoverageBands,
+                String definition,
+                int index,
+                CompositionType compositionType) {
             this.inputCoverageBands = inputCoverageBands;
             this.definition = definition;
             this.index = index;
@@ -213,20 +204,14 @@ public class CoverageView implements Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             CoverageBand other = (CoverageBand) obj;
-            if (compositionType != other.compositionType)
-                return false;
+            if (compositionType != other.compositionType) return false;
             if (definition == null) {
-                if (other.definition != null)
-                    return false;
-            } else if (!definition.equals(other.definition))
-                return false;
+                if (other.definition != null) return false;
+            } else if (!definition.equals(other.definition)) return false;
             return true;
         }
 
@@ -236,29 +221,32 @@ public class CoverageView implements Serializable {
             for (InputCoverageBand inputBand : inputCoverageBands) {
                 sb.append("[").append(inputBand).append("]");
             }
-            sb.append(", definition=").append(definition).append(", index=").append(index)
-                    .append(", compositionType=").append(compositionType);
+            sb.append(", definition=")
+                    .append(definition)
+                    .append(", index=")
+                    .append(index)
+                    .append(", compositionType=")
+                    .append(compositionType);
             return sb.toString();
         }
 
-        /**
-         * The InputCoverageBands composing this band 
-         */
+        /** The InputCoverageBands composing this band */
         private List<InputCoverageBand> inputCoverageBands;
 
         /**
-         * The definition of this coverage band. Currently it simply contains the name of the input band. Once we support different compositions, it
-         * will contain the maths... something like, as an instance, speed = sqrt(u_component_of_the_wind@0 ^ 2 + v_component_of_the_wind@0^2).
+         * The definition of this coverage band. Currently it simply contains the name of the input
+         * band. Once we support different compositions, it will contain the maths... something
+         * like, as an instance, speed = sqrt(u_component_of_the_wind@0 ^ 2 +
+         * v_component_of_the_wind@0^2).
          */
         private String definition;
 
-        /** 
-         * The index of the band in the output. (Is it really needed?)
-         */
+        /** The index of the band in the output. (Is it really needed?) */
         private int index;
 
         /**
-         * Type of composition used to define this band. Currently, only {@link CompositionType#BAND_SELECT} is supported.
+         * Type of composition used to define this band. Currently, only {@link
+         * CompositionType#BAND_SELECT} is supported.
          */
         private CompositionType compositionType;
 
@@ -295,41 +283,36 @@ public class CoverageView implements Serializable {
         }
     }
 
-    /** 
-     * A key to be assigned to the {@link CoverageView} object into metadata map 
-     */
+    /** A key to be assigned to the {@link CoverageView} object into metadata map */
     public static String COVERAGE_VIEW = "COVERAGE_VIEW";
 
-    public CoverageView() {
-
-    }
+    public CoverageView() {}
 
     public CoverageView(String name, List<CoverageBand> coverageBands) {
         this(name, coverageBands, EnvelopeCompositionType.UNION, SelectedResolution.BEST);
     }
 
-    public CoverageView(String name, List<CoverageBand> coverageBands, EnvelopeCompositionType envelopeCompositionType, SelectedResolution selectedResolution) {
+    public CoverageView(
+            String name,
+            List<CoverageBand> coverageBands,
+            EnvelopeCompositionType envelopeCompositionType,
+            SelectedResolution selectedResolution) {
         this.name = name;
         this.coverageBands = coverageBands;
         this.envelopeCompositionType = envelopeCompositionType;
         this.selectedResolution = selectedResolution;
     }
 
-    
     /** The list of {@link CoverageBand}s composing this {@link CoverageView} */
     private List<CoverageBand> coverageBands;
 
     /** The name assigned to the {@link CoverageView} */
     private String name;
 
-    /**
-     * Type of composition of the envelope. 
-     */
+    /** Type of composition of the envelope. */
     private EnvelopeCompositionType envelopeCompositionType;
 
-    /**
-     * Requested resolution type (worst vs best vs imposed vs index) 
-     */
+    /** Requested resolution type (worst vs best vs imposed vs index) */
     private SelectedResolution selectedResolution;
 
     /** This will be != -1 when {@link SelectedResolution} is INDEX */
@@ -345,7 +328,9 @@ public class CoverageView implements Serializable {
 
     public EnvelopeCompositionType getEnvelopeCompositionType() {
         // for backwards compatibility
-        return envelopeCompositionType == null ? EnvelopeCompositionType.INTERSECTION : envelopeCompositionType;
+        return envelopeCompositionType == null
+                ? EnvelopeCompositionType.INTERSECTION
+                : envelopeCompositionType;
     }
 
     public void setEnvelopeCompositionType(EnvelopeCompositionType envelopeCompositionType) {
@@ -376,38 +361,37 @@ public class CoverageView implements Serializable {
     public void setCoverageBands(List<CoverageBand> coverageBands) {
         this.coverageBands = coverageBands;
     }
-    
+
     /**
      * Create a {@link CoverageInfo}
-     * 
+     *
      * @param builder
      * @param storeInfo
      * @param cinfo
      * @param name
-     *
      */
-    private CoverageInfo buildCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
-            CoverageInfo cinfo, String name) throws Exception {
+    private CoverageInfo buildCoverageInfo(
+            CatalogBuilder builder, CoverageStoreInfo storeInfo, CoverageInfo cinfo, String name)
+            throws Exception {
         Catalog catalog = storeInfo.getCatalog();
 
-        // Get a reader from the pool for this Sample CoverageInfo 
+        // Get a reader from the pool for this Sample CoverageInfo
         // (we have to pass it down a CoverageView definition)
         cinfo.setStore(storeInfo);
         cinfo.getMetadata().put(CoverageView.COVERAGE_VIEW, this);
         cinfo.setName(name);
         cinfo.setNativeCoverageName(name);
 
-        GridCoverage2DReader reader = (GridCoverage2DReader) catalog.getResourcePool()
-                .getGridCoverageReader(cinfo, name, null);
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader)
+                        catalog.getResourcePool().getGridCoverageReader(cinfo, name, null);
         builder.setStore(storeInfo);
         return builder.buildCoverage(reader, name, null);
     }
 
-    /** 
-     * Create a new {@link CoverageInfo} for this {@link CoverageView}
-     */
-    public CoverageInfo createCoverageInfo(String name, CoverageStoreInfo storeInfo,
-            CatalogBuilder builder) throws Exception {
+    /** Create a new {@link CoverageInfo} for this {@link CoverageView} */
+    public CoverageInfo createCoverageInfo(
+            String name, CoverageStoreInfo storeInfo, CatalogBuilder builder) throws Exception {
         Catalog catalog = storeInfo.getCatalog();
 
         CoverageInfo coverageInfo = catalog.getFactory().createCoverage();
@@ -420,16 +404,20 @@ public class CoverageView implements Serializable {
     }
 
     /**
-     * Update the specified {@link CoverageInfo} with the updated {@link CoverageView} 
-     * stored within its metadata
-     * 
+     * Update the specified {@link CoverageInfo} with the updated {@link CoverageView} stored within
+     * its metadata
+     *
      * @param name
      * @param storeInfo
      * @param builder
      * @param coverageInfo
      */
-    public void updateCoverageInfo(String name, CoverageStoreInfo storeInfo,
-            CatalogBuilder builder, CoverageInfo coverageInfo) throws Exception {
+    public void updateCoverageInfo(
+            String name,
+            CoverageStoreInfo storeInfo,
+            CatalogBuilder builder,
+            CoverageInfo coverageInfo)
+            throws Exception {
         Utilities.ensureNonNull("coverageInfo", coverageInfo);
 
         // clean up coverage dimensions for the update
@@ -441,8 +429,8 @@ public class CoverageView implements Serializable {
 
     /**
      * Get the i-th {@link CoverageBand}
-     * @param index
      *
+     * @param index
      */
     public CoverageBand getBand(final int index) {
         return coverageBands.get(index);
@@ -450,8 +438,8 @@ public class CoverageView implements Serializable {
 
     /**
      * Get the {@link CoverageBand}s related to the specified coverageName
-     * @param coverageName
      *
+     * @param coverageName
      */
     public List<CoverageBand> getBands(final String coverageName) {
         List<CoverageBand> bands = new ArrayList<CoverageBand>();
@@ -465,10 +453,7 @@ public class CoverageView implements Serializable {
         return bands;
     }
 
-    /**
-     * Return the number of {@link CoverageBand}s composing the {@link CoverageView}
-     *
-     */
+    /** Return the number of {@link CoverageBand}s composing the {@link CoverageView} */
     public int getSize() {
         return coverageBands != null ? coverageBands.size() : 0;
     }
@@ -478,40 +463,33 @@ public class CoverageView implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((coverageBands == null) ? 0 : coverageBands.hashCode());
-        result = prime * result
-                + ((envelopeCompositionType == null) ? 0 : envelopeCompositionType.hashCode());
+        result =
+                prime * result
+                        + ((envelopeCompositionType == null)
+                                ? 0
+                                : envelopeCompositionType.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result
-                + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
+        result =
+                prime * result + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
         result = prime * result + selectedResolutionIndex;
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         CoverageView other = (CoverageView) obj;
         if (coverageBands == null) {
-            if (other.coverageBands != null)
-                return false;
-        } else if (!coverageBands.equals(other.coverageBands))
-            return false;
-        if (envelopeCompositionType != other.envelopeCompositionType)
-            return false;
+            if (other.coverageBands != null) return false;
+        } else if (!coverageBands.equals(other.coverageBands)) return false;
+        if (envelopeCompositionType != other.envelopeCompositionType) return false;
         if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (selectedResolution != other.selectedResolution)
-            return false;
-        if (selectedResolutionIndex != other.selectedResolutionIndex)
-            return false;
+            if (other.name != null) return false;
+        } else if (!name.equals(other.name)) return false;
+        if (selectedResolution != other.selectedResolution) return false;
+        if (selectedResolutionIndex != other.selectedResolutionIndex) return false;
         return true;
     }
 }

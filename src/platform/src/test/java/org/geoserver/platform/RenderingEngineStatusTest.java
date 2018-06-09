@@ -3,17 +3,14 @@
  * application directory.
  */
 package org.geoserver.platform;
- 
+
 import static org.junit.Assert.*;
 
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geoserver.platform.RenderingEngineStatus;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
-
 import sun.java2d.pipe.RenderingEngine;
 
 public class RenderingEngineStatusTest {
@@ -31,8 +28,9 @@ public class RenderingEngineStatusTest {
         RenderingEngineStatus res = new RenderingEngineStatus();
         Class<RenderingEngine> renderer;
         try {
-            renderer = (Class<RenderingEngine>) sun.java2d.pipe.RenderingEngine.getInstance()
-                    .getClass();
+            renderer =
+                    (Class<RenderingEngine>)
+                            sun.java2d.pipe.RenderingEngine.getInstance().getClass();
         } catch (Throwable e) {
             engine = UNKNOWN;
             provider = UNKNOWN;
@@ -52,15 +50,19 @@ public class RenderingEngineStatusTest {
         }
         String config = System.getProperty("sun.java2d.renderer");
         if (config != null) {
-             msg = String.format("Java 2D configured with %s.\nProvider: %s\nConfiguration: -Dsun.java2d.renderer=%s", engine,provider,config);
+            msg =
+                    String.format(
+                            "Java 2D configured with %s.\nProvider: %s\nConfiguration: -Dsun.java2d.renderer=%s",
+                            engine, provider, config);
         } else {
-             msg = String.format("Java 2D configured with %s.\nProvider: %s\n", engine,provider);
+            msg = String.format("Java 2D configured with %s.\nProvider: %s\n", engine, provider);
         }
-        if (provider.equals("Marlin") || provider.equals("OracleJDK") || provider.equals("OpenJDK")) {
+        if (provider.equals("Marlin")
+                || provider.equals("OracleJDK")
+                || provider.equals("OpenJDK")) {
             assertEquals(msg, statusMessage.get());
         } else {
             LOGGER.log(Level.WARNING, "Unkown Java Provider");
         }
     }
-
 }

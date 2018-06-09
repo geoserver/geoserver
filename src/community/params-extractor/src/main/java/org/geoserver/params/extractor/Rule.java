@@ -4,13 +4,12 @@
  */
 package org.geoserver.params.extractor;
 
-import org.geotools.util.logging.Logging;
-
 import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geotools.util.logging.Logging;
 
 public final class Rule {
 
@@ -29,8 +28,18 @@ public final class Rule {
     private final Pattern matchPattern;
     private final Optional<Pattern> activationPattern;
 
-    public Rule(String id, Boolean activated, Integer position, String match, String activation, String parameter,
-                String transform, Integer remove, String combine, Pattern matchPattern, Pattern activationPattern) {
+    public Rule(
+            String id,
+            Boolean activated,
+            Integer position,
+            String match,
+            String activation,
+            String parameter,
+            String transform,
+            Integer remove,
+            String combine,
+            Pattern matchPattern,
+            Pattern activationPattern) {
         this.id = id;
         this.activated = activated;
         this.position = position;
@@ -62,7 +71,8 @@ public final class Rule {
             return urlTransform;
         }
         urlTransform.removeMatch(matcher.group(remove.orElse(1)));
-        urlTransform.addParameter(parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine);
+        urlTransform.addParameter(
+                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine);
         return urlTransform;
     }
 

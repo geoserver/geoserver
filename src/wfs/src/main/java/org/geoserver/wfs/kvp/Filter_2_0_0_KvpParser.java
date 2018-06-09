@@ -9,13 +9,12 @@ import org.geoserver.config.GeoServer;
 import org.geotools.xml.Configuration;
 
 /**
- * Parses a {@code FILTER} parameter assuming the filters sent are encoded as
- * per the OGC Filter Encoding v2.0.0 specification.
- * <p>
- * This kvp parser is meant to be configured in the spring context to parse
- * filters when a GetFeature request is sent conforming to the WFS 2.0 spec.
- * </p>
- * 
+ * Parses a {@code FILTER} parameter assuming the filters sent are encoded as per the OGC Filter
+ * Encoding v2.0.0 specification.
+ *
+ * <p>This kvp parser is meant to be configured in the spring context to parse filters when a
+ * GetFeature request is sent conforming to the WFS 2.0 spec.
+ *
  * @author Justin Deoliveira
  */
 public class Filter_2_0_0_KvpParser extends FilterKvpParser {

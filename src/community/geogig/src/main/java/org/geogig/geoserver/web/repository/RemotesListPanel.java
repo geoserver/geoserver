@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -37,8 +36,8 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
 
     private static final long serialVersionUID = 5957961031378924960L;
 
-    private static final PackageResourceReference REMOVE_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/delete.png");
+    private static final PackageResourceReference REMOVE_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
 
     private final ModalWindow popupWindow;
 
@@ -73,10 +72,10 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
         return provider.getItems();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    protected Component getComponentForProperty(String id, IModel<RemoteInfo> itemModel,
-            Property<RemoteInfo> property) {
+    protected Component getComponentForProperty(
+            String id, IModel<RemoteInfo> itemModel, Property<RemoteInfo> property) {
 
         IModel<RemoteInfo> model = itemModel;
 
@@ -99,21 +98,23 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
         @SuppressWarnings("unchecked")
         IModel<?> nameModel = RemotesProvider.NAME.getModel(itemModel);
 
-        SimpleAjaxLink<RemoteInfo> link = new SimpleAjaxLink<RemoteInfo>(id, itemModel, nameModel) {
-            private static final long serialVersionUID = -18292070541084372L;
+        SimpleAjaxLink<RemoteInfo> link =
+                new SimpleAjaxLink<RemoteInfo>(id, itemModel, nameModel) {
+                    private static final long serialVersionUID = -18292070541084372L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                IModel<RemoteInfo> model = this.getModel();
-                RemotesListPanel table = RemotesListPanel.this;
-                RemoteEditPanel editPanel = new RemoteEditPanel(popupWindow.getContentId(), model,
-                        popupWindow, table);
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        IModel<RemoteInfo> model = this.getModel();
+                        RemotesListPanel table = RemotesListPanel.this;
+                        RemoteEditPanel editPanel =
+                                new RemoteEditPanel(
+                                        popupWindow.getContentId(), model, popupWindow, table);
 
-                popupWindow.setContent(editPanel);
-                popupWindow.setTitle(new ResourceModel("RemoteEditPanel.title"));
-                popupWindow.show(target);
-            }
-        };
+                        popupWindow.setContent(editPanel);
+                        popupWindow.setTitle(new ResourceModel("RemoteEditPanel.title"));
+                        popupWindow.show(target);
+                    }
+                };
         return link;
     }
 
@@ -128,34 +129,36 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 GeoServerDialog dialog = RemotesListPanel.this.dialog;
-                dialog.setTitle(new ParamResourceModel("RemotesListPanel.confirmRemoval.title",
-                        this));
+                dialog.setTitle(
+                        new ParamResourceModel("RemotesListPanel.confirmRemoval.title", this));
 
-                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
-                    private static final long serialVersionUID = -450822090965263894L;
+                dialog.showOkCancel(
+                        target,
+                        new GeoServerDialog.DialogDelegate() {
+                            private static final long serialVersionUID = -450822090965263894L;
 
-                    @Override
-                    protected Component getContents(String id) {
-                        return new ConfirmRemovePanel(id, model);
-                    }
+                            @Override
+                            protected Component getContents(String id) {
+                                return new ConfirmRemovePanel(id, model);
+                            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        boolean closeConfirmDialog = true;
+                            @Override
+                            protected boolean onSubmit(
+                                    AjaxRequestTarget target, Component contents) {
+                                boolean closeConfirmDialog = true;
 
-                        final RemoteInfo remote = model.getObject();
-                        List<RemoteInfo> items = RemotesListPanel.this.provider.getItems();
-                        items.remove(remote);
-                        target.add(RemotesListPanel.this);
-                        return closeConfirmDialog;
-                    }
+                                final RemoteInfo remote = model.getObject();
+                                List<RemoteInfo> items = RemotesListPanel.this.provider.getItems();
+                                items.remove(remote);
+                                target.add(RemotesListPanel.this);
+                                return closeConfirmDialog;
+                            }
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        target.add(RemotesListPanel.this);
-                    }
-
-                });
+                            @Override
+                            public void onClose(AjaxRequestTarget target) {
+                                target.add(RemotesListPanel.this);
+                            }
+                        });
             }
         };
     }
@@ -167,9 +170,13 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
         public ConfirmRemovePanel(String id, IModel<RemoteInfo> remote) {
             super(id);
 
-            add(new Label("aboutRemoveMsg", new ParamResourceModel(
-                    "RemotesListPanel$ConfirmRemovePanel.aboutRemove", this, remote.getObject()
-                            .getName())));
+            add(
+                    new Label(
+                            "aboutRemoveMsg",
+                            new ParamResourceModel(
+                                    "RemotesListPanel$ConfirmRemovePanel.aboutRemove",
+                                    this,
+                                    remote.getObject().getName())));
         }
     }
 
@@ -181,36 +188,38 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
 
         static final Property<RemoteInfo> URL = new BeanProperty<>("URL", "URL");
 
-        static final Property<RemoteInfo> PINGLINK = new AbstractProperty<RemoteInfo>("") {
-            private static final long serialVersionUID = 1L;
+        static final Property<RemoteInfo> PINGLINK =
+                new AbstractProperty<RemoteInfo>("") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public Boolean getPropertyValue(RemoteInfo item) {
-                return Boolean.TRUE;
-            }
+                    @Override
+                    public Boolean getPropertyValue(RemoteInfo item) {
+                        return Boolean.TRUE;
+                    }
 
-            @Override
-            public boolean isSearchable() {
-                return false;
-            }
-        };
+                    @Override
+                    public boolean isSearchable() {
+                        return false;
+                    }
+                };
 
-        static final Property<RemoteInfo> REMOVELINK = new AbstractProperty<RemoteInfo>("remove") {
-            private static final long serialVersionUID = 1L;
+        static final Property<RemoteInfo> REMOVELINK =
+                new AbstractProperty<RemoteInfo>("remove") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public Boolean getPropertyValue(RemoteInfo item) {
-                return Boolean.TRUE;
-            }
+                    @Override
+                    public Boolean getPropertyValue(RemoteInfo item) {
+                        return Boolean.TRUE;
+                    }
 
-            @Override
-            public boolean isSearchable() {
-                return false;
-            }
-        };
+                    @Override
+                    public boolean isSearchable() {
+                        return false;
+                    }
+                };
 
-        final List<Property<RemoteInfo>> PROPERTIES = Arrays
-                .asList(NAME, URL, PINGLINK, REMOVELINK);
+        final List<Property<RemoteInfo>> PROPERTIES =
+                Arrays.asList(NAME, URL, PINGLINK, REMOVELINK);
 
         private final ArrayList<RemoteInfo> items;
 
@@ -267,5 +276,4 @@ public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
             target.add(pingFeedbackPanel);
         }
     }
-
 }

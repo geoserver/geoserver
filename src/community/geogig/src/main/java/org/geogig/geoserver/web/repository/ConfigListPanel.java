@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -32,10 +31,10 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 
 public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
 
-	private static final long serialVersionUID = 4583765525525250302L;
+    private static final long serialVersionUID = 4583765525525250302L;
 
-	private static final PackageResourceReference REMOVE_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/delete.png");
+    private static final PackageResourceReference REMOVE_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
 
     private final ModalWindow popupWindow;
 
@@ -71,13 +70,13 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel<ConfigEntry> itemModel,
-            Property<ConfigEntry> property) {
+    protected Component getComponentForProperty(
+            String id, IModel<ConfigEntry> itemModel, Property<ConfigEntry> property) {
 
         if (property == ConfigProvider.NAME) {
             String key = (String) ConfigProvider.NAME.getModel(itemModel).getObject();
             if (ConfigEntry.isRestricted(key)) {
-            	return new Label(id, key);
+                return new Label(id, key);
             }
             return nameLink(id, itemModel);
         } else if (property == ConfigProvider.VALUE) {
@@ -87,7 +86,7 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
         } else if (property == ConfigProvider.REMOVELINK) {
             String key = (String) ConfigProvider.NAME.getModel(itemModel).getObject();
             if (ConfigEntry.isRestricted(key)) {
-            	return new Label(id, "-");
+                return new Label(id, "-");
             }
             return removeLink(id, itemModel);
         }
@@ -97,22 +96,24 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
     private Component nameLink(String id, IModel<ConfigEntry> itemModel) {
         IModel<?> nameModel = ConfigProvider.NAME.getModel(itemModel);
 
-        SimpleAjaxLink<ConfigEntry> link = new SimpleAjaxLink<ConfigEntry>(id, itemModel, nameModel) {
+        SimpleAjaxLink<ConfigEntry> link =
+                new SimpleAjaxLink<ConfigEntry>(id, itemModel, nameModel) {
 
-			private static final long serialVersionUID = 3999079486003240692L;
+                    private static final long serialVersionUID = 3999079486003240692L;
 
-			@Override
-            public void onClick(AjaxRequestTarget target) {
-                IModel<ConfigEntry> model = this.getModel();
-                ConfigListPanel table = ConfigListPanel.this;
-                ConfigEditPanel editPanel = new ConfigEditPanel(popupWindow.getContentId(), model,
-                        popupWindow, table);
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        IModel<ConfigEntry> model = this.getModel();
+                        ConfigListPanel table = ConfigListPanel.this;
+                        ConfigEditPanel editPanel =
+                                new ConfigEditPanel(
+                                        popupWindow.getContentId(), model, popupWindow, table);
 
-                popupWindow.setContent(editPanel);
-                popupWindow.setTitle(new ResourceModel("ConfigEditPanel.title"));
-                popupWindow.show(target);
-            }
-        };
+                        popupWindow.setContent(editPanel);
+                        popupWindow.setTitle(new ResourceModel("ConfigEditPanel.title"));
+                        popupWindow.show(target);
+                    }
+                };
         return link;
     }
 
@@ -120,41 +121,43 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
 
         return new ImageAjaxLink(id, REMOVE_ICON) {
 
-			private static final long serialVersionUID = 4251171731728162708L;
-			
-			private final IModel<ConfigEntry> model = itemModel;
+            private static final long serialVersionUID = 4251171731728162708L;
+
+            private final IModel<ConfigEntry> model = itemModel;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 GeoServerDialog dialog = ConfigListPanel.this.dialog;
-                dialog.setTitle(new ParamResourceModel("ConfigListPanel.confirmRemoval.title",
-                        this));
+                dialog.setTitle(
+                        new ParamResourceModel("ConfigListPanel.confirmRemoval.title", this));
 
-                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
-                    private static final long serialVersionUID = -450822090965263894L;
+                dialog.showOkCancel(
+                        target,
+                        new GeoServerDialog.DialogDelegate() {
+                            private static final long serialVersionUID = -450822090965263894L;
 
-                    @Override
-                    protected Component getContents(String id) {
-                        return new ConfirmRemovePanel(id, model);
-                    }
+                            @Override
+                            protected Component getContents(String id) {
+                                return new ConfirmRemovePanel(id, model);
+                            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        boolean closeConfirmDialog = true;
+                            @Override
+                            protected boolean onSubmit(
+                                    AjaxRequestTarget target, Component contents) {
+                                boolean closeConfirmDialog = true;
 
-                        final ConfigEntry config = model.getObject();
-                        List<ConfigEntry> items = ConfigListPanel.this.provider.getItems();
-                        items.remove(config);
-                        target.add(ConfigListPanel.this);
-                        return closeConfirmDialog;
-                    }
+                                final ConfigEntry config = model.getObject();
+                                List<ConfigEntry> items = ConfigListPanel.this.provider.getItems();
+                                items.remove(config);
+                                target.add(ConfigListPanel.this);
+                                return closeConfirmDialog;
+                            }
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        target.add(ConfigListPanel.this);
-                    }
-
-                });
+                            @Override
+                            public void onClose(AjaxRequestTarget target) {
+                                target.add(ConfigListPanel.this);
+                            }
+                        });
             }
         };
     }
@@ -166,9 +169,13 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
         public ConfirmRemovePanel(String id, IModel<ConfigEntry> config) {
             super(id);
 
-            add(new Label("aboutRemoveMsg", new ParamResourceModel(
-                    "ConfigListPanel$ConfirmRemovePanel.aboutRemove", this, config.getObject()
-                            .getName())));
+            add(
+                    new Label(
+                            "aboutRemoveMsg",
+                            new ParamResourceModel(
+                                    "ConfigListPanel$ConfirmRemovePanel.aboutRemove",
+                                    this,
+                                    config.getObject().getName())));
         }
     }
 
@@ -180,27 +187,27 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
 
         static final Property<ConfigEntry> VALUE = new BeanProperty<>("value", "value");
 
-        static final Property<ConfigEntry> REMOVELINK = new AbstractProperty<ConfigEntry>("remove") {
-            private static final long serialVersionUID = 1L;
+        static final Property<ConfigEntry> REMOVELINK =
+                new AbstractProperty<ConfigEntry>("remove") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public Boolean getPropertyValue(ConfigEntry item) {
-                return Boolean.TRUE;
-            }
+                    @Override
+                    public Boolean getPropertyValue(ConfigEntry item) {
+                        return Boolean.TRUE;
+                    }
 
-            @Override
-            public boolean isSearchable() {
-                return false;
-            }
-        };
+                    @Override
+                    public boolean isSearchable() {
+                        return false;
+                    }
+                };
 
-        final List<Property<ConfigEntry>> PROPERTIES = Arrays
-                .asList(NAME, VALUE, REMOVELINK);
+        final List<Property<ConfigEntry>> PROPERTIES = Arrays.asList(NAME, VALUE, REMOVELINK);
 
         private final List<ConfigEntry> config;
 
         public ConfigProvider(final Map<String, String> config) {
-        	this.config = ConfigEntry.fromConfig(config);
+            this.config = ConfigEntry.fromConfig(config);
         }
 
         @Override
@@ -223,5 +230,4 @@ public class ConfigListPanel extends GeoServerTablePanel<ConfigEntry> {
             return new Model<>(object);
         }
     }
-
 }

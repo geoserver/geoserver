@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.util.List;
-
 import org.geoserver.sldservice.utils.classifier.RulesBuilder;
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geotools.styling.LineSymbolizer;
@@ -26,8 +25,9 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     @Test
     public void testQuantileClassification() throws Exception {
         if (pointCollection != null) {
-            List<Rule> rules = builder.quantileClassification(pointCollection, "foo", Integer.class,
-                    4, false, false);
+            List<Rule> rules =
+                    builder.quantileClassification(
+                            pointCollection, "foo", Integer.class, 4, false, false);
             assertEquals(4, rules.size());
         }
     }
@@ -35,8 +35,9 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     @Test
     public void testEqualIntervalClassification() throws Exception {
         if (pointCollection != null) {
-            List<Rule> rules = builder.equalIntervalClassification(pointCollection, "foo",
-                    Integer.class, 4, false, false);
+            List<Rule> rules =
+                    builder.equalIntervalClassification(
+                            pointCollection, "foo", Integer.class, 4, false, false);
             assertEquals(4, rules.size());
         }
     }
@@ -44,12 +45,14 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     @Test
     public void testUniqueIntervalClassification() throws Exception {
         if (pointCollection != null) {
-            List<Rule> rules = builder.uniqueIntervalClassification(pointCollection, "group",
-                    Integer.class, -1, false);
+            List<Rule> rules =
+                    builder.uniqueIntervalClassification(
+                            pointCollection, "group", Integer.class, -1, false);
             assertEquals(4, rules.size());
 
-            rules = builder.uniqueIntervalClassification(pointCollection, "id", Integer.class, -1,
-                    false);
+            rules =
+                    builder.uniqueIntervalClassification(
+                            pointCollection, "id", Integer.class, -1, false);
             assertEquals(8, rules.size());
         }
     }
@@ -57,8 +60,9 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     @Test
     public void testJenksClassification() throws Exception {
         if (pointCollection != null) {
-            List<Rule> rules = builder.jenksClassification(lineCollection, "jenks71", Integer.class,
-                    10, false, false);
+            List<Rule> rules =
+                    builder.jenksClassification(
+                            lineCollection, "jenks71", Integer.class, 10, false, false);
             assertEquals(10, rules.size());
         }
     }
@@ -67,13 +71,15 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     public void testPolygonStyle() throws Exception {
         if (pointCollection != null) {
             int numClasses = 10;
-            List<Rule> rules = builder.equalIntervalClassification(pointCollection, "foo",
-                    Integer.class, numClasses, false, false);
+            List<Rule> rules =
+                    builder.equalIntervalClassification(
+                            pointCollection, "foo", Integer.class, numClasses, false, false);
             builder.polygonStyle(rules, new BlueColorRamp(), false);
             Rule ruleOne = rules.get(0);
             assertTrue(ruleOne.getSymbolizers()[0] instanceof PolygonSymbolizer);
             PolygonSymbolizer symbolizer = (PolygonSymbolizer) ruleOne.getSymbolizers()[0];
-            assertEquals(new Color(0, 0, 49),
+            assertEquals(
+                    new Color(0, 0, 49),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
             assertNotNull(ruleOne.getFilter());
             assertEquals(numClasses, rules.size());
@@ -84,11 +90,13 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     public void testPolygonStyleReverse() throws Exception {
         if (pointCollection != null) {
             int numClasses = 10;
-            List<Rule> rules = builder.equalIntervalClassification(pointCollection, "foo",
-                    Integer.class, numClasses, false, false);
+            List<Rule> rules =
+                    builder.equalIntervalClassification(
+                            pointCollection, "foo", Integer.class, numClasses, false, false);
             builder.polygonStyle(rules, new BlueColorRamp(), true);
             PolygonSymbolizer symbolizer = (PolygonSymbolizer) rules.get(0).getSymbolizers()[0];
-            assertEquals(new Color(0, 0, 224),
+            assertEquals(
+                    new Color(0, 0, 224),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
             assertEquals(numClasses, rules.size());
         }
@@ -98,13 +106,15 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     public void testLineStyle() throws Exception {
         if (lineCollection != null) {
             int numClasses = 10;
-            List<Rule> rules = builder.jenksClassification(lineCollection, "jenks71", Integer.class,
-                    numClasses, false, false);
+            List<Rule> rules =
+                    builder.jenksClassification(
+                            lineCollection, "jenks71", Integer.class, numClasses, false, false);
             builder.lineStyle(rules, new BlueColorRamp(), false);
             Rule ruleOne = rules.get(0);
             assertTrue(ruleOne.getSymbolizers()[0] instanceof LineSymbolizer);
             LineSymbolizer symbolizer = (LineSymbolizer) ruleOne.getSymbolizers()[0];
-            assertEquals(new Color(0, 0, 49),
+            assertEquals(
+                    new Color(0, 0, 49),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));
             assertNotNull(ruleOne.getFilter());
             assertEquals(10, rules.size());
@@ -115,13 +125,14 @@ public class RulesBuilderTest extends ClassifierTestSupport {
     public void testLineStyleReverse() throws Exception {
         if (lineCollection != null) {
             int numClasses = 10;
-            List<Rule> rules = builder.jenksClassification(lineCollection, "jenks71", Integer.class,
-                    numClasses, false, false);
+            List<Rule> rules =
+                    builder.jenksClassification(
+                            lineCollection, "jenks71", Integer.class, numClasses, false, false);
             builder.lineStyle(rules, new BlueColorRamp(), true);
             LineSymbolizer symbolizer = (LineSymbolizer) rules.get(0).getSymbolizers()[0];
-            assertEquals(new Color(0, 0, 224),
+            assertEquals(
+                    new Color(0, 0, 224),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));
         }
     }
-
 }

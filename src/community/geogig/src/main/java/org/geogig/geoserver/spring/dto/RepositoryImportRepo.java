@@ -7,9 +7,7 @@ package org.geogig.geoserver.spring.dto;
 import org.locationtech.geogig.spring.dto.RepositoryInitRepo;
 import org.springframework.http.HttpStatus;
 
-/**
- * Mirror the output of init, but use OK status instead of CREATED.
- */
+/** Mirror the output of init, but use OK status instead of CREATED. */
 public class RepositoryImportRepo extends RepositoryInitRepo {
     @Override
     public HttpStatus getStatus() {

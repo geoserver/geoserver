@@ -6,7 +6,6 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-
 import org.geotools.data.ows.Layer;
 import org.opengis.util.ProgressListener;
 
@@ -14,14 +13,8 @@ public interface WMSLayerInfo extends ResourceInfo {
 
     public WMSStoreInfo getStore();
 
-    /**
-     * Returns the raw WMS layer associated to this resource
-     * 
-     *
-     */
+    /** Returns the raw WMS layer associated to this resource */
     public Layer getWMSLayer(ProgressListener listener) throws IOException;
 
-    /**
-     * Return the DataURLs associated with this 
-     */
+    /** Return the DataURLs associated with this */
 }

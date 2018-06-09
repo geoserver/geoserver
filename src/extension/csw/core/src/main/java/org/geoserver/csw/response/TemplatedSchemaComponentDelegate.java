@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-
 import net.opengis.cat.csw20.DescribeRecordType;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
@@ -26,9 +24,8 @@ import org.opengis.feature.type.Name;
  * An implementation of {@link SchemaComponentDelegate} using a fixed file in the classpath to build
  * the SchemaComponent representation, with a simple templating mechanism for the root of the schema
  * locations (local vs schemas.opengis.net)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate {
 
@@ -38,7 +35,8 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
 
     GeoServer gs;
 
-    public TemplatedSchemaComponentDelegate(GeoServer gs, String namespaceURI, String name, String schemaPath) {
+    public TemplatedSchemaComponentDelegate(
+            GeoServer gs, String namespaceURI, String name, String schemaPath) {
         this.gs = gs;
         this.typeName = new NameImpl(namespaceURI, name);
         this.schemaPath = schemaPath;
@@ -50,17 +48,19 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
     }
 
     @Override
-    public void writeSchemaComponent(DescribeRecordType request, Writer bw, AttributeDescriptor descriptor) throws IOException {
-        if(!canHandle(descriptor)) {
+    public void writeSchemaComponent(
+            DescribeRecordType request, Writer bw, AttributeDescriptor descriptor)
+            throws IOException {
+        if (!canHandle(descriptor)) {
             throw new IllegalArgumentException("Cannot handle schema " + descriptor.getName());
         }
-        
-        //FeatureType schema = (FeatureType) descriptor.getType();
-        
+
+        // FeatureType schema = (FeatureType) descriptor.getType();
+
         // find the root of the schema location
         CSWInfo csw = gs.getService(CSWInfo.class);
         String schemaLocationRoot;
-        if(csw.isCanonicalSchemaLocation()) {
+        if (csw.isCanonicalSchemaLocation()) {
             schemaLocationRoot = "http://schemas.opengis.net";
         } else {
             schemaLocationRoot = buildSchemaURL(request.getBaseUrl(), "");
@@ -68,12 +68,15 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
             schemaLocationRoot = schemaLocationRoot.substring(0, schemaLocationRoot.length() - 1);
         }
 
-        
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(schemaPath), Charset.forName("UTF-8")));
+            reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    getClass().getResourceAsStream(schemaPath),
+                                    Charset.forName("UTF-8")));
             String line;
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 line = line.replace("%SCHEMAS_ROOT%", schemaLocationRoot);
                 bw.write(line);
                 bw.write("\n");
@@ -82,5 +85,4 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
             IOUtils.closeQuietly(reader);
         }
     }
-
 }

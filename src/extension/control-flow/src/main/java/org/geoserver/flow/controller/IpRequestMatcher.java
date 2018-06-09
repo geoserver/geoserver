@@ -4,15 +4,13 @@
  */
 package org.geoserver.flow.controller;
 
-import org.geoserver.ows.Request;
-
 import com.google.common.base.Predicate;
+import org.geoserver.ows.Request;
 
 /**
  * Matches a request by a certain IP address
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class IpRequestMatcher implements Predicate<Request> {
 
@@ -48,19 +46,13 @@ public class IpRequestMatcher implements Predicate<Request> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         IpRequestMatcher other = (IpRequestMatcher) obj;
         if (ip == null) {
-            if (other.ip != null)
-                return false;
-        } else if (!ip.equals(other.ip))
-            return false;
+            if (other.ip != null) return false;
+        } else if (!ip.equals(other.ip)) return false;
         return true;
     }
-
 }

@@ -4,16 +4,15 @@
  */
 package org.geoserver.gwc.wmts;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.InputStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
-
-import java.io.InputStream;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class WMTSXStreamLoaderTest extends GeoServerSystemTestSupport {
 

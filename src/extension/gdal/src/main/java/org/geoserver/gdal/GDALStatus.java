@@ -4,18 +4,14 @@
  */
 package org.geoserver.gdal;
 
+import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import java.util.Optional;
-
 import org.gdal.gdal.gdal;
 import org.geoserver.platform.ModuleStatus;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.Version;
 
-import it.geosolutions.imageio.gdalframework.GDALUtilities;
-
-/**
- * Status page checking availability and binary details
- */
+/** Status page checking availability and binary details */
 public class GDALStatus implements ModuleStatus {
 
     @Override

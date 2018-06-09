@@ -6,7 +6,6 @@
 package org.geoserver.wcs.web.demo;
 
 import java.awt.Rectangle;
-
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -22,9 +21,9 @@ import org.geotools.coverage.grid.GridEnvelope2D;
  */
 public class GridPanel extends FormComponentPanel {
 
-    Integer minX,minY,maxX,maxY;
+    Integer minX, minY, maxX, maxY;
 
-    public GridPanel(String id ) {
+    public GridPanel(String id) {
         super(id);
 
         initComponents();
@@ -43,10 +42,10 @@ public class GridPanel extends FormComponentPanel {
     void initComponents() {
         updateFields();
 
-        add( new TextField( "minX", new PropertyModel(this, "minX")) );
-        add( new TextField( "minY", new PropertyModel(this, "minY")) );
-        add( new TextField( "maxX", new PropertyModel(this, "maxX") ));
-        add( new TextField( "maxY", new PropertyModel(this, "maxY")) );
+        add(new TextField("minX", new PropertyModel(this, "minX")));
+        add(new TextField("minY", new PropertyModel(this, "minY")));
+        add(new TextField("maxX", new PropertyModel(this, "maxX")));
+        add(new TextField("maxY", new PropertyModel(this, "maxY")));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class GridPanel extends FormComponentPanel {
 
     private void updateFields() {
         GridEnvelope2D e = (GridEnvelope2D) getModelObject();
-        if(e != null) {
+        if (e != null) {
             this.minX = (int) e.getMinX();
             this.minY = (int) e.getMinY();
             this.maxX = (int) e.getMaxX();
@@ -65,22 +64,26 @@ public class GridPanel extends FormComponentPanel {
         }
     }
 
-    public GridPanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (component, visit) -> {
-            component.setEnabled( !readOnly );
-        });
+    public GridPanel setReadOnly(final boolean readOnly) {
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    component.setEnabled(!readOnly);
+                });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).processInput();
+                });
 
         // update the grid envelope
-        if(minX != null && maxX != null && minY != null && maxX != null) {
+        if (minX != null && maxX != null && minY != null && maxX != null) {
             final int width = maxX - minX;
             final int height = maxY - minY;
             setConvertedInput(new GridEnvelope2D(new Rectangle(minX, minY, width, height)));
@@ -94,9 +97,10 @@ public class GridPanel extends FormComponentPanel {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).clearInput();
+                });
     }
-
 }

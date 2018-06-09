@@ -6,25 +6,22 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import java.math.BigInteger;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.wfs.xml.SqlViewParamsExtractor;
-
 import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
 
-
 /**
  * Binding object for the type http://www.opengis.net/wfs:GetFeatureType.
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;xsd:complexType name="GetFeatureType"&gt;       &lt;xsd:annotation&gt;
  *              &lt;xsd:documentation&gt;             A GetFeature element
@@ -70,6 +67,7 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class GetFeatureTypeBinding extends AbstractComplexBinding {
@@ -79,14 +77,13 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         this.wfsfactory = wfsfactory;
     }
 
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return WFS.GETFEATURETYPE;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -97,13 +94,13 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
 
         WFSBindingUtils.service(getFeature, node);
@@ -114,26 +111,25 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
             getFeature.setHandle((String) node.getAttributeValue("handle"));
         }
 
-        //get the max features
+        // get the max features
         Number number = (Number) node.getAttributeValue("maxFeatures");
         if (number != null) {
             getFeature.setMaxFeatures(WFSBindingUtils.asBigInteger(number));
         }
-        
-        //startIndex (wfs 2.0)
+
+        // startIndex (wfs 2.0)
         if (node.hasAttribute("startIndex")) {
-            //convert manually since this is not standard schema for wfs 1.1
-            BigInteger startIndex = 
-                Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class);
+            // convert manually since this is not standard schema for wfs 1.1
+            BigInteger startIndex =
+                    Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class);
             getFeature.setStartIndex(startIndex);
         }
-        
-        //queries
+
+        // queries
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
-        
+
         // viewParams
         SqlViewParamsExtractor.viewParams(getFeature, node);
-
 
         return getFeature;
     }

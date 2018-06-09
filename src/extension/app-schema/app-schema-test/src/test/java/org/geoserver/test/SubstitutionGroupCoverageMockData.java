@@ -7,33 +7,30 @@ package org.geoserver.test;
 
 /**
  * Mock data for testing substitution groups {@link SubstitutionGroupCoverageWfsTest}
- * 
+ *
  * @author Aaron Braeckel (National Center for Atmospheric Research)
  */
 public class SubstitutionGroupCoverageMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * Prefix for namespace.
-     */
+    /** Prefix for namespace. */
     protected static final String NAMESPACE_PREFIX = "test";
 
-    /**
-     * URI for namespace.
-     */
+    /** URI for namespace. */
     protected static final String URI = "http://www.geotools.org/test";
 
     public SubstitutionGroupCoverageMockData() {
         super(GML32_NAMESPACES);
     }
 
-    /**
-     * @see AbstractAppSchemaMockData#addContent()
-     */
+    /** @see AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
         putNamespace(NAMESPACE_PREFIX, URI);
-        addFeatureType(NAMESPACE_PREFIX, "DiscreteCoverage", "subgrp.xml",
-                "subgrpcoverage.properties", "subgrp.xsd");
+        addFeatureType(
+                NAMESPACE_PREFIX,
+                "DiscreteCoverage",
+                "subgrp.xml",
+                "subgrpcoverage.properties",
+                "subgrp.xsd");
     }
-
 }

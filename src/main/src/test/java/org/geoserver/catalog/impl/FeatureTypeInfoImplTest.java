@@ -4,20 +4,18 @@
  */
 package org.geoserver.catalog.impl;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-
 public class FeatureTypeInfoImplTest {
 
     Catalog catalog;
-
 
     @Before
     public void setUp() throws Exception {

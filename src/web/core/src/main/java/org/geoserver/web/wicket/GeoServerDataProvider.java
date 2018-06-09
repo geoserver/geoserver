@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
@@ -37,9 +36,10 @@ import org.opengis.filter.Filter;
 /**
  * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider
  * it can perform keyword based filtering, enum the model properties used for display and sorting.
- * 
- * Implementors of providers for editable tables need to remember to raise the {@link #editable} flag. 
- * 
+ *
+ * <p>Implementors of providers for editable tables need to remember to raise the {@link #editable}
+ * flag.
+ *
  * @param <T>
  */
 public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, Object> {
@@ -47,31 +47,24 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
 
-    /**
-     * Keywords used for filtering data
-     */
+    /** Keywords used for filtering data */
     protected String[] keywords;
 
-    /**
-     * regular expression matchers, one per keyword
-     */
+    /** regular expression matchers, one per keyword */
     private transient Matcher[] matchers;
 
     /**
-     * A cache used to avoid recreating models over and over, this make it possible
-     * to make {@link GeoServerTablePanel} editable
+     * A cache used to avoid recreating models over and over, this make it possible to make {@link
+     * GeoServerTablePanel} editable
      */
     Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
-    
-    /**
-     * Sets the data provider as editable, in that case the models should be preserved
-     */
+
+    /** Sets the data provider as editable, in that case the models should be preserved */
     boolean editable = false;
-    
-    
+
     /**
-     * Returns true if this data provider is setup for editing (it will reuse models). Defaults to false
-     *
+     * Returns true if this data provider is setup for editing (it will reuse models). Defaults to
+     * false
      */
     public boolean isEditable() {
         return editable;
@@ -79,24 +72,21 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * Sets the data provider as editable/non editable
+     *
      * @param editable
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
-    /**
-     * Returns the current filtering keywords
-     * 
-     *
-     */
+    /** Returns the current filtering keywords */
     public String[] getKeywords() {
         return keywords;
     }
 
     /**
      * Sets the keywords used for filtering
-     * 
+     *
      * @param keywords
      */
     public void setKeywords(String[] keywords) {
@@ -104,9 +94,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         this.matchers = null;
     }
 
-    /**
-     * @return a regex matcher for each search keyword
-     */
+    /** @return a regex matcher for each search keyword */
     protected Matcher[] getMatchers() {
         if (matchers != null) {
             return matchers;
@@ -134,9 +122,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * Escape any character that's special for the regex api
-     * 
-     * @param keyword
      *
+     * @param keyword
      */
     private String escape(String keyword) {
         final String escapeSeq = "\\";
@@ -155,37 +142,39 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * Convenience method to determine if a character is special to the regex system.
-     * 
-     * @param chr
-     *            the character to test
-     * 
+     *
+     * @param chr the character to test
      * @return is the character a special character.
      */
     private boolean isSpecial(final char chr) {
-        return ((chr == '.') || (chr == '?') || (chr == '*') || (chr == '^') || (chr == '$')
-                || (chr == '+') || (chr == '[') || (chr == ']') || (chr == '(') || (chr == ')')
-                || (chr == '|') || (chr == '\\') || (chr == '&'));
+        return ((chr == '.')
+                || (chr == '?')
+                || (chr == '*')
+                || (chr == '^')
+                || (chr == '$')
+                || (chr == '+')
+                || (chr == '[')
+                || (chr == ']')
+                || (chr == '(')
+                || (chr == ')')
+                || (chr == '|')
+                || (chr == '\\')
+                || (chr == '&'));
     }
 
-    /**
-     * Returns the application singleton.
-     */
+    /** Returns the application singleton. */
     protected GeoServerApplication getApplication() {
         return GeoServerApplication.get();
     }
     /**
      * Provides catalog access for the provider (cannot be stored as a field, this class is going to
      * be serialized)
-     * 
-     *
      */
     protected Catalog getCatalog() {
         return getApplication().getCatalog();
     }
 
-    /**
-     * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
-     */
+    /** @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int) */
     @Override
     public Iterator<T> iterator(long first, long count) {
         List<T> items = getFilteredItems();
@@ -195,22 +184,19 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         if (comparator != null) {
             Collections.sort(items, comparator);
         }
-        if( items.size()<=count) {
-            //the list has been paged for us.
+        if (items.size() <= count) {
+            // the list has been paged for us.
             return items.iterator();
         }
         // in memory paging
         long last = first + count;
-        if (last > items.size())
-            last = items.size();
+        if (last > items.size()) last = items.size();
         return items.subList((int) first, (int) last).iterator();
     }
 
     /**
      * Returns a filtered list of items. Subclasses can override if they have a more efficient way
      * of filtering than in memory keyword comparison
-     * 
-     *
      */
     protected List<T> getFilteredItems() {
         List<T> items = getItems();
@@ -223,10 +209,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             return new ArrayList<T>(items);
         }
     }
-    
+
     /**
      * Returns the size of the filtered item collection
-     * 
+     *
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
      */
     @Override
@@ -234,11 +220,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return getFilteredItems().size();
     }
 
-    /**
-     * Returns the global size of the collection, without filtering it
-     * 
-     *
-     */
+    /** Returns the global size of the collection, without filtering it */
     public int fullSize() {
         return getItems().size();
     }
@@ -253,7 +235,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             ITEM:
             // find any match of any pattern over any property
             for (Property<T> property : properties) {
-                if(property.isSearchable()) {
+                if (property.isSearchable()) {
                     Object value = property.getPropertyValue(item);
                     if (value != null) {
                         // brute force check for keywords
@@ -272,16 +254,11 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return result;
     }
 
-    /**
-     * Returns only the properties that have been marked as visible
-     * 
-     *
-     */
+    /** Returns only the properties that have been marked as visible */
     List<Property<T>> getVisibleProperties() {
         List<Property<T>> results = new ArrayList<Property<T>>();
         for (Property<T> p : getProperties()) {
-            if (p.isVisible())
-                results.add(p);
+            if (p.isVisible()) results.add(p);
         }
         return results;
     }
@@ -290,47 +267,36 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Returns the list of properties served by this provider. The property keys are used to
      * establish the layer sorting, whilst the Property itself is used to extract the value of the
      * property from the item.
-     * 
-     *
      */
     protected abstract List<Property<T>> getProperties();
 
-    /**
-     * Returns a non filtered list of all the items the provider must return
-     * 
-     *
-     */
+    /** Returns a non filtered list of all the items the provider must return */
     protected abstract List<T> getItems();
 
     /**
      * Returns a comparator given the sort property.
-     * 
-     * @param sort
      *
+     * @param sort
      */
     protected Comparator<T> getComparator(SortParam<?> sort) {
-        if(sort == null) {
+        if (sort == null) {
             return null;
         }
-        
+
         Property<T> property = getProperty(sort);
         if (property != null) {
             Comparator<T> comparator = property.getComparator();
             if (comparator != null) {
-                if (!sort.isAscending())
-                    return new ReverseComparator<T>(comparator);
-                else
-                    return comparator;
+                if (!sort.isAscending()) return new ReverseComparator<T>(comparator);
+                else return comparator;
             }
         }
-        LOGGER.log(Level.WARNING,
-                "Could not find any comparator " + "for sort property " + sort);
+        LOGGER.log(Level.WARNING, "Could not find any comparator " + "for sort property " + sort);
         return null;
     }
-    
-    protected Property<T> getProperty(SortParam<?> sort){
-        if (sort == null || sort.getProperty() == null)
-            return null;
+
+    protected Property<T> getProperty(SortParam<?> sort) {
+        if (sort == null || sort.getProperty() == null) return null;
 
         for (Property<T> property : getProperties()) {
             if (sort.getProperty().equals(property.getName())) {
@@ -340,16 +306,16 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return null;
     }
     /**
-     * This implementation uses the {@link #modelCache} to avoid recreating over and over
-     * different models for the various items, this allows the grid panel to be editable
-     * 
+     * This implementation uses the {@link #modelCache} to avoid recreating over and over different
+     * models for the various items, this allows the grid panel to be editable
+     *
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
      */
     @Override
     public final IModel<T> model(T object) {
-        if(editable) {
+        if (editable) {
             IModel<T> result = modelCache.get(object);
-            if(result == null) {
+            if (result == null) {
                 result = newModel(object);
                 modelCache.put((T) object, result);
             }
@@ -361,8 +327,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * This method returns a filter based on the defined keywords.
-     * 
-     * @return a {@link Filter} which uses the defined Keywords. If no keyword is present Filter.INCLUDE is returned
+     *
+     * @return a {@link Filter} which uses the defined Keywords. If no keyword is present
+     *     Filter.INCLUDE is returned
      */
     protected Filter getFilter() {
         final String[] keywords = getKeywords();
@@ -383,10 +350,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Simply wraps the object into a Model assuming the Object is serializable. Subclasses
-     * can override this
-     * @param object
+     * Simply wraps the object into a Model assuming the Object is serializable. Subclasses can
+     * override this
      *
+     * @param object
      */
     @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
@@ -397,9 +364,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Simply models the concept of a property in this provider. A property has a key, that
      * identifies it and can be used for i18n, and can return the value of the property given an
      * item served by the {@link GeoServerDataProvider}
-     * 
+     *
      * @author Andrea Aime - OpenGeo
-     * 
      * @param <T>
      */
     public interface Property<T> extends Serializable {
@@ -407,70 +373,58 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
         /**
          * Given the item, returns the property
-         * 
-         * @param item
          *
+         * @param item
          */
         public Object getPropertyValue(T item);
 
         /**
          * Given the item model, returns a model for the property value
-         * 
-         * @param itemModel
          *
+         * @param itemModel
          */
         public IModel<?> getModel(IModel<T> itemModel);
 
-        /**
-         * Allows for sorting the property
-         * 
-         *
-         */
+        /** Allows for sorting the property */
         public Comparator<T> getComparator();
 
-        /**
-         * If false the property will be used for searches, but not shown in the table
-         */
+        /** If false the property will be used for searches, but not shown in the table */
         public boolean isVisible();
-        
 
-        /**
-         * Returns true if it makes sense to search over this property
-         *
-         */
+        /** Returns true if it makes sense to search over this property */
         public boolean isSearchable();
     }
-    
+
     /**
-     * Base property class. Assumes T is serializable, if it's not, manually override
-     * the getModel() method
+     * Base property class. Assumes T is serializable, if it's not, manually override the getModel()
+     * method
      */
     public abstract static class AbstractProperty<T> implements Property<T> {
         private static final long serialVersionUID = 6286992721731224988L;
         String name;
         boolean visible;
-        
+
         public AbstractProperty(String name) {
             this(name, true);
         }
-        
+
         public AbstractProperty(String name, boolean visible) {
             this.name = name;
             this.visible = visible;
         }
-        
+
         public Comparator<T> getComparator() {
             return new PropertyComparator<T>(this);
         }
 
         /**
-         * Returns a model based on the getPropertyValue(...) result. Mind, this is
-         * not suitable for editable tables, if you need to make one you'll have to
-         * roll your own getModel() implementation ( {@link BeanProperty} provides a good example)
+         * Returns a model based on the getPropertyValue(...) result. Mind, this is not suitable for
+         * editable tables, if you need to make one you'll have to roll your own getModel()
+         * implementation ( {@link BeanProperty} provides a good example)
          */
         public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue((T) itemModel.getObject());
-            if(value instanceof IModel) {
+            if (value instanceof IModel) {
                 return (IModel<?>) value;
             } else {
                 return new Model<Serializable>((Serializable) value);
@@ -484,12 +438,12 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         public boolean isVisible() {
             return visible;
         }
-        
+
         @Override
         public String toString() {
             return "Property[" + name + "]";
         }
-        
+
         public boolean isSearchable() {
             return true;
         }
@@ -497,9 +451,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * A Property implementation that uses BeanUtils to access a bean properties
-     * 
+     *
      * @author Andrea Aime - OpenGeo
-     * 
      * @param <T>
      */
     public static class BeanProperty<T> extends AbstractProperty<T> {
@@ -514,15 +467,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             super(key, visible);
             this.propertyPath = propertyPath;
         }
-        
-        public String getPropertyPath(){
+
+        public String getPropertyPath() {
             return propertyPath;
         }
-        
+
         /**
-         * Overrides the base class {@link #getModel(IModel)} to allow for editable
-         * tables: uses a property model against the bean so that writes will hit the
-         * bean instead of the possibly immutable values contained in it (think a String property)
+         * Overrides the base class {@link #getModel(IModel)} to allow for editable tables: uses a
+         * property model against the bean so that writes will hit the bean instead of the possibly
+         * immutable values contained in it (think a String property)
          */
         public IModel<T> getModel(IModel<T> itemModel) {
             return new PropertyModel<T>(itemModel, propertyPath);
@@ -530,16 +483,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
         public Object getPropertyValue(T bean) {
             // allow rest of the code to assume bean != null
-            if (bean == null)
-                return null;
+            if (bean == null) return null;
 
             try {
                 return PropertyUtils.getProperty(bean, propertyPath);
-            } catch(NestedNullException nne) {
+            } catch (NestedNullException nne) {
                 return null;
             } catch (Exception e) {
-                throw new RuntimeException("Could not find property " + propertyPath + " in "
-                        + bean.getClass(), e);
+                throw new RuntimeException(
+                        "Could not find property " + propertyPath + " in " + bean.getClass(), e);
             }
         }
 
@@ -553,9 +505,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Placeholder for a column that does not contain a real property (for example, a column
      * containing commands instead of data). Will return the item model as the model, and as the
      * property value.
-     * 
+     *
      * @author Andrea Aime
-     * 
      * @param <T>
      */
     public static class PropertyPlaceholder<T> implements Property<T> {
@@ -599,9 +550,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Uses {@link Property} to extract the values, and then compares them assuming they are
-     * {@link Comparable}
-     * 
+     * Uses {@link Property} to extract the values, and then compares them assuming they are {@link
+     * Comparable}
+     *
      * @param <T>
      */
     public static class PropertyComparator<T> implements Comparator<T> {
@@ -617,21 +568,17 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             Comparable<Object> p2 = (Comparable<Object>) property.getPropertyValue(o2);
 
             // what if any property is null? We assume null < (not null)
-            if (p1 == null)
-                return p2 != null ? -1 : 0;
-            else if (p2 == null)
-                return 1;
+            if (p1 == null) return p2 != null ? -1 : 0;
+            else if (p2 == null) return 1;
 
             return p1.compareTo(p2);
         }
-
     }
 
     /**
      * A simple comparator inverter
-     * 
+     *
      * @author Andrea Aime - OpenGeo
-     * 
      * @param <T>
      */
     private static class ReverseComparator<T> implements Comparator<T> {
@@ -644,7 +591,5 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         public int compare(T o1, T o2) {
             return comparator.compare(o1, o2) * -1;
         }
-
     }
-
 }

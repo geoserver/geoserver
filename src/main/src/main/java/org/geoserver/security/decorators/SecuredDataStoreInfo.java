@@ -6,7 +6,6 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
@@ -17,11 +16,9 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
 
 /**
- * Given a {@link DataStoreInfo} makes sure no write operations can be performed
- * through it
- * 
+ * Given a {@link DataStoreInfo} makes sure no write operations can be performed through it
+ *
  * @author Andrea Aime - TOPP
- * 
  * @param <T>
  * @param <F>
  */
@@ -36,15 +33,15 @@ public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
     }
 
     @Override
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener) throws IOException {
-        final DataAccess<? extends FeatureType, ? extends Feature> ds = super
-                .getDataStore(listener);
-        if (ds == null)
-            return null;
-        else if(policy.level == AccessLevel.METADATA)
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
+            ProgressListener listener) throws IOException {
+        final DataAccess<? extends FeatureType, ? extends Feature> ds =
+                super.getDataStore(listener);
+        if (ds == null) return null;
+        else if (policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         else
-            return (DataAccess<? extends FeatureType, ? extends Feature>) SecuredObjects.secure(ds, policy);
+            return (DataAccess<? extends FeatureType, ? extends Feature>)
+                    SecuredObjects.secure(ds, policy);
     }
-
 }

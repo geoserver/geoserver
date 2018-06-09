@@ -9,11 +9,17 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -23,45 +29,33 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.renderer.crs.WrappingProjectionHandler;
-import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-/**
- * 
- * @see RawMapResponse
- */
+/** @see RawMapResponse */
 public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputFormat {
     /** A logger for this class. */
-    protected static final Logger LOGGER = Logging.getLogger(AbstractOpenLayersMapOutputFormat.class);
+    protected static final Logger LOGGER =
+            Logging.getLogger(AbstractOpenLayersMapOutputFormat.class);
 
     /**
      * Default capabilities for OpenLayers format.
      *
      * <p>
+     *
      * <ol>
-     *         <li>tiled = supported</li>
-     *         <li>multipleValues = unsupported</li>
-     *         <li>paletteSupported = supported</li>
-     *         <li>transparency = supported</li>
+     *   <li>tiled = supported
+     *   <li>multipleValues = unsupported
+     *   <li>paletteSupported = supported
+     *   <li>transparency = supported
      * </ol>
      */
-    static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(true, false, true, true, null);
+    static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(true, false, true, true, null);
 
     /**
      * Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request
@@ -81,9 +75,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
         ignoredParameters.add("SRS");
     }
 
-    /**
-     * static freemaker configuration
-     */
+    /** static freemaker configuration */
     private static Configuration cfg;
 
     static {
@@ -94,21 +86,15 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
         cfg.setObjectWrapper(bw);
     }
 
-    /**
-     * wms configuration
-     */
+    /** wms configuration */
     private WMS wms;
 
     public AbstractOpenLayersMapOutputFormat(WMS wms) {
         this.wms = wms;
     }
 
-
-    /**
-     * @see GetMapOutputFormat#produceMap(WMSMapContent)
-     */
-    public RawMap produceMap(WMSMapContent mapContent)
-            throws ServiceException, IOException {
+    /** @see GetMapOutputFormat#produceMap(WMSMapContent) */
+    public RawMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         try {
             // create the template
             String templateName = getTemplateName(mapContent);
@@ -125,18 +111,23 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
             ProjectionHandler handler = null;
             try {
-                handler = ProjectionHandlerFinder.getHandler(
-                        new ReferencedEnvelope(request.getCrs()), 
-                        request.getCrs(), wms.isContinuousMapWrappingEnabled());
+                handler =
+                        ProjectionHandlerFinder.getHandler(
+                                new ReferencedEnvelope(request.getCrs()),
+                                request.getCrs(),
+                                wms.isContinuousMapWrappingEnabled());
             } catch (MismatchedDimensionException e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
             } catch (FactoryException e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
             }
-            map.put("global", String.valueOf(
-                    handler != null && handler instanceof WrappingProjectionHandler));
+            map.put(
+                    "global",
+                    String.valueOf(
+                            handler != null && handler instanceof WrappingProjectionHandler));
 
-            String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
+            String baseUrl =
+                    ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
             String queryString = null;
             // remove query string from baseUrl
             if (baseUrl.indexOf("?") > 0) {
@@ -182,6 +173,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
 
     /**
      * Returns the units for the current OL version
+     *
      * @param mapContent
      * @return
      */
@@ -189,6 +181,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
 
     /**
      * Returns the freemarker template used to generate the output
+     *
      * @param mapContent
      * @return
      */
@@ -203,7 +196,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             code = WMS.toInternalSRS(code, WMS.version("1.3.0"));
             CoordinateReferenceSystem crs13 = CRS.decode(code);
             return CRS.getAxisOrder(crs13) == AxisOrder.NORTH_EAST;
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to determine CRS axis order, assuming is EN", e);
             return false;
         }
@@ -212,19 +205,19 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     /**
      * Guesses if the map context is made only of coverage layers by looking at the wrapping feature
      * type. Ugly, if you come up with better means of doing so, fix it.
-     * 
-     * @param mapContent
      *
+     * @param mapContent
      */
     private boolean hasOnlyCoverages(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
             FeatureType schema = layer.getFeatureSource().getSchema();
-            boolean grid = schema.getName().getLocalPart().equals("GridCoverage")
-                    && schema.getDescriptor("geom") != null && schema.getDescriptor("grid") != null
-                    && !(layer instanceof WMSLayer)
-                    && !(layer instanceof WMTSMapLayer);
-            if (!grid)
-                return false;
+            boolean grid =
+                    schema.getName().getLocalPart().equals("GridCoverage")
+                            && schema.getDescriptor("geom") != null
+                            && schema.getDescriptor("grid") != null
+                            && !(layer instanceof WMSLayer)
+                            && !(layer instanceof WMTSMapLayer);
+            if (!grid) return false;
         }
         return true;
     }
@@ -232,34 +225,43 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     /**
      * Helper method that checks if filtering support should be activated.
      *
-     * If the map contains at least one layer that is queryable, filtering should be activated.
+     * <p>If the map contains at least one layer that is queryable, filtering should be activated.
      */
     private boolean supportsFiltering(WMSMapContent mapContent) {
         // returns TRUE if at least one layer supports filtering
-        return mapContent.layers().stream().anyMatch(layer -> {
-            if (layer instanceof FeatureLayer) {
-                // vector layers support filtering
-                return true;
-            }
-            if (!(layer instanceof GridReaderLayer)) {
-                // filtering is not support for the remaining types
-                return false;
-            }
-            // let's see if this coverage type supports filtering
-            GeneralParameterValue[] readParams = ((GridReaderLayer) layer).getParams();
-            if (readParams == null || readParams.length == 0) {
-                // filtering is not supported
-                return false;
-            }
-            for (GeneralParameterValue readParam : readParams) {
-                if (readParam.getDescriptor().getName().getCode().equalsIgnoreCase("FILTER")) {
-                    // the reader of this layer supports filtering
-                    return true;
-                }
-            }
-            // filtering is not supported
-            return false;
-        });
+        return mapContent
+                .layers()
+                .stream()
+                .anyMatch(
+                        layer -> {
+                            if (layer instanceof FeatureLayer) {
+                                // vector layers support filtering
+                                return true;
+                            }
+                            if (!(layer instanceof GridReaderLayer)) {
+                                // filtering is not support for the remaining types
+                                return false;
+                            }
+                            // let's see if this coverage type supports filtering
+                            GeneralParameterValue[] readParams =
+                                    ((GridReaderLayer) layer).getParams();
+                            if (readParams == null || readParams.length == 0) {
+                                // filtering is not supported
+                                return false;
+                            }
+                            for (GeneralParameterValue readParam : readParams) {
+                                if (readParam
+                                        .getDescriptor()
+                                        .getName()
+                                        .getCode()
+                                        .equalsIgnoreCase("FILTER")) {
+                                    // the reader of this layer supports filtering
+                                    return true;
+                                }
+                            }
+                            // filtering is not supported
+                            return false;
+                        });
     }
 
     private List<String> styleNames(WMSMapContent mapContent) {
@@ -274,11 +276,8 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
      * Returns a list of maps with the name and value of each parameter that we have to forward to
      * OpenLayers. Forwarded parameters are all the provided ones, besides a short set contained in
      * {@link #ignoredParameters}.
-     * 
-     * 
-     * 
-     * @param rawKvp
      *
+     * @param rawKvp
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<>(rawKvp.size());
@@ -294,7 +293,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             // this won't work for multi-valued parameters, but we have none so
             // far (they are common just in HTML forms...)
             Map<String, String> map = new HashMap<>();
-            
+
             map.put("name", paramName);
             map.put("value", en.getValue());
             result.add(map);
@@ -312,9 +311,8 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     /**
      * Makes sure the url does not end with "/", otherwise we would have URL lik
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
-     * 
-     * @param baseUrl
      *
+     * @param baseUrl
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {
@@ -334,5 +332,4 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }
-
 }

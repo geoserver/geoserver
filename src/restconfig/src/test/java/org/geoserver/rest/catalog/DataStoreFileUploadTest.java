@@ -23,9 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.servlet.Filter;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -35,7 +33,6 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geotools.data.DataUtilities;
 import org.geotools.util.URLs;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -87,29 +84,29 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     byte[] propertyFile() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( output ) );
-        writer.write( "_=name:String,pointProperty:Point\n" );
-        writer.write( "ds.0='zero'|POINT(0 0)\n");
-        writer.write( "ds.1='one'|POINT(1 1)\n");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+        writer.write("_=name:String,pointProperty:Point\n");
+        writer.write("ds.0='zero'|POINT(0 0)\n");
+        writer.write("ds.1='one'|POINT(1 1)\n");
         writer.flush();
         return output.toByteArray();
     }
 
-    void assertFeatures( Document dom ) throws Exception {
-        assertFeatures( dom, "gs" );
+    void assertFeatures(Document dom) throws Exception {
+        assertFeatures(dom, "gs");
     }
 
-    void assertFeatures( Document dom, String ns ) throws Exception {
-        assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
-        assertEquals( 2, dom.getElementsByTagName( ns + ":pds").getLength() );
+    void assertFeatures(Document dom, String ns) throws Exception {
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
+        assertEquals(2, dom.getElementsByTagName(ns + ":pds").getLength());
     }
 
     byte[] shpZipAsBytes() throws IOException {
-        return toBytes(getClass().getResourceAsStream( "test-data/pds.zip" ));
+        return toBytes(getClass().getResourceAsStream("test-data/pds.zip"));
     }
 
     byte[] shpChineseZipAsBytes() throws IOException {
-        return toBytes(getClass().getResourceAsStream( "test-data/chinese_poly.zip" ));
+        return toBytes(getClass().getResourceAsStream("test-data/chinese_poly.zip"));
     }
 
     byte[] shpSanAndresShapefilesZipAsBytes() throws IOException {
@@ -117,15 +114,15 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     byte[] shpMultiZipAsBytes() throws IOException {
-        return toBytes(getClass().getResourceAsStream( "test-data/pdst.zip" ));
+        return toBytes(getClass().getResourceAsStream("test-data/pdst.zip"));
     }
 
     byte[] toBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         int c;
-        while ( ( c = in.read() ) != -1 ) {
-            out.write( c );
+        while ((c = in.read()) != -1) {
+            out.write(c);
         }
         return out.toByteArray();
     }
@@ -133,29 +130,34 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testShapeFileUploadNotExisting() throws Exception {
         File file = new File("./target/notThere.tiff");
-        if(file.exists()) {
+        if (file.exists()) {
             assertTrue(file.delete());
         }
 
         URL url = URLs.fileToUrl(file.getCanonicalFile());
         String body = url.toExternalForm();
-        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/external.shp",
-                body, "text/plain");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp",
+                        body,
+                        "text/plain");
         assertEquals(400, response.getStatus());
     }
 
-
-
     @Test
     @Ignore
-    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for spaces in
+    // fixing https://osgeo-org.atlassian.net/browse/GEOS-6845, re-enable when a proper fix for
+    // spaces in
     // name has been made
     public void testShapeFileUploadWithSpaces() throws Exception {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "store with spaces"));
 
         byte[] bytes = shpZipAsBytes();
-        put( ROOT_PATH+"/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/store%20with%20spaces/file.shp",
+                bytes,
+                "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces");
         assertNull(ds);
@@ -166,7 +168,10 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "pdst"));
 
-        put(ROOT_PATH+"/workspaces/gs/datastores/pdst/file.shp?configure=all", shpMultiZipAsBytes(), "application/zip");
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/pdst/file.shp?configure=all",
+                shpMultiZipAsBytes(),
+                "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "pdst");
         assertNotNull(ds);
@@ -179,7 +184,8 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
 
-        put(ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/file.shp",
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/file.shp",
                 shpSanAndresShapefilesZipAsBytes(),
                 "application/zip");
 
@@ -191,22 +197,23 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetProperties() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties");
-        assertEquals( 404, resp.getStatus() );
+        MockHttpServletResponse resp =
+                getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
+        assertEquals(404, resp.getStatus());
 
         byte[] bytes = propertyFile();
-        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
+        put(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
 
-        resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties");
-        assertEquals( 200, resp.getStatus() );
-        assertEquals( "application/zip", resp.getContentType() );
+        resp = getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties");
+        assertEquals(200, resp.getStatus());
+        assertEquals("application/zip", resp.getContentType());
 
         ByteArrayInputStream bin = getBinaryInputStream(resp);
-        ZipInputStream zin = new ZipInputStream( bin );
+        ZipInputStream zin = new ZipInputStream(bin);
 
         ZipEntry entry = zin.getNextEntry();
-        assertNotNull( entry );
-        assertEquals( "pds.properties", entry.getName() );
+        assertNotNull(entry);
+        assertEquals("pds.properties", entry.getName());
     }
 
     @Test
@@ -222,14 +229,19 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         loadAppSchemaTestData();
 
         // upload mapping file (datastore is created implicitly)
-        put( ROOT_PATH+"/workspaces/gsml/datastores/mappedPolygons/file.appschema", bytes, "text/xml");
-        Document dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
+        put(
+                ROOT_PATH + "/workspaces/gsml/datastores/mappedPolygons/file.appschema",
+                bytes,
+                "text/xml");
+        Document dom = getAsDOM("wfs?request=getfeature&typename=gsml:MappedFeature");
 
         // print(dom);
 
-        assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
-        NodeList mappedFeatureNodes = dom.getDocumentElement().getElementsByTagNameNS(
-                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
+        NodeList mappedFeatureNodes =
+                dom.getDocumentElement()
+                        .getElementsByTagNameNS(
+                                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
         assertNotNull(mappedFeatureNodes);
         assertEquals(2, mappedFeatureNodes.getLength());
 
@@ -238,15 +250,20 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
         // upload alternative mapping file
         bytes = appSchemaAlternativeMappingAsBytes();
-        put(ROOT_PATH+"/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
-                bytes, "text/xml");
-        dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
+        put(
+                ROOT_PATH
+                        + "/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
+                bytes,
+                "text/xml");
+        dom = getAsDOM("wfs?request=getfeature&typename=gsml:MappedFeature");
 
         // print(dom);
 
-        assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
-        mappedFeatureNodes = dom.getDocumentElement().getElementsByTagNameNS(
-                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
+        mappedFeatureNodes =
+                dom.getDocumentElement()
+                        .getElementsByTagNameNS(
+                                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
         assertNotNull(mappedFeatureNodes);
         assertEquals(2, mappedFeatureNodes.getLength());
 
@@ -258,7 +275,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     private int countNameAttributes(Node mappedFeatureNode) {
         NodeList attrNodes = mappedFeatureNode.getChildNodes();
         int namesCount = 0;
-        for (int i=0; i<attrNodes.getLength(); i++) {
+        for (int i = 0; i < attrNodes.getLength(); i++) {
             Node attribute = attrNodes.item(i);
             if ("name".equals(attribute.getLocalName())) {
                 namesCount++;
@@ -269,12 +286,12 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     private void loadAppSchemaTestData() throws IOException {
-        GeoServerResourceLoader loader = new GeoServerResourceLoader(getTestData()
-                .getDataDirectoryRoot());
-        loader.copyFromClassPath("test-data/mappedPolygons.properties",
-                "data/gsml/mappedPolygons.properties");
-        loader.copyFromClassPath("test-data/mappedPolygons.oasis.xml",
-                "data/gsml/mappedPolygons.oasis.xml");
+        GeoServerResourceLoader loader =
+                new GeoServerResourceLoader(getTestData().getDataDirectoryRoot());
+        loader.copyFromClassPath(
+                "test-data/mappedPolygons.properties", "data/gsml/mappedPolygons.properties");
+        loader.copyFromClassPath(
+                "test-data/mappedPolygons.oasis.xml", "data/gsml/mappedPolygons.oasis.xml");
         loader.copyFromClassPath(
                 "test-data/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd");
@@ -311,16 +328,18 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     private byte[] appSchemaMappingAsBytes() throws IOException {
-        InputStream in = getClass().getResourceAsStream( "/test-data/mappedPolygons.xml" );
+        InputStream in = getClass().getResourceAsStream("/test-data/mappedPolygons.xml");
         if (in != null) {
             byte[] original = toBytes(in);
             byte[] modified;
 
             String originalAsString = new String(original, Charset.forName("UTF-8"));
             // modify paths in the original mapping file
-            String modifiedAsString = originalAsString.replace("file:./", "file:../")
-                    .replace("commonSchemas_new/", "../commonSchemas_new/")
-                    .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
+            String modifiedAsString =
+                    originalAsString
+                            .replace("file:./", "file:../")
+                            .replace("commonSchemas_new/", "../commonSchemas_new/")
+                            .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
 
             modified = modifiedAsString.getBytes(Charset.forName("UTF-8"));
 
@@ -336,12 +355,12 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             Document mappingDom = dom(new ByteArrayInputStream(mapping));
 
             // remove mapping for MappedFeature/gml:name[2] attribute
-            NodeList attrMappingNodes = mappingDom.getDocumentElement()
-                    .getElementsByTagName("AttributeMapping");
-            for (int i=0; i<attrMappingNodes.getLength(); i++) {
+            NodeList attrMappingNodes =
+                    mappingDom.getDocumentElement().getElementsByTagName("AttributeMapping");
+            for (int i = 0; i < attrMappingNodes.getLength(); i++) {
                 Node attrMapping = attrMappingNodes.item(i);
                 NodeList children = attrMapping.getChildNodes();
-                for (int j=0; j<children.getLength(); j++) {
+                for (int j = 0; j < children.getLength(); j++) {
                     if ("MappedFeature/gml:name[2]".equals(children.item(j).getTextContent())) {
                         attrMapping.getParentNode().removeChild(attrMapping);
                         break;

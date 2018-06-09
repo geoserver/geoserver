@@ -7,7 +7,6 @@ package org.geoserver.web.security.ldap;
 
 import java.util.HashMap;
 import java.util.logging.Level;
-
 import javax.naming.AuthenticationException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -33,7 +32,7 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Configuration panel for {@link LDAPAuthenticationProvider}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecurityServiceConfig> {
@@ -44,38 +43,42 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         super(id, model);
 
         add(new TextField<String>("serverURL").setRequired(true));
-        add(new CheckBox("useTLS"));        
+        add(new CheckBox("useTLS"));
         add(new TextField<String>("userDnPattern"));
         add(new TextField<String>("userFilter"));
         add(new TextField<String>("userFormat"));
 
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
-        add(new AjaxCheckBox("useLdapAuthorization", new Model<Boolean>(useLdapAuth)) {
+        add(
+                new AjaxCheckBox("useLdapAuthorization", new Model<Boolean>(useLdapAuth)) {
 
-            private static final long serialVersionUID = 2060279075143716273L;
+                    private static final long serialVersionUID = 2060279075143716273L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                WebMarkupContainer c = (WebMarkupContainer) 
-                    LDAPAuthProviderPanel.this.get("authorizationPanelContainer");
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        WebMarkupContainer c =
+                                (WebMarkupContainer)
+                                        LDAPAuthProviderPanel.this.get(
+                                                "authorizationPanelContainer");
 
-                //reset any values that were set
-                ((AuthorizationPanel)c.get("authorizationPanel")).resetModel();
+                        // reset any values that were set
+                        ((AuthorizationPanel) c.get("authorizationPanel")).resetModel();
 
-                //remove the old panel
-                c.remove("authorizationPanel");
-                
-                //add the new panel
-                c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
-                
-                target.add(c);
-            }
-        });
-        add(new WebMarkupContainer("authorizationPanelContainer")
-            .add(createAuthorizationPanel("authorizationPanel", useLdapAuth)).setOutputMarkupId(true));
+                        // remove the old panel
+                        c.remove("authorizationPanel");
+
+                        // add the new panel
+                        c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
+
+                        target.add(c);
+                    }
+                });
+        add(
+                new WebMarkupContainer("authorizationPanelContainer")
+                        .add(createAuthorizationPanel("authorizationPanel", useLdapAuth))
+                        .setOutputMarkupId(true));
 
         add(new TestLDAPConnectionPanel("testCx"));
-
     }
 
     AuthorizationPanel createAuthorizationPanel(String id, boolean useLDAP) {
@@ -139,70 +142,102 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         public TestLDAPConnectionPanel(String id) {
             super(id, new Model<HashMap<String, Object>>(new HashMap<String, Object>()));
 
-            add(new TextField<String>("username", new MapModel<String>(getModel().getObject(), "username")));
-            add(new PasswordTextField("password", new MapModel<String>(getModel().getObject(), "password")).setRequired(false));
-            add(new AjaxSubmitLink("test") {
+            add(
+                    new TextField<String>(
+                            "username", new MapModel<String>(getModel().getObject(), "username")));
+            add(
+                    new PasswordTextField(
+                                    "password",
+                                    new MapModel<String>(getModel().getObject(), "password"))
+                            .setRequired(false));
+            add(
+                    new AjaxSubmitLink("test") {
 
-                private static final long serialVersionUID = 2373404292655355758L;
+                        private static final long serialVersionUID = 2373404292655355758L;
 
-                @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    //since this is not a regular form submit we have to manually update models 
-                    // of form components we care about
-                    ((FormComponent<?>)TestLDAPConnectionPanel.this.get("username")).processInput();
-                    ((FormComponent<?>)TestLDAPConnectionPanel.this.get("password")).processInput();
+                        @Override
+                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            // since this is not a regular form submit we have to manually update
+                            // models
+                            // of form components we care about
+                            ((FormComponent<?>) TestLDAPConnectionPanel.this.get("username"))
+                                    .processInput();
+                            ((FormComponent<?>) TestLDAPConnectionPanel.this.get("password"))
+                                    .processInput();
 
-                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("serverURL")).processInput();
-                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("useTLS")).processInput();
+                            ((FormComponent<?>) LDAPAuthProviderPanel.this.get("serverURL"))
+                                    .processInput();
+                            ((FormComponent<?>) LDAPAuthProviderPanel.this.get("useTLS"))
+                                    .processInput();
 
-                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userDnPattern")).processInput();
-                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userFilter")).processInput();
-                    ((FormComponent<?>)LDAPAuthProviderPanel.this.get("userFormat")).processInput();
-                    
-                    String username = (String)((FormComponent<?>)TestLDAPConnectionPanel.this.get("username")).getConvertedInput();
-                    String password = (String)((FormComponent<?>)TestLDAPConnectionPanel.this.get("password")).getConvertedInput();
-                    
-                    LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) getForm().getModelObject();
-                    doTest(ldapConfig, username, password);
+                            ((FormComponent<?>) LDAPAuthProviderPanel.this.get("userDnPattern"))
+                                    .processInput();
+                            ((FormComponent<?>) LDAPAuthProviderPanel.this.get("userFilter"))
+                                    .processInput();
+                            ((FormComponent<?>) LDAPAuthProviderPanel.this.get("userFormat"))
+                                    .processInput();
 
-                    target.add(getPage().get("feedback"));
-                }
+                            String username =
+                                    (String)
+                                            ((FormComponent<?>)
+                                                            TestLDAPConnectionPanel.this.get(
+                                                                    "username"))
+                                                    .getConvertedInput();
+                            String password =
+                                    (String)
+                                            ((FormComponent<?>)
+                                                            TestLDAPConnectionPanel.this.get(
+                                                                    "password"))
+                                                    .getConvertedInput();
 
-                void doTest(LDAPSecurityServiceConfig ldapConfig, String username,
-                        String password) {
+                            LDAPSecurityServiceConfig ldapConfig =
+                                    (LDAPSecurityServiceConfig) getForm().getModelObject();
+                            doTest(ldapConfig, username, password);
 
-                    
-                    try {
-                        
-                        if (ldapConfig.getUserDnPattern() == null && ldapConfig.getUserFilter() == null) {
-                            error("Neither user dn pattern or user filter specified");
-                            return;
+                            target.add(getPage().get("feedback"));
                         }
-                        
-                        LDAPSecurityProvider provider = new LDAPSecurityProvider(getSecurityManager());
-                        LDAPAuthenticationProvider authProvider = (LDAPAuthenticationProvider) provider
-                                .createAuthenticationProvider(ldapConfig);
-                        Authentication authentication = authProvider
-                                .authenticate(new UsernamePasswordAuthenticationToken(
-                                        username, password));
-                        if(authentication == null || !authentication.isAuthenticated()) {
-                            throw new AuthenticationException("Cannot authenticate " + username);
-                        }
 
-                        provider.destroy(null);
-                        info(new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + 
-                            ".connectionSuccessful").getObject());
-                    } catch (Exception e) {
-                        error(e);
-                        LOGGER.log(Level.WARNING, e.getMessage(), e);
-                    }
-                    finally {
-                        
-                    }
-                    
-                }
-                
-            }.setDefaultFormProcessing(false));
+                        void doTest(
+                                LDAPSecurityServiceConfig ldapConfig,
+                                String username,
+                                String password) {
+
+                            try {
+
+                                if (ldapConfig.getUserDnPattern() == null
+                                        && ldapConfig.getUserFilter() == null) {
+                                    error("Neither user dn pattern or user filter specified");
+                                    return;
+                                }
+
+                                LDAPSecurityProvider provider =
+                                        new LDAPSecurityProvider(getSecurityManager());
+                                LDAPAuthenticationProvider authProvider =
+                                        (LDAPAuthenticationProvider)
+                                                provider.createAuthenticationProvider(ldapConfig);
+                                Authentication authentication =
+                                        authProvider.authenticate(
+                                                new UsernamePasswordAuthenticationToken(
+                                                        username, password));
+                                if (authentication == null || !authentication.isAuthenticated()) {
+                                    throw new AuthenticationException(
+                                            "Cannot authenticate " + username);
+                                }
+
+                                provider.destroy(null);
+                                info(
+                                        new StringResourceModel(
+                                                        LDAPAuthProviderPanel.class.getSimpleName()
+                                                                + ".connectionSuccessful")
+                                                .getObject());
+                            } catch (Exception e) {
+                                error(e);
+                                LOGGER.log(Level.WARNING, e.getMessage(), e);
+                            } finally {
+
+                            }
+                        }
+                    }.setDefaultFormProcessing(false));
         }
     }
 }

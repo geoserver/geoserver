@@ -7,13 +7,10 @@ package org.geoserver.wfs.response.v2_0;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs20.GetPropertyValueType;
 import net.opengis.wfs20.QueryType;
 import net.opengis.wfs20.ValueCollectionType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -69,8 +66,8 @@ public class GetPropertyValueResponse extends WFSResponse {
             try {
                 for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
                     if (encoder.getNamespaces().getURI(nameSpaceinfo.getPrefix()) == null) {
-                        encoder.getNamespaces().declarePrefix(nameSpaceinfo.getPrefix(),
-                                nameSpaceinfo.getURI());
+                        encoder.getNamespaces()
+                                .declarePrefix(nameSpaceinfo.getPrefix(), nameSpaceinfo.getURI());
                     }
                 }
             } finally {
@@ -81,5 +78,4 @@ public class GetPropertyValueResponse extends WFSResponse {
 
         encoder.encode(value, WFS.ValueCollection, output);
     }
-
 }

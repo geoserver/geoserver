@@ -8,7 +8,7 @@ import org.geoserver.platform.resource.Resource;
 
 /**
  * Tracks and cleans up a GeoServer resource
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class WPSResourceResource implements WPSResource {
@@ -25,5 +25,4 @@ public class WPSResourceResource implements WPSResource {
     public String getName() {
         return resource.path();
     }
-
 }

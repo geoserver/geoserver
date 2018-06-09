@@ -5,26 +5,23 @@
 
 package org.geoserver.notification.common.sender;
 
+import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
-
 import org.geoserver.notification.common.NotificationXStreamDefaultInitializer;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
- * Fanout exchange sender implementation: routes messages to all of the queues that are bound to it and the routing key is ignore (ideal for the
- * broadcast routing of messages)
+ * Fanout exchange sender implementation: routes messages to all of the queues that are bound to it
+ * and the routing key is ignore (ideal for the broadcast routing of messages)
+ *
+ * <p>The broker connection parameters are populated by {@link XStream} deserialization, using the
+ * configuration provided by {@link NotificationXStreamDefaultInitializer}
+ *
  * <p>
- * The broker connection parameters are populated by {@link XStream} deserialization, using the configuration provided by
- * {@link NotificationXStreamDefaultInitializer}
- * <p>
- * 
+ *
  * @param exchangeName the name of exchange to publish the message to
  * @param routingKey identify the queue to publish the message to (ignored by fanout type)
  * @author Xandros
- *
  */
-
 public class FanoutRabbitMQSender extends RabbitMQSender {
 
     private static final long serialVersionUID = -1947966245086626842L;
@@ -40,5 +37,4 @@ public class FanoutRabbitMQSender extends RabbitMQSender {
         channel.exchangeDeclare(exchangeName, EXCHANGE_TYPE);
         channel.basicPublish(exchangeName, routingKey, null, payload);
     }
-
 }

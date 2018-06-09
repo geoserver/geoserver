@@ -8,7 +8,6 @@ package org.geoserver.sld;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -24,7 +23,7 @@ import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 
 /**
  * DescribeLayer WMs operation.
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -38,7 +37,8 @@ public class GetStyles {
 
     public StyledLayerDescriptor run(final GetStylesRequest request) throws ServiceException {
 
-        if (request.getSldVer() != null && "".equals(request.getSldVer())
+        if (request.getSldVer() != null
+                && "".equals(request.getSldVer())
                 && !"1.0.0".equals(request.getSldVer()))
             throw new ServiceException("SLD version " + request.getSldVer() + " not supported");
 
@@ -87,5 +87,4 @@ public class GetStyles {
         style = (Style) cloner.getCopy();
         return style;
     }
-
 }

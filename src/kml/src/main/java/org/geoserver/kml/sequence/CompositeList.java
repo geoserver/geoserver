@@ -8,15 +8,13 @@ package org.geoserver.kml.sequence;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.springframework.util.CompositeIterator;
 
 /**
  * A simple way to compose to lists into one. Will only work as a iterator source, it does not
  * really implement the {@link List} basic functionalities
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  * @param <T>
  */
 public class CompositeList<T> extends AbstractList<T> {
@@ -46,5 +44,4 @@ public class CompositeList<T> extends AbstractList<T> {
     public int size() {
         return -1;
     }
-
 }

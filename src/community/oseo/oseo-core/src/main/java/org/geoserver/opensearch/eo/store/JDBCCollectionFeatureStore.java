@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -20,13 +19,15 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
 
     static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureStore.class);
 
-    public JDBCCollectionFeatureStore(JDBCOpenSearchAccess openSearchAccess,
-            FeatureType collectionFeatureType) throws IOException {
+    public JDBCCollectionFeatureStore(
+            JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
+            throws IOException {
         super(openSearchAccess, collectionFeatureType);
     }
 
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
-        return openSearchAccess.getDelegateStore()
+        return openSearchAccess
+                .getDelegateStore()
                 .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
     }
 
@@ -49,5 +50,4 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     protected String getThumbnailTable() {
         return "collection_thumb";
     }
-
 }

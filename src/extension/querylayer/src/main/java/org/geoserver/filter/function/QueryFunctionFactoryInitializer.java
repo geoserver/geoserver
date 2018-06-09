@@ -5,7 +5,6 @@
 package org.geoserver.filter.function;
 
 import java.util.Set;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
@@ -15,14 +14,14 @@ import org.geotools.filter.FunctionFactory;
 
 /**
  * Sets the catalog reference inside the {@link QueryLayerFunctionFactory}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 // for the moment we implement both to make it testable, eventually this should
 // be driven by configuration only and at that point we'll really need it to
 // implement both
-public class QueryFunctionFactoryInitializer implements GeoServerLifecycleHandler,
-        GeoServerInitializer {
+public class QueryFunctionFactoryInitializer
+        implements GeoServerLifecycleHandler, GeoServerInitializer {
 
     GeoServer geoServer;
 
@@ -36,14 +35,13 @@ public class QueryFunctionFactoryInitializer implements GeoServerLifecycleHandle
 
     public void onReload() {
         configure();
-
     }
 
     private void configure() {
-        Integer maxFeatures = parseInteger(GeoServerExtensions
-                .getProperty("QUERY_LAYER_MAX_FEATURES"));
-        Long maxCoordinates = parseLong(GeoServerExtensions
-                .getProperty("GEOMETRY_COLLECT_MAX_COORDINATES"));
+        Integer maxFeatures =
+                parseInteger(GeoServerExtensions.getProperty("QUERY_LAYER_MAX_FEATURES"));
+        Long maxCoordinates =
+                parseLong(GeoServerExtensions.getProperty("GEOMETRY_COLLECT_MAX_COORDINATES"));
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory ff : factories) {

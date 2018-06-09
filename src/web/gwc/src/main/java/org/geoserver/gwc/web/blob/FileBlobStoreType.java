@@ -12,10 +12,10 @@ public class FileBlobStoreType implements BlobStoreType<FileBlobStoreInfo> {
     private static final long serialVersionUID = 6825505034831901062L;
 
     @Override
-    public String toString(){
+    public String toString() {
         return "File BlobStore";
     }
-    
+
     @Override
     public FileBlobStoreInfo newConfigObject() {
         FileBlobStoreInfo config = new FileBlobStoreInfo();
@@ -33,5 +33,4 @@ public class FileBlobStoreType implements BlobStoreType<FileBlobStoreInfo> {
     public Panel createPanel(String id, IModel<FileBlobStoreInfo> model) {
         return new FileBlobStorePanel(id, model);
     }
-
 }

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -27,12 +26,11 @@ import org.junit.Test;
 
 public class GetStylesIntegrationTest extends WMSTestSupport {
 
- 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-       Catalog catalog = getCatalog();
-        
+        Catalog catalog = getCatalog();
+
         String lakes = MockData.LAKES.getLocalPart();
         String forests = MockData.FORESTS.getLocalPart();
         String bridges = MockData.BRIDGES.getLocalPart();
@@ -53,64 +51,71 @@ public class GetStylesIntegrationTest extends WMSTestSupport {
         lakesLayer.getStyles().add(catalog.getStyleByName(MockData.FORESTS.getLocalPart()));
         catalog.save(lakesLayer);
     }
-    
-    
+
     @Test
     public void testSimple() throws Exception {
-        InputStream stream = get("wms?service=WMS&version=1.1.1&&request=GetStyles&layers="
-                + getLayerId(MockData.BASIC_POLYGONS) + "&sldver=1.0.0");
-        
+        InputStream stream =
+                get(
+                        "wms?service=WMS&version=1.1.1&&request=GetStyles&layers="
+                                + getLayerId(MockData.BASIC_POLYGONS)
+                                + "&sldver=1.0.0");
+
         SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
         parser.setInput(stream);
-        
+
         StyledLayerDescriptor sld = parser.parseSLD();
         assertEquals(1, sld.getStyledLayers().length);
-        
+
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
         assertEquals(getLayerId(MockData.BASIC_POLYGONS), layer.getName());
         assertEquals(1, layer.styles().size());
-        
+
         Style style = layer.styles().get(0);
         assertTrue(style.isDefault());
         assertEquals("BasicPolygons", style.getName());
     }
-    
+
     @Test
     public void testGroup() throws Exception {
-        InputStream stream = get("wms?service=WMS&version=1.1.1&request=GetStyles&layers=lakesGroup&sldver=1.0.0");
-        
+        InputStream stream =
+                get(
+                        "wms?service=WMS&version=1.1.1&request=GetStyles&layers=lakesGroup&sldver=1.0.0");
+
         SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
         parser.setInput(stream);
-        
+
         StyledLayerDescriptor sld = parser.parseSLD();
         assertEquals(1, sld.getStyledLayers().length);
-        
+
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
         assertEquals("lakesGroup", layer.getName());
-        
+
         // groups have no style
         assertEquals(0, layer.styles().size());
     }
-    
+
     @Test
     public void testMultiStyle() throws Exception {
-        InputStream stream = get("wms?service=WMS&version=1.1.1&request=GetStyles&layers="
-                + getLayerId(MockData.LAKES) + "&sldver=1.0.0");
-        
+        InputStream stream =
+                get(
+                        "wms?service=WMS&version=1.1.1&request=GetStyles&layers="
+                                + getLayerId(MockData.LAKES)
+                                + "&sldver=1.0.0");
+
         SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null));
         parser.setInput(stream);
-        
+
         StyledLayerDescriptor sld = parser.parseSLD();
         assertEquals(1, sld.getStyledLayers().length);
-        
+
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
         assertEquals(getLayerId(MockData.LAKES), layer.getName());
         assertEquals(2, layer.styles().size());
-        
+
         Style style = layer.styles().get(0);
         assertTrue(style.isDefault());
         assertEquals("Lakes", style.getName());
-        
+
         style = layer.styles().get(1);
         assertFalse(style.isDefault());
         assertEquals("Forests", style.getName());

@@ -5,6 +5,7 @@
  */
 package org.geoserver.kml;
 
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,9 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import javax.imageio.ImageIO;
-
 import org.geoserver.kml.icons.IconRenderer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -28,13 +27,10 @@ import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-
 /**
  * A map response that handles KML documents and writes them out either as KML or as KMZ
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class KMLMapResponse extends AbstractMapResponse {
 
@@ -53,8 +49,8 @@ public class KMLMapResponse extends AbstractMapResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
         KMLMap kmlMap = (KMLMap) value;
         try {
             KmlEncodingContext context = kmlMap.getKmlEncodingContext();
@@ -69,8 +65,9 @@ public class KMLMapResponse extends AbstractMapResponse {
         }
     }
 
-    private void encodeAsKmz(Kml kml, KmlEncodingContext context, Operation operation,
-            OutputStream output) throws IOException {
+    private void encodeAsKmz(
+            Kml kml, KmlEncodingContext context, Operation operation, OutputStream output)
+            throws IOException {
         // wrap the output stream in a zipped one
         ZipOutputStream zip = new ZipOutputStream(output);
 
@@ -80,8 +77,8 @@ public class KMLMapResponse extends AbstractMapResponse {
         encoder.encode(kml, zip, context);
 
         // prepare for the ground overlays
-        final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat(
-                "image/png", wms);
+        final RenderedImageMapOutputFormat pngProducer =
+                new RenderedImageMapOutputFormat("image/png", wms);
         final PNGMapResponse pngEncoder = new PNGMapResponse(wms);
         ZipEntry images = new ZipEntry("images/");
         zip.putNextEntry(images);
@@ -109,7 +106,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             RenderedImageMap imageMap;
             try {
                 imageMap = pngProducer.produceMap(subContext);
-    
+
                 // write it to the zip stream
                 entry = new ZipEntry(path);
                 zip.putNextEntry(entry);
@@ -119,9 +116,9 @@ public class KMLMapResponse extends AbstractMapResponse {
                 subContext.dispose();
             }
         }
-        zip.closeEntry();// close the images/ folder
+        zip.closeEntry(); // close the images/ folder
 
-        //write out the icons
+        // write out the icons
         Map<String, Style> embeddedIcons = context.getIconStyles();
         if (!embeddedIcons.isEmpty()) {
             ZipEntry icons = new ZipEntry("icons/");
@@ -139,9 +136,5 @@ public class KMLMapResponse extends AbstractMapResponse {
 
         zip.finish();
         zip.flush();
-
     }
-
-    
-
 }

@@ -8,8 +8,8 @@ package org.geoserver.security.jdbc.config;
 
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
-public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig 
-    implements SecurityUserGroupServiceConfig {
+public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig
+        implements SecurityUserGroupServiceConfig {
 
     private static final long serialVersionUID = 1L;
     protected String passwordEncoderName;
@@ -18,7 +18,7 @@ public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig
     public JDBCUserGroupServiceConfig() {
         super();
     }
-    
+
     public JDBCUserGroupServiceConfig(JDBCUserGroupServiceConfig other) {
         super(other);
         passwordEncoderName = other.getPasswordEncoderName();
@@ -40,7 +40,7 @@ public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig
 
     @Override
     public void setPasswordEncoderName(String name) {
-        passwordEncoderName=name;
+        passwordEncoderName = name;
     }
 
     @Override

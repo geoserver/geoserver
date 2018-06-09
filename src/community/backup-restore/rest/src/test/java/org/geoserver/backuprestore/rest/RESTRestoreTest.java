@@ -9,57 +9,56 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Level;
-
+import net.sf.json.JSONObject;
 import org.geoserver.backuprestore.BackupRestoreTestSupport;
 import org.geoserver.platform.resource.Resource;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.Assert;
 
-import net.sf.json.JSONObject;
-
-/**
- * 
- * @author Alessio Fabiani, GeoSolutions
- *
- */
+/** @author Alessio Fabiani, GeoSolutions */
 public class RESTRestoreTest extends BackupRestoreTestSupport {
     @Test
     public void testNewRestore() throws Exception {
         Resource archiveFile = file("geoserver-alfa2-backup.zip");
-        
+
         if (archiveFile == null) {
             LOGGER.log(Level.WARNING, "Could not find source archive file.");
         } else {
-            String json = 
-                    "{\"restore\": {" + 
-                    "   \"archiveFile\": \""+archiveFile.path()+"\", " +  
-                    "   \"options\": { \"option\": [\"BK_DRY_RUN=true\", \"BK_BEST_EFFORT=true\"] }" +
-                    "  }" + 
-                    "}";
-            
+            String json =
+                    "{\"restore\": {"
+                            + "   \"archiveFile\": \""
+                            + archiveFile.path()
+                            + "\", "
+                            + "   \"options\": { \"option\": [\"BK_DRY_RUN=true\", \"BK_BEST_EFFORT=true\"] }"
+                            + "  }"
+                            + "}";
+
             JSONObject restore = postNewRestore(json);
-            
+
             Assert.notNull(restore);
 
-            JSONObject execution = readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
+            JSONObject execution =
+                    readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
 
-            assertTrue("STARTED".equals(execution.getString("status")) || 
-                    "STARTING".equals(execution.getString("status")));
+            assertTrue(
+                    "STARTED".equals(execution.getString("status"))
+                            || "STARTING".equals(execution.getString("status")));
 
-            while ("STARTED".equals(execution.getString("status")) || 
-                    "STARTING".equals(execution.getString("status"))) {
+            while ("STARTED".equals(execution.getString("status"))
+                    || "STARTING".equals(execution.getString("status"))) {
                 execution = readExecutionStatus(execution.getLong("id"));
 
                 Thread.sleep(100);
             }
 
-            assertTrue("COMPLETED".equals(execution.getString("status")));   
+            assertTrue("COMPLETED".equals(execution.getString("status")));
         }
     }
 
     JSONObject postNewRestore(String body) throws Exception {
-        MockHttpServletResponse resp = postAsServletResponse("/rest/br/restore", body, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse("/rest/br/restore", body, "application/json");
 
         assertEquals(201, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
@@ -78,7 +77,7 @@ public class RESTRestoreTest extends BackupRestoreTestSupport {
         JSONObject restore = json.getJSONObject("restore");
 
         assertNotNull(restore);
-        
+
         JSONObject execution = restore.getJSONObject("execution");
 
         assertNotNull(execution);

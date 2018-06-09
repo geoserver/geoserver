@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo;
 
 import java.util.Map;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.geotools.data.Parameter;
@@ -13,7 +12,7 @@ import org.geotools.data.Query;
 
 /**
  * A OpenSearch EO query, for either collections (no parent id) or products (with parent id)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SearchRequest {

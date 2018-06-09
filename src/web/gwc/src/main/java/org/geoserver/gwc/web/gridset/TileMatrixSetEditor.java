@@ -11,7 +11,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -69,8 +68,8 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
             List<Grid> grids = validatable.getValue();
             if (grids == null || grids.size() == 0) {
-                error.setMessage(new ResourceModel("TileMatrixSetEditor.validation.empty")
-                        .getObject());
+                error.setMessage(
+                        new ResourceModel("TileMatrixSetEditor.validation.empty").getObject());
                 validatable.error(error);
                 return;
             }
@@ -80,32 +79,44 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 Grid curr = grids.get(i);
 
                 if (curr.getResolution() >= prev.getResolution()) {
-                    String message = "Each resolution should be lower than it's prior one. Res["
-                            + i + "] == " + curr.getResolution() + ", Res[" + (i - 1) + "] == "
-                            + prev.getResolution() + ".";
+                    String message =
+                            "Each resolution should be lower than it's prior one. Res["
+                                    + i
+                                    + "] == "
+                                    + curr.getResolution()
+                                    + ", Res["
+                                    + (i - 1)
+                                    + "] == "
+                                    + prev.getResolution()
+                                    + ".";
                     error.setMessage(message);
                     validatable.error(error);
                     return;
                 }
 
                 if (curr.getScaleDenominator() >= prev.getScaleDenominator()) {
-                    String message = "Each scale denominator should be lower "
-                            + "than it's prior one. Scale[" + i + "] == "
-                            + curr.getScaleDenominator() + ", Scale[" + (i - 1) + "] == "
-                            + prev.getScaleDenominator() + ".";
+                    String message =
+                            "Each scale denominator should be lower "
+                                    + "than it's prior one. Scale["
+                                    + i
+                                    + "] == "
+                                    + curr.getScaleDenominator()
+                                    + ", Scale["
+                                    + (i - 1)
+                                    + "] == "
+                                    + prev.getScaleDenominator()
+                                    + ".";
                     error.setMessage(message);
                     validatable.error(error);
                     return;
                 }
             }
         }
-
     }
 
     /**
      * @param id
-     * @param model
-     *            the model over the appropriate list of {@link Grid}
+     * @param model the model over the appropriate list of {@link Grid}
      * @see WMSInfo#getAuthorityURLs()
      * @see LayerInfo#getAuthorityURLs()
      * @see LayerGroupInfo#getAuthorityURLs()
@@ -125,41 +136,43 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         container.setOutputMarkupId(true);
         add(container);
 
-        final IModel<Boolean> preserveesolutionsModel = new PropertyModel<Boolean>(info,
-                "resolutionsPreserved");
+        final IModel<Boolean> preserveesolutionsModel =
+                new PropertyModel<Boolean>(info, "resolutionsPreserved");
 
-        final RadioGroup<Boolean> resolutionsOrScales = new RadioGroup<Boolean>(
-                "useResolutionsOrScalesGroup", preserveesolutionsModel);
+        final RadioGroup<Boolean> resolutionsOrScales =
+                new RadioGroup<Boolean>("useResolutionsOrScalesGroup", preserveesolutionsModel);
         container.add(resolutionsOrScales);
 
-        Radio<Boolean> preserveResolutions = new Radio<Boolean>("preserveResolutions",
-                new Model<Boolean>(Boolean.TRUE));
-        Radio<Boolean> preserveScales = new Radio<Boolean>("preserveScales", new Model<Boolean>(
-                Boolean.FALSE));
+        Radio<Boolean> preserveResolutions =
+                new Radio<Boolean>("preserveResolutions", new Model<Boolean>(Boolean.TRUE));
+        Radio<Boolean> preserveScales =
+                new Radio<Boolean>("preserveScales", new Model<Boolean>(Boolean.FALSE));
 
         resolutionsOrScales.add(preserveResolutions);
         resolutionsOrScales.add(preserveScales);
 
         // update the table when this option changes so either the resolutions or scales column is
         // enabled
-        resolutionsOrScales.add(new AjaxFormChoiceComponentUpdatingBehavior() {
-            private static final long serialVersionUID = 1L;
+        resolutionsOrScales.add(
+                new AjaxFormChoiceComponentUpdatingBehavior() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                resolutionsOrScales.processInput();
-                final boolean useResolutions = resolutionsOrScales.getModelObject().booleanValue();
-                
-                Iterator<Component> iterator = grids.iterator();
-                while (iterator.hasNext()) {
-                    @SuppressWarnings("unchecked")
-					ListItem<Grid> next = (ListItem<Grid>) iterator.next();
-                    next.get("resolution").setEnabled(useResolutions);
-                    next.get("scale").setEnabled(!useResolutions);
-                }
-                target.add(table);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        resolutionsOrScales.processInput();
+                        final boolean useResolutions =
+                                resolutionsOrScales.getModelObject().booleanValue();
+
+                        Iterator<Component> iterator = grids.iterator();
+                        while (iterator.hasNext()) {
+                            @SuppressWarnings("unchecked")
+                            ListItem<Grid> next = (ListItem<Grid>) iterator.next();
+                            next.get("resolution").setEnabled(useResolutions);
+                            next.get("scale").setEnabled(!useResolutions);
+                        }
+                        target.add(table);
+                    }
+                });
 
         // the link list
         table = new WebMarkupContainer("table");
@@ -173,165 +186,200 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
         container.add(table);
 
-        grids = new ListView<Grid>("gridLevels", new ArrayList<Grid>(list.getObject())) {
+        grids =
+                new ListView<Grid>("gridLevels", new ArrayList<Grid>(list.getObject())) {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onBeforeRender() {
-                super.onBeforeRender();
-            }
-
-            @Override
-            protected void populateItem(final ListItem<Grid> item) {
-                // odd/even style
-                final int index = item.getIndex();
-                item.add(AttributeModifier.replace("class", index % 2 == 0 ? "even" : "odd"));
-
-                item.add(new Label("zoomLevel", String.valueOf(index)));
-
-                final TextField<Double> resolution;
-                final TextField<Double> scale;
-                final TextField<String> name;
-                final Label tiles;
-                final Component removeLink;
-
-                resolution = new DecimalTextField("resolution", new PropertyModel<Double>(
-                        item.getModel(), "resolution"));
-                resolution.setOutputMarkupId(true);
-                item.add(resolution);
-
-                scale = new DecimalTextField("scale", new PropertyModel<Double>(item.getModel(),
-                        "scaleDenom"));
-                scale.setOutputMarkupId(true);
-                item.add(scale);
-
-                name = new TextField<String>("name", new PropertyModel<String>(item.getModel(),
-                        "name"));
-                item.add(name);
-
-                IModel<String> tilesModel = new IModel<String>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public String getObject() {
-                        // resolution.processInput();
-                        Double res = resolution.getModelObject();
-                        GridSetInfo gridSetInfo = TileMatrixSetEditor.this.info.getObject();
-                        final ReferencedEnvelope extent = gridSetInfo.getBounds();
-                        if (res == null || extent == null) {
-                            return "--";
+                    protected void onBeforeRender() {
+                        super.onBeforeRender();
+                    }
+
+                    @Override
+                    protected void populateItem(final ListItem<Grid> item) {
+                        // odd/even style
+                        final int index = item.getIndex();
+                        item.add(
+                                AttributeModifier.replace(
+                                        "class", index % 2 == 0 ? "even" : "odd"));
+
+                        item.add(new Label("zoomLevel", String.valueOf(index)));
+
+                        final TextField<Double> resolution;
+                        final TextField<Double> scale;
+                        final TextField<String> name;
+                        final Label tiles;
+                        final Component removeLink;
+
+                        resolution =
+                                new DecimalTextField(
+                                        "resolution",
+                                        new PropertyModel<Double>(item.getModel(), "resolution"));
+                        resolution.setOutputMarkupId(true);
+                        item.add(resolution);
+
+                        scale =
+                                new DecimalTextField(
+                                        "scale",
+                                        new PropertyModel<Double>(item.getModel(), "scaleDenom"));
+                        scale.setOutputMarkupId(true);
+                        item.add(scale);
+
+                        name =
+                                new TextField<String>(
+                                        "name", new PropertyModel<String>(item.getModel(), "name"));
+                        item.add(name);
+
+                        IModel<String> tilesModel =
+                                new IModel<String>() {
+                                    private static final long serialVersionUID = 1L;
+
+                                    @Override
+                                    public String getObject() {
+                                        // resolution.processInput();
+                                        Double res = resolution.getModelObject();
+                                        GridSetInfo gridSetInfo =
+                                                TileMatrixSetEditor.this.info.getObject();
+                                        final ReferencedEnvelope extent = gridSetInfo.getBounds();
+                                        if (res == null || extent == null) {
+                                            return "--";
+                                        }
+                                        final int tileWidth = gridSetInfo.getTileWidth();
+                                        final int tileHeight = gridSetInfo.getTileHeight();
+                                        final double mapUnitWidth = tileWidth * res.doubleValue();
+                                        final double mapUnitHeight = tileHeight * res.doubleValue();
+
+                                        final long tilesWide =
+                                                (long)
+                                                        Math.ceil(
+                                                                (extent.getWidth()
+                                                                                - mapUnitWidth
+                                                                                        * 0.01)
+                                                                        / mapUnitWidth);
+                                        final long tilesHigh =
+                                                (long)
+                                                        Math.ceil(
+                                                                (extent.getHeight()
+                                                                                - mapUnitHeight
+                                                                                        * 0.01)
+                                                                        / mapUnitHeight);
+
+                                        NumberFormat nf =
+                                                NumberFormat.getIntegerInstance(); // so it shows
+                                        // grouping
+                                        // for large numbers
+                                        String tilesStr =
+                                                nf.format(tilesWide) + " x " + nf.format(tilesHigh);
+
+                                        return tilesStr;
+                                    }
+
+                                    @Override
+                                    public void detach() {
+                                        //
+                                    }
+
+                                    @Override
+                                    public void setObject(String object) {
+                                        //
+                                    }
+                                };
+
+                        tiles = new Label("tiles", tilesModel);
+                        tiles.setOutputMarkupId(true);
+                        item.add(tiles);
+
+                        // remove link
+                        if (TileMatrixSetEditor.this.readOnly) {
+                            removeLink = new Label("removeLink", "");
+                        } else {
+                            removeLink =
+                                    new ImageAjaxLink<Void>(
+                                            "removeLink", GWCIconFactory.DELETE_ICON) {
+                                        private static final long serialVersionUID = 1L;
+
+                                        @Override
+                                        protected void onClick(AjaxRequestTarget target) {
+                                            List<Grid> list =
+                                                    new ArrayList<Grid>(grids.getModelObject());
+                                            int index =
+                                                    ((Integer) getDefaultModelObject()).intValue();
+                                            list.remove(index);
+                                            grids.setModelObject(list);
+                                            target.add(container);
+                                        }
+                                    };
+                            removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
+                            removeLink.add(
+                                    new AttributeModifier(
+                                            "title",
+                                            new ResourceModel("TileMatrixSetEditor.removeLink")));
                         }
-                        final int tileWidth = gridSetInfo.getTileWidth();
-                        final int tileHeight = gridSetInfo.getTileHeight();
-                        final double mapUnitWidth = tileWidth * res.doubleValue();
-                        final double mapUnitHeight = tileHeight * res.doubleValue();
+                        item.add(removeLink);
 
-                        final long tilesWide = (long) Math
-                                .ceil((extent.getWidth() - mapUnitWidth * 0.01) / mapUnitWidth);
-                        final long tilesHigh = (long) Math
-                                .ceil((extent.getHeight() - mapUnitHeight * 0.01) / mapUnitHeight);
+                        final boolean isResolutionsPreserved = preserveesolutionsModel.getObject();
+                        resolution.setEnabled(isResolutionsPreserved);
+                        scale.setEnabled(!isResolutionsPreserved);
 
-                        NumberFormat nf = NumberFormat.getIntegerInstance();// so it shows grouping
-                                                                            // for large numbers
-                        String tilesStr = nf.format(tilesWide) + " x " + nf.format(tilesHigh);
+                        resolution.add(
+                                new AjaxFormComponentUpdatingBehavior("blur") {
+                                    private static final long serialVersionUID = 1L;
 
-                        return tilesStr;
-                    }
+                                    @Override
+                                    protected void onUpdate(AjaxRequestTarget target) {
+                                        resolution.processInput();
+                                        Double res = resolution.getModelObject();
+                                        Double scaleDenominator = null;
+                                        if (null != res) {
+                                            GridSetInfo gridSetInfo =
+                                                    TileMatrixSetEditor.this.info.getObject();
+                                            Double metersPerUnit = gridSetInfo.getMetersPerUnit();
+                                            if (metersPerUnit != null) {
+                                                scaleDenominator =
+                                                        res.doubleValue()
+                                                                * metersPerUnit.doubleValue()
+                                                                / GridSetFactory
+                                                                        .DEFAULT_PIXEL_SIZE_METER;
+                                            }
+                                        }
+                                        scale.setModelObject(scaleDenominator);
+                                        target.add(resolution);
+                                        target.add(scale);
+                                        target.add(tiles);
+                                    }
+                                });
 
-                    @Override
-                    public void detach() {
-                        //
-                    }
+                        scale.add(
+                                new AjaxFormComponentUpdatingBehavior("blur") {
+                                    private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void setObject(String object) {
-                        //
+                                    @Override
+                                    protected void onUpdate(AjaxRequestTarget target) {
+                                        scale.processInput();
+                                        final Double scaleDenominator = scale.getModelObject();
+                                        Double res = null;
+                                        if (null != scaleDenominator) {
+                                            GridSetInfo gridSetInfo =
+                                                    TileMatrixSetEditor.this.info.getObject();
+                                            final double pixelSize = gridSetInfo.getPixelSize();
+                                            Double metersPerUnit = gridSetInfo.getMetersPerUnit();
+                                            if (metersPerUnit != null) {
+                                                res = pixelSize * scaleDenominator / metersPerUnit;
+                                            }
+                                        }
+                                        resolution.setModelObject(res);
+                                        target.add(resolution);
+                                        target.add(scale);
+                                        target.add(tiles);
+                                    }
+                                });
                     }
                 };
-
-                tiles = new Label("tiles", tilesModel);
-                tiles.setOutputMarkupId(true);
-                item.add(tiles);
-
-                // remove link
-                if (TileMatrixSetEditor.this.readOnly) {
-                    removeLink = new Label("removeLink", "");
-                } else {
-                    removeLink = new ImageAjaxLink<Void>("removeLink", GWCIconFactory.DELETE_ICON) {
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            List<Grid> list = new ArrayList<Grid>(grids.getModelObject());
-                            int index = ((Integer) getDefaultModelObject()).intValue();
-                            list.remove(index);
-                            grids.setModelObject(list);
-                            target.add(container);
-                        }
-                    };
-                    removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
-                    removeLink.add(new AttributeModifier("title", new ResourceModel(
-                            "TileMatrixSetEditor.removeLink")));
-                }
-                item.add(removeLink);
-
-                final boolean isResolutionsPreserved = preserveesolutionsModel.getObject();
-                resolution.setEnabled(isResolutionsPreserved);
-                scale.setEnabled(!isResolutionsPreserved);
-
-                resolution.add(new AjaxFormComponentUpdatingBehavior("blur") {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        resolution.processInput();
-                        Double res = resolution.getModelObject();
-                        Double scaleDenominator = null;
-                        if (null != res) {
-                            GridSetInfo gridSetInfo = TileMatrixSetEditor.this.info.getObject();
-                            Double metersPerUnit = gridSetInfo.getMetersPerUnit();
-                            if (metersPerUnit != null) {
-                                scaleDenominator = res.doubleValue() * metersPerUnit.doubleValue()
-                                        / GridSetFactory.DEFAULT_PIXEL_SIZE_METER;
-                            }
-                        }
-                        scale.setModelObject(scaleDenominator);
-                        target.add(resolution);
-                        target.add(scale);
-                        target.add(tiles);
-                    }
-                });
-
-                scale.add(new AjaxFormComponentUpdatingBehavior("blur") {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        scale.processInput();
-                        final Double scaleDenominator = scale.getModelObject();
-                        Double res = null;
-                        if (null != scaleDenominator) {
-                            GridSetInfo gridSetInfo = TileMatrixSetEditor.this.info.getObject();
-                            final double pixelSize = gridSetInfo.getPixelSize();
-                            Double metersPerUnit = gridSetInfo.getMetersPerUnit();
-                            if (metersPerUnit != null) {
-                                res = pixelSize * scaleDenominator / metersPerUnit;
-                            }
-                        }
-                        resolution.setModelObject(res);
-                        target.add(resolution);
-                        target.add(scale);
-                        target.add(tiles);
-                    }
-                });
-            }
-        };
         grids.setOutputMarkupId(true);
         // this is necessary to avoid loosing item contents on edit/validation checks
         grids.setReuseItems(true);
         table.add(grids);
-
     }
 
     private Component thLabel(String id) {
@@ -351,8 +399,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         setConvertedInput(info);
     }
 
-    /**
-     */
+    /** */
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
@@ -362,12 +409,21 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         List<Grid> list = grids.getModelObject();
         final Grid newGrid = new Grid();
         if (list.isEmpty()) {
-            BoundingBox extent = new BoundingBox(bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(),
-                    bbox.getMaxY());
+            BoundingBox extent =
+                    new BoundingBox(bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY());
             final int levels = 1;
-            GridSet tmpGridset = GridSetFactory.createGridSet("stub", SRS.getEPSG4326(), extent,
-                    false, levels, 1D, GridSetFactory.DEFAULT_PIXEL_SIZE_METER, tileWidth,
-                    tileHeight, false);
+            GridSet tmpGridset =
+                    GridSetFactory.createGridSet(
+                            "stub",
+                            SRS.getEPSG4326(),
+                            extent,
+                            false,
+                            levels,
+                            1D,
+                            GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                            tileWidth,
+                            tileHeight,
+                            false);
             Grid grid = tmpGridset.getGridLevels()[0];
             newGrid.setResolution(grid.getResolution());
             newGrid.setScaleDenominator(grid.getScaleDenominator());
@@ -380,5 +436,4 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         grids.setModelObject(list);
         // TileMatrixSetEditor.this.convertInput();
     }
-
 }

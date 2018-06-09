@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -24,13 +23,13 @@ import org.hibernate.usertype.UserType;
 public class ErrorUserType implements UserType {
 
     /**
-     * flag that determines if we should use the hibernate BlobImpl class when writing to the 
-     * database, since it does not work with oracle. 
-     * 
-     * http://opensource.atlassian.com/projects/hibernate/browse/EJB-24
+     * flag that determines if we should use the hibernate BlobImpl class when writing to the
+     * database, since it does not work with oracle.
+     *
+     * <p>http://opensource.atlassian.com/projects/hibernate/browse/EJB-24
      */
     public static String USE_HIBERNATE_BLOB = "USE_HIBERNATE_BLOB";
-    
+
     public Object assemble(Serializable cached, Object owner) throws HibernateException {
         return cached;
     }
@@ -61,27 +60,26 @@ public class ErrorUserType implements UserType {
         if (blob == null) {
             return null;
         }
-//        byte[] bytes = rs.getBytes(names[0]);
-//        if (bytes == null) {
-//            return null;
-//        }
-        
-        
+        //        byte[] bytes = rs.getBytes(names[0]);
+        //        if (bytes == null) {
+        //            return null;
+        //        }
+
         ObjectInputStream in = null;
         try {
-            //in = new ObjectInputStream(new ByteArrayInputStream(bytes));
+            // in = new ObjectInputStream(new ByteArrayInputStream(bytes));
             in = new ObjectInputStream(blob.getBinaryStream());
             return in.readObject();
         } catch (IOException e) {
             throw new HibernateException(e);
         } catch (ClassNotFoundException e) {
             throw new HibernateException(e);
-        }
-        finally {
+        } finally {
             if (in != null) {
                 try {
                     in.close();
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                }
             }
         }
     }
@@ -94,23 +92,20 @@ public class ErrorUserType implements UserType {
                 ObjectOutputStream out = new ObjectOutputStream(bytes);
                 out.writeObject(value);
                 out.flush();
-                
+
                 if (useHibernateBlob()) {
                     st.setBlob(index, Hibernate.createBlob(bytes.toByteArray()));
+                } else {
+                    st.setBytes(index, bytes.toByteArray());
                 }
-                else {
-                    st.setBytes(index, bytes.toByteArray());    
-                }
-                
+
                 out.close();
-            } 
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new HibernateException(e);
             }
-        }
-        else {
+        } else {
             st.setNull(index, Types.BLOB);
-            //st.setBytes(index, null);
+            // st.setBytes(index, null);
         }
     }
 
@@ -123,7 +118,7 @@ public class ErrorUserType implements UserType {
     }
 
     public int[] sqlTypes() {
-        return new int[]{Types.BLOB};
+        return new int[] {Types.BLOB};
     }
 
     boolean useHibernateBlob() {

@@ -7,8 +7,8 @@ package org.geoserver.rest.catalog;
 import java.util.List;
 
 /**
- * Helper class that can be used to serialize a list of string to XML or JSON.
- * The alias will be used as the tag name in XML.
+ * Helper class that can be used to serialize a list of string to XML or JSON. The alias will be
+ * used as the tag name in XML.
  */
 public class StringsList {
 

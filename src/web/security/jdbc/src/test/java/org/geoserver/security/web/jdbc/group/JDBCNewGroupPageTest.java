@@ -16,7 +16,7 @@ public class JDBCNewGroupPageTest extends NewGroupPageTest {
     NewGroupPage page;
 
     @Test
-    public void testFill() throws Exception{
+    public void testFill() throws Exception {
         doTestFill();
     }
 
@@ -28,7 +28,7 @@ public class JDBCNewGroupPageTest extends NewGroupPageTest {
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }
-    
+
     @Override
     public String getRoleServiceName() {
         return "h2";
@@ -38,5 +38,4 @@ public class JDBCNewGroupPageTest extends NewGroupPageTest {
     public String getUserGroupServiceName() {
         return "h2";
     }
-
 }

@@ -8,6 +8,20 @@ package org.geoserver.jdbcconfig.internal;
 import static com.google.common.base.Preconditions.*;
 import static org.geoserver.jdbcconfig.internal.DbUtils.*;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.io.Closeables;
+import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -28,9 +42,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-
 import javax.annotation.Nullable;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.geoserver.catalog.Info;
@@ -50,21 +62,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.google.common.io.Closeables;
-import com.google.common.io.Resources;
-
 public class DbMappings {
 
     private static final Logger LOGGER = Logging.getLogger(DbMappings.class);
@@ -82,19 +79,20 @@ public class DbMappings {
     private Map<Integer, Map<String, PropertyType>> propertyTypes;
 
     @SuppressWarnings("unchecked")
-    private static final Set<Class<? extends Serializable>> INDEXABLE_TYPES = ImmutableSet.of(//
-            String.class, //
-            Boolean.class,//
-            Number.class, //
-            BigInteger.class, //
-            BigDecimal.class, //
-            Byte.class, //
-            Short.class, //
-            Integer.class, //
-            Long.class, //
-            Float.class, //
-            Double.class //
-            );
+    private static final Set<Class<? extends Serializable>> INDEXABLE_TYPES =
+            ImmutableSet.of( //
+                    String.class, //
+                    Boolean.class, //
+                    Number.class, //
+                    BigInteger.class, //
+                    BigDecimal.class, //
+                    Byte.class, //
+                    Short.class, //
+                    Integer.class, //
+                    Long.class, //
+                    Float.class, //
+                    Double.class //
+                    );
 
     public DbMappings(Dialect dialect) {
         this.dialect = dialect;
@@ -109,9 +107,7 @@ public class DbMappings {
         return types.get(typeId);
     }
 
-    /**
-     * @param template
-     */
+    /** @param template */
     public void initDb(final NamedParameterJdbcOperations template) {
 
         LOGGER.fine("Initializing Catalog and Config database");
@@ -142,7 +138,8 @@ public class DbMappings {
 
         // create all nested and/or collection properties, both self and related to other objects,
         // as defined nested_properties.properties
-        final Multimap<Class<?>, PropertyTypeDef> nestedPropertyTypeDefs = loadNestedPropertyTypeDefs();
+        final Multimap<Class<?>, PropertyTypeDef> nestedPropertyTypeDefs =
+                loadNestedPropertyTypeDefs();
 
         for (ClassMappings cm : classMsappings) {
             Class<? extends Info> clazz = cm.getInterface();
@@ -160,21 +157,21 @@ public class DbMappings {
 
         final String propertyName;
 
-        @Nullable
-        final Class<?> targetPropertyOf;
+        @Nullable final Class<?> targetPropertyOf;
 
-        @Nullable
-        final String targetPropertyName;
+        @Nullable final String targetPropertyName;
 
-        @Nullable
-        final boolean isCollection;
+        @Nullable final boolean isCollection;
 
-        @Nullable
-        final Boolean isText;
+        @Nullable final Boolean isText;
 
-        public PropertyTypeDef(Class<?> propertyOf, String propertyName,
-                @Nullable Class<?> targetPropertyOf, @Nullable String targetPropertyName,
-                boolean isCollection, Boolean isText) {
+        public PropertyTypeDef(
+                Class<?> propertyOf,
+                String propertyName,
+                @Nullable Class<?> targetPropertyOf,
+                @Nullable String targetPropertyName,
+                boolean isCollection,
+                Boolean isText) {
             this.propertyOf = propertyOf;
             this.propertyName = propertyName;
             this.targetPropertyOf = targetPropertyOf;
@@ -189,9 +186,7 @@ public class DbMappings {
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private Multimap<Class<?>, PropertyTypeDef> loadNestedPropertyTypeDefs() {
 
         Properties properties = loadTypeDefsFromResource();
@@ -226,11 +221,13 @@ public class DbMappings {
                     targetPropertyName = targetClassPropName.substring(1 + classNameSeparatorIndex);
                 }
                 String colType = propTarget.length > 1 ? propTarget[1] : null;
-                String textType = propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[2]
-                        : propTarget[1]) : null;
+                String textType =
+                        propTarget.length > 1
+                                ? (propTarget.length > 2 ? propTarget[2] : propTarget[1])
+                                : null;
 
-                collectionProperty = "list".equalsIgnoreCase(colType)
-                        || "set".equalsIgnoreCase(colType);
+                collectionProperty =
+                        "list".equalsIgnoreCase(colType) || "set".equalsIgnoreCase(colType);
                 if ("text".equalsIgnoreCase(textType)) {
                     textProperty = Boolean.TRUE;
                 } else {
@@ -238,8 +235,14 @@ public class DbMappings {
                 }
             }
 
-            PropertyTypeDef ptd = new PropertyTypeDef(objectType, propertyName, targetObjectType,
-                    targetPropertyName, collectionProperty, textProperty);
+            PropertyTypeDef ptd =
+                    new PropertyTypeDef(
+                            objectType,
+                            propertyName,
+                            targetObjectType,
+                            targetPropertyName,
+                            collectionProperty,
+                            textProperty);
 
             byTypePropDefs.put(objectType, ptd);
         }
@@ -264,10 +267,7 @@ public class DbMappings {
         return properties;
     }
 
-    /**
-     * @param simpleClassName
-     *
-     */
+    /** @param simpleClassName */
     private Class<?> toClass(String simpleClassName) {
         for (Class<?> c : this.typeIds.keySet()) {
             if (simpleClassName.equalsIgnoreCase(c.getSimpleName())) {
@@ -279,27 +279,35 @@ public class DbMappings {
 
     private Map<Integer, Map<String, PropertyType>> loadPropertyTypes(
             NamedParameterJdbcOperations template) {
-        final String query = "select oid, target_property, type_id, name, collection, text from property_type";
-        RowMapper<PropertyType> rowMapper = new RowMapper<PropertyType>() {
-            @Override
-            public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer oid = rs.getInt(1);
-                // cannot use getInteger and we might get BigDecimal or Integer
-                Number targetPropertyOid = (Number) rs.getObject(2);
-                Integer objectTypeOid = rs.getInt(3);
-                String propertyName = rs.getString(4);
-                Boolean collectionProperty = rs.getBoolean(5);
-                Boolean textProperty = rs.getBoolean(6);
+        final String query =
+                "select oid, target_property, type_id, name, collection, text from property_type";
+        RowMapper<PropertyType> rowMapper =
+                new RowMapper<PropertyType>() {
+                    @Override
+                    public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Integer oid = rs.getInt(1);
+                        // cannot use getInteger and we might get BigDecimal or Integer
+                        Number targetPropertyOid = (Number) rs.getObject(2);
+                        Integer objectTypeOid = rs.getInt(3);
+                        String propertyName = rs.getString(4);
+                        Boolean collectionProperty = rs.getBoolean(5);
+                        Boolean textProperty = rs.getBoolean(6);
 
-                if (targetPropertyOid != null) {
-                    targetPropertyOid = targetPropertyOid.intValue();
-                }
-                PropertyType pt = new PropertyType(oid, (Integer) targetPropertyOid, objectTypeOid,
-                        propertyName, collectionProperty, textProperty);
+                        if (targetPropertyOid != null) {
+                            targetPropertyOid = targetPropertyOid.intValue();
+                        }
+                        PropertyType pt =
+                                new PropertyType(
+                                        oid,
+                                        (Integer) targetPropertyOid,
+                                        objectTypeOid,
+                                        propertyName,
+                                        collectionProperty,
+                                        textProperty);
 
-                return pt;
-            }
-        };
+                        return pt;
+                    }
+                };
 
         final List<PropertyType> propertyTypes;
         {
@@ -343,16 +351,18 @@ public class DbMappings {
     private void createType(Class<? extends Info> clazz, NamedParameterJdbcOperations template) {
 
         final String typeName = clazz.getName();
-        String sql = String.format("insert into type (typename, oid) values (:typeName, %s)",
-                dialect.nextVal("seq_TYPE"));
+        String sql =
+                String.format(
+                        "insert into type (typename, oid) values (:typeName, %s)",
+                        dialect.nextVal("seq_TYPE"));
         int update = template.update(sql, params("typeName", typeName));
         if (1 == update) {
             log("created type " + typeName);
         }
     }
 
-    private void addDirectPropertyTypes(final Class<? extends Info> clazz,
-            final NamedParameterJdbcOperations template) {
+    private void addDirectPropertyTypes(
+            final Class<? extends Info> clazz, final NamedParameterJdbcOperations template) {
 
         log("Creating property mappings for " + clazz.getName());
 
@@ -370,16 +380,18 @@ public class DbMappings {
 
             Class<?> returnType = getter.getReturnType();
 
-            if (returnType.isPrimitive() || returnType.isEnum()
+            if (returnType.isPrimitive()
+                    || returnType.isEnum()
                     || INDEXABLE_TYPES.contains(returnType)) {
 
-                final Class<?> componentType = returnType.isArray() ? returnType.getComponentType()
-                        : returnType;
-                boolean isText = componentType.isEnum()
-                        || CharSequence.class.isAssignableFrom(componentType);
+                final Class<?> componentType =
+                        returnType.isArray() ? returnType.getComponentType() : returnType;
+                boolean isText =
+                        componentType.isEnum()
+                                || CharSequence.class.isAssignableFrom(componentType);
 
-                isText &= !"id".equals(propertyName);// id is not on the full text search list of
-                                                     // properties
+                isText &= !"id".equals(propertyName); // id is not on the full text search list of
+                // properties
                 addPropertyType(template, clazz, propertyName, null, false, isText);
             } else {
                 log("Ignoring property " + propertyName + ":" + returnType.getSimpleName());
@@ -393,7 +405,8 @@ public class DbMappings {
      * @param clazz
      * @param nestedPropDefs
      */
-    private void addNestedPropertyTypes(final NamedParameterJdbcOperations template,
+    private void addNestedPropertyTypes(
+            final NamedParameterJdbcOperations template,
             Collection<PropertyTypeDef> nestedPropDefs) {
 
         for (PropertyTypeDef ptd : nestedPropDefs) {
@@ -409,22 +422,35 @@ public class DbMappings {
                 final Integer targetPropId = getTypeId(targetPropertyOf);
                 checkState(
                         null != targetPropId,
-                        Joiner.on("").join("Property ", propertyOf.getName(), ".", propertyName,
-                                " references property ", targetPropertyOf.getName(), ".",
-                                targetPropertyName, " but target property typ does not exist"));
+                        Joiner.on("")
+                                .join(
+                                        "Property ",
+                                        propertyOf.getName(),
+                                        ".",
+                                        propertyName,
+                                        " references property ",
+                                        targetPropertyOf.getName(),
+                                        ".",
+                                        targetPropertyName,
+                                        " but target property typ does not exist"));
 
                 Map<String, PropertyType> targetPropertyTypes;
                 targetPropertyTypes = this.propertyTypes.get(targetPropId);
-                checkState(targetPropertyTypes != null, "PropertyTypes of target type "
-                        + targetPropertyOf.getName() + " not found while adding property "
-                        + propertyName + " of " + propertyOf.getName());
+                checkState(
+                        targetPropertyTypes != null,
+                        "PropertyTypes of target type "
+                                + targetPropertyOf.getName()
+                                + " not found while adding property "
+                                + propertyName
+                                + " of "
+                                + propertyOf.getName());
 
                 targetPropertyType = targetPropertyTypes.get(targetPropertyName);
                 checkState(targetPropertyType != null);
             }
             boolean text = isText == null ? false : isText.booleanValue();
-            addPropertyType(template, propertyOf, propertyName, targetPropertyType, isCollection,
-                    text);
+            addPropertyType(
+                    template, propertyOf, propertyName, targetPropertyType, isCollection, text);
         }
     }
 
@@ -446,11 +472,14 @@ public class DbMappings {
      * @param targetProperty
      * @param isCollection
      * @return the newly added property type, or {@code null} if it was not added to the database
-     *         (i.e. already exists)
+     *     (i.e. already exists)
      */
-    private PropertyType addPropertyType(final NamedParameterJdbcOperations template,
-            final Class<?> infoClazz, final String propertyName,
-            @Nullable final PropertyType targetProperty, final boolean isCollection,
+    private PropertyType addPropertyType(
+            final NamedParameterJdbcOperations template,
+            final Class<?> infoClazz,
+            final String propertyName,
+            @Nullable final PropertyType targetProperty,
+            final boolean isCollection,
             final boolean isText) {
 
         checkNotNull(template);
@@ -464,8 +493,9 @@ public class DbMappings {
         Map<String, ?> params;
 
         log("Checking for ", propertyName);
-        String query = "select count(*) from property_type "//
-                + "where type_id = :objectType and name = :propName";
+        String query =
+                "select count(*) from property_type " //
+                        + "where type_id = :objectType and name = :propName";
         params = params("objectType", typeId, "propName", propertyName);
         logStatement(query, params);
         final int exists = template.queryForObject(query, params, Integer.class);
@@ -477,25 +507,48 @@ public class DbMappings {
 
             Integer targetPropertyOid = targetProperty == null ? null : targetProperty.getOid();
 
-            String insert = String.format("insert into property_type (oid, target_property, type_id, name, collection, text) "
-                    + "values (%s, :target, :type, :name, :collection, :isText)",
-                    dialect.nextVal("seq_PROPERTY_TYPE"));
+            String insert =
+                    String.format(
+                            "insert into property_type (oid, target_property, type_id, name, collection, text) "
+                                    + "values (%s, :target, :type, :name, :collection, :isText)",
+                            dialect.nextVal("seq_PROPERTY_TYPE"));
 
-            params = params("target", targetPropertyOid, "type", typeId, "name", propertyName,
-                    "collection", isCollection, "isText", isText);
+            params =
+                    params(
+                            "target",
+                            targetPropertyOid,
+                            "type",
+                            typeId,
+                            "name",
+                            propertyName,
+                            "collection",
+                            isCollection,
+                            "isText",
+                            isText);
             logStatement(insert, params);
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            template.update(insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
+            template.update(
+                    insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
 
             // looks like some db's return the pk different than others, so lets try both ways
             Number pTypeKey = (Number) keyHolder.getKeys().get("oid");
             if (pTypeKey == null) {
                 pTypeKey = keyHolder.getKey();
             }
-            pType = new PropertyType(pTypeKey.intValue(), targetPropertyOid, typeId, propertyName,
-                    isCollection, isText);
+            pType =
+                    new PropertyType(
+                            pTypeKey.intValue(),
+                            targetPropertyOid,
+                            typeId,
+                            propertyName,
+                            isCollection,
+                            isText);
         } else {
-            log("Not adding property type ", infoClazz.getSimpleName(), ".", propertyName,
+            log(
+                    "Not adding property type ",
+                    infoClazz.getSimpleName(),
+                    ".",
+                    propertyName,
                     " as it already exists");
             pType = null;
         }
@@ -511,10 +564,7 @@ public class DbMappings {
         return pType;
     }
 
-    /**
-     * @param propertyName
-     *
-     */
+    /** @param propertyName */
     private String fixCase(String propertyName) {
         if (propertyName.length() > 1) {
             char first = propertyName.charAt(0);
@@ -532,10 +582,7 @@ public class DbMappings {
         LOGGER.finer(message);
     }
 
-    /**
-     * @param queryType
-     *
-     */
+    /** @param queryType */
     @SuppressWarnings("unchecked")
     public List<Integer> getConcreteQueryTypes(Class<?> queryType) {
         ClassMappings mappings = ClassMappings.fromInterface((Class<? extends Info>) queryType);
@@ -600,10 +647,7 @@ public class DbMappings {
         return propTypes;
     }
 
-    /**
-     * @param info
-     *
-     */
+    /** @param info */
     public Iterable<Property> properties(Info object) {
         checkArgument(!(object instanceof Proxy));
         final ClassMappings classMappings = ClassMappings.fromImpl(object.getClass());
@@ -660,10 +704,7 @@ public class DbMappings {
         return builder.build();
     }
 
-    /**
-     * @param typeId
-     *
-     */
+    /** @param typeId */
     private ImmutableList<PropertyType> getTypeProperties(Integer typeId) {
         Map<String, PropertyType> properties = this.propertyTypes.get(typeId);
         return ImmutableList.copyOf(properties.values());
@@ -679,5 +720,4 @@ public class DbMappings {
         }
         return propName;
     }
-
 }

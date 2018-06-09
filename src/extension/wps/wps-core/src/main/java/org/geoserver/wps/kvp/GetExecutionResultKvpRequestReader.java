@@ -11,14 +11,12 @@ import org.geoserver.wps.GetExecutionStatusType;
 
 /**
  * KVP reader for the ExecutionStatus request
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class GetExecutionResultKvpRequestReader extends KvpRequestReader {
 
     public GetExecutionResultKvpRequestReader() {
         super(GetExecutionStatusType.class);
     }
-
 }

@@ -4,6 +4,13 @@
  */
 package org.geoserver.wfs.xml;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.xsd.XSDFactory;
 import org.eclipse.xsd.XSDImport;
 import org.eclipse.xsd.XSDSchema;
@@ -16,27 +23,20 @@ import org.geotools.gml3.GML;
 import org.geotools.xml.XSD;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 public class ApplicationSchemaXSD1 extends XSD {
 
     FeatureTypeSchemaBuilder schemaBuilder;
 
-    Map<String,Set<FeatureTypeInfo>> featureTypes;
+    Map<String, Set<FeatureTypeInfo>> featureTypes;
     String baseURL;
 
     public ApplicationSchemaXSD1(FeatureTypeSchemaBuilder schemaBuilder) {
         this(schemaBuilder, Collections.emptyMap());
     }
 
-    public ApplicationSchemaXSD1(FeatureTypeSchemaBuilder schemaBuilder,
-                                 Map<String,Set<FeatureTypeInfo>> featureTypes) {
+    public ApplicationSchemaXSD1(
+            FeatureTypeSchemaBuilder schemaBuilder,
+            Map<String, Set<FeatureTypeInfo>> featureTypes) {
         this.schemaBuilder = schemaBuilder;
         this.featureTypes = featureTypes;
     }
@@ -53,13 +53,13 @@ public class ApplicationSchemaXSD1 extends XSD {
         Map<String, Set<FeatureTypeInfo>> featureTypes = new HashMap<>();
         for (Map.Entry<String, Set<ResourceInfo>> entry : resources.entrySet()) {
             Set<FeatureTypeInfo> fts = new HashSet<>();
-            for(ResourceInfo ri : entry.getValue()) {
-                if(ri instanceof FeatureTypeInfo) {
+            for (ResourceInfo ri : entry.getValue()) {
+                if (ri instanceof FeatureTypeInfo) {
                     fts.add((FeatureTypeInfo) ri);
                 }
             }
 
-            if(!fts.isEmpty()) {
+            if (!fts.isEmpty()) {
                 featureTypes.put(entry.getKey(), fts);
             }
         }
@@ -69,17 +69,17 @@ public class ApplicationSchemaXSD1 extends XSD {
     public Map<String, Set<FeatureTypeInfo>> getFeatureTypes() {
         return featureTypes;
     }
-    
+
     @Override
     public String getNamespaceURI() {
         if (featureTypes.size() == 1) {
             return featureTypes.keySet().iterator().next();
         }
-        
-        //TODO: return xsd namespace?
+
+        // TODO: return xsd namespace?
         return null;
     }
-    
+
     @Override
     public String getSchemaLocation() {
         StringBuilder sb = new StringBuilder();
@@ -89,18 +89,22 @@ public class ApplicationSchemaXSD1 extends XSD {
             }
         }
         sb.setLength(sb.length() - 1);
-        
+
         HashMap kvp = new HashMap();
         kvp.putAll(schemaBuilder.getDescribeFeatureTypeParams());
         kvp.put("typename", sb.toString());
-        
+
         return ResponseUtils.buildURL(baseURL, "wfs", kvp, URLType.SERVICE);
     }
-    
+
     @Override
     protected XSDSchema buildSchema() throws IOException {
-        FeatureTypeInfo[] types = this.featureTypes.values().stream()
-                .flatMap(Collection::stream).toArray(FeatureTypeInfo[]::new);
+        FeatureTypeInfo[] types =
+                this.featureTypes
+                        .values()
+                        .stream()
+                        .flatMap(Collection::stream)
+                        .toArray(FeatureTypeInfo[]::new);
         XSDSchema schema;
         if (containsComplexTypes(types)) {
             // we have complex features so we add all the available catalog feature types
@@ -114,26 +118,21 @@ public class ApplicationSchemaXSD1 extends XSD {
         return importWfsSchema(schema);
     }
 
-    /**
-     * Checks if the provided feature types contains complex types.
-     */
+    /** Checks if the provided feature types contains complex types. */
     private static boolean containsComplexTypes(FeatureTypeInfo[] featureTypes) {
         for (FeatureTypeInfo featureType : featureTypes) {
             try {
-                if(!(featureType.getFeatureType() instanceof SimpleFeatureType)) {
+                if (!(featureType.getFeatureType() instanceof SimpleFeatureType)) {
                     return true;
                 }
-            }
-            catch(Exception exception) {
+            } catch (Exception exception) {
                 // ignore the broken feature type
             }
         }
         return false;
     }
 
-    /**
-     * Imports the WFS 1.0.0 schema as a dependency.
-     */
+    /** Imports the WFS 1.0.0 schema as a dependency. */
     private static XSDSchema importWfsSchema(XSDSchema schema) throws IOException {
         XSDSchema wfsSchema = org.geotools.wfs.v1_1.WFS.getInstance().getSchema();
         if (wfsSchema == null || !(wfsSchema instanceof XSDSchemaImpl)) {

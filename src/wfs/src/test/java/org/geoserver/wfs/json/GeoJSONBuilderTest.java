@@ -7,26 +7,24 @@ package org.geoserver.wfs.json;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.StringWriter;
-import java.util.*;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
+import java.io.StringWriter;
+import java.util.*;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GeoJSONBuilderTest {
 
     StringWriter writer;
 
     GeoJSONBuilder builder;
-    
+
     @Before
     public void setUp() {
         writer = new StringWriter();
@@ -38,7 +36,8 @@ public class GeoJSONBuilderTest {
         Geometry g = new WKTReader().read("MULTILINESTRING((0 0, 1 1))");
         builder.writeGeom(g);
 
-        assertEquals("{\"type\":\"MultiLineString\",\"coordinates\":[[[0,0],[1,1]]]}",
+        assertEquals(
+                "{\"type\":\"MultiLineString\",\"coordinates\":[[[0,0],[1,1]]]}",
                 writer.toString());
     }
 
@@ -176,53 +175,71 @@ public class GeoJSONBuilderTest {
     public void testWriteGeomCollection() throws Exception {
         Geometry g = new WKTReader().read("GEOMETRYCOLLECTION(POINT(2 0),POINT(7 1))");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[2,0]},{\"type\":\"Point\",\"coordinates\":[7,1]}]}",
+        assertEquals(
+                "{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[2,0]},{\"type\":\"Point\",\"coordinates\":[7,1]}]}",
                 writer.toString());
     }
-    
+
     @Test
     public void testWrite3DPoint() throws Exception {
         Geometry g = new WKTReader().read("POINT(2 0 20)");
         builder.writeGeom(g);
         assertEquals("{\"type\":\"Point\",\"coordinates\":[2,0,20]}", writer.toString());
     }
-    
+
     @Test
     public void testWrite3DLine() throws Exception {
         Geometry g = new WKTReader().read("LINESTRING(0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0)");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"LineString\",\"coordinates\":[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]]}", writer.toString());
+        assertEquals(
+                "{\"type\":\"LineString\",\"coordinates\":[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]]}",
+                writer.toString());
     }
-    
+
     @Test
     public void testWrite3DPolygon() throws Exception {
-        Geometry g = new WKTReader().read("POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
+        assertEquals(
+                "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}",
+                writer.toString());
     }
-    
+
     @Test
     public void testNumberOfDecimalsFor3dPoint() throws Exception {
         builder.setNumberOfDecimals(2);
         Geometry g = new WKTReader().read("POINT(2.1234 0.1234 20.9999)");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"Point\",\"coordinates\":[2.12,0.12,21]}", writer.toString());        
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[2.12,0.12,21]}", writer.toString());
     }
-    
+
     @Test
     public void testNumberOfDecimalsFor3dLine() throws Exception {
         builder.setNumberOfDecimals(3);
-        Geometry g = new WKTReader().read("LINESTRING(1E-3 1E-4 1E-5, 0 10.12312321 1.000002, 10.1 10.2 2.0, 10 0 3, 0 0 0)");
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "LINESTRING(1E-3 1E-4 1E-5, 0 10.12312321 1.000002, 10.1 10.2 2.0, 10 0 3, 0 0 0)");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"LineString\",\"coordinates\":[[0.001,0,0],[0,10.123,1],[10.1,10.2,2],[10,0,3],[0,0,0]]}", writer.toString());
+        assertEquals(
+                "{\"type\":\"LineString\",\"coordinates\":[[0.001,0,0],[0,10.123,1],[10.1,10.2,2],[10,0,3],[0,0,0]]}",
+                writer.toString());
     }
-    
+
     @Test
     public void testNumberOfDecimalsFor3dPolygon() throws Exception {
         builder.setNumberOfDecimals(0);
-        Geometry g = new WKTReader().read("POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
-        assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
+        assertEquals(
+                "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}",
+                writer.toString());
     }
 
     @Test
@@ -234,34 +251,56 @@ public class GeoJSONBuilderTest {
 
     @Test
     public void testWriteIntList() throws Exception {
-        final List<Integer> list = Arrays.asList(Integer.MAX_VALUE, Integer.MIN_VALUE, 3 ,4);
+        final List<Integer> list = Arrays.asList(Integer.MAX_VALUE, Integer.MIN_VALUE, 3, 4);
         builder.writeList(list);
-        assertEquals("[" + Integer.toString(Integer.MAX_VALUE) + "," +
-                Integer.toString(Integer.MIN_VALUE) + ",3,4]", writer.toString());
+        assertEquals(
+                "["
+                        + Integer.toString(Integer.MAX_VALUE)
+                        + ","
+                        + Integer.toString(Integer.MIN_VALUE)
+                        + ",3,4]",
+                writer.toString());
     }
 
     @Test
     public void testWriteLongList() throws Exception {
-        final List<Long> list = Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE, 0L, -333L ,4L);
+        final List<Long> list = Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE, 0L, -333L, 4L);
         builder.writeList(list);
-        assertEquals("[" + Long.toString(Long.MAX_VALUE) + "," +
-                Long.toString(Long.MIN_VALUE) + ",0,-333,4]", writer.toString());
+        assertEquals(
+                "["
+                        + Long.toString(Long.MAX_VALUE)
+                        + ","
+                        + Long.toString(Long.MIN_VALUE)
+                        + ",0,-333,4]",
+                writer.toString());
     }
 
     @Test
     public void testWriteFloatList() throws Exception {
-        final List<Float> list = Arrays.asList(Float.MAX_VALUE, Float.MIN_VALUE, 0f, -333.2365f , 0.23235656f);
+        final List<Float> list =
+                Arrays.asList(Float.MAX_VALUE, Float.MIN_VALUE, 0f, -333.2365f, 0.23235656f);
         builder.writeList(list);
-        assertEquals("[" + Float.toString(Float.MAX_VALUE) + "," +
-                Float.toString(Float.MIN_VALUE) + ",0,-333.2365,0.23235656]", writer.toString());
+        assertEquals(
+                "["
+                        + Float.toString(Float.MAX_VALUE)
+                        + ","
+                        + Float.toString(Float.MIN_VALUE)
+                        + ",0,-333.2365,0.23235656]",
+                writer.toString());
     }
 
     @Test
     public void testWriteDoubleList() throws Exception {
-        final List<Double> list = Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0d, -333.2365d , 0.23235656d);
+        final List<Double> list =
+                Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0d, -333.2365d, 0.23235656d);
         builder.writeList(list);
-        assertEquals("[" + Double.toString(Double.MAX_VALUE) + "," +
-                Double.toString(Double.MIN_VALUE) + ",0,-333.2365,0.23235656]", writer.toString());
+        assertEquals(
+                "["
+                        + Double.toString(Double.MAX_VALUE)
+                        + ","
+                        + Double.toString(Double.MIN_VALUE)
+                        + ",0,-333.2365,0.23235656]",
+                writer.toString());
     }
 
     @Test
@@ -270,16 +309,21 @@ public class GeoJSONBuilderTest {
         final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
         final List<UUID> list = Arrays.asList(u1, u2);
         builder.writeList(list);
-        assertEquals("[" + "\"" +  u1.toString() + "\"" + "," + "\"" + u2.toString() + "\"" + "]", writer.toString());
+        assertEquals(
+                "[" + "\"" + u1.toString() + "\"" + "," + "\"" + u2.toString() + "\"" + "]",
+                writer.toString());
     }
 
     @Test
     public void testWriteStringStringMap() throws Exception {
-        final Map<String, String> map = new HashMap<String, String>() {{
-            put("a", "1");
-            put("b", "2");
-            put("c", "3");
-        }};
+        final Map<String, String> map =
+                new HashMap<String, String>() {
+                    {
+                        put("a", "1");
+                        put("b", "2");
+                        put("c", "3");
+                    }
+                };
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
         assertEquals(3, root.size());
@@ -290,11 +334,14 @@ public class GeoJSONBuilderTest {
 
     @Test
     public void testWriteStringIntMap() throws Exception {
-        final Map<String, Integer> map = new HashMap<String, Integer>() {{
-            put("a", Integer.MAX_VALUE);
-            put("b", Integer.MIN_VALUE);
-            put("c", 3);
-        }};
+        final Map<String, Integer> map =
+                new HashMap<String, Integer>() {
+                    {
+                        put("a", Integer.MAX_VALUE);
+                        put("b", Integer.MIN_VALUE);
+                        put("c", 3);
+                    }
+                };
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
         assertEquals(3, root.size());
@@ -306,18 +353,24 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWriteListOfMaps() throws Exception {
         final UUID u1 = UUID.fromString("12345678-1234-1234-1234-123456781234");
-        final Map<String, Object> tuple1 = new HashMap<String, Object>() {{
-            put("a", 1);
-            put("b", u1);
-            put("c", "object1");
-        }};
+        final Map<String, Object> tuple1 =
+                new HashMap<String, Object>() {
+                    {
+                        put("a", 1);
+                        put("b", u1);
+                        put("c", "object1");
+                    }
+                };
 
         final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
-        final Map<String, Object> tuple2 = new HashMap<String, Object>() {{
-            put("a", 2);
-            put("b", u2);
-            put("c", "object2");
-        }};
+        final Map<String, Object> tuple2 =
+                new HashMap<String, Object>() {
+                    {
+                        put("a", 2);
+                        put("b", u2);
+                        put("c", "object2");
+                    }
+                };
 
         final List<Map<String, Object>> tupleList = Arrays.asList(tuple1, tuple2);
         builder.writeList(tupleList);
@@ -338,4 +391,3 @@ public class GeoJSONBuilderTest {
         assertEquals("object2", o2.get("c"));
     }
 }
-

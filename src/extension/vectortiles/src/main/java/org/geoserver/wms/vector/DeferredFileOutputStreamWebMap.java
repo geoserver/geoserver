@@ -7,15 +7,11 @@ package org.geoserver.wms.vector;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 
-/**
- * WebMap that uses a DeferredFileOutputStream for its content rather than a byte array.
- *
- */
+/** WebMap that uses a DeferredFileOutputStream for its content rather than a byte array. */
 public class DeferredFileOutputStreamWebMap extends RawMap {
 
     private DeferredFileOutputStream mapContents;
@@ -26,8 +22,9 @@ public class DeferredFileOutputStreamWebMap extends RawMap {
      * @param mimeType Format of the map
      * @throws IOException
      */
-    public DeferredFileOutputStreamWebMap(WMSMapContent mapContent,
-            DeferredFileOutputStream mapContents, String mimeType) throws IOException {
+    public DeferredFileOutputStreamWebMap(
+            WMSMapContent mapContent, DeferredFileOutputStream mapContents, String mimeType)
+            throws IOException {
 
         super(mapContent, (byte[]) null, mimeType);
         // make sure the stream is closed to be able of retrieving its contents
@@ -47,5 +44,4 @@ public class DeferredFileOutputStreamWebMap extends RawMap {
             file.delete();
         }
     }
-
 }

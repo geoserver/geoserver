@@ -4,15 +4,14 @@
  */
 package org.geoserver.geofence.rest.xml;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
@@ -21,15 +20,10 @@ import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.LayerType;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
-
 @XmlRootElement(name = "Rule")
 public class JaxbRule {
 
-    /**
-     * Specification for "LIMIT" rules.
-     *
-     */
+    /** Specification for "LIMIT" rules. */
     public static class Limits {
 
         private MultiPolygon allowedArea;
@@ -67,13 +61,9 @@ public class JaxbRule {
             }
             return ruleLimits;
         }
-
     }
 
-    /**
-     * Access specification for a Layer Attribute
-     *
-     */
+    /** Access specification for a Layer Attribute */
     public static class LayerAttribute {
         private String name;
 
@@ -81,9 +71,7 @@ public class JaxbRule {
 
         private String accessType;
 
-        public LayerAttribute() {
-
-        }
+        public LayerAttribute() {}
 
         public LayerAttribute(org.geoserver.geofence.core.model.LayerAttribute att) {
             this.name = att.getName();
@@ -119,7 +107,8 @@ public class JaxbRule {
         }
 
         public org.geoserver.geofence.core.model.LayerAttribute toLayerAttribute() {
-            org.geoserver.geofence.core.model.LayerAttribute att = new org.geoserver.geofence.core.model.LayerAttribute();
+            org.geoserver.geofence.core.model.LayerAttribute att =
+                    new org.geoserver.geofence.core.model.LayerAttribute();
             if (accessType != null) {
                 att.setAccess(AccessType.valueOf(accessType.toUpperCase()));
             }
@@ -127,13 +116,9 @@ public class JaxbRule {
             att.setName(name);
             return att;
         }
-
     }
 
-    /**
-     * Details for layer access.
-     *
-     */
+    /** Details for layer access. */
     public static class LayerDetails {
         private String layerType;
 
@@ -240,8 +225,8 @@ public class JaxbRule {
             }
             if (layerAttributes != null) {
                 for (LayerAttribute att : layerAttributes) {
-                    Iterator<org.geoserver.geofence.core.model.LayerAttribute> it = details
-                            .getAttributes().iterator();
+                    Iterator<org.geoserver.geofence.core.model.LayerAttribute> it =
+                            details.getAttributes().iterator();
                     while (it.hasNext()) {
                         if (it.next().getName().equals(att.getName())) {
                             it.remove();
@@ -291,17 +276,15 @@ public class JaxbRule {
 
     private LayerDetails layerDetails;
 
-    public JaxbRule() {
-
-    }
+    public JaxbRule() {}
 
     public JaxbRule(Rule rule) {
         id = rule.getId();
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
-        addressRange = rule.getAddressRange() == null ? null
-                : rule.getAddressRange().getCidrSignature();
+        addressRange =
+                rule.getAddressRange() == null ? null : rule.getAddressRange().getCidrSignature();
         workspace = rule.getWorkspace();
         layer = rule.getLayer();
         service = rule.getService() == null ? null : rule.getService().toUpperCase();
@@ -321,8 +304,8 @@ public class JaxbRule {
             layerDetails.setCqlFilterWrite(rule.getLayerDetails().getCqlFilterWrite());
             layerDetails.setDefaultStyle(rule.getLayerDetails().getDefaultStyle());
             layerDetails.setLayerType(rule.getLayerDetails().getType().toString());
-            for (org.geoserver.geofence.core.model.LayerAttribute att : rule.getLayerDetails()
-                    .getAttributes()) {
+            for (org.geoserver.geofence.core.model.LayerAttribute att :
+                    rule.getLayerDetails().getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }
@@ -483,9 +466,7 @@ public class JaxbRule {
     }
 
     protected static String convertAny(String s) {
-        if ("".equals(s) || "*".equals(s))
-            return null;
-        else
-            return s;
+        if ("".equals(s) || "*".equals(s)) return null;
+        else return s;
     }
 }

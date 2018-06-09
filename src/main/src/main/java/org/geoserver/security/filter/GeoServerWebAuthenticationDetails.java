@@ -4,18 +4,15 @@
  * application directory.
  */
 
-
 package org.geoserver.security.filter;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.security.web.authentication.WebAuthenticationDetails;;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 /**
  * extension for adding additional authentication details
- * 
- * @author christian
  *
+ * @author christian
  */
 public class GeoServerWebAuthenticationDetails extends WebAuthenticationDetails {
 
@@ -32,7 +29,5 @@ public class GeoServerWebAuthenticationDetails extends WebAuthenticationDetails 
 
     public GeoServerWebAuthenticationDetails(HttpServletRequest request) {
         super(request);
-        
     }
-
 }

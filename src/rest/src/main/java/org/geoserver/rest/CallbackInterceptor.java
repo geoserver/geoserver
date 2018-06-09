@@ -7,29 +7,25 @@ package org.geoserver.rest;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/**
- * Interceptor notifying {@link DispatcherCallback} of request processing progress 
- */
+/** Interceptor notifying {@link DispatcherCallback} of request processing progress */
 public class CallbackInterceptor extends HandlerInterceptorAdapter {
 
     static final Logger LOGGER = Logging.getLogger(CallbackInterceptor.class);
 
-
     List<DispatcherCallback> getCallbacks() {
         return GeoServerExtensions.extensions(DispatcherCallback.class);
     }
-    
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws Exception {
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         List<DispatcherCallback> callbacks = getCallbacks();
         // for semi-backwards compatibility
         for (DispatcherCallback callback : callbacks) {
@@ -43,10 +39,11 @@ public class CallbackInterceptor extends HandlerInterceptorAdapter {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-            Object handler, Exception ex) throws Exception {
+    public void afterCompletion(
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
         List<DispatcherCallback> callbacks = getCallbacks();
-        
+
         if (ex != null) {
             for (DispatcherCallback callback : callbacks) {
                 callback.exception(request, response, ex);
@@ -62,5 +59,4 @@ public class CallbackInterceptor extends HandlerInterceptorAdapter {
             }
         }
     }
-
 }

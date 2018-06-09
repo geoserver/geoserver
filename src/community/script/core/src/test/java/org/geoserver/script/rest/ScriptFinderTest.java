@@ -5,6 +5,9 @@
  */
 package org.geoserver.script.rest;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -16,10 +19,6 @@ import org.geoserver.script.ScriptIntTestSupport;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ScriptFinderTest extends ScriptIntTestSupport {
 
@@ -52,8 +51,8 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNull(scriptMgr.findScriptFile("apps/app1/main.py"));
 
         String body = "print 'hello';";
-        MockHttpServletResponse resp = putAsServletResponse("/script/scripts/apps/app1/main.py",
-                body, "text/plain");
+        MockHttpServletResponse resp =
+                putAsServletResponse("/script/scripts/apps/app1/main.py", body, "text/plain");
         assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("apps/app1/main.py"));
@@ -80,8 +79,10 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
             String name = script.getString("name");
             assertTrue(name.equals("foo/main.py") || name.equals("bar/main.py"));
             String href = script.getString("href");
-            assertTrue(href.equals("http://localhost/geoserver/script/scripts/apps/foo/main.py")
-                    || href.equals("http://localhost/geoserver/script/scripts/apps/bar/main.py"));
+            assertTrue(
+                    href.equals("http://localhost/geoserver/script/scripts/apps/foo/main.py")
+                            || href.equals(
+                                    "http://localhost/geoserver/script/scripts/apps/bar/main.py"));
         }
 
         // XML
@@ -138,8 +139,8 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
 
         String body = "print 'hello';";
-        MockHttpServletResponse resp = putAsServletResponse("/script/scripts/wfs/tx/bar.py", body,
-                "text/plain");
+        MockHttpServletResponse resp =
+                putAsServletResponse("/script/scripts/wfs/tx/bar.py", body, "text/plain");
         assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
@@ -166,8 +167,10 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
             String name = script.getString("name");
             assertTrue(name.equals("foo.py") || name.equals("bar.py"));
             String href = script.getString("href");
-            assertTrue(href.equals("http://localhost/geoserver/script/scripts/wfs/tx/foo.py")
-                    || href.equals("http://localhost/geoserver/script/scripts/wfs/tx/bar.py"));
+            assertTrue(
+                    href.equals("http://localhost/geoserver/script/scripts/wfs/tx/foo.py")
+                            || href.equals(
+                                    "http://localhost/geoserver/script/scripts/wfs/tx/bar.py"));
         }
 
         // XML
@@ -223,8 +226,8 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNull(scriptMgr.findScriptFile("function/bar.py"));
 
         String body = "print 'hello';";
-        MockHttpServletResponse resp = putAsServletResponse("/script/scripts/function/bar.py", body,
-                "text/plain");
+        MockHttpServletResponse resp =
+                putAsServletResponse("/script/scripts/function/bar.py", body, "text/plain");
         assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("function/bar.py"));
@@ -251,8 +254,10 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
             String name = script.getString("name");
             assertTrue(name.equals("foo.py") || name.equals("bar.py"));
             String href = script.getString("href");
-            assertTrue(href.equals("http://localhost/geoserver/script/scripts/function/foo.py")
-                    || href.equals("http://localhost/geoserver/script/scripts/function/bar.py"));
+            assertTrue(
+                    href.equals("http://localhost/geoserver/script/scripts/function/foo.py")
+                            || href.equals(
+                                    "http://localhost/geoserver/script/scripts/function/bar.py"));
         }
 
         // XML
@@ -316,13 +321,13 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals(200, resp.getStatus());
         assertEquals("print 'foo'", resp.getContentAsString());
     }
-    
+
     public void testPutWps() throws Exception {
         assertNull(scriptMgr.findScriptFile("wps/bar.py"));
 
         String body = "print 'hello';";
-        MockHttpServletResponse resp = putAsServletResponse("/script/scripts/wps/bar.py", body,
-                "text/plain");
+        MockHttpServletResponse resp =
+                putAsServletResponse("/script/scripts/wps/bar.py", body, "text/plain");
         assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
@@ -332,13 +337,13 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
 
         String body = "print 'hello';";
-        MockHttpServletResponse resp = putAsServletResponse("/script/scripts/wps/foo:bar.py", body,
-                "text/plain");
+        MockHttpServletResponse resp =
+                putAsServletResponse("/script/scripts/wps/foo:bar.py", body, "text/plain");
         assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
     }
-    
+
     public void testGetAllWps() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/script/scripts/wps.json");
@@ -351,7 +356,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         // Add WPS script with custom namespace
         File subDir = new File(dir, "custom");
         FileUtils.writeStringToFile(new File(subDir, "buffer.py"), "print 'buffer'");
-        
+
         // JSON
         json = getAsJSON("/script/scripts/wps.json");
         JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
@@ -361,11 +366,16 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
             assertTrue(script.containsKey("name"));
             assertTrue(script.containsKey("href"));
             String name = script.getString("name");
-            assertTrue(name.equals("foo.py") || name.equals("bar.py") || name.equals("custom:buffer.py"));
+            assertTrue(
+                    name.equals("foo.py")
+                            || name.equals("bar.py")
+                            || name.equals("custom:buffer.py"));
             String href = script.getString("href");
-            assertTrue(href.equals("http://localhost/geoserver/script/scripts/wps/foo.py")
-                    || href.equals("http://localhost/geoserver/script/scripts/wps/bar.py")
-                    || href.equals("http://localhost/geoserver/script/scripts/wps/custom:buffer.py"));
+            assertTrue(
+                    href.equals("http://localhost/geoserver/script/scripts/wps/foo.py")
+                            || href.equals("http://localhost/geoserver/script/scripts/wps/bar.py")
+                            || href.equals(
+                                    "http://localhost/geoserver/script/scripts/wps/custom:buffer.py"));
         }
 
         // XML
@@ -402,7 +412,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         resp = getAsServletResponse("/script/scripts/wps/foo.py");
         assertEquals(404, resp.getStatus());
     }
-    
+
     public void testDeleteWpsWithNamespace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/bar:foo.py");
         assertEquals(404, resp.getStatus());
@@ -420,6 +430,5 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
         resp = getAsServletResponse("/script/scripts/wps/bar:foo.py");
         assertEquals(404, resp.getStatus());
-
     }
 }

@@ -6,12 +6,9 @@ package org.geoserver.web.netcdf.layer;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -22,14 +19,12 @@ import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.logging.Logging;
 
-/**
- * Bean used for creating a {@link NetCDFCFParser} singleton, parsing the input cf-standard file
- */
+/** Bean used for creating a {@link NetCDFCFParser} singleton, parsing the input cf-standard file */
 public class NetCDFParserBean {
 
-    public final static String NETCDF_STANDARD_NAME_TABLE = "NETCDF_STANDARD_TABLE";
+    public static final String NETCDF_STANDARD_NAME_TABLE = "NETCDF_STANDARD_TABLE";
 
-    public final static String NETCDF_STANDARD_NAME = "cf-standard-name-table.xml";
+    public static final String NETCDF_STANDARD_NAME = "cf-standard-name-table.xml";
 
     private static final Logger LOGGER = Logging.getLogger(NetCDFParserBean.class);
 
@@ -62,8 +57,8 @@ public class NetCDFParserBean {
             // Getting the directory file
             File netCDFDir = new File(NetCDFUtilities.EXTERNAL_DATA_DIR);
             // Creating a File filter
-            FileFilter filter = FileFilterUtils.nameFileFilter(NETCDF_STANDARD_NAME,
-                    IOCase.INSENSITIVE);
+            FileFilter filter =
+                    FileFilterUtils.nameFileFilter(NETCDF_STANDARD_NAME, IOCase.INSENSITIVE);
             // Getting the filtered file array
             File[] files = netCDFDir.listFiles(filter);
             // Getting the file if present
@@ -103,7 +98,8 @@ public class NetCDFParserBean {
     }
 
     /**
-     * @return an instance of {@link NetCDFCFParser} if present, or null if no cf-standard table file is present or badly parsed.
+     * @return an instance of {@link NetCDFCFParser} if present, or null if no cf-standard table
+     *     file is present or badly parsed.
      */
     public NetCDFCFParser getParser() {
         return parser;

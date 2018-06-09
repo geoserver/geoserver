@@ -5,24 +5,18 @@
  */
 package org.geoserver.flow.controller;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import com.google.common.base.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.flow.ControlFlowCallback;
 import org.geoserver.flow.FlowController;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.base.Predicate;
-
 /**
  * Base class for flow controllers using a single queue
- * 
+ *
  * @author Andrea Aime - OpenGeo
- * 
  */
 public class SingleQueueFlowController implements FlowController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
@@ -33,11 +27,11 @@ public class SingleQueueFlowController implements FlowController {
 
     int controllerPriority;
 
-    public SingleQueueFlowController(Predicate<Request> matcher, int controllerPriority, ThreadBlocker blocker) {
+    public SingleQueueFlowController(
+            Predicate<Request> matcher, int controllerPriority, ThreadBlocker blocker) {
         this.controllerPriority = controllerPriority;
         this.matcher = matcher;
         this.blocker = blocker;
-
     }
 
     public int getPriority() {
@@ -56,8 +50,7 @@ public class SingleQueueFlowController implements FlowController {
             try {
                 retval = blocker.requestIncoming(request, timeout);
             } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING,
-                        "Unexpected interruption while waiting for execution");
+                LOGGER.log(Level.WARNING, "Unexpected interruption while waiting for execution");
             }
         }
         return retval;
@@ -66,9 +59,10 @@ public class SingleQueueFlowController implements FlowController {
     public Predicate<Request> getMatcher() {
         return matcher;
     }
-    
+
     /**
      * Returns the current queue size (used for testing only)
+     *
      * @return
      */
     public int getRequestsInQueue() {
@@ -77,9 +71,10 @@ public class SingleQueueFlowController implements FlowController {
 
     /**
      * Returns the thread blocking mechanisms for this queue
+     *
      * @return a {@link ThreadBlocker} instance
      */
     public ThreadBlocker getBlocker() {
-         return blocker;
+        return blocker;
     }
 }

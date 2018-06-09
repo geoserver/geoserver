@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
@@ -27,8 +26,7 @@ import org.opengis.filter.Filter;
 import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
-public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
-        FeatureTypeInfo {
+public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureTypeInfo {
 
     protected transient Filter filter;
 
@@ -39,30 +37,29 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
 
     protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
     protected List<String> responseSRS = new ArrayList<String>();
-    
+
     boolean overridingServiceSRS;
     boolean skipNumberMatched = false;
     boolean circularArcPresent;
-    
+
     public boolean isCircularArcPresent() {
-    	return circularArcPresent;
-	}
-
-	public void setCircularArcPresent(boolean curveGeometryEnabled) {
-		this.circularArcPresent = curveGeometryEnabled;
-	}
-
-	Measure linearizationTolerance;
-    
-    protected FeatureTypeInfoImpl() {
+        return circularArcPresent;
     }
+
+    public void setCircularArcPresent(boolean curveGeometryEnabled) {
+        this.circularArcPresent = curveGeometryEnabled;
+    }
+
+    Measure linearizationTolerance;
+
+    protected FeatureTypeInfoImpl() {}
 
     public FeatureTypeInfoImpl(Catalog catalog) {
         super(catalog);
     }
 
     public FeatureTypeInfoImpl(Catalog catalog, String id) {
-        super(catalog,id);
+        super(catalog, id);
     }
 
     public DataStoreInfo getStore() {
@@ -77,11 +74,11 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     public List<AttributeTypeInfo> getAttributes() {
         return attributes;
     }
-    
+
     public void setAttributes(List<AttributeTypeInfo> attributes) {
         this.attributes = attributes;
     }
-    
+
     /*
      * The filter is computed by current cqlFilter
      */
@@ -100,32 +97,32 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     public int getMaxFeatures() {
         return maxFeatures;
     }
-    
+
     public void setMaxFeatures(int maxFeatures) {
         this.maxFeatures = maxFeatures;
     }
-    
+
     public int getNumDecimals() {
         return numDecimals;
     }
-    
+
     public void setNumDecimals(int numDecimals) {
         this.numDecimals = numDecimals;
     }
-    
+
     public List<AttributeTypeInfo> attributes() throws IOException {
-        return catalog.getResourcePool().getAttributes( this );
+        return catalog.getResourcePool().getAttributes(this);
     }
 
     public FeatureType getFeatureType() throws IOException {
-        return catalog.getResourcePool().getFeatureType( this );
+        return catalog.getResourcePool().getFeatureType(this);
     }
-    
-    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(ProgressListener listener, Hints hints)
-            throws IOException {
-        return catalog.getResourcePool().getFeatureSource( this, hints );
+
+    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+            ProgressListener listener, Hints hints) throws IOException {
+        return catalog.getResourcePool().getFeatureSource(this, hints);
     }
-    
+
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -137,7 +134,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     public void setResponseSRS(List<String> otherSrs) {
         this.responseSRS = otherSrs;
     }
-   
+
     public boolean isOverridingServiceSRS() {
         return overridingServiceSRS;
     }
@@ -172,7 +169,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
 
     /*
      * Mind, this method cannot be auto-generated, it has to compare against the interface,
-     * not the implementation 
+     * not the implementation
      */
     public boolean equals(Object obj) {
         if (!(obj instanceof FeatureTypeInfo)) {
@@ -184,55 +181,41 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
 
         final FeatureTypeInfo other = (FeatureTypeInfo) obj;
         if (attributes == null) {
-            if (other.getAttributes() != null)
-                return false;
+            if (other.getAttributes() != null) return false;
         } else {
             List<AttributeTypeInfo> otherAttributes = other.getAttributes();
-            if (otherAttributes == attributes)
-                return true;
+            if (otherAttributes == attributes) return true;
 
             ListIterator<AttributeTypeInfo> attributesIterator = attributes.listIterator();
-            ListIterator<AttributeTypeInfo> otherAttributesIterator = otherAttributes.listIterator();
+            ListIterator<AttributeTypeInfo> otherAttributesIterator =
+                    otherAttributes.listIterator();
             while (attributesIterator.hasNext() && otherAttributesIterator.hasNext()) {
                 AttributeTypeInfo attr = attributesIterator.next();
                 AttributeTypeInfo otherAttr = otherAttributesIterator.next();
 
                 if (attr == null) {
-                    if (otherAttr != null)
-                        return false;
+                    if (otherAttr != null) return false;
                 } else if (!attr.equalsIngnoreFeatureType(otherAttr)) {
                     return false;
                 }
             }
-            if (attributesIterator.hasNext() || otherAttributesIterator.hasNext())
-              return false;
+            if (attributesIterator.hasNext() || otherAttributesIterator.hasNext()) return false;
         }
         if (responseSRS == null) {
-            if (other.getResponseSRS() != null)
-                return false;
-        } else if (!responseSRS.equals(other.getResponseSRS()))
-            return false;
-        if (circularArcPresent != other.isCircularArcPresent())
-            return false;
+            if (other.getResponseSRS() != null) return false;
+        } else if (!responseSRS.equals(other.getResponseSRS())) return false;
+        if (circularArcPresent != other.isCircularArcPresent()) return false;
         if (linearizationTolerance == null) {
-            if (other.getLinearizationTolerance() != null)
-                return false;
-        } else if (!linearizationTolerance.equals(other.getLinearizationTolerance()))
-            return false;
-        if (maxFeatures != other.getMaxFeatures())
-            return false;
-        if (numDecimals != other.getNumDecimals())
-            return false;
-        if (overridingServiceSRS != other.isOverridingServiceSRS())
-            return false;
-        if (skipNumberMatched != other.getSkipNumberMatched())
-            return false;
+            if (other.getLinearizationTolerance() != null) return false;
+        } else if (!linearizationTolerance.equals(other.getLinearizationTolerance())) return false;
+        if (maxFeatures != other.getMaxFeatures()) return false;
+        if (numDecimals != other.getNumDecimals()) return false;
+        if (overridingServiceSRS != other.isOverridingServiceSRS()) return false;
+        if (skipNumberMatched != other.getSkipNumberMatched()) return false;
         if (cqlFilter == null) {
-            if (other.getCqlFilter() != null)
-                return false;
-        } else if (!cqlFilter.equals(other.getCqlFilter()))
-            return false;
-        
+            if (other.getCqlFilter() != null) return false;
+        } else if (!cqlFilter.equals(other.getCqlFilter())) return false;
+
         return true;
     }
 
@@ -256,5 +239,4 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         this.cqlFilter = cqlFilter;
         this.filter = null;
     }
-    
 }

@@ -11,11 +11,9 @@ import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.List;
-
 import net.opengis.wcs11.AxisSubsetType;
 import net.opengis.wcs11.FieldSubsetType;
 import net.opengis.wcs11.RangeSubsetType;
-
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException;
 

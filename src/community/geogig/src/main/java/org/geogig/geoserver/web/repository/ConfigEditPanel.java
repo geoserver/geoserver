@@ -20,15 +20,18 @@ import org.apache.wicket.validation.validator.PatternValidator;
 
 public class ConfigEditPanel extends Panel {
 
-	private static final long serialVersionUID = -1015911960516043997L;
+    private static final long serialVersionUID = -1015911960516043997L;
 
-	Form<ConfigEntry> form;
+    Form<ConfigEntry> form;
 
     TextField<String> name;
 
     TextField<String> value;
 
-    ConfigEditPanel(String id, IModel<ConfigEntry> model, final ModalWindow parentWindow,
+    ConfigEditPanel(
+            String id,
+            IModel<ConfigEntry> model,
+            final ModalWindow parentWindow,
             final ConfigListPanel table) {
         super(id, model);
 
@@ -50,28 +53,37 @@ public class ConfigEditPanel extends Panel {
         name = new TextField<>("name", new PropertyModel<>(model, "name"));
         name.setRequired(true);
         name.add(new PatternValidator("[^\\s]+"));
-        name.add(new IValidator<String>() {
-            private static final long serialVersionUID = 2927770353770055054L;
+        name.add(
+                new IValidator<String>() {
+                    private static final long serialVersionUID = 2927770353770055054L;
 
-            final String previousName = isInTable ? form.getModelObject().getName() : null;
+                    final String previousName = isInTable ? form.getModelObject().getName() : null;
 
-            @Override
-            public void validate(IValidatable<String> validatable) {
-                String name = validatable.getValue();
-                if (ConfigEntry.isRestricted(name)) {
-                	form.error(String.format("Modifying %s through this interface can have unintended consequences and is not allowed.", name));
-                } else {
-                    for (ConfigEntry config : table.getConfigs()) {
-                        if (!config.equals(model.getObject())) {
-                            String newName = config.getName();
-                            if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
-                                form.error(String.format("A config entry called %s already exists", name));
+                    @Override
+                    public void validate(IValidatable<String> validatable) {
+                        String name = validatable.getValue();
+                        if (ConfigEntry.isRestricted(name)) {
+                            form.error(
+                                    String.format(
+                                            "Modifying %s through this interface can have unintended consequences and is not allowed.",
+                                            name));
+                        } else {
+                            for (ConfigEntry config : table.getConfigs()) {
+                                if (!config.equals(model.getObject())) {
+                                    String newName = config.getName();
+                                    if (newName != null
+                                            && !newName.equals(previousName)
+                                            && newName.equals(name)) {
+                                        form.error(
+                                                String.format(
+                                                        "A config entry called %s already exists",
+                                                        name));
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
-        });
+                });
 
         value = new TextField<>("value", new PropertyModel<>(model, "value"));
         value.setRequired(true);
@@ -79,34 +91,35 @@ public class ConfigEditPanel extends Panel {
         form.add(name);
         form.add(value);
 
-        form.add(new AjaxSubmitLink("submit", form) {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxSubmitLink("submit", form) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedback);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        target.add(feedback);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-            	ConfigEntry newConfig = (ConfigEntry) form.getModelObject();
-                if (!isInTable) {
-                    table.add(newConfig);
-                }
-                parentWindow.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        ConfigEntry newConfig = (ConfigEntry) form.getModelObject();
+                        if (!isInTable) {
+                            table.add(newConfig);
+                        }
+                        parentWindow.close(target);
+                        target.add(table);
+                    }
+                });
 
-        form.add(new AjaxLink<Void>("cancel") {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                parentWindow.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        parentWindow.close(target);
+                        target.add(table);
+                    }
+                });
     }
-
 }

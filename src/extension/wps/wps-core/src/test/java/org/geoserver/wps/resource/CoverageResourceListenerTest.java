@@ -4,10 +4,14 @@
  */
 package org.geoserver.wps.resource;
 
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.verify;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import org.easymock.classextension.EasyMock;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wps.ProcessEvent;
@@ -18,11 +22,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.verify;
 
 public class CoverageResourceListenerTest {
 
@@ -37,10 +36,11 @@ public class CoverageResourceListenerTest {
     @Before
     public void setUp() {
         this.resourceManager = createMock(WPSResourceManager.class);
-        this.listener = new CoverageResourceListener(
-            this.resourceManager, new CoverageCleanerCallback());
-        this.status = new ExecutionStatus(
-            new NameImpl("gs", "TestProcess"), UUID.randomUUID().toString(), false);
+        this.listener =
+                new CoverageResourceListener(this.resourceManager, new CoverageCleanerCallback());
+        this.status =
+                new ExecutionStatus(
+                        new NameImpl("gs", "TestProcess"), UUID.randomUUID().toString(), false);
         this.status.setPhase(ProcessState.RUNNING);
         this.inputs = new HashMap<>();
         this.inputs.put("coverageA", null);
@@ -52,7 +52,7 @@ public class CoverageResourceListenerTest {
     @Test
     public void testCheckInputWhenSucceeded() {
         // expected addResource to be called twice
-        this.resourceManager.addResource(EasyMock.<GridCoverageResource> anyObject());
+        this.resourceManager.addResource(EasyMock.<GridCoverageResource>anyObject());
         expectLastCall().times(2);
         replay(this.resourceManager);
 
@@ -76,7 +76,7 @@ public class CoverageResourceListenerTest {
     @Test
     public void testCheckInputWhenFailed() {
         // expected addResource to be called once
-        this.resourceManager.addResource(EasyMock.<GridCoverageResource> anyObject());
+        this.resourceManager.addResource(EasyMock.<GridCoverageResource>anyObject());
         expectLastCall().once();
         replay(this.resourceManager);
 

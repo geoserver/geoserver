@@ -6,7 +6,6 @@ package org.geoserver.security.oauth2.services;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -25,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Remote Token Services for GitHub token details.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
@@ -33,15 +32,18 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
     public GitHubTokenServices() {
         tokenConverter = new GitHubAccessTokenConverter();
         restTemplate = new RestTemplate();
-        ((RestTemplate) restTemplate).setErrorHandler(new DefaultResponseErrorHandler() {
-            @Override
-            // Ignore 400
-            public void handleError(ClientHttpResponse response) throws IOException {
-                if (response.getRawStatusCode() != 400) {
-                    super.handleError(response);
-                }
-            }
-        });
+        ((RestTemplate) restTemplate)
+                .setErrorHandler(
+                        new DefaultResponseErrorHandler() {
+                            @Override
+                            // Ignore 400
+                            public void handleError(ClientHttpResponse response)
+                                    throws IOException {
+                                if (response.getRawStatusCode() != 400) {
+                                    super.handleError(response);
+                                }
+                            }
+                        });
     }
 
     @Override
@@ -49,15 +51,16 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
             throws AuthenticationException, InvalidTokenException {
         Map<String, Object> checkTokenResponse = checkToken(accessToken);
 
-        if (checkTokenResponse.containsKey("message") && 
-                checkTokenResponse.get("message").toString().startsWith("Problems")) {
+        if (checkTokenResponse.containsKey("message")
+                && checkTokenResponse.get("message").toString().startsWith("Problems")) {
             logger.debug("check_token returned error: " + checkTokenResponse.get("message"));
             throw new InvalidTokenException(accessToken);
         }
 
         transformNonStandardValuesToStandardValues(checkTokenResponse);
 
-        Assert.state(checkTokenResponse.containsKey("client_id"),
+        Assert.state(
+                checkTokenResponse.containsKey("client_id"),
                 "Client id must be present in response from auth server");
         return tokenConverter.extractAuthentication(checkTokenResponse);
     }
@@ -68,8 +71,11 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
         HttpHeaders headers = new HttpHeaders();
         // headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret));
         headers.set("Authorization", getAuthorizationHeader(accessToken));
-        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl).append("?access_token=")
-                .append(accessToken).toString();
+        String accessTokenUrl =
+                new StringBuilder(checkTokenEndpointUrl)
+                        .append("?access_token=")
+                        .append(accessToken)
+                        .toString();
         return postForMap(accessTokenUrl, formData, headers);
     }
 
@@ -79,18 +85,18 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
         map.put("user_name", map.get("login")); // GitHub sends 'user_name' as 'login'
         LOGGER.debug("Transformed = " + map);
     }
-    
+
     private String getAuthorizationHeader(String accessToken) {
         return "Bearer " + accessToken;
     }
 
-    private Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData,
-            HttpHeaders headers) {
+    private Map<String, Object> postForMap(
+            String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
         if (headers.getContentType() == null) {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
-        ParameterizedTypeReference<Map<String, Object>> map = new ParameterizedTypeReference<Map<String, Object>>() {
-        };
+        ParameterizedTypeReference<Map<String, Object>> map =
+                new ParameterizedTypeReference<Map<String, Object>>() {};
         return restTemplate
                 .exchange(path, HttpMethod.GET, new HttpEntity<>(formData, headers), map)
                 .getBody();

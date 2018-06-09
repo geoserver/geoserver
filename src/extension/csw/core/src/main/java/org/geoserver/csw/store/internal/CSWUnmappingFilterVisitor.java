@@ -17,10 +17,9 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a particular mapping
- * to a filter that can be applied directly onto Geoserver catalog objects.
+ * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a
+ * particular mapping to a filter that can be applied directly onto Geoserver catalog objects.
  *
- * 
  * @author Niels Charlier
  */
 public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
@@ -30,12 +29,12 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
     protected CatalogStoreMapping mapping;
 
     protected QNameResolver resolver = new QNameResolver();
-    
+
     protected RecordDescriptor rd;
-    
+
     /**
      * Create CSW Unmapping Filter Visitor
-     * 
+     *
      * @param mapping The Mapping
      * @param rd The Record Descriptor
      */
@@ -43,26 +42,40 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
         this.mapping = mapping;
         this.rd = rd;
     }
-    
+
     @Override
     public Object visit(PropertyName expression, Object extraData) {
-        
-        XPathUtil.StepList steps = XPathUtil.steps( rd.getFeatureDescriptor() , expression.getPropertyName(), rd.getNamespaceSupport());
-                
-        if (steps.size()==1 && steps.get(0).getName().getLocalPart().equalsIgnoreCase("AnyText")) {
-            
+
+        XPathUtil.StepList steps =
+                XPathUtil.steps(
+                        rd.getFeatureDescriptor(),
+                        expression.getPropertyName(),
+                        rd.getNamespaceSupport());
+
+        if (steps.size() == 1
+                && steps.get(0).getName().getLocalPart().equalsIgnoreCase("AnyText")) {
+
             Expression result = ff.literal(" ");
-             
+
             for (CatalogStoreMappingElement element : mapping.elements()) {
-                Expression fieldIgnoreNull = ff.function( "if_then_else", ff.function("isNull", element.getContent()), ff.literal(""), element.getContent());
-                result = ff.function("strConcat", result, ff.function("strConcat", ff.literal(" "),  fieldIgnoreNull ) );
+                Expression fieldIgnoreNull =
+                        ff.function(
+                                "if_then_else",
+                                ff.function("isNull", element.getContent()),
+                                ff.literal(""),
+                                element.getContent());
+                result =
+                        ff.function(
+                                "strConcat",
+                                result,
+                                ff.function("strConcat", ff.literal(" "), fieldIgnoreNull));
             }
-                        
-            return result;                    
-        } 
-                
+
+            return result;
+        }
+
         String path = CatalogStoreMapping.toDotPath(steps);
-                        
+
         if (path.equalsIgnoreCase(rd.getBoundingBoxPropertyName())) {
             return ff.property("boundingBox");
         }
@@ -73,9 +86,13 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
         }
         return element.getContent();
     }
-    
+
     @Override
-    public Object visit(Id filter, Object extraData) {        
-        return getFactory(extraData).equal(mapping.getIdentifierElement().getContent(), getFactory(extraData).literal(filter.getIDs()), true);
+    public Object visit(Id filter, Object extraData) {
+        return getFactory(extraData)
+                .equal(
+                        mapping.getIdentifierElement().getContent(),
+                        getFactory(extraData).literal(filter.getIDs()),
+                        true);
     }
 }

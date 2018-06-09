@@ -6,29 +6,29 @@
 package org.geoserver.test;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * HttpServletResponse wrapper to help in making assertions about expected status codes.
+ *
  * @author David Winslow, OpenGeo
  */
-public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper{
+public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper {
     private int myErrorCode;
     private boolean error;
 
-    public CodeExpectingHttpServletResponse (HttpServletResponse req){
+    public CodeExpectingHttpServletResponse(HttpServletResponse req) {
         super(req);
         myErrorCode = 200;
     }
 
-    public void setStatus(int sc){
+    public void setStatus(int sc) {
         myErrorCode = sc;
         super.setStatus(sc);
     }
 
-    public void setStatus(int sc, String sm){
+    public void setStatus(int sc, String sm) {
         myErrorCode = sc;
         super.setStatus(sc, sm);
     }
@@ -45,11 +45,11 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
         super.sendError(sc, sm);
     }
 
-    public int getErrorCode(){
+    public int getErrorCode() {
         return myErrorCode;
     }
 
-    public int getStatusCode(){
+    public int getStatusCode() {
         return myErrorCode;
     }
 
@@ -57,5 +57,3 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
         return error;
     }
 }
-
-

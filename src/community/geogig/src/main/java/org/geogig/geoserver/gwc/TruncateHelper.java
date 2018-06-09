@@ -4,12 +4,19 @@
  */
 package org.geogig.geoserver.gwc;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Throwables;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
+import com.vividsolutions.jts.operation.buffer.BufferOp;
+import com.vividsolutions.jts.operation.buffer.BufferParameters;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -36,21 +43,16 @@ import org.opengis.referencing.operation.MathTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Stopwatch;
-import com.google.common.base.Throwables;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-
 class TruncateHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TruncateHelper.class);
 
-    public static void issueTruncateTasks(Context context, Optional<Ref> oldRef,
-            Optional<Ref> newRef, GeoServerTileLayer tileLayer, TileBreeder breeder) {
+    public static void issueTruncateTasks(
+            Context context,
+            Optional<Ref> oldRef,
+            Optional<Ref> newRef,
+            GeoServerTileLayer tileLayer,
+            TileBreeder breeder) {
 
         final ObjectId oldCommit = oldRef.isPresent() ? oldRef.get().getObjectId() : ObjectId.NULL;
         final ObjectId newCommit = newRef.isPresent() ? newRef.get().getObjectId() : ObjectId.NULL;
@@ -58,14 +60,17 @@ class TruncateHelper {
         final String tileLayerName = tileLayer.getName();
         final String layerTreeName = tileLayer.getLayerInfo().getResource().getNativeName();
 
-        LOGGER.debug(String.format(
-                "Computing minimal bounds geometry on layer '%s' (tree '%s') for change %s...%s ",
-                tileLayerName, layerTreeName, oldCommit, newCommit));
+        LOGGER.debug(
+                String.format(
+                        "Computing minimal bounds geometry on layer '%s' (tree '%s') for change %s...%s ",
+                        tileLayerName, layerTreeName, oldCommit, newCommit));
         final Geometry minimalBounds;
         Stopwatch sw = Stopwatch.createStarted();
         try {
-            MinimalDiffBounds geomBuildCommand = context.command(MinimalDiffBounds.class)
-                    .setOldVersion(oldCommit.toString()).setNewVersion(newCommit.toString());
+            MinimalDiffBounds geomBuildCommand =
+                    context.command(MinimalDiffBounds.class)
+                            .setOldVersion(oldCommit.toString())
+                            .setNewVersion(newCommit.toString());
 
             geomBuildCommand.setTreeNameFilter(layerTreeName);
 
@@ -73,19 +78,23 @@ class TruncateHelper {
             sw.stop();
             if (minimalBounds.isEmpty()) {
                 LOGGER.debug(
-                        String.format("Feature tree '%s' not affected by change %s...%s (took %s)",
+                        String.format(
+                                "Feature tree '%s' not affected by change %s...%s (took %s)",
                                 layerTreeName, oldCommit, newCommit, sw));
                 return;
             }
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("Minimal bounds on layer '%s' computed in %s: %s",
-                        tileLayerName, sw, formattedWKT(minimalBounds)));
+                LOGGER.debug(
+                        String.format(
+                                "Minimal bounds on layer '%s' computed in %s: %s",
+                                tileLayerName, sw, formattedWKT(minimalBounds)));
             }
         } catch (Exception e) {
             sw.stop();
-            LOGGER.error(String.format(
-                    "Error computing minimal bounds for %s...%s on layer '%s' after %s", oldCommit,
-                    newCommit, tileLayerName, sw));
+            LOGGER.error(
+                    String.format(
+                            "Error computing minimal bounds for %s...%s on layer '%s' after %s",
+                            oldCommit, newCommit, tileLayerName, sw));
             throw Throwables.propagate(e);
         }
         final Set<String> gridSubsets = tileLayer.getGridSubsets();
@@ -109,11 +118,13 @@ class TruncateHelper {
             LOGGER.debug("Reprojecting geometry mask to gridset {}", gridsetId);
             Geometry geomInGridsetCrs = transformToGridsetCrs(minimalBounds, sourceCrs, gridSetCrs);
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("geometry mask reprojected to gridset {}: {}", gridsetId,
+                LOGGER.debug(
+                        "geometry mask reprojected to gridset {}: {}",
+                        gridsetId,
                         formattedWKT(geomInGridsetCrs));
             }
-            geomInGridsetCrs = bufferAndSimplifyBySizeOfSmallerTile(geomInGridsetCrs, gridSetCrs,
-                    gridSubset);
+            geomInGridsetCrs =
+                    bufferAndSimplifyBySizeOfSmallerTile(geomInGridsetCrs, gridSetCrs, gridSubset);
             try {
                 truncate(tileLayer, gridsetId, geomInGridsetCrs, breeder);
             } catch (Exception e) {
@@ -122,8 +133,10 @@ class TruncateHelper {
         }
     }
 
-    private static Geometry bufferAndSimplifyBySizeOfSmallerTile(Geometry geomInGridsetCrs,
-            CoordinateReferenceSystem gridSetCrs, GridSubset gridSubset) {
+    private static Geometry bufferAndSimplifyBySizeOfSmallerTile(
+            Geometry geomInGridsetCrs,
+            CoordinateReferenceSystem gridSetCrs,
+            GridSubset gridSubset) {
 
         double bufferRatio;
         // try {
@@ -154,9 +167,10 @@ class TruncateHelper {
         BufferOp bufferOp = new BufferOp(geomInGridsetCrs, bp);
         Geometry geometry = bufferOp.getResultGeometry(bufferRatio);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format(
-                    "Geometry buffered by the size of a tile at zoom level %s (%s units): %s",
-                    zoomStop, bufferRatio, formattedWKT(geometry)));
+            LOGGER.debug(
+                    String.format(
+                            "Geometry buffered by the size of a tile at zoom level %s (%s units): %s",
+                            zoomStop, bufferRatio, formattedWKT(geometry)));
         }
         TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geometry);
         simplifier.setDistanceTolerance(bufferRatio / 2);
@@ -167,9 +181,7 @@ class TruncateHelper {
         return geometry;
     }
 
-    /**
-     * A one-line WKT may be too large, this function returns a multiline formatted one
-     */
+    /** A one-line WKT may be too large, this function returns a multiline formatted one */
     private static Object formattedWKT(Geometry geometry) {
         WKTWriter w = new WKTWriter();
         w.setFormatted(true);
@@ -177,8 +189,11 @@ class TruncateHelper {
         return w.write(geometry);
     }
 
-    private static void truncate(final GeoServerTileLayer tileLayer, final String gridsetId,
-            final Geometry geomInGridsetCrs, final TileBreeder breeder) {
+    private static void truncate(
+            final GeoServerTileLayer tileLayer,
+            final String gridsetId,
+            final Geometry geomInGridsetCrs,
+            final TileBreeder breeder) {
 
         final List<MimeType> mimeTypes = tileLayer.getMimeTypes();
         final Set<String> cachedStyles = getCachedStyles(tileLayer);
@@ -201,8 +216,12 @@ class TruncateHelper {
         }
     }
 
-    private static void truncate(TileBreeder breeder, GeoServerTileLayer tileLayer,
-            GridSubset gridSubset, MimeType mimeType, Map<String, String> parameters,
+    private static void truncate(
+            TileBreeder breeder,
+            GeoServerTileLayer tileLayer,
+            GridSubset gridSubset,
+            MimeType mimeType,
+            Map<String, String> parameters,
             Geometry geomInGridsetCrs) {
 
         Integer zoomStart = gridSubset.getMinCachedZoom();
@@ -214,18 +233,30 @@ class TruncateHelper {
             zoomStop = gridSubset.getGridSet().getNumLevels() - 1;
         }
 
-        TileRangeMask rasterMask = GeometryTileRangeMask.build(tileLayer, gridSubset,
-                geomInGridsetCrs);
+        TileRangeMask rasterMask =
+                GeometryTileRangeMask.build(tileLayer, gridSubset, geomInGridsetCrs);
 
         String layerName = tileLayer.getName();
         String gridSetId = gridSubset.getName();
 
-        TileRange tileRange = new DiscontinuousTileRange(layerName, gridSetId, zoomStart, zoomStop,
-                rasterMask, mimeType, parameters);
+        TileRange tileRange =
+                new DiscontinuousTileRange(
+                        layerName,
+                        gridSetId,
+                        zoomStart,
+                        zoomStop,
+                        rasterMask,
+                        mimeType,
+                        parameters);
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("Truncating layer %s#%s#%s with geom mask %s", layerName,
-                    gridSetId, mimeType.getFormat(), formattedWKT(geomInGridsetCrs)));
+            LOGGER.debug(
+                    String.format(
+                            "Truncating layer %s#%s#%s with geom mask %s",
+                            layerName,
+                            gridSetId,
+                            mimeType.getFormat(),
+                            formattedWKT(geomInGridsetCrs)));
         }
         try {
             GWCTask[] tasks = breeder.createTasks(tileRange, TYPE.TRUNCATE, 1, false);
@@ -233,11 +264,12 @@ class TruncateHelper {
         } catch (GeoWebCacheException e) {
             throw Throwables.propagate(e);
         }
-
     }
 
-    private static Geometry transformToGridsetCrs(Geometry minimalBounds,
-            CoordinateReferenceSystem defaultCrs, CoordinateReferenceSystem gridSetCrs) {
+    private static Geometry transformToGridsetCrs(
+            Geometry minimalBounds,
+            CoordinateReferenceSystem defaultCrs,
+            CoordinateReferenceSystem gridSetCrs) {
 
         Geometry geomInGridsetCrs;
         try {
@@ -257,7 +289,7 @@ class TruncateHelper {
         try {
             int epsgCode = srs.getNumber();
             String epsgId = "EPSG:" + epsgCode;
-            boolean longitudeFirst = true;// as used by geoserver
+            boolean longitudeFirst = true; // as used by geoserver
             gridSetCrs = CRS.decode(epsgId, longitudeFirst);
         } catch (Exception e) {
             throw new RuntimeException("Can't decode SRS  ESPG:" + srs.getNumber());

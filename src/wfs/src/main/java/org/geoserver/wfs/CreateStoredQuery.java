@@ -16,15 +16,13 @@ import org.geoserver.platform.ServiceException;
  * Web Feature Service CreateStoredQuery operation.
  *
  * @author Justin Deoliveira, OpenGeo
- *
  * @version $Id$
  */
 public class CreateStoredQuery {
 
-    /**
-     * The default create stored query language, according to spec
-     */
-    public static final String DEFAULT_LANGUAGE = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression"; 
+    /** The default create stored query language, according to spec */
+    public static final String DEFAULT_LANGUAGE =
+            "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
 
     /** service config */
     WFSInfo wfs;
@@ -36,20 +34,24 @@ public class CreateStoredQuery {
         this.wfs = wfs;
         this.storedQueryProvider = storedQueryProvider;
     }
-    
+
     public CreateStoredQueryResponseType run(CreateStoredQueryType request) throws WFSException {
         for (StoredQueryDescriptionType sqd : request.getStoredQueryDefinition()) {
-            if(storedQueryProvider.getStoredQuery(sqd.getId()) != null) {
-                WFSException e = new WFSException(request, "Stored query already exists", WFSException.DUPLICATE_STORED_QUERY_ID_VALUE);
+            if (storedQueryProvider.getStoredQuery(sqd.getId()) != null) {
+                WFSException e =
+                        new WFSException(
+                                request,
+                                "Stored query already exists",
+                                WFSException.DUPLICATE_STORED_QUERY_ID_VALUE);
                 e.setLocator(sqd.getId());
                 throw e;
             }
-            
+
             validateStoredQuery(request, sqd);
-            
+
             try {
                 storedQueryProvider.createStoredQuery(sqd);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new WFSException(request, "Error occured creating stored query", e);
             }
         }
@@ -60,7 +62,8 @@ public class CreateStoredQuery {
         return response;
     }
 
-    void validateStoredQuery(CreateStoredQueryType request, StoredQueryDescriptionType sq) throws WFSException {
+    void validateStoredQuery(CreateStoredQueryType request, StoredQueryDescriptionType sq)
+            throws WFSException {
         if (sq.getQueryExpressionText().isEmpty()) {
             throw new WFSException(request, "Stored query does not specify any queries");
         }
@@ -69,28 +72,32 @@ public class CreateStoredQuery {
         for (QueryExpressionTextType queryExpressionTextType : sq.getQueryExpressionText()) {
             String language = queryExpressionTextType.getLanguage();
             if (language != null && !storedQueryProvider.supportsLanguage(language)) {
-                WFSException e = new WFSException(request, "Invalid language " + queryExpressionTextType.getLanguage
-                        (), ServiceException.INVALID_PARAMETER_VALUE);
+                WFSException e =
+                        new WFSException(
+                                request,
+                                "Invalid language " + queryExpressionTextType.getLanguage(),
+                                ServiceException.INVALID_PARAMETER_VALUE);
                 e.setLocator("language");
                 throw e;
             }
         }
-        
+
         // check for multiple languages
         String language = sq.getQueryExpressionText().get(0).getLanguage();
         for (int i = 1; i < sq.getQueryExpressionText().size(); i++) {
             if (!language.equals(sq.getQueryExpressionText().get(i).getLanguage())) {
-                throw new WFSException(request, "Stored query specifies queries with multiple languages. " +
-                    "Not supported");
+                throw new WFSException(
+                        request,
+                        "Stored query specifies queries with multiple languages. "
+                                + "Not supported");
             }
         }
 
         try {
             storedQueryProvider.createStoredQuery(sq, false).validate();
-        } catch(WFSException e) {
+        } catch (WFSException e) {
             throw new WFSException(request, e.getMessage(), e, e.getCode());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new WFSException(request, "Error validating stored query", e);
         }
     }

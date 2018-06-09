@@ -5,9 +5,9 @@
  */
 package org.geoserver.geofence;
 
+import com.google.common.base.Ticker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CachedRuleReader;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
@@ -17,12 +17,7 @@ import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.io.UrlResource;
 
-import com.google.common.base.Ticker;
-
-/**
- *
- * @author ETj (etj at geo-solutions.it)
- */
+/** @author ETj (etj at geo-solutions.it) */
 public class CacheReaderTest extends GeofenceBaseTest {
 
     static final Logger LOGGER = Logging.getLogger(CacheReaderTest.class);
@@ -35,8 +30,9 @@ public class CacheReaderTest extends GeofenceBaseTest {
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
-        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext
-                .getBean("geofence-configurer");
+        configurer =
+                (GeoFencePropertyPlaceholderConfigurer)
+                        applicationContext.getBean("geofence-configurer");
         configurer.setLocation(
                 new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
 
@@ -214,7 +210,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
-        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // dunno if load is made asynch or not
+        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // dunno if load is made
+        // asynch or not
 
         // reloading should have been triggered
         ticker.setMillisec(700);
@@ -224,9 +221,12 @@ public class CacheReaderTest extends GeofenceBaseTest {
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
-        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // uhm, this does not work
+        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // uhm, this does not
+        // work
         if (2 != cachedRuleReader.getStats().loadSuccessCount())
-            LOGGER.log(Level.SEVERE, "*** Bad successCount check, expected 2, found {0}",
+            LOGGER.log(
+                    Level.SEVERE,
+                    "*** Bad successCount check, expected 2, found {0}",
                     cachedRuleReader.getStats().loadSuccessCount());
 
         ticker.setMillisec(800);

@@ -14,5 +14,4 @@ public abstract class WPSPagesTestSupport extends GeoServerWicketTestSupport {
         // no data needed
         testData.setUpSecurity();
     }
-
 }

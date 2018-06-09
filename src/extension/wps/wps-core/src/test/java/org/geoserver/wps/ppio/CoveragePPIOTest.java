@@ -8,17 +8,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.ppio.CoveragePPIO.JPEGPPIO;
@@ -31,9 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Testing CoveragePPIOs is able to encode PNG and JPEG formats.
- */
+/** Testing CoveragePPIOs is able to encode PNG and JPEG formats. */
 public class CoveragePPIOTest {
 
     File geotiff = new File("./target/testInput.tiff");
@@ -66,8 +61,14 @@ public class CoveragePPIOTest {
 
     private GridCoverage2D getCoverage() throws IOException {
         coverage = reader.read(null);
-        return new GridCoverageFactory().create(coverage.getName(), coverage.getRenderedImage(),
-                coverage.getEnvelope(), coverage.getSampleDimensions(), null, null);
+        return new GridCoverageFactory()
+                .create(
+                        coverage.getName(),
+                        coverage.getRenderedImage(),
+                        coverage.getEnvelope(),
+                        coverage.getSampleDimensions(),
+                        null,
+                        null);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class CoveragePPIOTest {
     public void testEncodeQuality() throws Exception {
         GridCoverage2D coverage = getCoverage();
         JPEGPPIO ppio = new JPEGPPIO();
-        Map <String, Object> encodingParams = new HashMap<String, Object>();
+        Map<String, Object> encodingParams = new HashMap<String, Object>();
 
         File highQualityFile = new File("./target/outputHiQ.jpg");
         encodingParams.put(CoveragePPIO.QUALITY_KEY, "0.99");
@@ -106,8 +107,9 @@ public class CoveragePPIOTest {
         assertTrue(highQualityFileSize > lowQualityFileSize);
     }
 
-    private void testIsFormat(GridCoverage2D coverage, CoveragePPIO ppio, 
-            File encodedFile, String formatName) throws Exception {
+    private void testIsFormat(
+            GridCoverage2D coverage, CoveragePPIO ppio, File encodedFile, String formatName)
+            throws Exception {
         try (FileOutputStream fos = new FileOutputStream(encodedFile)) {
             ppio.encode(coverage, fos);
         }

@@ -10,13 +10,13 @@ import org.geoserver.security.jdbc.config.JDBCConnectAuthProviderConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
 
 /**
- * 
  * Configuration panel extension for {@link JDBCConnectAuthProvider}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class JDBCAuthProviderPanelInfo 
-    extends AuthenticationProviderPanelInfo<JDBCConnectAuthProviderConfig, JDBCAuthProviderPanel>{
+public class JDBCAuthProviderPanelInfo
+        extends AuthenticationProviderPanelInfo<
+                JDBCConnectAuthProviderConfig, JDBCAuthProviderPanel> {
 
     public JDBCAuthProviderPanelInfo() {
         setComponentClass(JDBCAuthProviderPanel.class);

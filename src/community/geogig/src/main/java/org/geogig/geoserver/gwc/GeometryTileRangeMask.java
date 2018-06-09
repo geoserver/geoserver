@@ -4,13 +4,12 @@
  */
 package org.geogig.geoserver.gwc;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.storage.TileRangeMask;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 class GeometryTileRangeMask implements TileRangeMask {
 
@@ -20,7 +19,8 @@ class GeometryTileRangeMask implements TileRangeMask {
 
     private long[][] byLevelTileCoverage;
 
-    GeometryTileRangeMask(Geometry geometryMask, GridSubset gridSubset, long[][] byLevelTileCoverage) {
+    GeometryTileRangeMask(
+            Geometry geometryMask, GridSubset gridSubset, long[][] byLevelTileCoverage) {
         this.geometryMask = geometryMask;
         this.gridSubset = gridSubset;
         this.byLevelTileCoverage = byLevelTileCoverage;
@@ -43,7 +43,7 @@ class GeometryTileRangeMask implements TileRangeMask {
             return false;
         }
 
-        long[] tileIndex = new long[] { tileX, tileY, level };
+        long[] tileIndex = new long[] {tileX, tileY, level};
         Envelope tileBounds = toEnvelope(gridSubset.boundsFromIndex(tileIndex));
         /*
          * Instead of "resampling"/buffering the geometry which can be time/heap consuming, increase
@@ -58,8 +58,8 @@ class GeometryTileRangeMask implements TileRangeMask {
         return intersects;
     }
 
-    public static TileRangeMask build(GeoServerTileLayer tileLayer, GridSubset gridSubset,
-            Geometry geomInGridsetCrs) {
+    public static TileRangeMask build(
+            GeoServerTileLayer tileLayer, GridSubset gridSubset, Geometry geomInGridsetCrs) {
 
         BoundingBox maskBounds = toBoundingBox(geomInGridsetCrs.getEnvelopeInternal());
         long[][] byLevelTileCoverage = gridSubset.getCoverageIntersections(maskBounds);

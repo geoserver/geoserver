@@ -9,21 +9,18 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
-/**
- * Detachable model for a specific namespace 
- */
+/** Detachable model for a specific namespace */
 @SuppressWarnings("serial")
 public class NamespaceDetachableModel extends LoadableDetachableModel<NamespaceInfo> {
 
     String id;
-    
-    public NamespaceDetachableModel( NamespaceInfo ns ) {
+
+    public NamespaceDetachableModel(NamespaceInfo ns) {
         this.id = ns.getId();
     }
-    
+
     @Override
     protected NamespaceInfo load() {
-        return GeoServerApplication.get().getCatalog().getNamespace( id );
+        return GeoServerApplication.get().getCatalog().getNamespace(id);
     }
-
 }

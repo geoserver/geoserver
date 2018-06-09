@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 
 /**
  * Test two WFS feature types (XSD elements) with the same XSD type.
- * 
+ *
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
 public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
@@ -21,9 +21,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
         return new DuplicateTypeMockData();
     }
 
-    /**
-     * Test GetFeature for gsml:DuplicateMappedFeature.
-     */
+    /** Test GetFeature for gsml:DuplicateMappedFeature. */
     @Test
     public void testGetDuplicateMappedFeature() throws Exception {
         String request = "GetFeature&version=1.1.0&typename=gsml:DuplicateMappedFeature";
@@ -43,9 +41,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Test GetFeature for gsml:MappedFeature.
-     */
+    /** Test GetFeature for gsml:MappedFeature. */
     @Test
     public void testGetMappedFeature() throws Exception {
         String request = "GetFeature&version=1.1.0&typename=gsml:MappedFeature";
@@ -55,7 +51,8 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(4, "//gsml:MappedFeature", doc);
         // test that targetAttributeNode works when mapping gsml:positionalAccuracy to
         // gsml:CGI_NumericValue
-        assertXpathEvaluatesTo("",
+        assertXpathEvaluatesTo(
+                "",
                 "(//gsml:MappedFeature)[1]/gsml:positionalAccuracy/gsml:CGI_TermValue/gsml:value",
                 doc);
         assertXpathEvaluatesTo(
@@ -63,5 +60,4 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
                 "(//gsml:MappedFeature)[1]/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue",
                 doc);
     }
-
 }

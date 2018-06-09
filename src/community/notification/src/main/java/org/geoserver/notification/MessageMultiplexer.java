@@ -11,7 +11,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.notification.common.Notification;
 import org.geoserver.notification.common.NotificationConfiguration;
 import org.geoserver.notification.common.Notificator;
@@ -31,12 +30,16 @@ public class MessageMultiplexer implements Runnable {
 
     public MessageMultiplexer(NotificationConfiguration notifierConfig) {
         mainQueue = new ArrayBlockingQueue<Notification>(notifierConfig.getQueueSize().intValue());
-        messageProcessors = new ArrayList<MessageProcessor>(notifierConfig.getNotificators().size());
+        messageProcessors =
+                new ArrayList<MessageProcessor>(notifierConfig.getNotificators().size());
         // Create destination queue, and thread pools one for each processor
         for (Notificator notificator : notifierConfig.getNotificators()) {
-            messageProcessors.add(new MessageProcessor(notificator.getQueueSize().intValue(),
-                    notificator.getProcessorThreads().intValue(), notificator.getMessageFilter(),
-                    notificator.getGenericProcessor()));
+            messageProcessors.add(
+                    new MessageProcessor(
+                            notificator.getQueueSize().intValue(),
+                            notificator.getProcessorThreads().intValue(),
+                            notificator.getMessageFilter(),
+                            notificator.getGenericProcessor()));
         }
     }
 
@@ -58,5 +61,4 @@ public class MessageMultiplexer implements Runnable {
             }
         }
     }
-
 }

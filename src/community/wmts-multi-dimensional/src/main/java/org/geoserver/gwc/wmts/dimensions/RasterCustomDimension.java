@@ -9,12 +9,11 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.wmts.dimensions.CoverageDimensionsReader.DataType;
 import org.geoserver.wms.WMS;
 
-/**
- * Represents a custom dimension of a raster.
- */
+/** Represents a custom dimension of a raster. */
 public class RasterCustomDimension extends RasterDimension {
 
-    public RasterCustomDimension(WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
+    public RasterCustomDimension(
+            WMS wms, LayerInfo layerInfo, String name, DimensionInfo dimensionInfo) {
         super(wms, name, layerInfo, dimensionInfo, DataType.CUSTOM);
     }
 
@@ -25,7 +24,7 @@ public class RasterCustomDimension extends RasterDimension {
 
     @Override
     public String getDefaultValueAsString() {
-        return getWms().getDefaultCustomDimensionValue(getDimensionName(), getResourceInfo(), String.class);
+        return getWms().getDefaultCustomDimensionValue(
+                        getDimensionName(), getResourceInfo(), String.class);
     }
-
 }

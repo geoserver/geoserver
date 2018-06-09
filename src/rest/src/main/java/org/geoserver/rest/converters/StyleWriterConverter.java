@@ -7,7 +7,6 @@ package org.geoserver.rest.converters;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -23,9 +22,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-/**
- * Write {@link Style} (or {@link StyleInfo}) using provided mimeType and handler.
- */
+/** Write {@link Style} (or {@link StyleInfo}) using provided mimeType and handler. */
 public class StyleWriterConverter extends BaseMessageConverter<Object> {
 
     private final Version version;
@@ -40,7 +37,9 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return RestWrapper.class.isAssignableFrom(clazz) || Style.class.isAssignableFrom(clazz) || StyleInfo.class.isAssignableFrom(clazz);
+        return RestWrapper.class.isAssignableFrom(clazz)
+                || Style.class.isAssignableFrom(clazz)
+                || StyleInfo.class.isAssignableFrom(clazz);
     }
 
     //
@@ -73,8 +72,8 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
             }
         }
 
-        Style style = object instanceof StyleInfo ? ((StyleInfo) object).getStyle()
-                : (Style) object;
+        Style style =
+                object instanceof StyleInfo ? ((StyleInfo) object).getStyle() : (Style) object;
         StyledLayerDescriptor sld = Styles.sld(style);
         // TODO: support pretty print somehow - probably a hint
         handler.encode(sld, version, false, outputMessage.getBody());
@@ -92,6 +91,4 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
     public String toString() {
         return "StyleWriterConverter [version=" + version + ", handler=" + handler + "]";
     }
-    
-    
 }

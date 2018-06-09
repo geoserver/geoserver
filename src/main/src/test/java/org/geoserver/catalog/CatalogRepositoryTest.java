@@ -5,24 +5,22 @@
 package org.geoserver.catalog;
 
 import static junit.framework.TestCase.assertNotNull;
-
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
 import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.data.DataStore;
-import org.geotools.feature.NameImpl;
-import org.geotools.util.URLs;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.data.test.MockData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.data.DataStore;
+import org.geotools.feature.NameImpl;
+import org.geotools.util.URLs;
+import org.junit.Test;
 
 public class CatalogRepositoryTest extends GeoServerSystemTestSupport {
 
@@ -50,7 +48,7 @@ public class CatalogRepositoryTest extends GeoServerSystemTestSupport {
         DataStore store = repository.dataStore(new NameImpl("foo", "bar"));
         assertNull(store);
     }
-    
+
     @Test
     public void testLookupFreshlyAdded() {
         Catalog catalog = getCatalog();

@@ -9,13 +9,12 @@ package org.geoserver.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
  * WFS GetFeature to test duplicate properties with GeoServer.
- * 
+ *
  * @author Florence Tan, CSIRO Earth Science and Resource Engineering
  */
 public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
@@ -25,9 +24,7 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
         return new DuplicatePropertiesMockData();
     }
 
-    /**
-     * Test whether GetCapabilities returns wfs:WFS_Capabilities.
-     */
+    /** Test whether GetCapabilities returns wfs:WFS_Capabilities. */
     @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
@@ -41,9 +38,7 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
         assertTrue(featureTypeNames.contains("ex:ERM"));
     }
 
-    /**
-     * Test whether GetFeature returns wfs:FeatureCollection.
-     */
+    /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=ex:ERM");
@@ -52,5 +47,4 @@ public class DuplicatePropertiesWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(2, "//ex:purpose", doc);
         assertXpathEvaluatesTo("instance", "//ex:material/ex:RockMaterial/ex:purpose", doc);
     }
-
 }

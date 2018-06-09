@@ -8,16 +8,13 @@ package org.geoserver.wfs;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.wfs20.FeatureCollectionType;
 import net.opengis.wfs20.GetFeatureType;
 import net.opengis.wfs20.GetPropertyValueType;
 import net.opengis.wfs20.QueryType;
 import net.opengis.wfs20.ValueCollectionType;
 import net.opengis.wfs20.Wfs20Factory;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -30,7 +27,7 @@ import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class GetPropertyValue {
-    
+
     Pattern FEATURE_ID_PATTERN = Pattern.compile("@(\\w+:)?id");
 
     GetFeature delegate;
@@ -47,9 +44,7 @@ public class GetPropertyValue {
         this.filterFactory = filterFactory;
     }
 
-    /**
-     * @return NamespaceSupport from Catalog
-     */
+    /** @return NamespaceSupport from Catalog */
     public NamespaceSupport getNamespaceSupport() {
         NamespaceSupport ns = new NamespaceSupport();
         Iterator<NamespaceInfo> it = catalog.getNamespaces().iterator();
@@ -65,8 +60,11 @@ public class GetPropertyValue {
         if (request.getValueReference() == null) {
             throw new WFSException(request, "No valueReference specified", "MissingParameterValue")
                     .locator("valueReference");
-        } else if("".equals(request.getValueReference().trim())) {
-            throw new WFSException(request, "ValueReference cannot be empty", ServiceException.INVALID_PARAMETER_VALUE)
+        } else if ("".equals(request.getValueReference().trim())) {
+            throw new WFSException(
+                            request,
+                            "ValueReference cannot be empty",
+                            ServiceException.INVALID_PARAMETER_VALUE)
                     .locator("valueReference");
         }
 
@@ -79,25 +77,31 @@ public class GetPropertyValue {
         getFeature.setResolveTimeout(request.getResolveTimeout());
         getFeature.setCount(request.getCount());
 
-        FeatureCollectionType fc = (FeatureCollectionType) delegate.run(
-                GetFeatureRequest.adapt(getFeature)).getAdaptee();
+        FeatureCollectionType fc =
+                (FeatureCollectionType)
+                        delegate.run(GetFeatureRequest.adapt(getFeature)).getAdaptee();
 
         QueryType query = (QueryType) request.getAbstractQueryExpression();
         QName typeName = (QName) query.getTypeNames().iterator().next();
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
-                typeName.getLocalPart());
+        FeatureTypeInfo featureType =
+                catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
         try {
 
-            PropertyName propertyName = filterFactory.property(request.getValueReference(),
-                    getNamespaceSupport());
-            PropertyName propertyNameNoIndexes = filterFactory.property(request.getValueReference()
-                    .replaceAll("\\[.*\\]", ""), getNamespaceSupport());
-            AttributeDescriptor descriptor = (AttributeDescriptor) propertyNameNoIndexes
-                    .evaluate(featureType.getFeatureType());
-            boolean featureIdRequest = FEATURE_ID_PATTERN.matcher(request.getValueReference()).matches();
+            PropertyName propertyName =
+                    filterFactory.property(request.getValueReference(), getNamespaceSupport());
+            PropertyName propertyNameNoIndexes =
+                    filterFactory.property(
+                            request.getValueReference().replaceAll("\\[.*\\]", ""),
+                            getNamespaceSupport());
+            AttributeDescriptor descriptor =
+                    (AttributeDescriptor)
+                            propertyNameNoIndexes.evaluate(featureType.getFeatureType());
+            boolean featureIdRequest =
+                    FEATURE_ID_PATTERN.matcher(request.getValueReference()).matches();
             if (descriptor == null && !featureIdRequest) {
-                throw new WFSException(request, "No such attribute: " + request.getValueReference());
+                throw new WFSException(
+                        request, "No such attribute: " + request.getValueReference());
             }
 
             // create value collection type from feature collection
@@ -105,7 +109,10 @@ public class GetPropertyValue {
             vc.setTimeStamp(fc.getTimeStamp());
             vc.setNumberMatched(fc.getNumberMatched());
             vc.setNumberReturned(fc.getNumberReturned());
-            vc.getMember().add(new PropertyValueCollection(fc.getMember().iterator().next(), descriptor, propertyName));
+            vc.getMember()
+                    .add(
+                            new PropertyValueCollection(
+                                    fc.getMember().iterator().next(), descriptor, propertyName));
             return vc;
         } catch (IOException e) {
             throw new WFSException(request, e);
@@ -114,6 +121,5 @@ public class GetPropertyValue {
 
     public void setFilterFactory(FilterFactory2 filterFactory) {
         this.filterFactory = filterFactory;
-
     }
 }

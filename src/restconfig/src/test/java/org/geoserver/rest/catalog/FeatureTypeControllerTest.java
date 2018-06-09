@@ -5,11 +5,12 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,10 +18,8 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -34,10 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.w3c.dom.Document;
 
 public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
@@ -57,7 +54,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllByWorkspace() throws Exception {
         Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes.xml");
-        assertEquals(catalog.getFeatureTypesByNamespace(catalog.getNamespaceByPrefix("sf")).size(),
+        assertEquals(
+                catalog.getFeatureTypesByNamespace(catalog.getNamespaceByPrefix("sf")).size(),
                 dom.getElementsByTagName("featureType").getLength());
     }
 
@@ -87,7 +85,9 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=" + (configureFeatureType ? "all" : "none");
-        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(),
+        put(
+                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
+                zbytes.toByteArray(),
                 "application/zip");
     }
 
@@ -117,12 +117,15 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=" + (configureFeatureType ? "all" : "none");
-        put(BASEPATH + "/workspaces/gs/datastores/ngpds/file.properties?" + q, zbytes.toByteArray(),
+        put(
+                BASEPATH + "/workspaces/gs/datastores/ngpds/file.properties?" + q,
+                zbytes.toByteArray(),
                 "application/zip");
     }
-    
+
     /**
      * Add a property data store with multiple feature types, but only configure the first.
+     *
      * @param configureFeatureType
      * @throws Exception
      */
@@ -152,7 +155,9 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=first";
-        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(),
+        put(
+                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
+                zbytes.toByteArray(),
                 "application/zip");
     }
 
@@ -173,8 +178,9 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     public void testGetAllAvailable() throws Exception {
         addPropertyDataStore(false);
 
-        Document dom = getAsDOM(
-                BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml?list=available");
+        Document dom =
+                getAsDOM(
+                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml?list=available");
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsa'])", dom);
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsb'])", dom);
     }
@@ -183,25 +189,29 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     public void testGetAllAvailableWithGeometryOnly() throws Exception {
         addGeomlessPropertyDataStore(false);
 
-        Document dom = getAsDOM(
-                BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available");
         assertXpathEvaluatesTo("2", "count(//featureTypeName)", dom);
 
-        dom = getAsDOM(BASEPATH
-                + "/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available_with_geom");
+        dom =
+                getAsDOM(
+                        BASEPATH
+                                + "/workspaces/gs/datastores/ngpds/featuretypes.xml?list=available_with_geom");
         assertXpathEvaluatesTo("0", "count(//featureTypeName)", dom);
     }
-    
 
     /**
-     * Test that a list of all feature types for a data source are returned when "list=all", including both
-     * configured and unconfigured ones. 
+     * Test that a list of all feature types for a data source are returned when "list=all",
+     * including both configured and unconfigured ones.
      */
     @Test
     public void testGetAllByDataStoreWithListAll() throws Exception {
         // Create a data store with only the first feature type configured.
         addPropertyDataStoreOnlyConfigureFirst();
-        Document dom = getAsDOM(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml?list=all");
+        Document dom =
+                getAsDOM(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml?list=all");
         assertEquals(2, dom.getElementsByTagName("featureTypeName").getLength());
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsa'])", dom);
         assertXpathEvaluatesTo("1", "count(//featureTypeName[text()='pdsb'])", dom);
@@ -209,14 +219,16 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals(405,
+        assertEquals(
+                405,
                 putAsServletResponse(BASEPATH + "/workspaces/sf/datastores/sf/featuretypes")
                         .getStatus());
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals(405,
+        assertEquals(
+                405,
                 deleteAsServletResponse(BASEPATH + "/workspaces/sf/datastores/sf/featuretypes")
                         .getStatus());
     }
@@ -226,8 +238,11 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         addPropertyDataStore(true);
         String xml = "<featureType>" + "<name>pdsa</name>" + "</featureType>";
 
-        MockHttpServletResponse response = postAsServletResponse(
-                BASEPATH + "/workspaces/gs/datastores/pds/featuretypes/pdsa", xml, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes/pdsa",
+                        xml,
+                        "text/xml");
         assertEquals(405, response.getStatus());
     }
 
@@ -267,8 +282,10 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom = getAsDOM(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
     }
 
     @Test
@@ -288,8 +305,15 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         String ft = "PrimitiveGeoFeaturessss";
         // Request path
         String requestPath = BASEPATH + "/workspaces/" + ws + "/featuretypes/" + ft + ".html";
-        String requestPath2 = BASEPATH + "/workspaces/" + ws + "/datastores/" + ds
-                + "/featuretypes/" + ft + ".html";
+        String requestPath2 =
+                BASEPATH
+                        + "/workspaces/"
+                        + ws
+                        + "/datastores/"
+                        + ds
+                        + "/featuretypes/"
+                        + ft
+                        + ".html";
         // Exception path
         String exception = "No such feature type: " + ws + "," + ft;
         String exception2 = "No such feature type: " + ws + "," + ds + "," + ft;
@@ -324,13 +348,17 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPut() throws Exception {
         String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml,
-                "text/xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",
+                        xml,
+                        "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom = getAsDOM(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
         assertXpathEvaluatesTo("new title", "/featureType/title", dom);
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
@@ -340,13 +368,14 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutWithoutStore() throws Exception {
         String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature", xml,
-                "text/xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature",
+                        xml,
+                        "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom = getAsDOM(
-                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+        Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
         assertXpathEvaluatesTo("new title", "/featureType/title", dom);
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
@@ -365,9 +394,11 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         boolean isCircularArcPresent = ft.isCircularArcPresent();
 
         String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml,
-                "text/xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",
+                        xml,
+                        "text/xml");
         assertEquals(200, response.getStatus());
 
         ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
@@ -382,8 +413,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     /**
      * Check feature type modification involving calculation of bounds.
-     * 
-     * Update: Ensure feature type modification does not reset ResourcePool DataStoreCache
+     *
+     * <p>Update: Ensure feature type modification does not reset ResourcePool DataStoreCache
      */
     @SuppressWarnings("rawtypes")
     @Test
@@ -391,18 +422,29 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         DataStoreInfo dataStoreInfo = getCatalog().getDataStoreByName("sf", "sf");
         String dataStoreId = dataStoreInfo.getId();
         DataAccess dataAccessBefore = dataStoreInfo.getDataStore(null);
-        assertSame("ResourcePool DataStoreCache", dataAccessBefore,
+        assertSame(
+                "ResourcePool DataStoreCache",
+                dataAccessBefore,
                 getCatalog().getResourcePool().getDataStoreCache().get(dataStoreId));
 
-        String clearLatLonBoundingBox = "<featureType>" + "<nativeBoundingBox>"
-                + "<minx>-180.0</minx>" + "<maxx>180.0</maxx>" + "<miny>-90.0</miny>"
-                + "<maxy>90.0</maxy>" + "<crs>EPSG:4326</crs>" + "</nativeBoundingBox>"
-                + "<latLonBoundingBox/>" + "</featureType>";
+        String clearLatLonBoundingBox =
+                "<featureType>"
+                        + "<nativeBoundingBox>"
+                        + "<minx>-180.0</minx>"
+                        + "<maxx>180.0</maxx>"
+                        + "<miny>-90.0</miny>"
+                        + "<maxy>90.0</maxy>"
+                        + "<crs>EPSG:4326</crs>"
+                        + "</nativeBoundingBox>"
+                        + "<latLonBoundingBox/>"
+                        + "</featureType>";
 
         String path = BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature";
-        MockHttpServletResponse response = putAsServletResponse(path, clearLatLonBoundingBox,
-                "text/xml");
-        assertEquals("Couldn't remove lat/lon bounding box:\n" + response.getContentAsString(), 200,
+        MockHttpServletResponse response =
+                putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
+        assertEquals(
+                "Couldn't remove lat/lon bounding box:\n" + response.getContentAsString(),
+                200,
                 response.getStatus());
 
         Document dom = getAsDOM(path + ".xml");
@@ -411,16 +453,27 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         // confirm ResourcePoool cache of DataStore is unchanged
         DataAccess dataAccessAfter = getCatalog().getDataStoreByName("sf", "sf").getDataStore(null);
         assertSame("ResourcePool DataStoreCache check 1", dataAccessBefore, dataAccessAfter);
-        assertSame("ResourcePool DataStoreCache", dataAccessBefore,
+        assertSame(
+                "ResourcePool DataStoreCache",
+                dataAccessBefore,
                 getCatalog().getResourcePool().getDataStoreCache().get(dataStoreId));
 
-        String updateNativeBounds = "<featureType>" + "<srs>EPSG:3785</srs>" + "<nativeBoundingBox>"
-                + "<minx>-20037508.34</minx>" + "<maxx>20037508.34</maxx>"
-                + "<miny>-20037508.34</miny>" + "<maxy>20037508.34</maxy>" + "<crs>EPSG:3785</crs>"
-                + "</nativeBoundingBox>" + "</featureType>";
+        String updateNativeBounds =
+                "<featureType>"
+                        + "<srs>EPSG:3785</srs>"
+                        + "<nativeBoundingBox>"
+                        + "<minx>-20037508.34</minx>"
+                        + "<maxx>20037508.34</maxx>"
+                        + "<miny>-20037508.34</miny>"
+                        + "<maxy>20037508.34</maxy>"
+                        + "<crs>EPSG:3785</crs>"
+                        + "</nativeBoundingBox>"
+                        + "</featureType>";
 
         response = putAsServletResponse(path + ".xml", updateNativeBounds, "text/xml");
-        assertEquals("Couldn't update native bounding box: \n" + response.getContentAsString(), 200,
+        assertEquals(
+                "Couldn't update native bounding box: \n" + response.getContentAsString(),
+                200,
                 response.getStatus());
         dom = getAsDOM(path + ".xml");
         print(dom);
@@ -428,16 +481,20 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         dataAccessAfter = getCatalog().getDataStoreByName("sf", "sf").getDataStore(null);
         assertSame("ResourcePool DataStoreCache check 2", dataAccessBefore, dataAccessAfter);
-        assertSame("ResourcePool DataStoreCache", dataAccessBefore,
+        assertSame(
+                "ResourcePool DataStoreCache",
+                dataAccessBefore,
                 getCatalog().getResourcePool().getDataStoreCache().get(dataStoreId));
     }
 
     @Test
     public void testPutNonExistant() throws Exception {
         String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/NonExistant", xml,
-                "text/xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/NonExistant",
+                        xml,
+                        "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -452,15 +509,17 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         for (LayerInfo l : catalog.getLayers(featureType)) {
             catalog.remove(l);
         }
-        assertEquals(200,
+        assertEquals(
+                200,
                 deleteAsServletResponse(
-                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature")
-                                .getStatus());
+                                BASEPATH
+                                        + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature")
+                        .getStatus());
         assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
 
         if (catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey(featureTypeId)) {
-            List<AttributeTypeInfo> attributesList = catalog.getResourcePool()
-                    .getFeatureTypeAttributeCache().get(featureTypeId);
+            List<AttributeTypeInfo> attributesList =
+                    catalog.getResourcePool().getFeatureTypeAttributeCache().get(featureTypeId);
             assertNull("attributes cleared", attributesList);
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
@@ -481,15 +540,16 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         for (LayerInfo l : catalog.getLayers(featureType)) {
             catalog.remove(l);
         }
-        assertEquals(200,
+        assertEquals(
+                200,
                 deleteAsServletResponse(
-                        BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature")
+                                BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature")
                         .getStatus());
         assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
 
         if (catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey(featureTypeId)) {
-            List<AttributeTypeInfo> attributesList = catalog.getResourcePool()
-                    .getFeatureTypeAttributeCache().get(featureTypeId);
+            List<AttributeTypeInfo> attributesList =
+                    catalog.getResourcePool().getFeatureTypeAttributeCache().get(featureTypeId);
             assertNull("attributes cleared", attributesList);
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
@@ -501,10 +561,11 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals(404,
+        assertEquals(
+                404,
                 deleteAsServletResponse(
-                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/NonExistant")
-                                .getStatus());
+                                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/NonExistant")
+                        .getStatus());
     }
 
     @Test
@@ -512,14 +573,18 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         assertNotNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
 
-        assertEquals(403,
+        assertEquals(
+                403,
                 deleteAsServletResponse(
-                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature")
-                                .getStatus());
-        assertEquals(200,
+                                BASEPATH
+                                        + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature")
+                        .getStatus());
+        assertEquals(
+                200,
                 deleteAsServletResponse(
-                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature?recurse=true")
-                                .getStatus());
+                                BASEPATH
+                                        + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature?recurse=true")
+                        .getStatus());
 
         assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         assertNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
@@ -531,54 +596,75 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         String xml = "<featureType>" + "<name>ngpdsa</name>" + "</featureType>";
 
-        MockHttpServletResponse response = postAsServletResponse(
-                BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes", xml, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes", xml, "text/xml");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(response.getHeader("Location")
-                .endsWith("/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa"));
+        assertTrue(
+                response.getHeader("Location")
+                        .endsWith("/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa"));
     }
-    
+
     @Test
     public void testDeleteWsNotSameAsStoreName() throws Exception {
         // create a feature type whose store name is not same as workspace name
         testPostGeometrylessFeatureType();
-        
-        assertEquals(200,
-                deleteAsServletResponse(
-                        BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa?recurse=true")
-                                .getStatus());
-        assertNull(catalog.getFeatureTypeByName("gs", "ngpdsa"));
 
+        assertEquals(
+                200,
+                deleteAsServletResponse(
+                                BASEPATH
+                                        + "/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa?recurse=true")
+                        .getStatus());
+        assertNull(catalog.getFeatureTypeByName("gs", "ngpdsa"));
     }
 
     @Test
     public void testCreateFeatureType() throws Exception {
-        String xml = "<featureType>\n" + "  <name>states</name>\n"
-                + "  <nativeName>states</nativeName>\n" + "  <namespace>\n"
-                + "    <name>cite</name>\n" + "  </namespace>\n"
-                + "  <title>USA Population</title>\n" + "  <srs>EPSG:4326</srs>\n"
-                + "  <attributes>\n" + "    <attribute>\n" + "      <name>the_geom</name>\n"
-                + "      <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>\n"
-                + "    </attribute>\n" + "    <attribute>\n" + "      <name>STATE_NAME</name>\n"
-                + "      <binding>java.lang.String</binding>\n" + "      <length>25</length>\n"
-                + "    </attribute>\n" + "    <attribute>\n" + "      <name>LAND_KM</name>\n"
-                + "      <binding>java.lang.Double</binding>\n" + "    </attribute>\n"
-                + "  </attributes>\n" + "</featureType>";
+        String xml =
+                "<featureType>\n"
+                        + "  <name>states</name>\n"
+                        + "  <nativeName>states</nativeName>\n"
+                        + "  <namespace>\n"
+                        + "    <name>cite</name>\n"
+                        + "  </namespace>\n"
+                        + "  <title>USA Population</title>\n"
+                        + "  <srs>EPSG:4326</srs>\n"
+                        + "  <attributes>\n"
+                        + "    <attribute>\n"
+                        + "      <name>the_geom</name>\n"
+                        + "      <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>\n"
+                        + "    </attribute>\n"
+                        + "    <attribute>\n"
+                        + "      <name>STATE_NAME</name>\n"
+                        + "      <binding>java.lang.String</binding>\n"
+                        + "      <length>25</length>\n"
+                        + "    </attribute>\n"
+                        + "    <attribute>\n"
+                        + "      <name>LAND_KM</name>\n"
+                        + "      <binding>java.lang.Double</binding>\n"
+                        + "    </attribute>\n"
+                        + "  </attributes>\n"
+                        + "</featureType>";
 
-        MockHttpServletResponse response = postAsServletResponse(
-                BASEPATH + "/workspaces/cite/datastores/default/featuretypes", xml, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        BASEPATH + "/workspaces/cite/datastores/default/featuretypes",
+                        xml,
+                        "text/xml");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(response.getHeader("Location")
-                .endsWith("/workspaces/cite/datastores/default/featuretypes/states"));
+        assertTrue(
+                response.getHeader("Location")
+                        .endsWith("/workspaces/cite/datastores/default/featuretypes/states"));
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("cite", "states");
         assertNotNull(ft);
         FeatureType schema = ft.getFeatureType();
         assertEquals("states", schema.getName().getLocalPart());
-        assertEquals(catalog.getNamespaceByPrefix("cite").getURI(),
-                schema.getName().getNamespaceURI());
+        assertEquals(
+                catalog.getNamespaceByPrefix("cite").getURI(), schema.getName().getNamespaceURI());
         assertEquals(3, schema.getDescriptors().size());
         assertNotNull(schema.getDescriptor("the_geom"));
         assertEquals(MultiPolygon.class, schema.getDescriptor("the_geom").getType().getBinding());
@@ -592,11 +678,15 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         FeatureTypeInfo before = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
 
         // Do a round-trip GET and PUT of the resource
-        String xml = getAsString(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml,
-                "text/xml");
+        String xml =
+                getAsString(
+                        BASEPATH
+                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",
+                        xml,
+                        "text/xml");
         assertEquals(200, response.getStatus());
 
         // Fetch the feature from the catalog again, and ensure nothing changed.
@@ -610,12 +700,16 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         FeatureTypeInfo before = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
 
         // Do a round-trip GET and PUT of the resource
-        String json = getAsString(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json");
+        String json =
+                getAsString(
+                        BASEPATH
+                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json");
         System.out.println(json);
-        MockHttpServletResponse response = putAsServletResponse(
-                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", json,
-                "text/json");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",
+                        json,
+                        "text/json");
         assertEquals(200, response.getStatus());
 
         // Fetch the feature from the catalog again, and ensure nothing changed.
@@ -624,6 +718,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     }
 
     public static void assertContains(String message, String contains) {
-        assertTrue("Expected \"" + message + "\" to contain \"" + contains + "\"", message.contains(contains));
+        assertTrue(
+                "Expected \"" + message + "\" to contain \"" + contains + "\"",
+                message.contains(contains));
     }
 }

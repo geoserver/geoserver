@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.notification.common.NotificationConfiguration;
@@ -26,9 +25,10 @@ public class SystemTest extends GeoServerSystemTestSupport {
         super.setUpTestData(testData);
         new File(testData.getDataDirectoryRoot(), "notifier").mkdir();
         testData.copyTo(
-                getClass().getClassLoader().getResourceAsStream(
-                        NotifierInitializer.PROPERTYFILENAME), "notifier/"
-                        + NotifierInitializer.PROPERTYFILENAME);
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
+                "notifier/" + NotifierInitializer.PROPERTYFILENAME);
     }
 
     @Test
@@ -54,5 +54,4 @@ public class SystemTest extends GeoServerSystemTestSupport {
         }
         assertEquals(1, counter);
     }
-
 }

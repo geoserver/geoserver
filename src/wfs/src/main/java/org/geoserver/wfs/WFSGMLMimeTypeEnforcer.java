@@ -4,6 +4,9 @@
  */
 package org.geoserver.wfs;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
@@ -13,13 +16,9 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Logger;
-
 /**
- * Dispatcher callback that will enforce configured GML MIME type for WFS GML responses.
- * If no GML enforcing MIME type is configured nothing will be done.
+ * Dispatcher callback that will enforce configured GML MIME type for WFS GML responses. If no GML
+ * enforcing MIME type is configured nothing will be done.
  */
 public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
 
@@ -32,10 +31,12 @@ public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         Service service = operation.getService();
-        if (service == null || service.getId() == null ||
-                !service.getId().equalsIgnoreCase("wfs")) {
+        if (service == null
+                || service.getId() == null
+                || !service.getId().equalsIgnoreCase("wfs")) {
             // not a WFS service so we are not interested in it
             return response;
         }
@@ -45,22 +46,22 @@ public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
             return response;
         }
         WFSInfo wfs = geoserver.getService(WFSInfo.class);
-        GMLInfo gmlInfo = wfs.getGML().get(WFSInfo.Version.negotiate(service.getVersion().toString()));
+        GMLInfo gmlInfo =
+                wfs.getGML().get(WFSInfo.Version.negotiate(service.getVersion().toString()));
         if (gmlInfo == null || !gmlInfo.getMimeTypeToForce().isPresent()) {
             // we don't need to force any specific MIME type
             return response;
         }
         // enforce the configured MIME type
         String mimeType = gmlInfo.getMimeTypeToForce().get();
-        LOGGER.info(String.format(
-                "Overriding MIME type '%s' with '%s' for WFS operation '%s'.",
-                responseMimeType, mimeType, operation.getId()));
+        LOGGER.info(
+                String.format(
+                        "Overriding MIME type '%s' with '%s' for WFS operation '%s'.",
+                        responseMimeType, mimeType, operation.getId()));
         return new ResponseWrapper(response, mimeType);
     }
 
-    /**
-     * Helper method that checks if a MIME type is GML based.
-     */
+    /** Helper method that checks if a MIME type is GML based. */
     private boolean isGmlBased(String candidateMimeType) {
         if (candidateMimeType == null) {
             // unlikely situation but in this we don't consider this MIME type a GML one
@@ -71,9 +72,7 @@ public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
         return candidateMimeType.contains("gml");
     }
 
-    /**
-     * Helper wrapper for responses to use the configured MIME type.
-     */
+    /** Helper wrapper for responses to use the configured MIME type. */
     private static final class ResponseWrapper extends Response {
 
         private final Response response;
@@ -91,7 +90,8 @@ public final class WFSGMLMimeTypeEnforcer extends AbstractDispatcherCallback {
         }
 
         @Override
-        public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
+        public void write(Object value, OutputStream output, Operation operation)
+                throws IOException, ServiceException {
             response.write(value, output, operation);
         }
 

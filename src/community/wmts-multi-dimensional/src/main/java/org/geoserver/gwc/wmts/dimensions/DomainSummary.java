@@ -4,18 +4,11 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geotools.geometry.jts.ReferencedEnvelope;
-
-import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
-
-/**
- * Simple containers of statistics about a domain
- */
+/** Simple containers of statistics about a domain */
 class DomainSummary {
-    
+
     private Object min;
     private Object max;
     private TreeSet<Object> uniqueValues;
@@ -47,5 +40,4 @@ class DomainSummary {
     public TreeSet<Object> getUniqueValues() {
         return uniqueValues;
     }
-
 }

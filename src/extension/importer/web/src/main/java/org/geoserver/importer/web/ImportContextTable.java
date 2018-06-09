@@ -6,7 +6,6 @@
 package org.geoserver.importer.web;
 
 import java.util.Date;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -34,9 +33,10 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
         if (ImportContextProvider.ID == property) {
             PageParameters pp = new PageParameters();
             pp.add("id", property.getModel(itemModel).getObject());
-            return new SimpleBookmarkableLink(id, ImportPage.class, property.getModel(itemModel), pp);
-        }
-        else if (ImportContextProvider.CREATED == property || ImportContextProvider.UPDATED == property) {
+            return new SimpleBookmarkableLink(
+                    id, ImportPage.class, property.getModel(itemModel), pp);
+        } else if (ImportContextProvider.CREATED == property
+                || ImportContextProvider.UPDATED == property) {
             Date date = (Date) property.getModel(itemModel).getObject();
             String pretty = PRETTY_TIME.format(date);
             return new Label(id, pretty);
@@ -44,5 +44,4 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
 
         return new Label(id, property.getModel(itemModel));
     }
-
 }

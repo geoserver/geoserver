@@ -371,6 +371,16 @@ public class Directory extends FileData {
         LOGGER.warning(buf.toString());
     }
 
+    /**
+     * @throws IOException
+     */
+    protected void lockDirectory() throws IOException {
+        File locking = new File(this.getFile(), ".locking");
+        if (!locking.exists()) {
+            locking.createNewFile();
+        }
+    }
+
     public Directory filter(List<FileData> files) {
         Filtered f = new Filtered(file, files);
         f.setFormat(getFormat());
@@ -400,6 +410,9 @@ public class Directory extends FileData {
     }
 
     public void accept(String childName, InputStream in) throws IOException {
+        // lock folder before it gets removed from JobQueue cleaner
+        lockDirectory();
+
         File dest = child(childName);
         
         IOUtils.copy(in, dest);
@@ -414,6 +427,9 @@ public class Directory extends FileData {
     }
 
     public void accept(FileItem item) throws Exception {
+        // lock folder before it gets removed from JobQueue cleaner
+        lockDirectory();
+
         File dest = child(item.getName());
         item.write(dest);
 

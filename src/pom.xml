@@ -1672,6 +1672,25 @@
     </configuration>
    </plugin>
 
+   <plugin>
+     <groupId>com.coveo</groupId>
+     <artifactId>fmt-maven-plugin</artifactId>
+     <version>2.4.0</version>
+     <configuration>
+       <verbose>false</verbose>
+       <filesNamePattern>.*\.java</filesNamePattern>
+       <skip>false</skip>
+       <style>aosp</style>
+     </configuration>
+     <executions>
+       <execution>
+         <goals>
+           <goal>${fmt.action}</goal>
+         </goals>
+       </execution>
+     </executions>
+   </plugin>
+
   </plugins>
 
   <extensions>
@@ -1892,6 +1911,7 @@
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <fmt.action>format</fmt.action>
  </properties>
 
  <profiles>

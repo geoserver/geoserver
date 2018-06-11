@@ -73,7 +73,7 @@ public class WFS3Filter implements GeoServerFilter {
     }
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
-        String path = requestHTTP.getServletPath();
+        String path = requestHTTP.getRequestURI();
         return path.contains("wfs3");
     }
 
@@ -83,6 +83,7 @@ public class WFS3Filter implements GeoServerFilter {
     }
 
     private class RequestWrapper extends HttpServletRequestWrapper {
+        private String pathInfo;
         private String request;
         private String typeName;
         private String outputFormat;
@@ -91,7 +92,7 @@ public class WFS3Filter implements GeoServerFilter {
 
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
-            String pathInfo = wrapped.getPathInfo();
+            pathInfo = getPathInfo(wrapped);
             if (pathInfo.equals("/") || pathInfo.equals("")) {
                 request = "landingPage";
             } else if (pathInfo.equals("/api") || pathInfo.equals("/api/")) {
@@ -181,6 +182,8 @@ public class WFS3Filter implements GeoServerFilter {
                 } else {
                     this.outputFormat = f;
                 }
+            } else if ("getFeature".equals(request)) {
+                this.outputFormat = RFCGeoJSONFeaturesResponse.MIME;
             }
 
             // support for the limit parameter
@@ -188,6 +191,19 @@ public class WFS3Filter implements GeoServerFilter {
             if (limit != null) {
                 this.limit = limit;
             }
+        }
+
+        /**
+         * Extracts the path info in a way that accounts for virtual services, parameter extractor
+         * and whatnot
+         *
+         * @param wrapped
+         * @return
+         */
+        private String getPathInfo(HttpServletRequest wrapped) {
+            String fullPath = wrapped.getRequestURI();
+            int idx = fullPath.indexOf("wfs3");
+            return fullPath.substring(idx + 4);
         }
 
         private void setLayerName(String layerName) {
@@ -202,7 +218,8 @@ public class WFS3Filter implements GeoServerFilter {
 
         @Override
         public String getRequestURI() {
-            return super.getContextPath() + "/wfs3";
+            String requestURI = super.getRequestURI();
+            return requestURI.substring(0, requestURI.length() - pathInfo.length());
         }
 
         @Override

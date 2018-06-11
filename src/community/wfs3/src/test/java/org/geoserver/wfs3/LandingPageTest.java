@@ -70,6 +70,12 @@ public class LandingPageTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testLandingPageWorkspaceSpecific() throws Exception {
+        DocumentContext json = getAsJSONPath("cdf/wfs3/", 200);
+        checkJSONLandingPage(json);
+    }
+
+    @Test
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("wfs3/?f=text/xml");
         print(dom);

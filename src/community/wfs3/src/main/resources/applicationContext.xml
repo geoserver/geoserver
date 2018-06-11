@@ -102,6 +102,8 @@
       <props>
         <prop key="/wfs3">dispatcher</prop>
         <prop key="/wfs3/*">dispatcher</prop>
+        <prop key="*/wfs3">dispatcher</prop>
+        <prop key="*/wfs3/*">dispatcher</prop>
       </props>
     </property>
   </bean>

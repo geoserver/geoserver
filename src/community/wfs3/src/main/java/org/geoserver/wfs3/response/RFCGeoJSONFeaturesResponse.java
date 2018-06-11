@@ -185,4 +185,9 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             boolean hasGeom) {
         // not needed in WFS3
     }
+
+    /** capabilities output format string. */
+    public String getCapabilitiesElementName() {
+        return "GeoJSON-RFC";
+    }
 }

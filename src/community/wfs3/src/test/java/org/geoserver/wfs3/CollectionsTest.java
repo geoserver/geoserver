@@ -4,7 +4,9 @@
  */
 package org.geoserver.wfs3;
 
-import net.sf.json.JSON;
+import static org.junit.Assert.assertEquals;
+
+import com.jayway.jsonpath.DocumentContext;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -12,8 +14,22 @@ public class CollectionsTest extends WFS3TestSupport {
 
     @Test
     public void testCollectionsJson() throws Exception {
-        JSON json = getAsJSON("wfs3/collections");
-        print(json);
+        DocumentContext json = getAsJSONPath("wfs3/collections", 200);
+        int expected = getCatalog().getFeatureTypes().size();
+        assertEquals(expected, (int) json.read("collections.length()", Integer.class));
+        // TODO: perform more checks
+    }
+
+    @Test
+    public void testCollectionsWorkspaceSpecificJson() throws Exception {
+        DocumentContext json = getAsJSONPath("cdf/wfs3/collections", 200);
+        long expected =
+                getCatalog()
+                        .getFeatureTypes()
+                        .stream()
+                        .filter(ft -> "cdf".equals(ft.getStore().getWorkspace().getName()))
+                        .count();
+        assertEquals(expected, (int) json.read("collections.length()", Integer.class));
     }
 
     @Test

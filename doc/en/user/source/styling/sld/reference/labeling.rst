@@ -283,7 +283,7 @@ To do this we include the following code in the ``<TextSymbolizer>``:
 .. code-block:: xml 
 
   <Priority>
-      <PropertyName>population</PropertyName>
+      <ogc:PropertyName>population</ogc:PropertyName>
   </Priority>
   
 This ensures that at small scales New York is labeled in preference to the less populous cities nearby: 

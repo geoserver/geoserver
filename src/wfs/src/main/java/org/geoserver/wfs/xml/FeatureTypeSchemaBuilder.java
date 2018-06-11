@@ -321,36 +321,6 @@ public abstract class FeatureTypeSchemaBuilder {
                 }
             }
             
-            boolean simple = true;
-            for (int i = 0; i < featureTypeInfos.length && simple; i++) {
-                try {
-                    simple = featureTypeInfos[i].getFeatureType() instanceof SimpleFeatureType;
-                }
-                catch(IOException e) {
-                    // ignore so that broken feature types don't prevent others from continuing to work
-                }
-            }
-            if (!simple) {
-                // complex features may belong to different workspaces
-                WorkspaceInfo localWorkspace = LocalWorkspace.get();
-                if (localWorkspace != null) {
-                    // deactivate workspace filtering
-                    LocalWorkspace.remove();
-                }
-                // add secondary namespaces from the full catalog
-                try {
-                    for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
-                        if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
-                            schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
-                                    nameSpaceinfo.getURI());
-                        }
-                    }
-                } finally {
-                    // make sure local workspace filtering is repositioned
-                    LocalWorkspace.set(localWorkspace);
-                }
-            }
-            
             // map of namespace to schemaLocation used to prevent duplicate imports
             Map<String, String> imports = new HashMap<String, String>();
             // set of schemaLocations used to prevent duplicate includes

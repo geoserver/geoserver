@@ -557,8 +557,6 @@ public class GWCTest {
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
         doNothing().when(tld).modify(same(tileLayer));
         doNothing().when(tld).modify(same(tileLayerGroup));
-        when(tld.removeGridset(eq("TEST"))).thenReturn(config);
-        when(tld.removeGridset(eq("My4326"))).thenReturn(config);
 
         mediator.removeGridSets(ImmutableSet.of("My4326", "TEST"));
 
@@ -581,8 +579,6 @@ public class GWCTest {
 
         verify(tld, times(1)).modify(same(tileLayer));
         verify(tld, times(1)).modify(same(tileLayerGroup));
-        verify(tld, times(1)).removeGridset(eq("TEST"));
-        verify(tld, times(1)).removeGridset(eq("My4326"));
     }
 
     @Test
@@ -592,8 +588,6 @@ public class GWCTest {
         when(tld.getConfiguration(same(tileLayerGroup))).thenReturn(config);
         doNothing().when(tld).modify(same(tileLayer));
         doNothing().when(tld).modify(same(tileLayerGroup));
-        when(tld.removeGridset(eq("EPSG:4326"))).thenReturn(config);
-        when(tld.removeGridset(eq("EPSG:900913"))).thenReturn(config);
 
         // sanity check before modification
         assertTrue(tileLayer.getInfo().isEnabled());

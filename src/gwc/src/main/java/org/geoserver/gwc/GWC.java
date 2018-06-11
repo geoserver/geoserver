@@ -2156,7 +2156,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         for (String gridSetId : gridsetIds) {
-            tld.removeGridset(gridSetId);
+            gridSetBroker.remove(gridSetId);
         }
     }
 

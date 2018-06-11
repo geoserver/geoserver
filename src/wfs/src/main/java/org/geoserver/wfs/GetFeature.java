@@ -845,7 +845,6 @@ public class GetFeature {
                 q.getFilter().accept(v, null);
                 q.getTypeNames().addAll(v.getTypeNames());
             }
-            
             if (q.getTypeNames().isEmpty()) {
                 if (getFeatureById) {
                     iterator.remove();

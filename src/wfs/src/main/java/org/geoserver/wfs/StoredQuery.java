@@ -6,6 +6,19 @@
 package org.geoserver.wfs;
 
 import org.opengis.feature.simple.SimpleFeatureType;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.ParameterType;
 import net.opengis.wfs20.QueryExpressionTextType;
@@ -227,7 +240,7 @@ public class StoredQuery {
         sb.setLength(sb.length() - 2);
         return sb.toString();
     }
-    
+
     public List<QueryType> compile(StoredQueryType query, 
             Catalog extCatalog) {
         List list = new ArrayList();

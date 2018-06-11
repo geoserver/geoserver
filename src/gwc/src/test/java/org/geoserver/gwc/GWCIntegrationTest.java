@@ -45,14 +45,7 @@ import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -621,6 +614,219 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 newWorkspaceName + ":" + WORKSPACED_LAYER,
                 response4.getHeader("geowebcache-layer"));
         assertThat(response4.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+    }
+
+    @Test
+    public void testAutomaticTruncationDefaultStyleContentsChange() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // First request should be a MISS
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // Second request should be a HIT
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatus());
+        assertEquals("image/png", response2.getContentType());
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // Rewrite the contents of the style; this should truncate the blobStore
+        // write out the SLD, we try to use the old style so the same path is used
+        StyleInfo styleToRewrite = layer.getDefaultStyle();
+        StyleInfo generic = catalog.getStyleByName("generic");
+        // ask the catalog to write the style
+        catalog.getResourcePool()
+                .writeStyle(
+                        styleToRewrite,
+                        new GeoServerDataDirectory(catalog.getResourceLoader())
+                                .style(generic)
+                                .in());
+
+        // update the catalog
+        catalog.save(styleToRewrite);
+
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response3.getStatus());
+        assertEquals("image/png", response3.getContentType());
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
+    @Test
+    public void testAutomaticTruncationDefaultStyleChange() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // First request should be a MISS
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // Second request should be a HIT
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatus());
+        assertEquals("image/png", response2.getContentType());
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // Change the style; this should truncate the blobStore
+        layer.setDefaultStyle(catalog.getStyleByName("generic"));
+        catalog.save(layer);
+
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response3.getStatus());
+        assertEquals("image/png", response3.getContentType());
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
+    @Test
+    public void testAutomaticTruncationLayerStyleChange() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        layer.getStyles().add(catalog.getStyleByName("generic"));
+        catalog.save(layer);
+        layer = catalog.getLayerByName(qualifiedName);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&style=generic"
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // First request should be a MISS
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // Second request should be a HIT
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatus());
+        assertEquals("image/png", response2.getContentType());
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // Remove the "generic" style, and add it back; this should truncate the layer
+        layer.getStyles().remove(catalog.getStyleByName("generic"));
+        catalog.save(layer);
+        layer = catalog.getLayerByName(qualifiedName);
+        layer.getStyles().add(catalog.getStyleByName("generic"));
+        catalog.save(layer);
+        layer = catalog.getLayerByName(qualifiedName);
+
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response3.getStatus());
+        assertEquals("image/png", response3.getContentType());
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
+    @Test
+    public void testAutomaticTruncationLayerStyleContentsChange() throws Exception {
+        final GWC gwc = GWC.get();
+        final Catalog catalog = getCatalog();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+
+        assertNotNull(tileLayer);
+
+        LayerInfo layer = catalog.getLayerByName(qualifiedName);
+
+        assertNotNull(layer);
+
+        layer.getStyles().add(catalog.getStyleByName("generic"));
+        catalog.save(layer);
+        layer = catalog.getLayerByName(qualifiedName);
+
+        String request =
+                "gwc/service/wmts?request=GetTile&layer="
+                        + qualifiedName
+                        + "&style=generic"
+                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // First request should be a MISS
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+
+        // Second request should be a HIT
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatus());
+        assertEquals("image/png", response2.getContentType());
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
+
+        // Rewrite the contents of the style; this should truncate the blobStore
+        StyleInfo styleToRewrite = catalog.getStyleByName("generic");
+        StyleInfo generic = catalog.getStyleByName("generic");
+        catalog.getResourcePool()
+                .writeStyle(
+                        styleToRewrite,
+                        new GeoServerDataDirectory(catalog.getResourceLoader())
+                                .style(generic)
+                                .in());
+
+        catalog.save(styleToRewrite);
+
+        MockHttpServletResponse response3 = getAsServletResponse(request);
+        assertEquals(200, response3.getStatus());
+        assertEquals("image/png", response3.getContentType());
+        assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
     }
 
     @Test

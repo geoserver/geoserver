@@ -250,8 +250,8 @@ public class GetFeature {
         // stored queries, preprocess compile any stored queries into actual query objects
         boolean getFeatureById = processStoredQueries(request);
         queries = request.getQueries();
-        
-        if (request.isQueryTypeNamesUnset()||getFeatureById) {
+
+        if (request.isQueryTypeNamesUnset() || getFeatureById) {
             expandTypeNames(request, queries, getFeatureById, getCatalog());
         }
 
@@ -836,7 +836,7 @@ public class GetFeature {
             RequestObject request, List<Query> queries, boolean getFeatureById, Catalog catalog) {
         // do a check for FeatureId filters in the queries and update the type names for the
         // queries accordingly
-        for (Iterator<Query> iterator = queries.iterator(); iterator.hasNext();) {
+        for (Iterator<Query> iterator = queries.iterator(); iterator.hasNext(); ) {
             Query q = iterator.next();
             if (!q.getTypeNames().isEmpty()) continue;
 
@@ -854,16 +854,18 @@ public class GetFeature {
                 }
             }
         }
-        //an exception is raised when no type is detected and there a no other complex types to check
-        if(getFeatureById && queries.isEmpty()) {
-            throw new WFSException(request, "Could not find feature with specified id", WFSException.NOT_FOUND);
+        // an exception is raised when no type is detected and there a no other complex types to
+        // check
+        if (getFeatureById && queries.isEmpty()) {
+            throw new WFSException(
+                    request, "Could not find feature with specified id", WFSException.NOT_FOUND);
         }
     }
 
     /**
      * Expands the stored queries, returns true if a GetFeatureById stored query was found (as a
      * different GML encoding is required in that case)
-     * 
+     *
      * @param request
      * @return
      */
@@ -911,8 +913,8 @@ public class GetFeature {
                     throw exception;
                 }
 
-                List<net.opengis.wfs20.QueryType> compiled = storedQuery.compile(sq,
-                        storedQueryProvider.catalog);
+                List<net.opengis.wfs20.QueryType> compiled =
+                        storedQuery.compile(sq, storedQueryProvider.catalog);
                 queries.remove(i);
                 queries.addAll(i, compiled);
                 i += compiled.size();

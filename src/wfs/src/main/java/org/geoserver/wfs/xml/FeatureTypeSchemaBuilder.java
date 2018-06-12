@@ -290,14 +290,14 @@ public abstract class FeatureTypeSchemaBuilder {
             if (!(this instanceof GML2)) {
                 schema.setTargetNamespace(ns.getURI());
             }
-            
+
             boolean simple = true;
             for (int i = 0; i < featureTypeInfos.length && simple; i++) {
                 try {
                     simple = featureTypeInfos[i].getFeatureType() instanceof SimpleFeatureType;
-                }
-                catch(IOException e) {
-                    // ignore so that broken feature types don't prevent others from continuing to work
+                } catch (IOException e) {
+                    // ignore so that broken feature types don't prevent others from continuing to
+                    // work
                 }
             }
             if (!simple) {
@@ -310,9 +310,10 @@ public abstract class FeatureTypeSchemaBuilder {
                 // add secondary namespaces from the full catalog
                 try {
                     for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
-                        if (!schema.getQNamePrefixToNamespaceMap().containsKey(nameSpaceinfo.getPrefix())) {
-                            schema.getQNamePrefixToNamespaceMap().put(nameSpaceinfo.getPrefix(),
-                                    nameSpaceinfo.getURI());
+                        if (!schema.getQNamePrefixToNamespaceMap()
+                                .containsKey(nameSpaceinfo.getPrefix())) {
+                            schema.getQNamePrefixToNamespaceMap()
+                                    .put(nameSpaceinfo.getPrefix(), nameSpaceinfo.getURI());
                         }
                     }
                 } finally {
@@ -320,7 +321,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     LocalWorkspace.set(localWorkspace);
                 }
             }
-            
+
             // map of namespace to schemaLocation used to prevent duplicate imports
             Map<String, String> imports = new HashMap<String, String>();
             // set of schemaLocations used to prevent duplicate includes

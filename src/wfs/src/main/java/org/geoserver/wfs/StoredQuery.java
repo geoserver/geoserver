@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs;
 
-import org.opengis.feature.simple.SimpleFeatureType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
 import org.geotools.xs.XS;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -241,8 +241,7 @@ public class StoredQuery {
         return sb.toString();
     }
 
-    public List<QueryType> compile(StoredQueryType query, 
-            Catalog extCatalog) {
+    public List<QueryType> compile(StoredQueryType query, Catalog extCatalog) {
         List list = new ArrayList();
         for (QueryExpressionTextType qe : queryDef.getQueryExpressionText()) {
 
@@ -276,42 +275,39 @@ public class StoredQuery {
                 throw new RuntimeException(e);
             }
         }
-        
-        //getfitlerbyid only has one subquery and no type
-        //supplementary queries must be added for each complex type
-        //(for simple types there's a type detection mechanism in GetFeature that doesn't work with user-defined ids)
-        if(this==DEFAULT)
-        {
+
+        // getfitlerbyid only has one subquery and no type
+        // supplementary queries must be added for each complex type
+        // (for simple types there's a type detection mechanism in GetFeature that doesn't work with
+        // user-defined ids)
+        if (this == DEFAULT) {
             if (extCatalog != null) {
                 List<FeatureTypeInfo> complexTypes = StoredQuery.getComplexFeatureTypes(extCatalog);
-                if(complexTypes!=null)
-                {
-                    
+                if (complexTypes != null) {
+
                     QueryType qt = (QueryType) list.get(0);
-                    for(FeatureTypeInfo complexType: complexTypes)
-                    {
-                         QueryType copy = EcoreUtil.copy(qt);
-                         copy.getTypeNames().add(new QName(complexType.getNamespace().getURI(),
-                                 complexType.getName()));
-                         list.add(copy);
-                    } 
+                    for (FeatureTypeInfo complexType : complexTypes) {
+                        QueryType copy = EcoreUtil.copy(qt);
+                        copy.getTypeNames()
+                                .add(
+                                        new QName(
+                                                complexType.getNamespace().getURI(),
+                                                complexType.getName()));
+                        list.add(copy);
+                    }
                 }
             }
         }
         return list;
     }
-    
-    static List<FeatureTypeInfo> getComplexFeatureTypes(Catalog catalog)
-    {
-        List<FeatureTypeInfo> complexTypes= null;
-        for(DataStoreInfo dsInfo: catalog.getDataStores())
-        {
-            for(FeatureTypeInfo ftInfo: catalog.getFeatureTypesByDataStore(dsInfo))
+
+    static List<FeatureTypeInfo> getComplexFeatureTypes(Catalog catalog) {
+        List<FeatureTypeInfo> complexTypes = null;
+        for (DataStoreInfo dsInfo : catalog.getDataStores()) {
+            for (FeatureTypeInfo ftInfo : catalog.getFeatureTypesByDataStore(dsInfo))
                 try {
-                    if(!(ftInfo.getFeatureType() instanceof SimpleFeatureType))
-                    {
-                        if(complexTypes==null)
-                            complexTypes=new ArrayList<>();
+                    if (!(ftInfo.getFeatureType() instanceof SimpleFeatureType)) {
+                        if (complexTypes == null) complexTypes = new ArrayList<>();
                         complexTypes.add(ftInfo);
                     }
                 } catch (IOException e) {

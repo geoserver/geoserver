@@ -257,4 +257,9 @@ final class TimeVersioningCallback implements GetFeatureCallback, TransactionCal
             TransactionRequest request, TransactionResponse result, boolean committed) {
         // nothing to do
     }
+
+    @Override
+    public void dataStoreChange(TransactionEvent event) throws WFSException {
+        // nothing to do
+    }
 }

@@ -72,8 +72,7 @@ public class ShapeZipPPIO extends BinaryPPIO {
             ZipEntry entry = null;
 
             while ((entry = zis.getNextEntry()) != null) {
-                String name = entry.getName();
-                File file = new File(tempDir, entry.getName());
+                File file = IOUtils.getZipOutputFile(tempDir, entry);
                 if (entry.isDirectory()) {
                     file.mkdir();
                 } else {

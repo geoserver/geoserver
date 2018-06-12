@@ -410,6 +410,37 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         truncate(layerName, styleName, gridSetId, bounds, format);
     }
 
+    /**
+     * Truncates the cache for the default style of the given layer
+     *
+     * @param layerName
+     */
+    public void truncateByLayerDefaultStyle(final String layerName) {
+        checkNotNull(layerName, "layerName can't be null");
+        log.fine("truncating '" + layerName + "' for default style");
+
+        final TileLayer layer = getTileLayerByName(layerName);
+        final Set<String> gridSetIds = layer.getGridSubsets(); // all of them
+        final List<MimeType> mimeTypes = layer.getMimeTypes(); // all of them
+        final BoundingBox bounds = null; // all of them
+        final Map<String, String> parameters = null; // only default style
+
+        for (String gridSetId : gridSetIds) {
+            GridSubset gridSubset = layer.getGridSubset(gridSetId);
+            if (gridSubset == null) {
+                // layer may no longer have this gridsubset, but we want to truncate any remaining
+                // tiles
+                GridSet gridSet = gridSetBroker.get(gridSetId);
+                gridSubset = GridSubsetFactory.createGridSubSet(gridSet);
+            }
+
+            for (MimeType mime : mimeTypes) {
+                String formatName = mime.getFormat();
+                truncate(layer, bounds, gridSubset, formatName, parameters);
+            }
+        }
+    }
+
     public void truncate(final String layerName, final ReferencedEnvelope bounds)
             throws GeoWebCacheException {
 
@@ -2125,7 +2156,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         for (String gridSetId : gridsetIds) {
-            tld.removeGridset(gridSetId);
+            gridSetBroker.remove(gridSetId);
         }
     }
 

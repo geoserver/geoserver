@@ -481,7 +481,7 @@ public class CatalogLayerEventListenerTest {
 
         listener.handlePostModifyEvent(postModifyEvent);
 
-        verify(mockMediator).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(oldName));
+        verify(mockMediator).truncateByLayerDefaultStyle(eq(PREFIXED_RESOURCE_NAME));
         // both the layer group and the layer got saved
         verify(mockMediator, times(2)).save(any(GeoServerTileLayer.class));
 

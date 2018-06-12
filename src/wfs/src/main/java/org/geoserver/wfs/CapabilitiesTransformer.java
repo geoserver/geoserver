@@ -311,7 +311,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         }
 
         protected class CapabilitiesTranslator1_0 extends TranslatorSupport {
-            GetCapabilitiesRequest request;
+            protected GetCapabilitiesRequest request;
 
             public CapabilitiesTranslator1_0(ContentHandler handler) {
                 super(handler, null, null);

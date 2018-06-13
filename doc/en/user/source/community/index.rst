@@ -16,7 +16,7 @@ officially part of the GeoServer releases. They are however built along with the
    :maxdepth: 1
 
    authkey/index
-   oauth2/index
+   security/index
    dds/index
    scripting/index
    spatialite/index

@@ -182,3 +182,46 @@ The following are some resources for constructing regular expressions:
   * GeoServer uses the standard Java regular expression engine. The `Pattern class Javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_ contain the full specification of the allowed syntax.
   * `<http://www.regular-expressions.info>`_ has many tutorials and examples of regular expressions.
   * The `myregexp <http://myregexp.com/>`_ applet can be used to test regular expressions online.
+
+Place holder for the SQL WHERE clause
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The SQL ``WHERE`` clause produced by GeoServer using the context filters, e.g. the bounding box filter of a WMS query, will be added around the SQL view definition. This comes handy (better performance) when we have extra operations that can  be done on top of the rows filtered with the GeoServer produced filter first.
+
+A typical use case for this functionality is the execution of analytic functions on top of the filtered results:
+
+.. code-block:: sql
+
+  SELECT STATION_NAME,
+         MEASUREMENT,
+         MEASUREMENT_TYPE,
+         LOCATION
+  FROM
+    (SELECT STATION_NAME,
+            MEASUREMENT,
+            MEASUREMENT_TYPE,
+            LOCATION,
+            ROW_NUMBER() OVER(PARTITION BY STATION_ID, MEASUREMENT_TYPE
+                              ORDER BY TIME DESC) AS RANK
+     FROM
+       (SELECT st.id AS STATION_ID,
+               st.common_name AS STATION_NAME,
+               ob.value AS MEASUREMENT,
+               pr.param_name AS MEASUREMENT_TYPE,
+               ob.time AS TIME,
+               st.position AS LOCATION
+        FROM meteo.meteo_stations st
+        LEFT JOIN meteo.meteo_observations ob ON st.id = ob.station_id
+        LEFT JOIN meteo.meteo_parameters pr ON ob.parameter_id = pr.id
+
+        -- SQL WHERE clause place holder for GeoServer
+        WHERE 1 = 1 :where_clause:) AS stations_filtered) AS stations
+
+  WHERE RANK = 1;
+
+A few restrictions apply when using the explicit ``:where_clause:`` place holder:
+
+  * it needs to be added in a position where all the attributes known by GeoServer are already present
+  * the ``:where_clause:`` can only appear once 
+
+When a ``WHERE`` clause place holder is present, GeoServer will always add an explicit ``AND`` at the beginning of the produced ``WHERE`` clause. This allows the injection of the produced ``WHERE`` in the middle of complex expressions if needed.

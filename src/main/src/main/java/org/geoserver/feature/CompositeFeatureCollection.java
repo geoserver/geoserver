@@ -5,11 +5,13 @@
  */
 package org.geoserver.feature;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import org.geotools.data.CloseableIterator;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.store.DataFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -94,7 +96,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
                 .sum();
     }
 
-    class CompositeIterator implements Iterator {
+    class CompositeIterator implements CloseableIterator {
         int index;
         FeatureIterator iterator;
 
@@ -136,6 +138,13 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
 
         public Object next() {
             return iterator.next();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (iterator instanceof Closeable) {
+                iterator.close();
+            }
         }
     }
 

@@ -8,7 +8,10 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
@@ -62,6 +65,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @BeforeClass
     public static void setupTimeZone() {
         System.setProperty("user.timezone", "GMT");
+        System.setProperty("gt2.jdbc.trace", "true");
     }
 
     @Before
@@ -137,6 +141,9 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // drop the store caches
         getGeoServer().reset();
 
+        // remove the old database and config files
+        File dir = new File(getTestData().getDataDirectoryRoot(), "ir-rgb");
+        FileUtils.deleteQuietly(dir);
         getTestData().addRasterLayer(IR_RGB, "ir-rgb.zip", null, null, SystemTestData.class, cat);
 
         // build the view
@@ -724,5 +731,75 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("2", "count(//gf:RgbIrView)", dom);
         assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.rgb.1']", dom);
         assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.ir.1']", dom);
+    }
+
+    @Test
+    public void testGetGranuleInMultiCoverageView() throws Exception {
+        // get a single granule
+        Document dom =
+                getAsDOM(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1",
+                        200);
+        // print(dom);
+        assertXpathEvaluatesTo("1", "count(//gf:RgbIrView)", dom);
+        assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.rgb.1']", dom);
+
+        // and get the other
+        dom =
+                getAsDOM(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.ir.1",
+                        200);
+        // print(dom);
+        assertXpathEvaluatesTo("1", "count(//gf:RgbIrView)", dom);
+        assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.ir.1']", dom);
+    }
+
+    @Test
+    public void testDeleteGranuleInMultiCoverageView() throws Exception {
+        // delete granule
+        MockHttpServletResponse response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
+        assertEquals(200, response.getStatus());
+
+        // try to get it, it should provide a 404 now
+        response =
+                getAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
+        assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void testGetGranuleInSingleCoverageView() throws Exception {
+        // get a single granule
+        Document dom =
+                getAsDOM(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1",
+                        200);
+        print(dom);
+        assertXpathEvaluatesTo("1", "count(//gf:waterView)", dom);
+        assertXpathExists("//gf:waterView[@fid='waterView.watertemp.1']", dom);
+    }
+
+    @Test
+    public void testDeleteGranuleInSingleCoverageView() throws Exception {
+        // delete granule
+        MockHttpServletResponse response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
+        assertEquals(200, response.getStatus());
+
+        // try to get it, it should provide a 404 now
+        response =
+                getAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
+        assertEquals(404, response.getStatus());
     }
 }

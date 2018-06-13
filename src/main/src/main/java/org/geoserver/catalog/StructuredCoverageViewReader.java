@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.feature.CompositeFeatureCollection;
 import org.geoserver.feature.RetypingFeatureCollection;
@@ -26,10 +27,13 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.filter.Id;
+import org.opengis.filter.identity.Identifier;
 
 /**
  * A coverageView reader using a structured coverage readers implementation
@@ -47,6 +51,39 @@ public class StructuredCoverageViewReader extends CoverageViewReader
      * a single band of the coverage view
      */
     public static Hints.Key QUERY_FIRST_BAND = new Hints.Key(Boolean.class);
+
+    /** Unmaps the view prefix in the id names */
+    static class GranuleStoreViewFilterVisitor extends DuplicatingFilterVisitor {
+
+        static Filter unmapIdentifiers(Filter filter, String viewName) {
+            GranuleStoreViewFilterVisitor visitor = new GranuleStoreViewFilterVisitor(viewName);
+            return (Filter) filter.accept(visitor, null);
+        }
+
+        String prefix;
+
+        public GranuleStoreViewFilterVisitor(String viewName) {
+            this.prefix = viewName + ".";
+        }
+
+        @Override
+        public Object visit(Id filter, Object extraData) {
+            Set<Identifier> identifiers = filter.getIdentifiers();
+            Set<Identifier> renamedIdentifiers =
+                    identifiers
+                            .stream()
+                            .map(
+                                    id -> {
+                                        String name = id.getID().toString();
+                                        if (name.startsWith(prefix)) {
+                                            name = name.substring(prefix.length());
+                                        }
+                                        return getFactory(extraData).featureId(name);
+                                    })
+                            .collect(Collectors.toSet());
+            return getFactory(extraData).id(renamedIdentifiers);
+        }
+    }
 
     static class GranuleStoreView implements GranuleStore {
 
@@ -74,6 +111,12 @@ public class StructuredCoverageViewReader extends CoverageViewReader
         public SimpleFeatureCollection getGranules(Query q) throws IOException {
             List<CoverageBand> bands = coverageView.getCoverageBands();
             Query renamedQuery = q != null ? new Query(q) : new Query();
+            if (q != null && q.getFilter() != null) {
+                Filter unmapped =
+                        GranuleStoreViewFilterVisitor.unmapIdentifiers(
+                                q.getFilter(), coverageView.getName());
+                renamedQuery.setFilter(unmapped);
+            }
             List<SimpleFeatureCollection> collections = new ArrayList<>();
             boolean returnOnlyFirst =
                     Boolean.TRUE.equals(
@@ -98,8 +141,6 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             if (collections.size() == 0) {
                 throw new IllegalStateException(
                         "Unexpected, there is not a single band in the definition?");
-            } else if (collections.size() == 1) {
-                return renameCollection(collections.get(0));
             } else {
                 // need to composite the collections
                 SimpleFeatureType schema = collections.get(0).getSchema();
@@ -122,19 +163,6 @@ public class StructuredCoverageViewReader extends CoverageViewReader
                         };
                     }
                 };
-            }
-        }
-
-        private SimpleFeatureCollection renameCollection(SimpleFeatureCollection result) {
-            // set the name of the view
-            SimpleFeatureType schema = result.getSchema();
-            if (schema.getTypeName().equals(coverageView.getName())) {
-                return result;
-            } else {
-                SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-                tb.init(schema);
-                tb.setName(coverageView.getName());
-                return new RetypingFeatureCollection(result, tb.buildFeatureType());
             }
         }
 
@@ -169,6 +197,10 @@ public class StructuredCoverageViewReader extends CoverageViewReader
 
         @Override
         public int removeGranules(Filter filter) {
+            // unmap the feature identifiers
+            Filter unmapped =
+                    GranuleStoreViewFilterVisitor.unmapIdentifiers(filter, coverageView.getName());
+
             List<CoverageBand> bands = coverageView.getCoverageBands();
             int removed = 0;
             for (CoverageBand band : bands) {
@@ -179,7 +211,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
                     // TODO: We may revisit the #removed granules computation to take into
                     // account cases where we remove different number of records across different
                     // input coverages
-                    removed = granuleStore.removeGranules(filter);
+                    removed = granuleStore.removeGranules(unmapped);
                 } catch (UnsupportedOperationException e) {
                     LOGGER.log(Level.FINER, e.getMessage(), e);
                 } catch (IOException e) {

@@ -87,7 +87,7 @@
           <descriptor>release/ext-status-monitoring.xml</descriptor>
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
-          <!--<descriptor>release/ext-taskmanager.xml</descriptor>-->
+          <descriptor>release/ext-taskmanager-core.xml</descriptor>
           <descriptor>release/ext-taskmanager-s3.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
@@ -258,7 +258,7 @@
         <module>nsg-profiles/nsg-wfs-profile</module>
         <module>nsg-profiles/nsg-wmts-profile</module>
         <module>netcdf-ghrsst</module>
-        <!--<module>taskmanager</module>-->
+        <module>taskmanager</module>
         <module>wfs3</module>
         <module>monitor-hibernate</module>
       </modules>

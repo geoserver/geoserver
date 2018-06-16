@@ -672,6 +672,11 @@ background: url(../img/icons/silk/photo.png) no-repeat;
 display: block;
 }
 
+.button-group .button-color span {
+background: url(../img/icons/silk/palette.png) no-repeat;
+display: block;
+}
+
 
 
 .button-group a img,

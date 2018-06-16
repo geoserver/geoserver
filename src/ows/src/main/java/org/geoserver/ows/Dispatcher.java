@@ -245,7 +245,6 @@ public class Dispatcher extends AbstractController {
                 service = service(request);
             } catch (Throwable t) {
                 exception(t, null, request);
-
                 return null;
             }
             

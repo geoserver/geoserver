@@ -30,8 +30,8 @@ import org.opengis.feature.type.FeatureType;
  */
 public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
 
-    /** The default feature cache size */
-    public static final int DEFAULT_CACHE_SIZE = 16;
+    /** The default feature cache size - disabled by default */
+    public static final int DEFAULT_CACHE_SIZE = 0;
 
     /** The original feature source. */
     protected SimpleFeatureSource featureSource;

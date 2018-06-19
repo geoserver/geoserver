@@ -255,8 +255,7 @@
         <module>mbstyle</module>
         <module>s3-geotiff</module>
         <module>status-monitoring</module>
-        <module>nsg-profiles/nsg-wfs-profile</module>
-        <module>nsg-profiles/nsg-wmts-profile</module>
+        <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
         <module>wfs3</module>
@@ -565,13 +564,13 @@
     <profile>
       <id>nsg-wfs-profile</id>
       <modules>
-        <module>nsg-profiles/nsg-wfs-profile</module>
+        <module>nsg-profiles</module>
       </modules>
     </profile>
     <profile>
       <id>nsg-wmts-profile</id>
       <modules>
-        <module>nsg-profiles/nsg-wmts-profile</module>
+        <module>nsg-profiles</module>
       </modules>
     </profile>
     <profile>

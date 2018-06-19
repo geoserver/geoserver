@@ -231,7 +231,8 @@ public class JDBCResourceStore implements ResourceStore {
 
         @Override
         public Resource parent() {
-            return new JDBCResource(entry.getParent());
+            JDBCDirectoryStructure.Entry parentEntry = entry.getParent();
+            return parentEntry == null ? null : new JDBCResource(parentEntry);
         }
 
         @Override

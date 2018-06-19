@@ -40,7 +40,7 @@ public class TreeView<T> extends Panel {
 
     /** Behaviour for selected node */
     protected static final AttributeAppender SELECTED_BEHAVIOR =
-            new AttributeAppender("class", new Model<String>("selected"), " ");
+            new ClassAppender(new Model<String>("selected"));
 
     /** Implement this to listen to selection events */
     public static interface SelectionListener<T> extends Serializable {

@@ -15,6 +15,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
+import org.geoserver.config.GeoServerResourcePersister;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
@@ -76,6 +77,8 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         Stopwatch sw = Stopwatch.createStarted();
         loadCatalogInternal(catalog, xp);
         sw.stop();
+
+        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
         // System.err.println("Loaded catalog in " + sw.toString());
     }
 

@@ -52,7 +52,7 @@ public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
     protected static final String COVERAGE_LAYER = "coverage_layer";
 
     @Before
-    public void loadCoverageData() throws IOException {
+    public void loadData() throws Exception {
         getTestData().addWorkspace(getTestData().WCS_PREFIX, getTestData().WCS_URI, getCatalog());
         getTestData().addDefaultRasterLayer(getTestData().WORLD, getCatalog());
     }

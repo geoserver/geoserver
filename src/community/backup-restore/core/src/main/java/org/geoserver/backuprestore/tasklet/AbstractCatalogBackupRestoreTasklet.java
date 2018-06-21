@@ -82,6 +82,18 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
      *
      */
     static {
+        resources.put(
+                "/",
+                new Filter<Resource>() {
+
+                    @Override
+                    public boolean accept(Resource res) {
+                        if (!res.name().endsWith(".xml")) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
         resources.put("demo", AnyFilter.INSTANCE);
         resources.put("images", AnyFilter.INSTANCE);
         resources.put(
@@ -90,12 +102,14 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
                     @Override
                     public boolean accept(Resource res) {
-                        if (res.name().endsWith(".properties")) {
+                        if (!res.name().endsWith(".xml")) {
                             return true;
                         }
                         return false;
                     }
                 });
+        resources.put("gwc-layers", AnyFilter.INSTANCE);
+        resources.put("layergroups", AnyFilter.INSTANCE);
         resources.put("palettes", AnyFilter.INSTANCE);
         resources.put("plugIns", AnyFilter.INSTANCE);
 
@@ -121,6 +135,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         resources.put("user_projections", AnyFilter.INSTANCE);
         resources.put("validation", AnyFilter.INSTANCE);
         resources.put("www", AnyFilter.INSTANCE);
+        resources.put("csw", AnyFilter.INSTANCE);
     }
 
     private long timeout = 0;

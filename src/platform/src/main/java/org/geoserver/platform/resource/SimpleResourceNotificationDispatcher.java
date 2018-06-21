@@ -49,7 +49,10 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * @param notification
      */
     protected void changedInternal(ResourceNotification notification) {
-        List<ResourceListener> listeners = handlers.get(notification.getPath());
+        // copy listeners into a new collection,
+        // so that listeners can remove/add themselves if necessary
+        List<ResourceListener> listeners =
+                new ArrayList<ResourceListener>(handlers.get(notification.getPath()));
         if (listeners != null) {
             for (ResourceListener listener : listeners) {
                 listener.changed(notification);

@@ -251,9 +251,7 @@ public class CatalogLayerEventListener implements CatalogListener {
         final List<Object> newValues = preModifyEvent.getNewValues();
 
         log.finer("Handling modify event for " + source);
-        if (source instanceof FeatureTypeInfo
-                || source instanceof CoverageInfo
-                || source instanceof WMSLayerInfo
+        if (source instanceof ResourceInfo
                 || source instanceof LayerGroupInfo) {
             /*
              * Handle changing the filter definition, this is the kind of change that affects the

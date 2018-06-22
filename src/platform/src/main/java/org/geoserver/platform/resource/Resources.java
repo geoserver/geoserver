@@ -760,7 +760,9 @@ public class Resources {
 
         @Override
         public Resource parent() {
-            return new SerializableResourceWrapper(delegate.parent());
+            return delegate.parent() == null
+                    ? null
+                    : new SerializableResourceWrapper(delegate.parent());
         }
 
         @Override
@@ -809,6 +811,9 @@ public class Resources {
     public static Resource serializable(Resource resource) {
         if (resource instanceof Serializable) {
             return resource;
+        }
+        if (resource == null) {
+            return null;
         }
         return new SerializableResourceWrapper(resource);
     }

@@ -2124,18 +2124,30 @@ public class CatalogImplTest {
         assertNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup"));
 
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
-        lg2.setWorkspace(defaultWorkspace);
+        lg2.setWorkspace(ws);
+        assertEquals(ws, catalog.getDefaultWorkspace());
         lg2.setName("layerGroup2");
         lg2.getLayers().add(l);
         lg2.getStyles().add(s);
         catalog.add(lg2);
 
-        assertNull(
-                "layerGropu2 is not global, should not be found",
-                catalog.getLayerGroupByName("layerGroup2"));
-        assertNotNull(catalog.getLayerGroupByName(defaultWorkspace.getName() + ":layerGroup2"));
+        // When in the default workspace, we should be able to find it without the prefix
+        assertNotNull(catalog.getLayerGroupByName("layerGroup2"));
+        assertNotNull(catalog.getLayerGroupByName(ws.getName() + ":layerGroup2"));
         assertNotNull(catalog.getLayerGroupByName(catalog.getDefaultWorkspace(), "layerGroup2"));
+        assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
+
+        // Repeat in a non-default workspace
+        WorkspaceInfo ws2 = catalog.getFactory().createWorkspace();
+        ws2.setName("ws2");
+        catalog.add(ws2);
+        catalog.setDefaultWorkspace(ws2);
+
+        assertNull(
+                "layerGroup2 is not global, should not be found",
+                catalog.getLayerGroupByName("layerGroup2"));
+        assertNotNull(catalog.getLayerGroupByName(ws.getName() + ":layerGroup2"));
+        assertNotNull(catalog.getLayerGroupByName(ws, "layerGroup2"));
         assertNull(catalog.getLayerGroupByName("cite", "layerGroup2"));
     }
 
@@ -2165,6 +2177,7 @@ public class CatalogImplTest {
     @Test
     public void testGetLayerGroupByNameWithWorkspace() {
         addLayer();
+        assertEquals(ws, catalog.getDefaultWorkspace());
 
         CatalogFactory factory = catalog.getFactory();
         LayerGroupInfo lg1 = factory.createLayerGroup();
@@ -2220,8 +2233,9 @@ public class CatalogImplTest {
         lg2.getStyles().add(s2);
         catalog.add(lg2);
 
-        // lg is not global, should not be found at least we specify a prefixed name
-        assertNull(catalog.getLayerGroupByName("lg"));
+        // lg is not global, but it is in the default workspace, so it should be found if we don't
+        // specify the workspace
+        assertEquals(lg1, catalog.getLayerGroupByName("lg"));
 
         assertEquals(lg1, catalog.getLayerGroupByName(ws.getName(), "lg"));
         assertEquals(lg1, catalog.getLayerGroupByName(ws, "lg"));

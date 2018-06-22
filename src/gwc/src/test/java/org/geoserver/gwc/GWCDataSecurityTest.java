@@ -23,9 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -635,6 +633,32 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         // but this can access it all
         setRequestAuth("cite", "cite");
         response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+    }
+
+    @Test
+    public void testWorkspacedLayerGroup() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        WorkspaceInfo ws = lakes.getResource().getStore().getWorkspace();
+        LayerGroupInfo workspacedLayerGroup = getCatalog().getFactory().createLayerGroup();
+        workspacedLayerGroup.setWorkspace(ws);
+        workspacedLayerGroup.setName("citeGroup");
+        workspacedLayerGroup.getLayers().add(lakes);
+        workspacedLayerGroup.getStyles().add(null);
+        catalog.add(workspacedLayerGroup);
+        // enable direct WMS integration
+        GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
+
+        // no auth, it should work
+        setRequestAuth(null, null);
+        String path =
+                ws.getName()
+                        + "/wms?bgcolor=0x000000&LAYERS="
+                        + workspacedLayerGroup.prefixedName()
+                        + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
     }
 }

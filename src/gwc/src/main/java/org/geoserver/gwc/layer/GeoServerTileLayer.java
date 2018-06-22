@@ -855,6 +855,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     @Override
     public void addGridSubset(GridSubset gridSubset) {
         XMLGridSubset gridSubsetInfo = new XMLGridSubset(gridSubset);
+        if(gridSubset instanceof DynamicGridSubset) {
+          gridSubsetInfo.setExtent(null);
+        }
         Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
         gridSubsets.add(gridSubsetInfo);
         info.setGridSubsets(gridSubsets);
@@ -871,15 +874,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
 
         Map<String, GridSubset> grids = new HashMap<String, GridSubset>(2);
-        for (XMLGridSubset gridSubset : cachedGridSets) {
-            final String gridSetId = gridSubset.getGridSetName();
+        for (XMLGridSubset xmlGridSubset : cachedGridSets) {
+            final String gridSetId = xmlGridSubset.getGridSetName();
             final GridSet gridSet = gridSetBroker.get(gridSetId);
             if (gridSet == null) {
                 LOGGER.info("No GWC GridSet named '" + gridSetId + "' exists.");
                 continue;
             }
-            BoundingBox extent = gridSubset.getExtent();
-            if (null == extent) {
+            BoundingBox extent = xmlGridSubset.getExtent();
+            boolean dynamic = Objects.isNull(extent);
+            if (dynamic) {
                 try {
                     SRS srs = gridSet.getSrs();
                     try {
@@ -912,9 +916,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                     extent = gridSet.getOriginalExtent();
                 }
             }
-            gridSubset.setExtent(extent);
+            xmlGridSubset.setExtent(extent);
 
-            GridSubset gridSubSet = gridSubset.getGridSubSet(gridSetBroker);
+            GridSubset gridSubSet = xmlGridSubset.getGridSubSet(gridSetBroker);
+            if(dynamic) {
+                gridSubSet = new DynamicGridSubset(gridSubSet);
+            }
 
             grids.put(gridSetId, gridSubSet);
         }

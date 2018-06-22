@@ -13,6 +13,11 @@ import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -40,6 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,6 +92,7 @@ import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
@@ -94,6 +102,7 @@ import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -120,6 +129,8 @@ public class GeoServerTileLayerTest {
     private GWCConfig defaults;
 
     private GWC mockGWC;
+
+    private FeatureTypeInfoImpl resource;
 
     @After
     public void tearDown() throws Exception {
@@ -148,7 +159,7 @@ public class GeoServerTileLayerTest {
         storeInfo.setEnabled(true);
         storeInfo.setWorkspace(workspaceInfo);
 
-        FeatureTypeInfoImpl resource = new FeatureTypeInfoImpl((Catalog) null);
+        resource = new FeatureTypeInfoImpl((Catalog) null);
         resource.setStore(storeInfo);
         resource.setId("mock-resource-info");
         resource.setName("MockLayerInfoName");
@@ -432,6 +443,54 @@ public class GeoServerTileLayerTest {
         gridSubsets = layerGroupInfoTileLayer.getGridSubsets();
         assertNotNull(gridSubsets);
         assertEquals(2, gridSubsets.size());
+    }
+    
+    @Test
+    public void testGetGridSubsetsDynamic() throws Exception {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        
+        GridSubset subset = layerInfoTileLayer.getGridSubset("EPSG:4326");
+        
+        assertThat(subset, instanceOf(DynamicGridSubset.class));
+        
+        assertThat(subset, hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
+        
+        layerInfoTileLayer.removeGridSubset("EPSG:4326");
+        layerInfoTileLayer.addGridSubset(subset);
+        
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        
+        GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
+        
+        // the extent should be that of resource
+        assertThat(subset2, hasProperty("originalExtent", hasProperty("minX", closeTo(-90.0, 0.0000001))));
+    }
+    
+    @Test
+    public void testGetGridSubsetsStatic() throws Exception {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        
+        GridSubset subset = layerInfoTileLayer.getGridSubset("EPSG:4326");
+        
+        assertThat(subset, instanceOf(DynamicGridSubset.class));
+        
+        assertThat(subset, hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
+        
+        layerInfoTileLayer.removeGridSubset("EPSG:4326");
+        layerInfoTileLayer.addGridSubset(new GridSubset(subset)); // Makes the dynamic extent static
+        
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        
+        GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
+        
+        // the extent should not change with that of resource
+        assertThat(subset2, hasProperty("originalExtent", hasProperty("minX", closeTo(-180.0, 0.0000001))));
     }
 
     @Test

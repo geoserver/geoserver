@@ -2247,7 +2247,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             if (group != null) {
                 // use the prefixed name to avoid clashes because the raw catalog is not
                 // workspace-filtered
-                LayerGroupInfo rawGroup = rawCatalog.getLayerGroupByName(group.prefixedName());
+                LayerGroupInfo rawGroup;
+                if (group.getWorkspace() != null) {
+                    // LocalWorkspace has a NameDequalifyingProxy which will strip off the workspace
+                    // if we just call prefixedName
+                    rawGroup =
+                            rawCatalog.getLayerGroupByName(group.getWorkspace(), group.getName());
+                } else {
+                    rawGroup = rawCatalog.getLayerGroupByName(group.getName());
+                }
                 if (rawGroup.layers().size() == group.layers().size()) {
                     layerInfos = group.layers();
                 }

@@ -223,6 +223,8 @@ public class ImportContext implements Serializable {
         if (tasks.isEmpty()) {
             if (state == State.INIT) {
                 newState = State.INIT;
+            } else if (state == State.INIT_ERROR) {
+                newState = State.INIT_ERROR;
             } else {
                 newState = State.PENDING;
             }

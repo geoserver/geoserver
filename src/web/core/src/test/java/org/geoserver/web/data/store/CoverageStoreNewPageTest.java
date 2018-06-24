@@ -39,8 +39,8 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     private CoverageStoreNewPage startPage() {
 
-        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         login();
+        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         tester.startPage(page);
 
         if (debugMode) {
@@ -55,6 +55,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
         final String formatName = "_invalid_";
         try {
+            login();
             new CoverageStoreNewPage(formatName);
             fail("Expected IAE on invalid format name");
         } catch (IllegalArgumentException e) {
@@ -107,6 +108,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testGeoPackageRaster() {
+        login();
         formatType = new GeoPackageFormat().getName();
         final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         tester.startPage(page);

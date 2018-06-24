@@ -32,10 +32,10 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
     private static final boolean debugMode = false;
 
     private AbstractDataAccessPage startPage() {
+        login();
         final String dataStoreFactoryDisplayName = new PropertyDataStoreFactory().getDisplayName();
 
         final AbstractDataAccessPage page = new DataAccessNewPage(dataStoreFactoryDisplayName);
-        login();
         tester.startPage(page);
 
         if (debugMode) {
@@ -50,6 +50,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
         final String dataStoreFactoryDisplayName = "_invalid_";
         try {
+            login();
             new DataAccessNewPage(dataStoreFactoryDisplayName);
             fail("Expected IAE on invalid datastore factory name");
         } catch (IllegalArgumentException e) {
@@ -140,10 +141,11 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testGeoPackagePage() {
         final String displayName = new GeoPkgDataStoreFactory().getDisplayName();
+        login();
         final AbstractDataAccessPage page = new DataAccessNewPage(displayName);
         tester.startPage(page);
 
-        tester.debugComponentTrees();
+        // tester.debugComponentTrees();
         // the "database" key is the second, should be a file panel
         Component component =
                 tester.getComponentFromLastRenderedPage(

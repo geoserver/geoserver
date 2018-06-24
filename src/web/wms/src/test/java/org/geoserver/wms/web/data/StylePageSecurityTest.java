@@ -11,9 +11,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
@@ -175,7 +177,14 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
     @Test
     public void testEditCite() {
         loginAsCite();
-        StyleEditPage page = new StyleEditPage(buildingsStyle);
+        PageParameters pp = new PageParameters();
+        pp.set(StyleEditPage.NAME, buildingsStyle.getName());
+        pp.set(
+                StyleEditPage.WORKSPACE,
+                Optional.ofNullable(buildingsStyle.getWorkspace())
+                        .map(ws -> ws.getName())
+                        .orElse(""));
+        StyleEditPage page = tester.startPage(StyleEditPage.class, pp);
         tester.startPage(page);
 
         tester.assertRenderedPage(StyleEditPage.class);

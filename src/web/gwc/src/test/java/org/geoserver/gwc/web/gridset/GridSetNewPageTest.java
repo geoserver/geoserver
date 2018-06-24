@@ -30,9 +30,15 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     /** Just a smoke test to make sure the page loads as expected */
     @Test

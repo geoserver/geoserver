@@ -1679,7 +1679,7 @@
      <configuration>
        <verbose>false</verbose>
        <filesNamePattern>.*\.java</filesNamePattern>
-       <skip>false</skip>
+       <skip>${fmt.skip}</skip>
        <style>aosp</style>
      </configuration>
      <executions>
@@ -1912,6 +1912,7 @@
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
   <fmt.action>format</fmt.action>
+  <fmt.skip>false</fmt.skip>
  </properties>
 
  <profiles>

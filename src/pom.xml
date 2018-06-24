@@ -1683,7 +1683,7 @@
      <configuration>
        <verbose>false</verbose>
        <filesNamePattern>.*\.java</filesNamePattern>
-       <skip>false</skip>
+       <skip>${fmt.skip}</skip>
        <style>aosp</style>
      </configuration>
      <executions>
@@ -1921,6 +1921,7 @@
   <solrj.version>7.2.1</solrj.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
+  <fmt.skip>false</fmt.skip>
  </properties>
 
  <profiles>

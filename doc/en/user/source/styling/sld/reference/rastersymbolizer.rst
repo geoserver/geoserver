@@ -260,6 +260,67 @@ and re-colorizing it via a ColorMap:
 
 .. figure:: img/channelselection2.png
    :align: left 
+   
+ChannelSelection Expressions
+""""""""""""""""""""""""""""
+
+Since the previous approach supports Strings only and therefore is static and not suitable when dealing with multispectral imagery that has more than four bands 
+and hyperspectral imagery (hyperspectral sensors have typically hundreds of bands), a dynamical approach is needed.
+
+By replacing Strings with Expressions in ``<SourceChannelName>``, context free functions like ``env`` can be used to indicate which bands are to be used in a particular rendering session. 
+
+The following example shows how to set the Red, Green and Blue channels and to map them into the desired bands. Here below, the ``env`` function will set, by default in the WMS request, the RedChannel 
+on the second band, the GreenChannel on the fifth band and the BlueChannel on the seventh band.     
+
+.. code-block:: xml
+
+<RasterSymbolizer>
+  <ChannelSelection>
+    <RedChannel>
+      <SourceChannelName>
+          <ogc:Function name="env">
+             <ogc:Literal>B1</ogc:Literal>
+             <ogc:Literal>1</ogc:Literal>
+          </ogc:Function>
+      </SourceChannelName>
+    </RedChannel>
+    <GreenChannel>
+      <SourceChannelName>
+          <ogc:Function name="env">
+             <ogc:Literal>B2</ogc:Literal>
+             <ogc:Literal>2</ogc:Literal>
+          </ogc:Function>
+      </SourceChannelName>
+    </GreenChannel>
+    <BlueChannel>
+      <SourceChannelName>
+          <ogc:Function name="env">
+             <ogc:Literal>B3</ogc:Literal>
+             <ogc:Literal>3</ogc:Literal>
+          </ogc:Function>
+      </SourceChannelName>
+    </BlueChannel>
+  </ChannelSelection>
+<RasterSymbolizer>
+
+.. figure:: img/channelsexpression1.png
+   :align: left 
+   
+The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:
+
+.. code-block:: xml
+
+ * { raster-channels: [env('B1','1')] '2' '3'; }
+          
+ * { raster-channels: @B1(1)  '2' '3';}
+
+One can specify the ``env`` request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, 
+for example the 4, 2, 3 as the following: 
+
+	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=&bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
+   
+.. figure:: img/channels2.png
+   :align: left
 
 ContrastEnhancement
 ^^^^^^^^^^^^^^^^^^^

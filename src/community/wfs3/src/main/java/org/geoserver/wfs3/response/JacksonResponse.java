@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs3.response;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
@@ -95,6 +96,7 @@ public abstract class JacksonResponse extends WFSResponse {
 
         } else {
             mapper = Json.mapper();
+            mapper.writer(new DefaultPrettyPrinter());
         }
 
         mapper.writeValue(output, value);

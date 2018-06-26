@@ -18,11 +18,15 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -118,7 +122,8 @@ public class ApiTest extends WFS3TestSupport {
         assertThat(item.getGet().getOperationId(), equalTo("getFeature"));
 
         // check collectionId parameter
-        Parameter collectionId = api.getComponents().getParameters().get("collectionId");
+        Map<String, Parameter> params = api.getComponents().getParameters();
+        Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
                 getCatalog()
@@ -127,5 +132,13 @@ public class ApiTest extends WFS3TestSupport {
                         .map(ft -> NCNameResourceCodec.encode(ft))
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
+
+        // check the limit parameter
+        Parameter limit = params.get("limit");
+        Schema limitSchema = limit.getSchema();
+        assertEquals(BigDecimal.valueOf(1), limitSchema.getMinimum());
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        assertEquals(wfs.getMaxFeatures(), limitSchema.getMaximum().intValue());
+        assertEquals(wfs.getMaxFeatures(), ((Number) limitSchema.getDefault()).intValue());
     }
 }

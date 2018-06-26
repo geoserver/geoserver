@@ -14,9 +14,11 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -95,7 +97,8 @@ public class OpenAPIBuilder {
                 FeatureCollectionResponse.class);
 
         // provide a list of valid values for collectionId
-        Parameter collectionId = api.getComponents().getParameters().get("collectionId");
+        Map<String, Parameter> parameters = api.getComponents().getParameters();
+        Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wfs.getGeoServer().getCatalog();
         List<String> validCollectionIds =
                 catalog.getFeatureTypes()
@@ -103,6 +106,18 @@ public class OpenAPIBuilder {
                         .map(ft -> NCNameResourceCodec.encode(ft))
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
+
+        // provide actual values for limit
+        Parameter limit = parameters.get("limit");
+        BigDecimal limitMax;
+        if (wfs.getMaxFeatures() > 0) {
+            limitMax = BigDecimal.valueOf(wfs.getMaxFeatures());
+        } else {
+            limitMax = BigDecimal.valueOf(Integer.MAX_VALUE);
+        }
+        limit.getSchema().setMaximum(limitMax);
+        // for the moment we don't have a setting for the default, keep it same as max
+        limit.getSchema().setDefault(limitMax);
 
         return api;
     }

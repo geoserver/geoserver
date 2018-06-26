@@ -21,6 +21,8 @@ import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
 
+import io.swagger.v3.oas.models.OpenAPI;
+
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
@@ -57,7 +59,7 @@ public class LandingPageDocument {
         addLinksFor(
                 baseUrl,
                 "wfs3/api",
-                APIDocument.class,
+                OpenAPI.class,
                 "API definition for this endpoint as ",
                 null);
         // conformance

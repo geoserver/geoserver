@@ -12,7 +12,6 @@ public class Link {
     public static final String REL_SELF = "self";
     public static final String REL_ALTERNATE = "alternate";
     public static final String REL_ABOUT = "about";
-    public static final String REL_DESCRIBEDBY = "describedBy";
     static final String ATOM_NS = "http://www.w3.org/2005/Atom";
 
     String href;

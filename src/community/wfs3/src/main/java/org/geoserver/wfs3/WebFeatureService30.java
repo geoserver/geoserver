@@ -28,7 +28,7 @@ public interface WebFeatureService30 {
      * @return A {@link CollectionDocument} or a {@link CollectionsDocument} depending on the
      *     request
      */
-    Object collections(CollectionsRequest request);
+    CollectionsDocument collections(CollectionsRequest request);
 
     /**
      * The OpenAPI description of the service

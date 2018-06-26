@@ -64,7 +64,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     }
 
     @Override
-    public Object collections(CollectionsRequest request) {
+    public CollectionsDocument collections(CollectionsRequest request) {
         if (request.getTypeName() == null) {
             // all collections
             return new CollectionsDocument(request, getService(), getCatalog());

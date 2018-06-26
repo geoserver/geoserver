@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.media.BinarySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.ManifestLoader;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -91,6 +93,16 @@ public class OpenAPIBuilder {
                 api,
                 "/collections/{collectionId}/items/{featureId}",
                 FeatureCollectionResponse.class);
+
+        // provide a list of valid values for collectionId
+        Parameter collectionId = api.getComponents().getParameters().get("collectionId");
+        Catalog catalog = wfs.getGeoServer().getCatalog();
+        List<String> validCollectionIds =
+                catalog.getFeatureTypes()
+                        .stream()
+                        .map(ft -> NCNameResourceCodec.encode(ft))
+                        .collect(Collectors.toList());
+        collectionId.getSchema().setEnum(validCollectionIds);
 
         return api;
     }

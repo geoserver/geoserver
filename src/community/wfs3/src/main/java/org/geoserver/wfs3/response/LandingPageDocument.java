@@ -9,6 +9,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import io.swagger.v3.oas.models.OpenAPI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,8 +21,6 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
-
-import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
@@ -57,11 +56,7 @@ public class LandingPageDocument {
                 });
         // api
         addLinksFor(
-                baseUrl,
-                "wfs3/api",
-                OpenAPI.class,
-                "API definition for this endpoint as ",
-                null);
+                baseUrl, "wfs3/api", OpenAPI.class, "API definition for this endpoint as ", null);
         // conformance
         addLinksFor(
                 baseUrl,

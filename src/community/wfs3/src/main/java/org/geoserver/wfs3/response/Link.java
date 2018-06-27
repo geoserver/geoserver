@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs3.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class Link {
@@ -18,8 +19,17 @@ public class Link {
     String rel;
     String type;
     String title;
+    String classification;
 
     public Link() {}
+
+    public Link(String href, String rel, String type, String title, String classification) {
+        this.href = href;
+        this.rel = rel;
+        this.type = type;
+        this.title = title;
+        this.classification = classification;
+    }
 
     public Link(String href, String rel, String type, String title) {
         this.href = href;
@@ -62,5 +72,14 @@ public class Link {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @JsonIgnore
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 }

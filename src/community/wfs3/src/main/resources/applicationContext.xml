@@ -59,6 +59,10 @@
   <bean id="landingPageResponse" class="org.geoserver.wfs3.response.LandingPageResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="landingPageHTMLResponse" class="org.geoserver.wfs3.response.LandingPageHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
   <bean id="collectionsResponse" class="org.geoserver.wfs3.response.CollectionsDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
@@ -104,5 +108,16 @@
       </props>
     </property>
   </bean>
+
+  <bean id="wfsClasspathPublisherMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/wfs3css/**">classpathPublisher</prop>
+      </props>
+    </property>
+  </bean>
+
 
 </beans>

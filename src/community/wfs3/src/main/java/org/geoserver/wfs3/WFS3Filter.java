@@ -74,7 +74,7 @@ public class WFS3Filter implements GeoServerFilter {
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
         String path = requestHTTP.getRequestURI();
-        return path.contains("wfs3");
+        return path.contains("wfs3") && !path.contains("wfs3css");
     }
 
     @Override

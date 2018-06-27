@@ -9,18 +9,26 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import io.swagger.v3.oas.models.OpenAPI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
@@ -46,6 +54,7 @@ public class LandingPageDocument {
                 "wfs3/",
                 LandingPageDocument.class,
                 "This document as ",
+                "landingPage",
                 (format, link) -> {
                     String outputFormat = request.getOutputFormat();
                     if (format.equals(outputFormat)
@@ -56,13 +65,19 @@ public class LandingPageDocument {
                 });
         // api
         addLinksFor(
-                baseUrl, "wfs3/api", OpenAPI.class, "API definition for this endpoint as ", null);
+                baseUrl,
+                "wfs3/api",
+                OpenAPI.class,
+                "API definition for this endpoint as ",
+                "api",
+                null);
         // conformance
         addLinksFor(
                 baseUrl,
                 "wfs3/conformance",
                 ConformanceDocument.class,
                 "Conformance declaration as ",
+                "conformance",
                 null);
         // collections
         addLinksFor(
@@ -70,6 +85,7 @@ public class LandingPageDocument {
                 "wfs3/collections",
                 CollectionsDocument.class,
                 "Collections Metadata as ",
+                "collections",
                 null);
     }
 
@@ -79,6 +95,7 @@ public class LandingPageDocument {
             String path,
             Class<?> responseType,
             String titlePrefix,
+            String classification,
             BiConsumer<String, Link> linkUpdater) {
         for (String format : DefaultWebFeatureService30.getAvailableFormats(responseType)) {
             Map<String, String> params = Collections.singletonMap("f", format);
@@ -86,6 +103,7 @@ public class LandingPageDocument {
             String linkType = Link.REL_SERVICE;
             String linkTitle = titlePrefix + format;
             Link link = new Link(url, linkType, format, linkTitle);
+            link.setClassification(classification);
             if (linkUpdater != null) {
                 linkUpdater.accept(format, link);
             }
@@ -101,5 +119,20 @@ public class LandingPageDocument {
     @JacksonXmlElementWrapper(useWrapping = false)
     public List<Link> getLinks() {
         return links;
+    }
+
+    public String getLinkUrl(String classification, String type) {
+        return links.stream()
+                .filter(l -> Objects.equals(classification, l.getClassification()))
+                .filter(l -> type.equals(l.getType()))
+                .map(l -> l.getHref())
+                .findFirst().orElse(null);
+    }
+
+    public List<Link> getLinksExcept(String classification, String excludedType) {
+        return links.stream()
+                .filter(l -> Objects.equals(classification, l.getClassification()))
+                .filter(l -> !excludedType.equals(l.getType()))
+                .collect(Collectors.toList());
     }
 }

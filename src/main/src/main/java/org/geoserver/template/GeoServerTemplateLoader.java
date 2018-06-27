@@ -21,6 +21,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -85,6 +86,9 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      * @deprecated Keeping this around for backwards compatibility, use resource
      */
     SimpleFeatureType featureType;
+
+    /** Allows for workspace specific lookups */
+    WorkspaceInfo workspace;
 
     /**
      * Coverage info directory to load template against. Its presence is mutually exclusive with
@@ -193,6 +197,10 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         this.resource = resource;
     }
 
+    public void setWorkspace(WorkspaceInfo workspace) {
+        this.workspace = workspace;
+    }
+
     public Object findTemplateSource(String path) throws IOException {
         File template = null;
 
@@ -221,6 +229,22 @@ public class GeoServerTemplateLoader implements TemplateLoader {
             if (template == null) {
                 // try global supplementary files
                 template = dd.findSuppWorkspacesFile(resource.getStore().getWorkspace(), path);
+            }
+
+            if (template != null) {
+                return template;
+            }
+        }
+
+        if (workspace != null) {
+            if (template == null) {
+                // next try relative to the workspace
+                template = dd.findSuppWorkspaceFile(workspace, path);
+            }
+
+            if (template == null) {
+                // try global supplementary files
+                template = dd.findSuppWorkspacesFile(workspace, path);
             }
 
             if (template != null) {

@@ -94,11 +94,10 @@ public class LandingPageTest extends WFS3TestSupport {
 
     @Test
     public void testLandingPageHTML() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("wfs3?f=html");
+        MockHttpServletResponse response = getAsServletResponse("wfs3?f=html");
         assertEquals(200, response.getStatus());
         assertEquals("text/html", response.getContentType());
-        
+
         System.out.println(response.getContentAsString());
 
         // parse the HTML

@@ -9,26 +9,20 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
+import io.swagger.v3.oas.models.OpenAPI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.LandingPageRequest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * A class representing the WFS3 server "contents" in a way that Jackson can easily translate to
@@ -126,7 +120,8 @@ public class LandingPageDocument {
                 .filter(l -> Objects.equals(classification, l.getClassification()))
                 .filter(l -> type.equals(l.getType()))
                 .map(l -> l.getHref())
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Link> getLinksExcept(String classification, String excludedType) {

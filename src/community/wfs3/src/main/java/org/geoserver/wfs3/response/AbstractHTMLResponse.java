@@ -2,14 +2,20 @@
  *  (c) 2018 Open Source Geospatial Foundation - all rights reserved
  *  * This code is licensed under the GPL 2.0 license, available at the root
  *  * application directory.
- *  
+ *
  */
 package org.geoserver.wfs3.response;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -19,15 +25,6 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-
 public abstract class AbstractHTMLResponse extends Response {
 
     private static Configuration templateConfig = new Configuration();
@@ -35,7 +32,8 @@ public abstract class AbstractHTMLResponse extends Response {
     private final GeoServerResourceLoader resoureLoader;
     private final GeoServer geoServer;
 
-    public AbstractHTMLResponse(Class<?> binding, GeoServerResourceLoader loader, GeoServer geoServer)
+    public AbstractHTMLResponse(
+            Class<?> binding, GeoServerResourceLoader loader, GeoServer geoServer)
             throws IOException {
         super(binding, BaseRequest.HTML_MIME);
         this.resoureLoader = loader;
@@ -73,13 +71,15 @@ public abstract class AbstractHTMLResponse extends Response {
 
     /**
      * Returns the template name to be used for the object to be encoded
+     *
      * @param value
      * @return
      */
     protected abstract String getTemplateName(Object value);
 
     /**
-     * Returns the eventual ResourceInfo associated with the 
+     * Returns the eventual ResourceInfo associated with the
+     *
      * @param value
      * @return
      */
@@ -88,12 +88,12 @@ public abstract class AbstractHTMLResponse extends Response {
      * Returns the template for the specified feature type. Looking up templates is pretty
      * expensive, so we cache templates by feture type and template.
      */
-    protected Template getTemplate(ResourceInfo resource, String templateName)
-            throws IOException {
+    protected Template getTemplate(ResourceInfo resource, String templateName) throws IOException {
         // otherwise, build a loader and do the lookup
-        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(getClass(), resoureLoader);
+        GeoServerTemplateLoader templateLoader =
+                new GeoServerTemplateLoader(getClass(), resoureLoader);
         if (resource != null) {
-            templateLoader.setResource(resource); 
+            templateLoader.setResource(resource);
         } else {
             WorkspaceInfo ws = LocalWorkspace.get();
             if (ws != null) {
@@ -106,7 +106,7 @@ public abstract class AbstractHTMLResponse extends Response {
             templateConfig.setTemplateLoader(templateLoader);
             Template t = templateConfig.getTemplate(templateName);
             t.setEncoding("UTF-8");
-            return  t;
+            return t;
         }
     }
 }

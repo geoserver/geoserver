@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -408,6 +409,8 @@ public class BackupTest extends BackupRestoreTestSupport {
                 GeoServerExtensions.bean(GeoServerDataDirectory.class);
         Resource extraResource = dataDirectory.get(ExtraFileHandler.EXTRA_FILE_NAME);
         assertThat(extraResource.file().exists(), is(true));
+        assertThat(extraResource.file().length(), not(0));
+
         // load the properties
         Properties extraProperties = new Properties();
         try (InputStream input = extraResource.in()) {

@@ -274,34 +274,34 @@ on the second band, the GreenChannel on the fifth band and the BlueChannel on th
 
 .. code-block:: xml
 
-<RasterSymbolizer>
-  <ChannelSelection>
-    <RedChannel>
-      <SourceChannelName>
-          <ogc:Function name="env">
-             <ogc:Literal>B1</ogc:Literal>
-             <ogc:Literal>1</ogc:Literal>
-          </ogc:Function>
-      </SourceChannelName>
-    </RedChannel>
-    <GreenChannel>
-      <SourceChannelName>
-          <ogc:Function name="env">
-             <ogc:Literal>B2</ogc:Literal>
-             <ogc:Literal>2</ogc:Literal>
-          </ogc:Function>
-      </SourceChannelName>
-    </GreenChannel>
-    <BlueChannel>
-      <SourceChannelName>
-          <ogc:Function name="env">
-             <ogc:Literal>B3</ogc:Literal>
-             <ogc:Literal>3</ogc:Literal>
-          </ogc:Function>
-      </SourceChannelName>
-    </BlueChannel>
-  </ChannelSelection>
-<RasterSymbolizer>
+    <RasterSymbolizer>
+    <ChannelSelection>
+    	<RedChannel>
+    	<SourceChannelName>
+    		<ogc:Function name="env">
+    			<ogc:Literal>B1</ogc:Literal>
+    			<ogc:Literal>1</ogc:Literal>
+    		</ogc:Function>
+    	</SourceChannelName>
+    	</RedChannel>
+    	<GreenChannel>
+    	<SourceChannelName>
+    		<ogc:Function name="env">
+    			<ogc:Literal>B2</ogc:Literal>
+    			<ogc:Literal>2</ogc:Literal>
+    		</ogc:Function>
+    	</SourceChannelName>
+    	</GreenChannel>
+    	<BlueChannel>
+    	<SourceChannelName>
+    		<ogc:Function name="env">
+    			<ogc:Literal>B3</ogc:Literal>
+    			<ogc:Literal>3</ogc:Literal>
+    		</ogc:Function>
+    	</SourceChannelName>
+    	</BlueChannel>
+    </ChannelSelection>
+    <RasterSymbolizer>
 
 .. figure:: img/channelsexpression1.png
    :align: left 
@@ -317,11 +317,70 @@ The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:
 One can specify the ``env`` request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, 
 for example the 4, 2, 3 as the following: 
 
-	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=&bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
+	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=
+	&bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
    
-.. figure:: img/channels2.png
+.. figure:: img/channelsexpression2.png
    :align: left
+   
+Now let us suppose that we want to work on a single band and to exclude all the remaining bands in order to render a monochromatic raster. 
+As an SLD example:
 
+.. code-block:: xml
+
+    <RasterSymbolizer>
+      <Opacity>1.0</se:Opacity>
+      <ChannelSelection>
+        <GrayChannel>
+          <SourceChannelName>
+            	<Function name="env">
+                 <ogc:Literal>B1</ogc:Literal>
+                 <ogc:Literal>1</ogc:Literal>
+              </ogc:Function>
+          </SourceChannelName>
+        </GrayChannel>
+      </ChannelSelection>
+    </RasterSymbolizer>
+   
+.. figure:: img/channelsexpression3.png
+   :align: left
+ 
+The Schema above will render the channel "1" by default. As before, you can choose to render any channel of the raster by calling the ``env`` function in your 
+WMS request and setting the desired band. By adding to the request &env=B1:3 for example:
+
+	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:usa&styles=
+	&bbox=-130.85168,20.7052,-62.0054,54.1141&width=768&height=372&srs=EPSG:4326&format=application/openlayers&env=B1:3
+
+.. figure:: img/channelsexpression4.png
+   :align: left
+   
+Finally, you can add a ColorMap on the selected channel as the following:
+
+.. code-block:: xml
+
+    <RasterSymbolizer>
+     <Opacity>1.0</Opacity>
+     <ChannelSelection>
+       <GrayChannel>
+         <SourceChannelName>
+           	<ogc:Function name="env">
+                <ogc:Literal>B1</ogc:Literal>
+                <ogc:Literal>1</ogc:Literal>
+             </ogc:Function>
+         </SourceChannelName>
+       </GrayChannel>
+     </ChannelSelection>
+     <ColorMap extended="true">
+         <ColorMapEntry color="#0000ff" quantity="50.0"/>
+         <ColorMapEntry color="#009933" quantity="100.0"/>
+         <ColorMapEntry color="#ff9900" quantity="150.0" />
+         <ColorMapEntry color="#ff0000" quantity="200.0"/>
+     </ColorMap>
+    </RasterSymbolizer> 	
+   
+.. figure:: img/channelsexpression5.png
+   :align: left
+ 
 ContrastEnhancement
 ^^^^^^^^^^^^^^^^^^^
 

@@ -12,7 +12,9 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.geoserver.data.test.MockData;
+import org.jsoup.Jsoup;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends WFS3TestSupport {
 
@@ -145,5 +147,19 @@ public class FeatureTest extends WFS3TestSupport {
         assertEquals("InvalidParameterValue", json.read("code"));
         assertThat(
                 json.read("description"), both(containsString("COUNT")).and(containsString("abc")));
+    }
+
+    @Test
+    public void testGetLayerAsHTML() throws Exception {
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse response =
+                getAsServletResponse("wfs3/collections/" + roadSegments + "/items?f=html");
+        assertEquals(200, response.getStatus());
+        assertEquals("text/html", response.getContentType());
+
+        System.out.println(response.getContentAsString());
+
+        // parse the HTML
+        org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
     }
 }

@@ -14,14 +14,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 
@@ -29,15 +26,14 @@ public abstract class AbstractHTMLResponse extends Response {
 
     private static Configuration templateConfig = new Configuration();
 
-    private final GeoServerResourceLoader resoureLoader;
     private final GeoServer geoServer;
+    private FreemarkerTemplateSupport templateSupport;
 
     public AbstractHTMLResponse(
-            Class<?> binding, GeoServerResourceLoader loader, GeoServer geoServer)
-            throws IOException {
+            Class<?> binding, GeoServerResourceLoader loader, GeoServer geoServer) {
         super(binding, BaseRequest.HTML_MIME);
-        this.resoureLoader = loader;
         this.geoServer = geoServer;
+        this.templateSupport = new FreemarkerTemplateSupport(loader, geoServer);
     }
 
     @Override
@@ -50,7 +46,7 @@ public abstract class AbstractHTMLResponse extends Response {
             throws IOException, ServiceException {
         final ResourceInfo ri = getResource(value);
         final String templateName = getTemplateName(value);
-        Template template = getTemplate(ri, templateName);
+        Template template = templateSupport.getTemplate(ri, templateName);
 
         try {
             HashMap<String, Object> model = new HashMap<>();
@@ -84,29 +80,4 @@ public abstract class AbstractHTMLResponse extends Response {
      * @return
      */
     protected abstract ResourceInfo getResource(Object value);
-    /**
-     * Returns the template for the specified feature type. Looking up templates is pretty
-     * expensive, so we cache templates by feture type and template.
-     */
-    protected Template getTemplate(ResourceInfo resource, String templateName) throws IOException {
-        // otherwise, build a loader and do the lookup
-        GeoServerTemplateLoader templateLoader =
-                new GeoServerTemplateLoader(getClass(), resoureLoader);
-        if (resource != null) {
-            templateLoader.setResource(resource);
-        } else {
-            WorkspaceInfo ws = LocalWorkspace.get();
-            if (ws != null) {
-                templateLoader.setWorkspace(ws);
-            }
-        }
-
-        // Configuration is not thread safe
-        synchronized (templateConfig) {
-            templateConfig.setTemplateLoader(templateLoader);
-            Template t = templateConfig.getTemplate(templateName);
-            t.setEncoding("UTF-8");
-            return t;
-        }
-    }
 }

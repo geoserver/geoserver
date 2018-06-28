@@ -737,16 +737,11 @@ public class GetFeature {
                                         (SimpleFeatureCollection) features, targetType);
                     }
 
-                    // JD: TODO reoptimize
-                    //                if ( i == request.getQuery().size() - 1 ) {
-                    //                  //DJB: dont calculate feature count if you dont have to. The
-                    // MaxFeatureReader will take care of the last iteration
-                    //                  maxFeatures -= features.getCount();
-                    //                }
+                    // allow encoders to grab information about this layer if needs be
+                    if (primaryMeta != null) {
+                        features = TypeInfoCollectionWrapper.wrap(features, primaryMeta);
+                    }
 
-                    // GR: I don't know if the featuresults should be added here for later
-                    // encoding if it was a lock request. may be after ensuring the lock
-                    // succeed?
                     results.add(features);
                 } catch (WFSException e) {
                     // intercept and set locator to query handle if one was set, or if it simply set

@@ -73,7 +73,7 @@ public class CollectionsTest extends WFS3TestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("text/html", response.getContentType());
 
-        System.out.println(response.getContentAsString());
+        // System.out.println(response.getContentAsString());
 
         // parse the HTML
         org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
@@ -84,7 +84,9 @@ public class CollectionsTest extends WFS3TestSupport {
             String encodedName = NCNameResourceCodec.encode(featureType);
             assertNotNull(document.select("#html_" + encodedName + "_link"));
             assertEquals(
-                    "&limit=50" /* Not encoded yet "http://localhost:8080/geoserver/wfs3/collections?f=text/html"  */,
+                    "http://localhost:8080/geoserver/wfs3/collections/"
+                            + encodedName
+                            + "/items?f=text%2Fhtml&limit=50",
                     document.select("#html_" + encodedName + "_link").attr("href"));
         }
 

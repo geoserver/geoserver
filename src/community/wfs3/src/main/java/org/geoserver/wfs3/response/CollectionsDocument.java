@@ -7,7 +7,6 @@ package org.geoserver.wfs3.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,11 +28,10 @@ import org.opengis.filter.Filter;
  */
 @JacksonXmlRootElement(localName = "Collections")
 @JsonPropertyOrder({"links", "links", "collections"})
-public class CollectionsDocument {
+public class CollectionsDocument extends AbstractDocument {
 
     private final Catalog catalog;
     private final WFSInfo wfs;
-    private final List<Link> links = new ArrayList<>();
     private final BaseRequest request;
     private final FeatureTypeInfo featureType;
 

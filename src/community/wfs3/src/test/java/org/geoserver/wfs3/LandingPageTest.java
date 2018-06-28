@@ -36,7 +36,7 @@ public class LandingPageTest extends WFS3TestSupport {
     }
 
     private void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(13, (int) json.read("links.length()", Integer.class));
+        assertEquals(14, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -62,6 +62,7 @@ public class LandingPageTest extends WFS3TestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*wfs3\\/collections.*/)].rel",
+                "service",
                 "service",
                 "service",
                 "service");
@@ -104,8 +105,8 @@ public class LandingPageTest extends WFS3TestSupport {
         org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
         // check a couple of links
         assertEquals(
-                "" /* Not encoded yet "http://localhost:8080/geoserver/wfs3/collections?f=text/html"  */,
-                document.select("#collectionsHtmlLink").attr("href"));
+                "http://localhost:8080/geoserver/wfs3/collections?f=text%2Fhtml",
+                document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
                 "http://localhost:8080/geoserver/wfs3/api?f=application%2Fjson",
                 document.select("#jsonApiLink").attr("href"));

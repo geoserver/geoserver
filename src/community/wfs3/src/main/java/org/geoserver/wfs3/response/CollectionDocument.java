@@ -7,7 +7,6 @@ package org.geoserver.wfs3.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -22,19 +21,18 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"name", "title", "description", "extent", "links"})
-public class CollectionDocument {
+public class CollectionDocument extends AbstractDocument {
     String name;
     String title;
     String description;
     WFSExtents extent;
-    List<Link> links = new ArrayList<>();
 
     public CollectionDocument(BaseRequest request, FeatureTypeInfo featureType) {
         // basic info
         String collectionId = NCNameResourceCodec.encode(featureType);
         setName(collectionId);
         setTitle(featureType.getTitle());
-        setDescription(featureType.getDescription());
+        setDescription(featureType.getAbstract());
         ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
         setExtent(new WFSExtents(bbox));
 
@@ -49,7 +47,13 @@ public class CollectionDocument {
                             "wfs3/collections/" + collectionId + "/items",
                             Collections.singletonMap("f", format),
                             URLMangler.URLType.SERVICE);
-            addLink(new Link(apiUrl, Link.REL_ABOUT, format, collectionId + " as " + format));
+            addLink(
+                    new Link(
+                            apiUrl,
+                            Link.REL_ABOUT,
+                            format,
+                            collectionId + " as " + format,
+                            "items"));
         }
     }
 
@@ -92,9 +96,5 @@ public class CollectionDocument {
     @JacksonXmlElementWrapper(useWrapping = false)
     public List<Link> getLinks() {
         return links;
-    }
-
-    public void addLink(Link link) {
-        links.add(link);
     }
 }

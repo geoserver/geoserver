@@ -315,10 +315,9 @@ The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:
  * { raster-channels: @B1(1)  '2' '3';}
 
 One can specify the ``env`` request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, 
-for example the 4, 2, 3 as the following: 
+for example the 4, 2, 3 as the following:: 
 
-    http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=&
-    bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
+	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=&bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
    
 .. figure:: img/channelsexpression2.png
    :align: left
@@ -335,7 +334,7 @@ As an SLD example:
           <SourceChannelName>
             	<Function name="env">
                  <ogc:Literal>B1</ogc:Literal>
-                 <ogc:Literal>1</ogc:Literal>
+                 <ogc:Literal>7</ogc:Literal>
               </ogc:Function>
           </SourceChannelName>
         </GrayChannel>
@@ -345,11 +344,10 @@ As an SLD example:
 .. figure:: img/channelsexpression3.png
    :align: left
  
-The Schema above will render the channel "1" by default. As before, you can choose to render any channel of the raster by calling the ``env`` function in your 
-WMS request and setting the desired band. By adding to the request &env=B1:3 for example:
+The Schema above will render the channel "7" by default. As before, you can choose to render any channel of the raster by calling the ``env`` function in your 
+WMS request and setting the desired band. By adding to the request &env=B1:3 for example::
 
-    http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:usa&styles=&
-    bbox=-130.85168,20.7052,-62.0054,54.1141&width=768&height=372&srs=EPSG:4326&format=application/openlayers&env=B1:3
+	http://localhost:8083/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:usa&styles=&bbox=-130.85168,20.7052,-62.0054,54.1141&width=768&height=372&srs=EPSG:4326&format=application/openlayers&env=B1:3
 
 .. figure:: img/channelsexpression4.png
    :align: left
@@ -365,12 +363,12 @@ Finally, you can add a ColorMap on the selected channel as the following:
          <SourceChannelName>
            	<ogc:Function name="env">
                 <ogc:Literal>B1</ogc:Literal>
-                <ogc:Literal>1</ogc:Literal>
+                <ogc:Literal>7</ogc:Literal>
              </ogc:Function>
          </SourceChannelName>
        </GrayChannel>
      </ChannelSelection>
-     <ColorMap extended="true">
+     <ColorMap>
          <ColorMapEntry color="#0000ff" quantity="50.0"/>
          <ColorMapEntry color="#009933" quantity="100.0"/>
          <ColorMapEntry color="#ff9900" quantity="150.0" />

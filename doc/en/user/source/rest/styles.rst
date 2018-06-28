@@ -119,7 +119,7 @@ You can create a new style on the server in two ways. In the first way, the crea
 
    ::
 
-     curl -v -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld+xml" -d @roads.sld http://localhost:8080/geoserver/rest/styles/roads_styl
+     curl -v -u admin:geoserver -XPUT -H "Content-type: application/vnd.ogc.sld+xml" -d @roads.sld http://localhost:8080/geoserver/rest/styles/roads_style
 
 *Response*
 
@@ -143,6 +143,39 @@ You can create a new style on the server in two ways. In the first way, the crea
 
    201 Created
 
+   
+This example will create a new style on the server and populate it the contents of a local SLD file and related images provided in a SLD package. 
+A SLD package is a zip file containing the SLD style and related image files used in the SLD.
+
+The following creates a new style named ``roads_style``.
+
+Each code block below contains a single command that may be extended over multiple lines.
+
+*Request*
+
+.. admonition:: curl
+
+   ::
+
+     curl -u admin:geoserver -XPOST -H "Content-type: application/zip"
+     --data-binary @roads_style.zip
+     http://localhost:8080/geoserver/rest/styles
+
+*Response*
+
+::
+
+   201 OK
+   
+The SLD itself can be downloaded through a a GET request: 
+
+.. admonition:: curl
+
+   ::
+
+     curl -v -u admin:geoserver -XGET
+     http://localhost:8080/geoserver/rest/styles/roads_style.sld  
+   
 Changing an existing style
 --------------------------
 
@@ -195,6 +228,8 @@ Changing an existing style
 ::
 
    200 OK
+   
+
 
 Deleting a style
 ----------------

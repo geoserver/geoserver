@@ -317,8 +317,8 @@ The style Schema supports also the SLD 1.1 and CSS. As a CSS examples:
 One can specify the ``env`` request parameters in the WMS request to switch the bands and render the raster layer using the desired bands, 
 for example the 4, 2, 3 as the following: 
 
-	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=
-	&bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
+	http://localhost:8083/geosolutions/wms?service=WMS&version=1.1.0&request=GetMap&layers=geosolutions:raster_multichannel&styles=&
+	bbox=-180.0,-90.5,180.0,90.5&width=768&height=386&srs=EPSG:4326&format=application/openlayers&env=B1:4;B2:2;B3:3
    
 .. figure:: img/channelsexpression2.png
    :align: left

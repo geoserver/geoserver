@@ -78,6 +78,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         Arrays.asList(ResourceErrorHandling.values()),
                         new ResourceErrorHandlingRenderer()));
         form.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
+        form.add(new CheckBox("useHeadersProxyURL"));
 
         logLevelsAppend(form, loggingInfoModel);
         form.add(

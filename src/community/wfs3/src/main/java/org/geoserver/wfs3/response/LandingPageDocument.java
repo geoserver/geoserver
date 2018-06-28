@@ -6,17 +6,11 @@ package org.geoserver.wfs3.response;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.v3.oas.models.OpenAPI;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.wfs.WFSInfo;
@@ -29,11 +23,10 @@ import org.geoserver.wfs3.LandingPageRequest;
  * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JacksonXmlRootElement(localName = "LandingPage")
-public class LandingPageDocument {
+public class LandingPageDocument extends AbstractDocument {
 
     private final Catalog catalog;
     private final WFSInfo wfs;
-    private final List<Link> links = new ArrayList<>();
     private final LandingPageRequest request;
 
     public LandingPageDocument(LandingPageRequest request, WFSInfo wfs, Catalog catalog) {
@@ -101,33 +94,7 @@ public class LandingPageDocument {
             if (linkUpdater != null) {
                 linkUpdater.accept(format, link);
             }
-            links.add(link);
+            addLink(link);
         }
-    }
-
-    public void addLink(Link link) {
-        links.add(link);
-    }
-
-    @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public String getLinkUrl(String classification, String type) {
-        return links.stream()
-                .filter(l -> Objects.equals(classification, l.getClassification()))
-                .filter(l -> type.equals(l.getType()))
-                .map(l -> l.getHref())
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<Link> getLinksExcept(String classification, String excludedType) {
-        return links.stream()
-                .filter(l -> Objects.equals(classification, l.getClassification()))
-                .filter(l -> !excludedType.equals(l.getType()))
-                .collect(Collectors.toList());
     }
 }

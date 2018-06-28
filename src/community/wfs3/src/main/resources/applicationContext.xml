@@ -66,6 +66,10 @@
   <bean id="collectionsResponse" class="org.geoserver.wfs3.response.CollectionsDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="collectionsHTMLResponse" class="org.geoserver.wfs3.response.CollectionsHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
   <bean id="collectionResponse" class="org.geoserver.wfs3.response.CollectionDocumentResponse">
     <constructor-arg ref="geoServer"/>
   </bean>

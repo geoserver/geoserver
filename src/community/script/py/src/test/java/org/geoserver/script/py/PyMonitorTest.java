@@ -4,8 +4,6 @@
  */
 package org.geoserver.script.py;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.script.wps.ScriptProcessFactory;
@@ -14,6 +12,8 @@ import org.geoserver.wps.WPSException;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessException;
 import org.geotools.util.DefaultProgressListener;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 import org.python.core.PyException;

@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo.store;
 
 import com.google.common.base.Objects;
-import org.locationtech.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +44,7 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.jdbc.VirtualTable;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;

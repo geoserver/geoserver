@@ -11,7 +11,6 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.RA
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import org.locationtech.jts.geom.Polygon;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +48,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;

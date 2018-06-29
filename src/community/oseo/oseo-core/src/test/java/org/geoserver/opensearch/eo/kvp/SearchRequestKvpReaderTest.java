@@ -12,8 +12,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +31,8 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.And;
 import org.opengis.filter.BinaryComparisonOperator;
 import org.opengis.filter.Filter;

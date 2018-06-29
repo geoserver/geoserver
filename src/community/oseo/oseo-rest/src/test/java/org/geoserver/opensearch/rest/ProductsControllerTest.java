@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
-import org.locationtech.jts.geom.Envelope;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -37,6 +36,7 @@ import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;

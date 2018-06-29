@@ -8,10 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.apache.wicket.MarkupContainer;
+import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.junit.After;
 import org.junit.Test;
 
 /** Test suite for {@link DataAccessNewPage}, using {@link PostgisNGDataStoreFactory} */
@@ -19,13 +21,18 @@ public class DataAccessNewPageDatabaseTest extends GeoServerWicketTestSupport {
     final JDBCDataStoreFactory dataStoreFactory = new PostgisNGDataStoreFactory();
 
     private AbstractDataAccessPage startPage() {
-
+        AdminRequest.start(new Object());
+        login();
         final AbstractDataAccessPage page =
                 new DataAccessNewPage(dataStoreFactory.getDisplayName());
-        login();
         tester.startPage(page);
 
         return page;
+    }
+
+    @After
+    public void clearAdminRequest() {
+        AdminRequest.finish();
     }
 
     @Test

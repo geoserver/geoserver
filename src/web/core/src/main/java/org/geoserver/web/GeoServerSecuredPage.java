@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -51,9 +52,9 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
             session.setAttribute(SAVED_REQUEST, savedRequest);
 
             // then redirect to the login page
-            setResponsePage(GeoServerLoginPage.class);
+            throw new RestartResponseException(GeoServerLoginPage.class);
         } else if (!getPageAuthorizer().isAccessAllowed(this.getClass(), auth))
-            setResponsePage(UnauthorizedPage.class);
+            throw new RestartResponseException(UnauthorizedPage.class);
     }
 
     /**

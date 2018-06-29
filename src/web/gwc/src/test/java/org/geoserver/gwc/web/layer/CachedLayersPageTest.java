@@ -19,6 +19,7 @@ import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geowebcache.layer.TileLayer;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,6 +30,11 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             new GeoServerExtensionsHelper.ExtensionsHelperRule();
 
     protected static final String NATURE_GROUP = "nature";
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

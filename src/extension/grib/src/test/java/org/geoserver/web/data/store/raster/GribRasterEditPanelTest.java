@@ -19,12 +19,18 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.CoverageStoreNewPage;
 import org.geotools.coverage.io.grib.GRIBFormat;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GribRasterEditPanelTest extends GeoServerWicketTestSupport {
 
     protected static QName SAMPLE_GRIB =
             new QName(MockData.SF_URI, "sampleGrib", MockData.SF_PREFIX);
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

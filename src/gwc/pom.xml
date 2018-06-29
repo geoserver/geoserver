@@ -46,6 +46,12 @@
     <dependency>
       <groupId>org.geowebcache</groupId>
       <artifactId>gwc-georss</artifactId>
+      <exclusions>
+        <exclusion>
+           <groupId>org.locationtech.jts</groupId>
+           <artifactId>jts-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geowebcache</groupId>

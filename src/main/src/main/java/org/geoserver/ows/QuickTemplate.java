@@ -23,9 +23,9 @@ class QuickTemplate {
      * @return
      */
     static String replaceVariables(CharSequence template, Map<String, String> variables) {
-        StringBuilder sb = new StringBuilder(template);
+        StringBuilder sb = new StringBuilder(template.toString().toLowerCase());
         for (Map.Entry<String, String> entry : variables.entrySet()) {
-            replaceVariable(sb, entry.getKey(), entry.getValue());
+            replaceVariable(sb, entry.getKey().toLowerCase(), entry.getValue());
         }
 
         return sb.toString();

@@ -238,10 +238,9 @@ public class URLProxifyingTest {
     }
 
     @Test
-    @Ignore // FIXME
     public void testProxyBaseURLFlagSetWithTemplateMixedCase() throws Exception {
         createAppContext(
-                "http://${X-ForwarDED-HoSTt}/${x-forwarded-PATH}/geoserver",
+                "http://${X-ForwarDED-HoST}/${x-forwarded-PATH}/geoserver",
                 true,
                 null,
                 null,

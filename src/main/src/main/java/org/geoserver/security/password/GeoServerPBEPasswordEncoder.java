@@ -17,7 +17,7 @@ import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.KeyStoreProviderImpl;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.spring.security3.PBEPasswordEncoder;
+import org.jasypt.springsecurity3.authentication.encoding.PBEPasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.crypto.codec.Base64;
 

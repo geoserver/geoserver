@@ -725,7 +725,7 @@
    <dependency>
     <groupId>commons-io</groupId>
     <artifactId>commons-io</artifactId>
-    <version>2.1</version>
+    <version>2.6</version>
    </dependency>
    <dependency>
     <groupId>commons-codec</groupId>
@@ -889,12 +889,17 @@
    <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
-      <version>1.8</version>
+      <version>${jasypt.version}</version>
+   </dependency>
+   <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt-springsecurity3</artifactId>
+      <version>${jasypt.version}</version>
    </dependency>
    <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk15on</artifactId>
-    <version>1.54</version>
+    <version>${bouncycastle.version}</version>
    </dependency>
    <dependency>
      <groupId>org.apache.wicket</groupId>
@@ -1829,7 +1834,6 @@
        </formats>
     </configuration> 
    </plugin>
-
   </plugins>
  </reporting>
 
@@ -1876,7 +1880,7 @@
   <gt.version>20-SNAPSHOT</gt.version>
   <gwc.version>1.14-SNAPSHOT</gwc.version>
   <spring.version>4.3.16.RELEASE</spring.version>
-  <spring.security.version>4.0.4.RELEASE</spring.security.version> 
+  <spring.security.version>4.2.7.RELEASE</spring.security.version> 
   <servlet-api.version>3.0.1</servlet-api.version>
   <jetty.version>9.2.13.v20150730</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
@@ -1919,6 +1923,8 @@
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
+  <bouncycastle.version>1.59</bouncycastle.version>
+  <jasypt.version>1.9.2</jasypt.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
@@ -2107,6 +2113,30 @@
                 <phase>test</phase>
                 <goals>
                   <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Dependency version checks -->
+    <profile>
+      <id>dependencycheck</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+              <failBuildOnCVSS>8</failBuildOnCVSS>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
                 </goals>
               </execution>
             </executions>

@@ -5,7 +5,7 @@
 package org.geoserver.opensearch.eo.store;
 
 import com.google.common.base.Objects;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

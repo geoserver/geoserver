@@ -9,7 +9,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 
 import com.google.common.base.Stopwatch;
-import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +30,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.renderer.lite.VectorMapRenderUtils;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;

@@ -7,16 +7,6 @@ package org.geoserver.wms.vector;
 import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
 import com.google.common.base.Throwables;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -32,6 +22,16 @@ import org.geotools.renderer.ScreenMap;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -352,7 +352,7 @@ class PipelineBuilder {
             if (geom.getDimension() == 0) {
                 return geom;
             }
-            // DJB: Use this instead of com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier
+            // DJB: Use this instead of org.locationtech.jts.simplify.DouglasPeuckerSimplifier
             // because
             // DPS does NOT do a good job with polygons.
             TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geom);
@@ -464,7 +464,7 @@ class PipelineBuilder {
             if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
                 return result;
             }
-            List polys = com.vividsolutions.jts.geom.util.PolygonExtracter.getPolygons(result);
+            List polys = org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
             if (polys.size() == 0) {
                 return null;
             }
@@ -485,7 +485,7 @@ class PipelineBuilder {
             if ((result instanceof LineString) || (result instanceof MultiLineString)) {
                 return result;
             }
-            List lines = com.vividsolutions.jts.geom.util.LineStringExtracter.getLines(result);
+            List lines = org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
             if (lines.size() == 0) {
                 return null;
             }
@@ -501,7 +501,7 @@ class PipelineBuilder {
             if ((result instanceof Point) || (result instanceof MultiPoint)) {
                 return result;
             }
-            List pts = com.vividsolutions.jts.geom.util.PointExtracter.getPoints(result);
+            List pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
             if (pts.size() == 0) {
                 return null;
             }

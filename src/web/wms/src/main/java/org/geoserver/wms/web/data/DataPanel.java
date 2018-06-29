@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.web.data;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
@@ -30,6 +29,7 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.PropertyDescriptor;
 

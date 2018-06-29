@@ -4,7 +4,7 @@
  */
 package org.geoserver.script.py;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

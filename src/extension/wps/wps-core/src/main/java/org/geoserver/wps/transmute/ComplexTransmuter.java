@@ -6,10 +6,10 @@
 
 package org.geoserver.wps.transmute;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.InputStream;
 import org.geoserver.wps.WPSException;
 import org.geotools.xml.Configuration;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * ComplexTransmuter interface

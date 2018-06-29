@@ -7,8 +7,6 @@ package org.geoserver.wms.map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -31,6 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.coverage.grid.GridEnvelope;
 
 /**

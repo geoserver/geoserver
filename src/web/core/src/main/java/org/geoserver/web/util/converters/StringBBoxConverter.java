@@ -5,10 +5,10 @@
  */
 package org.geoserver.web.util.converters;
 
-import com.vividsolutions.jts.geom.Envelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converter;
+import org.locationtech.jts.geom.Envelope;
 
 public class StringBBoxConverter implements Converter {
 

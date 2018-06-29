@@ -12,7 +12,6 @@ import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -72,6 +71,7 @@ import org.geotools.util.Version;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;

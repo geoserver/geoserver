@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.xml.gml3;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.wfs.WFSException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml2.bindings.GML2ParsingUtils;
@@ -13,6 +12,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.picocontainer.MutablePicoContainer;

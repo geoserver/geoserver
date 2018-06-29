@@ -4,7 +4,7 @@
  */
 package no.ecc.vectortile;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /*
  * provides VectorTileEncoder that doesn't do any clipping.

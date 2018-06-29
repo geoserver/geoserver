@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -42,6 +41,7 @@ import org.geotools.gml2.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
 import org.geotools.util.Converters;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;

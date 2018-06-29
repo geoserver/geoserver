@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;

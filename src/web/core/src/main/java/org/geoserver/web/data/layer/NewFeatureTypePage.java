@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.layer;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -37,6 +36,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 

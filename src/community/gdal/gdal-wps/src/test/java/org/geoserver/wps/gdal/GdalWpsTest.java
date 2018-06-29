@@ -9,7 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.zip.ZipEntry;

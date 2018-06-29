@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -60,6 +59,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;

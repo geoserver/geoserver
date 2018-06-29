@@ -11,7 +11,7 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.RA
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

@@ -5,7 +5,6 @@
 
 package org.geoserver.wms.featureinfo;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryDescriptor;

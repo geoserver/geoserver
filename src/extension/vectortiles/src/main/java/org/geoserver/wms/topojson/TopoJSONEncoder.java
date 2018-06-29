@@ -15,9 +15,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.Writer;
@@ -32,6 +29,9 @@ import org.geoserver.wms.topojson.TopoGeom.MultiPoint;
 import org.geoserver.wms.topojson.TopoGeom.MultiPolygon;
 import org.geoserver.wms.topojson.TopoGeom.Point;
 import org.geoserver.wms.topojson.TopoGeom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
@@ -92,7 +92,7 @@ public class TopoJSONEncoder {
             JsonArray arcs = new JsonArray();
 
             JsonArray jsonArc;
-            for (com.vividsolutions.jts.geom.LineString arc : topology.getArcs()) {
+            for (org.locationtech.jts.geom.LineString arc : topology.getArcs()) {
                 if (topology.getScreenToWorldTransform().isIdentity()) {
                     jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
                 } else {

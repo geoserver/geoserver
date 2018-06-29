@@ -17,8 +17,6 @@ import static org.junit.Assert.fail;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -89,6 +87,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1218,14 +1218,14 @@ public class XStreamPersisterTest {
         Map<String, String> types =
                 new HashMap<String, String>() {
                     {
-                        put("southernmost_point", "com.vividsolutions.jts.geom.Geometry");
-                        put("location_polygon", "com.vividsolutions.jts.geom.Geometry");
-                        put("centroid", "com.vividsolutions.jts.geom.Geometry");
-                        put("northernmost_point", "com.vividsolutions.jts.geom.Geometry");
-                        put("easternmost_point", "com.vividsolutions.jts.geom.Geometry");
-                        put("location", "com.vividsolutions.jts.geom.Geometry");
-                        put("location_original", "com.vividsolutions.jts.geom.Geometry");
-                        put("westernmost_point", "com.vividsolutions.jts.geom.Geometry");
+                        put("southernmost_point", "org.locationtech.jts.geom.Geometry");
+                        put("location_polygon", "org.locationtech.jts.geom.Geometry");
+                        put("centroid", "org.locationtech.jts.geom.Geometry");
+                        put("northernmost_point", "org.locationtech.jts.geom.Geometry");
+                        put("easternmost_point", "org.locationtech.jts.geom.Geometry");
+                        put("location", "org.locationtech.jts.geom.Geometry");
+                        put("location_original", "org.locationtech.jts.geom.Geometry");
+                        put("westernmost_point", "org.locationtech.jts.geom.Geometry");
                     }
                 };
 

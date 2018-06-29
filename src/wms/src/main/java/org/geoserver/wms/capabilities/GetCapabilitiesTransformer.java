@@ -12,7 +12,6 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.collect.Iterables;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -74,6 +73,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.NumberRange;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

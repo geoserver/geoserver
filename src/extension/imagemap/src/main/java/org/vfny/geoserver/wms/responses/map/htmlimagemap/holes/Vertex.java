@@ -5,7 +5,7 @@
  */
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Indexed coordinate. It allows to bind a coordinate to its position in a containing geometry

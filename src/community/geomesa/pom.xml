@@ -64,7 +64,7 @@ application directory.
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.vividsolutions</groupId>
+                    <groupId>org.locationtech.jts</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
@@ -79,7 +79,7 @@ application directory.
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.vividsolutions</groupId>
+                    <groupId>org.locationtech.jts</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

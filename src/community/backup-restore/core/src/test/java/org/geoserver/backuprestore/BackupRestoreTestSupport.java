@@ -7,7 +7,7 @@ package org.geoserver.backuprestore;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -7,8 +7,6 @@ package org.geoserver.wms;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Point;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +17,8 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.EnvFunction;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Point;
 import org.opengis.filter.FilterFactory;
 
 /**

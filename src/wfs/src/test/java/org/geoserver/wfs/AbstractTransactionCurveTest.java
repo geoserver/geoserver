@@ -9,11 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -31,6 +26,11 @@ import org.geotools.geometry.jts.CompoundCurvedGeometry;
 import org.geotools.geometry.jts.CurvedGeometries;
 import org.geotools.geometry.jts.SingleCurvedGeometry;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 

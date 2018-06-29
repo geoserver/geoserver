@@ -5,7 +5,6 @@
  */
 package org.geoserver.data.test;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,6 +37,7 @@ import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

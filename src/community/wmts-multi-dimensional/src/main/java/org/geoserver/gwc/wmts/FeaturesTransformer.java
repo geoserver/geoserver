@@ -4,7 +4,7 @@
  */
 package org.geoserver.gwc.wmts;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.geoserver.gwc.wmts.dimensions.Dimension;

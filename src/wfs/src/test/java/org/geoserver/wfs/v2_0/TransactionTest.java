@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Point;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.Map;
@@ -35,6 +34,7 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Point;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -6,8 +6,8 @@
 
 package org.geoserver.wps.transmute;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.gml2.GMLConfiguration;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Abstract transmuter for GML2 geometries

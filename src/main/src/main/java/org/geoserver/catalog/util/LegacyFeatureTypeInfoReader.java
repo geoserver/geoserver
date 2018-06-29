@@ -5,7 +5,6 @@
  */
 package org.geoserver.catalog.util;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geoserver.platform.resource.Resource;
+import org.locationtech.jts.geom.Envelope;
 import org.w3c.dom.Element;
 
 /**

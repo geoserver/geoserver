@@ -7,7 +7,7 @@ package org.geoserver.tiles;
 import static java.lang.String.format;
 
 import com.google.common.base.Preconditions;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

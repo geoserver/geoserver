@@ -4,7 +4,6 @@
  */
 package org.geoserver.kml.builder;
 
-import com.vividsolutions.jts.geom.Envelope;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Link;
 import de.micromata.opengis.kml.v_2_2_0.LookAt;
@@ -27,6 +26,7 @@ import org.geoserver.wms.WMSRequests;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Builds a KML document that has a network link for each layer, no superoverlays involved

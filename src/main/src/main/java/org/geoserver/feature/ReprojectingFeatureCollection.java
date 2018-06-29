@@ -5,7 +5,6 @@
  */
 package org.geoserver.feature;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +25,7 @@ import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -45,7 +45,7 @@ import org.opengis.util.ProgressListener;
  * reference system on the fly.
  *
  * <p>The coordinate reference system of feature geometries is looked up using {@link
- * com.vividsolutions.jts.geom.Geometry#getUserData()}.
+ * org.locationtech.jts.geom.Geometry#getUserData()}.
  *
  * <p>The {@link #defaultSource} attribute can be set to specify a coordinate refernence system to
  * transform from when one is not specified by teh geometry itself. Leaving the property null

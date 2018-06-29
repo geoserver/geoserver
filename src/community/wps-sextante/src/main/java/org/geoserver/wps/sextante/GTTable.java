@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.sextante;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import es.unex.sextante.dataObjects.AbstractTable;
 import es.unex.sextante.dataObjects.IRecordsetIterator;
 import es.unex.sextante.outputs.FileOutputChannel;

@@ -9,7 +9,7 @@ import static org.geoserver.data.test.MockData.LAKES;
 import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;

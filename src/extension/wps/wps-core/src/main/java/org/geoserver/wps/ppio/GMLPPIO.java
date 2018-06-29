@@ -5,13 +5,6 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.InputStream;
 import javax.xml.namespace.QName;
 import org.geotools.gml2.GML;
@@ -19,6 +12,13 @@ import org.geotools.gml2.GMLConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 import org.geotools.xml.Parser;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.xml.sax.ContentHandler;
 
 public class GMLPPIO extends XMLPPIO {
@@ -51,7 +51,7 @@ public class GMLPPIO extends XMLPPIO {
         /** Place holder for process params which declare Geometry.class as the type. */
         public static class Geometry extends GML2 {
             public Geometry() {
-                super(com.vividsolutions.jts.geom.Geometry.class, GML._Geometry);
+                super(org.locationtech.jts.geom.Geometry.class, GML._Geometry);
             }
 
             @Override
@@ -98,7 +98,7 @@ public class GMLPPIO extends XMLPPIO {
         /** Place holder for process params which declare Geometry.class as the type. */
         public static class Geometry extends GML3 {
             public Geometry() {
-                super(com.vividsolutions.jts.geom.Geometry.class, org.geotools.gml3.GML._Geometry);
+                super(org.locationtech.jts.geom.Geometry.class, org.geotools.gml3.GML._Geometry);
                 xml = new org.geotools.gml3.GMLConfiguration();
             }
 

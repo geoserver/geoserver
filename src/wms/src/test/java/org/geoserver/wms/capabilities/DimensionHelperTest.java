@@ -7,7 +7,6 @@ package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
 
-import com.vividsolutions.jts.util.Assert;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +24,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.capabilities.DimensionHelper.Mode;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.util.Assert;
 import org.xml.sax.Attributes;
 
 /**

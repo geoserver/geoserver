@@ -5,12 +5,6 @@
  */
 package org.geoserver.web.crs;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -50,6 +44,12 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.metadata.extent.GeographicBoundingBox;
@@ -202,7 +202,7 @@ class CRSAreaOfValidityMapBuilder {
     }
 
     public RenderedImage createMapFor(
-            CoordinateReferenceSystem crs, com.vividsolutions.jts.geom.Envelope areaOfInterest)
+            CoordinateReferenceSystem crs, org.locationtech.jts.geom.Envelope areaOfInterest)
             throws IOException {
         BufferedImage image = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
@@ -214,7 +214,7 @@ class CRSAreaOfValidityMapBuilder {
     @SuppressWarnings("unchecked")
     public void createMapFor(
             final CoordinateReferenceSystem crs,
-            final com.vividsolutions.jts.geom.Envelope areaOfInterest,
+            final org.locationtech.jts.geom.Envelope areaOfInterest,
             final Graphics2D graphics)
             throws IOException {
 
@@ -277,7 +277,7 @@ class CRSAreaOfValidityMapBuilder {
     private MapContext getMapContext(
             CoordinateReferenceSystem crs,
             Geometry geographicBoundingBox,
-            com.vividsolutions.jts.geom.Envelope areaOfInterest)
+            org.locationtech.jts.geom.Envelope areaOfInterest)
             throws IOException {
 
         DefaultMapContext mapContent = new DefaultMapContext();

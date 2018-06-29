@@ -1243,7 +1243,7 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.0.9</version>
+      <version>1.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.ning</groupId>
@@ -1884,7 +1884,7 @@
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
   <imageio-ext.version>1.1.24</imageio-ext.version>
-  <jaiext.version>1.0.23</jaiext.version>
+  <jaiext.version>1.0-SNAPSHOT</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>

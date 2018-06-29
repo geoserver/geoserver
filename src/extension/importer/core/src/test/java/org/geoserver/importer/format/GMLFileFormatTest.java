@@ -6,13 +6,13 @@ package org.geoserver.importer.format;
 
 import static org.junit.Assert.assertEquals;
 
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.util.Date;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class GMLFileFormatTest {

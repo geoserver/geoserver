@@ -7,7 +7,7 @@ import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
@@ -168,8 +168,8 @@ public class SimulateCallback implements DispatcherCallback {
             out.endObject();
             return;
         }
-        if (obj instanceof com.vividsolutions.jts.geom.Envelope) {
-            com.vividsolutions.jts.geom.Envelope e = (com.vividsolutions.jts.geom.Envelope) obj;
+        if (obj instanceof org.locationtech.jts.geom.Envelope) {
+            org.locationtech.jts.geom.Envelope e = (org.locationtech.jts.geom.Envelope) obj;
             out.object()
                     .key("x1")
                     .value(e.getMinX())

@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Envelope;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
@@ -18,6 +17,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class EnvelopePanelTest extends GeoServerWicketTestSupport {

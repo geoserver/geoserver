@@ -6,7 +6,6 @@
 
 package org.geoserver.test;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +32,7 @@ import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geotools.data.complex.AppSchemaDataAccessTest;
 import org.geotools.xml.resolver.SchemaCatalog;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Abstract base class for mock data based on the app-schema test data set.

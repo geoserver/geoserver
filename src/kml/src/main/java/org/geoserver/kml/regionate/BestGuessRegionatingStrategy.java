@@ -5,12 +5,12 @@
  */
 package org.geoserver.kml.regionate;
 
-import com.vividsolutions.jts.geom.Point;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.Layer;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 

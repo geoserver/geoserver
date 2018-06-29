@@ -4,7 +4,7 @@
  */
 package org.geoserver.security;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.filter.Filter;
 
 /**

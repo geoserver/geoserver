@@ -6,10 +6,10 @@ package org.geoserver.opensearch.eo.response;
 
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.Polygon;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;

@@ -24,9 +24,9 @@ public class GroovyFunctionHook extends FunctionHook {
         // Convert GeoTools args to GeoScript args
         List<Object> newArgs = new ArrayList<Object>(args.size());
         for (Object arg : args) {
-            if (arg instanceof com.vividsolutions.jts.geom.Geometry) {
+            if (arg instanceof org.locationtech.jts.geom.Geometry) {
                 newArgs.add(
-                        geoscript.geom.Geometry.wrap((com.vividsolutions.jts.geom.Geometry) arg));
+                        geoscript.geom.Geometry.wrap((org.locationtech.jts.geom.Geometry) arg));
             } else {
                 newArgs.add(arg);
             }

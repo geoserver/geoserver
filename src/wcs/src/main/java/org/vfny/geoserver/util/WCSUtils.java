@@ -5,8 +5,6 @@
  */
 package org.vfny.geoserver.util;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
@@ -39,6 +37,8 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.filter.Filter;
@@ -110,7 +110,7 @@ public class WCSUtils {
         // checks
         final ReferencedEnvelope cropBounds = new ReferencedEnvelope(bounds);
         final ReferencedEnvelope coverageBounds = new ReferencedEnvelope(coverage.getEnvelope());
-        if (cropBounds.contains((com.vividsolutions.jts.geom.Envelope) coverageBounds)) {
+        if (cropBounds.contains((org.locationtech.jts.geom.Envelope) coverageBounds)) {
             return coverage;
         }
         Polygon polygon = JTS.toGeometry(cropBounds);

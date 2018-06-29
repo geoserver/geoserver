@@ -6,7 +6,6 @@
 
 package org.geoserver.test;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import org.geoserver.data.util.IOUtils;
 import org.geotools.data.SampleDataAccess;
 import org.geotools.data.SampleDataAccessData;
 import org.geotools.data.SampleDataAccessFactory;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Mock data for testing integration of {@link SampleDataAccess} with GeoServer.

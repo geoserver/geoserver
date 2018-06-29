@@ -7,7 +7,6 @@ package org.geoserver.wfs;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
@@ -69,6 +68,7 @@ import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Encoder;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;

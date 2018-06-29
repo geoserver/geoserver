@@ -5,9 +5,6 @@
  */
 package org.geoserver.kml.utils;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import java.util.Collections;
 import java.util.Map;
@@ -17,6 +14,9 @@ import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * Data object to hold the KML <a

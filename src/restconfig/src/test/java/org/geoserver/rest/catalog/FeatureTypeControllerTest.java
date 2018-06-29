@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -634,7 +634,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                         + "  <attributes>\n"
                         + "    <attribute>\n"
                         + "      <name>the_geom</name>\n"
-                        + "      <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>\n"
+                        + "      <binding>org.locationtech.jts.geom.MultiPolygon</binding>\n"
                         + "    </attribute>\n"
                         + "    <attribute>\n"
                         + "      <name>STATE_NAME</name>\n"

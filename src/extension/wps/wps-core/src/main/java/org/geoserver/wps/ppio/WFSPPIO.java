@@ -6,7 +6,6 @@
 package org.geoserver.wps.ppio;
 
 import com.google.common.io.ByteStreams;
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -32,6 +31,7 @@ import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 import org.geotools.xml.Parser;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;

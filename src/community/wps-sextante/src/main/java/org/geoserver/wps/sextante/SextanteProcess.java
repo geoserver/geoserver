@@ -7,7 +7,7 @@ package org.geoserver.wps.sextante;
 
 import static org.geoserver.wps.sextante.SextanteProcessFactory.*;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import es.unex.sextante.core.AnalysisExtent;
 import es.unex.sextante.core.GeoAlgorithm;
 import es.unex.sextante.core.ITaskMonitor;

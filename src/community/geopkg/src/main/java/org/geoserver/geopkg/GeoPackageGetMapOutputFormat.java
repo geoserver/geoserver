@@ -8,7 +8,7 @@ package org.geoserver.geopkg;
 import static org.geoserver.geopkg.GeoPkg.*;
 
 import com.google.common.collect.Sets;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

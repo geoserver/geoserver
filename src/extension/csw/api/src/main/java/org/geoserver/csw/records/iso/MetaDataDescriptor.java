@@ -4,7 +4,6 @@
  */
 package org.geoserver.csw.records.iso;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
 import org.geotools.filter.SortByImpl;
 import org.geotools.xml.SchemaIndex;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;

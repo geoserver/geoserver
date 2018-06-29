@@ -4,7 +4,7 @@
  */
 package org.geoserver.geofence.web;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

@@ -6,7 +6,6 @@
 package org.geoserver.wps.gs;
 
 import com.google.common.base.Splitter;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.ColorModel;
@@ -51,6 +50,7 @@ import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

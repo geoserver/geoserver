@@ -235,7 +235,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "com.vividsolutions.jts.geom.MultiPolygon",
+                "org.locationtech.jts.geom.MultiPolygon",
                 "/Schema/attributes/Attribute[name='the_geom']/binding",
                 dom);
         assertXpathEvaluatesTo(
@@ -318,7 +318,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "com.vividsolutions.jts.geom.MultiPolygon",
+                "org.locationtech.jts.geom.MultiPolygon",
                 "/Schema/attributes/Attribute[name='the_geom']/binding",
                 dom);
         assertXpathEvaluatesTo(
@@ -343,7 +343,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         JSONArray attributes = external.getJSONArray("Attribute");
         assertEquals(4, attributes.size());
         assertEquals(
-                "com.vividsolutions.jts.geom.MultiPolygon",
+                "org.locationtech.jts.geom.MultiPolygon",
                 attributes.getJSONObject(0).get("binding"));
 
         json =
@@ -683,7 +683,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "com.vividsolutions.jts.geom.MultiPolygon",
+                "org.locationtech.jts.geom.MultiPolygon",
                 "/Schema/attributes/Attribute[name='the_geom']/binding",
                 dom);
         assertXpathEvaluatesTo(
@@ -715,7 +715,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
         assertXpathEvaluatesTo("2", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "com.vividsolutions.jts.geom.Polygon",
+                "org.locationtech.jts.geom.Polygon",
                 "/Schema/attributes/Attribute[name='the_geom']/binding",
                 dom);
         assertXpathEvaluatesTo(

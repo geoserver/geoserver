@@ -4,7 +4,6 @@
  */
 package org.geoserver.web.data.layer;
 
-import com.vividsolutions.jts.io.WKTReader;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -18,6 +17,7 @@ import org.geotools.data.FeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class AbstractSqlViewPageTest extends GeoServerWicketTestSupport {

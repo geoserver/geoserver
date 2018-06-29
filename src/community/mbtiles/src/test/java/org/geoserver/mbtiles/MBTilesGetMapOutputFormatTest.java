@@ -8,7 +8,6 @@ package org.geoserver.mbtiles;
 import static org.geoserver.data.test.MockData.*;
 import static org.junit.Assert.*;
 
-import org.locationtech.jts.geom.Envelope;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +27,7 @@ import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

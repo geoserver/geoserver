@@ -5,12 +5,12 @@
  */
 package org.geoserver.wps.gs.download;
 
-import org.locationtech.jts.geom.Geometry;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;

@@ -5,16 +5,16 @@
  */
 package org.geoserver.wps.ppio;
 
+import java.util.List;
+import org.geoserver.wps.ppio.gpx.GpxType;
+import org.geoserver.wps.ppio.gpx.RteType;
+import org.geoserver.wps.ppio.gpx.WptType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
-import java.util.List;
-import org.geoserver.wps.ppio.gpx.GpxType;
-import org.geoserver.wps.ppio.gpx.RteType;
-import org.geoserver.wps.ppio.gpx.WptType;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.Name;

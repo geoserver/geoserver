@@ -4,13 +4,13 @@
  */
 package org.geoserver.script.py;
 
-import org.locationtech.jts.geom.Geometry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.script.wps.ScriptProcessFactory;
 import org.geoserver.script.wps.ScriptProcessTestSupport;
 import org.geotools.data.Parameter;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.type.Name;
 
 public class PyExtraMetadataTest extends ScriptProcessTestSupport {

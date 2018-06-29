@@ -4,7 +4,6 @@
  */
 package org.geoserver.geopkg.wps;
 
-import org.locationtech.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -52,6 +51,7 @@ import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;

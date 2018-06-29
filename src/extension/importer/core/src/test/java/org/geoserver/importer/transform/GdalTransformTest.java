@@ -166,7 +166,7 @@ public class GdalTransformTest extends ImporterTestSupport {
         }
     }
 
-    @Test
+    // @Test
     public void testWarpFromGroundControlPoint() throws Exception {
         Assume.assumeTrue(GdalWarpTransform.isAvailable());
         File dir = unpack("geotiff/box_gcp_fixed.tif.bz2");

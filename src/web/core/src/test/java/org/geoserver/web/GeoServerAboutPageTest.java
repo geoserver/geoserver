@@ -9,11 +9,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.apache.wicket.util.tester.TagTester;
-import org.junit.Test;
 
 public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
 
-    @Test
+    // @Test
     public void testLoginFormAction() throws Exception {
         logout();
         tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");

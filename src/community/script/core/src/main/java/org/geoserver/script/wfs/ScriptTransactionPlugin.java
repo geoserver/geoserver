@@ -8,6 +8,7 @@ package org.geoserver.script.wfs;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
             files = scriptMgr.wfsTx().list();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error listing files in wfs/tx directory", e);
-            return Iterators.emptyIterator();
+            return Collections.emptyIterator();
         }
 
         return Iterators.transform(

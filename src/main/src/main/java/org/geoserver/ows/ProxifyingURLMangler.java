@@ -5,16 +5,30 @@
  */
 package org.geoserver.ows;
 
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.Requests;
 
 /** A URL mangler that replaces the base URL with the proxied one */
 public class ProxifyingURLMangler implements URLMangler {
 
     GeoServer geoServer;
+    private static Logger LOGGER = Logging.getLogger(ProxifyingURLMangler.class);
     public static String USEHEADERS_PARAM = "USEHEADERS_PROXYURL";
+    public static String TEMPLATE_SEPARATOR = " ";
+    public static String TEMPLATE_PREFIX = "${";
+    public static String TEMPLATE_POSTFIX = "}";
+    public static String TEMPLATE_HEADERPREFIX = "headers";
+
+    public static final String FORWARDED_HEADER = "X-Forwarded";
+    public static final String FORWARDED_PROTO_HEADER = "X-Forwarded-Proto";
+    public static final String FORWARDED_HOST_HEADER = "X-Forwarded-Host";
+    public static final String FORWARDED_PATH_HEADER = "X-Forwarded-Path";
+    public static final String HOST_HEADER = "Host";
 
     public ProxifyingURLMangler(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -22,28 +36,35 @@ public class ProxifyingURLMangler implements URLMangler {
 
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+
+        // first check the system property, then fall back to configuration
+        String proxyBase =
+                (GeoServerExtensions.getProperty(Requests.PROXY_PARAM) != null)
+                        ? GeoServerExtensions.getProperty(Requests.PROXY_PARAM)
+                        : this.geoServer.getSettings().getProxyBaseUrl();
+
+        // Mangles the URL base in different ways based on a flag
+        // (for two reasons: a) speed; b) to make the admin aware of
+        // possible security liabilities)
+        LOGGER.warning("************* this.geoServer " + this.geoServer);
+        LOGGER.warning("************* this.geoServer.getGlobal() " + this.geoServer.getGlobal());
+        LOGGER.warning(
+                "************* this.geoServer.getGlobal().isUseHeadersProxyURL() "
+                        + this.geoServer.getGlobal().isUseHeadersProxyURL());
         baseURL =
-                this.geoServer.getGlobal().isUseHeadersProxyURL().booleanValue() == true
-                        ? this.mangleURLHeaders(baseURL)
-                        : this.mangleURLFixedURL(
-                                baseURL,
-                                GeoServerExtensions.getProperty(Requests.PROXY_PARAM),
-                                geoServer.getSettings().getProxyBaseUrl());
+                this.geoServer.getGlobal().isUseHeadersProxyURL() == true
+                        ? this.mangleURLHeaders(baseURL, proxyBase)
+                        : this.mangleURLFixedURL(baseURL, proxyBase);
     }
 
     /**
      * Mangle URL using the PROXY_BASE_URL
      *
-     * @param baseURL baseURL to mangle
-     * @param proxyURLSys Proxy URL fron system property
-     * @param proxyURLConf Proxy URL from configuraiton
+     * @param baseURL URL to mangle
+     * @param proxyBase Proxy base URL as taken from configuration
      * @return mangled proxy URL
      */
-    private StringBuilder mangleURLFixedURL(
-            StringBuilder baseURL, String proxyURLSys, String proxyURLConf) {
-
-        // first check the system property, then fall back to configuration
-        String proxyBase = (proxyURLSys != null) ? proxyURLSys : proxyURLConf;
+    private StringBuilder mangleURLFixedURL(StringBuilder baseURL, String proxyBase) {
 
         // perform the replacement if the proxy base is set,
         // otherwise return the baseURL unchanged
@@ -55,25 +76,59 @@ public class ProxifyingURLMangler implements URLMangler {
         return baseURL;
     }
 
-    /** Mangle URL using request headers */
-    private StringBuilder mangleURLHeaders(StringBuilder baseURL) {
+    /**
+     * Mangle URL using request headers
+     *
+     * @param baseURL URL to mangle
+     * @param proxyBase Proxy base URL as taken from configuration
+     * @return mangled proxy URL
+     */
+    private StringBuilder mangleURLHeaders(StringBuilder baseURL, String proxyBase) {
 
-        // Request owsRequest = (Request) Dispatcher.REQUEST.get();
-        // owsRequest.httpRequest.getHeaderNames();
-
-        // first check the system property
-        String proxyBase = GeoServerExtensions.getProperty("PROXY_BASE_URL");
-        if (proxyBase == null) {
-            // if no system property fall back to configuration
-            proxyBase = geoServer.getSettings().getProxyBaseUrl();
+        // If the proxy base URL does not contain templates, fall back to
+        // the fixed URL cse
+        if (!proxyBase.contains(TEMPLATE_PREFIX)) {
+            return this.mangleURLFixedURL(baseURL, proxyBase);
         }
 
-        // perform the replacement if the proxy base is set
-        if (proxyBase != null && proxyBase.trim().length() > 0) {
-            baseURL.setLength(0);
-            baseURL.append(proxyBase);
+        // Cycles through templates in the proxy base URL until one is competely matched
+        Map<String, String> headers = this.compileHeadersMap();
+        for (String template : Arrays.asList(proxyBase.split(TEMPLATE_SEPARATOR))) {
+            String candidate = QuickTemplate.replaceVariables(template, headers);
+            if (!candidate.contains(TEMPLATE_PREFIX)) {
+                baseURL.setLength(0);
+                baseURL.append(candidate);
+                break;
+            }
         }
 
         return baseURL;
+    }
+
+    /** Compile Map of header templates and actual header values */
+    private Map<String, String> compileHeadersMap() {
+
+        Map<String, String> headers = new HashMap<String, String>();
+
+        HttpServletRequest owsRequest = Dispatcher.REQUEST.get().getHttpRequest();
+        List<String> headerNames =
+                new ArrayList<String>(
+                        Arrays.asList(
+                                FORWARDED_HEADER,
+                                FORWARDED_HOST_HEADER,
+                                FORWARDED_PROTO_HEADER,
+                                HOST_HEADER,
+                                FORWARDED_PATH_HEADER));
+        headerNames.forEach(
+                (headerName) -> {
+                    if (owsRequest.getHeader(headerName) != null) {
+                        headers.put(
+                                String.format(
+                                        "%s%s%s", TEMPLATE_PREFIX, headerName, TEMPLATE_POSTFIX),
+                                owsRequest.getHeader(headerName));
+                    }
+                });
+
+        return headers;
     }
 }

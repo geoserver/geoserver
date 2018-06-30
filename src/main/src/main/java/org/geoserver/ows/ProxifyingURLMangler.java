@@ -6,29 +6,37 @@
 package org.geoserver.ows;
 
 import java.util.*;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.util.Requests;
 
 /** A URL mangler that replaces the base URL with the proxied one */
 public class ProxifyingURLMangler implements URLMangler {
 
+    public enum Headers {
+        FORWARDED("X-Forwarded"),
+        FORWARDED_PROTO("X-Forwarded-Proto"),
+        FORWARDED_HOST("X-Forwarded-Host"),
+        FORWARDED_PATH("X-Forwarded-Path"),
+        HOST("Host");
+
+        private String header;
+
+        Headers(String h) {
+            this.header = h;
+        }
+
+        public String asString() {
+            return header;
+        }
+    }
+
     GeoServer geoServer;
-    private static Logger LOGGER = Logging.getLogger(ProxifyingURLMangler.class);
-    public static String USEHEADERS_PARAM = "USEHEADERS_PROXYURL";
+
     public static String TEMPLATE_SEPARATOR = " ";
     public static String TEMPLATE_PREFIX = "${";
     public static String TEMPLATE_POSTFIX = "}";
-    public static String TEMPLATE_HEADERPREFIX = "headers";
-
-    public static final String FORWARDED_HEADER = "X-Forwarded";
-    public static final String FORWARDED_PROTO_HEADER = "X-Forwarded-Proto";
-    public static final String FORWARDED_HOST_HEADER = "X-Forwarded-Host";
-    public static final String FORWARDED_PATH_HEADER = "X-Forwarded-Path";
-    public static final String HOST_HEADER = "Host";
 
     public ProxifyingURLMangler(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -106,23 +114,19 @@ public class ProxifyingURLMangler implements URLMangler {
         Map<String, String> headers = new HashMap<String, String>();
 
         HttpServletRequest owsRequest = Dispatcher.REQUEST.get().getHttpRequest();
-        List<String> headerNames =
-                new ArrayList<String>(
-                        Arrays.asList(
-                                FORWARDED_HEADER,
-                                FORWARDED_HOST_HEADER,
-                                FORWARDED_PROTO_HEADER,
-                                HOST_HEADER,
-                                FORWARDED_PATH_HEADER));
-        headerNames.forEach(
-                (headerName) -> {
-                    if (owsRequest.getHeader(headerName) != null) {
-                        headers.put(
-                                String.format(
-                                        "%s%s%s", TEMPLATE_PREFIX, headerName, TEMPLATE_POSTFIX),
-                                owsRequest.getHeader(headerName));
-                    }
-                });
+        Arrays.asList(Headers.values())
+                .forEach(
+                        (header) -> {
+                            if (owsRequest.getHeader(header.asString()) != null) {
+                                headers.put(
+                                        String.format(
+                                                "%s%s%s",
+                                                TEMPLATE_PREFIX,
+                                                header.asString(),
+                                                TEMPLATE_POSTFIX),
+                                        owsRequest.getHeader(header.asString()));
+                            }
+                        });
 
         return headers;
     }

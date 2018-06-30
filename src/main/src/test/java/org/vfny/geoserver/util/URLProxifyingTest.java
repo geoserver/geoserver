@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
@@ -35,24 +36,25 @@ public class URLProxifyingTest {
             String forwardedHost,
             String forwardedPath) {
 
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(
+                ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase(), forwardedHeader);
+        headers.put(
+                ProxifyingURLMangler.Headers.FORWARDED_PROTO.asString().toLowerCase(),
+                forwardedProtoHeader);
+        headers.put(
+                ProxifyingURLMangler.Headers.FORWARDED_HOST.asString().toLowerCase(),
+                forwardedHost);
+        headers.put(
+                ProxifyingURLMangler.Headers.FORWARDED_PATH.asString().toLowerCase(),
+                forwardedPath);
+
         Request request = createNiceMock(Request.class);
         expect(request.getHttpRequest())
                 .andReturn(
                         new HttpServletRequestWrapper(new MockHttpServletRequest()) {
                             public String getHeader(String name) {
-                                switch (name) {
-                                    case ProxifyingURLMangler.FORWARDED_HEADER:
-                                        return forwardedHeader;
-                                    case ProxifyingURLMangler.FORWARDED_PROTO_HEADER:
-                                        return forwardedProtoHeader;
-                                    case ProxifyingURLMangler.FORWARDED_HOST_HEADER:
-                                        return forwardedHost;
-                                    case ProxifyingURLMangler.FORWARDED_PATH_HEADER:
-                                        return forwardedPath;
-                                    case ProxifyingURLMangler.HOST_HEADER:
-                                        return forwardedHost;
-                                }
-                                return null;
+                                return headers.get(name.toLowerCase());
                             }
                         })
                 .anyTimes();

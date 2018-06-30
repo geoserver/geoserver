@@ -46,13 +46,8 @@ public class ProxifyingURLMangler implements URLMangler {
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
         // possible security liabilities)
-        LOGGER.warning("************* this.geoServer " + this.geoServer);
-        LOGGER.warning("************* this.geoServer.getGlobal() " + this.geoServer.getGlobal());
-        LOGGER.warning(
-                "************* this.geoServer.getGlobal().isUseHeadersProxyURL() "
-                        + this.geoServer.getGlobal().isUseHeadersProxyURL());
         baseURL =
-                this.geoServer.getGlobal().isUseHeadersProxyURL() == true
+                (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null)
                         ? this.mangleURLHeaders(baseURL, proxyBase)
                         : this.mangleURLFixedURL(baseURL, proxyBase);
     }

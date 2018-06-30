@@ -19,7 +19,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -92,6 +91,18 @@ public class URLProxifyingTest {
     @After
     public void clearAppContext() {
         GeoServerExtensionsHelper.init(null);
+    }
+
+    @Test
+    public void testNoProxyBaseURL() throws Exception {
+        createAppContext(null, false, null, null, null, null);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL,
+                new StringBuilder(),
+                new HashMap<String, String>(),
+                URLMangler.URLType.SERVICE);
+        assertEquals("", baseURL.toString());
     }
 
     @Test

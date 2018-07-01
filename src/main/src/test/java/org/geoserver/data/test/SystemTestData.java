@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -82,9 +81,6 @@ public class SystemTestData extends CiteTestData {
     public static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
 
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
-
-    static final Boolean WINDOWS_LENIENCY =
-            Boolean.valueOf(System.getProperty("windows.leniency", "true"));
 
     /** Keys for overriding default layer properties */
     public static class LayerProperty<T> {
@@ -1062,31 +1058,64 @@ public class SystemTestData extends CiteTestData {
 
     @Override
     public void tearDown() throws Exception {
-        if ((SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY)
-                || Boolean.getBoolean("testdata.force.delete")) {
-            int MAX_ATTEMPTS = 100;
-            for (int i = 0; i < MAX_ATTEMPTS; i++) {
-                try {
-                    FileUtils.deleteDirectory(data);
-                    break;
-                } catch (IOException e) {
-                    if (i >= MAX_ATTEMPTS) {
-                        throw new IOException(
-                                "Failed to clean up test data dir after "
-                                        + MAX_ATTEMPTS
-                                        + " attempts",
-                                e);
-                    }
-                    System.err.println(
-                            "Error occurred while removing files, assuming "
-                                    + "it's a transient lock, sleeping 100ms and re-trying. Error message: "
-                                    + e.getMessage());
-                    System.gc();
-                    Thread.sleep(100);
+        int MAX_ATTEMPTS = 100;
+        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+            try {
+                deleteFilesOnExit(data);
+                break;
+            } catch (IOException e) {
+                if (i == MAX_ATTEMPTS && data.exists()) {
+                    throw new IOException(
+                            "Failed to clean up test data dir after " + MAX_ATTEMPTS + " attempts",
+                            e);
+                }
+                System.err.println(
+                        "Error occurred while removing files. "
+                                + "Possible transient lock or H2 log race. "
+                                + "Sleeping 100ms and retrying. Error message: "
+                                + e.getMessage());
+                System.gc();
+                Thread.sleep(100);
+            }
+        }
+    }
+
+    private void deleteFilesOnExit(File directory) throws IOException {
+        try {
+            FileUtils.deleteDirectory(data);
+        } catch (IOException e) {
+            if (!data.exists()) {
+                // gone some other way? good...
+            } else {
+                String tree = printFileTree(data);
+                throw new IOException("Failed to delete tree:\n" + tree, e);
+            }
+        }
+    }
+
+    private static String printFileTree(File dir) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dir.getPath()).append("\n");
+        printFileTree_(sb, "", dir);
+        return sb.toString();
+    }
+
+    private static void printFileTree_(StringBuilder sb, String prefix, File dir) {
+        File listFile[] = dir.listFiles();
+        if (listFile != null) {
+            for (int i = 0; i < listFile.length; i++) {
+                boolean last = i == listFile.length - 1;
+                File file = listFile[i];
+                String firstChar = last ? "└" : "├";
+                sb.append(prefix)
+                        .append(firstChar)
+                        .append("──")
+                        .append(file.getName())
+                        .append("\n");
+                if (file.isDirectory()) {
+                    printFileTree_(sb, prefix + (last ? " " : "|") + "  ", file);
                 }
             }
-        } else {
-            FileUtils.deleteDirectory(data);
         }
     }
 

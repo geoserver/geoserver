@@ -9,7 +9,7 @@ import static org.geoserver.security.SecurityUtils.toBytes;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jasypt.digest.StandardByteDigester;
-import org.jasypt.spring.security3.PasswordEncoder;
+import org.jasypt.springsecurity3.authentication.encoding.PasswordEncoder;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 /**

@@ -876,8 +876,13 @@
    <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
-      <version>1.8</version>
+      <version>${jasypt.version}</version>
    </dependency>
+      <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt-springsecurity3</artifactId>
+      <version>${jasypt.version}</version>
+    </dependency>
    <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk15on</artifactId>
@@ -1897,6 +1902,7 @@
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
   <gf.version>3.2-SNAPSHOT</gf.version>
+  <jasypt.version>1.9.2</jasypt.version>
   <hibernate-version>3.6.0.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>

@@ -1063,12 +1063,12 @@ public class SystemTestData extends CiteTestData {
     @Override
     public void tearDown() throws Exception {
         int MAX_ATTEMPTS = 100;
-        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             try {
                 deleteFilesOnExit(data);
                 break;
             } catch (IOException e) {
-                if (i >= MAX_ATTEMPTS && data.exists()) {
+                if (i == MAX_ATTEMPTS && data.exists()) {
                     throw new IOException(
                             "Failed to clean up test data dir after " + MAX_ATTEMPTS + " attempts",
                             e);

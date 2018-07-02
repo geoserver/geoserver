@@ -2121,6 +2121,48 @@
         </plugins>
       </build>
     </profile>
- </profiles>
+
+    <!-- Dependency version checks -->
+    <profile>
+      <id>dependencycheck</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>directory-maven-plugin</artifactId>
+            <version>0.3.1</version>
+            <executions>
+              <execution>
+                <id>directories</id>
+                <goals>
+                  <goal>highest-basedir</goal>
+                </goals>
+                <phase>initialize</phase>
+                <configuration>
+                  <property>geoserverBaseDir</property>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <suppressionFile>${geoserverBaseDir}/dependency-check-suppression.xml</suppressionFile>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

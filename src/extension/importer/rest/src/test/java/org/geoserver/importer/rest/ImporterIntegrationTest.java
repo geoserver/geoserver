@@ -92,8 +92,6 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
     @Test
     public void testDirectWrongFile() throws Exception {
-
-        boolean async = false;
         // set a callback to check that the request spring context is passed to the job thread
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         SecurityContextHolder.getContext().setAuthentication(createAuthentication());
@@ -141,8 +139,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         // initialize the import
         MockHttpServletResponse servletResponse =
-                postAsServletResponse(
-                        "/rest/imports?async=true", contextDefinition, "application/json");
+                postAsServletResponse("/rest/imports", contextDefinition, "application/json");
         JSONObject json = (JSONObject) json(servletResponse);
         int importId = json.getJSONObject("import").getInt("id");
         json = (JSONObject) getAsJSON("/rest/imports/" + importId);
@@ -154,8 +151,6 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
     @Test
     public void testDirectWrongDir() throws Exception {
-
-        boolean async = false;
         // set a callback to check that the request spring context is passed to the job thread
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         SecurityContextHolder.getContext().setAuthentication(createAuthentication());
@@ -204,8 +199,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
 
         // initialize the import
         MockHttpServletResponse servletResponse =
-                postAsServletResponse(
-                        "/rest/imports?async=true", contextDefinition, "application/json");
+                postAsServletResponse("/rest/imports", contextDefinition, "application/json");
 
         assertEquals(500, servletResponse.getStatus());
     }

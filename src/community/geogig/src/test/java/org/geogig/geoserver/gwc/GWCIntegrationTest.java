@@ -7,10 +7,8 @@ package org.geogig.geoserver.gwc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import org.locationtech.jts.geom.Envelope;
 import java.util.Map;
+
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
 import org.geoserver.catalog.Catalog;
@@ -30,7 +28,11 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.junit.Rule;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /** Integration test for GeoServer cached layers using the GWC REST API */
 @TestSetup(run = TestSetupFrequency.ONCE)

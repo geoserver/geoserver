@@ -215,5 +215,15 @@ class GrowableCoordinateSequence implements CoordinateSequence {
         public Object clone() {
             return new SubSequence(orig, fromIndex, toIndex);
         }
+
+        @Override
+        public CoordinateSequence copy() {
+            return new SubSequence(orig.copy(), fromIndex, toIndex);
+        }
+    }
+
+    @Override
+    public CoordinateSequence copy() {
+        return new GrowableCoordinateSequence(ordinates.clone(), size());
     }
 }

@@ -1821,7 +1821,7 @@
    <plugin>
     <groupId>org.jacoco</groupId>
     <artifactId>jacoco-maven-plugin</artifactId>
-    <version>0.8.0</version>
+    <version>${jacoco.version}</version>
     <configuration>
        <formats>
           <format>html</format>
@@ -1919,6 +1919,7 @@
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
+  <jacoco.version>0.8.1</jacoco.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>

@@ -1,21 +1,8 @@
-<html>
-  <head>
-      <link rel="stylesheet" href="${baseURL}wfs3css/blueprint/screen.css" type="text/css" media="screen, projection" />
-      <link rel="stylesheet" href="${baseURL}wfs3css/blueprint/print.css" type="text/css" media="print" />
-      <link rel="stylesheet" href="${baseURL}wfs3css/geoserver.css" type="text/css" media="screen, projection" />
-      <link rel="stylesheet" href="${baseURL}wfs3css/blueprint/ie.css" type="text/css" media="screen, projection" />
-  </head>
-<body>
-   <div id="header">
-     <a href="${baseURL}"></a>
-   </div>
+<#include "common-header.ftl">
    <div id="content">
        <h2>${service.title!"GeoServer WFS 3 Service"}</h2>
-       <p>${service.abstract!""}</h2>
-       <p>
-       
-       <h2>Landing page</h2>
-       <p>This is the landing page of the WFS 3 service, providing links to the service API and its contents.
+       <p>${service.abstract!""}<br/>
+       This is the landing page of the WFS 3 service, providing links to the service API and its contents.
        <br/> 
        This document is also available as
        <#list model.getLinksExcept("landingPage", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
@@ -41,6 +28,4 @@
        <li>Organization: ${contact.contactOrganization!"-unspecified-"}</li>
        <li>Mail: <a href="mailto:${contact.contactEmail!''}">${contact.contactEmail!"-unspecified-"}</a></li>
        </ul> 
-   </div>
-</body>
-</html>
+<#include "common-footer.ftl">

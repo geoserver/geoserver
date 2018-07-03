@@ -26,7 +26,7 @@ public abstract class AbstractHTMLResponse extends Response {
 
     private static Configuration templateConfig = new Configuration();
 
-    private final GeoServer geoServer;
+    protected final GeoServer geoServer;
     private FreemarkerTemplateSupport templateSupport;
 
     public AbstractHTMLResponse(

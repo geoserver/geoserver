@@ -133,7 +133,7 @@ public class WFS3Filter implements GeoServerFilter {
                                     Pattern.compile("/collections/([^/]+)/?").matcher(path);
                             boolean matches = matcher.matches();
                             if (matches) {
-                                request = "collections";
+                                request = "collection";
                                 String layerName = matcher.group(1);
                                 setLayerName(layerName);
                             }

@@ -27,7 +27,7 @@ public interface TypeInfoCollectionWrapper {
         }
     }
 
-    class Complex extends DecoratingFeatureCollection {
+    class Complex extends DecoratingFeatureCollection implements TypeInfoCollectionWrapper {
 
         private final FeatureTypeInfo featureTypeInfo;
 
@@ -41,7 +41,7 @@ public interface TypeInfoCollectionWrapper {
         }
     }
 
-    class Simple extends DecoratingSimpleFeatureCollection {
+    class Simple extends DecoratingSimpleFeatureCollection implements TypeInfoCollectionWrapper {
 
         private final FeatureTypeInfo featureTypeInfo;
 

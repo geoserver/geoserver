@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class ApiTest extends WFS3TestSupport {
     @Test
     public void testApiJson() throws Exception {
         String json = getAsString("wfs3/api");
-        System.out.println(json);
+        LOGGER.log(Level.INFO, json);
 
         ObjectMapper mapper = Json.mapper();
         OpenAPI api = mapper.readValue(json, OpenAPI.class);
@@ -47,7 +48,7 @@ public class ApiTest extends WFS3TestSupport {
     @Test
     public void testApiYaml() throws Exception {
         String yaml = getAsString("wfs3/api?f=application/x-yaml");
-        System.out.println(yaml);
+        LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);

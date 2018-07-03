@@ -6,15 +6,13 @@
  */
 package org.geoserver.wfs3.response;
 
-import java.io.IOException;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 
 public class CollectionsHTMLResponse extends AbstractHTMLResponse {
 
-    public CollectionsHTMLResponse(GeoServerResourceLoader loader, GeoServer geoServer)
-            throws IOException {
+    public CollectionsHTMLResponse(GeoServerResourceLoader loader, GeoServer geoServer) {
         super(CollectionsDocument.class, loader, geoServer);
     }
 

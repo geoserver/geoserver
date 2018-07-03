@@ -9,12 +9,13 @@ import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.jsoup.Jsoup;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionsTest extends WFS3TestSupport {
@@ -38,7 +39,18 @@ public class CollectionsTest extends WFS3TestSupport {
         DocumentContext json = getAsJSONPath("wfs3/collections", 200);
         int expected = getCatalog().getFeatureTypes().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
-        // TODO: perform more checks
+
+        // check we have the expected number of links and they all use the right "rel" relation
+        List<String> formats =
+                DefaultWebFeatureService30.getAvailableFormats(FeatureCollectionResponse.class);
+        assertEquals(
+                formats.size(), (int) json.read("collections[0].links.length()", Integer.class));
+        for (String format : formats) {
+            // check title and rel.
+            List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
+            Map item = (Map) items.get(0);
+            assertEquals("item", item.get("rel"));
+        }
     }
 
     @Test
@@ -63,20 +75,13 @@ public class CollectionsTest extends WFS3TestSupport {
     @Test
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("wfs3/collections/?f=application/x-yaml");
-        System.out.println(yaml);
+        LOGGER.log(Level.INFO, yaml);
         // TODO: add actual tests
     }
 
     @Test
     public void testCollectionsHTML() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse("wfs3/collections?f=html");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-
-        // System.out.println(response.getContentAsString());
-
-        // parse the HTML
-        org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
+        org.jsoup.nodes.Document document = getAsJSoup("wfs3/collections?f=html");
 
         // check collection links
         List<FeatureTypeInfo> featureTypes = getCatalog().getFeatureTypes();

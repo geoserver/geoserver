@@ -25,10 +25,17 @@ public interface WebFeatureService30 {
      * Returns a description of the collection(s)
      *
      * @param request A {@link CollectionRequest}
-     * @return A {@link CollectionDocument} or a {@link CollectionsDocument} depending on the
-     *     request
+     * @return A {@link CollectionsDocument} depending on the request
      */
     CollectionsDocument collections(CollectionsRequest request);
+
+    /**
+     * Returns a description of a single collection
+     *
+     * @param request A {@link CollectionRequest}
+     * @return A {@link CollectionDocument}
+     */
+    CollectionDocument collection(CollectionRequest request);
 
     /**
      * The OpenAPI description of the service

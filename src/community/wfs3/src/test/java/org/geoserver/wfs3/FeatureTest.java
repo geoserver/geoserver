@@ -7,14 +7,18 @@ package org.geoserver.wfs3;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.data.test.MockData;
-import org.jsoup.Jsoup;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.ows.util.ResponseUtils;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends WFS3TestSupport {
 
@@ -152,14 +156,51 @@ public class FeatureTest extends WFS3TestSupport {
     @Test
     public void testGetLayerAsHTML() throws Exception {
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse response =
-                getAsServletResponse("wfs3/collections/" + roadSegments + "/items?f=html");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
+        String url = "wfs3/collections/" + roadSegments + "/items?f=html";
+        Document document = getAsJSoup(url);
+        assertEquals(5, document.select("td:matches(RoadSegments\\..*)").size());
+        // all elements expected are there
+        // check the id of a known tag
+        assertEquals(
+                "106", document.select("td:matches(RoadSegments\\.1107532045091) + td").text());
+    }
 
-        System.out.println(response.getContentAsString());
+    @Test
+    public void testGetLayerAsHTMLPagingLinks() throws Exception {
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String urlBase = "wfs3/collections/" + roadSegments + "/items?f=html";
+        String expectedBase =
+                "http://localhost:8080/geoserver/wfs3/collections/" + roadSegments + "/items";
 
-        // parse the HTML
-        org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
+        // first page, should only have next URL
+        String firstPageURL = urlBase + "&limit=2";
+        Document document = getAsJSoup(firstPageURL);
+        assertNull(document.getElementById("prevPage"));
+        assertNotNull(document.getElementById("nextPage"));
+        String expectedSecondPageURL = expectedBase + "?f=html&limit=2&startIndex=2";
+        assertURL(expectedSecondPageURL, document.getElementById("nextPage").attr("href"));
+
+        // second page, should have both prev and next
+        document = getAsJSoup(urlBase + "&limit=2&startIndex=2");
+        assertNotNull(document.getElementById("prevPage"));
+        assertNotNull(document.getElementById("nextPage"));
+        String expectedThirdPageURL = expectedBase + "?f=html&limit=2&startIndex=4";
+        assertURL(expectedThirdPageURL, document.getElementById("nextPage").attr("href"));
+
+        // last page, only prev
+        document = getAsJSoup(urlBase + "&limit=2&startIndex=4");
+        assertNotNull(document.getElementById("prevPage"));
+        assertNull(document.getElementById("nextPage"));
+        assertURL(expectedSecondPageURL, document.getElementById("prevPage").attr("href"));
+    }
+
+    private void assertURL(String expectedURL, String actualURL) {
+        String expectedPath = ResponseUtils.stripQueryString(expectedURL);
+        String actualPath = ResponseUtils.stripQueryString(actualURL);
+        assertEquals(expectedPath, actualPath);
+
+        Map<String, Object> expectedKVP = KvpUtils.parseQueryString(expectedPath);
+        Map<String, Object> actualKVP = KvpUtils.parseQueryString(expectedPath);
+        assertEquals(expectedKVP, actualKVP);
     }
 }

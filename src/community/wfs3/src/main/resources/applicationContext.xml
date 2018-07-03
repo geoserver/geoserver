@@ -19,6 +19,7 @@
         <value>api</value>
         <value>conformance</value>
         <value>collections</value>
+        <value>collection</value>
         <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
       </list>
     </constructor-arg>
@@ -45,6 +46,7 @@
   <bean id="wfs3TimeKvpParser" class="org.geoserver.wfs3.kvp.TimeKvpParser"/>
   <bean id="apiKvpRequestReader" class="org.geoserver.wfs3.kvp.APIRequestKVPReader"/>
   <bean id="contentKvpRequestReader" class="org.geoserver.wfs3.kvp.LandingPageRequestKVPReader"/>
+  <bean id="collectionKvpRequestReader" class="org.geoserver.wfs3.kvp.CollectionRequestKVPReader"/>
   <bean id="collectionsKvpRequestReader" class="org.geoserver.wfs3.kvp.CollectionsRequestKVPReader"/>
   <bean id="conformanceKvpRequestReader" class="org.geoserver.wfs3.kvp.ConformanceRequestKVPReader"/>
   <bean id="getFeatureKvpRequestReader" class="org.geoserver.wfs3.kvp.GetFeatureKvpRequestReader">
@@ -71,6 +73,10 @@
     <constructor-arg ref="geoServer"/>
   </bean>
   <bean id="collectionResponse" class="org.geoserver.wfs3.response.CollectionDocumentResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="collectionHTMLResponse" class="org.geoserver.wfs3.response.CollectionHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
     <constructor-arg ref="geoServer"/>
   </bean>
   <bean id="conformanceResponse" class="org.geoserver.wfs3.response.ConformanceDocumentResponse">

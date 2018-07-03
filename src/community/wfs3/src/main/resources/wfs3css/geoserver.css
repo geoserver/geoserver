@@ -108,3 +108,7 @@ padding-bottom: 0px;
 margin-bottom: 5px;
 border-bottom: 2px solid #c6e09b;
 }
+
+select {
+ margin: 0;
+}

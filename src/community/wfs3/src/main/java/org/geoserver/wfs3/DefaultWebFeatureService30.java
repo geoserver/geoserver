@@ -27,9 +27,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
@@ -65,23 +68,25 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public CollectionsDocument collections(CollectionsRequest request) {
-        if (request.getTypeName() == null) {
-            // all collections
-            return new CollectionsDocument(request, getService(), getCatalog());
+        return new CollectionsDocument(request, geoServer);
+    }
+
+    @Override
+    public CollectionDocument collection(CollectionRequest request) {
+        // single collection
+        QName typeName = request.getTypeName();
+        NamespaceInfo ns = getCatalog().getNamespaceByURI(typeName.getNamespaceURI());
+        FeatureTypeInfo featureType =
+                getCatalog().getFeatureTypeByName(ns, typeName.getLocalPart());
+        if (featureType == null) {
+            throw new ServiceException(
+                    "Unknown collection " + typeName,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "typeName");
         } else {
-            // single collection
-            QName typeName = request.getTypeName();
-            NamespaceInfo ns = getCatalog().getNamespaceByURI(typeName.getNamespaceURI());
-            FeatureTypeInfo featureType =
-                    getCatalog().getFeatureTypeByName(ns, typeName.getLocalPart());
-            if (featureType == null) {
-                throw new ServiceException(
-                        "Unknown collection " + typeName,
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "typeName");
-            } else {
-                return new CollectionsDocument(request, getService(), getCatalog(), featureType);
-            }
+            CollectionsDocument collections =
+                    new CollectionsDocument(request, geoServer, featureType);
+            return collections.getCollections().next();
         }
     }
 
@@ -109,9 +114,16 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
             request.setStartIndex(BigInteger.ZERO);
         }
 
-        // delegate execution to WFS 2.0
-        FeatureCollectionResponse response = wfs20.getFeature(request);
+        WFS3GetFeature gf = new WFS3GetFeature(getServiceInfo(), getCatalog());
+        gf.setFilterFactory(filterFactory);
+        gf.setStoredQueryProvider(getStoredQueryProvider());
+        FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
+
         return response;
+    }
+
+    private StoredQueryProvider getStoredQueryProvider() {
+        return new StoredQueryProvider(getCatalog());
     }
 
     /**
@@ -144,5 +156,9 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     @Override
     public OpenAPI api(APIRequest request) {
         return new OpenAPIBuilder().build(request, getService());
+    }
+
+    public WFSInfo getServiceInfo() {
+        return geoServer.getService(WFSInfo.class);
     }
 }

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -23,6 +24,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WFS3TestSupport extends GeoServerSystemTestSupport {
@@ -64,5 +67,17 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
         CiteTestData.registerNamespaces(namespaces);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+    }
+
+    protected Document getAsJSoup(String url) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(url);
+        assertEquals(200, response.getStatus());
+        assertEquals("text/html", response.getContentType());
+
+        LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());
+
+        // parse the HTML
+        Document document = Jsoup.parse(response.getContentAsString());
+        return document;
     }
 }

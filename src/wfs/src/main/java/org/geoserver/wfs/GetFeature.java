@@ -955,47 +955,55 @@ public class GetFeature {
                 // generate kvp map from request object
                 kvp = buildKvpFromRequest(request);
             }
-
-            // WFS 2.0 specific, must have a next and should point to the first result
-            if (request.isResultTypeHits()
-                    && (request.getVersion() == null || request.getVersion().startsWith("2"))) {
-                kvp = new KvpMap(kvp);
-                kvp.put("RESULTTYPE", "results");
-                kvp.put("STARTINDEX", "0");
-            }
-
-            // WFS 2.0 has specific requirements for hits, there is no previous link, the next
-            // points to the first
-            // page of results
-            if (offset > 0
-                    && !(request.isResultTypeHits() && request.getVersion().startsWith("2"))) {
-                // previous
-
-                // previous offset calculated as the current offset - maxFeatures, or 0 if this is a
-                // negative value
-                int prevOffset = Math.max(offset - maxFeatures, 0);
-                kvp.put("startIndex", String.valueOf(prevOffset));
-
-                // previous count should be current offset - previousOffset
-                kvp.put("count", String.valueOf(offset - prevOffset));
-                result.setPrevious(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
-            }
-
-            // don't return a next if we are at the end. But always do in WFS 2.0 HITS
-            // (ie. are returning less results than requested)
-            if (request.isResultTypeHits() && request.getVersion().startsWith("2")) {
-                result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
-            } else if (count > 0 && offset > -1 && maxFeatures <= count) {
-                kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
-                kvp.put("count", String.valueOf(maxFeatures));
-                result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
-            }
+            buildPrevNextLinks(request, offset, maxFeatures, count, result, kvp);
         }
 
         return result;
     }
 
-    KvpMap buildKvpFromRequest(GetFeatureRequest request) {
+    protected void buildPrevNextLinks(
+            GetFeatureRequest request,
+            int offset,
+            int maxFeatures,
+            int count,
+            FeatureCollectionResponse result,
+            Map<String, String> kvp) {
+        // WFS 2.0 specific, must have a next and should point to the first result
+        if (request.isResultTypeHits()
+                && (request.getVersion() == null || request.getVersion().startsWith("2"))) {
+            kvp = new KvpMap(kvp);
+            kvp.put("RESULTTYPE", "results");
+            kvp.put("STARTINDEX", "0");
+        }
+
+        // WFS 2.0 has specific requirements for hits, there is no previous link, the next
+        // points to the first
+        // page of results
+        if (offset > 0 && !(request.isResultTypeHits() && request.getVersion().startsWith("2"))) {
+            // previous
+
+            // previous offset calculated as the current offset - maxFeatures, or 0 if this is a
+            // negative value
+            int prevOffset = Math.max(offset - maxFeatures, 0);
+            kvp.put("startIndex", String.valueOf(prevOffset));
+
+            // previous count should be current offset - previousOffset
+            kvp.put("count", String.valueOf(offset - prevOffset));
+            result.setPrevious(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
+        }
+
+        // don't return a next if we are at the end. But always do in WFS 2.0 HITS
+        // (ie. are returning less results than requested)
+        if (request.isResultTypeHits() && request.getVersion().startsWith("2")) {
+            result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
+        } else if (count > 0 && offset > -1 && maxFeatures <= count) {
+            kvp.put("startIndex", String.valueOf(offset > 0 ? offset + count : count));
+            kvp.put("count", String.valueOf(maxFeatures));
+            result.setNext(buildURL(request.getBaseUrl(), "wfs", kvp, URLType.SERVICE));
+        }
+    }
+
+    protected KvpMap buildKvpFromRequest(GetFeatureRequest request) {
 
         // FILTER_LANGUAGE
         // RESOURCEID

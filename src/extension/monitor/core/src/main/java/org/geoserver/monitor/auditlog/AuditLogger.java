@@ -36,6 +36,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
+import org.geoserver.template.TemplateUtils;
 
 /**
  * Writes all requests to a log file. The log file can be configured in the MonitorConfig, as well
@@ -71,7 +72,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     public AuditLogger(MonitorConfig config, GeoServerResourceLoader loader) throws IOException {
         this.config = config;
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }
 

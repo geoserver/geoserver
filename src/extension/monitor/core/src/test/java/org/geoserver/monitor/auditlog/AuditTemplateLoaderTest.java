@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.junit.Test;
+import org.geoserver.template.TemplateUtils;
 
 public class AuditTemplateLoaderTest {
 
@@ -18,7 +19,7 @@ public class AuditTemplateLoaderTest {
     public void testLoadDefaultTemplates() throws IOException {
         GeoServerResourceLoader rloader = new GeoServerResourceLoader(new File("./target"));
         AuditTemplateLoader tloader = new AuditTemplateLoader(rloader);
-        Configuration config = new Configuration();
+        Configuration config = TemplateUtils.getSafeConfiguration();
         config.setTemplateLoader(tloader);
 
         assertNotNull(config.getTemplate("header.ftl"));

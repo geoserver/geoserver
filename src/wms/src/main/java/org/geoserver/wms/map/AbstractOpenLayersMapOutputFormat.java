@@ -21,6 +21,7 @@ import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.*;
@@ -79,7 +80,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     private static Configuration cfg;
 
     static {
-        cfg = new Configuration();
+        cfg = TemplateUtils.getSafeConfiguration();
         cfg.setClassForTemplateLoading(AbstractOpenLayersMapOutputFormat.class, "");
         BeansWrapper bw = new BeansWrapper();
         bw.setExposureLevel(BeansWrapper.EXPOSE_PROPERTIES_ONLY);

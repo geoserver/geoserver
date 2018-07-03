@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
+import org.geoserver.template.TemplateUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -59,7 +60,7 @@ public class FeatureTemplate {
     static {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
         templateConfig.setObjectWrapper(new FeatureWrapper());
 
         // set the default output formats for dates

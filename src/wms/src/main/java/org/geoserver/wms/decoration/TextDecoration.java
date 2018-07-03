@@ -7,7 +7,6 @@ package org.geoserver.wms.decoration;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.StringModel;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
@@ -24,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.renderer.style.FontCache;
 import org.geotools.util.Converters;
@@ -136,7 +136,11 @@ public class TextDecoration implements MapDecoration {
 
     String evaluateMessage(WMSMapContent content) throws IOException, TemplateException {
         final Map env = content.getRequest().getEnv();
-        Template t = new Template("name", new StringReader(messageTemplate), new Configuration());
+        Template t =
+                new Template(
+                        "name",
+                        new StringReader(messageTemplate),
+                        TemplateUtils.getSafeConfiguration());
         final BeansWrapper bw = new BeansWrapper();
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 t,

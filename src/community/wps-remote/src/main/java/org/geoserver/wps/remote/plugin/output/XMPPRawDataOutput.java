@@ -45,6 +45,7 @@ import org.geoserver.wps.remote.plugin.XMPPClient;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.geoserver.template.TemplateUtils;
 
 /**
  * Actual implementation of a RAW DATA Output Type
@@ -537,7 +538,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 // process the template and stream out the result
                 content = FileUtils.readFileToString(new File(wmcTemplatePath));
                 Template template =
-                        new Template("name", new StringReader(content), new Configuration());
+                        new Template("name", new StringReader(content), TemplateUtils.getSafeConfiguration());
 
                 template.setOutputEncoding("UTF-8");
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();

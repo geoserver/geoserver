@@ -23,7 +23,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
@@ -77,7 +76,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         "resourceErrorHandling",
                         Arrays.asList(ResourceErrorHandling.values()),
                         new ResourceErrorHandlingRenderer()));
-        form.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
+        form.add(new TextField<String>("proxyBaseUrl"));
+        form.add(new CheckBox("useHeadersProxyURL"));
 
         logLevelsAppend(form, loggingInfoModel);
         form.add(

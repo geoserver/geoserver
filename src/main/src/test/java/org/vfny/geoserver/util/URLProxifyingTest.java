@@ -33,8 +33,10 @@ public class URLProxifyingTest {
             Boolean useHeadersProxyURLIn,
             String forwardedHeader,
             String forwardedProtoHeader,
+            String host,
             String forwardedHost,
-            String forwardedPath) {
+            String forwardedPath,
+            String forwarded) {
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(
@@ -42,12 +44,14 @@ public class URLProxifyingTest {
         headers.put(
                 ProxifyingURLMangler.Headers.FORWARDED_PROTO.asString().toLowerCase(),
                 forwardedProtoHeader);
+        headers.put(ProxifyingURLMangler.Headers.HOST.asString().toLowerCase(), host);
         headers.put(
                 ProxifyingURLMangler.Headers.FORWARDED_HOST.asString().toLowerCase(),
                 forwardedHost);
         headers.put(
                 ProxifyingURLMangler.Headers.FORWARDED_PATH.asString().toLowerCase(),
                 forwardedPath);
+        headers.put(ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase(), forwarded);
 
         Request request = createNiceMock(Request.class);
         expect(request.getHttpRequest())
@@ -97,7 +101,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testNoProxyBaseURL() throws Exception {
-        createAppContext(null, false, null, null, null, null);
+        createAppContext(null, false, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -109,7 +113,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURL() throws Exception {
-        createAppContext("http://foo.org/geoserver", false, null, null, null, null);
+        createAppContext("http://foo.org/geoserver", false, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -121,7 +125,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURLFlagSetNoTemplate() throws Exception {
-        createAppContext("http://foo.org/geoserver", true, null, null, null, null);
+        createAppContext("http://foo.org/geoserver", true, null, null, null, null, null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -136,6 +140,8 @@ public class URLProxifyingTest {
         createAppContext(
                 "http://${X-Forwarded-Host}/${X-Forwarded-Path}/geoserver",
                 true,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -156,7 +162,9 @@ public class URLProxifyingTest {
                 true,
                 null,
                 null,
+                null,
                 "example.com:8080",
+                null,
                 null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
@@ -169,7 +177,7 @@ public class URLProxifyingTest {
 
     @Test
     public void testProxyBaseURLFlagSetWithTemplateEmptyBaseURL() throws Exception {
-        createAppContext("", true, null, null, "example.com:8080", null);
+        createAppContext("", true, null, null, null, "example.com:8080", null, null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -182,7 +190,14 @@ public class URLProxifyingTest {
     @Test
     public void testProxyBaseURLFlagSetWithTemplate() throws Exception {
         createAppContext(
-                "http://${X-Forwarded-Host}/geoserver", true, null, null, "example.com:8080", null);
+                "http://${X-Forwarded-Host}/geoserver",
+                true,
+                null,
+                null,
+                null,
+                "example.com:8080",
+                null,
+                null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -193,14 +208,76 @@ public class URLProxifyingTest {
     }
 
     @Test
-    public void testProxyBaseURLFlagSetWithTemplate2() throws Exception {
+    public void testProxyBaseURLFlagSetWithTemplateForwardedHost() throws Exception {
         createAppContext(
                 "http://${X-Forwarded-Host}/${X-Forwarded-Path}/geoserver",
                 true,
                 null,
                 null,
+                null,
                 "example.com:8080",
-                "public");
+                "public",
+                null);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL,
+                new StringBuilder(),
+                new HashMap<String, String>(),
+                URLMangler.URLType.SERVICE);
+        assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
+    }
+
+    @Test
+    public void testProxyBaseURLFlagSetWithTemplateHost() throws Exception {
+        createAppContext(
+                "http://${Host}/${X-Forwarded-Path}/geoserver",
+                true,
+                null,
+                null,
+                "example.com:8080",
+                null,
+                "public",
+                null);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL,
+                new StringBuilder(),
+                new HashMap<String, String>(),
+                URLMangler.URLType.SERVICE);
+        assertEquals("http://example.com:8080/public/geoserver", baseURL.toString());
+    }
+
+    @Test
+    public void testProxyBaseURLFlagSetWithTemplateForwarded() throws Exception {
+        createAppContext(
+                "${Forwarded.proto}://${Forwarded.host}/geoserver",
+                true,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "for=192.0.2.60; proto=http; by=203.0.113.43; host=example.com:8080");
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL,
+                new StringBuilder(),
+                new HashMap<String, String>(),
+                URLMangler.URLType.SERVICE);
+        assertEquals("http://example.com:8080/geoserver", baseURL.toString());
+    }
+
+    @Test
+    public void testProxyBaseURLFlagSetWithTemplateForwardedPath() throws Exception {
+        createAppContext(
+                "${Forwarded.proto}://${Forwarded.host}/${Forwarded.path}/geoserver",
+                true,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "proto=http; host=example.com:8080; path=public");
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -219,8 +296,10 @@ public class URLProxifyingTest {
                 true,
                 null,
                 null,
+                null,
                 "example.com:8080",
-                "public");
+                "public",
+                null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -240,7 +319,9 @@ public class URLProxifyingTest {
                 null,
                 null,
                 null,
-                "public");
+                null,
+                "public",
+                null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
@@ -257,8 +338,10 @@ public class URLProxifyingTest {
                 true,
                 null,
                 null,
+                null,
                 "example.com:8080",
-                "public");
+                "public",
+                null);
         StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,

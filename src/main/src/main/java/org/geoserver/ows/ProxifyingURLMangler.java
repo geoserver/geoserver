@@ -6,6 +6,8 @@
 package org.geoserver.ows;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -19,6 +21,7 @@ public class ProxifyingURLMangler implements URLMangler {
         FORWARDED_PROTO("X-Forwarded-Proto"),
         FORWARDED_HOST("X-Forwarded-Host"),
         FORWARDED_PATH("X-Forwarded-Path"),
+        FORWARDED_FOR("X-Forwarded-For"),
         HOST("Host");
 
         private String header;
@@ -32,11 +35,43 @@ public class ProxifyingURLMangler implements URLMangler {
         }
     }
 
+    public enum ForwardedComponents {
+        FOR("for"),
+        BY("by"),
+        PROTO("proto"),
+        HOST("host"),
+        PATH("path");
+
+        private String comp;
+
+        ForwardedComponents(String c) {
+            this.comp = c;
+        }
+
+        public String asString() {
+            return comp;
+        }
+    }
+
     GeoServer geoServer;
 
     public static String TEMPLATE_SEPARATOR = " ";
     public static String TEMPLATE_PREFIX = "${";
     public static String TEMPLATE_POSTFIX = "}";
+
+    public static Map<String, Pattern> FORWARDED_PATTERNS = new HashMap<String, Pattern>();
+
+    {
+        Arrays.asList(ForwardedComponents.values())
+                .forEach(
+                        (comp) -> {
+                            FORWARDED_PATTERNS.put(
+                                    comp.asString(),
+                                    Pattern.compile(
+                                            String.format(
+                                                    "(.*)%s=([^;^ ]+)(.*)", comp.asString())));
+                        });
+    }
 
     public ProxifyingURLMangler(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -108,7 +143,11 @@ public class ProxifyingURLMangler implements URLMangler {
         return baseURL;
     }
 
-    /** Compile Map of header templates and actual header values */
+    /**
+     * Compile Map of header templates and actual header values
+     *
+     * @return map of header names and values
+     */
     private Map<String, String> compileHeadersMap() {
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -118,13 +157,34 @@ public class ProxifyingURLMangler implements URLMangler {
                 .forEach(
                         (header) -> {
                             if (owsRequest.getHeader(header.asString()) != null) {
-                                headers.put(
-                                        String.format(
-                                                "%s%s%s",
-                                                TEMPLATE_PREFIX,
-                                                header.asString(),
-                                                TEMPLATE_POSTFIX),
-                                        owsRequest.getHeader(header.asString()));
+                                if (header == Headers.FORWARDED) {
+                                    FORWARDED_PATTERNS.forEach(
+                                            (comp, pattern) -> {
+                                                Matcher m =
+                                                        pattern.matcher(
+                                                                owsRequest.getHeader(
+                                                                        header.asString()));
+                                                if (m.matches()) {
+                                                    headers.put(
+                                                            String.format(
+                                                                    "%s%s%s",
+                                                                    TEMPLATE_PREFIX,
+                                                                    Headers.FORWARDED.toString()
+                                                                            + "."
+                                                                            + comp,
+                                                                    TEMPLATE_POSTFIX),
+                                                            m.group(2));
+                                                }
+                                            });
+                                } else {
+                                    headers.put(
+                                            String.format(
+                                                    "%s%s%s",
+                                                    TEMPLATE_PREFIX,
+                                                    header.asString(),
+                                                    TEMPLATE_POSTFIX),
+                                            owsRequest.getHeader(header.asString()));
+                                }
                             }
                         });
 

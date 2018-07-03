@@ -21,10 +21,11 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
+import org.geoserver.template.TemplateUtils;
 
 public abstract class AbstractHTMLResponse extends Response {
 
-    private static Configuration templateConfig = new Configuration();
+    private static Configuration templateConfig = TemplateUtils.getSafeConfiguration();
 
     protected final GeoServer geoServer;
     private FreemarkerTemplateSupport templateSupport;

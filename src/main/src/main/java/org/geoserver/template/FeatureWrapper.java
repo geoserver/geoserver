@@ -87,7 +87,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  *  //features we want to apply template to
  *  FeatureCollection features = ...;
  *  //create the configuration and set the wrapper
- *  Configuration cfg = new Configuration();
+ *  Configuration cfg = TemplateUtils.getSafeConfiguration();
  *  cfg.setObjectWrapper( new FeatureWrapper() );
  *  //get the template and go
  *  Template template = cfg.getTemplate( &quot;foo.ftl&quot; );

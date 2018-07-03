@@ -18,6 +18,7 @@ import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.rest.wrapper.RestWrapperAdapter;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
@@ -68,7 +69,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @return
      */
     protected <T> Configuration createConfiguration(Class<T> clazz) {
-        Configuration cfg = new Configuration();
+        Configuration cfg = TemplateUtils.getSafeConfiguration();
         cfg.setObjectWrapper(createObjectWrapper(clazz));
         cfg.setClassForTemplateLoading(getClass(), pathPrefix);
         if (encoding != null) {

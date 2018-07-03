@@ -23,6 +23,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
@@ -49,7 +50,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     static {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
         templateConfig.setObjectWrapper(
                 new FeatureWrapper(tfcFactory) {
 

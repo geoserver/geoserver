@@ -4,7 +4,7 @@
  */
 package org.geogig.geoserver.config;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 
 public class LogEvent implements Serializable {
@@ -70,7 +70,7 @@ public class LogEvent implements Serializable {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(eventId)
                 .addValue(severity)
                 .add("time", timestamp)

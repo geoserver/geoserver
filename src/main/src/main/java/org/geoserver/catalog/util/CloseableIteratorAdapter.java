@@ -12,6 +12,7 @@ import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Closeables;
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -132,7 +133,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     }
 
     public static <T> CloseableIterator<T> empty() {
-        Iterator<T> empty = Iterators.emptyIterator();
+        Iterator<T> empty = Collections.emptyIterator();
         return new CloseableIteratorAdapter<T>(empty);
     }
 

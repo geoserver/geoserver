@@ -376,9 +376,8 @@ border: 0 none transparent;
 legend span { 
 position: absolute;
 width: 29.2em;
-top: -3em;
+top: -1.5em;
 left: 0;
-padding-top: 1.5em;
 }
 
 legend a {

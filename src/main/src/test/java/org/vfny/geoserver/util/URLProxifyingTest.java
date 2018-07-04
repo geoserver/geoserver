@@ -258,7 +258,7 @@ public class URLProxifyingTest {
                 null,
                 null,
                 "for=192.0.2.60; proto=http; by=203.0.113.43; host=example.com:8080");
-        StringBuilder baseURL = new StringBuilder();
+       StringBuilder baseURL = new StringBuilder();
         this.mangler.mangleURL(
                 baseURL,
                 new StringBuilder(),

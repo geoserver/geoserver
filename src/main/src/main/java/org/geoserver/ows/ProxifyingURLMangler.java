@@ -17,7 +17,7 @@ import org.vfny.geoserver.util.Requests;
 public class ProxifyingURLMangler implements URLMangler {
 
     public enum Headers {
-        FORWARDED("X-Forwarded"),
+        FORWARDED("Forwarded"),
         FORWARDED_PROTO("X-Forwarded-Proto"),
         FORWARDED_HOST("X-Forwarded-Host"),
         FORWARDED_PATH("X-Forwarded-Path"),
@@ -169,7 +169,7 @@ public class ProxifyingURLMangler implements URLMangler {
                                                             String.format(
                                                                     "%s%s%s",
                                                                     TEMPLATE_PREFIX,
-                                                                    Headers.FORWARDED.toString()
+                                                                    Headers.FORWARDED.asString()
                                                                             + "."
                                                                             + comp,
                                                                     TEMPLATE_POSTFIX),

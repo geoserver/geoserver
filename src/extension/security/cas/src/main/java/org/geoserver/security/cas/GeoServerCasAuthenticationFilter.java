@@ -21,6 +21,7 @@ import org.geoserver.security.LogoutFilterChain;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
+import org.jasig.cas.client.configuration.ConfigurationKeys;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
 import org.jasig.cas.client.util.CommonUtils;
@@ -246,7 +247,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         return "POST".equals(request.getMethod())
                 && CommonUtils.isNotBlank(
                         CommonUtils.safeGetParameter(
-                                request, SingleSignOutHandler.DEFAULT_LOGOUT_PARAMETER_NAME));
+                                request,
+                                ConfigurationKeys.LOGOUT_PARAMETER_NAME.getDefaultValue()));
     }
 
     @Override

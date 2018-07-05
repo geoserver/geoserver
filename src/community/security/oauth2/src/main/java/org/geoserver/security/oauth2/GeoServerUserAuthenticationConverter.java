@@ -1,8 +1,15 @@
+/*
+ * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ *
+ */
+
 /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.oauth2.services;
+package org.geoserver.security.oauth2;
 
 import java.util.Map;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,11 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
 /**
- * User Authentication Converter for GeoNode token details.
+ * User Authentication Converter
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
+public class GeoServerUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
 
     private static Object USERNAME_KEY = USERNAME;
 
@@ -23,7 +30,7 @@ public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticatio
      *
      * @param username_key
      */
-    public GeoNodeUserAuthenticationConverter() {
+    public GeoServerUserAuthenticationConverter() {
         super();
     }
 
@@ -32,7 +39,7 @@ public class GeoNodeUserAuthenticationConverter extends DefaultUserAuthenticatio
      *
      * @param username_key
      */
-    public GeoNodeUserAuthenticationConverter(final String username_key) {
+    public GeoServerUserAuthenticationConverter(final String username_key) {
         super();
 
         USERNAME_KEY = username_key;

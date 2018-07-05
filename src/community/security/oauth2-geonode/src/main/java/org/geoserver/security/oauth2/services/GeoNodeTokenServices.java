@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2.services;
 
 import java.util.Map;
+import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 
 /**
@@ -15,7 +16,7 @@ import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 public class GeoNodeTokenServices extends GeoServerOAuthRemoteTokenServices {
 
     public GeoNodeTokenServices() {
-        super(new GeoNodeAccessTokenConverter());
+        super(new GeoServerAccessTokenConverter());
     }
 
     protected void transformNonStandardValuesToStandardValues(Map<String, Object> map) {

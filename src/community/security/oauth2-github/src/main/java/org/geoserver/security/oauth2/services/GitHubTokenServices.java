@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.oauth2.services;
 
+import java.util.Map;
+import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -13,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Map;
-
 /**
  * Remote Token Services for GitHub token details.
  *
@@ -23,7 +23,7 @@ import java.util.Map;
 public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
 
     public GitHubTokenServices() {
-        super(new GitHubAccessTokenConverter());
+        super(new GeoServerAccessTokenConverter());
     }
 
     protected void transformNonStandardValuesToStandardValues(Map<String, Object> map) {

@@ -42,6 +42,15 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
     }
 
     /**
+     * Initializes the class with a default user auth converter
+     *
+     * @param defaultUserAuthConverter
+     */
+    public GeoServerAccessTokenConverter() {
+        setUserTokenConverter(new GeoServerUserAuthenticationConverter());
+    }
+
+    /**
      * Converter for the part of the data in the token representing a user.
      *
      * @param userTokenConverter the userTokenConverter to set

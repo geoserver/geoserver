@@ -222,7 +222,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     public Boolean isUseHeadersProxyURL() {
-        return useHeadersProxyURL;
+        return useHeadersProxyURL == null ? false : useHeadersProxyURL;
     }
 
     public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {

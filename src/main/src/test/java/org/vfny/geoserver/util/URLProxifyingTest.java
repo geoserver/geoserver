@@ -71,7 +71,7 @@ public class URLProxifyingTest {
                         new GeoServerInfoImpl() {
                             @Override
                             public Boolean isUseHeadersProxyURL() {
-                                return useHeadersProxyURLIn;
+                                return useHeadersProxyURLIn == null ? false : useHeadersProxyURLIn;
                             }
                         })
                 .anyTimes();
@@ -97,6 +97,18 @@ public class URLProxifyingTest {
     @After
     public void clearAppContext() {
         GeoServerExtensionsHelper.init(null);
+    }
+
+    @Test
+    public void testNullFlag() throws Exception {
+        createAppContext(null, null, null, null, null, null, null, null);
+        StringBuilder baseURL = new StringBuilder();
+        this.mangler.mangleURL(
+                baseURL,
+                new StringBuilder(),
+                new HashMap<String, String>(),
+                URLMangler.URLType.SERVICE);
+        assertEquals("", baseURL.toString());
     }
 
     @Test

@@ -16,7 +16,8 @@ import java.util.Map;
 class QuickTemplate {
 
     /**
-     * Simple replacement of a set of variables in a string with their values
+     * Simple replacement of a set of variables in a string with their values. The variable names to
+     * expand are case-insensitive.
      *
      * @param template
      * @param variables

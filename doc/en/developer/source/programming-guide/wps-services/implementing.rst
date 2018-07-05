@@ -107,6 +107,14 @@ For this example the project will be called "hello_wps".
                     <enabled>true</enabled>
                 </snapshots>
             </repository>
+	    <repository>
+                <id>osgeo</id>
+                <name>Open Source Geospatial Foundation Repository</name>
+                <url>http://download.osgeo.org/webdav/geotools</url>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
         </repositories>
 
     </project>  

@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.oauth2.services;
 
+import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
+
 /**
  * Access Token Converter for GitHub token details.
  *

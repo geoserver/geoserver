@@ -4,13 +4,23 @@
  */
 package org.geoserver.security.oauth2;
 
+import java.util.Arrays;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.token.AccessTokenProvider;
+import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
+import org.springframework.security.oauth2.common.AuthenticationScheme;
 
 /**
  * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must implement its own {@link
@@ -45,11 +55,51 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     }
 
     /** Details for an OAuth2-protected resource. */
-    public abstract OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
+    public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
+        AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+        details.setId(getDetailsId());
+
+        details.setGrantType("authorization_code");
+        details.setAuthenticationScheme(AuthenticationScheme.header);
+        details.setClientAuthenticationScheme(AuthenticationScheme.form);
+
+        return details;
+    }
+
+    /**
+     * Returns the details id for the AuthorizationCodeResourceDetails.
+     *
+     * @return
+     */
+    protected String getDetailsId() {
+        return "oauth2-client";
+    }
 
     /**
      * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of
      * the provided resource.
      */
-    public abstract OAuth2RestTemplate geoServerOauth2RestTemplate();
+    public OAuth2RestTemplate geoServerOauth2RestTemplate() {
+
+        OAuth2RestTemplate oAuth2RestTemplate =
+                new OAuth2RestTemplate(
+                        geoServerOAuth2Resource(),
+                        new DefaultOAuth2ClientContext(getAccessTokenRequest()));
+
+        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider =
+                new AuthorizationCodeAccessTokenProvider();
+        authorizationCodeAccessTokenProvider.setStateMandatory(false);
+
+        AccessTokenProvider accessTokenProviderChain =
+                new AccessTokenProviderChain(
+                        Arrays.<AccessTokenProvider>asList(
+                                authorizationCodeAccessTokenProvider,
+                                new ImplicitAccessTokenProvider(),
+                                new ResourceOwnerPasswordAccessTokenProvider(),
+                                new ClientCredentialsAccessTokenProvider()));
+
+        oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
+
+        return oAuth2RestTemplate;
+    }
 }

@@ -23,16 +23,6 @@
 	<!-- OAuth2 Security Extension -->
 	<bean id="githubOAuth2TokenServices"
 		class="org.geoserver.security.oauth2.services.GitHubTokenServices">
-		<property name="accessTokenConverter">
-			<bean
-				class="org.geoserver.security.oauth2.services.GitHubAccessTokenConverter">
-				<property name="userTokenConverter">
-					<bean
-						class="org.geoserver.security.oauth2.services.GitHubUserAuthenticationConverter">
-					</bean>
-				</property>
-			</bean>
-		</property>
 	</bean>
 
 	<bean id="githubOAuth2AuthenticationProvider"

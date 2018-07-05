@@ -23,17 +23,6 @@
 	<!-- OAuth2 Security Extension -->
 	<bean id="googleOAuth2TokenServices"
 		class="org.geoserver.security.oauth2.services.GoogleTokenServices">
-		<property name="accessTokenConverter">
-			<bean
-				class="org.geoserver.security.oauth2.services.GoogleAccessTokenConverter">
-				<property name="userTokenConverter">
-					<bean
-						class="org.geoserver.security.oauth2.services.GoogleUserAuthenticationConverter">
-						<constructor-arg value="email" />
-					</bean>
-				</property>
-			</bean>
-		</property>
 	</bean>
 
 	<bean id="googleOAuth2AuthenticationProvider"

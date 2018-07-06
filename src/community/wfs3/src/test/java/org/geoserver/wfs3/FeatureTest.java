@@ -39,6 +39,28 @@ public class FeatureTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testWorkspaceQualified() throws Exception {
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        DocumentContext json =
+                getAsJSONPath(
+                        MockData.ROAD_SEGMENTS.getPrefix()
+                                + "/wfs3/collections/"
+                                + roadSegments
+                                + "/items",
+                        200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(5, (int) json.read("features.length()", Integer.class));
+        // check self link
+        List selfRels = json.read("links[?(@.type == 'application/geo+json')].rel");
+        assertEquals(1, selfRels.size());
+        assertEquals("self", selfRels.get(0));
+        // check alternate link
+        List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
+        assertEquals(1, alternatefRels.size());
+        assertEquals("alternate", alternatefRels.get(0));
+    }
+
+    @Test
     public void testBBoxFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =

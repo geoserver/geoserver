@@ -4,11 +4,17 @@
  * application directory.
  *
  */
+
+/*
+ * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ *
+ */
 package org.geoserver.security.oauth2;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.logging.Level;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -18,16 +24,16 @@ import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
-public class LoginButtonTest extends GeoServerWicketTestSupport {
+public class GeoNodeLoginButtonTest extends GeoServerWicketTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         GeoServerSecurityManager manager = getSecurityManager();
-        GitHubOAuth2FilterConfig filterConfig = new GitHubOAuth2FilterConfig();
-        filterConfig.setName("github");
-        filterConfig.setClassName(GitHubOAuthAuthenticationFilter.class.getName());
+        GeoNodeOAuth2FilterConfig filterConfig = new GeoNodeOAuth2FilterConfig();
+        filterConfig.setName("geonode");
+        filterConfig.setClassName(GeoNodeOAuthAuthenticationFilter.class.getName());
         filterConfig.setCliendId("foo");
         filterConfig.setClientSecret("bar");
         manager.saveFilter(filterConfig);
@@ -35,7 +41,7 @@ public class LoginButtonTest extends GeoServerWicketTestSupport {
         SecurityManagerConfig config = manager.getSecurityConfig();
         GeoServerSecurityFilterChain chain = config.getFilterChain();
         RequestFilterChain www = chain.getRequestChainByName("web");
-        www.setFilterNames("github", "anonymous");
+        www.setFilterNames("geonode", "anonymous");
         manager.saveSecurityConfig(config);
     }
 
@@ -48,14 +54,14 @@ public class LoginButtonTest extends GeoServerWicketTestSupport {
     public void testLoginButton() {
         tester.startPage(GeoServerHomePage.class);
         String html = tester.getLastResponseAsString();
-        LOGGER.log(Level.INFO, "Last HTML page output:\n" + html);
+        LOGGER.info("Last page HTML:\n" + html);
 
         // the login form is there and has the link
         assertTrue(
                 html.contains(
-                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_github_login\">"));
+                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_geonode_login\">"));
         assertTrue(
                 html.contains(
-                        "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanel/github"));
+                        "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GeoNodeOAuth2AuthProviderPanel/geonode"));
     }
 }

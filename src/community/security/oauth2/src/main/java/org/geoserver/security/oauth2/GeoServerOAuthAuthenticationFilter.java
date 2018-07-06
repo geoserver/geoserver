@@ -41,6 +41,7 @@ import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -99,7 +100,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
             throws IOException, ServletException {
 
         // Search for an access_token on the request (simulating SSO)
-        final String accessToken = getParameterValue("access_token", request);
+        String accessToken = getParameterValue("access_token", request);
+        if (accessToken == null) {
+            accessToken = getBearerToken(request);
+        }
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
@@ -170,6 +174,16 @@ public abstract class GeoServerOAuthAuthenticationFilter
         }
 
         chain.doFilter(request, response);
+    }
+
+    protected String getBearerToken(ServletRequest request) {
+        if (request instanceof HttpServletRequest) {
+            Authentication auth = new BearerTokenExtractor().extract((HttpServletRequest) request);
+            if (auth != null && auth.getPrincipal() instanceof String)
+                return (String) auth.getPrincipal();
+        }
+
+        return null;
     }
 
     protected String getParameterValue(String paramName, ServletRequest request) {

@@ -27,13 +27,13 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security.outh2");
 
-    RemoteTokenServices tokenServices;
+    protected RemoteTokenServices tokenServices;
 
-    GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
+    protected GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
-    OAuth2RestTemplate geoServerOauth2RestTemplate;
+    protected OAuth2RestTemplate geoServerOauth2RestTemplate;
 
-    private ApplicationContext context;
+    protected ApplicationContext context;
 
     public GeoServerOAuthAuthenticationProvider(
             GeoServerSecurityManager securityManager,

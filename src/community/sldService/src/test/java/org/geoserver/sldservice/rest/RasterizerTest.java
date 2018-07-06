@@ -56,21 +56,68 @@ public class RasterizerTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testRasterizeWithNoLayer() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH + "/sldservice//" + getServiceUrl() + ".xml";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 404);
+    }
+
+    @Test
     public void testRasterizeWithNoParams() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("wcs:World");
         assertEquals("raster", l.getDefaultStyle().getName());
         final String restPath =
                 RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
-        // Randomly cannot find REST path
-        if (response.getStatus() == 200) {
-            Document dom = getAsDOM(restPath, 200);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            // print(dom);
-            print(dom, baos);
-            assertTrue(baos.toString().indexOf("<featureTypeStyles>") > 0);
-            // checkColorMap(baos.toString(), 5);
-        }
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        assertTrue(baos.toString().indexOf("<sld:ColorMap>") > 0);
+        checkColorMap(baos.toString(), 100);
+    }
+
+    @Test
+    public void testRasterizeOptions() throws Exception {
+        LayerInfo l = getCatalog().getLayerByName("wcs:World");
+        assertEquals("raster", l.getDefaultStyle().getName());
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:World/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "classes=5&min=10.0&max=50.0&digits=1&ramp=custom&startColor=0xFF0000&endColor=0x0000FF";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        assertTrue(baos.toString().indexOf("<sld:ColorMap>") > 0);
+        ColorMap map = checkColorMap(baos.toString(), 5);
+        checkColorEntry(map.getColorMapEntries()[1], "#FF0000", "10.0", "1.0");
+        checkColorEntry(map.getColorMapEntries()[5], "#0000FF", "50.0", "1.0");
+    }
+
+    @Test
+    public void testRasterizeOptions2() throws Exception {
+        LayerInfo l = getCatalog().getLayerByName("wcs:World");
+        assertEquals("raster", l.getDefaultStyle().getName());
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:World/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "classes=5&min=10.0&max=50.0&digits=2&ramp=custom&startColor=0xFF0000&endColor=0x0000FF";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        assertTrue(baos.toString().indexOf("<sld:ColorMap>") > 0);
+        ColorMap map = checkColorMap(baos.toString(), 5);
+        checkColorEntry(map.getColorMapEntries()[1], "#FF0000", "10.00", "1.0");
+        checkColorEntry(map.getColorMapEntries()[5], "#0000FF", "50.00", "1.0");
     }
 
     private ColorMap checkColorMap(String resultXml, int classes) {

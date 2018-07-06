@@ -196,11 +196,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             new PackageResourceReference(
                                                     info.getComponentClass(), info.getInclude()));
                         } else {
-                            include =
-                                    new LoginFormHTMLInclude(
-                                            "login.include",
-                                            new PackageResourceReference(
-                                                    GeoServerBasePage.class, ""));
+                            include = new LoginFormHTMLInclude("login.include", null);
                         }
                         loginForm.add(include);
 

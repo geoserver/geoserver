@@ -1,8 +1,15 @@
+/*
+ * (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ *
+ */
+
 /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.security.oauth2.services;
+package org.geoserver.security.oauth2;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,22 +21,33 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 
 /**
- * Access Token Converter for GitHub token details.
+ * Base Access Token Converter with some GeoServer extras
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class GitHubAccessTokenConverter extends DefaultAccessTokenConverter {
+public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
 
-    private UserAuthenticationConverter userTokenConverter;
+    protected UserAuthenticationConverter userTokenConverter;
 
-    public GitHubAccessTokenConverter() {
-        final DefaultUserAuthenticationConverter defaultUserAuthConverter =
-                new GitHubUserAuthenticationConverter();
+    /**
+     * Initializes the class with a default user auth converter
+     *
+     * @param defaultUserAuthConverter
+     */
+    public GeoServerAccessTokenConverter(UserAuthenticationConverter defaultUserAuthConverter) {
         setUserTokenConverter(defaultUserAuthConverter);
+    }
+
+    /**
+     * Initializes the class with a default user auth converter
+     *
+     * @param defaultUserAuthConverter
+     */
+    public GeoServerAccessTokenConverter() {
+        setUserTokenConverter(new GeoServerUserAuthenticationConverter());
     }
 
     /**
@@ -61,7 +79,7 @@ public class GitHubAccessTokenConverter extends DefaultAccessTokenConverter {
     }
 
     private Set<String> parseScopes(Map<String, ?> map) {
-        // Parsing of scopes coming back from GitHub are slightly different from
+        // Parsing of scopes coming back from GeoNode are slightly different from
         // the default implementation. Instead of it being a collection it is a
         // String where multiple scopes are separated by a space.
         Object scopeAsObject = map.containsKey(SCOPE) ? map.get(SCOPE) : "";

@@ -1206,6 +1206,9 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testRunPostScript() throws Exception {
         // check if bash is there
         Assume.assumeTrue("Could not find sh in path, skipping", checkShellAvailable());
+        // even with bash available, the test won't work on windows as it won't know
+        // how to run the .sh out of the box
+        Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
 
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");

@@ -427,6 +427,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                         x,
                         y);
         Document document = getAsDOM(getFeatureUrl);
+        print(document);
 
         String xpath = null;
         try {

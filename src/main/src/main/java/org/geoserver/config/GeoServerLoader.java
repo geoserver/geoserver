@@ -5,10 +5,7 @@
  */
 package org.geoserver.config;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -346,7 +343,10 @@ public abstract class GeoServerLoader {
         // copy the file out to the data directory if necessary
         Resource styleResource = resourceLoader.get(Paths.path("styles", sld));
         if (!Resources.exists(styleResource)) {
-            IOUtils.copy(GeoServerLoader.class.getResourceAsStream(sld), styleResource.out());
+            try (InputStream in = GeoServerLoader.class.getResourceAsStream(sld);
+                    OutputStream out = styleResource.out()) {
+                IOUtils.copy(in, out);
+            }
         }
 
         // create a style for it

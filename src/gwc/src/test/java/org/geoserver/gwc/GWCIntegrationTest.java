@@ -26,10 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -47,6 +44,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -813,13 +811,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // Rewrite the contents of the style; this should truncate the blobStore
         StyleInfo styleToRewrite = catalog.getStyleByName("generic");
-        StyleInfo generic = catalog.getStyleByName("generic");
-        catalog.getResourcePool()
-                .writeStyle(
-                        styleToRewrite,
-                        new GeoServerDataDirectory(catalog.getResourceLoader())
-                                .style(generic)
-                                .in());
+        try (InputStream is = GeoServerLoader.class.getResourceAsStream("default_generic.sld")) {
+            catalog.getResourcePool().writeStyle(styleToRewrite, is);
+        }
 
         catalog.save(styleToRewrite);
 

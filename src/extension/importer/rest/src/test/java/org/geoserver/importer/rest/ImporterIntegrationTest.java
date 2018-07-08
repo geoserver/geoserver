@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Properties;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -783,6 +784,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // check if bash is there
         Assume.assumeTrue(
                 "Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+        // even with bash available, the test won't work on windows as it won't know
+        // how to run the .sh out of the box
+        Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("archsites"));
@@ -830,6 +834,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // check if bash is there
         Assume.assumeTrue(
                 "Could not find sh in path, skipping", ImporterDataTest.checkShellAvailable());
+        // even with bash available, the test won't work on windows as it won't know
+        // how to run the .sh out of the box
+        Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("archsites"));

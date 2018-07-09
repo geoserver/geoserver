@@ -64,6 +64,9 @@ public class GetCoverageTest extends WCSTestSupport {
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
+    protected static QName CUSTOMDIMS =
+            new QName(MockData.SF_URI, "customdimensions", MockData.SF_PREFIX);
+
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
 
     private static final QName BORDERS = new QName(MockData.SF_URI, "borders", MockData.SF_PREFIX);
@@ -75,6 +78,7 @@ public class GetCoverageTest extends WCSTestSupport {
     public void clearDimensions() {
         clearDimensions(getLayerId(WATTEMP));
         clearDimensions(getLayerId(TIMERANGES));
+        clearDimensions(getLayerId(CUSTOMDIMS));
     }
 
     @Override
@@ -102,6 +106,8 @@ public class GetCoverageTest extends WCSTestSupport {
         testData.addRasterLayer(
                 TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
         testData.addRasterLayer(
+                CUSTOMDIMS, "customdimensions.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(
                 SPATIO_TEMPORAL,
                 "spatio-temporal.zip",
                 null,
@@ -110,6 +116,7 @@ public class GetCoverageTest extends WCSTestSupport {
                 getCatalog());
 
         sortByElevation(TIMERANGES);
+        sortByElevation(CUSTOMDIMS);
     }
 
     // force sorting on elevation to get predictable results
@@ -768,6 +775,37 @@ public class GetCoverageTest extends WCSTestSupport {
         request = request.replace("${slicePointTime}", "2008-11-07T00:00:00.000Z");
         request = request.replace("${Custom}", "WAVELENGTH");
         request = request.replace("${slicePointCustom}", "80");
+        // timeranges is really just an expanded watertemp
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+
+    @Test
+    public void testCoverageMultipleCustomSubsets() throws Exception {
+        setupRasterDimension(
+                getLayerId(CUSTOMDIMS), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(CUSTOMDIMS), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(CUSTOMDIMS),
+                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
+                DimensionPresentation.LIST,
+                null);
+        setupRasterDimension(
+                getLayerId(CUSTOMDIMS),
+                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "CUSTOM",
+                DimensionPresentation.LIST,
+                null);
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageMultipleCustomSlicingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__customdimensions");
+        request = request.replace("${slicePointElevation}", "140");
+        request = request.replace("${slicePointTime}", "2008-11-07T00:00:00.000Z");
+        request = request.replace("${CustomOne}", "WAVELENGTH");
+        request = request.replace("${slicePointCustomOne}", "80");
+        request = request.replace("${CustomTwo}", "CUSTOM");
+        request = request.replace("${slicePointCustomTwo}", "99");
         // timeranges is really just an expanded watertemp
         checkWaterTempValue(request, 14.52999974018894136);
     }

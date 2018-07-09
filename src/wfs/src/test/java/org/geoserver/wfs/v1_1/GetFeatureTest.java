@@ -705,9 +705,7 @@ public class GetFeatureTest extends WFSTestSupport {
                                 + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         assertXpathExists("//gml:Point[@srsDimension = '2']", dom);
 
-        WFSInfo wfs = getWFS();
-        wfs.setCiteCompliant(true);
-        getGeoServer().save(wfs);
+        setCiteCompliant(true);
 
         dom =
                 getAsDOM(

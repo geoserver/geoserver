@@ -4,11 +4,14 @@
  */
 package org.geoserver.geopkg.wps.gs;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureReader;
@@ -20,6 +23,7 @@ import org.geotools.geopkg.TileReader;
 import org.geotools.util.URLs;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class GeoPackageProcessTest extends WPSTestSupport {
 
@@ -201,6 +205,90 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         tr.close();
 
         gpkg.close();
+    }
+
+    @Test
+    public void testGeoPackageProcessValidationError() throws Exception {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
+                        + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
+                        + "  <wps:DataInputs>"
+                        + "    <wps:Input>"
+                        + "      <ows:Identifier>contents</ows:Identifier>"
+                        + "      <wps:Data>"
+                        + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
+                        + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                        + "  <features name=\"lakes\" identifier=\"lakes1\">"
+                        + "    <description>lakes description</description>"
+                        + "    <featuretype>cite:Lakes</featuretype>"
+                        + "    <indexed>HELLO WORLD</indexed>"
+                        + "   </features>"
+                        + "</geopackage>"
+                        + "]]></wps:ComplexData>"
+                        + "      </wps:Data>"
+                        + "    </wps:Input>"
+                        + "  </wps:DataInputs>"
+                        + "  <wps:ResponseForm>"
+                        + "    <wps:RawDataOutput>"
+                        + "      <ows:Identifier>geopackage</ows:Identifier>"
+                        + "    </wps:RawDataOutput>"
+                        + "  </wps:ResponseForm>"
+                        + "</wps:Execute>";
+        Document d = postAsDOM("wps", xml);
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
+        String message =
+                XMLUnit.newXpathEngine()
+                        .evaluate(
+                                "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
+                                        + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
+                                d);
+        assertThat(message, containsString("org.xml.sax.SAXParseException"));
+        assertThat(message, containsString("HELLO WORLD"));
+    }
+
+    @Test
+    public void testGeoPackageProcessValidationXXE() throws Exception {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
+                        + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
+                        + "  <wps:DataInputs>"
+                        + "    <wps:Input>"
+                        + "      <ows:Identifier>contents</ows:Identifier>"
+                        + "      <wps:Data>"
+                        + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
+                        + "<!DOCTYPE indexed ["
+                        + "<!ELEMENT indexed ANY >"
+                        + "<!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\" >]>"
+                        + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                        + "  <features name=\"lakes\" identifier=\"lakes1\">"
+                        + "    <description>lakes description</description>"
+                        + "    <featuretype>cite:Lakes</featuretype>"
+                        + "    <indexed>&xxe;</indexed>"
+                        + "   </features>"
+                        + "</geopackage>"
+                        + "]]></wps:ComplexData>"
+                        + "      </wps:Data>"
+                        + "    </wps:Input>"
+                        + "  </wps:DataInputs>"
+                        + "  <wps:ResponseForm>"
+                        + "    <wps:RawDataOutput>"
+                        + "      <ows:Identifier>geopackage</ows:Identifier>"
+                        + "    </wps:RawDataOutput>"
+                        + "  </wps:ResponseForm>"
+                        + "</wps:Execute>";
+        Document d = postAsDOM("wps", xml);
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
+        String message =
+                XMLUnit.newXpathEngine()
+                        .evaluate(
+                                "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
+                                        + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
+                                d);
+        assertThat(message, containsString("Entity resolution disallowed"));
     }
 
     public String getXml() {

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
@@ -17,6 +18,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.xml.v1_0_0.WFSConfiguration;
+import org.junit.After;
 
 /**
  * New Base support class for wfs tests.
@@ -96,5 +98,23 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
                     "Overlaps",
                     "BBOX"
                 });
+    }
+
+    protected Boolean citeCompliant;
+
+    protected void setCiteCompliant(boolean value) {
+        WFSInfo wfs = getWFS();
+        citeCompliant = wfs.isCiteCompliant();
+        wfs.setCiteCompliant(value);
+        getGeoServer().save(wfs);
+    }
+
+    @After
+    public void resetCiteCompliant() {
+        if (Objects.nonNull(citeCompliant)) {
+            WFSInfo wfs = getWFS();
+            wfs.setCiteCompliant(citeCompliant);
+            getGeoServer().save(wfs);
+        }
     }
 }

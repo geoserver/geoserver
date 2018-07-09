@@ -57,11 +57,11 @@
           <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
-          <descriptor>release/ext-geofence.xml</descriptor>
-          <!-- <descriptor>release/ext-sldservice.xml</descriptor> -->
+          <!--descriptor>release/ext-geofence.xml</descriptor-->
+          <descriptor>release/ext-sldservice.xml</descriptor>
           <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
-          <descriptor>release/ext-geofence-server.xml</descriptor>
+          <!--descriptor>release/ext-geofence-server.xml</descriptor-->
           <descriptor>release/ext-gwc-s3.xml</descriptor>
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
@@ -88,7 +88,7 @@
           <descriptor>release/ext-status-monitoring.xml</descriptor>
           <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
           <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
-          <!--<descriptor>release/ext-taskmanager.xml</descriptor>-->
+          <descriptor>release/ext-taskmanager-core.xml</descriptor>
           <descriptor>release/ext-taskmanager-s3.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
@@ -209,7 +209,7 @@
         <module>spatialite</module>
         <module>jdbcconfig</module>
         <module>feature-aggregate</module>
-        <module>script</module>
+        <!--module>script</module-->
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
@@ -224,9 +224,9 @@
         <module>hz-cluster</module>
         <module>solr</module>
         <!-- <module>rest-upload</module> -->
-        <module>geofence</module>
-        <module>geofence-server</module>
-        <!-- <module>sldService</module> -->
+        <!--module>geofence</module-->
+        <!--module>geofence-server</module-->
+        <module>sldService</module>
         <module>params-extractor</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
@@ -256,10 +256,9 @@
         <module>mbstyle</module>
         <module>s3-geotiff</module>
         <module>status-monitoring</module>
-        <module>nsg-profiles/nsg-wfs-profile</module>
-        <module>nsg-profiles/nsg-wmts-profile</module>
+        <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
-        <!--<module>taskmanager</module>-->
+        <module>taskmanager</module>
         <module>wfs3</module>
         <module>monitor-hibernate</module>
       </modules>
@@ -566,13 +565,13 @@
     <profile>
       <id>nsg-wfs-profile</id>
       <modules>
-        <module>nsg-profiles/nsg-wfs-profile</module>
+        <module>nsg-profiles</module>
       </modules>
     </profile>
     <profile>
       <id>nsg-wmts-profile</id>
       <modules>
-        <module>nsg-profiles/nsg-wmts-profile</module>
+        <module>nsg-profiles</module>
       </modules>
     </profile>
     <profile>

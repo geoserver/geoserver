@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-core</artifactId>
-			<version>${spring.version}</version>
+			<version>4.3.17.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

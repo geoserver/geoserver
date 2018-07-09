@@ -5,13 +5,13 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Inputs and outputs feature collections in GeoJSON format using gt-geojson

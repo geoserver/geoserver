@@ -7,9 +7,6 @@ package org.geoserver.wms.geojson;
 import static org.geoserver.wms.geojson.GeoJsonBuilderFactory.MIME_TYPE;
 
 import com.google.common.base.Charsets;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +21,9 @@ import org.geoserver.wms.vector.DeferredFileOutputStreamWebMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.precision.CoordinatePrecisionReducerFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import si.uom.SI;
 

@@ -25,11 +25,6 @@ public class GoogleOAuth2AuthenticationProvider extends GeoServerOAuthAuthentica
     }
 
     @Override
-    public void handlePostChanged(GeoServerSecurityManager securityManager) {
-        // Nothing to do
-    }
-
-    @Override
     public void configure(XStreamPersister xp) {
         xp.getXStream().alias("googleOauth2Authentication", GoogleOAuth2FilterConfig.class);
     }

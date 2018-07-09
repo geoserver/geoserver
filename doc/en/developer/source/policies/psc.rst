@@ -26,7 +26,6 @@ Current PSC
 * Andrea Aime
 * Ben Caradoc-Davies
 * Brad Hards
-* Christian Mueller
 * Ian Turton
 * Jody Garnett
 * Jukka Rahkonen
@@ -41,6 +40,7 @@ We would like to thank prior PSC members:
 * Brent Owens
 * Gabriel Roldan
 * Phil Scadden
+* Christian Mueller
 
 PSC Membership
 --------------

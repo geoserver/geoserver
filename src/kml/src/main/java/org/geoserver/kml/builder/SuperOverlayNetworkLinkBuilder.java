@@ -4,7 +4,6 @@
  */
 package org.geoserver.kml.builder;
 
-import com.vividsolutions.jts.geom.Envelope;
 import de.micromata.opengis.kml.v_2_2_0.AbstractLatLonBox;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -47,6 +46,7 @@ import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

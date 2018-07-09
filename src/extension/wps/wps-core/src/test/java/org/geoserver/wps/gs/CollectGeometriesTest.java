@@ -7,11 +7,11 @@ package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectGeometriesTest extends WPSTestSupport {

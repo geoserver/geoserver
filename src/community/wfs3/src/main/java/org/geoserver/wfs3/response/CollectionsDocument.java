@@ -7,17 +7,15 @@ package org.geoserver.wfs3.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.NCNameResourceCodec;
@@ -29,22 +27,19 @@ import org.opengis.filter.Filter;
  */
 @JacksonXmlRootElement(localName = "Collections")
 @JsonPropertyOrder({"links", "links", "collections"})
-public class CollectionsDocument {
+public class CollectionsDocument extends AbstractDocument {
 
-    private final Catalog catalog;
-    private final WFSInfo wfs;
-    private final List<Link> links = new ArrayList<>();
     private final BaseRequest request;
     private final FeatureTypeInfo featureType;
+    private final GeoServer geoServer;
 
-    public CollectionsDocument(BaseRequest request, WFSInfo wfs, Catalog catalog) {
-        this(request, wfs, catalog, null);
+    public CollectionsDocument(BaseRequest request, GeoServer geoServer) {
+        this(request, geoServer, null);
     }
 
     public CollectionsDocument(
-            BaseRequest request, WFSInfo wfs, Catalog catalog, FeatureTypeInfo featureType) {
-        this.wfs = wfs;
-        this.catalog = catalog;
+            BaseRequest request, GeoServer geoServer, FeatureTypeInfo featureType) {
+        this.geoServer = geoServer;
         this.request = request;
         this.featureType = featureType;
 
@@ -83,12 +78,13 @@ public class CollectionsDocument {
     public Iterator<CollectionDocument> getCollections() {
         // single collection case
         if (featureType != null) {
-            return Collections.singleton(new CollectionDocument(request, featureType)).iterator();
+            return Collections.singleton(new CollectionDocument(geoServer, request, featureType))
+                    .iterator();
         }
 
         // full scan case
         CloseableIterator<FeatureTypeInfo> featureTypes =
-                catalog.list(FeatureTypeInfo.class, Filter.INCLUDE);
+                geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
         return new Iterator<CollectionDocument>() {
 
             CollectionDocument next;
@@ -107,7 +103,7 @@ public class CollectionsDocument {
                     try {
                         FeatureTypeInfo featureType = featureTypes.next();
                         CollectionDocument collection =
-                                new CollectionDocument(request, featureType);
+                                new CollectionDocument(geoServer, request, featureType);
 
                         next = collection;
                         return true;

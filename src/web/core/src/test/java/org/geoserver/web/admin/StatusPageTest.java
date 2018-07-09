@@ -20,6 +20,8 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StatusPageTest extends GeoServerWicketTestSupport {
     @Override
@@ -163,5 +165,16 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         public Panel createPanel(String panelId, Page containerPage) {
             return new ExtraTabPanel(panelId);
         }
+    }
+
+    @Test
+    public void redirectUnauthorizedToLogin() throws Exception {
+        logout();
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "web/wicket/bookmarkable/org.geoserver.web.admin"
+                                + ".StatusPage?29-1.ILinkListener-tabs-tabs~container-tabs-1-link");
+        assertEquals(HttpStatus.FOUND.value(), response.getStatus());
+        assertEquals("./org.geoserver.web.GeoServerLoginPage", response.getHeader("Location"));
     }
 }

@@ -16,6 +16,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -29,8 +30,8 @@ import org.opengis.feature.type.FeatureType;
  */
 public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollection {
 
-    /** The default feature cache size */
-    public static final int DEFAULT_CACHE_SIZE = 16;
+    /** The default feature cache size - disabled by default */
+    public static final int DEFAULT_CACHE_SIZE = 0;
 
     /** The original feature source. */
     protected SimpleFeatureSource featureSource;
@@ -119,6 +120,11 @@ public class FeatureSizeFeatureCollection extends DecoratingSimpleFeatureCollect
             return new CachedWrappingFeatureIterator(featureCache);
         }
         return super.features();
+    }
+
+    @Override
+    protected boolean canDelegate(FeatureVisitor visitor) {
+        return true;
     }
 
     @Override

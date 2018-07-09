@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.layer;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -23,6 +22,7 @@ import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.locationtech.jts.geom.Geometry;
 
 @SuppressWarnings("serial")
 public class AttributeEditPage extends GeoServerSecuredPage {

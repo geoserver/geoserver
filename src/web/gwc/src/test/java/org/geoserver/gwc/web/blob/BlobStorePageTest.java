@@ -19,6 +19,7 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -27,6 +28,11 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 public class BlobStorePageTest extends GeoServerWicketTestSupport {
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     @Test
     public void testPage() {

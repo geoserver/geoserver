@@ -22,14 +22,7 @@
 
 	<!-- OAuth2 Security Extension -->
 		<bean id="geoNodeOAuth2TokenServices" class="org.geoserver.security.oauth2.services.GeoNodeTokenServices">
-			<property name="accessTokenConverter">
-				<bean class="org.geoserver.security.oauth2.services.GeoNodeAccessTokenConverter">
-					<property name="userTokenConverter">
-						<bean class="org.geoserver.security.oauth2.services.GeoNodeUserAuthenticationConverter">
-						</bean>
-					</property>
-				</bean>
-			</property>
+
 		</bean>
 
 		<bean id="geoNodeOAuth2AuthenticationProvider"

@@ -260,7 +260,7 @@
           params: {'FORMAT': format,
                    'VERSION': '1.1.1',  
              <#list parameters as param>
-                ${param.name?js_string}: '${param.value?js_string}',
+                "${param.name?js_string}": '${param.value?js_string}',
              </#list>
           }
         })
@@ -273,7 +273,7 @@
                    'VERSION': '1.1.1',
                    tiled: true,
              <#list parameters as param>
-                ${param.name?js_string}: '${param.value?js_string}',
+                "${param.name?js_string}": '${param.value?js_string}',
              </#list>
              tilesOrigin: ${request.bbox.minX?c} + "," + ${request.bbox.minY?c}
           }

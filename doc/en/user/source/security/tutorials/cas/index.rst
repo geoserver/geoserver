@@ -10,7 +10,7 @@ setting up authentication aganist an CAS server. It is recommended that the
 CAS server certificates
 -----------------------
 
-A running `CAS server <http://jasig.github.io/cas/4.0.0/index.html>`_ is needed. 
+A running `CAS server <https://apereo.github.io/cas/5.3.x/index.html>`_ is needed. 
 
 The first step is to import the server certificates into the the GeoServer JVM.
 

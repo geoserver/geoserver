@@ -24,6 +24,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -35,6 +36,11 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
 
     private static final String ID_DUMMY1 = "zzz";
     private static final String ID_DUMMY2 = "yyy";
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     public BlobStoreInfo dummyStore1() {
         FileBlobStoreInfo config = new FileBlobStoreInfo(ID_DUMMY1);

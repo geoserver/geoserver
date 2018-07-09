@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.util.Arrays;
 import java.util.List;
 import net.opengis.ows11.BoundingBoxType;
@@ -14,6 +13,7 @@ import org.geoserver.wps.WPSException;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

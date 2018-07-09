@@ -11,7 +11,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Point;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,6 +77,7 @@ import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.locationtech.jts.geom.Point;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;

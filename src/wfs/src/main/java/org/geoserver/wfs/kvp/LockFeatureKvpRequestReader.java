@@ -4,7 +4,6 @@
  */
 package org.geoserver.wfs.kvp;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +19,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.Query;
 import org.geotools.xml.EMFUtils;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 

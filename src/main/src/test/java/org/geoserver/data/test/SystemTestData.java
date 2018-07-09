@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -35,9 +34,10 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerConfigPersister;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.GeoServerPersister;
+import org.geoserver.config.GeoServerResourcePersister;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
@@ -82,9 +82,6 @@ public class SystemTestData extends CiteTestData {
     public static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
 
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
-
-    static final Boolean WINDOWS_LENIENCY =
-            Boolean.valueOf(System.getProperty("windows.leniency", "true"));
 
     /** Keys for overriding default layer properties */
     public static class LayerProperty<T> {
@@ -304,7 +301,9 @@ public class SystemTestData extends CiteTestData {
         catalog.setResourceLoader(new GeoServerResourceLoader(data));
 
         catalog.addListener(
-                new GeoServerPersister(catalog.getResourceLoader(), createXStreamPersister()));
+                new GeoServerConfigPersister(
+                        catalog.getResourceLoader(), createXStreamPersister()));
+        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
 
         // workspaces
         addWorkspace(DEFAULT_PREFIX, DEFAULT_URI, catalog);
@@ -323,8 +322,9 @@ public class SystemTestData extends CiteTestData {
     protected void createConfig() {
         GeoServerImpl geoServer = new GeoServerImpl();
         geoServer.addListener(
-                new GeoServerPersister(
+                new GeoServerConfigPersister(
                         new GeoServerResourceLoader(data), createXStreamPersister()));
+        catalog.addListener(new GeoServerResourcePersister(catalog.getResourceLoader()));
 
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal(global);
@@ -1062,32 +1062,25 @@ public class SystemTestData extends CiteTestData {
 
     @Override
     public void tearDown() throws Exception {
-        if ((SystemUtils.IS_OS_WINDOWS && WINDOWS_LENIENCY)
-                || Boolean.getBoolean("testdata.force.delete")) {
-            int MAX_ATTEMPTS = 100;
-            for (int i = 0; i < MAX_ATTEMPTS; i++) {
-                try {
-                    deleteFilesOnExit(data);
-                    break;
-                } catch (IOException e) {
-                    if (i >= MAX_ATTEMPTS && data.exists()) {
-                        String tree = printFileTree(data);
-                        throw new IOException(
-                                "Failed to clean up test data dir after "
-                                        + MAX_ATTEMPTS
-                                        + " attempts",
-                                e);
-                    }
-                    System.err.println(
-                            "Error occurred while removing files, assuming "
-                                    + "it's a transient lock, sleeping 100ms and re-trying. Error message: "
-                                    + e.getMessage());
-                    System.gc();
-                    Thread.sleep(100);
+        int MAX_ATTEMPTS = 100;
+        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+            try {
+                deleteFilesOnExit(data);
+                break;
+            } catch (IOException e) {
+                if (i == MAX_ATTEMPTS && data.exists()) {
+                    throw new IOException(
+                            "Failed to clean up test data dir after " + MAX_ATTEMPTS + " attempts",
+                            e);
                 }
+                System.err.println(
+                        "Error occurred while removing files. "
+                                + "Possible transient lock or H2 log race. "
+                                + "Sleeping 100ms and retrying. Error message: "
+                                + e.getMessage());
+                System.gc();
+                Thread.sleep(100);
             }
-        } else {
-            deleteFilesOnExit(data);
         }
     }
 
@@ -1099,7 +1092,7 @@ public class SystemTestData extends CiteTestData {
                 // gone some other way? good...
             } else {
                 String tree = printFileTree(data);
-                throw new IOException("Failed to delete tree \n" + tree, e);
+                throw new IOException("Failed to delete tree:\n" + tree, e);
             }
         }
     }

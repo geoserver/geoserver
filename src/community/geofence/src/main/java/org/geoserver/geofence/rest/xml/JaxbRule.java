@@ -4,7 +4,7 @@
  */
 package org.geoserver.geofence.rest.xml;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

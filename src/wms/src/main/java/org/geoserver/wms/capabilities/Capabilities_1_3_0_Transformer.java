@@ -16,7 +16,6 @@ import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -76,6 +75,7 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;

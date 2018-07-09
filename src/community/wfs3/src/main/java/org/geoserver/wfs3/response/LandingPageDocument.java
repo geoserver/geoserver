@@ -6,12 +6,9 @@ package org.geoserver.wfs3.response;
 
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.util.ArrayList;
+import io.swagger.v3.oas.models.OpenAPI;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import org.geoserver.catalog.Catalog;
@@ -26,11 +23,10 @@ import org.geoserver.wfs3.LandingPageRequest;
  * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JacksonXmlRootElement(localName = "LandingPage")
-public class LandingPageDocument {
+public class LandingPageDocument extends AbstractDocument {
 
     private final Catalog catalog;
     private final WFSInfo wfs;
-    private final List<Link> links = new ArrayList<>();
     private final LandingPageRequest request;
 
     public LandingPageDocument(LandingPageRequest request, WFSInfo wfs, Catalog catalog) {
@@ -45,6 +41,7 @@ public class LandingPageDocument {
                 "wfs3/",
                 LandingPageDocument.class,
                 "This document as ",
+                "landingPage",
                 (format, link) -> {
                     String outputFormat = request.getOutputFormat();
                     if (format.equals(outputFormat)
@@ -57,8 +54,9 @@ public class LandingPageDocument {
         addLinksFor(
                 baseUrl,
                 "wfs3/api",
-                APIDocument.class,
+                OpenAPI.class,
                 "API definition for this endpoint as ",
+                "api",
                 null);
         // conformance
         addLinksFor(
@@ -66,6 +64,7 @@ public class LandingPageDocument {
                 "wfs3/conformance",
                 ConformanceDocument.class,
                 "Conformance declaration as ",
+                "conformance",
                 null);
         // collections
         addLinksFor(
@@ -73,6 +72,7 @@ public class LandingPageDocument {
                 "wfs3/collections",
                 CollectionsDocument.class,
                 "Collections Metadata as ",
+                "collections",
                 null);
     }
 
@@ -82,6 +82,7 @@ public class LandingPageDocument {
             String path,
             Class<?> responseType,
             String titlePrefix,
+            String classification,
             BiConsumer<String, Link> linkUpdater) {
         for (String format : DefaultWebFeatureService30.getAvailableFormats(responseType)) {
             Map<String, String> params = Collections.singletonMap("f", format);
@@ -89,20 +90,11 @@ public class LandingPageDocument {
             String linkType = Link.REL_SERVICE;
             String linkTitle = titlePrefix + format;
             Link link = new Link(url, linkType, format, linkTitle);
+            link.setClassification(classification);
             if (linkUpdater != null) {
                 linkUpdater.accept(format, link);
             }
-            links.add(link);
+            addLink(link);
         }
-    }
-
-    public void addLink(Link link) {
-        links.add(link);
-    }
-
-    @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    public List<Link> getLinks() {
-        return links;
     }
 }

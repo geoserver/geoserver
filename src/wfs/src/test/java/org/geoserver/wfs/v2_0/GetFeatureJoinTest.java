@@ -8,7 +8,6 @@ package org.geoserver.wfs.v2_0;
 import static org.junit.Assert.assertEquals;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -35,6 +34,7 @@ import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;

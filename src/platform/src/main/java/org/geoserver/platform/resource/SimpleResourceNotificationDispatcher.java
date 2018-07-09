@@ -51,6 +51,9 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     protected void changedInternal(ResourceNotification notification) {
         List<ResourceListener> listeners = handlers.get(notification.getPath());
         if (listeners != null) {
+            // copy listeners into a new collection,
+            // so that listeners can remove/add themselves if necessary
+            listeners = new ArrayList<>(listeners);
             for (ResourceListener listener : listeners) {
                 listener.changed(notification);
             }

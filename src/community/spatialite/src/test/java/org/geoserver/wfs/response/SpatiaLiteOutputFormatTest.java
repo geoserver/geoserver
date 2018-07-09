@@ -7,9 +7,6 @@ package org.geoserver.wfs.response;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.HashMap;
@@ -24,6 +21,9 @@ import org.geotools.data.spatialite.SpatiaLiteDataStoreFactory;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.Point;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**

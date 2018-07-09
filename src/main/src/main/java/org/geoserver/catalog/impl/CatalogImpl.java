@@ -1060,6 +1060,9 @@ public class CatalogImpl implements Catalog {
 
         int colon = name.indexOf(':');
         if (colon == -1) {
+            // if there is no prefix, try the default workspace
+            WorkspaceInfo defaultWs = getDefaultWorkspace();
+            workspaceName = defaultWs == null ? null : defaultWs.getName();
             layerGroupName = name;
         }
         if (colon != -1) {

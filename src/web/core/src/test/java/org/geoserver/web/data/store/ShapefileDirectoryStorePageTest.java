@@ -31,8 +31,8 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
     private AbstractDataAccessPage startPage() {
         final String dataStoreFactoryDisplayName = new ShapefileDirectoryFactory().getDisplayName();
 
-        final AbstractDataAccessPage page = new DataAccessNewPage(dataStoreFactoryDisplayName);
         login();
+        final AbstractDataAccessPage page = new DataAccessNewPage(dataStoreFactoryDisplayName);
         tester.startPage(page);
 
         if (debugMode) {

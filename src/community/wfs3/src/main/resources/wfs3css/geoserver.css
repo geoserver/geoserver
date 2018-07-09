@@ -1,0 +1,114 @@
+/*-----------------------
+General styles
+-----------------------*/
+body {
+background: #fff;
+font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+text-align:left !important; /* override blueprint's ie.css */
+overflow-y: scroll;
+}
+
+#content {
+margin-left: 1em;
+}
+
+body.help {
+padding: 2em;
+}
+body.help ul {
+/*padding-top: 1em;*/
+}
+body.help ol, ul ul {
+color:black;
+}
+
+body.help ol li {
+display:list-item;
+}
+body.help p {
+color: black;
+}
+
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6 {
+color: #0082b6;
+font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+}
+
+h1 { /* override blueprint.css */
+font-size: 2.1em;
+}
+
+strong, 
+em,
+dt, 
+b, 
+i {
+font-family: Tahoma, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+}
+
+a {
+color: #0076a1;
+text-decoration: none;
+outline: none !important; /* avoid ugly dotted border for Firefox */
+}
+
+a:hover {
+color: #cc6d00;
+text-decoration: underline;
+}
+
+a img {
+border: none; 
+}
+
+div {
+outline: none !important; /* avoid ugly dotted border for Firefox, when listeners are added via js */
+}
+
+.error, 
+.notice, 
+.success { /* override blueprint.css */
+border: 0 none transparent;
+margin-bottom: 0;
+padding: 0;
+background: transparent;
+border-color: transparent;
+}
+
+input,
+textarea,
+select {
+background: #fff;
+color: #000;
+}
+
+input[readonly] {
+	border: 1px solid Lightgrey;
+}
+
+.palette th, .palette td {
+  padding: 0;
+}
+
+#header a {
+width: 100%;
+height: 67px;
+background: url(img/logo.png) no-repeat;
+overflow: hidden;
+text-indent: -9999em;
+text-align: left;
+margin: 0 0 -23px;
+display: block;
+padding-bottom: 0px;
+margin-bottom: 5px;
+border-bottom: 2px solid #c6e09b;
+}
+
+select {
+ margin: 0;
+}

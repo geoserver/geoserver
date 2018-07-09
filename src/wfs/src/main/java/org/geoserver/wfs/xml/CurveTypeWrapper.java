@@ -4,8 +4,6 @@
  */
 package org.geoserver.wfs.xml;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +12,8 @@ import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.CurvedGeometry;
 import org.geotools.geometry.jts.MultiCurvedGeometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;

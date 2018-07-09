@@ -4,11 +4,11 @@
  */
 package org.geoserver.wms.vector;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.IOException;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.locationtech.jts.geom.Geometry;
 
 /** Collects features into a vector tile */
 public interface VectorTileBuilder {

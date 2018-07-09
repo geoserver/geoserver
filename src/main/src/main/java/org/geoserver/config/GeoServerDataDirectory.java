@@ -699,7 +699,7 @@ public class GeoServerDataDirectory {
     /**
      * Styles directory (using StyleInfo).
      *
-     * <p>Package visibility {@link GeoServerPersister#dir(StyleInfo)}.
+     * <p>Package visibility {@link GeoServerConfigPersister#dir(StyleInfo)}.
      *
      * @param create Create if needed
      * @param styleInfo
@@ -715,7 +715,7 @@ public class GeoServerDataDirectory {
      * Access to styles directory for provided workspace (or global styles directory if workspace
      * not provided).
      *
-     * <p>Package visibility for {@link GeoServerPersister}.
+     * <p>Package visibility for {@link GeoServerConfigPersister}.
      *
      * @param create Create directory if required
      * @param workspaceInfo Workspace used to access styles directory
@@ -1296,7 +1296,7 @@ public class GeoServerDataDirectory {
                                 try {
                                     u = new URL(u.toString() + "?" + url.getQuery());
                                 } catch (MalformedURLException ex) {
-                                    GeoServerPersister.LOGGER.log(
+                                    GeoServerConfigPersister.LOGGER.log(
                                             Level.WARNING,
                                             "Error processing query string for resource with uri: "
                                                     + uri,
@@ -1309,7 +1309,7 @@ public class GeoServerDataDirectory {
                                 try {
                                     u = new URL(u.toString() + "#" + url.getRef());
                                 } catch (MalformedURLException ex) {
-                                    GeoServerPersister.LOGGER.log(
+                                    GeoServerConfigPersister.LOGGER.log(
                                             Level.WARNING,
                                             "Error processing # fragment for resource with uri: "
                                                     + uri,
@@ -1451,7 +1451,7 @@ public class GeoServerDataDirectory {
                                     resources.add(r);
                                 }
                             } catch (IllegalArgumentException | MalformedURLException e) {
-                                GeoServerPersister.LOGGER.log(
+                                GeoServerConfigPersister.LOGGER.log(
                                         Level.WARNING,
                                         "Error attemping to process SLD resource",
                                         e);
@@ -1471,9 +1471,9 @@ public class GeoServerDataDirectory {
                         }
                     });
         } catch (FileNotFoundException e) {
-            GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style:" + e);
+            GeoServerConfigPersister.LOGGER.log(Level.WARNING, "Error loading style:" + e);
         } catch (IOException e) {
-            GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style", e);
+            GeoServerConfigPersister.LOGGER.log(Level.WARNING, "Error loading style", e);
         }
         return resources;
     }

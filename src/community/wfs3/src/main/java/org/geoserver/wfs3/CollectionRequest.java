@@ -4,5 +4,17 @@
  */
 package org.geoserver.wfs3;
 
+import javax.xml.namespace.QName;
+
 /** Request for the server contents */
-public class CollectionRequest extends BaseRequest {}
+public class CollectionRequest extends BaseRequest {
+    QName typeName;
+
+    public QName getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(QName typeName) {
+        this.typeName = typeName;
+    }
+}

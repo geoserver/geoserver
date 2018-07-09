@@ -25,11 +25,6 @@ public class GitHubOAuth2AuthenticationProvider extends GeoServerOAuthAuthentica
     }
 
     @Override
-    public void handlePostChanged(GeoServerSecurityManager securityManager) {
-        // Nothing to do
-    }
-
-    @Override
     public void configure(XStreamPersister xp) {
         xp.getXStream().alias("githubOauth2Authentication", GitHubOAuth2FilterConfig.class);
     }

@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -16,6 +15,7 @@ import java.util.List;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.Parameter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Envelope;
 import org.springframework.context.ApplicationContext;
 
 /**

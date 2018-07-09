@@ -63,3 +63,7 @@ replaceSelection = function(repl) {
         editor.indentLine(i);
     }
 }
+getSelection = function() {
+	start = editor.getCursor(true).line;
+    return editor.getSelection();
+}

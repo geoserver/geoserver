@@ -764,9 +764,11 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 
         final Enumeration<? extends ZipEntry> entries = archive.entries();
         try {
+            File destDir = outputDirectory.dir();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-
+                // Verify that the file will not be written outside of the target directory
+                org.geoserver.util.IOUtils.getZipOutputFile(destDir, entry);
                 if (!entry.isDirectory()) {
                     final String name = entry.getName();
                     final String ext = FilenameUtils.getExtension(name);

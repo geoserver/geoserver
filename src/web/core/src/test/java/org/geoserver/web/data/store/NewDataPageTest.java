@@ -20,6 +20,7 @@ public class NewDataPageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void init() {
+        login();
         tester.startPage(new NewDataPage());
     }
 

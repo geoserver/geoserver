@@ -30,7 +30,9 @@
    </bean>
    
    <!-- override the default one -->
-   <bean id="resourceNotificationDispatcher" class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" />
+   <bean id="hzResourceNotificationDispatcher" primary="true" 
+   		class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" />
+   <alias name="hzResourceNotificationDispatcher" alias="resourceNotificationDispatcher" />
    
    <!-- turn of default webui redirect -->
    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >

@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.tasklet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -580,16 +581,18 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     private void replaceConfigFile(
             final GeoServerResourceLoader resourceLoader, Resource configFile) throws IOException {
         // - Check of the resource exists on the restore folder
-        Resource rstConfigFile =
-                Files.asResource(
-                        resourceLoader.find(
-                                Paths.path(
-                                        configFile.file().getParent(),
-                                        configFile.file().getName())));
+        final File destinationResource =
+                resourceLoader.find(
+                        Paths.path(
+                                configFile.file().getParentFile().getName(),
+                                configFile.file().getName()));
+        if (destinationResource != null) {
+            Resource rstConfigFile = Files.asResource(destinationResource);
 
-        // - Copy the resource into the GOSERVER_DATA_DIR (overwriting the old one if exists)
-        if (Resources.exists(rstConfigFile)) {
-            Resources.copy(rstConfigFile.file(), configFile.parent());
+            // - Copy the resource into the GOSERVER_DATA_DIR (overwriting the old one if exists)
+            if (Resources.exists(rstConfigFile)) {
+                Resources.copy(rstConfigFile.file(), configFile.parent());
+            }
         }
     }
 

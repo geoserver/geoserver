@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.validator;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Estimates the size of a geometry

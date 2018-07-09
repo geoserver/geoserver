@@ -818,7 +818,7 @@
       <xsd:element ref="sld:ContrastEnhancement" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-  <xsd:element name="SourceChannelName" type="xsd:string"/>
+  <xsd:element name="SourceChannelName" type="sld:ParameterValueType"/>
 
   <xsd:element name="OverlapBehavior">
     <xsd:annotation>

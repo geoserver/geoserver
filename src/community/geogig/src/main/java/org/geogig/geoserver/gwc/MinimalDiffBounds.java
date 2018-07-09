@@ -9,7 +9,6 @@ import static com.google.common.base.Optional.fromNullable;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.vividsolutions.jts.geom.Geometry;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.model.RevTree;
@@ -19,6 +18,7 @@ import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk;
 import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk.Consumer;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.storage.ObjectDatabase;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * An operation that computes the "approximate minimal bounds" difference between two {@link RevTree

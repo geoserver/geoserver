@@ -7,7 +7,6 @@ package org.geoserver.importer.mosaic;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,6 +31,7 @@ import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.BoundingBox;

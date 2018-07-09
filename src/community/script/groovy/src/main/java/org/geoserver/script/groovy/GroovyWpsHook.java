@@ -89,8 +89,8 @@ public class GroovyWpsHook extends WpsHook {
      * @return A GeoScript object if it is possible
      */
     protected Object convertGeoToolsToGeoScript(Object value) {
-        if (value instanceof com.vividsolutions.jts.geom.Geometry) {
-            return geoscript.geom.Geometry.wrap((com.vividsolutions.jts.geom.Geometry) value);
+        if (value instanceof org.locationtech.jts.geom.Geometry) {
+            return geoscript.geom.Geometry.wrap((org.locationtech.jts.geom.Geometry) value);
         } else if (value instanceof org.geotools.geometry.jts.ReferencedEnvelope) {
             return new geoscript.geom.Bounds((org.geotools.geometry.jts.ReferencedEnvelope) value);
         } else if (value instanceof org.geotools.feature.FeatureCollection) {
@@ -108,7 +108,7 @@ public class GroovyWpsHook extends WpsHook {
      */
     protected Object convertGeoScriptToGeoTools(Object value) throws Exception {
         if (value instanceof geoscript.geom.Geometry) {
-            // com.vividsolutions.jts.geom.Geometry
+            // org.locationtech.jts.geom.Geometry
             return ((geoscript.geom.Geometry) value).getG();
         } else if (value instanceof geoscript.geom.Bounds) {
             // org.geotools.geometry.jts.ReferencedEnvelope

@@ -13,8 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,6 +58,8 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -88,6 +88,120 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // remove any callback set to check the request spring context
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         listener.setCallBack(null);
+    }
+
+    @Test
+    public void testDirectWrongFile() throws Exception {
+        // set a callback to check that the request spring context is passed to the job thread
+        RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
+        SecurityContextHolder.getContext().setAuthentication(createAuthentication());
+
+        final boolean[] invoked = {false};
+        listener.setCallBack(
+                (request, user, resource) -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    assertThat(request, notNullValue());
+                    assertThat(resource, notNullValue());
+                    assertThat(auth, notNullValue());
+                    invoked[0] = true;
+                });
+        File dir = unpack("geotiff/EmissiveCampania.tif.bz2");
+        File geotiffFile = new File(dir, "EmissiveCampania.tif");
+        String wrongPath = jsonSafePath(geotiffFile).replace("/EmissiveCampania", "/foobar");
+
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + wrongPath
+                        + "\"\n"
+                        + "      },"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
+
+        // initialize the import
+        MockHttpServletResponse servletResponse =
+                postAsServletResponse("/rest/imports", contextDefinition, "application/json");
+        JSONObject json = (JSONObject) json(servletResponse);
+        int importId = json.getJSONObject("import").getInt("id");
+        json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+
+        // Expect an error
+        assertEquals("INIT_ERROR", json.getJSONObject("import").getString("state"));
+        assertEquals("input == null!", json.getJSONObject("import").getString("message"));
+    }
+
+    @Test
+    public void testDirectWrongDir() throws Exception {
+        // set a callback to check that the request spring context is passed to the job thread
+        RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
+        SecurityContextHolder.getContext().setAuthentication(createAuthentication());
+
+        final boolean[] invoked = {false};
+        listener.setCallBack(
+                (request, user, resource) -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    assertThat(request, notNullValue());
+                    assertThat(resource, notNullValue());
+                    assertThat(auth, notNullValue());
+                    invoked[0] = true;
+                });
+        File dir = unpack("geotiff/EmissiveCampania.tif.bz2");
+        File geotiffFile = new File(dir, "EmissiveCampania.tif");
+        String wrongPath =
+                jsonSafePath(geotiffFile).replace("/EmissiveCampania", "bar/EmissiveCampania");
+
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+
+        // @formatter:off
+        String contextDefinition =
+                "{\n"
+                        + "   \"import\": {\n"
+                        + "      \"targetWorkspace\": {\n"
+                        + "         \"workspace\": {\n"
+                        + "            \"name\": \""
+                        + wsName
+                        + "\"\n"
+                        + "         }\n"
+                        + "      },\n"
+                        + "      \"data\": {\n"
+                        + "        \"type\": \"file\",\n"
+                        + "        \"file\": \""
+                        + wrongPath
+                        + "\"\n"
+                        + "      },"
+                        + "      targetStore: {\n"
+                        + "        dataStore: {\n"
+                        + "        name: \"h2\",\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "   }\n"
+                        + "}";
+        // @formatter:on
+
+        // initialize the import
+        MockHttpServletResponse servletResponse =
+                postAsServletResponse("/rest/imports", contextDefinition, "application/json");
+
+        assertEquals(500, servletResponse.getStatus());
     }
 
     @Test

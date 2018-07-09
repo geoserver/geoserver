@@ -7,14 +7,14 @@ package org.geoserver.wps.jts;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

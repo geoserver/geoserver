@@ -324,13 +324,32 @@ public class IOUtils {
         zipout.flush();
     }
 
+    /**
+     * Gets the output file for the provided zip entry and checks that it will not be written
+     * outside of the target directory.
+     *
+     * @param destDir the output directory
+     * @param entry the zip entry
+     * @return the output file
+     * @throws IOException if the zip entry is outside of the target directory
+     */
+    public static File getZipOutputFile(File destDir, ZipEntry entry) throws IOException {
+        String canonicalDirectory = destDir.getCanonicalPath();
+        File file = new File(destDir, entry.getName());
+        String canonicalFile = file.getCanonicalPath();
+        if (canonicalFile.startsWith(canonicalDirectory + File.separator)) {
+            return file;
+        }
+        throw new IOException("Entry is outside of the target directory: " + entry.getName());
+    }
+
     public static void decompress(InputStream input, File destDir) throws IOException {
         ZipInputStream zin = new ZipInputStream(input);
         ZipEntry entry = null;
 
         byte[] buffer = new byte[1024];
         while ((entry = zin.getNextEntry()) != null) {
-            File f = new File(destDir, entry.getName());
+            File f = getZipOutputFile(destDir, entry);
             if (entry.isDirectory()) {
                 f.mkdirs();
                 continue;
@@ -349,41 +368,38 @@ public class IOUtils {
     }
 
     public static void decompress(final File inputFile, final File destDir) throws IOException {
-        ZipFile zipFile = new ZipFile(inputFile);
+        try (ZipFile zipFile = new ZipFile(inputFile)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                File newFile = getZipOutputFile(destDir, entry);
+                if (entry.isDirectory()) {
+                    // Assume directories are stored parents first then children.
+                    newFile.mkdir();
+                    continue;
+                }
 
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
-            InputStream stream = zipFile.getInputStream(entry);
+                InputStream stream = zipFile.getInputStream(entry);
+                FileOutputStream fos = new FileOutputStream(newFile);
+                try {
+                    byte[] buf = new byte[1024];
+                    int len;
 
-            if (entry.isDirectory()) {
-                // Assume directories are stored parents first then children.
-                (new File(destDir, entry.getName())).mkdir();
-                continue;
-            }
+                    while ((len = stream.read(buf)) >= 0) saveCompressedStream(buf, fos, len);
 
-            File newFile = new File(destDir, entry.getName());
-            FileOutputStream fos = new FileOutputStream(newFile);
-            try {
-                byte[] buf = new byte[1024];
-                int len;
+                } catch (IOException e) {
+                    IOException ioe = new IOException("Not valid archive file type.");
+                    ioe.initCause(e);
+                    throw ioe;
+                } finally {
+                    fos.flush();
+                    fos.close();
 
-                while ((len = stream.read(buf)) >= 0) saveCompressedStream(buf, fos, len);
-
-            } catch (IOException e) {
-                zipFile.close();
-                IOException ioe = new IOException("Not valid COAMPS archive file type.");
-                ioe.initCause(e);
-                throw ioe;
-            } finally {
-                fos.flush();
-                fos.close();
-
-                stream.close();
+                    stream.close();
+                }
             }
         }
-        zipFile.close();
     }
 
     /**

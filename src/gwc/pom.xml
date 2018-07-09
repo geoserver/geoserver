@@ -48,8 +48,8 @@
       <artifactId>gwc-georss</artifactId>
       <exclusions>
         <exclusion>
-           <groupId>com.vividsolutions</groupId>
-           <artifactId>jts</artifactId>
+           <groupId>org.locationtech.jts</groupId>
+           <artifactId>jts-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -170,6 +170,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
         <configuration>
           <excludes>
             <exclude>**/FakeHttp*.class</exclude>

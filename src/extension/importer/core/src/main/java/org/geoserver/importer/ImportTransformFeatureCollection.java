@@ -4,7 +4,6 @@
  */
 package org.geoserver.importer;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.util.NoSuchElementException;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.VectorTransformChain;
@@ -14,6 +13,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.DecoratingFeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;

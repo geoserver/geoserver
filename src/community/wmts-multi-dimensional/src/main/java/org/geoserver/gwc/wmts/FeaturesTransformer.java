@@ -4,7 +4,6 @@
  */
 package org.geoserver.gwc.wmts;
 
-import com.vividsolutions.jts.geom.*;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
@@ -15,6 +14,7 @@ import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Encoder;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.locationtech.jts.geom.*;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.xml.sax.Attributes;

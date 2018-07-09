@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.animate;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.RenderedImage;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * GIF Animated reflecting service.

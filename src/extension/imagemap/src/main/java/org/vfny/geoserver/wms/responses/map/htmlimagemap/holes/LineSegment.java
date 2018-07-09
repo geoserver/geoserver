@@ -5,8 +5,8 @@
  */
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import javax.vecmath.GVector;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Represents a segment. It has the 2 ending points as properties (A,B).

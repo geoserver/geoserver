@@ -9,7 +9,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.zip.ZipEntry;
@@ -28,6 +27,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 

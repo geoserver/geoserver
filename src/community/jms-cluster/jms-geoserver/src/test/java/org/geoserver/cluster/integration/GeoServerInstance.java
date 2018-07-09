@@ -14,9 +14,10 @@ import org.geoserver.cluster.client.JMSQueueListener;
 import org.geoserver.cluster.events.ToggleType;
 import org.geoserver.cluster.impl.rest.Controller;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerConfigPersister;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
-import org.geoserver.config.GeoServerPersister;
+import org.geoserver.config.GeoServerResourcePersister;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
@@ -89,8 +90,10 @@ public final class GeoServerInstance {
         Catalog catalog = new CatalogImpl();
         catalog.setResourceLoader(loader);
         XStreamPersister xstreamPersister = new XStreamPersisterFactory().createXMLPersister();
-        GeoServerPersister geoserverPersister = new GeoServerPersister(loader, xstreamPersister);
+        GeoServerConfigPersister geoserverPersister =
+                new GeoServerConfigPersister(loader, xstreamPersister);
         catalog.addListener(geoserverPersister);
+        catalog.addListener(new GeoServerResourcePersister(loader));
         // create default styles
         createDefaultStyle(catalog, stylesDirectory, "point", "default_point.sld");
         createDefaultStyle(catalog, stylesDirectory, "line", "default_line.sld");

@@ -6,7 +6,6 @@ package org.geoserver.wms.mapbox;
 
 import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Map;
@@ -16,6 +15,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Geometry;
 
 /** @author Niels Charlier */
 public class MapBoxTileBuilder implements VectorTileBuilder {

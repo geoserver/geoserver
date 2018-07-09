@@ -341,9 +341,70 @@ Key aspects of the SLD are:
 This transformation styles a layer to produce a heatmap surface 
 for the data in the requested map extent, as shown in the image below.
 (The map image also shows the original input data points 
-styled by another SLD,
-as well as a base map layer.)
+styled by another SLD, as well as a base map layer.)
 
 .. figure:: images/heatmap_urban_us_east.png
    :align: center
 
+Running map algebra on the fly using Jiffle
+-------------------------------------------
+
+The ``Jiffle`` rendering transformation allows to run map algebra on the bands of an input raster
+layer using the `Jiffle language <https://github.com/geosolutions-it/jai-ext/wiki/Jiffle---language-summary>`_.
+For example, the following style computes the NDVI index from a 13 bands Sentinel 2 image, in which
+the red and NIR bands are the forth and eight bands (Jiffle band indexes are zero based),  
+and then displays the resulting index with a color map:
+
+.. code-block:: xml
+   :linenos:
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld
+   http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
+     <NamedLayer>
+       <Name>Sentinel2 NDVI</Name>
+       <UserStyle>
+         <Title>NDVI</Title>
+         <FeatureTypeStyle>
+           <Transformation>
+             <ogc:Function name="ras:Jiffle">
+               <ogc:Function name="parameter">
+                 <ogc:Literal>coverage</ogc:Literal>
+               </ogc:Function>
+               <ogc:Function name="parameter">
+                 <ogc:Literal>script</ogc:Literal>
+                 <ogc:Literal>
+                   nir = src[7];
+                   vir = src[3];
+                   dest = (nir - vir) / (nir + vir);
+                 </ogc:Literal>
+               </ogc:Function>
+             </ogc:Function>
+           </Transformation>
+           <Rule>
+             <RasterSymbolizer>
+               <Opacity>1.0</Opacity>
+               <ColorMap>
+                 <ColorMapEntry color="#000000" quantity="-1"/>
+                 <ColorMapEntry color="#0000ff" quantity="-0.75"/>
+                 <ColorMapEntry color="#ff00ff" quantity="-0.25"/>
+                 <ColorMapEntry color="#ff0000" quantity="0"/>
+                 <ColorMapEntry color="#ffff00" quantity="0.5"/>
+                 <ColorMapEntry color="#00ff00" quantity="1"/>
+               </ColorMap>
+             </RasterSymbolizer>
+           </Rule>
+         </FeatureTypeStyle>
+       </UserStyle>
+     </NamedLayer>
+   </StyledLayerDescriptor>
+
+Here are a view of the area, using the visible color bands:
+
+.. figure:: images/s2-visible.png
+   :align: center
+
+and then the display of the NDVI index computed with the above style:
+
+.. figure:: images/s2-ndvi.png
+   :align: center

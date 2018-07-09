@@ -33,6 +33,11 @@ import org.junit.Test;
 
 public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
+
     @Test
     public void testPageLoad() {
         GWCSettingsPage page = new GWCSettingsPage();

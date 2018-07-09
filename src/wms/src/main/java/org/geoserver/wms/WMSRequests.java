@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
@@ -26,6 +25,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.map.Layer;
 import org.geotools.map.MapLayer;
 import org.geotools.styling.Style;
+import org.locationtech.jts.geom.Envelope;
 import org.vfny.geoserver.util.Requests;
 
 /**

@@ -32,8 +32,8 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
     @Override
     public Object decode(InputStream input) throws Exception {
         Parser p = new Parser(config);
-        p.validate(input);
         p.setEntityResolver(resolverProvider.getEntityResolver());
+        p.validate(input);
 
         if (!p.getValidationErrors().isEmpty()) {
             throw new ServiceException(

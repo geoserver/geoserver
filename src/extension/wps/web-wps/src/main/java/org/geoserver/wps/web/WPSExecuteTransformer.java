@@ -31,7 +31,9 @@ import org.hsqldb.lib.StringInputStream;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -43,6 +45,9 @@ import org.xml.sax.helpers.AttributesImpl;
 class WPSExecuteTransformer extends TransformerBase {
 
     static final Logger LOGGER = Logging.getLogger(WPSExecuteTransformer.class);
+
+    /** entity resolver */
+    private EntityResolver2 entityResolver;
 
     public WPSExecuteTransformer() {
         this(null);
@@ -57,6 +62,14 @@ class WPSExecuteTransformer extends TransformerBase {
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new ExecuteRequestTranslator(handler);
+    }
+
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = (EntityResolver2) entityResolver;
+    }
+
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
     }
 
     public class ExecuteRequestTranslator extends TranslatorSupport {
@@ -378,6 +391,7 @@ class WPSExecuteTransformer extends TransformerBase {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
                 DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setEntityResolver(entityResolver);
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n" + data;
                 }

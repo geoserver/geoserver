@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -41,6 +43,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -110,8 +113,16 @@ public class RasterizerController extends BaseSLDServiceController {
             @RequestParam(value = "startColor", required = false) String startColor,
             @RequestParam(value = "endColor", required = false) String endColor,
             @RequestParam(value = "midColor", required = false) String midColor,
-            @RequestParam(value = "ramp", required = false) String ramp) {
-
+            @RequestParam(value = "ramp", required = false) String ramp,
+            @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
+            final HttpServletResponse response) {
+        if (cachingTime > 0) {
+            response.setHeader(
+                    "cache-control",
+                    CacheControl.maxAge(cachingTime, TimeUnit.SECONDS)
+                            .cachePublic()
+                            .getHeaderValue());
+        }
         if (layerName == null) {
             return wrapList(new ArrayList(), ArrayList.class);
         }

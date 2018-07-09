@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -70,6 +72,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -162,7 +165,9 @@ public class ClassifierController extends BaseSLDServiceController {
             @RequestParam(value = "customClasses", required = false, defaultValue = "")
                     String customClasses,
             @RequestParam(value = "fullSLD", required = false, defaultValue = "false")
-                    Boolean fullSLD) {
+                    Boolean fullSLD,
+            @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
+            final HttpServletResponse response) {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo == null) {
             throw new ResourceNotFoundException("No such layer: " + layerName);
@@ -214,6 +219,13 @@ public class ClassifierController extends BaseSLDServiceController {
             } catch (UnsupportedEncodingException e1) {
                 throw new RuntimeException("colors are not correct: " + colors, e1);
             }
+            if (cachingTime > 0) {
+                response.setHeader(
+                        "cache-control",
+                        CacheControl.maxAge(cachingTime, TimeUnit.SECONDS)
+                                .cachePublic()
+                                .getHeaderValue());
+            }
             final List<Rule> rules =
                     this.generateClassifiedSLD(
                             layerName,
@@ -234,6 +246,7 @@ public class ClassifierController extends BaseSLDServiceController {
                             strokeWeight,
                             color != null ? Color.decode(color) : null);
             if (fullSLD) {
+
                 StyleBuilder sb = new StyleBuilder();
                 StyledLayerDescriptor sld = SF.createStyledLayerDescriptor();
                 NamedLayer namedLayer = SF.createNamedLayer();
@@ -255,6 +268,7 @@ public class ClassifierController extends BaseSLDServiceController {
                                         + e.getLocalizedMessage(),
                                 e);
                 }
+
             } else {
                 RulesList jsonRules = null;
                 if (rules != null) jsonRules = generateRulesList(layerName, rules);

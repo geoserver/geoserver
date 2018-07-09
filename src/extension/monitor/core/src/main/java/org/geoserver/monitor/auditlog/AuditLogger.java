@@ -32,11 +32,11 @@ import org.geoserver.monitor.RequestDataListener;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.geoserver.template.TemplateUtils;
 
 /**
  * Writes all requests to a log file. The log file can be configured in the MonitorConfig, as well

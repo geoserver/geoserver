@@ -10,8 +10,8 @@ import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.junit.Test;
 import org.geoserver.template.TemplateUtils;
+import org.junit.Test;
 
 public class AuditTemplateLoaderTest {
 

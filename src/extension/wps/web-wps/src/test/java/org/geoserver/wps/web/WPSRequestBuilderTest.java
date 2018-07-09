@@ -5,7 +5,10 @@
  */
 package org.geoserver.wps.web;
 
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.apache.wicket.markup.html.basic.Label;
@@ -100,5 +103,29 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "form:requestBuilder:inputContainer:inputs:0:paramValue:editor:textarea",
                 TextArea.class);
+    }
+
+    @Test
+    public void testGetRequestXMLWithEntity() throws Exception {
+        login();
+        WPSRequestBuilder builder =
+                tester.startPage(
+                        new WPSRequestBuilder(new PageParameters().add("name", "JTS:area")));
+        String resource = getClass().getResource("secret.txt").toExternalForm();
+        builder.builder
+                .execute
+                .inputs
+                .get(0)
+                .values
+                .get(0)
+                .setValue(
+                        "<?xml version=\"1.0\"?>"
+                                + "<!DOCTYPE foo [ "
+                                + "<!ELEMENT foo ANY >"
+                                + "<!ENTITY xxe SYSTEM \""
+                                + resource
+                                + "\" >]><foo>&xxe;</foo>");
+        String executeXML = builder.getRequestXML();
+        assertThat(executeXML, not(containsString("HELLO WORLD")));
     }
 }

@@ -5,16 +5,13 @@
  */
 package org.geoserver.wps.web;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.TransformerException;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -387,21 +384,6 @@ public class WPSRequestBuilderPanel extends Panel {
         Collections.sort(result);
 
         return result;
-    }
-
-    String getRequestXML() {
-        // turn the GUI request into an actual WPS request
-        WPSExecuteTransformer tx = new WPSExecuteTransformer();
-        tx.setIndentation(2);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        try {
-            tx.transform(execute, out);
-        } catch (TransformerException e) {
-            LOGGER.log(Level.SEVERE, "Error generating xml request", e);
-            error(e);
-        }
-        return out.toString();
     }
 
     public Component getFeedbackPanel() {

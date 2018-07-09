@@ -254,6 +254,8 @@ public class ComplexInputPanel extends Panel {
 
     String getExecuteXML() {
         WPSExecuteTransformer tx = new WPSExecuteTransformer();
+        tx.setEntityResolver(
+                GeoServerApplication.get().getCatalog().getResourcePool().getEntityResolver());
         tx.setIndentation(2);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

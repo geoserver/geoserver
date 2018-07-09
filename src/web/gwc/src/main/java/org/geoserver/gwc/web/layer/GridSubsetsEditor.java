@@ -299,15 +299,16 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
                         // TODO Should probably use a convertor instead of an if but this should
                         // work until we decide to make this editable.
-                        if(Objects.nonNull(item.getModelObject().getExtent())) {
-                            gridSetBounds = new Label("bounds",
-                                    new PropertyModel<Integer>(item.getModel(), "extent")
-                                    );
+                        if (Objects.nonNull(item.getModelObject().getExtent())) {
+                            gridSetBounds =
+                                    new Label(
+                                            "bounds",
+                                            new PropertyModel<Integer>(item.getModel(), "extent"));
                         } else {
                             gridSetBounds =
-                                new Label(
-                                "bounds",
-                                new ResourceModel("GridSubsetsEditor.bounds.dynamic"));
+                                    new Label(
+                                            "bounds",
+                                            new ResourceModel("GridSubsetsEditor.bounds.dynamic"));
                         }
                         item.add(gridSetBounds);
 

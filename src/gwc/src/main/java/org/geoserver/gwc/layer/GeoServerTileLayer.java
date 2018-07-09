@@ -855,8 +855,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     @Override
     public void addGridSubset(GridSubset gridSubset) {
         XMLGridSubset gridSubsetInfo = new XMLGridSubset(gridSubset);
-        if(gridSubset instanceof DynamicGridSubset) {
-          gridSubsetInfo.setExtent(null);
+        if (gridSubset instanceof DynamicGridSubset) {
+            gridSubsetInfo.setExtent(null);
         }
         Set<XMLGridSubset> gridSubsets = new HashSet<XMLGridSubset>(info.getGridSubsets());
         gridSubsets.add(gridSubsetInfo);
@@ -919,7 +919,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             xmlGridSubset.setExtent(extent);
 
             GridSubset gridSubSet = xmlGridSubset.getGridSubSet(gridSetBroker);
-            if(dynamic) {
+            if (dynamic) {
                 gridSubSet = new DynamicGridSubset(gridSubSet);
             }
 

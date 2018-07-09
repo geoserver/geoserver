@@ -22,6 +22,7 @@
   <name>GeoServer Security Community Modules</name>
 
   <profiles>
+
     <profile>
       <id>oauth2-google</id>
       <modules>
@@ -43,6 +44,13 @@
       <modules>
         <module>oauth2</module>
         <module>oauth2-geonode</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>keycloak</id>
+      <modules>
+        <module>keycloak</module>
       </modules>
     </profile>
 

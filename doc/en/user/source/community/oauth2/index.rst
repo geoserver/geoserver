@@ -254,6 +254,45 @@ Configure the GeoServer OAuth2 filter
    .. figure:: images/oauth2filter004.png
       :align: center
 
+
+It's now possible to test the authentication:
+
+#. Navigate to the GeoServer home page and log out of the admin account. 
+#. Try to login again, you should be able now to see the external Google login form.
+
+   .. figure:: images/test1.jpg
+:align: center
+
+   .. figure:: images/test2.jpg
+:align: center
+
+   .. figure:: images/test3.jpg
+:align: center
+
+   .. figure:: images/test4.jpg
+:align: center
+
+   .. figure:: images/test5.jpg
+:align: center
+
+OpenID connect authentication
+-----------------------------
+
+The OpenID connect authentication is working in a way quite similar to Google (and GitHub) 
+authentications, the only difference is that the authentication page cannot propose default
+values for the various endpoints, which have to be configured manually.
+
+In case the web login will not be used, the "client ID" and "client secret" are not actually
+needed, and can be filled with two made up values (the validation just checks they are present,
+but they will be used only in the "authorisation flow", but not when doing OGC requests
+where the client is supposed to have autonomously retrieved a valid bearer token).
+
+.. warning:: The oauth2-openid-connect does not implement the full protocol and has been tested
+   against a single server, more development and testing is needed before it can be consumed by
+   a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md`_
+   to improve the module are welcomed.
+
+
 SSL Trusted Certificates
 ------------------------
 
@@ -394,24 +433,4 @@ In order to do this you can follow the next steps:
 		# verify we've got it.
 		keytool -list -v -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS} -alias ${HOST}
 
-Test the Google OAuth2 Provider Based Login
--------------------------------------------
-
-#. Navigate to the GeoServer home page and log out of the admin account. 
-#. Try to login again, you should be able now to see the external Google login form.
-
-   .. figure:: images/test1.jpg
-      :align: center
-
-   .. figure:: images/test2.jpg
-      :align: center
-
-   .. figure:: images/test3.jpg
-      :align: center
-
-   .. figure:: images/test4.jpg
-      :align: center
-
-   .. figure:: images/test5.jpg
-      :align: center
 

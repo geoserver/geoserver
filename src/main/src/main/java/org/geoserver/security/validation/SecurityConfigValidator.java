@@ -56,10 +56,15 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
      */
     public static SecurityConfigValidator getConfigurationValiator(
             Class<?> serviceClass, String className) throws SecurityConfigException {
-        GeoServerSecurityProvider prov =
-                GeoServerSecurityProvider.getProvider(serviceClass, className);
         if (className == null)
             throw new SecurityConfigException(CLASSNAME_REQUIRED, new Object[] {});
+
+        GeoServerSecurityProvider prov =
+                GeoServerSecurityProvider.getProvider(serviceClass, className);
+
+        if (prov == null) {
+            throw new SecurityConfigException(CLASS_NOT_FOUND, new Object[] {className});
+        }
 
         // TODO: remove the call to extensions, have teh security manager be passed in
         return prov.createConfigurationValidator(

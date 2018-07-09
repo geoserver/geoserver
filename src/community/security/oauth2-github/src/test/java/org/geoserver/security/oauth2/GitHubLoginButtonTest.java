@@ -4,13 +4,6 @@
  * application directory.
  *
  */
-
-/*
- * (c) 2018 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- *
- */
 package org.geoserver.security.oauth2;
 
 import static org.junit.Assert.assertTrue;
@@ -25,16 +18,16 @@ import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
-public class LoginButtonTest extends GeoServerWicketTestSupport {
+public class GitHubLoginButtonTest extends GeoServerWicketTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         GeoServerSecurityManager manager = getSecurityManager();
-        GoogleOAuth2FilterConfig filterConfig = new GoogleOAuth2FilterConfig();
-        filterConfig.setName("google");
-        filterConfig.setClassName(GoogleOAuthAuthenticationFilter.class.getName());
+        GitHubOAuth2FilterConfig filterConfig = new GitHubOAuth2FilterConfig();
+        filterConfig.setName("github");
+        filterConfig.setClassName(GitHubOAuthAuthenticationFilter.class.getName());
         filterConfig.setCliendId("foo");
         filterConfig.setClientSecret("bar");
         manager.saveFilter(filterConfig);
@@ -42,7 +35,7 @@ public class LoginButtonTest extends GeoServerWicketTestSupport {
         SecurityManagerConfig config = manager.getSecurityConfig();
         GeoServerSecurityFilterChain chain = config.getFilterChain();
         RequestFilterChain www = chain.getRequestChainByName("web");
-        www.setFilterNames("google", "anonymous");
+        www.setFilterNames("github", "anonymous");
         manager.saveSecurityConfig(config);
     }
 
@@ -60,9 +53,9 @@ public class LoginButtonTest extends GeoServerWicketTestSupport {
         // the login form is there and has the link
         assertTrue(
                 html.contains(
-                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_google_login\">"));
+                        "<form style=\"display: inline-block;\" method=\"post\" action=\"../web/j_spring_oauth2_github_login\">"));
         assertTrue(
                 html.contains(
-                        "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanel/google"));
+                        "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanel/github"));
     }
 }

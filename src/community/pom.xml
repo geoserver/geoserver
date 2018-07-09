@@ -527,6 +527,13 @@
       </modules>
     </profile>
     <profile>
+      <id>oauth2-openid-connect</id>
+      <modules>
+        <module>security/oauth2</module>
+        <module>security/oauth2-openid-connect</module>
+      </modules>
+    </profile>
+    <profile>
       <id>wmts-multi-dimensional</id>
       <modules>
         <module>wmts-multi-dimensional</module>

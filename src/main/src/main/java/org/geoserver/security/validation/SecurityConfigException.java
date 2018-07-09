@@ -76,6 +76,8 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String CLASSNAME_REQUIRED = "CLASSNAME_REQUIRED";
     // return MessageFormat.format("Implementation name is required",args);
 
+    public static final String CLASS_NOT_FOUND = "CLASS_NOT_FOUND";
+
     public static final String ROLE_SERVICE_ACTIVE_$1 = "ROLE_SERVICE_ACTIVE";
     // return MessageFormat.format("Role service {0} is active and cannot be deleted",args);
 

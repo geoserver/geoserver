@@ -55,12 +55,21 @@
     </profile>
 
     <profile>
+      <id>oauth2-openid-connect</id>
+      <modules>
+        <module>oauth2</module>
+        <module>oauth2-openid-connect</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>oauth2-all</id>
       <modules>
         <module>oauth2</module>
         <module>oauth2-google</module>
         <module>oauth2-github</module>
         <module>oauth2-geonode</module>
+        <module>oauth2-openid-connect</module>
       </modules>
     </profile>
     

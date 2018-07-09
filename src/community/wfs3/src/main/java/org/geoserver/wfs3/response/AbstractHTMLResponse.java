@@ -19,9 +19,9 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
-import org.geoserver.template.TemplateUtils;
 
 public abstract class AbstractHTMLResponse extends Response {
 

@@ -214,7 +214,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                         "Decoded result is not a "
                                 + complexPPIO.getType().getName()
                                 + ", got a: "
-                                + result);
+                                + result.getClass().getName());
             } else {
                 throw new WPSException("Could not find a mean to read input " + inputId);
             }

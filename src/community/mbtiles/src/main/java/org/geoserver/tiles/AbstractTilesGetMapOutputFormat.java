@@ -7,7 +7,6 @@ package org.geoserver.tiles;
 import static java.lang.String.format;
 
 import com.google.common.base.Preconditions;
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -54,6 +53,7 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**

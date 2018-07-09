@@ -72,7 +72,7 @@ Two-dimension coordinate variables are exposed in GeoServer as single dimensions
 +-------------------+--------------------------------+
 |     Runtime       |           Time                 |
 +========+==========+==========+==========+==========+
-| 	 |          |     0    |     1    |    2     |   
+|        |          |     0    |     1    |    2     |
 +--------+----------+----------+----------+----------+
 | 0      | 1/1/2017 | 1/1/2017 | 1/2/2017 | 1/4/2017 |
 +--------+----------+----------+----------+----------+
@@ -116,22 +116,31 @@ The NetCDF Auxiliary Store returns a WFS record like this for each possible comb
 
 Supporting Custom NetCDF Coordinate Reference Systems
 -----------------------------------------------------
+Grid Mapping attributes
+^^^^^^^^^^^^^^^^^^^^^^^
+
 Starting with GeoServer 2.8.x, NetCDF related modules (both NetCDF/GRIB store, imageMosaic store based on NetCDF/GRIB dataset and NetCDF output format) allow to support custom Coordinate Reference Systems and Projections.
 As reported in the `NetCDF CF documentation, Grid mappings section <http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings>`_
-a NetCDF CF file may expose gridMapping attributes to describe the underlying projection. 
+a NetCDF CF file may expose gridmapping attributes to describe the underlying projection. A *grid_mapping* attribute in the variable refers to the name of a variable containing the grid mapping definition.
 
 The GeoTools NetCDF machinery will parse the attributes (if any) contained in the underlying NetCDF dataset to setup an OGC CoordinateReferenceSystem object.
 Once created, a CRS lookup will be made to identify a custom EPSG (if any) defined by the user to match that Projection.
 In case the NetCDF gridMapping is basically the same of the one exposed as EPSG entry but the matching doesn't happen, you may consider tuning the comparison tolerance: See :ref:`crs_configure`, *Increase Comparison Tolerance section*.
 
+.. figure:: gridmapping.png
+   :align: center
+
+   *Grid Mapping and related custom EPSG definition*
+
 User defined NetCDF Coordinate Reference Systems with their custom EPSG need to be provided in :file:`user_projections\\netcdf.projections.properties` file inside your data directory (you have to create that file if missing).  
 
 A sample entry in that property file could look like this:
 
-      971801=PROJCS["lambert_conformal_conic_1SP", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6371229.0, 0.0]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Lambert_Conformal_Conic_1SP"], PARAMETER["central_meridian", -95.0], PARAMETER["latitude_of_origin", 25.0], PARAMETER["scale_factor", 1.0], PARAMETER["false_easting", 0.0], PARAMETER["false_northing", 0.0], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971801"]]
+      971835=PROJCS["albers_conical_equal_area", GEOGCS["unknown", DATUM["unknown", SPHEROID["unknown", 6378137.0, 298.2572221010042]], PRIMEM["Greenwich", 0.0], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH]], PROJECTION["Albers_Conic_Equal_Area"], PARAMETER["central_meridian", -126.0], PARAMETER["latitude_of_origin", 45.0], PARAMETER["standard_parallel_1", 50.0], PARAMETER["false_easting", 1000000.0], PARAMETER["false_northing", 0.0], PARAMETER["standard_parallel_2", 58.5], UNIT["m", 1.0], AXIS["Easting", EAST], AXIS["Northing", NORTH], AUTHORITY["EPSG","971835"]]
+
 
 .. note:: Note the "unknown" names for GEOGCS, DATUM and SPHEROID elements. This is how the underlying NetCDF machinery will name custom elements.
-.. note:: Note the number that precedes the WKT. This will determine the EPSG code.  So in this example, the EPSG code is 971801.
+.. note:: Note the number that precedes the WKT. This will determine the EPSG code.  So in this example, the EPSG code is 971835.
 .. note:: When dealing with records indexing based on PostGIS, make sure the custom code isn't greater than 998999. (It tooks us a while to understand why we had some issues with custom codes using PostGIS as granules index. Some more details, `here <http://gis.stackexchange.com/questions/145017/why-is-there-an-upper-limit-to-the-srid-value-in-the-spatial-ref-sys-table-in-po>`_)
 .. note:: If a parameter like "central_meridian" or "longitude_of_origin" or other longitude related value is outside the range [-180,180], make sure you adjust this value to belong to the standard range. As an instance a Central Meridian of 265 should be set as -95.
  
@@ -139,25 +148,25 @@ You may specify further custom NetCDF EPSG references by adding more lines to th
 
 #. Insert the code WKT for the projection at the end of the file (on a single line or with backslash characters)::
      
-      971802=PROJCS["lambert_conformal_conic_2SP", \
+      971835=PROJCS["albers_conical_equal_area", \
 	    GEOGCS["unknown", \
 		  DATUM["unknown", \
-		    SPHEROID["unknown", 6377397.0, 299.15550239234693]], \
+		    SPHEROID["unknown", 6378137.0, 298.2572221010042]],  \
 	      PRIMEM["Greenwich", 0.0], \
 		  UNIT["degree", 0.017453292519943295], \
 		  AXIS["Geodetic longitude", EAST], \
 		  AXIS["Geodetic latitude", NORTH]], \
-		PROJECTION["Lambert_Conformal_Conic_2SP"], \
-		PARAMETER["central_meridian", 13.333333015441895], \
-		PARAMETER["latitude_of_origin", 46.0], \
-		PARAMETER["standard_parallel_1", 46.0], \
-		PARAMETER["standard_parallel_2", 49], \
-		PARAMETER["false_easting", 0.0], \
-		PARAMETER["false_northing", 0.0], 
+		PROJECTION["Albers_Conic_Equal_Area"], \
+		PARAMETER["central_meridian", -126.0], \
+		PARAMETER["latitude_of_origin", 45.0], \
+		PARAMETER["standard_parallel_1", 50.0], \
+		PARAMETER["false_easting", 1000000.0], \
+		PARAMETER["false_northing", 0.0], \
+		PARAMETER["standard_parallel_2", 58.5], \
 		UNIT["m", 1.0], \
 		AXIS["Easting", EAST], \
 		AXIS["Northing", NORTH], \
-		AUTHORITY["EPSG","971802"]]
+		AUTHORITY["EPSG","971835"]]
 
 #. Save the file.
 
@@ -168,9 +177,20 @@ You may specify further custom NetCDF EPSG references by adding more lines to th
 #. If the projection wasn't listed, examine the logs for any errors.
 
 Specify an external file through system properties
---------------------------------------------------
+""""""""""""""""""""""""""""""""""""""""""""""""""
 You may also specify the NetCDF projections definition file by setting a **Java system property** which links to the specified file.
 As an instance: :file:`-Dnetcdf.projections.file=/full/path/of/the/customfile.properties`
+
+WKT Attributes
+^^^^^^^^^^^^^^
+Some NetCDFs may include a text attribute containing the WKT definition of a Coordinate Reference System. 
+When present, it will be parsed by GeoServer to setup a CRS and a lookup will be performed to see if any EPSG is matching it.
+
+
+ * spatial_ref
+     GDAL *spatial_ref* attribute 
+ * esri_pe_string
+     An attribute being defined by `NetCDF CERP Metadata Convention <https://www.jem.gov/downloads/CERP%20NetCDF%20standard/CERP_NetCDF_Metadata_Conventions_1.2.pdf>`_
 
 NetCDF files in read-only directories
 -------------------------------------

@@ -19,7 +19,7 @@ import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.PARAMET
 import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.PARENT_PARAMETER_NAME;
 import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.SHAPE_TYPE;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import es.unex.sextante.additionalInfo.AdditionalInfo;
 import es.unex.sextante.additionalInfo.AdditionalInfoBoolean;
 import es.unex.sextante.additionalInfo.AdditionalInfoFixedTable;

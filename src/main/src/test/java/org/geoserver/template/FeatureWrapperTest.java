@@ -7,8 +7,6 @@ package org.geoserver.template;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.StringWriter;
@@ -17,6 +15,8 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class FeatureWrapperTest {

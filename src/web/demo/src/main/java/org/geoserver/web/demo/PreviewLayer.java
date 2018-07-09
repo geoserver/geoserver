@@ -6,7 +6,6 @@
 package org.geoserver.web.demo;
 
 import com.google.common.collect.Iterables;
-import com.vividsolutions.jts.geom.Envelope;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.ProgressListener;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;

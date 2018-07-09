@@ -101,7 +101,7 @@ public class JDBCDirectoryStructure {
         }
 
         public String getName() {
-            return path.isEmpty() ? null : path.get(path.size() - 1);
+            return path.isEmpty() ? "" : path.get(path.size() - 1);
         }
 
         public List<String> getPath() {

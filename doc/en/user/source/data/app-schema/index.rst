@@ -39,5 +39,6 @@ The app-schema module looks to GeoServer just like any other data store and so c
    joining
    tutorial
    mongo-tutorial
+   solr-tutorial
    
 

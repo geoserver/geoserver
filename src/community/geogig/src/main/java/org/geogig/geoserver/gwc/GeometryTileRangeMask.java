@@ -4,12 +4,12 @@
  */
 package org.geogig.geoserver.gwc;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.storage.TileRangeMask;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 class GeometryTileRangeMask implements TileRangeMask {
 

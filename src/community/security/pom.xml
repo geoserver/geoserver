@@ -53,6 +53,16 @@
         <module>keycloak</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>oauth2-all</id>
+      <modules>
+        <module>oauth2</module>
+        <module>oauth2-google</module>
+        <module>oauth2-github</module>
+        <module>oauth2-geonode</module>
+      </modules>
+    </profile>
     
   </profiles>
 

@@ -5,9 +5,6 @@
  */
 package org.geoserver.kml.regionate;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,6 +37,9 @@ import org.geotools.referencing.operation.projection.ProjectionException;
 import org.geotools.util.CanonicalSet;
 import org.geotools.util.logging.Logging;
 import org.h2.tools.DeleteDbFiles;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;

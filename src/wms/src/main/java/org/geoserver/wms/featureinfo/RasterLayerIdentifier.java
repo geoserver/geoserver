@@ -6,7 +6,6 @@
 package org.geoserver.wms.featureinfo;
 
 import com.sun.org.apache.xml.internal.utils.XMLChar;
-import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -48,6 +47,7 @@ import org.geotools.resources.geometry.XRectangle2D;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.coverage.CannotEvaluateException;
 import org.opengis.coverage.PointOutsideCoverageException;
 import org.opengis.coverage.grid.GridEnvelope;

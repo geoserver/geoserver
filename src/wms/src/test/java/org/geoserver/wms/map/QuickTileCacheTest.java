@@ -7,10 +7,10 @@ package org.geoserver.wms.map;
 
 import static org.junit.Assert.assertEquals;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 
 public class QuickTileCacheTest {
     QuickTileCache cache = new QuickTileCache();

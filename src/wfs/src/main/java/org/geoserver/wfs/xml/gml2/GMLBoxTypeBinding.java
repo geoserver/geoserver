@@ -5,12 +5,12 @@
  */
 package org.geoserver.wfs.xml.gml2;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.net.URI;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.ElementInstance;
 import org.geotools.xml.Node;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**

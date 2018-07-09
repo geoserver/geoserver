@@ -5,8 +5,6 @@
  */
 package org.geoserver.security;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.io.WKTReader;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,6 +14,8 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geotools.factory.CommonFactoryFinder;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;

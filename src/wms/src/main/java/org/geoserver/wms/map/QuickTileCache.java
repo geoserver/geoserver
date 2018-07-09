@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.RenderedImage;
@@ -32,6 +31,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.CanonicalSet;
+import org.locationtech.jts.geom.Envelope;
 
 public class QuickTileCache implements TransactionListener, GeoServerLifecycleHandler {
     /**

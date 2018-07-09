@@ -12,6 +12,7 @@ public class NewCachedLayerPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testPageLoad() {
+        login();
         NewCachedLayerPage page = new NewCachedLayerPage();
 
         tester.startPage(page);

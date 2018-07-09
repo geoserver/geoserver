@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
@@ -103,6 +104,31 @@ public abstract class AbstractResourceNotificationDispatcherTest {
         assertTrue(watcher.removeListener(res.get("DirC").path(), chkDirC));
         assertTrue(watcher.removeListener(res.get("DirC/FileC1").path(), chkFileC1));
         assertTrue(watcher.removeListener(res.get("DirC/FileC2").path(), chkFileC2));
+    }
+
+    @Test
+    public void testDeleteWhileListening() {
+        Resource res = store.get("DirA");
+
+        final ResourceListener deletingListener =
+                new ResourceListener() {
+                    @Override
+                    public void changed(ResourceNotification notify) {
+                        assertTrue(watcher.removeListener(notify.getPath(), this));
+                    }
+                };
+
+        watcher.addListener(res.path(), deletingListener);
+
+        watcher.changed(
+                new ResourceNotification(
+                        "DirA",
+                        Kind.ENTRY_DELETE,
+                        System.currentTimeMillis(),
+                        Collections.emptyList()));
+
+        // verify already deleted
+        assertFalse(watcher.removeListener(res.path(), deletingListener));
     }
 
     @Test

@@ -4,12 +4,12 @@
  */
 package org.geoserver.wms.topojson;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.LineString;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineString;
 
 public class Topology {
 

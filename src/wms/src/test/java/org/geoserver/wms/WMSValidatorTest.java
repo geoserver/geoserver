@@ -4,7 +4,6 @@
  */
 package org.geoserver.wms;
 
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.util.Arrays;
 import org.easymock.classextension.EasyMock;
@@ -18,6 +17,7 @@ import org.geoserver.data.test.MockCreator;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
+import org.locationtech.jts.geom.Polygon;
 
 public class WMSValidatorTest extends GeoServerMockTestSupport {
 

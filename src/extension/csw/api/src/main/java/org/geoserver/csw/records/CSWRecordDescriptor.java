@@ -5,7 +5,6 @@
  */
 package org.geoserver.csw.records;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -32,6 +31,7 @@ import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.ows.OWS;
 import org.geotools.xml.SchemaIndex;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;

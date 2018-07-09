@@ -180,6 +180,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     @Test
     public void testStoreNewPage() throws Exception {
         loginAsCite();
+        AdminRequest.start(new Object());
 
         final String dataStoreFactoryDisplayName = new PropertyDataStoreFactory().getDisplayName();
         tester.startPage(new DataAccessNewPage(dataStoreFactoryDisplayName));

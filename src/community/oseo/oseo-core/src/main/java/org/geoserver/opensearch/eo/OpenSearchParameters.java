@@ -4,8 +4,6 @@
  */
 package org.geoserver.opensearch.eo;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,6 +12,8 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.FactoryException;

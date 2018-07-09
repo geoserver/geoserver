@@ -82,7 +82,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         }
         if (kvp.containsKey("bbox")) {
             Envelope bbox = (Envelope) kvp.get("bbox");
-            BBOX bboxFilter = bboxFilter((com.vividsolutions.jts.geom.Envelope) bbox);
+            BBOX bboxFilter = bboxFilter((org.locationtech.jts.geom.Envelope) bbox);
             filters.add(bboxFilter);
         }
         if (kvp.containsKey("time")) {

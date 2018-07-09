@@ -57,26 +57,28 @@ public class LoginFormHTMLInclude extends Include {
      */
     @Override
     protected String importAsString() {
-        try {
+        if (resourceReference != null) {
+            try {
 
-            templateConfig.setClassForTemplateLoading(this.resourceReference.getScope(), "");
-            Template template = templateConfig.getTemplate(this.resourceReference.getName());
-            Map<String, Object> params = new HashMap<>();
+                templateConfig.setClassForTemplateLoading(this.resourceReference.getScope(), "");
+                Template template = templateConfig.getTemplate(this.resourceReference.getName());
+                Map<String, Object> params = new HashMap<>();
 
-            String autocompleteValue =
-                    GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
-            if (autocompleteValue == null) {
-                autocompleteValue = DEFAULT_AUTOCOMPLETE_VALUE;
+                String autocompleteValue =
+                        GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
+                if (autocompleteValue == null) {
+                    autocompleteValue = DEFAULT_AUTOCOMPLETE_VALUE;
+                }
+                params.put("autocomplete", autocompleteValue);
+
+                StringWriter writer = new StringWriter();
+                template.process(params, writer);
+
+                return writer.toString();
+
+            } catch (Exception ex) {
+                LOGGER.log(Level.FINEST, "Problem reading resource contents.", ex);
             }
-            params.put("autocomplete", autocompleteValue);
-
-            StringWriter writer = new StringWriter();
-            template.process(params, writer);
-
-            return writer.toString();
-
-        } catch (Exception ex) {
-            LOGGER.log(Level.FINEST, "Problem reading resource contents.", ex);
         }
 
         return "";

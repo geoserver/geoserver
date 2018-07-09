@@ -30,8 +30,11 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
         File file = Paths.toFile(null, path);
         if (!file.isAbsolute()) {
             // in linux, an absolute path might appear relative if the root slash has been removed.
-            if (folder.getRoot().getPath().startsWith("/")
-                    && path.startsWith(folder.getRoot().getPath().substring(1))) {
+            // This can also occur with the root path if java.io.tmpdir is relative.
+            String rootPath = folder.getRoot().getPath();
+            String rootPathWithoutSlash =
+                    rootPath.startsWith("/") ? rootPath.substring(1) : rootPath;
+            if (path.contains(rootPathWithoutSlash)) {
                 file = Paths.toFile(new File("/"), path);
             } else {
                 file = Paths.toFile(folder.getRoot(), path);

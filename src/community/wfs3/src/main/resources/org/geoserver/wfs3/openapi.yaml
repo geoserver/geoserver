@@ -190,10 +190,6 @@ components:
         Only items are counted that are on the first level of the collection in
         the response document. Nested objects contained within the explicitly
         requested items shall not be counted.
-
-        * Minimum = 1
-        * Maximum = 10000
-        * Default = 10
       required: false
       schema:
         type: integer

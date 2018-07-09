@@ -5,8 +5,6 @@
  */
 package org.geoserver.wcs2_0.eo.response;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -58,6 +56,8 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.impl.DatatypeConverterImpl;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;

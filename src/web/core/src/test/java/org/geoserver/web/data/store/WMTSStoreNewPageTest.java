@@ -34,8 +34,8 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     private WMTSStoreNewPage startPage() {
 
-        final WMTSStoreNewPage page = new WMTSStoreNewPage();
         login();
+        final WMTSStoreNewPage page = new WMTSStoreNewPage();
         tester.startPage(page);
 
         if (debugMode) {

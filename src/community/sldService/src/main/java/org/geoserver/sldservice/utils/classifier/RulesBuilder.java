@@ -50,10 +50,28 @@ public class RulesBuilder {
 
     private StyleBuilder sb;
 
+    private double strokeWeight = 1;
+    private Color strokeColor = Color.BLACK;
+    private boolean includeStrokeForPoints = false;
+
     public RulesBuilder() {
         ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
         styleFactory = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
         sb = new StyleBuilder();
+    }
+
+    public void setStrokeWeight(double strokeWeight) {
+        this.strokeWeight = strokeWeight;
+    }
+
+    public void setStrokeColor(Color strokeColor) {
+        if (strokeColor != null) {
+            this.strokeColor = strokeColor;
+        }
+    }
+
+    public void setIncludeStrokeForPoints(boolean includeStrokeForPoints) {
+        this.includeStrokeForPoints = includeStrokeForPoints;
     }
 
     /**
@@ -213,7 +231,10 @@ public class RulesBuilder {
                 rule.setSymbolizers(
                         new Symbolizer[] {
                             sb.createPolygonSymbolizer(
-                                    sb.createStroke(Color.BLACK, 1), sb.createFill(color))
+                                    strokeWeight < 0
+                                            ? null
+                                            : sb.createStroke(strokeColor, strokeWeight),
+                                    sb.createFill(color))
                         });
             }
         } catch (Exception e) {
@@ -256,7 +277,9 @@ public class RulesBuilder {
                         sb.createMark(
                                 StyleBuilder.MARK_CIRCLE,
                                 sb.createFill(color),
-                                sb.createStroke(color));
+                                includeStrokeForPoints
+                                        ? sb.createStroke(strokeColor, strokeWeight)
+                                        : null);
                 rule.setSymbolizers(
                         new Symbolizer[] {
                             sb.createPointSymbolizer(sb.createGraphic(null, mark, null))
@@ -316,7 +339,7 @@ public class RulesBuilder {
      * @param groups
      * @param property
      */
-    private List<Rule> openRangedRules(
+    public List<Rule> openRangedRules(
             RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
         Rule r;
@@ -327,7 +350,7 @@ public class RulesBuilder {
         try {
             /* First class */
             r = styleFactory.createRule();
-            if (groups.getMin(0).equals(groups.getMax(0))) {
+            /*if (groups.getMin(0).equals(groups.getMax(0))) {
                 f = ff.equals(att, ff.literal(groups.getMax(0)));
                 r.setFilter(f);
                 r.setTitle(ff.literal(groups.getMax(0)).toString());
@@ -337,7 +360,11 @@ public class RulesBuilder {
                 r.setFilter(f);
                 r.setTitle(" <= " + ff.literal(groups.getMax(0)));
                 list.add(r);
-            }
+            }*/
+            f = ff.lessOrEqual(att, ff.literal(groups.getMax(0)));
+            r.setFilter(f);
+            r.setTitle(" <= " + ff.literal(groups.getMax(0)));
+            list.add(r);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = styleFactory.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
@@ -361,7 +388,7 @@ public class RulesBuilder {
             }
             /* Last class */
             r = styleFactory.createRule();
-            if (groups.getMin(groups.getSize() - 1).equals(groups.getMax(groups.getSize() - 1))) {
+            /*if (groups.getMin(groups.getSize() - 1).equals(groups.getMax(groups.getSize() - 1))) {
                 f = ff.equals(att, ff.literal(groups.getMin(groups.getSize() - 1)));
                 r.setFilter(f);
                 r.setTitle(ff.literal(groups.getMin(groups.getSize() - 1)).toString());
@@ -371,7 +398,11 @@ public class RulesBuilder {
                 r.setFilter(f);
                 r.setTitle(" > " + ff.literal(groups.getMin(groups.getSize() - 1)));
                 list.add(r);
-            }
+            }*/
+            f = ff.greater(att, ff.literal(groups.getMin(groups.getSize() - 1)));
+            r.setFilter(f);
+            r.setTitle(" > " + ff.literal(groups.getMin(groups.getSize() - 1)));
+            list.add(r);
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
@@ -399,7 +430,7 @@ public class RulesBuilder {
      * @param groups
      * @param property
      */
-    private List<Rule> closedRangedRules(
+    public List<Rule> closedRangedRules(
             RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
         Rule r;
@@ -450,7 +481,7 @@ public class RulesBuilder {
      * @param groups
      * @param property
      */
-    private List<Rule> explicitRules(
+    public List<Rule> explicitRules(
             ExplicitClassifier groups, String property, Class<?> propertyType) {
 
         Rule r;

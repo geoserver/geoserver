@@ -74,7 +74,7 @@ public class WFS3Filter implements GeoServerFilter {
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
         String path = requestHTTP.getRequestURI();
-        return path.contains("wfs3");
+        return path.contains("wfs3") && !path.contains("wfs3css");
     }
 
     @Override
@@ -133,7 +133,7 @@ public class WFS3Filter implements GeoServerFilter {
                                     Pattern.compile("/collections/([^/]+)/?").matcher(path);
                             boolean matches = matcher.matches();
                             if (matches) {
-                                request = "collections";
+                                request = "collection";
                                 String layerName = matcher.group(1);
                                 setLayerName(layerName);
                             }
@@ -230,11 +230,11 @@ public class WFS3Filter implements GeoServerFilter {
         @Override
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
-            Map filtered = new HashMap<>(original);
-            filtered.put("service", "WFS");
-            filtered.put("version", "3.0.0");
-            filtered.put("request", request);
-            filtered.put("srsName", "EPSG:4326");
+            Map<String, String[]> filtered = new HashMap<>(original);
+            filtered.put("service", new String[] {"WFS"});
+            filtered.put("version", new String[] {"3.0.0"});
+            filtered.put("request", new String[] {request});
+            filtered.put("srsName", new String[] {"EPSG:4326"});
             String bbox = super.getParameter("bbox");
             if (bbox != null) {
                 try {
@@ -244,23 +244,23 @@ public class WFS3Filter implements GeoServerFilter {
                     // if 2D and lacking a CRS, force WGS84
                     if (envelope.getCoordinateReferenceSystem() == null
                             && envelope.getDimension() == 2) {
-                        filtered.put("bbox", bbox + ",EPSG:4326");
+                        filtered.put("bbox", new String[] {bbox + ",EPSG:4326"});
                     }
                 } catch (Exception expected) {
                     // fine, the actual request parsing later on will deal with this
                 }
             }
             if (typeName != null) {
-                filtered.put("typeName", typeName);
+                filtered.put("typeName", new String[] {typeName});
             }
             if (outputFormat != null) {
-                filtered.put("outputFormat", outputFormat);
+                filtered.put("outputFormat", new String[] {outputFormat});
             }
             if (featureId != null && !featureId.isEmpty()) {
-                filtered.put("featureId", featureId);
+                filtered.put("featureId", new String[] {featureId});
             }
             if (limit != null && !limit.isEmpty()) {
-                filtered.put("count", limit);
+                filtered.put("count", new String[] {limit});
             }
             return filtered;
         }

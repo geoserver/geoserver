@@ -4,13 +4,13 @@
  */
 package org.geoserver.wfs3.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Yaml;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -77,10 +77,7 @@ public abstract class JacksonResponse extends WFSResponse {
             throws IOException, ServiceException {
         ObjectMapper mapper;
         if (isYamlFormat(operation)) {
-            YAMLFactory factory = new YAMLFactory();
-            mapper = new ObjectMapper(factory);
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+            mapper = Yaml.mapper();
         } else if (isXMLFormat(operation)) {
             mapper = new XmlMapper();
             // using a custom annotation introspector to set the desired namespace
@@ -98,8 +95,8 @@ public abstract class JacksonResponse extends WFSResponse {
                     });
 
         } else {
-            mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper = Json.mapper();
+            mapper.writer(new DefaultPrettyPrinter());
         }
 
         mapper.writeValue(output, value);

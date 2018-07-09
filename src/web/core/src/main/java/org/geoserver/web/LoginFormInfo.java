@@ -15,7 +15,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
-    private String include = "";
+    private String include;
     private String loginPath;
 
     /**

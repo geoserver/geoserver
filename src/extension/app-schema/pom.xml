@@ -32,6 +32,7 @@
                 <module>app-schema-oracle-test</module>
                 <module>app-schema-postgis-test</module>
                 <module>app-schema-mongo-test</module>
+                <module>app-schema-solr-test</module>
             </modules>
             <dependencies>
                 <dependency>

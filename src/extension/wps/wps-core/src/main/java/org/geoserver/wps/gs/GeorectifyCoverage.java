@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.gs;
 
-import com.vividsolutions.jts.geom.Envelope;
+import com.google.common.base.Splitter;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.ColorModel;
@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +50,7 @@ import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -214,9 +215,10 @@ public class GeorectifyCoverage implements GSProcess {
             //
             // //
             final int gcpNum[] = new int[1];
-            final String gcp = parseGcps(gcps, gcpNum);
+            final List<String> gcp = parseGcps(gcps, gcpNum);
             File vrtFile =
-                    addGroundControlPoints(location, gcp, config.getGdalTranslateParameters());
+                    addGroundControlPoints(
+                            location, gcp, splitToList(config.getGdalTranslateParameters()));
             if (vrtFile == null || !vrtFile.exists() || !vrtFile.canRead()) {
                 throw new IOException(
                         "Unable to get a valid file with attached Ground Control Points");
@@ -239,7 +241,7 @@ public class GeorectifyCoverage implements GSProcess {
                             tempFolder,
                             loggingFolder,
                             config.getExecutionTimeout(),
-                            config.getGdalWarpingParameters());
+                            splitToList(config.getGdalTranslateParameters()));
             if (warpedFile == null || !warpedFile.exists() || !warpedFile.canRead()) {
                 throw new IOException("Unable to get a valid georectified file");
             }
@@ -397,15 +399,15 @@ public class GeorectifyCoverage implements GSProcess {
             final File tempFolder,
             final File loggingFolder,
             final Long timeOut,
-            final String warpingParameters)
+            final List<String> warpingParameters)
             throws IOException {
         final File file = File.createTempFile("warped", ".tif", tempFolder);
         final String vrtFilePath = originalFile.getAbsolutePath();
         final String outputFilePath = file.getAbsolutePath();
-        final String tEnvelope = parseBBox(targetEnvelope);
+        final List<String> tEnvelope = parseBBox(targetEnvelope);
         final String tCrs = parseCrs(targetCRS);
-        final String argument =
-                buildWarpArgument(
+        final List<String> arguments =
+                buildWarpArguments(
                         tEnvelope,
                         width,
                         height,
@@ -416,7 +418,7 @@ public class GeorectifyCoverage implements GSProcess {
                         warpingParameters);
         final String gdalCommand = config.getWarpingCommand();
 
-        executeCommand(gdalCommand, argument, loggingFolder, config.getEnvVariables());
+        executeCommand(gdalCommand, arguments, loggingFolder, config.getEnvVariables());
         return file;
     }
 
@@ -431,33 +433,38 @@ public class GeorectifyCoverage implements GSProcess {
      * @param inputFilePath the path of the file referring to the dataset to be warped
      * @param outputFilePath the path of the file referring to the produced dataset
      */
-    private static final String buildWarpArgument(
-            final String targetEnvelope,
+    @SuppressWarnings("serial")
+    private static final List<String> buildWarpArguments(
+            final List<String> targetEnvelope,
             final Integer width,
             final Integer height,
             final String targetCrs,
             final Integer order,
             final String inputFilePath,
             final String outputFilePath,
-            final String warpingParameters) {
-        String imageSize = width != null && height != null ? " -ts " + width + " " + height : "";
-        String te =
-                targetEnvelope != null && targetEnvelope.length() > 0
-                        ? "-te " + targetEnvelope
-                        : "";
-        return te
-                + imageSize
-                + " -t_srs "
-                + targetCrs
-                + " "
-                + (order != null ? " -order " + order : "")
-                + " "
-                + warpingParameters
-                + " "
-                + inputFilePath
-                + " "
-                + outputFilePath
-                + "";
+            final List<String> warpingParameters) {
+        return new ArrayList<String>() {
+            {
+                if (targetEnvelope != null && targetEnvelope.size() > 0) {
+                    add("-te");
+                    addAll(targetEnvelope);
+                }
+                if (width != null && height != null) {
+                    add("-ts");
+                    add(Integer.toString(width));
+                    add(Integer.toString(height));
+                }
+                add("-t_srs");
+                add(targetCrs);
+                if (order != null) {
+                    add("-order");
+                    add(Integer.toString(order));
+                }
+                addAll(warpingParameters);
+                add(inputFilePath);
+                add(outputFilePath);
+            }
+        };
     }
 
     private static String getError(File logFile) throws IOException {
@@ -488,11 +495,19 @@ public class GeorectifyCoverage implements GSProcess {
      *
      * @param boundingBox
      */
-    private static String parseBBox(Envelope re) {
+    @SuppressWarnings("serial")
+    private static List<String> parseBBox(Envelope re) {
         if (re == null) {
-            return "";
+            return Collections.emptyList();
         } else {
-            return re.getMinX() + " " + re.getMinY() + " " + re.getMaxX() + " " + re.getMaxY();
+            return new ArrayList<String>() {
+                {
+                    add(Double.toString(re.getMinX()));
+                    add(Double.toString(re.getMinY()));
+                    add(Double.toString(re.getMaxX()));
+                    add(Double.toString(re.getMaxY()));
+                }
+            };
         }
     }
 
@@ -515,20 +530,23 @@ public class GeorectifyCoverage implements GSProcess {
      * @throws IOException
      */
     private File addGroundControlPoints(
-            final String originalFilePath, final String gcp, final String parameters)
+            final String originalFilePath, final List<String> gcp, final List<String> parameters)
             throws IOException {
         final File vrtFile = File.createTempFile("vrt_", ".vrt", config.getTempFolder());
-        final String argument =
-                "-of VRT "
-                        + parameters
-                        + " "
-                        + gcp
-                        + " "
-                        + originalFilePath
-                        + " "
-                        + vrtFile.getAbsolutePath();
+        @SuppressWarnings("serial")
+        final List<String> arguments =
+                new ArrayList<String>() {
+                    {
+                        add("-of");
+                        add("VRT");
+                        addAll(parameters);
+                        addAll(gcp);
+                        add(originalFilePath);
+                        add(vrtFile.getAbsolutePath());
+                    }
+                };
         final String gdalCommand = config.getTranslateCommand();
-        executeCommand(gdalCommand, argument, config.getLoggingFolder(), config.getEnvVariables());
+        executeCommand(gdalCommand, arguments, config.getLoggingFolder(), config.getEnvVariables());
         if (vrtFile != null && vrtFile.exists() && vrtFile.canRead()) {
             return vrtFile;
         }
@@ -537,13 +555,17 @@ public class GeorectifyCoverage implements GSProcess {
 
     private File expandRgba(final String originalFilePath) throws IOException {
         final File expandedFile = File.createTempFile("rgba", ".tif", config.getTempFolder());
-        final String argument =
-                "-expand RGBA -co TILED=yes -co COMPRESS=LZW "
-                        + originalFilePath
-                        + " "
-                        + expandedFile.getAbsolutePath();
+        @SuppressWarnings("serial")
+        final List<String> arguments =
+                new ArrayList<String>() {
+                    {
+                        addAll(splitToList("-expand RGBA -co TILED=yes -co COMPRESS=LZW"));
+                        add(originalFilePath);
+                        add(expandedFile.getAbsolutePath());
+                    }
+                };
         final String gdalCommand = config.getTranslateCommand();
-        executeCommand(gdalCommand, argument, config.getLoggingFolder(), config.getEnvVariables());
+        executeCommand(gdalCommand, arguments, config.getLoggingFolder(), config.getEnvVariables());
         return expandedFile;
     }
 
@@ -553,7 +575,7 @@ public class GeorectifyCoverage implements GSProcess {
      */
     private static void executeCommand(
             final String gdalCommand,
-            final String argument,
+            final List<String> arguments,
             final File loggingFolder,
             final Map<String, String> envVars)
             throws IOException {
@@ -561,9 +583,15 @@ public class GeorectifyCoverage implements GSProcess {
         final File logFile = File.createTempFile("LOG", ".log", loggingFolder);
 
         // run the process and grab the output for error reporting purposes
-        List<String> commands = new ArrayList<String>(Arrays.asList(argument.trim().split("\\s+")));
-        commands.add(0, gdalCommand);
-        ProcessBuilder builder = new ProcessBuilder(commands);
+        @SuppressWarnings("serial")
+        ProcessBuilder builder =
+                new ProcessBuilder(
+                        new ArrayList<String>() {
+                            {
+                                add(gdalCommand);
+                                addAll(arguments);
+                            }
+                        });
         if (envVars != null) {
             builder.environment().putAll(envVars);
         } else {
@@ -586,7 +614,7 @@ public class GeorectifyCoverage implements GSProcess {
                     "Error launching OS command: "
                             + gdalCommand
                             + " with arguments "
-                            + argument
+                            + arguments
                             + " and env vars "
                             + envVars,
                     e);
@@ -598,7 +626,7 @@ public class GeorectifyCoverage implements GSProcess {
                             "Error launching OS command: '"
                                     + gdalCommand
                                     + "' with arguments '"
-                                    + argument
+                                    + arguments
                                     + "' and env vars '"
                                     + envVars
                                     + "': \n"
@@ -618,12 +646,12 @@ public class GeorectifyCoverage implements GSProcess {
         try {
             executeCommand(
                     GeorectifyConfiguration.GRDefaults.GDAL_TRANSLATE_COMMAND,
-                    "--version",
+                    Collections.singletonList("--version"),
                     tmp,
                     config.getEnvVariables());
             executeCommand(
                     GeorectifyConfiguration.GRDefaults.GDAL_WARP_COMMAND,
-                    "--version",
+                    Collections.singletonList("--version"),
                     tmp,
                     config.getEnvVariables());
             return true;
@@ -639,29 +667,32 @@ public class GeorectifyCoverage implements GSProcess {
      * @param gcps
      * @param gcpNum
      */
-    private String parseGcps(String gcps, int[] gcpNum) {
+    private List<String> parseGcps(String gcps, int[] gcpNum) {
         Matcher gcpMatcher = GCP_PATTERN.matcher(gcps);
         // if(!gcpMatcher.matches()) {
         // throw new WPSException("Invalid GCP syntax:" + gcps);
         // }
-        StringBuilder gcpCommand = new StringBuilder();
+        List<String> gcpCommand = new ArrayList<String>();
         int gcpPoints = 0;
         // Setting up gcp command arguments
         while (gcpMatcher.find()) {
-            String gcp = "-gcp ";
+            @SuppressWarnings("serial")
+            List<String> gcp =
+                    new ArrayList<String>() {
+                        {
+                            add("-gcp");
+                        }
+                    };
             String pixels = gcpMatcher.group(0);
             gcpMatcher.find();
             String lines = gcpMatcher.group(0);
-            gcp +=
-                    pixels.replace("[", "").replace("]", "").replace(",", "")
-                            + " "
-                            + lines.replace("[", "").replace("]", "").replace(",", "")
-                            + " ";
-            gcpCommand.append(gcp);
+            gcp.addAll(splitToList(pixels.replace("[", "").replace("]", "").replace(",", "")));
+            gcp.addAll(splitToList(lines.replace("[", "").replace("]", "").replace(",", "")));
+            gcpCommand.addAll(gcp);
             gcpPoints++;
         }
         gcpNum[0] = gcpPoints;
-        return gcpCommand.toString();
+        return gcpCommand;
     }
 
     private static void deleteFile(final File file) {
@@ -676,5 +707,14 @@ public class GeorectifyCoverage implements GSProcess {
 
     public void setResourceManager(WPSResourceManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+
+    /**
+     * Split a whitespace-separated list into a list of strings, discarding all excess whitespace.
+     * No empty strings are returned. If the string is empty or contains only whitespace, the
+     * returned list will be empty.
+     */
+    private static List<String> splitToList(String s) {
+        return Splitter.onPattern("\\s+").omitEmptyStrings().splitToList(s);
     }
 }

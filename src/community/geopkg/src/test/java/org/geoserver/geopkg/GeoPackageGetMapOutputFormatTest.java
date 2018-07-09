@@ -9,7 +9,6 @@ import static org.geoserver.data.test.MockData.LAKES;
 import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,6 +29,7 @@ import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Test For WMS GetMap Output Format for GeoPackage

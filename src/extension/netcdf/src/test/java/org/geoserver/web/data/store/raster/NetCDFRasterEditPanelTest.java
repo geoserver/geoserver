@@ -19,12 +19,18 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.CoverageStoreNewPage;
 import org.geotools.coverage.io.netcdf.NetCDFFormat;
+import org.junit.Before;
 import org.junit.Test;
 
 public class NetCDFRasterEditPanelTest extends GeoServerWicketTestSupport {
 
     protected static QName SAMPLE_NETCDF =
             new QName(MockData.SF_URI, "sampleNetCDF", MockData.SF_PREFIX);
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

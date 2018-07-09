@@ -21,10 +21,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -140,6 +136,10 @@ import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
@@ -2278,7 +2278,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             if (group != null) {
                 // use the prefixed name to avoid clashes because the raw catalog is not
                 // workspace-filtered
-                LayerGroupInfo rawGroup = rawCatalog.getLayerGroupByName(group.prefixedName());
+                LayerGroupInfo rawGroup;
+                if (group.getWorkspace() != null) {
+                    // LocalWorkspace has a NameDequalifyingProxy which will strip off the workspace
+                    // if we just call prefixedName
+                    rawGroup =
+                            rawCatalog.getLayerGroupByName(group.getWorkspace(), group.getName());
+                } else {
+                    rawGroup = rawCatalog.getLayerGroupByName(group.getName());
+                }
                 if (rawGroup.layers().size() == group.layers().size()) {
                     layerInfos = group.layers();
                 }

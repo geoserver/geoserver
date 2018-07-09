@@ -5,7 +5,6 @@
  */
 package org.geoserver.template;
 
-import com.vividsolutions.jts.geom.Geometry;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.template.Configuration;
@@ -35,6 +34,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.MapEntry;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;

@@ -70,4 +70,9 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
             GeoServerSecurityManager securityManager) {
         return new OAuth2FilterConfigValidator(securityManager);
     }
+
+    @Override
+    public void handlePostChanged(GeoServerSecurityManager securityManager) {
+        // By default, nothing to do
+    }
 }

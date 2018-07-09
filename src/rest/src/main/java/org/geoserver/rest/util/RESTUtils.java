@@ -6,7 +6,6 @@
 package org.geoserver.rest.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,9 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -463,29 +460,6 @@ public class RESTUtils {
      * @throws IOException
      */
     public static void unzipInputStream(InputStream in, File outputDirectory) throws IOException {
-        ZipInputStream zin = null;
-
-        try {
-            zin = new ZipInputStream(in);
-
-            ZipEntry entry;
-            byte[] buffer = new byte[2048];
-
-            while ((entry = zin.getNextEntry()) != null) {
-                String outpath = outputDirectory.getAbsolutePath() + "/" + entry.getName();
-                FileOutputStream output = null;
-                try {
-                    output = new FileOutputStream(outpath);
-                    int len;
-                    while ((len = zin.read(buffer)) > 0) {
-                        output.write(buffer, 0, len);
-                    }
-                } finally {
-                    IOUtils.closeQuietly(output);
-                }
-            }
-        } finally {
-            IOUtils.closeQuietly(zin);
-        }
+        org.geoserver.util.IOUtils.decompress(in, outputDirectory);
     }
 }

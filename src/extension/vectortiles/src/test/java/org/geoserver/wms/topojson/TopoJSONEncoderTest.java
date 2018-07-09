@@ -5,9 +5,6 @@
 package org.geoserver.wms.topojson;
 
 import com.google.common.collect.ImmutableList;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import java.awt.geom.AffineTransform;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -18,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
 import org.junit.Test;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 public class TopoJSONEncoderTest {
 

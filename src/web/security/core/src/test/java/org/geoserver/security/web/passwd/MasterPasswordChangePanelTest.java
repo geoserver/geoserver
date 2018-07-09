@@ -18,6 +18,7 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
 
     @Before
     public void setUp() throws Exception {
+        login();
         tester.startPage(new MasterPasswordChangePage());
         tester.assertRenderedPage(MasterPasswordChangePage.class);
 

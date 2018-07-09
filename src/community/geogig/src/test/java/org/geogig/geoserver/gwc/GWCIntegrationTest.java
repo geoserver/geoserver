@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.vividsolutions.jts.geom.Envelope;
 import java.util.Map;
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
@@ -30,6 +29,7 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.junit.Rule;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
 
 /** Integration test for GeoServer cached layers using the GWC REST API */

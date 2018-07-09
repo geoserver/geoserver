@@ -19,6 +19,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -123,6 +124,14 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         action.onClick(target);
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        CharSequence dynamicExtraParameters =
+                                "var result = {'cmSelection': getSelection()};" + "return result;";
+                        attributes.getDynamicExtraParameters().add(dynamicExtraParameters);
                     }
                 }.add(new AttributeAppender("class", cssClass, " "))
                         .add(new AttributeAppender("title", title, " ")));

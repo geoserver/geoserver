@@ -27,8 +27,8 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     private WMSStoreNewPage startPage() {
 
-        final WMSStoreNewPage page = new WMSStoreNewPage();
         login();
+        final WMSStoreNewPage page = new WMSStoreNewPage();
         tester.startPage(page);
 
         if (debugMode) {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.geoserver.security.oauth2.GeoServerUserAuthenticationConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -28,7 +29,7 @@ public class GoogleAccessTokenConverter extends DefaultAccessTokenConverter {
 
     public GoogleAccessTokenConverter() {
         final DefaultUserAuthenticationConverter defaultUserAuthConverter =
-                new GoogleUserAuthenticationConverter("email");
+                new GeoServerUserAuthenticationConverter("email");
         setUserTokenConverter(defaultUserAuthConverter);
     }
 

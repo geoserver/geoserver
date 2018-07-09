@@ -7,7 +7,6 @@ package org.geoserver.catalog;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Point;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,7 +17,7 @@ import java.util.List;
 import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.config.GeoServerPersister;
+import org.geoserver.config.GeoServerConfigPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -36,6 +35,7 @@ import org.geotools.styling.PointSymbolizer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -135,7 +135,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         for (CatalogListener listener : catalog.getListeners()) {
             if (listener instanceof ResourcePool.CacheClearingListener) {
                 countCleaner++;
-            } else if (listener instanceof GeoServerPersister) {
+            } else if (listener instanceof GeoServerConfigPersister) {
                 countPersister++;
             }
         }

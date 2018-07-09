@@ -5,8 +5,6 @@
  */
 package org.geoserver.kml.decorator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -16,6 +14,8 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.wms.WMSInfo;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Adds LookAt elements on Document, Folder and Placemark

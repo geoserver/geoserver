@@ -14,6 +14,7 @@ import org.geoserver.catalog.impl.DataLinkInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensionsHelper;
@@ -29,6 +30,7 @@ public class ResponseUtilsTest {
         replay(settings);
 
         GeoServer geoServer = createNiceMock(GeoServer.class);
+        expect(geoServer.getGlobal()).andReturn(new GeoServerInfoImpl());
         expect(geoServer.getSettings()).andReturn(settings).anyTimes();
         replay(geoServer);
 
@@ -52,7 +54,7 @@ public class ResponseUtilsTest {
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
         link.setContent("http://bar.com/geoserver/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/geoserver");
         assertEquals(link.getContent(), url);
     }
 
@@ -62,7 +64,7 @@ public class ResponseUtilsTest {
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
         link.setContent("/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/geoserver");
         assertEquals("http://foo.org/geoserver/metadata.xml?foo=bar", url);
     }
 
@@ -82,7 +84,7 @@ public class ResponseUtilsTest {
         DataLinkInfo link = new DataLinkInfoImpl();
         link.setContent("http://bar.com/geoserver/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/geoserver");
         assertEquals(link.getContent(), url);
     }
 
@@ -92,7 +94,7 @@ public class ResponseUtilsTest {
         DataLinkInfo link = new DataLinkInfoImpl();
         link.setContent("/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/geoserver");
         assertEquals("http://foo.org/geoserver/metadata.xml?foo=bar", url);
     }
 

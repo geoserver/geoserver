@@ -40,6 +40,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Boolean globalServices = true;
 
+    protected Boolean useHeadersProxyURL = false;
+
     protected transient GeoServer geoServer;
 
     protected Integer xmlPostRequestLogBufferSize = 1024;
@@ -217,6 +219,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     public void setGlobalServices(Boolean forceVirtualServices) {
         this.globalServices = forceVirtualServices;
+    }
+
+    public Boolean isUseHeadersProxyURL() {
+        return useHeadersProxyURL == null ? false : useHeadersProxyURL;
+    }
+
+    public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {
+        this.useHeadersProxyURL = useHeadersProxyURL;
     }
 
     public void setXmlPostRequestLogBufferSize(Integer bufferSize) {

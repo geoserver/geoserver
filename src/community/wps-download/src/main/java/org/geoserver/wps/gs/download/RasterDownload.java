@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.gs.download;
 
-import com.vividsolutions.jts.geom.Geometry;
 import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
 import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 import java.awt.Color;
@@ -58,6 +57,7 @@ import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.RasterSymbolizerImpl;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
@@ -588,7 +588,7 @@ class RasterDownload {
 
         AffineTransform envToGrid = mapper.createAffineTransform().createInverse();
         MathTransform mt = ProjectiveTransform.create(envToGrid);
-        com.vividsolutions.jts.geom.Envelope transformedEnvelope =
+        org.locationtech.jts.geom.Envelope transformedEnvelope =
                 JTS.transform(new ReferencedEnvelope(requestedGridGeometry.getEnvelope()), mt);
 
         int minX = (int) transformedEnvelope.getMinX();

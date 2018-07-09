@@ -6,9 +6,6 @@ package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
 import java.io.IOException;
 import java.util.Collections;
 import javax.xml.namespace.QName;
@@ -26,6 +23,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;

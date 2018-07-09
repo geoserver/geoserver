@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 public class LandingPageTest extends WFS3TestSupport {
 
     @Test
-    public void testLandingPageNoSlah() throws Exception {
+    public void testLandingPageNoSlash() throws Exception {
         DocumentContext json = getAsJSONPath("wfs3", 200);
         checkJSONLandingPage(json);
     }
@@ -34,7 +34,7 @@ public class LandingPageTest extends WFS3TestSupport {
     }
 
     private void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(12, (int) json.read("links.length()", Integer.class));
+        assertEquals(14, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -43,6 +43,7 @@ public class LandingPageTest extends WFS3TestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "service",
                 "service",
                 "service");
         // check API links
@@ -59,6 +60,7 @@ public class LandingPageTest extends WFS3TestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*wfs3\\/collections.*/)].rel",
+                "service",
                 "service",
                 "service",
                 "service");
@@ -79,11 +81,25 @@ public class LandingPageTest extends WFS3TestSupport {
     public void testLandingPageXML() throws Exception {
         Document dom = getAsDOM("wfs3/?f=text/xml");
         print(dom);
+        // TODO: add actual tests in here
     }
 
     @Test
     public void testLandingPageYaml() throws Exception {
         String yaml = getAsString("wfs3/?f=application/x-yaml");
         System.out.println(yaml);
+        // TODO: add actual tests in here
+    }
+
+    @Test
+    public void testLandingPageHTML() throws Exception {
+        org.jsoup.nodes.Document document = getAsJSoup("wfs3?f=html");
+        // check a couple of links
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections?f=text%2Fhtml",
+                document.select("#htmlCollectionsLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/api?f=application%2Fjson",
+                document.select("#jsonApiLink").attr("href"));
     }
 }

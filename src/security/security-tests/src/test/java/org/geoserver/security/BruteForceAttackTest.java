@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
     private static final String HELLO_GET_REQUEST =
-            "ows?service=hello&request=hello&message=Hello%20World";
+            "ows?service=hello&request=hello&message=Hello_World";
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {

@@ -5,6 +5,7 @@
 package org.geoserver.importer.rest;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Arrays;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -19,7 +20,8 @@ public class PostScriptTransformTest extends TransformTestSupport {
     protected void setUp() throws Exception {
         super.setUp();
 
-        dd = new GeoServerDataDirectory(FileUtils.getTempDirectory());
+        File tempDirectory = Files.createTempDirectory("postScriptTest").toFile();
+        dd = new GeoServerDataDirectory(tempDirectory);
         GeoServerExtensionsHelper.singleton("dataDirectory", dd, GeoServerDataDirectory.class);
 
         // write out a simple shell script in the data dir and make it executable

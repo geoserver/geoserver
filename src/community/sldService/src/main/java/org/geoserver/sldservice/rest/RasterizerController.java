@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
@@ -30,10 +30,12 @@ import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory2;
@@ -53,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
-public class RasterizerController extends AbstractCatalogController {
+public class RasterizerController extends BaseSLDServiceController {
     private static final Logger LOGGER = Logging.getLogger(RasterizerController.class);
 
     public enum COLORRAMP_TYPE {
@@ -162,8 +164,21 @@ public class RasterizerController extends AbstractCatalogController {
                 } catch (Exception e) {
                     throw new InvalidSymbolizer();
                 }
-
-                return wrapObject(rasterized, Style.class);
+                StyledLayerDescriptor sld = SF.createStyledLayerDescriptor();
+                NamedLayer namedLayer = SF.createNamedLayer();
+                namedLayer.setName(layerName);
+                namedLayer.addStyle(rasterized);
+                sld.addStyledLayer(namedLayer);
+                try {
+                    return sldAsString(sld);
+                } catch (TransformerException e) {
+                    if (LOGGER.isLoggable(Level.FINE))
+                        LOGGER.log(
+                                Level.FINE,
+                                "Exception occurred while transforming the style "
+                                        + e.getLocalizedMessage(),
+                                e);
+                }
             }
         }
 

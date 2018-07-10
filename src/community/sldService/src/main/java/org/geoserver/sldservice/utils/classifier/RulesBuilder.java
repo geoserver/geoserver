@@ -277,7 +277,7 @@ public class RulesBuilder {
                         sb.createMark(
                                 StyleBuilder.MARK_CIRCLE,
                                 sb.createFill(color),
-                                includeStrokeForPoints
+                                includeStrokeForPoints && strokeWeight >= 0
                                         ? sb.createStroke(strokeColor, strokeWeight)
                                         : null);
                 rule.setSymbolizers(

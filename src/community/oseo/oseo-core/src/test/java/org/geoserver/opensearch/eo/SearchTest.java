@@ -84,7 +84,7 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                        equalTo("89.0 -179.0 89.0 179.0 -89.0 179.0 -89.0 -179.0 89.0 -179.0")));
+                        equalTo("89 -179 89 179 -89 179 -89 -179 89 -179")));
         assertThat(
                 dom,
                 hasXPath("/at:feed/at:entry[1]/georss:box", equalTo("-89.0 -179.0 89.0 179.0")));

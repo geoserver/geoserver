@@ -204,4 +204,18 @@ public interface WMSInfo extends ServiceInfo {
     default void setMaxRequestedDimensionValues(int maxRequestedDimensionValues) {
         // if not implemented nothing is done
     }
+
+    /**
+     * Returns WMS cache configuration for remote resources.
+     *
+     * @return
+     */
+    CacheConfiguration getCacheConfiguration();
+
+    /**
+     * Set current WMS cache configuration for remote resources.
+     *
+     * @return
+     */
+    void setCacheConfiguration(CacheConfiguration cacheCfg);
 }

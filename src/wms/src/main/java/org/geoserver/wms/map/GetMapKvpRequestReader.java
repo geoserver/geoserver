@@ -23,6 +23,17 @@ import java.util.logging.Level;
 import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.EnumerationUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.cache.CacheResponseStatus;
+import org.apache.http.client.cache.HttpCacheContext;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -39,6 +50,7 @@ import org.geoserver.ows.LocalHttpServletRequest;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.wms.CacheConfiguration;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -96,6 +108,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     /** EntityResolver provider, used in SLD parsing */
     EntityResolverProvider entityResolverProvider;
 
+    /** HTTP client used to fetch remote styles * */
+    CloseableHttpClient httpClient;
     /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
@@ -103,9 +117,35 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private boolean laxStyleMatchAllowed = true;
 
     public GetMapKvpRequestReader(WMS wms) {
+        this(wms, null);
+    }
+
+    public GetMapKvpRequestReader(WMS wms, HttpClientConnectionManager manager) {
         super(GetMapRequest.class);
         this.wms = wms;
         this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
+
+        // configure the http client used to fetch remote styles
+        RequestConfig requestConfig = RequestConfig.custom().build();
+
+        CacheConfiguration cacheCfg = wms.getRemoteResourcesCacheConfiguration();
+        if (cacheCfg != null && cacheCfg.isEnabled()) {
+            CacheConfig cacheConfig =
+                    CacheConfig.custom()
+                            .setMaxCacheEntries(cacheCfg.getMaxEntries())
+                            .setMaxObjectSize(cacheCfg.getMaxEntrySize())
+                            .build();
+
+            this.httpClient =
+                    CachingHttpClientBuilder.create()
+                            .setCacheConfig(cacheConfig)
+                            .setConnectionManager(manager)
+                            .setDefaultRequestConfig(requestConfig)
+                            .build();
+        } else {
+            this.httpClient =
+                    HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+        }
     }
 
     /**
@@ -325,51 +365,110 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             URL styleUrl = getMap.getStyleUrl();
 
-            if (getMap.getValidateSchema().booleanValue()) {
-                InputStream input = Requests.getInputStream(styleUrl);
-                List errors = null;
-
+            InputStream input = null;
+            if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
+                HttpCacheContext cacheContext = HttpCacheContext.create();
+                CloseableHttpResponse response = null;
                 try {
-                    errors = validateStyle(input, getMap);
-                } finally {
+                    HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
+                    response = httpClient.execute(httpget, cacheContext);
+
+                    if (cacheContext != null) {
+                        CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
+                        if (responseStatus != null) {
+                            switch (responseStatus) {
+                                case CACHE_HIT:
+                                    if (LOGGER.isLoggable(Level.FINE)) {
+                                        LOGGER.fine(
+                                                "A response was generated from the cache with "
+                                                        + "no requests sent upstream");
+                                    }
+                                    break;
+                                case CACHE_MODULE_RESPONSE:
+                                    if (LOGGER.isLoggable(Level.FINE)) {
+                                        LOGGER.fine(
+                                                "The response was generated directly by the "
+                                                        + "caching module");
+                                    }
+                                    break;
+                                case CACHE_MISS:
+                                    if (LOGGER.isLoggable(Level.FINE)) {
+                                        LOGGER.fine("The response came from an upstream server");
+                                    }
+                                    break;
+                                case VALIDATED:
+                                    if (LOGGER.isLoggable(Level.FINE)) {
+                                        LOGGER.fine(
+                                                "The response was generated from the cache "
+                                                        + "after validating the entry with the origin server");
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    input = response.getEntity().getContent();
+                    ByteArrayInputStream styleData =
+                            new ByteArrayInputStream(IOUtils.toByteArray(input));
                     input.close();
+                    input = styleData;
+                    input.reset();
+                } catch (Exception ex) {
+                    LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
+                    // KMS: Replace with a generic exception so it can't be used to port scan the
+                    // local
+                    // network.
+                    throw new ServiceException("Error while getting SLD.");
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
 
-                if ((errors != null) && (errors.size() != 0)) {
+            } else {
+                try {
                     input = Requests.getInputStream(styleUrl);
-
-                    try {
-                        throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
-                    } finally {
-                        input.close();
-                    }
-                }
-            }
-
-            // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
-            // to do compression
-            try (InputStream input = Requests.getInputStream(styleUrl); ) {
-                StyledLayerDescriptor sld = parseStyle(getMap, input);
-                processSld(getMap, requestedLayerInfos, sld, styleNameList);
-            } catch (Exception ex) {
-                final Level l = Level.WARNING;
-                // KMS: Kludge here to allow through certain exceptions without being hidden.
-                if (ex.getCause() instanceof SAXException) {
-                    if (ex.getCause().getMessage().contains("Entity resolution disallowed")) {
-                        throw ex;
-                    }
-                }
-                LOGGER.log(l, "Exception while getting SLD.", ex);
-                // KMS: Replace with a generic exception so it can't be used to port scan the local
-                // network.
-                if (LOGGER.isLoggable(l)) {
-                    throw new ServiceException(
-                            "Error while getting SLD.  See the log for details.");
-                } else {
+                } catch (Exception ex) {
+                    LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
+                    // KMS: Replace with a generic exception so it can't be used to port scan the
+                    // local
+                    // network.
                     throw new ServiceException("Error while getting SLD.");
                 }
             }
+            if (input != null) {
+                try {
 
+                    if (getMap.getValidateSchema().booleanValue()) {
+                        List errors = validateStyle(input, getMap);
+                        if ((errors != null) && (errors.size() != 0)) {
+                            throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
+                        }
+                    }
+
+                    StyledLayerDescriptor sld = parseStyle(getMap, input);
+                    processSld(getMap, requestedLayerInfos, sld, styleNameList);
+                } catch (Exception ex) {
+                    final Level l = Level.WARNING;
+                    // KMS: Kludge here to allow through certain exceptions without being hidden.
+                    if (ex.getCause() instanceof SAXException) {
+                        if (ex.getCause().getMessage().contains("Entity resolution disallowed")) {
+                            throw ex;
+                        }
+                    }
+                    LOGGER.log(l, "Exception while getting SLD.", ex);
+                    // KMS: Replace with a generic exception so it can't be used to port scan the
+                    // local
+                    // network.
+                    if (LOGGER.isLoggable(l)) {
+                        throw new ServiceException(
+                                "Error while getting SLD.  See the log for details.");
+                    } else {
+                        throw new ServiceException("Error while getting SLD.");
+                    }
+                } finally {
+                    input.close();
+                }
+            }
             // set filter in, we'll check consistency later
             getMap.setFilter(filters);
             getMap.setSortBy(sortBy);

@@ -144,6 +144,8 @@ public class WMS implements ApplicationContextAware {
 
     public static final String FEATURES_REPROJECTION_DISABLED = "featuresReprojectionDisabled";
 
+    public static final String CACHE_REMOTE_STYLES = "cacheRemoteStyles";
+
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -401,6 +403,19 @@ public class WMS implements ApplicationContextAware {
     public String getGlobalWatermarkingURL() {
         WatermarkInfo watermark = getServiceInfo().getWatermark();
         return watermark.getURL();
+    }
+
+    public boolean isRemoteStylesCacheEnabled() {
+        CacheConfiguration cache = getServiceInfo().getCacheConfiguration();
+        return cache != null && cache.isEnabled() ? true : false;
+    }
+
+    public CacheConfiguration getRemoteResourcesCacheConfiguration() {
+        return getServiceInfo().getCacheConfiguration();
+    }
+
+    public void setRemoteResourcesCacheConfiguration(CacheConfiguration cacheCfg) {
+        getServiceInfo().setCacheConfiguration(cacheCfg);
     }
 
     public FeatureTypeInfo getFeatureTypeInfo(final Name name) {

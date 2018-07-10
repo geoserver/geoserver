@@ -190,4 +190,14 @@ public class WMSTest extends WMSTestSupport {
         getGeoServer().reload();
         assertEquals(0, imageCache.size());
     }
+
+    @Test
+    public void testCacheConfiguration() {
+        assertFalse(wms.isRemoteStylesCacheEnabled());
+
+        WMSInfo info = wms.getServiceInfo();
+        info.setCacheConfiguration(new CacheConfiguration(true));
+        getGeoServer().save(info);
+        assertTrue(wms.isRemoteStylesCacheEnabled());
+    }
 }

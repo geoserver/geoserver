@@ -349,12 +349,19 @@ public class ProductsController extends AbstractOpenSearchController {
         // check the product exists
         queryProduct(collection, product, q -> {});
 
+        runTransactionOnProductStore(fs -> updateProductInternal(collection, product, feature, fs));
+    }
+
+    private void updateProductInternal(
+            String collection, String product, SimpleFeature feature, FeatureStore fs)
+            throws IOException {
         // prepare the update, need to convert each field into a Name/Value couple
         Feature productFeature = simpleToComplex(feature, getProductSchema(), PRODUCT_HREFS);
         List<Name> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Property p : productFeature.getProperties()) {
-            // skip over the large/complex attributes that are being modified via separate calls
+            // skip over the large/complex attributes that are being modified via
+            // separate calls
             final Name propertyName = p.getName();
             if (OpenSearchAccess.METADATA_PROPERTY_NAME.equals(propertyName)
                     || OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(propertyName)
@@ -367,8 +374,8 @@ public class ProductsController extends AbstractOpenSearchController {
         Name[] attributeNames = (Name[]) names.toArray(new Name[names.size()]);
         Object[] attributeValues = (Object[]) values.toArray();
         Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> fs.modifyFeatures(attributeNames, attributeValues, filter));
+
+        fs.modifyFeatures(attributeNames, attributeValues, filter);
     }
 
     @DeleteMapping(path = "{product:.+}")
@@ -745,5 +752,110 @@ public class ProductsController extends AbstractOpenSearchController {
         final FeatureSource<FeatureType, Feature> productSource = access.getProductSource();
         final FeatureType schema = productSource.getSchema();
         return schema;
+    }
+
+    @PutMapping(path = "{product:.+}", consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
+    public void putProductZip(
+            @PathVariable(name = "collection", required = true) String collection,
+            @PathVariable(name = "product", required = true) String product,
+            HttpServletRequest request,
+            InputStream body)
+            throws IOException, URISyntaxException {
+        // check the collection and product actually exist
+        queryCollection(collection, q -> {});
+        queryProduct(collection, product, q -> {});
+
+        // grab and process the parts
+        Map<ProductPart, byte[]> parts = parsePartsFromZip(body, ProductPart.values());
+
+        // process the product part
+        final byte[] productPayload = parts.get(ProductPart.Product);
+        SimpleFeature jsonFeature;
+        if (productPayload != null) {
+            jsonFeature = parseGeoJSONFeature("product.json", productPayload);
+            // get the JSON and check consistency
+            String jsonProductId = (String) jsonFeature.getAttribute("eop:identifier");
+            String jsonParentId = (String) jsonFeature.getAttribute("eop:parentIdentifier");
+            if (!collection.equals(jsonParentId)) {
+                throw new RestException(
+                        "product.json file refers to parentId "
+                                + jsonParentId
+                                + " but the HTTP resource refers to "
+                                + collection,
+                        HttpStatus.BAD_REQUEST);
+            }
+            if (!product.equals(jsonProductId)) {
+                throw new RestException(
+                        "product.json file refers to product "
+                                + jsonProductId
+                                + " but the HTTP resource refers to "
+                                + product,
+                        HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            jsonFeature = null;
+        }
+
+        // grab the other parts
+        byte[] description = parts.get(ProductPart.Description);
+        byte[] metadata = parts.get(ProductPart.Metadata);
+        byte[] thumbnail = parts.get(ProductPart.Thumbnail);
+        byte[] rawLinks = parts.get(ProductPart.OwsLinks);
+        SimpleFeatureCollection linksCollection;
+        if (rawLinks != null) {
+            OgcLinks links = parseJSON(OgcLinks.class, rawLinks);
+            linksCollection = beansToLinksCollection(links);
+        } else {
+            linksCollection = null;
+        }
+        byte[] rawGranules = parts.get(ProductPart.Granules);
+        SimpleFeatureCollection granulesCollection;
+        if (rawGranules != null) {
+            granulesCollection = parseGeoJSONFeatureCollection("granules.json", rawGranules);
+        } else {
+            granulesCollection = null;
+        }
+
+        // update the feature and accessory bits
+        runTransactionOnProductStore(
+                fs -> {
+                    if (jsonFeature != null) {
+                        updateProductInternal(collection, product, jsonFeature, fs);
+                    }
+
+                    final String nsURI = fs.getSchema().getName().getNamespaceURI();
+                    Filter filter = getProductFilter(collection, product);
+
+                    if (description != null) {
+                        String descriptionString = new String(description);
+                        fs.modifyFeatures(
+                                new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
+                                descriptionString,
+                                filter);
+                    }
+
+                    if (metadata != null) {
+                        String descriptionString = new String(metadata);
+                        fs.modifyFeatures(
+                                OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString, filter);
+                    }
+
+                    if (linksCollection != null) {
+                        fs.modifyFeatures(
+                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+                    }
+
+                    if (thumbnail != null) {
+                        fs.modifyFeatures(
+                                OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
+                    }
+
+                    if (granulesCollection != null) {
+                        fs.modifyFeatures(
+                                new NameImpl(nsURI, OpenSearchAccess.GRANULES),
+                                granulesCollection,
+                                filter);
+                    }
+                });
     }
 }

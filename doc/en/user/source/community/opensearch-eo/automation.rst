@@ -58,7 +58,7 @@ A collection.zip, sent as a PUT request to ``rest/collections`` would contain th
 Product components
 ``````````````````
 
-A product.zip, sent as a PUT request to ``rest/collections/<theCollection>/products`` would contain the following files:
+A product.zip, sent as a POST request to ``rest/collections/<theCollection>/products`` would contain the following files:
 
 .. list-table::
    :widths: 10 10 80
@@ -90,6 +90,11 @@ A product.zip, sent as a PUT request to ``rest/collections/<theCollection>/produ
        and eventual band name, for products splitting bands in different files.
        Could be a single file, a list of files split by area, or a list of files representing the
        various bands of a multispectral product.
+
+It is also possible to send the zip file on the ``rest/collections/<theCollection>/products/<theProduct>``
+resource as a PUT request, it will update an existing product by replacing the parts contained
+in the file. Parts missing from the file will be kept unchanged, to remove them run an explicit
+DELETE request on their respective REST resources.
 
 Template variable expansion
 ---------------------------

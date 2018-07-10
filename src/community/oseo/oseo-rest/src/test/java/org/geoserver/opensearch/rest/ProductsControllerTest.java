@@ -4,25 +4,38 @@
  */
 package org.geoserver.opensearch.rest;
 
+import static java.util.Arrays.asList;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.EOP_GENERIC;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Description;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Granules;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Metadata;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.OwsLinks;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Product;
+import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Thumbnail;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 import com.vividsolutions.jts.geom.Envelope;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.imageio.ImageIO;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
@@ -35,13 +48,19 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.test.ImageAssert;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ProductsControllerTest extends OSEORestTestSupport {
+
+    public static final String PRODUCT_CREATE_UPDATE_ID =
+            "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04";
 
     @Override
     protected boolean populateGranulesTable() {
@@ -68,8 +87,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                                 true),
                         FF.equal(
                                 FF.property(new NameImpl(EOP_GENERIC.getPrefix(), "identifier")),
-                                FF.literal(
-                                        "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04"),
+                                FF.literal(PRODUCT_CREATE_UPDATE_ID),
                                 true)));
     }
 
@@ -178,26 +196,26 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                        + PRODUCT_CREATE_UPDATE_ID,
                 response.getHeader("location"));
 
         // check it's really there
-        assertProductCreated();
+        assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
     }
 
-    private void assertProductCreated() throws Exception {
+    private void assertProduct(String timeStart, String timeEnd) throws Exception {
         DocumentContext json =
                 getAsJSONPath(
-                        "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                        "/rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
                         200);
-        assertEquals(
-                "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
-                json.read("$.id"));
+        assertEquals(PRODUCT_CREATE_UPDATE_ID, json.read("$.id"));
         assertEquals("Feature", json.read("$.type"));
         assertEquals("SENTINEL2", json.read("$.properties['eop:parentIdentifier']"));
         assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
         assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
-        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        assertEquals(timeStart, json.read("$.properties['timeStart']"));
+        assertEquals(timeEnd, json.read("$.properties['timeEnd']"));
         assertEquals("EPSG:32632", json.read("$.properties['crs']"));
 
         SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
@@ -215,14 +233,16 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                        + PRODUCT_CREATE_UPDATE_ID,
                 response.getHeader("location"));
 
         // grab the JSON to modify some bits
         JSONObject feature =
                 (JSONObject)
                         getAsJSON(
-                                "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04");
+                                "rest/oseo/collections/SENTINEL2/products/"
+                                        + PRODUCT_CREATE_UPDATE_ID);
         JSONObject properties = feature.getJSONObject("properties");
         properties.element("eop:orbitNumber", 66);
         properties.element("timeStart", "2017-01-01T00:00:00Z");
@@ -230,7 +250,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // send it back
         response =
                 putAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
                         feature.toString(),
                         "application/json");
         assertEquals(200, response.getStatus());
@@ -238,7 +258,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // check the changes
         DocumentContext json =
                 getAsJSONPath(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
                         200);
         assertEquals(Integer.valueOf(66), json.read("$.properties['eop:orbitNumber']"));
         assertEquals("2017-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
@@ -254,24 +274,23 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
+                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                        + PRODUCT_CREATE_UPDATE_ID,
                 response.getHeader("location"));
 
         // it's there
-        getAsJSONPath(
-                "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
-                200);
+        getAsJSONPath("rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID, 200);
 
         // and now kill the poor beast
         response =
                 deleteAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04");
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID);
         assertEquals(200, response.getStatus());
 
         // no more there
         response =
                 getAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04");
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID);
         assertEquals(404, response.getStatus());
     }
 
@@ -305,10 +324,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // check they are there
-        assertProductLinks();
+        assertProductLinks("application/xml");
     }
 
-    private void assertProductLinks() throws Exception {
+    private void assertProductLinks(String firstLinkType) throws Exception {
         DocumentContext json =
                 getAsJSONPath(
                         "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ogcLinks",
@@ -318,7 +337,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));
-        assertEquals("application/xml", json.read("$.links[0].type"));
+        assertEquals(firstLinkType, json.read("$.links[0].type"));
         assertEquals(
                 "${BASE_URL}/SENTINEL2/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
@@ -369,10 +388,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
-        assertProductMetadata();
+        assertProductMetadata("<eop:orbitType>LEO</eop:orbitType>");
     }
 
-    private void assertProductMetadata() throws Exception, UnsupportedEncodingException {
+    private void assertProductMetadata(String testContainsContent)
+            throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response;
         response =
                 getAsServletResponse(
@@ -382,9 +402,8 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertThat(
                 response.getContentAsString(),
                 both(containsString("opt:EarthObservation"))
-                        .and(
-                                containsString(
-                                        "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04")));
+                        .and(containsString(PRODUCT_CREATE_UPDATE_ID)));
+        assertThat(response.getContentAsString(), containsString(testContainsContent));
     }
 
     @Test
@@ -433,10 +452,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
-        assertProductDescription();
+        assertProductDescription("2016-09-29T10:20:22.026Z / 2016-09-29T10:23:44.107Z");
     }
 
-    private void assertProductDescription() throws Exception, UnsupportedEncodingException {
+    private void assertProductDescription(String expectedDateRange)
+            throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response;
         response =
                 getAsServletResponse(
@@ -445,10 +465,8 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("text/html", response.getContentType());
         assertThat(
                 response.getContentAsString(),
-                both(containsString("<table"))
-                        .and(
-                                containsString(
-                                        "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04")));
+                both(containsString("<table")).and(containsString(PRODUCT_CREATE_UPDATE_ID)));
+        assertThat(response.getContentAsString(), containsString(expectedDateRange));
     }
 
     @Test
@@ -502,13 +520,18 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         // grab and check
-        assertProductThumbnail();
+        assertProductThumbnail("./src/test/resources/product-thumb.jpeg");
     }
 
-    private void assertProductThumbnail() throws Exception {
-        getAsImage(
-                "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/thumbnail",
-                "image/jpeg");
+    private void assertProductThumbnail(String expectedImagePath) throws Exception {
+        BufferedImage actual =
+                getAsImage(
+                        "rest/oseo/collections/SENTINEL2/products"
+                                + "/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04"
+                                + "/thumbnail",
+                        "image/jpeg");
+        BufferedImage expected = ImageIO.read(new File(expectedImagePath));
+        ImageAssert.assertEquals(actual, expected, 0);
     }
 
     @Test
@@ -554,7 +577,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(200, response.getStatus());
 
-        assertProductGranules();
+        assertProductGranules("/efs/geoserver_data/coverages/sentinel/california/R1C1.tif");
     }
 
     @Test
@@ -569,7 +592,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(200, response.getStatus());
 
-        assertProductGranules();
+        assertProductGranules("/efs/geoserver_data/coverages/sentinel/california/R1C1.tif");
         DocumentContext json =
                 getAsJSONPath(
                         "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/granules",
@@ -578,7 +601,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("B2", json.read("$.features[1].properties.band"));
     }
 
-    private void assertProductGranules() throws Exception {
+    private void assertProductGranules(String firstGranulePath) throws Exception {
         // grab and check
         DocumentContext json =
                 getAsJSONPath(
@@ -588,9 +611,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(new Integer(2), json.read("$.features.length()"));
         assertEquals("Feature", json.read("$.features[0].type"));
         assertEquals("Polygon", json.read("$.features[0].geometry.type"));
-        assertEquals(
-                "/efs/geoserver_data/coverages/sentinel/california/R1C1.tif",
-                json.read("$.features[0].properties.location"));
+        assertEquals(firstGranulePath, json.read("$.features[0].properties.location"));
         assertEquals("Feature", json.read("$.features[1].type"));
         assertEquals("Polygon", json.read("$.features[1].geometry.type"));
         assertEquals(
@@ -648,16 +669,10 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     @Test
     public void testCreateProductAsZip() throws Exception {
         // build all possible combinations of elements in the zip and check they all work
-        Set<Set<ProductPart>> sets =
-                Sets.powerSet(
-                        new HashSet<>(
-                                Arrays.asList(
-                                        ProductPart.Product,
-                                        ProductPart.Description,
-                                        ProductPart.Metadata,
-                                        ProductPart.Thumbnail,
-                                        ProductPart.OwsLinks,
-                                        ProductPart.Granules)));
+        HashSet<ProductPart> allProducts =
+                new HashSet<>(
+                        asList(Product, Description, Metadata, Thumbnail, OwsLinks, Granules));
+        Set<Set<ProductPart>> sets = Sets.powerSet(allProducts);
 
         for (Set<ProductPart> parts : sets) {
             if (parts.isEmpty()) {
@@ -672,9 +687,43 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     private void testCreateProductAsZip(Set<ProductPart> parts) throws Exception {
         LOGGER.info("Testing: " + parts);
-        byte[] zip = null;
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ZipOutputStream zos = new ZipOutputStream(bos)) {
+        MockHttpServletResponse response = createProductAsZip(parts);
+        if (parts.contains(Product)) {
+            assertEquals(201, response.getStatus());
+            assertEquals(
+                    "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                            + PRODUCT_CREATE_UPDATE_ID,
+                    response.getHeader("location"));
+
+            assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
+        } else {
+            assertEquals(400, response.getStatus());
+            assertThat(response.getContentAsString(), containsString("product.json"));
+            // failed, nothing else to check
+            return;
+        }
+
+        if (parts.contains(Description)) {
+            assertProductDescription("2016-09-29T10:20:22.026Z / 2016-09-29T10:23:44.107Z");
+        }
+        if (parts.contains(Metadata)) {
+            assertProductMetadata("<eop:orbitType>LEO</eop:orbitType>");
+        }
+        if (parts.contains(Thumbnail)) {
+            assertProductThumbnail("./src/test/resources/product-thumb.jpeg");
+        }
+        if (parts.contains(OwsLinks)) {
+            assertProductLinks("application/xml");
+        }
+        if (parts.contains(Granules)) {
+            assertProductGranules("/efs/geoserver_data/coverages/sentinel/california/R1C1.tif");
+        }
+    }
+
+    private MockHttpServletResponse createProductAsZip(Set<ProductPart> parts) throws Exception {
+        byte[] zip;
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(bos)) {
             for (ProductPart part : parts) {
                 String resource, name;
                 switch (part) {
@@ -708,46 +757,147 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
                 ZipEntry entry = new ZipEntry(name);
                 zos.putNextEntry(entry);
-                IOUtils.copy(getClass().getResourceAsStream(resource), zos);
-                zos.flush();
+                try (InputStream is = getClass().getResourceAsStream(resource)) {
+                    int copy = IOUtils.copy(is, zos);
+                    assertThat(copy, Matchers.greaterThan(0));
+                }
                 zos.closeEntry();
             }
-            zip = bos.toByteArray();
         }
+        zip = bos.toByteArray();
+
+        return postAsServletResponse(
+                "rest/oseo/collections/SENTINEL2/products",
+                zip,
+                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+    }
+
+    private MockHttpServletResponse putProductAsZip(Collection<ProductPart> parts)
+            throws Exception {
+        byte[] zip = buildZip(parts);
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products",
+                putAsServletResponse(
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
                         zip,
                         MediaTypeExtensions.APPLICATION_ZIP_VALUE);
-        if (parts.contains(ProductPart.Product)) {
-            assertEquals(201, response.getStatus());
-            assertEquals(
-                    "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04",
-                    response.getHeader("location"));
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        return response;
+    }
 
-            assertProductCreated();
-        } else {
-            assertEquals(400, response.getStatus());
-            assertThat(response.getContentAsString(), containsString("product.json"));
-            // failed, nothing else to check
-            return;
-        }
+    private byte[] buildZip(Collection<ProductPart> parts) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(bos)) {
+            for (ProductPart part : parts) {
+                String resource, name;
+                switch (part) {
+                    case Product:
+                        resource = "/product-updated.json";
+                        name = "product.json";
+                        break;
+                    case Description:
+                        resource = "/product-description-updated.html";
+                        name = "description.html";
+                        break;
+                    case Metadata:
+                        resource = "/product-metadata-updated.xml";
+                        name = "metadata.xml";
+                        break;
+                    case Thumbnail:
+                        resource = "/product-thumb-updated.jpeg";
+                        name = "thumbnail.jpeg";
+                        break;
+                    case OwsLinks:
+                        resource = "/product-links-updated.json";
+                        name = "owsLinks.json";
+                        break;
+                    case Granules:
+                        resource = "/product-granules-updated.json";
+                        name = "granules.json";
+                        break;
+                    default:
+                        throw new RuntimeException("Unexpected part " + part);
+                }
 
-        if (parts.contains(ProductPart.Description)) {
-            assertProductDescription();
+                ZipEntry entry = new ZipEntry(name);
+                zos.putNextEntry(entry);
+                InputStream stream = getClass().getResourceAsStream(resource);
+                assertNotNull("Could not find " + resource, stream);
+                int copied = IOUtils.copy(stream, zos);
+                assertThat(copied, Matchers.greaterThan(0));
+                zos.closeEntry();
+                zos.flush();
+            }
         }
-        if (parts.contains(ProductPart.Metadata)) {
-            assertProductMetadata();
+        return bos.toByteArray();
+    }
+
+    private void testUpdateProductAsZip(Collection<ProductPart> parts) throws Exception {
+        LOGGER.info("Testing: " + parts);
+        MockHttpServletResponse response = putProductAsZip(parts);
+        assertEquals(200, response.getStatus());
+
+        if (parts.contains(Product)) {
+            assertProduct("2018-05-01T00:00:00.000+0000", "2018-05-01T00:00:00.000+0000");
         }
-        if (parts.contains(ProductPart.Thumbnail)) {
-            assertProductThumbnail();
+        if (parts.contains(Description)) {
+            assertProductDescription("2016-11-29T10:20:22.026Z / 2016-11-29T10:23:44.107Z");
         }
-        if (parts.contains(ProductPart.OwsLinks)) {
-            assertProductLinks();
+        if (parts.contains(Metadata)) {
+            assertProductMetadata("<eop:orbitType>GEO</eop:orbitType>");
         }
-        if (parts.contains(ProductPart.Granules)) {
-            assertProductGranules();
+        if (parts.contains(Thumbnail)) {
+            assertProductThumbnail("./src/test/resources/product-thumb-updated.jpeg");
+        }
+        if (parts.contains(OwsLinks)) {
+            assertProductLinks("text/xml");
+        }
+        if (parts.contains(Granules)) {
+            assertProductGranules("/var/geoserver_data/coverages/sentinel/california/R1C1.tif");
+        }
+    }
+
+    @Test
+    public void testUpdateProductAsZipFromFullProduct() throws Exception {
+        // prepare a full initial product
+        Set<ProductPart> allProductParts =
+                new LinkedHashSet<>(
+                        asList(Product, Description, Metadata, Thumbnail, OwsLinks, Granules));
+        cleanupTestProduct();
+        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
+
+        // update one items at a time
+        for (ProductPart part : allProductParts) {
+            testUpdateProductAsZip(asList(part));
+        }
+    }
+
+    @Test
+    public void testUpdateAllProductPartsAsZipFromFullProduct() throws Exception {
+        // prepare a full initial product
+        Set<ProductPart> allProductParts =
+                new LinkedHashSet<>(
+                        asList(Product, Description, Metadata, Thumbnail, OwsLinks, Granules));
+        cleanupTestProduct();
+        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
+
+        // update all in one shot
+        testUpdateProductAsZip(allProductParts);
+    }
+
+    @Test
+    public void testUpdateProductAsZipFromBasicProduct() throws Exception {
+        // prepare a basic initial product
+        Set<ProductPart> initialProduct = new HashSet<>(asList(Product));
+        cleanupTestProduct();
+        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(initialProduct).getStatus());
+
+        // update/add one item at a time
+        Set<ProductPart> allProductParts =
+                new LinkedHashSet<>(
+                        asList(Product, Description, Metadata, Thumbnail, OwsLinks, Granules));
+        for (ProductPart part : allProductParts) {
+            testUpdateProductAsZip(asList(part));
         }
     }
 }

@@ -18,7 +18,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -31,12 +33,14 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,8 +83,18 @@ public class ListAttributesController extends AbstractCatalogController {
             MediaType.TEXT_HTML_VALUE
         }
     )
-    public Object attributes(@PathVariable String layerName) {
+    public Object attributes(
+            @PathVariable String layerName,
+            @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
+            final HttpServletResponse response) {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
+        if (cachingTime > 0) {
+            response.setHeader(
+                    "cache-control",
+                    CacheControl.maxAge(cachingTime, TimeUnit.SECONDS)
+                            .cachePublic()
+                            .getHeaderValue());
+        }
         if (layerInfo == null) {
             return wrapObject(new ArrayList(), ArrayList.class);
         }

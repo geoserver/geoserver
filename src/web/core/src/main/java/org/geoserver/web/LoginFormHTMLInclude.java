@@ -16,6 +16,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.include.Include;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
@@ -34,7 +35,7 @@ public class LoginFormHTMLInclude extends Include {
 
     static {
         // initialize the template engine, this is static to maintain a cache
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
     }
 
     private PackageResourceReference resourceReference;

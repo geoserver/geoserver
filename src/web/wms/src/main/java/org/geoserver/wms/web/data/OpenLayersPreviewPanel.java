@@ -45,6 +45,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
@@ -64,7 +65,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     static final Configuration templates;
 
     static {
-        templates = new Configuration();
+        templates = TemplateUtils.getSafeConfiguration();
         templates.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
         templates.setObjectWrapper(new DefaultObjectWrapper());
     }

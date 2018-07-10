@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.remote.plugin.output;
 
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,6 +36,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.process.StringRawData;
@@ -537,7 +537,10 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 // process the template and stream out the result
                 content = FileUtils.readFileToString(new File(wmcTemplatePath));
                 Template template =
-                        new Template("name", new StringReader(content), new Configuration());
+                        new Template(
+                                "name",
+                                new StringReader(content),
+                                TemplateUtils.getSafeConfiguration());
 
                 template.setOutputEncoding("UTF-8");
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();

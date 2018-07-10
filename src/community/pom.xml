@@ -93,6 +93,7 @@
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
           <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+          <descriptor>release/ext-qos.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -202,6 +203,12 @@
       </modules>
     </profile>
     <profile>
+      <id>qos</id>
+      <modules>
+		<module>qos</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
@@ -261,6 +268,7 @@
         <module>taskmanager</module>
         <module>wfs3</module>
         <module>monitor-hibernate</module>
+        <module>qos</module>
       </modules>
     </profile>
     <profile>

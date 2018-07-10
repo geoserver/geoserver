@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div wicket:id="mainDiv" class="qos-panel">
+        
+        <table>
+        	<tr>
+        		<td>
+			        <div wicket:id="layersDiv" class="" >
+			        	<label>Layers</label>
+			        	<ul wicket:id="layersList">
+			        		<li>
+			        			<input type="text" wicket:id="layerName"/>
+			        			<a wicket:id="deleteLayer" class="remove-link"> </a>
+			        		</li>
+			        	</ul>
+			        	<a wicket:id="addLayer" class="add-link">Add...</a>
+			        </div>
+	        	</td>
+	        </tr>
+        </table>
+        <div wicket:id="innerConstraintsDiv">
+	        <div wicket:id="formatsDiv">
+	   			<label>Output Formats</label>
+	   			<select wicket:id="formatsChoice" ></select>
+	   		</div>
+	        <div>
+	        	<label><wicket:message key="bounds">Bounds</wicket:message></label>
+	            <div wicket:id="bounds" class="selfclear"></div>
+	        </div>
+	        
+	        <div>
+	        	<input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"/>
+	         	<input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/> 
+	        </div>
+	        
+	        <div>
+	        	<ul>
+	        		<li>
+	        			<label><wicket:message key="imageMinWidth">Image Min Width</wicket:message></label>
+	        			<input wicket:id="imageMinWidthInput" />
+	        		</li>
+	        		<li>
+	        			<label><wicket:message key="imageMaxWidth">Image Max Width</wicket:message></label>
+	        			<input wicket:id="imageMaxWidthInput" />
+	        		</li>
+	        		<li>
+	        			<label><wicket:message key="imageMinHeight">Image Min Height</wicket:message></label>
+	        			<input wicket:id="imageMinHeightInput" />
+	        		</li>
+	        		<li>
+	        			<label><wicket:message key="imageMaxHeight">Image Max Height</wicket:message></label>
+	        			<input wicket:id="imageMaxHeightInput" />
+	        		</li>
+	        	</ul>
+	        </div>
+	    </div>
+    </div>
+    
+    <div wicket:id="selectLayerModal" ></div>
+ </wicket:panel>

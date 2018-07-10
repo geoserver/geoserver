@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div class="qos-panel">
+        <div wicket:id="div" class="inputForm">
+        	<table>
+	        	<tr>
+		        	<td>
+				        <table>
+				        	<tr>
+					        	<td>
+					        		<label>Metric</label>
+					        		<select wicket:id="metricSelector"></select>
+					        	</td>
+					        	<td>
+					        		<label>Title</label>
+					        		<input type="text" wicket:id="metricTitle"></input>
+					        	</td>
+				        	</tr>
+				        	<tr>
+					        	<td>
+					        		<label>Match type</label>
+					        		<select wicket:id="typeSelector"></select>
+					        	</td>
+					        	<td>
+					        		
+					        	</td>
+				        	</tr>
+				        	<tr>
+					        	<td>
+					        		<div wicket:id="uomDiv">
+					        			<label>Unit of metric</label>
+					        			<select wicket:id="uomSelector"></select>
+					        		</div>
+					        	</td>
+					        	<td>
+					        		<label>Value</label>
+					        		<input wicket:id="valueText"></input>
+					        	</td>
+				        	</tr>
+				        </table>
+			        </td>
+			        <td>
+			        	<a href="#" wicket:id="deleteLink" class="remove-link">Delete</a>
+			        </td>
+	        	</tr>
+	        </table>
+        </div>
+    </div>
+</wicket:panel>

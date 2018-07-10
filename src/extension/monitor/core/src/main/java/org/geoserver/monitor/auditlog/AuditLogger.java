@@ -32,6 +32,7 @@ import org.geoserver.monitor.RequestDataListener;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -71,7 +72,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     public AuditLogger(MonitorConfig config, GeoServerResourceLoader loader) throws IOException {
         this.config = config;
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }
 

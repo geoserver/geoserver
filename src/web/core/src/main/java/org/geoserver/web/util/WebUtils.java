@@ -26,6 +26,7 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
 
@@ -92,7 +93,7 @@ public class WebUtils {
 
             templateName = clazz.getSimpleName() + ".ftl";
 
-            cfg = new Configuration();
+            cfg = TemplateUtils.getSafeConfiguration();
             cfg.setClassForTemplateLoading(clazz, "");
         }
 

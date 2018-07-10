@@ -36,7 +36,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
  *
  * <pre>
  *         <code>
- *  Configuration cfg = new Configuration();
+ *  Configuration cfg = TemplateUtils.getSafeConfiguration();
  *  cfg.setTemplateLoader( new GeoServerTemplateLoader() );
  *  ...
  *  Template template = cfg.getTemplate( "foo.ftl" );

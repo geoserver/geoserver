@@ -6,10 +6,14 @@
 
 package org.geoserver.wms.featureinfo;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +44,11 @@ import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 
@@ -57,6 +64,8 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
 
     private String currentTemplate;
+
+    @Rule public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -152,6 +161,27 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         } finally {
             System.clearProperty("TEST_PROPERTY");
         }
+    }
+
+    @Test
+    public void testExecuteIsBlocked() throws IOException {
+        currentTemplate = "test_execute.ftl";
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+        exception.expect(
+                allOf(
+                        instanceOf(IOException.class),
+                        hasProperty(
+                                "cause",
+                                allOf(
+                                        instanceOf(TemplateException.class),
+                                        hasProperty(
+                                                "message",
+                                                Matchers.containsString(
+                                                        "freemarker.template.utility.Execute"))))));
+
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
     }
 
     /**

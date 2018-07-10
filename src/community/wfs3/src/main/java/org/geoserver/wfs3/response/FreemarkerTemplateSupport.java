@@ -24,10 +24,11 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
+import org.geoserver.template.TemplateUtils;
 
 public class FreemarkerTemplateSupport {
 
-    private static Configuration templateConfig = new Configuration();
+    private static Configuration templateConfig = TemplateUtils.getSafeConfiguration();
 
     private final GeoServerResourceLoader resoureLoader;
     private final GeoServer geoServer;
@@ -38,7 +39,7 @@ public class FreemarkerTemplateSupport {
     static {
         // initialize the template engine, this is static to maintain a cache of templates being
         // loaded
-        templateConfig = new Configuration();
+        templateConfig = TemplateUtils.getSafeConfiguration();
         templateConfig.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
     }
 

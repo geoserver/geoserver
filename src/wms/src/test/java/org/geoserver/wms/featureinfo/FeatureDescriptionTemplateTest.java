@@ -12,6 +12,7 @@ import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import org.geoserver.template.FeatureWrapper;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class FeatureDescriptionTemplateTest {
 
     @Test
     public void testTemplate() throws Exception {
-        Configuration cfg = new Configuration();
+        Configuration cfg = TemplateUtils.getSafeConfiguration();
         cfg.setObjectWrapper(new FeatureWrapper());
         cfg.setClassForTemplateLoading(FeatureTemplate.class, "");
 
@@ -77,7 +78,7 @@ public class FeatureDescriptionTemplateTest {
     }
 
     // public void testFeatureCollection() throws Exception {
-    // Configuration cfg = new Configuration();
+    // Configuration cfg = TemplateUtils.getSafeConfiguration();
     // cfg.setObjectWrapper(new FeatureWrapper());
     // cfg.setClassForTemplateLoading(FeatureDescriptionTemplate.class, "");
     //

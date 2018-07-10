@@ -14,10 +14,10 @@
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>gs-sec-oauth2</artifactId>
+	<artifactId>gs-sec-oauth2-core</artifactId>
 	<packaging>jar</packaging>
 	<version>2.14-SNAPSHOT</version>
-	<name>GeoServer OAuth2 Connect Security Module</name>
+	<name>GeoServer OAuth2 Connect Security Module - Core</name>
 
 	<properties>
 		<spring.security.jwt.version>1.0.2.RELEASE</spring.security.jwt.version>

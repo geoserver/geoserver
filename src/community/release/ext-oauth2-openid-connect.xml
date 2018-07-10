@@ -1,5 +1,5 @@
 <assembly>
-  <id>sec-oauth2-google-plugin</id>
+  <id>sec-oauth2-openid-connect-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -10,7 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-sec-oauth2-core*</include>
-        <include>gs-sec-oauth2-google*</include>
+        <include>gs-sec-oauth2-openid-connect*</include>
         <include>spring-security*</include>
         <include>spring-security-oauth2*</include>
         <include>commons-codec*</include>

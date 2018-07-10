@@ -21,6 +21,7 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.data.test.MockData;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -34,7 +35,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
     @Test
     public void test() throws Exception {
-        Configuration cfg = new Configuration();
+        Configuration cfg = TemplateUtils.getSafeConfiguration();
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         cfg.setObjectWrapper(new BeansWrapper());
 

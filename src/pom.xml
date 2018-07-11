@@ -886,7 +886,7 @@
    <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk15on</artifactId>
-    <version>1.54</version>
+    <version>1.60</version>
    </dependency>
    <dependency>
      <groupId>org.apache.wicket</groupId>

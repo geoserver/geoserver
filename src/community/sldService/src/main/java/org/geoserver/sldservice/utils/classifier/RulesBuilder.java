@@ -52,6 +52,7 @@ public class RulesBuilder {
 
     private double strokeWeight = 1;
     private Color strokeColor = Color.BLACK;
+    private int pointSize = 15;
     private boolean includeStrokeForPoints = false;
 
     public RulesBuilder() {
@@ -68,6 +69,10 @@ public class RulesBuilder {
         if (strokeColor != null) {
             this.strokeColor = strokeColor;
         }
+    }
+
+    public void setPointSize(int pointSize) {
+        this.pointSize = pointSize;
     }
 
     public void setIncludeStrokeForPoints(boolean includeStrokeForPoints) {
@@ -282,7 +287,8 @@ public class RulesBuilder {
                                         : null);
                 rule.setSymbolizers(
                         new Symbolizer[] {
-                            sb.createPointSymbolizer(sb.createGraphic(null, mark, null))
+                            sb.createPointSymbolizer(
+                                    sb.createGraphic(null, mark, null, 1.0, pointSize, 0.0))
                         });
             }
         } catch (Exception e) {

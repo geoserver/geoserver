@@ -166,6 +166,38 @@ The parameters usable to customize the ColorMap are:
      - central color for the custom ramp
      - 
      -
+   * - colors
+     - list of comma delimited colors for the custom ramp (use this instead of startColor, endColor and midColor to specify colors in more detail)
+     - 
+     -
+   * - strokeColor
+     - color of the stroke, for points and polygons
+     - 
+     - BLACK
+   * - strokeWeight
+     - weight of the stroke, for points and polygons (use a negative value to not include stroke in style)
+     - 
+     - 1
+   * - pointSize
+     - size of points
+     - 
+     - 15
+   * - fullSLD
+     - create a full valid SLD document, instead of the Rules fragment only
+     - true or false
+     - false
+   * - cache
+     - append caching headers to the responses
+     - expire time in seconds, use 0 to disable cache
+     - 600 (10 minutes)
+   * - viewparams
+     - allows use of parametric views
+     - view parameters in the usual format (<key>:<value>;...;<keyN>:<valueN>)
+     - 
+   * - customClasses
+     - allows specifying a set of custom classes (client driven style); no classes calculation will happen (method, intervals, etc. are ignored)
+     - classes in the following format: <min>,<max>,<color>;...;<minN>,<maxN>,<colorN>)
+     - 
     
 Examples
 ~~~~~~~~~~
@@ -492,6 +524,10 @@ The parameters usable to customize the ColorMap are:
      - central color for the CUSTOM ramp
      - 
      - 
+   * - cache
+     - append caching headers to the responses
+     - expire time in seconds, use 0 to disable cache
+     - 600 (10 minutes)
 
 Examples
 ~~~~~~~~~~

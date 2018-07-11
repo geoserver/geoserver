@@ -1307,7 +1307,8 @@ public class WCSDimensionsSubsetHelper {
                     final String startAttrib = dimensionDescriptor.getStartAttribute();
                     final String endAttrib = dimensionDescriptor.getEndAttribute();
                     dimensionsFilter =
-                            filterDimension(startAttrib, endAttrib, dimensionValues, filter);
+                            filterDimension(
+                                    startAttrib, endAttrib, dimensionValues, dimensionsFilter);
 
                 } else {
                     if (LOGGER.isLoggable(Level.WARNING)) {

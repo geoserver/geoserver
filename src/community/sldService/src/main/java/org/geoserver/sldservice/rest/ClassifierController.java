@@ -158,6 +158,8 @@ public class ClassifierController extends BaseSLDServiceController {
                     String strokeColor,
             @RequestParam(value = "strokeWeight", required = false, defaultValue = "1")
                     Double strokeWeight,
+            @RequestParam(value = "pointSize", required = false, defaultValue = "15")
+                    Integer pointSize,
             @RequestParam(value = "normalize", required = false, defaultValue = "false")
                     Boolean normalize,
             @RequestParam(value = "viewparams", required = false, defaultValue = "")
@@ -244,7 +246,8 @@ public class ClassifierController extends BaseSLDServiceController {
                             normalize,
                             viewParams,
                             strokeWeight,
-                            color != null ? Color.decode(color) : null);
+                            color != null ? Color.decode(color) : null,
+                            pointSize);
             if (fullSLD) {
 
                 StyleBuilder sb = new StyleBuilder();
@@ -399,10 +402,12 @@ public class ClassifierController extends BaseSLDServiceController {
             Boolean normalize,
             String viewParams,
             double strokeWeight,
-            Color strokeColor) {
+            Color strokeColor,
+            int pointSize) {
         RulesBuilder builder = new RulesBuilder();
         builder.setStrokeColor(strokeColor);
         builder.setStrokeWeight(strokeWeight);
+        builder.setPointSize(pointSize);
         /* Looks in attribute map if there is the featureType param */
         if (property != null && property.length() > 0) {
             /* First try to find as a FeatureType */

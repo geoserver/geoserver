@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerExtensions;
@@ -597,7 +596,7 @@ public class DefaultWebMapService
         if (USE_GLOBAL_RENDERING_POOL && RENDERING_POOL == null) {
             synchronized (DefaultWebMapService.class) {
                 if (RENDERING_POOL == null) {
-                    RENDERING_POOL = Executors.newCachedThreadPool();
+                    RENDERING_POOL = new ThreadLocalTransferExecutor();
                 }
             }
         }

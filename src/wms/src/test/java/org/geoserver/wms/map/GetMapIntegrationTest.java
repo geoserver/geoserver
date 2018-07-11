@@ -44,6 +44,11 @@ import org.w3c.dom.Document;
 public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+
+    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpWcs10RasterLayers();
@@ -56,6 +61,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle("indexed", "indexed.sld", getClass(), catalog);
         testData.addStyle("crop_raster", "CropTransform.sld", getClass(), catalog);
         testData.addStyle("lakeScale", "lakeScale.sld", getClass(), catalog);
+        testData.addStyle("channelSelector", "channelSelector.sld", getClass(), catalog);
 
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, "indexed");
@@ -89,6 +95,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addRasterLayer(
                 new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
                 "fourbits.zip",
+                null,
+                props,
+                SystemTestData.class,
+                catalog);
+
+        testData.addRasterLayer(
+                new QName(MockData.SF_URI, "multiband", MockData.SF_PREFIX),
+                "multiband.tiff",
                 null,
                 props,
                 SystemTestData.class,
@@ -412,5 +426,29 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Style expected = getCatalog().getStyleByName("BasicStyleGroup").getStyle();
         Style style = request.getStyles().get(0);
         assertEquals(expected, style);
+    }
+
+    @Test
+    public void testChannelSelectionEnvVar() throws Exception {
+        String request =
+                "wms?&LAYERS="
+                        + getLayerId(MockData.BASIC_POLYGONS)
+                        + ",sf:multiband"
+                        + "&STYLES=polygon,channelSelector&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A32611"
+                        + "&BBOX=508880,3551340,748865,3750000&WIDTH=64&HEIGHT=64";
+        final File BASE = new File("src/test/resources/org/geoserver/wms/map");
+
+        // first channel
+        BufferedImage bi = getAsImage(request + "&env=band:1", "image/png");
+        ImageAssert.assertEquals(new File(BASE, "csFirstChannel.png"), bi, 0);
+
+        // middle channel
+        bi = getAsImage(request + "&env=band:5", "image/png");
+        ImageAssert.assertEquals(new File(BASE, "csMidChannel.png"), bi, 0);
+
+        // last channel
+        bi = getAsImage(request + "&env=band:9", "image/png");
+        ImageAssert.assertEquals(new File(BASE, "csLastChannel.png"), bi, 0);
     }
 }

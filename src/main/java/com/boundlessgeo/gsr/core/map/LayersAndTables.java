@@ -5,12 +5,7 @@
 package com.boundlessgeo.gsr.core.map;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +21,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
@@ -173,7 +170,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
     public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayerWithId(
         String workspaceName, Integer layerId, String geometryTypeName, String geometryText, String inSRText,
         String outSRText, String spatialRelText, String objectIdsText, String relatePattern, String time, String text,
-        String maxAllowableOffsets, Boolean returnGeometry, String outFieldsText, LayersAndTables layersAndTables)
+        String maxAllowableOffsets, String whereClause, Boolean returnGeometry, String outFieldsText, LayersAndTables layersAndTables)
         throws IOException {
 
         LayerInfo l = null;
@@ -199,14 +196,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         }
 
         return getFeatureCollectionForLayer(workspaceName, layerId, geometryTypeName, geometryText, inSRText, outSRText,
-            spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets, returnGeometry,
+            spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause, returnGeometry,
             outFieldsText, l);
     }
 
     public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayer(
         String workspaceName, Integer layerId, String geometryTypeName, String geometryText, String inSRText,
         String outSRText, String spatialRelText, String objectIdsText, String relatePattern, String time, String text,
-        String maxAllowableOffsets, Boolean returnGeometry, String outFieldsText, LayerInfo l) throws IOException {
+        String maxAllowableOffsets, String whereClause, Boolean returnGeometry, String outFieldsText, LayerInfo l) throws IOException {
         FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
         if (null == featureType) {
             throw new NoSuchElementException(
@@ -261,18 +258,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             throw new UnsupportedOperationException(
                 "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
         }
-        //        if (whereClause != null) {
-        //            Filter whereFilter = Filter.INCLUDE;
-        //            try {
-        //                whereFilter = ECQL.toFilter(whereClause);
-        //            } catch (CQLException e) {
-        //                //TODO Ignore for now. Some clients send basic queries that we can't handle right now
-        ////                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " +
-        // whereClause, e);
-        //            }
-        //            List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
-        //            filter = FILTERS.and(children);
-        //        }
+        //TODO: test with QGIS plugin
+        if (whereClause != null) {
+            Filter whereFilter = Filter.INCLUDE;
+            try {
+                whereFilter = ECQL.toFilter(whereClause);
+            } catch (CQLException e) {
+                //TODO Ignore for now. Some clients send basic queries that we can't handle right now
+                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
+            }
+            List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
+            filter = FILTERS.and(children);
+        }
         String[] properties = parseOutFields(outFieldsText);
 
         FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);

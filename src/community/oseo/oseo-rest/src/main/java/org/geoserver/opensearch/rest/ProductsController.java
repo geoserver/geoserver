@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.eo.DefaultOpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.rest.CollectionsController.IOConsumer;
 import org.geoserver.ows.URLMangler.URLType;
@@ -97,8 +98,7 @@ public class ProductsController extends AbstractOpenSearchController {
         }
     }
 
-    static final Name PRODUCT_ID =
-            new NameImpl(OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(), "identifier");
+    static final Name PRODUCT_ID = new NameImpl(ProductClass.GENERIC.getNamespace(), "identifier");
 
     static final Name PARENT_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "parentIdentifier");
 

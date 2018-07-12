@@ -22,6 +22,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.MetadataRequest;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess;
@@ -120,7 +121,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             mapNamespacePrefix("sch", "http://www.ascc.net/xml/schematron");
             mapNamespacePrefix("owc", "http://www.opengis.net/owc/1.0");
             mapNamespacePrefix("media", "http://search.yahoo.com/mrss/");
-            for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+            for (ProductClass pc : info.getProductClasses()) {
                 mapNamespacePrefix(pc.getPrefix(), pc.getNamespace());
             }
 
@@ -349,11 +350,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
 
         private void encodeProductEntry(Feature feature, SearchRequest request) {
             final String identifier =
-                    (String)
-                            value(
-                                    feature,
-                                    OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(),
-                                    "identifier");
+                    (String) value(feature, ProductClass.GENERIC.getNamespace(), "identifier");
 
             // encode the generic contents
             String productIdentifierLink = buildProductIdentifierLink(identifier, request);
@@ -693,7 +690,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
                 Parameter parameter = entry.getKey();
                 String value = entry.getValue();
-                String key = OpenSearchParameters.getQualifiedParamName(parameter, false);
+                String key = OpenSearchParameters.getQualifiedParamName(info, parameter, false);
                 kvp.put(key, value);
             }
             kvp.put("startIndex", "" + startIndex);
@@ -712,7 +709,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
                 Parameter parameter = entry.getKey();
                 String value = entry.getValue();
-                String key = OpenSearchParameters.getQualifiedParamName(parameter, false);
+                String key = OpenSearchParameters.getQualifiedParamName(info, parameter, false);
                 parameters.put(key, value);
             }
             // fill in defaults

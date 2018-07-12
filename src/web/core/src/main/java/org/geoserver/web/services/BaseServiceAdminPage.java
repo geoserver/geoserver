@@ -158,7 +158,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     }
                 };
         form.add(cancel);
-        // cancel.setDefaultFormProcessing( false );
+        cancel.setDefaultFormProcessing(false);
     }
 
     protected ListView createExtensionPanelList(String id, final IModel infoModel) {

@@ -60,37 +60,6 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     public static String GRANULES = "granules";
 
     /**
-     * Classes of products
-     *
-     * @author Andrea Aime - GeoSolutions
-     */
-    enum ProductClass {
-        EOP_GENERIC("eop", "http://www.opengis.net/eop/2.1"), //
-        OPTICAL("opt", "http://www.opengis.net/opt/2.1"), //
-        RADAR("sar", "http://www.opengis.net/sar/2.1"), //
-        ALTIMETRIC("atm", "http://www.opengis.net/atm/2.1"), //
-        LIMB("lmb", "http://www.opengis.net/lmb/2.1"), //
-        SSP("ssp", "http://www.opengis.net/ssp/2.1");
-
-        private String namespace;
-
-        private String prefix;
-
-        private ProductClass(String prefix, String namespace) {
-            this.prefix = prefix;
-            this.namespace = namespace;
-        }
-
-        public String getNamespace() {
-            return namespace;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
-    }
-
-    /**
      * Just like in WCS 2.0, setting up a separator that's unlikely to be found in the wild, since
      * there is no option that's absolutely unique
      */

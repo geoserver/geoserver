@@ -30,17 +30,25 @@ import org.xml.sax.ContentHandler;
  */
 public class DescriptionTransformer extends LambdaTransformerBase {
 
+    OSEOInfo oseo;
+
+    public DescriptionTransformer(OSEOInfo oseo) {
+        this.oseo = oseo;
+    }
+
     @Override
     public Translator createTranslator(ContentHandler handler) {
-        return new OSEODescriptionTranslator(handler);
+        return new OSEODescriptionTranslator(handler, oseo);
     }
 
     private class OSEODescriptionTranslator extends LambdaTranslatorSupport {
 
         private static final String CEOS_SUPPORTED_VERSION = "CEOS-OS-BP-V1.2/L1";
+        private final OSEOInfo oseo;
 
-        public OSEODescriptionTranslator(ContentHandler contentHandler) {
+        public OSEODescriptionTranslator(ContentHandler contentHandler, OSEOInfo oseo) {
             super(contentHandler);
+            this.oseo = oseo;
         }
 
         @Override
@@ -139,7 +147,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                                         String spec = p.key + "={";
                                         spec +=
                                                 OpenSearchParameters.getQualifiedParamName(
-                                                        p, false);
+                                                        oseo, p, false);
                                         if (!p.required) {
                                             spec += "?";
                                         }
@@ -207,7 +215,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                 map.put("name", param.key);
                 map.put(
                         "value",
-                        "{" + OpenSearchParameters.getQualifiedParamName(param, false) + "}");
+                        "{" + OpenSearchParameters.getQualifiedParamName(oseo, param, false) + "}");
                 if (!param.isRequired()) {
                     map.put("minimum", "0");
                 }

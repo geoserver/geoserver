@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
+import java.util.List;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -57,7 +58,12 @@ public class OpenSearchAccessProvider {
         return (OpenSearchAccess) result;
     }
 
-    public DataStoreInfo getDataStoreInfo() throws IOException {
+    /**
+     * Returns the configuration of the store backing the OpenSearch subsystem
+     *
+     * @return
+     */
+    public DataStoreInfo getDataStoreInfo() {
         OSEOInfo service = getService();
         String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
         if (openSearchAccessStoreId == null) {
@@ -68,5 +74,14 @@ public class OpenSearchAccessProvider {
         DataStoreInfo dataStore = this.geoServer.getCatalog().getDataStore(openSearchAccessStoreId);
 
         return dataStore;
+    }
+
+    /**
+     * List the configured product classes
+     *
+     * @return
+     */
+    public List<ProductClass> getProductClasses() {
+        return ProductClass.getProductClasses(getService());
     }
 }

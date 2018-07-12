@@ -5,7 +5,7 @@
 package org.geoserver.opensearch.rest;
 
 import static java.util.Arrays.asList;
-import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.EOP_GENERIC;
+import static org.geoserver.opensearch.eo.ProductClass.GENERIC;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Description;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Granules;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Metadata;
@@ -81,12 +81,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         store.removeFeatures(
                 FF.and(
                         FF.equal(
-                                FF.property(
-                                        new NameImpl(EOP_GENERIC.getPrefix(), "parentIdentifier")),
+                                FF.property(new NameImpl(GENERIC.getPrefix(), "parentIdentifier")),
                                 FF.literal("SENTINEL2"),
                                 true),
                         FF.equal(
-                                FF.property(new NameImpl(EOP_GENERIC.getPrefix(), "identifier")),
+                                FF.property(new NameImpl(GENERIC.getPrefix(), "identifier")),
                                 FF.literal(PRODUCT_CREATE_UPDATE_ID),
                                 true)));
     }
@@ -202,6 +201,36 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         // check it's really there
         assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
+    }
+
+    @Test
+    public void testCreateProductInCustomCollection() throws Exception {
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections/gsTestCollection/products",
+                        getTestData("/product-custom-class.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/gsTestCollection/products/GS_TEST_PRODUCT.02",
+                response.getHeader("location"));
+
+        // check it's really there
+        DocumentContext json =
+                getAsJSONPath(
+                        "rest/oseo/collections/gsTestCollection/products/GS_TEST_PRODUCT.02", 200);
+        assertEquals("GS_TEST_PRODUCT.02", json.read("$.id"));
+        assertEquals("Feature", json.read("$.type"));
+        assertEquals("gsTestCollection", json.read("$.properties['eop:parentIdentifier']"));
+        assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
+        assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
+        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeEnd']"));
+        assertEquals("123456", json.read("$.properties['gs:test']"));
+
+        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
+        assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
 
     private void assertProduct(String timeStart, String timeEnd) throws Exception {

@@ -38,6 +38,7 @@ import org.geoserver.opensearch.eo.OpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.OpenSearchParameters.DateRelation;
 import org.geoserver.opensearch.eo.OpenSearchParameters.GeometryRelation;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
@@ -532,7 +533,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
 
         // product parameter?
-        for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+        OSEOInfo info = gs.getService(OSEOInfo.class);
+        for (ProductClass pc : info.getProductClasses()) {
             if (pc.getPrefix().equals(prefix)) {
                 return true;
             }
@@ -545,7 +547,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         // support two types of filters, equality and range filters
         Class<?> type = parameter.getType();
 
-        PropertyName pn = OpenSearchParameters.getFilterPropertyFor(FF, parameter);
+        PropertyName pn =
+                OpenSearchParameters.getFilterPropertyFor(
+                        gs.getService(OSEOInfo.class), FF, parameter);
 
         // for numeric and range parameters check the range syntax
         String input = (String) value;

@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.geoserver.opensearch.eo.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
@@ -107,7 +108,13 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), populateGranulesTable());
+        GeoServer geoServer = getGeoServer();
+        setupBasicOpenSearch(testData, getCatalog(), geoServer, populateGranulesTable());
+
+        // add the custom product class
+        OSEOInfo oseo = geoServer.getService(OSEOInfo.class);
+        oseo.getProductClasses().add(JDBCOpenSearchAccessTest.GS_PRODUCT);
+        geoServer.save(oseo);
     }
 
     /**
@@ -195,9 +202,10 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("owc", "http://www.opengis.net/owc/1.0");
         namespaceContext.bindNamespaceUri("dc", "http://purl.org/dc/elements/1.1/");
         namespaceContext.bindNamespaceUri("media", "http://search.yahoo.com/mrss/");
-        for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+        for (ProductClass pc : ProductClass.DEFAULT_PRODUCT_CLASSES) {
             namespaceContext.bindNamespaceUri(pc.getPrefix(), pc.getNamespace());
         }
+        namespaceContext.bindNamespaceUri(GS_PRODUCT.getPrefix(), GS_PRODUCT.getNamespace());
     }
 
     protected Matcher<Node> hasXPath(String xPath) {

@@ -100,7 +100,9 @@
   <bean id="oseoQuicklookRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.QuicklookRequestKvpReader" />
 
   <!-- responses -->
-  <bean id="oseoDescriptionResponse" class="org.geoserver.opensearch.eo.response.DescriptionResponse" />
+  <bean id="oseoDescriptionResponse" class="org.geoserver.opensearch.eo.response.DescriptionResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
   <bean id="oseoAtomSearchResponse" class="org.geoserver.opensearch.eo.response.AtomSearchResponse">
     <constructor-arg ref="geoServer" />
   </bean>

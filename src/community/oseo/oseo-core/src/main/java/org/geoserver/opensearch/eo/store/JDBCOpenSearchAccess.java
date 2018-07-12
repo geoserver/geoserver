@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
+import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -99,13 +101,15 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     List<Name> typeNames;
 
-    public JDBCOpenSearchAccess(Repository repository, Name delegateStoreName, String namespaceURI)
+    private GeoServer geoServer;
+
+    public JDBCOpenSearchAccess(
+            Repository repository, Name delegateStoreName, String namespaceURI, GeoServer geoServer)
             throws IOException {
-        // TODO: maybe get a direct Catalog reference so that we can lookup by store id, which is
-        // stable though renames?
         this.repository = repository;
         this.delegateStoreName = delegateStoreName;
         this.namespaceURI = namespaceURI;
+        this.geoServer = geoServer;
 
         // check the expected feature types are available
         DataStore delegate = getDelegateStore();
@@ -242,7 +246,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             if (name.startsWith(EO_PREFIX)) {
                 name = "eop" + name.substring(2);
             }
-            for (ProductClass pc : ProductClass.values()) {
+            for (ProductClass pc : ProductClass.getProductClasses(geoServer)) {
                 String prefix = pc.getPrefix();
                 if (name.startsWith(prefix)) {
                     name = name.substring(prefix.length());
@@ -467,7 +471,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         String sensorType = (String) collectionFeature.getAttribute("eoSensorType");
         ProductClass productClass = null;
         if (sensorType != null) {
-            productClass = OpenSearchAccess.ProductClass.valueOf(sensorType);
+            productClass = ProductClass.getProductClassFromName(geoServer, sensorType);
         }
 
         final String dbSchema = delegate.getDatabaseSchema();
@@ -608,7 +612,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     private boolean matchesAnyProductClass(String localName) {
-        for (ProductClass pc : ProductClass.values()) {
+        for (ProductClass pc : ProductClass.getProductClasses(geoServer)) {
             if (localName.startsWith(pc.getPrefix())) {
                 return true;
             }

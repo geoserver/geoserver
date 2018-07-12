@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.Repository;
@@ -51,6 +53,8 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
     public static final Param NAMESPACE =
             new Param("namespace", String.class, "Namespace prefix", false);
 
+    private static GeoServer geoServer;
+
     @Override
     public Map<Key, ?> getImplementationHints() {
         // TODO Auto-generated method stub
@@ -64,7 +68,8 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
         String flatStoreName = (String) STORE_PARAM.lookUp(params);
         String ns = (String) NAMESPACE.lookUp(params);
         Name name = Converters.convert(flatStoreName, Name.class);
-        return new JDBCOpenSearchAccess(repository, name, ns);
+        return new JDBCOpenSearchAccess(
+                repository, name, ns, GeoServerExtensions.bean(GeoServer.class));
     }
 
     @Override

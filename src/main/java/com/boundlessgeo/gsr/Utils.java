@@ -39,6 +39,25 @@ public class Utils {
 
     private static final Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.global");
 
+    /**
+     * Constructs a geometry {@link Filter} based on the provided parameters
+     *
+     *@param geometryType The type of geometry specified by the geometry parameter. Values:
+     *                    esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon |
+     *                    esriGeometryEnvelope
+     * @param geometryText A geometry representing a spatial filter to filter the features by
+     * @param requestCRS The spatial reference of the input geometry. If the inSR is not specified, the geometry is
+     *                   assumed to be in the spatial reference of the map.
+     * @param spatialRel The spatial relationship to be applied on the input geometry while performing the query.
+     *                   Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses |
+     *                   esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps |
+     *                   esriSpatialRelTouches | esriSpatialRelWithin
+     * @param geometryProperty The name of the geometry property from the schema the filter is being applied to
+     * @param relationPattern The spatial relate function that can be applied while performing the query operation. An
+     *                        example for this spatial relate function is "FFFTTT***"
+     * @param nativeCRS The native CRS of the schema the filter is being applied to
+     * @return
+     */
     public static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText,
         SpatialRelationship spatialRel, String relationPattern, CoordinateReferenceSystem requestCRS,
         CoordinateReferenceSystem nativeCRS) {
@@ -212,6 +231,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Constructs a temporal {@link Filter} from the provided ESRI temportal filter text
+     * @param temporalProperty The temporal property to filter on
+     * @param filterText The filter text
+     * @return The resultant Filter
+     */
     public static Filter parseTemporalFilter(String temporalProperty, String filterText) {
         if (null == temporalProperty || null == filterText || filterText.equals("")) {
             return Filter.INCLUDE;
@@ -244,6 +269,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Converts a UNIX Epoch time string into a {@link Date}
+     * @param timestamp
+     * @return The Date, or null if time is null "NULL".
+     * @throws IllegalArgumentException if there was an error converting the timestamp
+     */
     private static Date parseDate(String timestamp) {
         if ("NULL".equals(timestamp)) {
             return null;

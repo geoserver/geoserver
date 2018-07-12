@@ -42,7 +42,9 @@ import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * A list of {@link LayerOrTable}
+ * A list of {@link LayerOrTable}, that can be serialized as JSON
+ *
+ * Also provides a number of static utility methods for interacting with this list.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL) public class LayersAndTables implements GSRModel {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayersAndTables.class);
@@ -167,6 +169,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         return new LayersAndTables(new ArrayList<>(layers), new ArrayList<>(tables));
     }
 
+    /**
+     * Searches the provided list of layersAndTables for layerId, then returns the result of
+     * {@link #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String, String, String, String, String, String, String, Boolean, String, LayerInfo)}
+     *
+     * If no matching layer is found, throws a {@link NoSuchElementException}
+     *
+     * @see #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String, String, String, String, String, String, String, Boolean, String, LayerInfo)
+     * @return The features in the layer that match the provided parameters
+     * @throws IOException, NoSuchElementException
+     */
     public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayerWithId(
         String workspaceName, Integer layerId, String geometryTypeName, String geometryText, String inSRText,
         String outSRText, String spatialRelText, String objectIdsText, String relatePattern, String time, String text,
@@ -200,6 +212,38 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             outFieldsText, l);
     }
 
+    /**
+     * Returns a list of features from a single layer, matching the provided criteria
+     *
+     * @param workspaceName The name of the workspace that contains the layer
+     * @param layerId The integer {@link LayerOrTable#getId() id} of the layer within GSR
+     * @param geometryTypeName The type of geometry specified by the geometry parameter. Values:
+     *                         esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon |
+     *                         esriGeometryEnvelope
+     * @param geometryText A geometry representing a spatial filter to filter the features by
+     * @param inSRText The spatial reference of the input geometry. If the inSR is not specified, the geometry is
+     *                 assumed to be in the spatial reference of the map. TODO Currently defaults to 4326
+     * @param outSRText The spatial reference of the returned geometry (If the returnGeometry parameter is true). TODO Currently defaults to 4326
+     * @param spatialRelText The spatial relationship to be applied on the input geometry while performing the query.
+     *                       Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses |
+     *                       esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps |
+     *                       esriSpatialRelTouches | esriSpatialRelWithin
+     * @param objectIdsText A comma-separated list of feature ids used to filter the features
+     * @param relatePattern The spatial relate function that can be applied while performing the query operation. An
+     *                      example for this spatial relate function is "FFFTTT***"
+     * @param time The time instant or the time extent to query (In UNIX Epoch time).
+     * @param text Text to filter the features by. TODO: Not implemented
+     * @param maxAllowableOffsets This option can be used to specify the maxAllowableOffset (In the units of outSR) to
+     *                            be used for generalizing geometries returned by the query operation. TODO: Not implemented
+     * @param whereClause A where clause used to filter the features, using CQL where syntax. TODO: Should use SQL-92 instead of CQL
+     * @param returnGeometry If true, the result includes the geometry associated with each feature returned.
+     * @param outFieldsText The list of fields to be included in the returned result set. This list is a comma
+     *                      delimited list of field names.
+     * @param l The {@link LayerInfo} that corresponds to the layer
+     *
+     * @return List of features for the layer, filtered by the provided pararameters.
+     * @throws IOException
+     */
     public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayer(
         String workspaceName, Integer layerId, String geometryTypeName, String geometryText, String inSRText,
         String outSRText, String spatialRelText, String objectIdsText, String relatePattern, String time, String text,
@@ -286,6 +330,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         return source.getFeatures(query);
     }
 
+    /**
+     * Converts a comma-separated list of field names into an array of field names.
+     *
+     * @param outFieldsText comma-separated list of field names.
+     * @return An array of field names, or null if outFieldsText is empty or equal to "*".
+     */
     public static String[] parseOutFields(String outFieldsText) {
         if (StringUtils.isEmpty(outFieldsText)) {
             return null;
@@ -325,6 +375,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         return workspaceName + ":" + name;
     }
 
+    /**
+     * Converts a comma-seprated list of feature ids into an id {@link Filter}
+     *
+     * @param objectIdsText
+     * @return
+     */
     public static Filter parseObjectIdFilter(String objectIdsText) {
         if (null == objectIdsText) {
             return Filter.INCLUDE;
@@ -338,6 +394,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         }
     }
 
+    /**
+     * Constructs an array of property names to return, based on the provided property names.
+     * Fixes case to match the case used in the feature schema
+     * If addGeometry is true, adds the geometry field.
+     *
+     * @see #adjustOneProperty(String, FeatureType)
+     * @param addGeometry Whether to add the geometry property to the list of properties
+     * @param originalProperties provided list of property names
+     * @param schema schema with the actual property names
+     * @return array of ammended proprty names
+     */
     public static String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
         if (originalProperties == null) {
             return null;
@@ -357,6 +424,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         return effectiveProperties;
     }
 
+    /**
+     * Searches for a matching property name in the provided schema, and returns the actual property name from the
+     * schema, with the correct case.
+     * Throws an error if the name is ambiguous properties
+     *
+     * @param name The name of the property to find
+     * @param schema The schema containing the property
+     * @return The matching property name in the schema
+     */
     static String adjustOneProperty(String name, FeatureType schema) {
         List<String> candidates = new ArrayList<>();
         for (PropertyDescriptor d : schema.getDescriptors()) {

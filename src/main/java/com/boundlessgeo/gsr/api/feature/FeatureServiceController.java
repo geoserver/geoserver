@@ -115,6 +115,7 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
             }
         }
 
+        //TODO: What should returnIdsOnly look like here?
         return queryResult;
     }
 }

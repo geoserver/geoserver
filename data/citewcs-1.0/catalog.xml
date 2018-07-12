@@ -12,8 +12,8 @@ a format configuration element serves as a common data source
 parameters repository for all coverages it holds.
 -->
 <format namespace = "cdf" enabled = "true" id = "gtopo" >
-<type>Gtopo30</type>
-<url>file:coverages/gtopo_sample/W020N90.dem</url>
+<type>GeoTIFF</type>
+<url>file:coverages/gtopo_sample/W020N90.tif</url>
 </format>
 <format namespace = "cdf" enabled = "true" id = "usa" >
 <type>WorldImage</type>

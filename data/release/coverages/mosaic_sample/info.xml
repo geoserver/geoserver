@@ -74,7 +74,7 @@
     <responseCRSs>EPSG:4326</responseCRSs>
   </supportedCRSs>
   <supportedFormats nativeFormat = "ImageMosaic" >
-    <formats>GTOPO30,GEOTIFF,IMAGEMOSAIC,ARCGRID,GIF,PNG,JPEG,TIFF</formats>
+    <formats>GEOTIFF,IMAGEMOSAIC,ARCGRID,GIF,PNG,JPEG,TIFF</formats>
   </supportedFormats>
   <supportedInterpolations default = "nearest neighbor" >
     <interpolationMethods>nearest neighbor,bilinear,bicubic,bicubic_2</interpolationMethods>

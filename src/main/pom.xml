@@ -184,11 +184,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-gtopo30</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-image</artifactId>
    <scope>test</scope>
   </dependency>

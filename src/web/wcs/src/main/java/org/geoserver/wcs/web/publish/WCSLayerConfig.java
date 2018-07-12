@@ -39,7 +39,6 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     "PNG",
                     "JPEG",
                     "TIFF",
-                    "GTOPO30",
                     "GEOTIFF",
                     "IMAGEMOSAIC",
                     ARCGRID_COVERAGE_FORMAT);

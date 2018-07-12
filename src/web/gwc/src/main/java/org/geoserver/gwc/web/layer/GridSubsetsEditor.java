@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -296,16 +297,19 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         updateValidZoomRanges(
                                 zoomStart, zoomStop, minCachedLevel, maxCachedLevel, null);
 
-                        // gridSetBounds = new EnvelopePanel("bounds");
-                        // gridSetBounds.setCRSFieldVisible(false);
-                        // gridSetBounds.setCrsRequired(false);
-                        // gridSetBounds.setLabelsVisibility(false);
-                        // gridSetBounds.setModel(new Model<ReferencedEnvelope>(new
-                        // ReferencedEnvelope()));
-                        gridSetBounds =
-                                new Label(
-                                        "bounds",
-                                        new ResourceModel("GridSubsetsEditor.bounds.dynamic"));
+                        // TODO Should probably use a convertor instead of an if but this should
+                        // work until we decide to make this editable.
+                        if (Objects.nonNull(item.getModelObject().getExtent())) {
+                            gridSetBounds =
+                                    new Label(
+                                            "bounds",
+                                            new PropertyModel<Integer>(item.getModel(), "extent"));
+                        } else {
+                            gridSetBounds =
+                                    new Label(
+                                            "bounds",
+                                            new ResourceModel("GridSubsetsEditor.bounds.dynamic"));
+                        }
                         item.add(gridSetBounds);
 
                         removeLink =

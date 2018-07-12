@@ -43,10 +43,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-gtopo30</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-image</artifactId>
   </dependency>
   <dependency>

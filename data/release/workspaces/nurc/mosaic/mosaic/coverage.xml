@@ -69,7 +69,6 @@
     <string>ImageMosaic</string>
     <string>GEOTIFF</string>
     <string>ArcGrid</string>
-    <string>Gtopo30</string>
   </supportedFormats>
   <interpolationMethods>
     <string>nearest neighbor</string>

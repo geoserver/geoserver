@@ -76,7 +76,6 @@
     <string>PNG</string>
     <string>JPEG</string>
     <string>TIFF</string>
-    <string>GTOPO30</string>
     <string>GEOTIFF</string>
     <string>IMAGEMOSAIC</string>
     <string>ARCGRID</string>

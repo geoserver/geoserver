@@ -45,9 +45,6 @@
     <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate">
 		<constructor-arg ref="geoServer"/>
 	</bean>
-    <bean id="GTopo30CoverageResponseDelegate" class="org.geoserver.wcs.responses.GTopo30CoverageResponseDelegate">
-		<constructor-arg ref="geoServer"/>
-	</bean>
     <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate">
 		<constructor-arg ref="geoServer"/>
 	</bean>

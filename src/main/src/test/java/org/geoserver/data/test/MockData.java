@@ -496,10 +496,6 @@ public class MockData implements TestData {
         String styleName = "raster";
         addStyle(styleName, style);
 
-        // wcs 1.0
-        // addCoverage(GTOPO_DEM, TestData.class.getResource("W020N90/W020N90.manifest"),
-        //        "dem", styleName);
-
         addCoverageFromZip(USA_WORLDIMG, TestData.class.getResource("usa.zip"), PNG, styleName);
     }
 

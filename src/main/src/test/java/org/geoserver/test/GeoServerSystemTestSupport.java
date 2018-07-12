@@ -1798,7 +1798,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             Document dom, String version, String exceptionCode, String locator) throws Exception {
         Element root = dom.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName());
-        assertEquals("1.1.0", root.getAttribute("version"));
+        assertEquals(version, root.getAttribute("version"));
         assertEquals("http://www.opengis.net/ows/1.1", root.getAttribute("xmlns:ows"));
 
         if (exceptionCode != null) {

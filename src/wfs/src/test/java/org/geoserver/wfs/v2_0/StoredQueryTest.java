@@ -5,7 +5,9 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -329,5 +331,42 @@ public class StoredQueryTest extends WFS20TestSupport {
         Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:DropStoredQueryResponse").getLength());
+    }
+
+    @Test
+    public void testCreateStoredQueryXXE() throws Exception {
+        String xml =
+                "<wfs:CreateStoredQuery service='WFS' version='2.0.0' "
+                        + "   xmlns:wfs='http://www.opengis.net/wfs/2.0' "
+                        + "   xmlns:fes='http://www.opengis.net/fes/2.0' "
+                        + "   xmlns:gml='http://www.opengis.net/gml/3.2' "
+                        + "   xmlns:myns='http://www.someserver.com/myns' "
+                        + "   xmlns:sf='"
+                        + MockData.SF_URI
+                        + "'>"
+                        + "   <wfs:StoredQueryDefinition id='testXXE'> "
+                        + "      <wfs:Parameter name='AreaOfInterest' type='gml:Polygon'/> "
+                        + "      <wfs:QueryExpressionText "
+                        + "           returnFeatureTypes='sf:PrimitiveGeoFeature' "
+                        + "           language='urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression' "
+                        + "           isPrivate='false'><![CDATA[<?xml version='1.0' encoding='UTF-8'?> "
+                        + "         <!DOCTYPE Query [ "
+                        + "         <!ELEMENT Query ANY> "
+                        + "         <!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\">]> "
+                        + "         <wfs:Query typeNames='sf:PrimitiveGeoFeature'> "
+                        + "            <fes:Filter> "
+                        + "               <fes:Within> "
+                        + "                  <fes:ValueReference>&xxe;</fes:ValueReference> "
+                        + "                  ${AreaOfInterest} "
+                        + "               </fes:Within> "
+                        + "            </fes:Filter> "
+                        + "         </wfs:Query>]]> "
+                        + "      </wfs:QueryExpressionText> "
+                        + "   </wfs:StoredQueryDefinition> "
+                        + "</wfs:CreateStoredQuery>";
+        Document dom = postAsDOM("wfs", xml);
+        String message =
+                checkOws11Exception(dom, "2.0.0", "OperationProcessingFailed", "CreateStoredQuery");
+        assertThat(message, containsString("Entity resolution disallowed"));
     }
 }

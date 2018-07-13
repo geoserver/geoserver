@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -139,16 +138,13 @@ public class Dispatcher extends AbstractController {
     /** SOAP mime type */
     static final String SOAP_MIME = "application/soap+xml";
 
-    private Constructor<?> constructorERP = null;
     private Method getEntityResolver = null;
 
     {
         try {
-            // Use reflection to access classes/methods in the gs-main module.
-            Class<?> classERP = Class.forName("org.geoserver.util.EntityResolverProvider");
-            Class<?> classGS = Class.forName("org.geoserver.config.GeoServer");
-            constructorERP = classERP.getConstructor(classGS);
-            getEntityResolver = classERP.getMethod("getEntityResolver");
+            // Use reflection to access class/method in the gs-main module.
+            Class<?> clazz = Class.forName("org.geoserver.util.EntityResolverProvider");
+            getEntityResolver = clazz.getMethod("getEntityResolver");
         } catch (Exception e) {
             // This should only happen when running the gs-ows unit tests.
             logger.log(
@@ -439,9 +435,8 @@ public class Dispatcher extends AbstractController {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            if (getEntityResolver != null) {
-                Object geoServer = GeoServerExtensions.bean("geoServer");
-                Object provider = constructorERP.newInstance(geoServer);
+            Object provider = GeoServerExtensions.bean("entityResolverProvider");
+            if (provider != null && getEntityResolver != null) {
                 db.setEntityResolver((EntityResolver) getEntityResolver.invoke(provider));
             }
             dom = db.parse(httpRequest.getInputStream());

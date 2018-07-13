@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1463,6 +1464,36 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom = dom(new ByteArrayInputStream(resp.getContentAsByteArray()));
         // print(dom);
         assertEquals(Dispatcher.SOAP_12_NS, dom.getDocumentElement().getAttribute("xmlns:soap"));
+    }
+
+    @Test
+    public void testSOAPWithEntity() throws Exception {
+        String xml =
+                "<!DOCTYPE Envelope ["
+                        + "<!ELEMENT Envelope ANY>"
+                        + "<!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\">]>"
+                        + "<soap:Envelope xmlns:soap='"
+                        + Dispatcher.SOAP_12_NS
+                        + "'> "
+                        + " <soap:Header/> "
+                        + " <soap:Body>"
+                        + "<wfs:GetFeature "
+                        + "service='WFS' "
+                        + "version='2.0.0' "
+                        + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                        + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
+                        + "> "
+                        + "<wfs:Query typeNames='cdf:Other'> "
+                        + "<wfs:PropertyName>&xxe;</wfs:PropertyName> "
+                        + "</wfs:Query> "
+                        + "</wfs:GetFeature>"
+                        + " </soap:Body> "
+                        + "</soap:Envelope> ";
+
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
+        assertEquals("application/soap+xml", resp.getContentType());
+        String message = resp.getContentAsString();
+        assertThat(message, containsString("Entity resolution disallowed"));
     }
 
     @Test

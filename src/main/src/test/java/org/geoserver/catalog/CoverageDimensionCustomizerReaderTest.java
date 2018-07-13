@@ -5,21 +5,26 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.Color;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.measure.quantity.Quantity;
 import javax.measure.unit.BaseUnit;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.NumberRange;
@@ -312,5 +317,29 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         // Check if min and max are taken from the categories
         assertEquals(Double.NEGATIVE_INFINITY, wrappedDim.getMinimumValue(), DELTA);
         assertEquals(Double.POSITIVE_INFINITY, wrappedDim.getMaximumValue(), DELTA);
+    }
+
+    /**
+     * Test GridCoverage unwrapping
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testGridCoverageUnwrapping() throws IOException {
+
+        GridCoverageFactory gcFactory = new GridCoverageFactory();
+        RenderedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
+
+        GridCoverage2D original =
+                gcFactory.create(
+                        "original",
+                        image,
+                        new GeneralEnvelope(new Rectangle2D.Double(0, 0, 64, 64)));
+        GridSampleDimension[] gsd =
+                new GridSampleDimension[] {new GridSampleDimension("wrappedSampleDimension")};
+        GridCoverageWrapper wrapper = new GridCoverageWrapper("wrapped", original, gsd, null);
+        assertNotSame(original.getSampleDimensions(), wrapper.getSampleDimensions());
+        assertNotSame(wrapper, original);
+        assertSame(original, wrapper.unwrap(original.getClass()));
     }
 }

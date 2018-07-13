@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -62,6 +62,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -135,16 +136,24 @@ public class Dispatcher extends AbstractController {
     /** SOAP mime type */
     static final String SOAP_MIME = "application/soap+xml";
 
-    /** document builder, used to parse SOAP requests */
-    DocumentBuilder db;
+    private Constructor<?> constructorERP = null;
+    private Method getEntityResolver = null;
 
     {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
+            // Use reflection to access classes/methods in the gs-main module.
+            Class<?> classERP = Class.forName("org.geoserver.util.EntityResolverProvider");
+            Class<?> classGS = Class.forName("org.geoserver.config.GeoServer");
+            constructorERP = classERP.getConstructor(classGS);
+            getEntityResolver = classERP.getMethod("getEntityResolver");
+        } catch (Exception e) {
+            // This should only happen when running the gs-ows unit tests.
+            logger.log(
+                    Level.WARNING,
+                    "Unable to load EntityResolverProvider. Entity resolution will be enabled: "
+                            + e.getClass().getName()
+                            + ": "
+                            + e.getMessage());
         }
     }
 
@@ -424,9 +433,16 @@ public class Dispatcher extends AbstractController {
         // not nice... but then again neither is using SOAP
         Document dom = null;
         try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            if (getEntityResolver != null) {
+                Object geoServer = GeoServerExtensions.bean("geoServer");
+                Object provider = constructorERP.newInstance(geoServer);
+                db.setEntityResolver((EntityResolver) getEntityResolver.invoke(provider));
+            }
             dom = db.parse(httpRequest.getInputStream());
-
-        } catch (SAXException e) {
+        } catch (Exception e) {
             throw new IOException("Error parsing SOAP request", e);
         }
 

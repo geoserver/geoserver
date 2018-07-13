@@ -1196,9 +1196,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                 "<!DOCTYPE Envelope ["
                         + "<!ELEMENT Envelope ANY>"
                         + "<!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\">]>"
-                        + "<soap:Envelope xmlns:soap='"
-                        + Dispatcher.SOAP_12_NS
-                        + "'> "
+                        + "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> "
                         + " <soap:Header/> "
                         + " <soap:Body>"
                         + "<wfs:GetFeature "

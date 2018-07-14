@@ -111,8 +111,9 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
 
             try {
                 // generated field
-                fields.add(new Field("objectid", FieldTypeEnum.OID, "Feature Id", 4000, false, false));
                 FeatureType schema = featureTypeInfo.getFeatureType();
+                fields.add(new Field(FeatureEncoder.OBJECTID_FIELD_NAME, FieldTypeEnum.OID, "Feature Id", 4000, false, false));
+
 
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
                     try {

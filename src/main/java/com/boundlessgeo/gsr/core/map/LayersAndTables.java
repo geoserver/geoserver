@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.boundlessgeo.gsr.ObjectIdRemappingFilterVisitor;
+import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -23,6 +25,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
@@ -302,11 +305,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             throw new UnsupportedOperationException(
                 "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
         }
-        //TODO: test with QGIS plugin
         if (whereClause != null) {
-            Filter whereFilter = Filter.INCLUDE;
+            Filter whereFilter;
             try {
                 whereFilter = ECQL.toFilter(whereClause);
+                whereFilter = (Filter) whereFilter.accept(new ObjectIdRemappingFilterVisitor(FeatureEncoder.OBJECTID_FIELD_NAME), null);
             } catch (CQLException e) {
                 //TODO Ignore for now. Some clients send basic queries that we can't handle right now
                 throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
@@ -314,6 +317,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
             filter = FILTERS.and(children);
         }
+        filter = SimplifyingFilterVisitor.simplify(filter);
+
         String[] properties = parseOutFields(outFieldsText);
 
         FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
@@ -413,7 +418,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         String[] effectiveProperties = new String[originalProperties.length + (addGeometry ? 1 : 0)];
         for (int i = 0; i < originalProperties.length; i++) {
             //todo skip synthetic id for now
-            if (!originalProperties[i].equals("objectid")) {
+            if (!originalProperties[i].equals(FeatureEncoder.OBJECTID_FIELD_NAME)) {
                 effectiveProperties[i] = adjustOneProperty(originalProperties[i], schema);
             }
         }

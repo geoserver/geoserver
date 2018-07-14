@@ -23,6 +23,9 @@ import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.core.geometry.SpatialReference;
 
 public class FeatureEncoder {
+
+    public static final String OBJECTID_FIELD_NAME = "objectid";
+
     private FeatureEncoder() {
         throw new RuntimeException("Feature encoder has only static methods, no need to instantiate it.");
     }
@@ -116,7 +119,7 @@ public class FeatureEncoder {
                 objectIds.add(adaptId(feature.getIdentifier().getID()));
             }
         }
-        return new FeatureIdSet("objectId", objectIds.stream().mapToLong(i -> i).toArray());
+        return new FeatureIdSet(OBJECTID_FIELD_NAME, objectIds.stream().mapToLong(i -> i).toArray());
     }
 
     private final static Pattern featureIDPattern = Pattern.compile("^(?:.*\\.)?(\\p{Digit}+)$");

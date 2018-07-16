@@ -8,7 +8,7 @@ import static org.geoserver.data.test.CiteTestData.STREAMS;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.GetMapRequest;

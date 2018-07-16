@@ -82,7 +82,10 @@
 			<artifactId>amqp-client</artifactId>
 			<version>4.0.0</version>
 		</dependency>
-
+                <dependency>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-lang3</artifactId>
+                </dependency>
 	</dependencies>
 
 </project>

@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;

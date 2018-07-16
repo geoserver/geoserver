@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.jdbcstore.cache.ResourceCache;
 import org.geoserver.jdbcstore.internal.JDBCDirectoryStructure;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;

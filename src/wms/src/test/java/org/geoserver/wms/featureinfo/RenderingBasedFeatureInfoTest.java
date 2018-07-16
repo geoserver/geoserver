@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableDouble;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;

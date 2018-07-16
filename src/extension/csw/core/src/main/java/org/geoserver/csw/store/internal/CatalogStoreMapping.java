@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.complex.filter.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;

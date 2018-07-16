@@ -7,7 +7,7 @@ package org.geoserver.importer.rest;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 import java.lang.reflect.Type;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.ImportTransform;
@@ -130,16 +130,19 @@ public class ImportTransformController extends ImportBaseController {
 
     @Override
     protected String getTemplateName(Object object) {
-        throw new NotImplementedException();
+        throw new NotImplementedException(
+                "ImportTransformController::getTemplateName() is not implemented");
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        throw new NotImplementedException();
+        throw new NotImplementedException(
+                "ImportTransformController::createObjectWrapper() is not implemented");
     }
 
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-        throw new NotImplementedException();
+        throw new NotImplementedException(
+                "ImportTransformController::configueFreemarker() is not implemented");
     }
 }

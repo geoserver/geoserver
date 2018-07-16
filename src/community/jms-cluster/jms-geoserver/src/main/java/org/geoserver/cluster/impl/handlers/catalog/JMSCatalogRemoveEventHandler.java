@@ -9,7 +9,6 @@ import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -39,7 +38,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
     @Override
     public boolean synchronize(CatalogEvent event) throws Exception {
         if (event == null) {
-            throw new NullArgumentException("Incoming object is null");
+            throw new NullPointerException("Incoming object is null");
         }
         try {
             if (event instanceof CatalogRemoveEvent) {

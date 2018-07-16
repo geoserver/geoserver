@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.CascadeDeleteVisitor;

@@ -4,8 +4,6 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -13,7 +11,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -172,7 +171,9 @@ public class BatchesPanel extends Panel {
                                                     for (Batch batch :
                                                             batchesPanel.getSelection()) {
                                                         sb.append("\n&nbsp;&nbsp;");
-                                                        sb.append(escapeHtml(batch.getFullName()));
+                                                        sb.append(
+                                                                StringEscapeUtils.escapeHtml4(
+                                                                        batch.getFullName()));
                                                     }
                                                     return new MultiLineLabel(id, sb.toString())
                                                             .setEscapeModelStrings(false);

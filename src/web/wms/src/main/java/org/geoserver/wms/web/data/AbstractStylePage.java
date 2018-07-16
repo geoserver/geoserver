@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;

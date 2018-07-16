@@ -12,7 +12,7 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;

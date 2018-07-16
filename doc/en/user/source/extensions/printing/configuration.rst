@@ -95,6 +95,7 @@ Here is the general structure:
 Optional parts are shown with a question mark in the left margin. The question marks must not be put in the configuration file. Their default values is shown.
 
 Note: Sets of values like DPI can be entered in one of two forms:
+
 .. code-block:: yaml
 
   dpi: [1,2,3,...]
@@ -745,7 +746,7 @@ You define that:
                 backgroundColor: #FA0002
                 align: center
           {...}
-          
+
 Warranty disclaimer and license
 -------------------------------
 

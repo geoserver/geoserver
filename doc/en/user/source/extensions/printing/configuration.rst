@@ -95,6 +95,7 @@ Here is the general structure:
 Optional parts are shown with a question mark in the left margin. The question marks must not be put in the configuration file. Their default values is shown.
 
 Note: Sets of values like DPI can be entered in one of two forms:
+
 .. code-block:: yaml
 
   dpi: [1,2,3,...]
@@ -111,42 +112,42 @@ A chosen DPI value from the above configuration is used in WMS GetMap requests a
 
 In general, PDF dimensions and positions are specified in points. 72 points == 1 inch == 25.4 mm.
 
-The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <configuration.html#host-whitelist-definition>`_.
+The list of ``{HOST_WHITELIST_DEFINITION}`` defines the allowed URLs for getting maps. Its format will be defined in `the next sub-section <configuration.html#host-whitelist-definition>`_.
 
 The formats element lists the values formats that the server permits.  If omitted only 'pdf' is permitted.  If the single element '*' (quotes are required) is present then all formats that the server can produce can be requested.  The formats the server can produce depends to a large degree on how the Java is configured.  PDF is supported on all systems but for image output formats JAI and ImageIO is used which means both must be on the server for them to be available.  You can get the list of supported formats by running the standalone client with the --clientConfig flag enabled (you will need to supply a yaml config file as well).  If you are using the servlet then do a get info request to see the list of formats (with the '*' as the outputFormats parameter in the config file).
 
-You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map. Same for the "lastPage", but for the end of the document. The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found `in another sub-section of this document <configuration.html#page-definition>`_.
+You can have as many layouts as you want. Their name must be unique and will be used on the client side. A layout can have a ``titlePage`` that will be added at the beginning of the generated document. It cannot contain any map. Same for the ``lastPage``, but for the end of the document. The ``mainPage`` section is mandatory and will be used once for each page requested. The details of a ``{PAGE_DEFINITION}`` section can be found `in another sub-section of this document <configuration.html#page-definition>`_.
 
-If you want to let the user rotate the map (for a given layout), you have to set the "rotate" field to "true" in the corresponding "mainPage" section.
+If you want to let the user rotate the map (for a given layout), you have to set the ``rotate`` field to ``true`` in the corresponding ``mainPage`` section.
 
-"globalParallelFetches" and "perHostParallelFetches" are used to tune the parallel loading of the map tiles/images. If you want to disable the parallel loading, set "globalParallelFetches" to 1.
+``globalParallelFetches`` and ``perHostParallelFetches`` are used to tune the parallel loading of the map tiles/images. If you want to disable the parallel loading, set ``globalParallelFetches`` to 1.
 
-New versions of tilecache added the support for merging multiple layers in a single WMS request. If you want to use this functionality, set the "tilecacheMerging" attribute to true.
+New versions of tilecache added the support for merging multiple layers in a single WMS request. If you want to use this functionality, set the ``tilecacheMerging`` attribute to true.
 
-"connectionTimeout" and "socketTimeout" (only since MapFish v1.2) can be used to tune the timeouts for reading tiles from map servers.
+``connectionTimeout`` and ``socketTimeout`` (only since MapFish v1.2) can be used to tune the timeouts for reading tiles from map servers.
 
-If the 'outputFilename' parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the 'outputFilename' parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method.  If a pattern is provided it will be passed to SimpleDataFormat for processing.  A few examples follow:
+If the ``outputFilename`` parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the 'outputFilename' parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method.  If a pattern is provided it will be passed to SimpleDataFormat for processing.  A few examples follow:
 
-* outputFilename: "host-${yyyyMMdd}.pdf"   # results in host-20111213.pdf
-* outputFilename: "host-${date}"           # results in host-Dec_13_2011.pdf (actual output depends on local of server)
-* outputFilename: "host-${dateTime}"       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
-* outputFilename: "host-${time}.pdf"       # results in host-1:11:14_PM.pdf (actual output depends on local of server)
-* outputFilename: "host-${yyMMdd-hhmmss}"# results in host-111213-011154.pdf (actual output depends on local of server)
+* outputFilename: ``host-${yyyyMMdd}.pdf``   # results in host-20111213.pdf
+* outputFilename: ``host-${date}``           # results in host-Dec_13_2011.pdf (actual output depends on local of server)
+* outputFilename: ``host-${dateTime}``       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
+* outputFilename: ``host-${time}.pdf``       # results in host-1:11:14_PM.pdf (actual output depends on local of server)
+* outputFilename: ``host-${yyMMdd-hhmmss}``# results in host-111213-011154.pdf (actual output depends on local of server)
 
-"disableScaleLocking" allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
+``disableScaleLocking`` allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
-"brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
+``brokenUrlPlaceholder`` the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
 Non-null values are:
 
-* "default" - use the system default image.
-* "throw" - throw an exception.
+* ``default`` - use the system default image.
+* ``throw`` - throw an exception.
 * <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.
 
-"proxyBaseUrl" the optional url of the proxy between mapfish-print and the internet.  This is the url base that will be in the info.json response.  On occasion the url or port of the web server containing mapfish-print is not the server that is public to the internet and the requests are proxied to the mapfish-print webserver.  In this case it is important for the info.json request to return the public URL instead of the url of the webserver.
+``proxyBaseUrl`` the optional url of the proxy between mapfish-print and the internet.  This is the url base that will be in the info.json response.  On occasion the url or port of the web server containing mapfish-print is not the server that is public to the internet and the requests are proxied to the mapfish-print webserver.  In this case it is important for the info.json request to return the public URL instead of the url of the webserver.
 
-"tmsDefaultOriginX" By default this is null.  If non-null then TmsMapReader will use this as the origin x value if null then the origin will be derived from the maxExtent parameter.
+``tmsDefaultOriginX`` By default this is null.  If non-null then TmsMapReader will use this as the origin x value if null then the origin will be derived from the maxExtent parameter.
 
-"tmsDefaultOriginY" By default this is null.  If non-null then TmsMapReader will use this as the origin y value if null then the origin will be derived from the maxExtent parameter.
+``tmsDefaultOriginY`` By default this is null.  If non-null then TmsMapReader will use this as the origin y value if null then the origin will be derived from the maxExtent parameter.
 
 
 Security
@@ -198,7 +199,7 @@ Thanks to the hosts and domain matcher it is possible to have a key for google m
 Fonts definition
 -----------------
 
-The "fonts" section is optional. It contains the path of the fonts you want to use. The entries can point to files (TTF, OTF, TTC, AFM, PFM) or directories. Don't point to directories containing too many files since it will slow down the start time. By default, PDF gives you access to the following fonts (Cp1252 encoding only):
+The ``fonts`` section is optional. It contains the path of the fonts you want to use. The entries can point to files (TTF, OTF, TTC, AFM, PFM) or directories. Don't point to directories containing too many files since it will slow down the start time. By default, PDF gives you access to the following fonts (Cp1252 encoding only):
 
 * Courrier (-Bold, -Oblique, -BoldOblique)
 * Helvetica (-Bold, -Oblique, -BoldOblique)
@@ -223,7 +224,7 @@ Allowing every local services:
     - !localMatch
       dummy: true
 
-The "dummy" parameter is ignored, but mandatory to avoid a limitation in the YAML format.
+The ``dummy`` parameter is ignored, but mandatory to avoid a limitation in the YAML format.
 
 Allowing by DNS name:
 ~~~~~~~~~~~~~~~~~~~~~
@@ -242,7 +243,7 @@ Allowing by IP address:
         ip: www.camptocamp.org
     ?   mask: 255.255.255.255
 
-The "ip" parameter can be a DNS name that will be resolved or directly an IP address.
+The ``ip`` parameter can be a DNS name that will be resolved or directly an IP address.
 
 All the methods accept the following optional parameters:
 
@@ -297,11 +298,11 @@ The structure is like that:
               - {BLOCK_DEFINITION}
               {...}
 
-With the "condition" we can completely hide a page, same behavior than in block.
+With the ``condition`` we can completely hide a page, same behavior than in block.
 
-If "backgroundPdf" is specified, the first page of the given PDF file will be added as background of every page.
+If ``backgroundPdf`` is specified, the first page of the given PDF file will be added as background of every page.
 
-The "header" and "footer" sections are optional. If the "items" that are in the main section are too big, more pages are generated. The header and footer will be drawn on those pages as well.
+The ``header`` and ``footer`` sections are optional. If the ``items`` that are in the main section are too big, more pages are generated. The header and footer will be drawn on those pages as well.
 
 Here is a short list of supported **pageSizes**:
 
@@ -337,9 +338,9 @@ Some virtual variables can be used:
 * ${configDir}: The absolute path to the directory of the configuration file.
 * ${format PRINTF VAR}: Format the value of VAR using the provided `PRINTF format <http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html#syntax>`_ (for example: %,d).
 
-All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
+All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to ``false`` or ``0``, the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
 
-Example: show text block only if in the spec the attribute name "showText" is given, is not equal to "false" and not equal to "0":
+Example: show text block only if in the spec the attribute name ``showText`` is given, is not equal to ``false`` and not equal to ``0``:
 
 .. code-block:: yaml
 
@@ -363,7 +364,7 @@ Text block
   ?         backgroundColor: #FFFFFF
             text: 'Blahblah'
 
-Typical "fontEncoding" values are:
+Typical ``fontEncoding`` values are:
 
 * Cp1250
 * Cp1252
@@ -372,7 +373,7 @@ Typical "fontEncoding" values are:
 * Identity-V (vertical UTF-8)
 * MacRoman
 
-The "font" must refer to a standard PDF font or a `declared font <configuration.html#fonts-definition>`_.
+The ``font`` must refer to a standard PDF font or a `declared font <configuration.html#fonts-definition>`_.
 
 Image block
 -----------
@@ -389,7 +390,7 @@ Image block
 
 Supported formats are PNG, GIF, Jpeg, Jpeg2000, BMP, WMF (vector), SVG and TIFF.
 
-The original aspect ratio will be respected. The url can contain "${}" variables.
+The original aspect ratio will be respected. The url can contain ``${}`` variables.
 
 Columns block
 -------------
@@ -513,7 +514,7 @@ The type can be:
 
 .. image:: images/scalebarTypes.png
 
-The bar and/or text orientation can be set to "up", "down", "left" or "right".
+The bar and/or text orientation can be set to ``up``, ``down``, ``left`` or ``right``.
 
 The `align` attribute is for placing the whole scalebar withing the surrounding column or page. The `vertAlign` attribute is used only when placed in a column.
 
@@ -745,7 +746,7 @@ You define that:
                 backgroundColor: #FA0002
                 align: center
           {...}
-          
+
 Warranty disclaimer and license
 -------------------------------
 

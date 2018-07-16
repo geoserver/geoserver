@@ -36,6 +36,7 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
+import org.geotools.decorate.Wrapper;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.resources.coverage.CoverageUtilities;
@@ -505,7 +506,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     /** Utility class to wrap a GridCoverage by overriding its sampleDimensions and properties */
-    public static class GridCoverageWrapper extends GridCoverage2D {
+    public static class GridCoverageWrapper extends GridCoverage2D implements Wrapper {
 
         /**
          * A custom propertySource allowing to redefine properties (since getProperties return a
@@ -516,12 +517,16 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         /** Configured sampleDimensions */
         private GridSampleDimension[] wrappedSampleDimensions;
 
+        /** The original wrapped gridCoverage */
+        private GridCoverage2D gridCoverage;
+
         public GridCoverageWrapper(
                 String name,
                 GridCoverage2D coverage,
                 GridSampleDimension[] sampleDimensions,
                 Map properties) {
             super(name, coverage);
+            this.gridCoverage = coverage;
             this.wrappedSampleDimensions = sampleDimensions;
             wrappedPropertySource =
                     new PropertySourceImpl(
@@ -565,6 +570,27 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                         properties == null ? sourceCoverage.getProperties() : properties);
             }
             return coverage;
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> iface) {
+            if (gridCoverage instanceof Wrapper) {
+                return ((Wrapper) gridCoverage).isWrapperFor(iface);
+            }
+            return iface.isInstance(gridCoverage);
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
+            if (gridCoverage instanceof Wrapper) {
+                return ((Wrapper) gridCoverage).unwrap(iface);
+            }
+            if (iface.isInstance(gridCoverage)) {
+                return (T) gridCoverage;
+            } else {
+                throw new IllegalArgumentException(
+                        "Cannot unwrap to the requested interface " + iface);
+            }
         }
     }
 

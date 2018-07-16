@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum GeometryTypeEnum {
 
     POINT("esriGeometryPoint"),
-    MULTIPOINT("esriGeometryMultiPoint"),
+    MULTIPOINT("esriGeometryMultipoint"),
     POLYLINE("esriGeometryPolyline"),
     POLYGON("esriGeometryPolygon"),
     ENVELOPE("esriGeometryEnvelope");

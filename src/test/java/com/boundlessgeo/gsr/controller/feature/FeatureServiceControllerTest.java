@@ -4,6 +4,7 @@
  */
 package com.boundlessgeo.gsr.controller.feature;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -42,5 +43,36 @@ public class FeatureServiceControllerTest extends ControllerTest {
         assertFalse(object.has("error"));
         JSONArray layers = (JSONArray) object.get("layers");
         assertTrue(layers.size() > 0);
+    }
+
+    //TODO: Debug into cite, find something that gives different # results for each of the below:
+    @Test
+    public void testQueryByObjectId() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&objectIds=0,1,2,3,4,5,6,7,8,9"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(10, layers.size());
+    }
+    @Test
+    public void testQueryByWhere() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json&where=\"id\" LIKE ' lfbt%25'"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(6, layers.size());
+    }
+    @Test
+    public void testQueryByObjectIdAndWhere() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json&where=\"id\" LIKE ' lfbt%25'"
+                + "&objectIds=0,1,2,3,4,5,6,7,8,9"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(2, layers.size());
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 import com.boundlessgeo.gsr.ObjectIdRemappingFilterVisitor;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
@@ -23,6 +24,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
@@ -274,6 +276,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             throw new IllegalArgumentException("Unable to determine geometry type for query request");
         }
 
+
+        //Try to reverse-mask objectIds into featureIds
+        Feature sampleFeature = null;
+        String featureIdPrefix = "";
+        FeatureIterator i = featureType.getFeatureSource(null, null).getFeatures().features();
+        if (i.hasNext()) {
+            sampleFeature = i.next();
+            String fid = sampleFeature.getIdentifier().getID();
+
+            Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
+            if (matcher.matches()) {
+                featureIdPrefix = matcher.group(1);
+            }
+        }
+        i.close();
+        Filter objectIdFilter = parseObjectIdFilter(objectIdsText, featureIdPrefix);
+
         //Query Parameters
         // TODO update this to match outSR spec
         // "If outSR is not specified, the geometry is returned in the spatial reference of the map."
@@ -283,7 +302,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         if (StringUtils.isNotEmpty(spatialRelText)) {
             spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
         }
-        Filter objectIdFilter = parseObjectIdFilter(objectIdsText);
 
         String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : "4326";
         final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRCode, geometryText);
@@ -316,6 +334,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             }
             List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
             filter = FILTERS.and(children);
+        } else {
+            filter = FILTERS.and(filter, objectIdFilter);
         }
         filter = SimplifyingFilterVisitor.simplify(filter);
 
@@ -387,13 +407,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
      * @return
      */
     public static Filter parseObjectIdFilter(String objectIdsText) {
+        return parseObjectIdFilter(objectIdsText, "");
+    }
+
+    /**
+     * Converts a comma-seprated list of feature ids into an id {@link Filter}
+     *
+     * @param objectIdsText
+     * @param prefix Optional prefix to prepend to each id
+     * @return
+     */
+    public static Filter parseObjectIdFilter(String objectIdsText, String prefix) {
         if (null == objectIdsText) {
             return Filter.INCLUDE;
         } else {
             String[] parts = objectIdsText.split(",");
             Set<FeatureId> fids = new HashSet<>();
             for (String part : parts) {
-                fids.add(FILTERS.featureId(part));
+                fids.add(FILTERS.featureId(prefix + part));
             }
             return FILTERS.id(fids);
         }

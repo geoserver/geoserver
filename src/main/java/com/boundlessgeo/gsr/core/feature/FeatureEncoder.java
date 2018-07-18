@@ -122,12 +122,12 @@ public class FeatureEncoder {
         return new FeatureIdSet(OBJECTID_FIELD_NAME, objectIds.stream().mapToLong(i -> i).toArray());
     }
 
-    private final static Pattern featureIDPattern = Pattern.compile("^(?:.*\\.)?(\\p{Digit}+)$");
+    public final static Pattern FEATURE_ID_PATTERN = Pattern.compile("(^(?:.*\\.)?)(\\p{Digit}+)$");
 
     private static Long adaptId(String featureId) {
-        Matcher matcher = featureIDPattern.matcher(featureId);
+        Matcher matcher = FEATURE_ID_PATTERN.matcher(featureId);
         if (matcher.matches()) {
-            return Long.parseLong(matcher.group(1));
+            return Long.parseLong(matcher.group(2));
         } else {
             return (long) featureId.hashCode();
         }

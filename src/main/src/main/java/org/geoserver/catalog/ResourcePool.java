@@ -1063,6 +1063,9 @@ public class ResourcePool {
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
             tb.setName(info.getName());
             tb.setNamespaceURI(info.getNamespace().getURI());
+            if (ft.getGeometryDescriptor() != null) {
+                tb.setDefaultGeometry(ft.getGeometryDescriptor().getLocalName());
+            }
 
             if (info.getAttributes() == null || info.getAttributes().isEmpty()) {
                 // take this to mean just load all native

@@ -24,14 +24,18 @@ public class ObjectIdRemappingFilterVisitor extends DuplicatingFilterVisitor {
 
     final String objectId;
 
+    final String featureIdPrefix;
+
     public ObjectIdRemappingFilterVisitor() {
-        this(null);
+        this(null, "");
     }
 
     /**
      * @param objectIdField The property name to be remapped to the id. Defaults to {@link FeatureEncoder#OBJECTID_FIELD_NAME}
+     * @param featureIdPrefix The prefix of the GeoTools FeatureId, including any delimiters. Defaults to and empty string
      */
-    public ObjectIdRemappingFilterVisitor(String objectIdField) {
+    public ObjectIdRemappingFilterVisitor(String objectIdField, String featureIdPrefix) {
+        this.featureIdPrefix = featureIdPrefix;
         if (null == objectIdField || objectIdField.isEmpty()) {
             objectId = FeatureEncoder.OBJECTID_FIELD_NAME;
         } else {
@@ -76,7 +80,7 @@ public class ObjectIdRemappingFilterVisitor extends DuplicatingFilterVisitor {
     public Id toIdExpression(Literal value, Object extraData) {
         FilterFactory factory = getFactory(extraData);
         HashSet<FeatureId> ids = new HashSet<>();
-        ids.add(factory.featureId(value.getValue().toString()));
+        ids.add(factory.featureId(featureIdPrefix + value.getValue().toString()));
         return factory.id(ids);
     }
 

@@ -44,8 +44,6 @@ public class FeatureServiceControllerTest extends ControllerTest {
         JSONArray layers = (JSONArray) object.get("layers");
         assertTrue(layers.size() > 0);
     }
-
-    //TODO: Debug into cite, find something that gives different # results for each of the below:
     @Test
     public void testQueryByObjectId() throws Exception {
         JSON result = getAsJSON(query("cdf", "/3/query?f=json"
@@ -56,6 +54,49 @@ public class FeatureServiceControllerTest extends ControllerTest {
         JSONArray layers = (JSONArray) object.get("features");
         assertEquals(10, layers.size());
     }
+    @Test
+    public void testQueryWhereObjectId() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&where=objectid=0"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(1, layers.size());
+    }
+    @Test
+    public void testQueryWhereOrObjectIds() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&where=objectid=0 or objectid=1"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(2, layers.size());
+    }
+
+    @Test
+    public void testQueryWhereAndObjectIds() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&where=objectid=0 and objectid=1"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(0, layers.size());
+    }
+
+    @Test
+    public void testQueryWhereInObjectIds() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&where=objectid IN ('0','1','2')"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(3, layers.size());
+    }
+
     @Test
     public void testQueryByWhere() throws Exception {
         JSON result = getAsJSON(query("cdf", "/3/query?f=json&where=\"id\" LIKE ' lfbt%25'"));

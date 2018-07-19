@@ -4,6 +4,7 @@
  */
 package com.boundlessgeo.gsr.core.feature;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
@@ -56,7 +58,7 @@ public class FeatureEncoder {
         }
 
         if (objectIdFieldName != null) {
-            attributes.put(objectIdFieldName, adaptId(feature.getIdentifier().getID()));
+            attributes.put(objectIdFieldName, toGSRObjectId(feature.getIdentifier().getID()));
         }
 
         return attributes;
@@ -116,7 +118,7 @@ public class FeatureEncoder {
         try (FeatureIterator<F> iterator = features.features()) {
             while (iterator.hasNext()) {
                 F feature = iterator.next();
-                objectIds.add(adaptId(feature.getIdentifier().getID()));
+                objectIds.add(toGSRObjectId(feature.getIdentifier().getID()));
             }
         }
         return new FeatureIdSet(OBJECTID_FIELD_NAME, objectIds.stream().mapToLong(i -> i).toArray());
@@ -124,13 +126,67 @@ public class FeatureEncoder {
 
     public final static Pattern FEATURE_ID_PATTERN = Pattern.compile("(^(?:.*\\.)?)(\\p{Digit}+)$");
 
-    private static Long adaptId(String featureId) {
+    /**
+     * Converts a GeoTools FeatureId of the form $NAME.$ID to a ESRI-compatible long value by removing the $NAME prefix
+     * using {@link FeatureEncoder#FEATURE_ID_PATTERN}
+     *
+     * @param featureId
+     * @return
+     */
+    public static Long toGSRObjectId(String featureId) {
         Matcher matcher = FEATURE_ID_PATTERN.matcher(featureId);
         if (matcher.matches()) {
             return Long.parseLong(matcher.group(2));
         } else {
             return (long) featureId.hashCode();
         }
+    }
+
+    /**
+     * Converts a long id generated using {@link #toGSRObjectId(String)} back to a GeoTools FeatureId.
+     *
+     * @param objectId the generated id
+     * @param idPrefix the prefix to prepend
+     * @return
+     */
+    public static String toGeotoolsFeatureId(Long objectId, String idPrefix) {
+        return idPrefix+objectId.toString();
+    }
+
+    /**
+     * Converts a long id generated using {@link #toGSRObjectId(String)} back to a GeoTools FeatureId.
+     *
+     * @param objectId the generated id
+     * @param targetFeature The target featuretype of the id, used to calculate the prefix
+     * @return
+     * @throws IOException
+     */
+    public static String toGeotoolsFeatureId(Long objectId, FeatureTypeInfo targetFeature) throws IOException {
+        return toGeotoolsFeatureId(objectId, calculateFeatureIdPrefix(targetFeature));
+
+    }
+
+    /**
+     * Calculates the geotools id prefix,
+     * @param targetFeature
+     * @return
+     * @throws IOException
+     */
+    public static String calculateFeatureIdPrefix(FeatureTypeInfo targetFeature) throws IOException {
+        org.opengis.feature.Feature sampleFeature = null;
+        String featureIdPrefix = "";
+        FeatureIterator i = targetFeature.getFeatureSource(null, null).getFeatures().features();
+        if (i.hasNext()) {
+            sampleFeature = i.next();
+            String fid = sampleFeature.getIdentifier().getID();
+
+            Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
+            if (matcher.matches()) {
+                featureIdPrefix = matcher.group(1);
+            }
+        }
+        i.close();
+        return featureIdPrefix;
     }
 
     /**

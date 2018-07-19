@@ -278,19 +278,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 
         //Try to reverse-mask objectIds into featureIds
-        Feature sampleFeature = null;
-        String featureIdPrefix = "";
-        FeatureIterator i = featureType.getFeatureSource(null, null).getFeatures().features();
-        if (i.hasNext()) {
-            sampleFeature = i.next();
-            String fid = sampleFeature.getIdentifier().getID();
-
-            Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
-            if (matcher.matches()) {
-                featureIdPrefix = matcher.group(1);
-            }
-        }
-        i.close();
+        String featureIdPrefix = FeatureEncoder.calculateFeatureIdPrefix(featureType);
         Filter objectIdFilter = parseObjectIdFilter(objectIdsText, featureIdPrefix);
 
         //Query Parameters
@@ -327,7 +315,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
             Filter whereFilter;
             try {
                 whereFilter = ECQL.toFilter(whereClause);
-                whereFilter = (Filter) whereFilter.accept(new ObjectIdRemappingFilterVisitor(FeatureEncoder.OBJECTID_FIELD_NAME), null);
+                whereFilter = (Filter) whereFilter.accept(new ObjectIdRemappingFilterVisitor(FeatureEncoder.OBJECTID_FIELD_NAME, featureIdPrefix), null);
             } catch (CQLException e) {
                 //TODO Ignore for now. Some clients send basic queries that we can't handle right now
                 throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);

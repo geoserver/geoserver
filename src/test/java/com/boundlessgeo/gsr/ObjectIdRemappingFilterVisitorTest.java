@@ -17,7 +17,7 @@ public class ObjectIdRemappingFilterVisitorTest {
         Filter filter = ECQL.toFilter("objectid=1");
         assertTrue(filter instanceof PropertyIsEqualTo);
 
-        ObjectIdRemappingFilterVisitor visitor = new ObjectIdRemappingFilterVisitor("objectid");
+        ObjectIdRemappingFilterVisitor visitor = new ObjectIdRemappingFilterVisitor("objectid", "");
 
         Object remappedFilter = filter.accept(visitor, null);
         assertTrue(remappedFilter instanceof Id);
@@ -28,7 +28,7 @@ public class ObjectIdRemappingFilterVisitorTest {
         Filter filter = ECQL.toFilter("objectid=objectid");
         assertTrue(filter instanceof PropertyIsEqualTo);
 
-        ObjectIdRemappingFilterVisitor visitor = new ObjectIdRemappingFilterVisitor("objectid");
+        ObjectIdRemappingFilterVisitor visitor = new ObjectIdRemappingFilterVisitor("objectid", "");
 
         Object remappedFilter = filter.accept(visitor, null);
         assertEquals(Filter.INCLUDE, remappedFilter);

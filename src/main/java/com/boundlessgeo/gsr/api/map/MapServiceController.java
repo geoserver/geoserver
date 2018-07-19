@@ -88,7 +88,7 @@ public class MapServiceController extends AbstractGSRController {
         @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryPoint") String
             geometryTypeName,
         @RequestParam(name = "geometry", required = false) String geometryText,
-        @RequestParam(name = "sr", required = false) String inSRCode,
+        @RequestParam(name = "sr", required = false) String srCode,
         @RequestParam(name = "time", required = false) String time) {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
@@ -97,7 +97,7 @@ public class MapServiceController extends AbstractGSRController {
             try {
                 FeatureCollection collection = LayersAndTables
                     .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
-                        inSRCode, null, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, null,true,
+                        srCode, srCode, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, null,true,
                         null, layer.layer);
 
                 result.getResults().addAll(IdentifyServiceResult.encode(collection, layer));

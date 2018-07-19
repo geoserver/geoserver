@@ -98,30 +98,10 @@ public class Envelope extends Geometry {
         this.ymin = envelope.getMinY();
         this.ymax = envelope.getMaxY();
 
-        int EPSGid = -1;
-
         try {
-            EPSGid = CRS.lookupEpsgCode(envelope.getCoordinateReferenceSystem(), false);
+            this.spatialReference = SpatialReferences.fromCRS(envelope.getCoordinateReferenceSystem());
         } catch (FactoryException e) {
             throw new RuntimeException(e);
-        }
-
-        if (EPSGid < 0) {
-            Set<ReferenceIdentifier> ids = envelope.getCoordinateReferenceSystem().getIdentifiers();
-            for (ReferenceIdentifier id : ids) {
-                if (id.getCodeSpace().equalsIgnoreCase("EPSG")) {
-                    EPSGid = Integer.parseInt(id.getCode());
-                }
-            }
-        }
-
-        if(EPSGid > 0) {
-            this.spatialReference = new SpatialReferenceWKID(EPSGid);
-        }
-        else {
-            String wkt = ((org.geotools.referencing.wkt.Formattable)envelope.getCoordinateReferenceSystem())
-                .toWKT(Citations.ESRI, 0);
-            this.spatialReference = new SpatialReferenceWKT(wkt);
         }
     }
 

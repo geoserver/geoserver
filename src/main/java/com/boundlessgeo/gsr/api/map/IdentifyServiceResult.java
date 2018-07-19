@@ -1,19 +1,25 @@
 package com.boundlessgeo.gsr.api.map;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.core.geometry.*;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.geometry.Geometry;
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
-import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 import com.boundlessgeo.gsr.core.map.LayerOrTable;
+import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Holder for identify results
@@ -31,14 +37,29 @@ class IdentifyServiceResult {
         FeatureIterator iterator = collection.features();
         while (iterator.hasNext()) {
             Feature feature = iterator.next();
+            //Get the default geometry from the FeatureType for consistency (see GEOS-8852)
+            GeometryDescriptor defaultGeometry;
+            FeatureTypeInfo featureType = (FeatureTypeInfo) layer.layer.getResource();
+            try {
+                defaultGeometry = featureType.getFeatureType().getGeometryDescriptor();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unable to determine geometry type for identify request");
+            }
+
+            SpatialReference spatialReference;
+            try {
+                spatialReference = SpatialReferences.fromCRS(defaultGeometry.getCoordinateReferenceSystem());
+            } catch (FactoryException e) {
+                throw new RuntimeException(e);
+            }
             IdentifyResult result = new IdentifyResult();
             result.setLayerName(layer.getName());
             result.setLayerId(layer.getId());
             result.setGeometry(GeometryEncoder.toRepresentation(
-                (com.vividsolutions.jts.geom.Geometry) feature.getDefaultGeometryProperty().getValue(), null));
-            result.setAttributes(FeatureEncoder.attributeList(feature, null));
+                (com.vividsolutions.jts.geom.Geometry) feature.getProperty(defaultGeometry.getName()).getValue(), spatialReference));
+            result.setAttributes(FeatureEncoder.attributeList(feature, FeatureEncoder.OBJECTID_FIELD_NAME));
             result.setGeometryType(result.getGeometry().getGeometryType());
-            result.getGeometry().setSpatialReference(new SpatialReferenceWKID(4326)); //todo ack!
+            result.getGeometry().setSpatialReference(spatialReference);
             result.setValue(feature.getIdentifier().toString());
             result.getAttributes().put("synthetic_id", feature.getIdentifier().toString());
             result.setDisplayFieldName("synthetic_id");

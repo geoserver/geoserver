@@ -192,6 +192,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-java</artifactId>
       <version>${cucumber-java.version}</version>

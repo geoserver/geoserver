@@ -278,7 +278,13 @@
     <artifactId>gt-xsd-core</artifactId>
     <version>${gt.version}</version>
    </dependency>
-    <dependency>
+   <dependency>
+    <groupId>org.geotools.xsd</groupId>
+    <artifactId>gt-xsd-core</artifactId>
+    <version>${gt.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-ows</artifactId>
     <version>${gt.version}</version>

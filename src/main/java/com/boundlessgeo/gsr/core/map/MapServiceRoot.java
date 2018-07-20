@@ -9,6 +9,7 @@ import com.boundlessgeo.gsr.core.geometry.Envelope;
 import com.boundlessgeo.gsr.core.geometry.SpatialReference;
 import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
 
+import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -56,8 +57,12 @@ public class MapServiceRoot implements GSRModel {
         }
         this.singleFusedMapCache = false;
         this.capabilities = "Query";
-        //TODO HACK HACK HACk, it's not clear what this should actually be in a GeoServer context
-        this.spatialReference = new SpatialReferenceWKID(4326);
+        /* TODO it's not clear what this should actually be in a GeoServer context
+         * Services in ArcGIS are more like layerGroups than workspaces, and have an SRS associated with them.
+         * GeoServer doesn't have an equivalent concept for workspaces. We could define an algorithm to calculate
+         * a default WKID based on the layers in the workspace, but that would be no less hacky.
+         */
+        this.spatialReference = new SpatialReferenceWKID(SpatialReferences.DEFAULT_WKID);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

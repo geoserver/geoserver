@@ -11,6 +11,9 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public final class SpatialReferences {
+
+    public static int DEFAULT_WKID = 4326;
+
     private SpatialReferences() {
         throw new RuntimeException("No need to instantiate SpatialReferences, it has only static methods.");
     }

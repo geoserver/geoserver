@@ -75,8 +75,9 @@ public class JDBCResourceStore implements ResourceStore {
      *
      * @param resourceWatcher
      */
-    public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceWatcher) {
-        this.resourceNotificationDispatcher = resourceWatcher;
+    public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceNotDis) {
+        this.resourceNotificationDispatcher = resourceNotDis;
+        dir.setResourceNotificationDispatcher(resourceNotDis);
     }
 
     public JDBCResourceStore(JDBCDirectoryStructure dir) {
@@ -85,6 +86,7 @@ public class JDBCResourceStore implements ResourceStore {
 
     public JDBCResourceStore(DataSource ds, JDBCResourceStoreProperties config) {
         this(new JDBCDirectoryStructure(ds, config));
+        dir.setResourceNotificationDispatcher(resourceNotificationDispatcher);
     }
 
     public JDBCResourceStore(

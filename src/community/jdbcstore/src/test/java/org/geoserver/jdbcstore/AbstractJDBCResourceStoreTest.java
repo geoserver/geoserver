@@ -309,6 +309,29 @@ public abstract class AbstractJDBCResourceStoreTest {
     }
 
     @Test
+    public void testDelete() throws Exception {
+        standardData();
+        cache.create();
+
+        JDBCResourceStoreProperties config = getConfig(true, false);
+
+        ResourceStore fileStore = new FileSystemResourceStore(cache.getRoot());
+        ResourceStore jdbcStore = new JDBCResourceStore(support.getDataSource(), config, fileStore);
+
+        ((JDBCResourceStore) jdbcStore).setCache(new SimpleResourceCache(cache.getRoot()));
+        // Initialize FileA in cache
+        Resource jdbcResource = jdbcStore.get("FileA");
+
+        // Update the Resource in the JDBCStore
+        jdbcResource.delete();
+
+        // Verify this update actually occurs
+        Resource fileResource = fileStore.get("FileA");
+
+        assertThat(fileResource.getType(), equalTo(Resource.Type.UNDEFINED));
+    }
+
+    @Test
     public void testIgnoreDir() throws Exception {
         support.initialize();
         JDBCResourceStoreProperties config = getConfig(true, false);

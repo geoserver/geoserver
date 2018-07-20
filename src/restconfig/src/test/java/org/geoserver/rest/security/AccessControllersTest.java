@@ -4,7 +4,10 @@
  */
 package org.geoserver.rest.security;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.MessageFormat;
@@ -17,6 +20,7 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -544,6 +548,22 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         nl = dom.getElementsByTagName(CatalogModeController.MODE_ELEMENT);
         mode = nl.item(0).getTextContent();
         assertEquals(CatalogMode.CHALLENGE.toString(), mode);
+    }
+
+    @Test
+    public void testCatalogModeXXE() throws Exception {
+        String resource = getClass().getResource("secret.txt").toExternalForm();
+        String xml = "<!DOCTYPE " + CatalogModeController.XML_ROOT_ELEM + " [";
+        xml += "<!ELEMENT " + CatalogModeController.XML_ROOT_ELEM + " ANY>";
+        xml += "<!ENTITY xxe SYSTEM \"" + resource + "\">]>";
+        xml += "<" + CatalogModeController.XML_ROOT_ELEM + ">" + "\n";
+        xml += " <" + CatalogModeController.MODE_ELEMENT + ">&xxe;";
+        xml += "</" + CatalogModeController.MODE_ELEMENT + ">" + "\n";
+        xml += "</" + CatalogModeController.XML_ROOT_ELEM + ">" + "\n";
+
+        MockHttpServletResponse resp = putAsServletResponse(CATALOG_URI_XML, xml, "text/xml");
+        assertEquals(400, resp.getStatus());
+        assertThat(resp.getContentAsString(), not(containsString("HELLO WORLD")));
     }
 
     @Test

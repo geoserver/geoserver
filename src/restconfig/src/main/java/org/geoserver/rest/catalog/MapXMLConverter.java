@@ -44,6 +44,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
             throws IOException, HttpMessageNotReadableException {
         Object result;
         SAXBuilder builder = new SAXBuilder();
+        builder.setEntityResolver(catalog.getResourcePool().getEntityResolver());
         Document doc;
         try {
             doc = builder.build(inputMessage.getBody());

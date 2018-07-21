@@ -90,6 +90,11 @@ This section contains a number of examples which illustrate some of the most com
    security
    styles
    workspaces
+   stores   
+   imagemosaic
+   appschema
+   
+   
 
 .. toctree::
    :maxdepth: 1

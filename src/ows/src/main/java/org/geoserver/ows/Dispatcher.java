@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -63,6 +62,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -138,16 +138,21 @@ public class Dispatcher extends AbstractController {
     /** SOAP mime type */
     static final String SOAP_MIME = "application/soap+xml";
 
-    /** document builder, used to parse SOAP requests */
-    DocumentBuilder db;
+    private Method getEntityResolver = null;
 
     {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
+            // Use reflection to access class/method in the gs-main module.
+            Class<?> clazz = Class.forName("org.geoserver.util.EntityResolverProvider");
+            getEntityResolver = clazz.getMethod("getEntityResolver");
+        } catch (Exception e) {
+            // This should only happen when running the gs-ows unit tests.
+            logger.log(
+                    Level.WARNING,
+                    "Unable to load EntityResolverProvider. Entity resolution will be enabled: "
+                            + e.getClass().getName()
+                            + ": "
+                            + e.getMessage());
         }
     }
 
@@ -427,9 +432,15 @@ public class Dispatcher extends AbstractController {
         // not nice... but then again neither is using SOAP
         Document dom = null;
         try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Object provider = GeoServerExtensions.bean("entityResolverProvider");
+            if (provider != null && getEntityResolver != null) {
+                db.setEntityResolver((EntityResolver) getEntityResolver.invoke(provider));
+            }
             dom = db.parse(httpRequest.getInputStream());
-
-        } catch (SAXException e) {
+        } catch (Exception e) {
             throw new IOException("Error parsing SOAP request", e);
         }
 

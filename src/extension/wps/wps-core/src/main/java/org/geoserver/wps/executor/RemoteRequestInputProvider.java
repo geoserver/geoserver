@@ -204,10 +204,29 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             // actually parse the data
             if (input != null) {
                 CancellingInputStream is = new CancellingInputStream(input, listener);
-                return complexPPIO.decode(is);
+                Object result = complexPPIO.decode(is);
+                if (result == null || complexPPIO.getType().isInstance(result)) {
+                    return result;
+                }
+                // Some text parsers return a Map when it can not be converted to
+                // the proper type.  Detect those errors here rather than later.
+                throw new IllegalArgumentException(
+                        "Decoded result is not a "
+                                + complexPPIO.getType().getName()
+                                + ", got a: "
+                                + result.getClass().getName());
             } else {
                 throw new WPSException("Could not find a mean to read input " + inputId);
             }
+        } catch (WPSException e) {
+            throw e;
+        } catch (Exception e) {
+            // Log the exception and replace with a generic exception to prevent
+            // potentially disclosing sensitive information from a remote resource.
+            listener.exceptionOccurred(e);
+            String message = "Failed to retrieve value for input " + getInputId();
+            LOGGER.log(Level.WARNING, message, e);
+            throw new WPSException(message);
         } finally {
             listener.progress(100);
             listener.complete();

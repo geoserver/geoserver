@@ -131,7 +131,7 @@ public class StoredQuery {
         DocumentBuilder db;
         try {
             db = dbf.newDocumentBuilder();
-
+            db.setEntityResolver(catalog.getResourcePool().getEntityResolver());
         } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }

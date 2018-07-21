@@ -56,6 +56,8 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
     public static void initXStreamPersister(XStreamPersister xp) {
         XStream xs = xp.getXStream();
         xs.alias("oseo", OSEOInfo.class, OSEOInfoImpl.class);
+        xs.alias("productClass", ProductClass.class, ProductClass.class);
+        xs.allowTypeHierarchy(ProductClass.class);
     }
 
     @Override

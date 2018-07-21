@@ -26,7 +26,7 @@ create table collection (
   "eoPlatform" varchar,
   "eoPlatformSerialIdentifier" varchar,
   "eoInstrument" varchar,
-  "eoSensorType" varchar check ("eoSensorType" in ('OPTICAL', 'RADAR', 'ALTIMETRIC', 'ATMOSPHERIC', 'LIMB')),
+  "eoSensorType" varchar, -- this is configurable, so no checks on values anymore
   "eoCompositeType" varchar,
   "eoProcessingLevel" varchar,
   "eoOrbitType" varchar,

@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
+import static org.geoserver.opensearch.eo.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
@@ -20,6 +21,7 @@ import java.util.Map;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OSEOTestSupport;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
@@ -27,6 +29,7 @@ import org.geoserver.platform.OWS20Exception;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
 import org.junit.Before;
@@ -488,6 +491,15 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertBinaryFilter(filter, OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
     }
 
+    @Test
+    public void testCollectionSensorTypeCustom() throws Exception {
+        Map<String, String> map = toMap("sensorType", GS_PRODUCT.getName());
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(PropertyIsEqualTo.class));
+        assertBinaryFilter(
+                filter, OpenSearchAccess.EO_NAMESPACE, "sensorType", GS_PRODUCT.getName());
+    }
+
     private void assertBinaryFilter(
             Filter filter, String expectedNamespace, String expectedName, Object expectedValue) {
         BinaryComparisonOperator bce = (BinaryComparisonOperator) filter;
@@ -525,8 +537,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "[30");
         Filter filter = parseAndGetFilter(map);
         assertThat(filter, instanceOf(PropertyIsGreaterThanOrEqualTo.class));
-        assertBinaryFilter(
-                filter, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 30);
+        assertBinaryFilter(filter, ProductClass.OPTICAL.getNamespace(), "cloudCover", 30);
     }
 
     @Test
@@ -534,8 +545,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "20]");
         Filter filter = parseAndGetFilter(map);
         assertThat(filter, instanceOf(PropertyIsLessThanOrEqualTo.class));
-        assertBinaryFilter(
-                filter, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
+        assertBinaryFilter(filter, ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
     }
 
     @Test
@@ -548,12 +558,10 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(2, children.size());
         BinaryComparisonOperator op1 = (BinaryComparisonOperator) children.get(0);
         assertThat(op1, instanceOf(PropertyIsGreaterThanOrEqualTo.class));
-        assertBinaryFilter(
-                op1, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
+        assertBinaryFilter(op1, ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
         BinaryComparisonOperator op2 = (BinaryComparisonOperator) children.get(1);
         assertThat(op2, instanceOf(PropertyIsLessThanOrEqualTo.class));
-        assertBinaryFilter(
-                op2, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
+        assertBinaryFilter(op2, ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
     }
 
     @Test
@@ -566,12 +574,10 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(2, children.size());
         BinaryComparisonOperator op1 = (BinaryComparisonOperator) children.get(0);
         assertThat(op1, instanceOf(PropertyIsGreaterThan.class));
-        assertBinaryFilter(
-                op1, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
+        assertBinaryFilter(op1, ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);
         BinaryComparisonOperator op2 = (BinaryComparisonOperator) children.get(1);
         assertThat(op2, instanceOf(PropertyIsLessThan.class));
-        assertBinaryFilter(
-                op2, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
+        assertBinaryFilter(op2, ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
     }
 
     @Test
@@ -620,7 +626,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertThat(op, instanceOf(PropertyIsGreaterThan.class));
         assertBinaryFilter(
                 op,
-                OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(),
+                ProductClass.GENERIC.getNamespace(),
                 "creationDate",
                 Converters.convert("2016-01-01", Date.class));
     }
@@ -631,5 +637,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertNotNull(query);
         Filter filter = query.getFilter();
         return filter;
+    }
+
+    @Test
+    public void testCustomProperty() throws Exception {
+        Map<String, String> map = toMap("parentId", "gsTestCollection", "test", "abcde");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(IsEqualsToImpl.class));
+        assertBinaryFilter(filter, GS_PRODUCT.getNamespace(), "test", "abcde");
     }
 }

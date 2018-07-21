@@ -1,0 +1,22 @@
+{
+  "type": "Feature",
+  "geometry": {
+      "type":"Polygon",
+      "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+  },
+  "properties": {
+    "eop:identifier" : "GS_TEST_PRODUCT.02",
+    "timeStart" : "2018-01-01T00:00:00Z",
+    "timeEnd" : "2018-01-01T00:00:00Z",
+    "originalPackageLocation" : "/var/data/gs/2018/foo.zip",
+    "crs" : "EPSG:32632",
+    "eop:parentIdentifier" : "gsTestCollection",
+    "eop:acquisitionType" : "NOMINAL",
+    "eop:orbitNumber" : 65,
+    "eop:orbitDirection" : "DESCENDING",
+    "eop:creationDate" : "2018-01-01T00:00:00Z",
+    "eop:archivingCenter" : "DPA"
+    "eop:processingMode" : "DATA_DRIVEN",
+    "gs:test" : "123456",
+  }
+}

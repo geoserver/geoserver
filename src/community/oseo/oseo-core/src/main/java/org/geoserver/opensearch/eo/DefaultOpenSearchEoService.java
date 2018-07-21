@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geotools.data.DataUtilities;
@@ -97,7 +96,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         String sensorType = (String) sensorTypeProperty.getValue();
         ProductClass collectionClass = null;
         try {
-            collectionClass = OpenSearchAccess.ProductClass.valueOf(sensorType);
+            collectionClass = ProductClass.getProductClassFromName(geoServer, sensorType);
         } catch (Exception e) {
             LOGGER.warning(
                     "Could not understand sensor type "
@@ -107,8 +106,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         OpenSearchAccess access = getOpenSearchAccess();
         FeatureType productSchema = access.getProductSource().getSchema();
-        searchParameters.addAll(
-                getSearchParametersByClass(ProductClass.EOP_GENERIC, productSchema));
+        searchParameters.addAll(getSearchParametersByClass(ProductClass.GENERIC, productSchema));
         if (collectionClass != null) {
             searchParameters.addAll(getSearchParametersByClass(collectionClass, productSchema));
         }

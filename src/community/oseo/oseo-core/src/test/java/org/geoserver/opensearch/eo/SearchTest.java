@@ -41,7 +41,7 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("4")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -58,12 +58,13 @@ public class SearchTest extends OSEOTestSupport {
         assertNoResults(dom);
 
         // check entries
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("4")));
         // ... sorted by date
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("LANDSAT8")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[4]/at:title", equalTo("LANDSAT8")));
 
         // check the sentinel2 one
         assertThat(
@@ -171,7 +172,7 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("4")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("0")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -207,7 +208,7 @@ public class SearchTest extends OSEOTestSupport {
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         print(dom);
 
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("4")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("2")));
     }
 
@@ -239,7 +240,7 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 1, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "next", 2, 1);
-        assertHasLink(dom, "last", 3, 1);
+        assertHasLink(dom, "last", 4, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
@@ -250,16 +251,26 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 1, 1);
         assertHasLink(dom, "next", 3, 1);
-        assertHasLink(dom, "last", 3, 1);
+        assertHasLink(dom, "last", 4, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
 
-        // third and last page
+        // third page
         dom = getAsDOM("oseo/search?count=1&startIndex=3");
         assertHasLink(dom, "self", 3, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 2, 1);
-        assertHasLink(dom, "last", 3, 1);
+        assertHasLink(dom, "next", 4, 1);
+        assertHasLink(dom, "last", 4, 1);
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+
+        // fourth and last page
+        dom = getAsDOM("oseo/search?count=1&startIndex=4");
+        assertHasLink(dom, "self", 4, 1);
+        assertHasLink(dom, "first", 1, 1);
+        assertHasLink(dom, "previous", 3, 1);
+        assertHasLink(dom, "last", 4, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
@@ -276,7 +287,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
 
         // second page
         dom = getAsDOM("oseo/search?count=2&startIndex=3");
@@ -285,8 +296,9 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "previous", 1, 2);
         assertHasLink(dom, "last", 3, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("LANDSAT8")));
     }
 
     @Test
@@ -597,7 +609,7 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -608,9 +620,10 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:updated"));
 
         // check entries, only SENTINEL ones match
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("SENTINEL1")));
     }
 
     @Test
@@ -658,6 +671,25 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("LANDSAT8")));
+    }
+
+    @Test
+    public void testCustomClass() throws Exception {
+        // only the GS_TEST collection matches
+        Document dom = getAsDOM("oseo/search?sensorType=geoServer");
+        // print(dom);
+
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:sensorType='geoServer']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only one feature matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
     }
 
     @Test
@@ -712,6 +744,22 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@count]"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@eo:cloudCover='2]']"));
+    }
+
+    @Test
+    public void testProductByCustomProperty() throws Exception {
+        // match test property
+        Document dom = getAsDOM("oseo/search?parentId=gsTestCollection&test=abc");
+        print(dom);
+
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count]"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:test='abc']"));
     }
 
     @Test

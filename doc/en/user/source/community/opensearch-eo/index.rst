@@ -8,5 +8,6 @@ OpenSearch for EO
 
    intro
    installation
+   configuration
    database
    automation

@@ -27,9 +27,9 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.response.LinkFeatureComparator;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
 import org.geoserver.opensearch.rest.CollectionsController.IOConsumer;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -189,7 +189,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             if (OpenSearchAccess.EO_NAMESPACE.equals(uri)) {
                 prefix = "eo";
             } else {
-                for (ProductClass pc : ProductClass.values()) {
+                for (ProductClass pc : accessProvider.getProductClasses()) {
                     if (pc.getNamespace().equals(uri)) {
                         prefix = pc.getPrefix();
                         break;
@@ -411,8 +411,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 if ("eo".equals(prefix)) {
                     namespaceURI = OpenSearchAccess.EO_NAMESPACE;
                 } else {
-                    for (OpenSearchAccess.ProductClass pc :
-                            OpenSearchAccess.ProductClass.values()) {
+                    for (ProductClass pc : accessProvider.getProductClasses()) {
                         if (prefix.equals(pc.getPrefix())) {
                             namespaceURI = pc.getNamespace();
                         }

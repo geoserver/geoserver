@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.List;
 import org.geoserver.config.ServiceInfo;
 import org.geotools.util.Version;
 
@@ -14,11 +15,11 @@ import org.geotools.util.Version;
  */
 public interface OSEOInfo extends ServiceInfo {
 
-    public static int DEFAULT_MAXIMUM_RECORDS = 100;
-    public static int DEFAULT_RECORDS_PER_PAGE = 10;
+    int DEFAULT_MAXIMUM_RECORDS = 100;
+    int DEFAULT_RECORDS_PER_PAGE = 10;
 
     /** Version 1.0.0 */
-    public static final Version VERSION_1_0_0 = new Version("1.0.0");
+    Version VERSION_1_0_0 = new Version("1.0.0");
 
     /**
      * Returns the identifier of the OpenSearchAccess
@@ -48,12 +49,20 @@ public interface OSEOInfo extends ServiceInfo {
      *
      * @return
      */
-    public int getRecordsPerPage();
+    int getRecordsPerPage();
 
     /**
      * Sets the records per page, when no record is provided
      *
      * @param recordsPerPage
      */
-    public void setRecordsPerPage(int recordsPerPage);
+    void setRecordsPerPage(int recordsPerPage);
+
+    /**
+     * Live list of configured product classes. If none is configured, then a clone of {@link
+     * ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
+     *
+     * @return
+     */
+    List<ProductClass> getProductClasses();
 }

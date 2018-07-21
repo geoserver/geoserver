@@ -102,10 +102,12 @@ For this example the project will be called "hello_wps".
             <repository>
                 <id>boundless</id>
                 <name>Boundless Maven Repository</name>
-                <url>http://repo.boundlessgeo.com/main</url>
-                <snapshots>
-                    <enabled>true</enabled>
-                </snapshots>
+                <url>https://repo.boundlessgeo.com/main</url>
+            </repository>
+	    <repository>
+                <id>osgeo</id>
+                <name>Open Source Geospatial Foundation Repository</name>
+                <url>https://download.osgeo.org/webdav/geotools</url>
             </repository>
         </repositories>
 

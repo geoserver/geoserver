@@ -44,6 +44,9 @@ public class S3BlobStorePanel extends Panel {
                 new TextField<String>("prefix")
                         .add(new AttributeModifier("title", new ResourceModel("prefix.title"))));
         add(
+                new TextField<String>("endpoint")
+                        .add(new AttributeModifier("title", new ResourceModel("endpoint.title"))));
+        add(
                 new TextField<Integer>("maxConnections")
                         .setRequired(true)
                         .add(

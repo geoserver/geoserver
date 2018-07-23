@@ -791,6 +791,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         assertNotNull(schemaDefaultGeometry);
         assertNotNull(featureDefaultGeometry);
+        assertEquals("pointProperty", schemaDefaultGeometry.getLocalName());
         assertEquals(schemaDefaultGeometry, featureDefaultGeometry);
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2018 Open Source Geospatial Foundation. All rights reserved. 
+    This code is licensed under the GPL 2.0 license, available at the root application 
+    directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
+
+	<bean class="org.geoserver.platform.ModuleStatusImpl">
+		<constructor-arg index="0" value="sec-keycloak" />
+		<constructor-arg index="1" value="GeoServer Keycloak Security" />
+	</bean>
+
+	<!-- enables Keycloak as an auth-provider -->
+	<bean id="keycloakFilterProvider"
+		class="org.geoserver.security.keycloak.GeoServerKeycloakAuthenticationProvider" />
+
+	<!-- GeoServer UI for Keycloak auth config -->
+	<bean id="keycloakPanelInfo"
+		class="org.geoserver.web.security.keycloak.KeycloakAuthFilterPanelInfo">
+		<property name="id" value="security.keycloakAuthFilter" />
+		<property name="shortTitleKey" value="KeycloakAuthFilterPanel.short" />
+		<property name="titleKey" value="KeycloakAuthFilterPanel.title" />
+		<property name="descriptionKey" value="KeycloakAuthFilterPanel.description" />
+	</bean>
+
+</beans>

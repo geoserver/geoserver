@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+	<body>
+		<wicket:head>
+			<style type="text/css">
+				ul.horizontal div {
+				display:inline;
+				}
+			</style>
+		</wicket:head>
+		<wicket:extend>
+			<ul>
+				<li>
+					<fieldset>
+						<legend>
+							<span>
+								<wicket:message key="adapterConfig"></wicket:message>
+								<a href="#" wicket:id="adapterConfigHelp" class="help-link"></a>
+							</span>
+						</legend>
+						<ul>
+							<li>
+								<label for="adapterConfig">
+									<wicket:message key="adapterConfig"></wicket:message>
+								</label>
+								<!--input id="adapterConfig" wicket:id="adapterConfig" type="text" class="text" /-->
+								<textarea id="adapterConfig" wicket:id="adapterConfig" type="text" class="text" rows="10" cols="40" />
+							</li>
+						</ul>
+					</fieldset>
+				</li>
+			</ul>
+		</wicket:extend>
+	</body>
+</html>

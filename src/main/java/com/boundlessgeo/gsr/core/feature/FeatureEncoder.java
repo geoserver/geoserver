@@ -74,7 +74,7 @@ public class FeatureEncoder {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
         Map<String, Object> attributes = FeatureEncoder.attributeList(feature, objectIdFieldName);
         if (returnGeometry) {
-            return new Feature(GeometryEncoder
+            return new Feature(new GeometryEncoder()
                 .toRepresentation((com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(),
                     spatialReference), attributes);
         } else {

@@ -61,7 +61,7 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
         FeatureCollection<? extends FeatureType, ? extends Feature> features = LayersAndTables
             .getFeatureCollectionForLayerWithId(workspaceName, layerId, geometryTypeName, geometryText, inSRText,
-                outSRText, spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets,
+                outSRText, spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause,
                 returnGeometry, outFieldsText, layersAndTables);
         if (returnIdsOnly) {
             return FeatureEncoder.objectIds(features);

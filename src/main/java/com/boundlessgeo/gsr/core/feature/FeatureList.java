@@ -20,12 +20,12 @@ import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * List of {@link Feature}
+ * List of {@link Feature}, that can be serialized as JSON
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeatureList implements GSRModel {
 
-    public final String objectIdFieldName = "FID";
+    public final String objectIdFieldName = FeatureEncoder.OBJECTID_FIELD_NAME;
 
     public final String globalIdFieldName = "";
 

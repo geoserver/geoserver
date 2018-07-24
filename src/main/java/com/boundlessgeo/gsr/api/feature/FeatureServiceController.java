@@ -105,83 +105,17 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
             if (l.getType() != PublishedType.VECTOR) {
                 break;
             }
-
-            FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
-
-            final String geometryProperty;
-            final String temporalProperty;
-            final CoordinateReferenceSystem nativeCRS;
-
-            try {
-                GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
-                nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
-                geometryProperty = geometryDescriptor.getName().getLocalPart();
-                DimensionInfo timeInfo = featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-                if (timeInfo == null || !timeInfo.isEnabled()) {
-                    temporalProperty = null;
-                } else {
-                    temporalProperty = timeInfo.getAttribute();
-                }
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Unable to determine geometry type for query request");
-            }
-
-            //Query Parameters
-            final CoordinateReferenceSystem outSR = Utils.parseSpatialReference(outSRText);
-
-            SpatialRelationship spatialRel = null;
-            if (StringUtils.isNotEmpty(spatialRelText)) {
-                spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
-            }
-            Filter objectIdFilter = LayersAndTables.parseObjectIdFilter(objectIdsText);
-            Filter filter = Filter.INCLUDE;
-
-            final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRText, geometryText);
-            if (StringUtils.isNotEmpty(geometryText)) {
-                filter = Utils.buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel,
-                    relatePattern, inSR, nativeCRS);
-            }
-
-            if (time != null) {
-                filter = FILTERS.and(filter, Utils.parseTemporalFilter(temporalProperty, time));
-            }
-            if (text != null) {
-                throw new UnsupportedOperationException("Text filter not implemented");
-            }
-            if (maxAllowableOffsets != null) {
-                throw new UnsupportedOperationException(
-                    "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
-            }
-            if (whereClause != null) {
-                final Filter whereFilter;
-                try {
-                    whereFilter = ECQL.toFilter(whereClause);
-                } catch (CQLException e) {
-                    throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
-                }
-                List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
-                filter = FILTERS.and(children);
-            }
-            String[] properties = LayersAndTables.parseOutFields(outFieldsText);
-
-            FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
-            final String[] effectiveProperties = LayersAndTables
-                .adjustProperties(returnGeometry, properties, source.getSchema());
-
-            final Query query;
-            if (effectiveProperties == null) {
-                query = new Query(featureType.getName(), filter);
-            } else {
-                query = new Query(featureType.getName(), filter, effectiveProperties);
-            }
-            query.setCoordinateSystemReproject(outSR);
-            FeatureList features = new FeatureList(source.getFeatures(query), true);
+            FeatureList features = new FeatureList(LayersAndTables.getFeatureCollectionForLayer(workspaceName,
+                    layerOrTable.getId(), geometryTypeName, geometryText, inSRText, outSRText, spatialRelText,
+                    objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause, returnGeometry,
+                    outFieldsText, l), returnGeometry, outSRText);
             if (features.features.size() > 0) {
                 layer.setFeatures(features);
                 queryResult.getLayers().add(layer);
             }
         }
 
+        //TODO: What should returnIdsOnly look like here?
         return queryResult;
     }
 }

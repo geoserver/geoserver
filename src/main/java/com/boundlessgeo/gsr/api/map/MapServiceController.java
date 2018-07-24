@@ -97,7 +97,7 @@ public class MapServiceController extends AbstractGSRController {
             try {
                 FeatureCollection collection = LayersAndTables
                     .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
-                        inSRCode, null, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, true,
+                        inSRCode, null, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, null,true,
                         null, layer.layer);
 
                 result.getResults().addAll(IdentifyServiceResult.encode(collection, layer));

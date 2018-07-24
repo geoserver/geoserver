@@ -31,7 +31,7 @@ public class FeatureLayer extends AbstractLayerOrTable {
     // htmlPopupType - could consider use of GetFeatureInfo
 
     // objectIdField - placeholder for FeatureId
-    protected String objectIdField = "objectid";
+    public String objectIdField = FeatureEncoder.OBJECTID_FIELD_NAME;
 
     // globalIdField - placeholder for FeatureId
     protected String globalIdField = "";

@@ -4,10 +4,10 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
-public final class GeometryEncoder extends AbstractGeometryEncoder {
+public final class GeometryEncoder extends AbstractGeometryEncoder<Double> {
 
-    protected double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
-        return new double[] {coord.x, coord.y};
+    protected Double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {
+        return new Double[] {coord.x, coord.y};
     }
 
     @Override

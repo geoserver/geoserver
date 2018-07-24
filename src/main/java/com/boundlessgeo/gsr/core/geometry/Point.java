@@ -25,13 +25,13 @@ public class Point extends Geometry {
         this.geometryType = geometryType;
     }
 
-    private double x;
+    private Number x;
 
-    private double y;
+    private Number y;
 
     private SpatialReference spatialReference;
 
-    public double getX() {
+    public Number getX() {
         return x;
     }
 
@@ -39,7 +39,7 @@ public class Point extends Geometry {
         this.x = x;
     }
 
-    public double getY() {
+    public Number getY() {
         return y;
     }
 
@@ -55,7 +55,7 @@ public class Point extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Point(double x, double y, SpatialReference spatialReference) {
+    public Point(Number x, Number y, SpatialReference spatialReference) {
         this.x = x;
         this.y = y;
         this.spatialReference = spatialReference;

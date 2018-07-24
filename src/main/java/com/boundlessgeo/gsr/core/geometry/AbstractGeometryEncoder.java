@@ -21,7 +21,7 @@ import net.sf.json.util.JSONStringer;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractGeometryEncoder implements Converter {
+public abstract class AbstractGeometryEncoder<T extends Number> implements Converter {
 
     @Override
     public void marshal(Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
@@ -64,7 +64,8 @@ public abstract class AbstractGeometryEncoder implements Converter {
     /**
      * Converts a GeoTools {@link Geometry} to a GSR {@link com.boundlessgeo.gsr.core.geometry.Geometry}
      *
-     * @param geom
+     * @param geom The Geometry to convert
+     * @param spatialReference The spatialReference of geom. TODO: Can't we just get the spatialReference from geom?
      * @return a {@link com.boundlessgeo.gsr.core.geometry.Geometry} or {@link GeometryArray}
      */
     public com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(
@@ -81,41 +82,41 @@ public abstract class AbstractGeometryEncoder implements Converter {
 
         if (geom instanceof com.vividsolutions.jts.geom.Point) {
             com.vividsolutions.jts.geom.Point p = (com.vividsolutions.jts.geom.Point) geom;
-            double[] coords = embeddedPoint(p);
+            T[] coords = embeddedPoint(p);
 
             return new Point(coords[0], coords[1], spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPoint) {
             com.vividsolutions.jts.geom.MultiPoint mpoint = (com.vividsolutions.jts.geom.MultiPoint) geom;
-            List<double[]> points = new ArrayList<>();
+            List<T[]> points = new ArrayList<>();
             for (int i = 0; i < mpoint.getNumPoints(); i++) {
                 points.add(embeddedPoint((com.vividsolutions.jts.geom.Point) mpoint.getGeometryN(i)));
             }
-            return new Multipoint(points.toArray(new double[points.size()][]), spatialReference);
+            return new Multipoint(points.toArray(new Number[points.size()][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.LineString) {
             com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) geom;
-            return new Polyline(new double[][][]{embeddedLineString(line)}, spatialReference);
+            return new Polyline(new Number[][][]{embeddedLineString(line)}, spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiLineString) {
             com.vividsolutions.jts.geom.MultiLineString mline = (com.vividsolutions.jts.geom.MultiLineString) geom;
-            List<double[][]> paths = new ArrayList<>();
+            List<T[][]> paths = new ArrayList<>();
 
             for (int i = 0; i < mline.getNumGeometries(); i++) {
                 com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) mline.getGeometryN(i);
                 paths.add(embeddedLineString(line));
             }
-            return new Polyline(paths.toArray(new double[paths.size()][][]), spatialReference);
+            return new Polyline(paths.toArray(new Number[paths.size()][][]), spatialReference);
 
         } else if (geom instanceof com.vividsolutions.jts.geom.Polygon) {
             com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
-            List<double[][]> rings = new ArrayList<>();
+            List<T[][]> rings = new ArrayList<>();
             rings.add(embeddedLineString(polygon.getExteriorRing()));
 
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 rings.add(embeddedLineString(polygon.getInteriorRingN(i)));
             }
-            return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
+            return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            List<double[][]> rings = new ArrayList<>();
+            List<T[][]> rings = new ArrayList<>();
 
             for (int i = 0; i < mpoly.getNumGeometries(); i++) {
                 //for now, assume these are all polygons. that SHOULD be the case anyway
@@ -130,7 +131,7 @@ public abstract class AbstractGeometryEncoder implements Converter {
                 }
             }
 
-            return new Polygon(rings.toArray(new double[rings.size()][][]), spatialReference);
+            return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
 
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;
@@ -145,27 +146,27 @@ public abstract class AbstractGeometryEncoder implements Converter {
         }
     }
 
-    protected abstract double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord);
+    protected abstract T[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord);
 
     protected abstract void startFeature();
 
     protected abstract void endFeature();
 
-    protected double[] embeddedPoint(com.vividsolutions.jts.geom.Point point) {
+    protected T[] embeddedPoint(com.vividsolutions.jts.geom.Point point) {
         startFeature();
-        double [] p = embeddedCoordinate(point.getCoordinate());
+        T [] p = embeddedCoordinate(point.getCoordinate());
         endFeature();
         return p;
     }
 
-    protected double[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
-        List<double[]> points = new ArrayList<>();
+    protected T[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
+        List<T[]> points = new ArrayList<>();
         startFeature();
         for (com.vividsolutions.jts.geom.Coordinate c : line.getCoordinates()) {
             points.add(embeddedCoordinate(c));
         }
         endFeature();
-        return points.toArray(new double[points.size()][]);
+        return (T[][])points.toArray(new Number[points.size()][]);
     }
 
     protected static GeometryTypeEnum determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {

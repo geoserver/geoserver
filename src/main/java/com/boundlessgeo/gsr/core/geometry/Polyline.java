@@ -21,15 +21,15 @@ public class Polyline extends Geometry {
         this.geometryType = geometryType;
     }
 
-    private double[][][] paths;
+    private Number[][][] paths;
 
     private SpatialReference spatialReference;
 
-    public double[][][] getPaths() {
+    public Number[][][] getPaths() {
         return paths;
     }
 
-    public void setPaths(double[][][] paths) {
+    public void setPaths(Number[][][] paths) {
         this.paths = paths;
     }
 
@@ -41,7 +41,7 @@ public class Polyline extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Polyline(double[][][] paths, SpatialReference spatialRef) {
+    public Polyline(Number[][][] paths, SpatialReference spatialRef) {
         this.paths = paths;
         this.spatialReference = spatialRef;
         this.geometryType = GeometryTypeEnum.POLYLINE;

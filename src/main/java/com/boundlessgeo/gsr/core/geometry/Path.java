@@ -11,17 +11,17 @@ package com.boundlessgeo.gsr.core.geometry;
  */
 public class Path {
 
-    private double[] coordinates;
+    private Number[] coordinates;
 
-    public Path(double[] coords) {
+    public Path(Number[] coords) {
         this.coordinates = coords;
     }
 
-    public double[] getCoordinates() {
+    public Number[] getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(double[] coordinates) {
+    public void setCoordinates(Number[] coordinates) {
         this.coordinates = coordinates;
     }
 }

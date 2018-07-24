@@ -15,14 +15,14 @@ public class RingTest {
      */
     @Test
     public void testIsValid() {
-        double[] c1 = { 0, 0 };
-        double[] c2 = { 0, 1 };
-        double[] c3 = { 1, 1 };
-        double[] c4 = { 1, 0 };
-        double[] c5 = { 1, 2 };
+        Double[] c1 = { 0.0, 0.0 };
+        Double[] c2 = { 0.0, 1.0 };
+        Double[] c3 = { 1.0, 1.0 };
+        Double[] c4 = { 1.0, 0.0 };
+        Double[] c5 = { 1.0, 2.0 };
 
-        double[][] coords1 = { c1, c2, c3, c4, c1 };
-        double[][] coords2 = { c1, c2, c3, c4, c5 };
+        Double[][] coords1 = { c1, c2, c3, c4, c1 };
+        Double[][] coords2 = { c1, c2, c3, c4, c5 };
 
         Ring validRing = new Ring(coords1);
         Ring invalidRing = new Ring(coords2);

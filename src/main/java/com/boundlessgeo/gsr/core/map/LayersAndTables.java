@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 
 import com.boundlessgeo.gsr.ObjectIdRemappingFilterVisitor;
 import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -285,13 +286,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
         // TODO update this to match outSR spec
         // "If outSR is not specified, the geometry is returned in the spatial reference of the map."
         final CoordinateReferenceSystem outSR = Utils
-            .parseSpatialReference(StringUtils.isNotEmpty(outSRText) ? outSRText : "4326");
+            .parseSpatialReference(StringUtils.isNotEmpty(outSRText) ? outSRText : String.valueOf(SpatialReferences.DEFAULT_WKID));
         SpatialRelationship spatialRel = null;
         if (StringUtils.isNotEmpty(spatialRelText)) {
             spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
         }
 
-        String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : "4326";
+        String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : String.valueOf(SpatialReferences.DEFAULT_WKID);
         final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRCode, geometryText);
         Filter filter = Filter.INCLUDE;
 

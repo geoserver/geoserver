@@ -7,6 +7,8 @@ package org.geoserver.csw.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Set;
 import javax.xml.transform.TransformerException;
 import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.GetRecordsType;
@@ -34,7 +36,12 @@ public abstract class AbstractRecordsResponse extends Response {
     FeatureType recordType;
 
     public AbstractRecordsResponse(FeatureType recordType, String schema, GeoServer gs) {
-        super(CSWRecordsResult.class, "application/xml");
+        this(recordType, schema, Collections.singleton("application/xml"), gs);
+    }
+
+    public AbstractRecordsResponse(
+            FeatureType recordType, String schema, Set<String> outputFormats, GeoServer gs) {
+        super(CSWRecordsResult.class, outputFormats);
         this.schema = schema;
         this.gs = gs;
         this.recordType = recordType;

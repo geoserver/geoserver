@@ -6,24 +6,34 @@
 package org.geoserver.csw;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
-import junit.framework.TestCase;
+import javax.xml.transform.TransformerException;
 import net.opengis.cat.csw20.Csw20Factory;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
+import net.opengis.cat.csw20.RequestBaseType;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.response.AbstractRecordsResponse;
 import org.geoserver.csw.response.CSWRecordTransformer;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.simple.SimpleCatalogStore;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Files;
 import org.geotools.csw.CSW;
 import org.geotools.csw.DC;
@@ -33,16 +43,47 @@ import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.ows.OWS;
 import org.geotools.xlink.XLINK;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-public class CSWRecordResponseTest extends TestCase {
+public class CSWRecordResponseTest extends CSWSimpleTestSupport {
+
+    class CustomRecordResponse extends AbstractRecordsResponse {
+
+        public CustomRecordResponse(GeoServer gs) {
+            super(
+                    CSWRecordDescriptor.RECORD_TYPE,
+                    CSW.NAMESPACE,
+                    new HashSet<String>(
+                            Arrays.asList(new String[] {"application/xml", "text/xml"})),
+                    gs);
+        }
+
+        @Override
+        protected void transformResponse(
+                OutputStream output,
+                CSWRecordsResult result,
+                RequestBaseType request,
+                CSWInfo csw) {
+            CSWRecordTransformer transformer =
+                    new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
+            transformer.setIndentation(2);
+            try {
+                transformer.transform(result, output);
+            } catch (TransformerException e) {
+                throw new ServiceException(e);
+            }
+        }
+    }
 
     SimpleCatalogStore store =
             new SimpleCatalogStore(
                     Files.asResource(new File("./src/test/resources/org/geoserver/csw/records")));
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("csw", CSW.NAMESPACE);
@@ -217,6 +258,28 @@ public class CSWRecordResponseTest extends TestCase {
                 "Vestibulum quis ipsum sit amet metus imperdiet vehicula. Nulla scelerisque cursus mi.",
                 xpathBase + "dct:abstract",
                 dom);
+    }
+
+    @Test
+    public void testOutputFormats() throws IOException, SAXException, XpathException {
+        GeoServer geoserver = getGeoServer();
+        // Collection<? extends ServiceInfo>
+        CSWInfo cswInfo = geoserver.getServiceByName("CSW", CSWInfo.class);
+
+        CustomRecordResponse customResponse = new CustomRecordResponse(geoserver);
+        assertTrue(customResponse.getOutputFormats().contains("text/xml"));
+        GetRecordsType request = getCSWRequest();
+        request.setOutputFormat("text/xml");
+
+        CSWRecordsResult result = getCSWResponse();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        customResponse.transformResponse(baos, result, request, cswInfo);
+        String responseString = baos.toString();
+        Document dom = XMLUnit.buildControlDocument(responseString);
+
+        // checking root elements
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", dom);
     }
 
     private GetRecordsType getCSWRequest() {

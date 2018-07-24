@@ -46,6 +46,8 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
 
     private Catalog rawCatalog;
 
+    private HzResourceNotificationDispatcher rnd;
+
     private static HzCluster CLUSTER;
 
     /**
@@ -123,6 +125,8 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
             hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig(this.rl));
             CLUSTER = this;
         }
+
+        rnd.setCluster(this);
     }
 
     @Override
@@ -151,6 +155,10 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
      */
     public void setResourceStore(ResourceStore dd) throws IOException {
         rl = dd;
+    }
+
+    public void setResourceNotificationDispatcher(HzResourceNotificationDispatcher rnd) {
+        this.rnd = rnd;
     }
 
     /** For Spring initialisation, don't call otherwise. */

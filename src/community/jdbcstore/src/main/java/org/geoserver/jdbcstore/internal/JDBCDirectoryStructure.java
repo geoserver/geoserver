@@ -21,8 +21,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import org.geoserver.jdbcstore.internal.JDBCQueryHelper.*;
 import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.ResourceListener;
+import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.util.CacheProvider;
 import org.geoserver.util.DefaultCacheProvider;
 
@@ -59,6 +61,8 @@ public class JDBCDirectoryStructure {
     private JDBCQueryHelper helper;
 
     Cache<ArrayList<String>, EntryMetaData> entryCache;
+
+    private ResourceNotificationDispatcher resourceNotificationDispatcher;
 
     private static class EntryMetaData implements Serializable {
         private static final long serialVersionUID = 4442694295286861328L;
@@ -220,7 +224,7 @@ public class JDBCDirectoryStructure {
         }
 
         public void setContent(InputStream is) {
-            md.lastModified = new Timestamp(new java.util.Date().getTime());
+            md.lastModified = new Timestamp(System.currentTimeMillis());
             if (helper.updateQuery(
                             TABLE_RESOURCES,
                             new PathSelector(path),
@@ -302,7 +306,7 @@ public class JDBCDirectoryStructure {
             }
 
             ByteArrayInputStream is = new ByteArrayInputStream(new byte[0]);
-            /*Integer*/ md.oid =
+            md.oid =
                     helper.insertQuery(
                             TABLE_RESOURCES,
                             new Assignment<String>(NAME, getName()),
@@ -326,14 +330,7 @@ public class JDBCDirectoryStructure {
         }
 
         public String toString() {
-            StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < path.size(); i++) {
-                if (i > 0) { // no leading slash
-                    buf.append("/");
-                }
-                buf.append(path.get(i));
-            }
-            return buf.toString();
+            return mergePath(path);
         }
 
         @Override
@@ -363,6 +360,17 @@ public class JDBCDirectoryStructure {
         protected JDBCDirectoryStructure getStructure() {
             return JDBCDirectoryStructure.this;
         }
+    }
+
+    protected String mergePath(List<String> path) {
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < path.size(); i++) {
+            if (i > 0) { // no leading slash
+                buf.append("/");
+            }
+            buf.append(path.get(i));
+        }
+        return buf.toString();
     }
 
     public JDBCDirectoryStructure(DataSource ds, JDBCResourceStoreProperties config) {
@@ -419,6 +427,19 @@ public class JDBCDirectoryStructure {
                                                                         LAST_MODIFIED
                                                                                 .getFieldName());
                                             }
+                                            resourceNotificationDispatcher.addListener(
+                                                    mergePath(path),
+                                                    new ResourceListener() {
+
+                                                        @Override
+                                                        public void changed(
+                                                                ResourceNotification notify) {
+                                                            entryCache().invalidate(path);
+                                                            resourceNotificationDispatcher
+                                                                    .removeListener(
+                                                                            md.toString(), this);
+                                                        }
+                                                    });
                                             return md;
                                         }
                                     }));
@@ -531,5 +552,9 @@ public class JDBCDirectoryStructure {
             qb.addParameter(new Parameter<String>(TYPE_STRING, name));
             return qb;
         }
+    }
+
+    public void setResourceNotificationDispatcher(ResourceNotificationDispatcher resourceNotDis) {
+        this.resourceNotificationDispatcher = resourceNotDis;
     }
 }

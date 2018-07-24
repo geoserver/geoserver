@@ -8,7 +8,7 @@
   <artifactId>gsr</artifactId>
   <packaging>jar</packaging>
   <name>GeoServices REST API</name>
-  <version>0.3</version>
+  <version>0.4</version>
 
   <repositories>
     <repository>

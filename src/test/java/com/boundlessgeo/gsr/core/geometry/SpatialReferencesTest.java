@@ -21,11 +21,11 @@ public class SpatialReferencesTest {
         //Google Web Mercator
         sr = (SpatialReferenceWKID) SpatialReferences.fromCRS(Utils.parseSpatialReference("900913"));
         assertEquals(900913, sr.getWkid());
-        assertEquals(3857, sr.getLatestWkid());
+        assertEquals(900913, sr.getLatestWkid());
 
         //ESRI Web Mercator
         sr = (SpatialReferenceWKID) SpatialReferences.fromCRS(Utils.parseSpatialReference("102100"));
         assertEquals(102100, sr.getWkid());
-        assertEquals(3857, sr.getLatestWkid());
+        assertEquals(102100, sr.getLatestWkid());
     }
 }

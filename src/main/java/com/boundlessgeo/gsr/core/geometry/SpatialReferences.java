@@ -27,16 +27,19 @@ public final class SpatialReferences {
             //strip off EPSG
             String code = epsgCode.substring(epsgCode.lastIndexOf(GenericName.DEFAULT_SEPARATOR) + 1);
             SpatialReferenceWKID sr = new SpatialReferenceWKID(Integer.parseInt(code));
+            /* TODO: Re-renable this once BSE is on GS 2.13.2 or newer
             Integer latestWkid = latestWkid(crs);
             if (latestWkid != null) {
                 sr.setLatestWkid(latestWkid);
             }
+            */
             return sr;
         } else {
             return new SpatialReferenceWKT(crs.toWKT());
         }
     }
 
+    /* TODO: Re-renable this once BSE is on GS 2.13.2 or newer
     public static Integer latestWkid(CoordinateReferenceSystem crs) throws FactoryException {
         if (!CRS.isTransformationRequired(CRS.decode("EPSG:3857"), crs)) {
             return 3857;
@@ -46,4 +49,5 @@ public final class SpatialReferences {
         }
         return null;
     }
+    */
 }

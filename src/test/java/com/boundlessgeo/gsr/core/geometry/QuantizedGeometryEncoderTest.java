@@ -19,22 +19,19 @@ public class QuantizedGeometryEncoderTest {
 
     @Test
     public void testRepresentation() throws URISyntaxException, IOException, FactoryException {
-        //test based on actual test data
-        //wkid 102100
+        //test based on real data from an ArcGIS JS API app
         final int testSRID = 102100;
 
         File jsonFile = new File(getClass().getResource("sample_geometry.json").toURI());
         net.sf.json.JSON json = JSONSerializer.toJSON(FileUtils.readFileToString(jsonFile, "UTF-8"));
 
         com.vividsolutions.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToGeometry(json);
-        inputGeometry.setSRID(testSRID);
 
         QuantizedGeometryEncoder geometryEncoder = new QuantizedGeometryEncoder(
                 QuantizedGeometryEncoder.Mode.view,
                 QuantizedGeometryEncoder.OriginPosition.upperLeft,
                 38.21851414253776,
-                new Envelope(-17787495.232546896,19386896.43321582,1495796.1696307966,9570643.396627536),
-                Utils.parseSpatialReference(String.valueOf(testSRID)));
+                new Envelope(-17787495.232546896,19386896.43321582,1495796.1696307966,9570643.396627536));
 
         Geometry outputGeometry = geometryEncoder.toRepresentation(inputGeometry, new SpatialReferenceWKID(testSRID));
 
@@ -64,7 +61,7 @@ public class QuantizedGeometryEncoderTest {
                         "[0,1]" +
                     "]" +
                 "]}";
-                */
+        */
 
         String expectedJson =
                 "{\"geometryType\":\"esriGeometryPolygon\"," +

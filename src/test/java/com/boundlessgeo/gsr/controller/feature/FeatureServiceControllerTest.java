@@ -116,4 +116,74 @@ public class FeatureServiceControllerTest extends ControllerTest {
         JSONArray layers = (JSONArray) object.get("features");
         assertEquals(2, layers.size());
     }
+
+    @Test
+    public void testFeaturesNative() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&objectIds=0"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        assertFalse(object.has("transform"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(1, layers.size());
+
+        JSONObject geometry = layers.getJSONObject(0).getJSONObject("geometry");
+        assertEquals("4326", geometry.getJSONObject("spatialReference").getString("wkid"));
+        assertEquals(-92.99955, geometry.getDouble("x"), 0.0000001);
+        assertEquals(4.524015, geometry.getDouble("y"), 0.0000001);
+    }
+
+    @Test
+    public void testFeaturesReprojected() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json"
+                + "&objectIds=0&outSR=102100"));
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+        assertFalse(object.has("transform"));
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(1, layers.size());
+
+        JSONObject geometry = layers.getJSONObject(0).getJSONObject("geometry");
+        assertEquals("102100", geometry.getJSONObject("spatialReference").getString("wkid"));
+        assertEquals(-10352662.0, geometry.getDouble("x"), 0.001);
+        assertEquals(504135.16, geometry.getDouble("y"), 0.001);
+    }
+
+    @Test
+    public void testFeaturesQuantized() throws Exception {
+        JSON result = getAsJSON(query("cdf", "/3/query?f=json&objectIds=0&outSR=102100" +
+                "&quantizationParameters={" +
+                    "\"mode\":\"view\"," +
+                    "\"originPosition\":\"upperLeft\"," +
+                    "\"tolerance\":1000," +
+                    "\"extent\":{" +
+                        "\"xmin\":-100.0," +
+                        "\"ymin\":0.0," +
+                        "\"xmax\":-80.0," +
+                        "\"ymax\":10.0," +
+                        "\"spatialReference\":{\"wkid\":4326,\"latestWkid\":4326}" +
+                    "}" +
+                "}"));
+
+        System.out.println(result.toString());
+        JSONObject object = (JSONObject) result;
+        assertFalse(object.has("error"));
+
+        assertTrue(object.has("transform"));
+        JSONObject transform = object.getJSONObject("transform");
+        assertEquals(1000.0, transform.getJSONArray("scale").getDouble(0), 0.01);
+        assertEquals(-11131949, transform.getJSONArray("translate").getDouble(0), 0.01);
+        assertEquals(1118890.0, transform.getJSONArray("translate").getDouble(1), 0.01);
+
+        JSONArray layers = (JSONArray) object.get("features");
+        assertEquals(1, layers.size());
+
+        JSONObject geometry = layers.getJSONObject(0).getJSONObject("geometry");
+        assertEquals("102100", geometry.getJSONObject("spatialReference").getString("wkid"));
+        assertEquals(779L, geometry.getLong("x"));
+        assertEquals(615L, geometry.getLong("y"));
+    }
+
 }

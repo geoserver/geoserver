@@ -21,6 +21,16 @@ import net.sf.json.util.JSONStringer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract encoder for encoding {@link Geometry JTS Geometries} as
+ * {@link com.boundlessgeo.gsr.core.geometry.Geometry GSR Geometries}
+ *
+ * Also includes a number of static utility methods used encode and decode envelopes and other geometries
+ *
+ * TODO: While this technically implements converter, the converter part doesn't actually do anything yet. Fix this.
+ *
+ * @param <T> The coordinate type. Must be a {@link Number}.
+ */
 public abstract class AbstractGeometryEncoder<T extends Number> implements Converter {
 
     @Override
@@ -33,12 +43,25 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return null;
     }
 
+    /**
+     * Converts a JTS Envelope to a GSR JSON string
+     *
+     * @param envelope the envelope
+     * @return JSON string representation
+     */
     public static String toJson(Envelope envelope) {
         JSONStringer json = new JSONStringer();
         envelopeToJson(envelope, json);
         return json.toString();
     }
 
+    /**
+     * Converts a JTS Envelope with a Spatial Reference to a GSR JSON string
+     *
+     * @param envelope the envelope
+     * @param sr the spatial reference
+     * @return JSON string representation
+     */
     public static void referencedEnvelopeToJson(Envelope envelope, SpatialReference sr, JSONBuilder json) {
         json.object();
         envelopeCoordsToJson(envelope, json);
@@ -47,12 +70,24 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         json.endObject();
     }
 
+    /**
+     * Converts a JTS Envelope to a JSON object
+     *
+     * @param envelope the envelope
+     * @param json The JSONbuilder to add the envelope to
+     */
     public static void envelopeToJson(Envelope envelope, JSONBuilder json) {
         json.object();
         envelopeCoordsToJson(envelope, json);
         json.endObject();
     }
 
+    /**
+     * Converts a JTS Envelope to a set of x and y keys for an existing JSON object
+     *
+     * @param envelope the envelope
+     * @param json The JSONbuilder to add the keys to
+     */
     private static void envelopeCoordsToJson(Envelope envelope, JSONBuilder json) {
         json
           .key("xmin").value(envelope.getMinX())
@@ -65,7 +100,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      * Converts a GeoTools {@link Geometry} to a GSR {@link com.boundlessgeo.gsr.core.geometry.Geometry}
      *
      * @param geom The Geometry to convert
-     * @param spatialReference The spatialReference of geom. TODO: Can't we just get the spatialReference from geom?
+     * @param spatialReference The spatialReference of geom.
      * @return a {@link com.boundlessgeo.gsr.core.geometry.Geometry} or {@link GeometryArray}
      */
     public com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(
@@ -146,12 +181,35 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         }
     }
 
+    /**
+     * Encodes a coordinate.
+     *
+     * All methods which encode a feature delegate to this method; implementations of {@link AbstractGeometryEncoder}
+     * should override it with the applicable implementation.
+     *
+     * @param coord The Coordinate to encode
+     * @return The coordinate as an array.
+     */
     protected abstract T[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord);
 
+    /**
+     * Called immediately before a new feature is encoded.
+     * Used by subclasses for to handle certain special cases.
+     */
     protected abstract void startFeature();
 
+    /**
+     * Called immediately after a feature is encoded.
+     * Used by subclasses for to handle certain special cases.
+     */
     protected abstract void endFeature();
 
+    /**
+     * Encodes a point feature
+     *
+     * @param point the point to encode.
+     * @return the encoded point
+     */
     protected T[] embeddedPoint(com.vividsolutions.jts.geom.Point point) {
         startFeature();
         T [] p = embeddedCoordinate(point.getCoordinate());
@@ -159,6 +217,12 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return p;
     }
 
+    /**
+     * Encodes a linestring feature (this may be a line feature, or one ring of a polygon feature).
+     *
+     * @param line the linestring to encode
+     * @return the encoded linestring
+     */
     protected T[][] embeddedLineString(com.vividsolutions.jts.geom.LineString line) {
         List<T[]> points = new ArrayList<>();
         startFeature();
@@ -169,6 +233,14 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return (T[][])points.toArray(new Number[points.size()][]);
     }
 
+    /**
+     * Determines the geometry type of geometries in a geometry collection.
+     *
+     * @param collection The geometry collection
+     * @return The type of all geometries in the collection, or {@link GeometryTypeEnum#POINT} if the collection is
+     *         empty.
+     * @throws IllegalArgumentException if the gemetry collection contains multiple geometry types
+     */
     protected static GeometryTypeEnum determineGeometryType(com.vividsolutions.jts.geom.GeometryCollection collection) {
         if (collection.getNumGeometries() == 0) {
             return GeometryTypeEnum.POINT;
@@ -199,6 +271,12 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return coordinates;
     }
 
+    /**
+     * Converts a JSON object to an envelope
+     *
+     * @param json the json object representing an envelope
+     * @return the envelope
+     */
     public static Envelope jsonToEnvelope(net.sf.json.JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("An envelope must be encoded as a JSON Object");
@@ -211,6 +289,12 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         return new Envelope(minx, maxx, miny, maxy);
     }
 
+    /**
+     * Converts a JSON object to a geometry
+     *
+     * @param json the json object representing a geometry
+     * @return the geometry
+     */
     public static Geometry jsonToGeometry(net.sf.json.JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("A geometry must be encoded as a JSON Object");

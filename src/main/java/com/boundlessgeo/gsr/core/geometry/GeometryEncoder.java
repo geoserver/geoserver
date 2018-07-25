@@ -4,6 +4,9 @@
  */
 package com.boundlessgeo.gsr.core.geometry;
 
+/**
+ * Default implementation of {@link AbstractGeometryEncoder}. Encodes geometries as arrays of doubles.
+ */
 public final class GeometryEncoder extends AbstractGeometryEncoder<Double> {
 
     protected Double[] embeddedCoordinate(com.vividsolutions.jts.geom.Coordinate coord) {

@@ -3,9 +3,16 @@ package com.boundlessgeo.gsr.core.feature;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.boundlessgeo.gsr.Utils;
+import com.boundlessgeo.gsr.core.geometry.*;
+import com.vividsolutions.jts.geom.Envelope;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
@@ -13,11 +20,10 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 
 import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.geometry.GeometryTypeEnum;
-import com.boundlessgeo.gsr.core.geometry.SpatialReference;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferenceWKID;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferences;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * List of {@link Feature}, that can be serialized as JSON
@@ -33,6 +39,8 @@ public class FeatureList implements GSRModel {
 
     public final SpatialReference spatialReference;
 
+    public final Transform transform;
+
     public final ArrayList<Field> fields = new ArrayList<>();
 
     public final ArrayList<Feature> features = new ArrayList<>();
@@ -42,10 +50,16 @@ public class FeatureList implements GSRModel {
     }
 
     public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
-        FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR) throws IOException {
+            FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR) throws IOException {
+        this(collection, returnGeometry, outputSR, null);
+    }
+
+    public <T extends FeatureType, F extends org.opengis.feature.Feature> FeatureList(
+        FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR, String quantizationParameters) throws IOException {
 
         T schema = collection.getSchema();
 
+        //determine geometry type
         if (returnGeometry) {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             if (geometryDescriptor == null) {
@@ -65,16 +79,67 @@ public class FeatureList implements GSRModel {
             this.geometryType = null;
         }
 
+        //determine crs
+        CoordinateReferenceSystem outCrs = null;
         if (StringUtils.isNotEmpty(outputSR)) {
-            spatialReference = new SpatialReferenceWKID(Integer.parseInt(outputSR));
+            outCrs = Utils.parseSpatialReference(outputSR);
         } else if (schema.getCoordinateReferenceSystem() != null) {
+            outCrs = schema.getCoordinateReferenceSystem();
+        }
+        if (outCrs == null) {
+            spatialReference = null;
+        } else {
             try {
-                spatialReference = SpatialReferences.fromCRS(schema.getCoordinateReferenceSystem());
+                spatialReference = SpatialReferences.fromCRS(outCrs);
             } catch (FactoryException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        AbstractGeometryEncoder geometryEncoder;
+        //Parse quantizationParameters
+        if (null == quantizationParameters || quantizationParameters.isEmpty()) {
+            transform = null;
+            geometryEncoder = new GeometryEncoder();
         } else {
-            spatialReference = null;
+            JSONObject json = (JSONObject) JSONSerializer.toJSON(quantizationParameters);
+
+            QuantizedGeometryEncoder.Mode mode = QuantizedGeometryEncoder.Mode.valueOf(json.getString("mode"));
+            QuantizedGeometryEncoder.OriginPosition originPosition = QuantizedGeometryEncoder.OriginPosition.valueOf(json.getString("originPosition"));
+            Double tolerance = json.getDouble("tolerance");
+            Envelope extent = GeometryEncoder.jsonToEnvelope(json.getJSONObject("extent"));
+            CoordinateReferenceSystem envelopeCrs = SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(
+                    json.getJSONObject("extent").getJSONObject("spatialReference"));
+
+            MathTransform mathTx;
+            try {
+                mathTx = CRS.findMathTransform(envelopeCrs, outCrs, true);
+            } catch (FactoryException e) {
+                throw new IllegalArgumentException(
+                        "Unable to transform between input and native coordinate reference systems", e);
+            }
+            Envelope transformedExtent;
+            try {
+                transformedExtent = JTS.transform(extent, mathTx);
+            } catch (TransformException e) {
+                throw new IllegalArgumentException(
+                        "Error while converting envelope from input to native coordinate system", e);
+            }
+
+            //TODO: Transform extent to outSR before determining translate
+            //default to upperLeft
+            double[] translate = new double[]{transformedExtent.getMinX(), transformedExtent.getMaxY()};
+            if (originPosition == QuantizedGeometryEncoder.OriginPosition.bottomRight) {
+                translate = new double[]{transformedExtent.getMaxX(), transformedExtent.getMinY()};
+            }
+            transform = new Transform(originPosition, new double[]{tolerance, tolerance},
+                    translate);
+
+            geometryEncoder = new QuantizedGeometryEncoder(
+                    mode,
+                    originPosition,
+                    tolerance,
+                    transformedExtent);
         }
 
         for (PropertyDescriptor desc : schema.getDescriptors()) {
@@ -88,7 +153,7 @@ public class FeatureList implements GSRModel {
         try (FeatureIterator<F> iterator = collection.features()) {
             while (iterator.hasNext()) {
                 org.opengis.feature.Feature feature = iterator.next();
-                features.add(FeatureEncoder.feature(feature, returnGeometry, spatialReference, objectIdFieldName));
+                features.add(FeatureEncoder.feature(feature, returnGeometry, spatialReference, objectIdFieldName, geometryEncoder));
             }
         }
     }

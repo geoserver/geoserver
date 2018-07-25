@@ -1,20 +1,21 @@
 package com.boundlessgeo.gsr.core.geometry;
 
-import afu.org.checkerframework.checker.oigj.qual.O;
-import com.boundlessgeo.gsr.Utils;
 import com.vividsolutions.jts.geom.Coordinate;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
 import com.vividsolutions.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+/**
+ * Geometry encoder used to quantize geometries.
+ *
+ * Encodes geometries as {@link Long} arrays representing pixel coordinates on a screen, and performs simplification based
+ * on the resolution.
+ */
 public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
 
     public enum Mode {
@@ -26,55 +27,57 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
         bottomRight
     }
 
-    public QuantizedGeometryEncoder(Mode mode, OriginPosition originPosition, double tolerance, Envelope envelope, CoordinateReferenceSystem requestCRS) {
+    /**
+     * Initializes the geometry encoder.
+     *
+     * @param mode {@link Mode#view}
+     * @param originPosition Integer coordinates will be returned relative to the origin position defined by this
+     *                       property value. Defaults to {@link OriginPosition#upperLeft}
+     * @param tolerance The tolerance is the size of one pixel in the units of the output geometry, as described in the
+     *                  spatialReference parameter of
+     *                  {@link #toRepresentation(com.vividsolutions.jts.geom.Geometry, SpatialReference)}.
+     *                  This number is used to convert the coordinates to integers by building a grid with resolution
+     *                  matching the tolerance. Each coordinate is then snapped to one pixel on the grid. Consecutive
+     *                  coordinates snapped to the same pixel are removed to reduce the overall response size.
+     * @param envelope An extent defining the quantization grid bounds. Its SpatialReference matches the output geometry
+     *                 spatial reference, as supplied to
+     *                 {@link #toRepresentation(com.vividsolutions.jts.geom.Geometry, SpatialReference)}.
+     */
+    public QuantizedGeometryEncoder(Mode mode, OriginPosition originPosition, double tolerance, Envelope envelope) {
         super();
-        this.mode = mode;
-        this.originPosition = originPosition;
+        this.mode = mode == null ? Mode.view : mode;
+        this.originPosition = originPosition == null ? OriginPosition.upperLeft : originPosition;
         this.tolerance = tolerance;
         this.envelope = envelope;
-        this.envelopeCrs = requestCRS;
     }
 
     //set by constructor
-    Mode mode;
-    OriginPosition originPosition;
-    double tolerance;
-    Envelope envelope;
-    CoordinateReferenceSystem envelopeCrs;
+    private Mode mode;
+    private OriginPosition originPosition;
+    private double tolerance;
+    private Envelope envelope;
 
     //set when calling toRepresentation
-    double[] originCoords;
-    Long[] startingCoords = null;
-    CoordinateReferenceSystem outCrs;
+    private double[] originCoords;
+    private Long[] startingCoords = null;
+    private CoordinateReferenceSystem outCrs;
 
 
     @Override
     public com.boundlessgeo.gsr.core.geometry.Geometry toRepresentation(
             com.vividsolutions.jts.geom.Geometry geom, SpatialReference spatialReference) {
-        //TODO: Init SR, starting coord, etc
-        outCrs = Utils.parseSpatialReference(String.valueOf(geom.getSRID()));
-
-        MathTransform mathTx;
         try {
-            mathTx = CRS.findMathTransform(envelopeCrs, outCrs, true);
+            outCrs = SpatialReferences.fromSpatialReference(spatialReference);
         } catch (FactoryException e) {
             throw new IllegalArgumentException(
-                    "Unable to transform between input and native coordinate reference systems", e);
+                    "Unable to parse spatial reference", e);
         }
-        Envelope transformedEnvelope;
-        try {
-            transformedEnvelope = JTS.transform(envelope, mathTx);
-        } catch (TransformException e) {
-            throw new IllegalArgumentException(
-                    "Error while converting envelope from input to native coordinate system", e);
-        }
-
         switch (originPosition) {
             case upperLeft:
-                originCoords = new double[]{transformedEnvelope.getMinX(), transformedEnvelope.getMaxY()};
+                originCoords = new double[]{envelope.getMinX(), envelope.getMaxY()};
                 break;
             case bottomRight:
-                originCoords = new double[]{transformedEnvelope.getMaxX(), transformedEnvelope.getMinY()};
+                originCoords = new double[]{envelope.getMaxX(), envelope.getMinY()};
                 break;
         }
 

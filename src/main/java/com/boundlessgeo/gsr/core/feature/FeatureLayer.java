@@ -21,6 +21,8 @@ public class FeatureLayer extends AbstractLayerOrTable {
     protected Boolean supportsStatistics = false;
     // supportsAdvancedQueries - not implemented yet (no queries at all.) implement using SortBy
     protected Boolean supportsAdvancedQueries = false;
+    // supportsCoordinatesQuantization - Supported. See QuantizedGeometryEncoder
+    protected Boolean supportsCoordinatesQuantization = true;
 
 
 
@@ -70,5 +72,9 @@ public class FeatureLayer extends AbstractLayerOrTable {
 
     public List getTemplates() {
         return templates;
+    }
+
+    public Boolean getSupportsCoordinatesQuantization() {
+        return supportsCoordinatesQuantization;
     }
 }

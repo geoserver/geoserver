@@ -13,25 +13,25 @@ import java.util.Arrays;
  */
 public class Ring {
 
-    private double[][] coordinates;
+    private Number[][] coordinates;
 
-    public double[][] getCoordinates() {
+    public Number[][] getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(double[][] coordinates) {
+    public void setCoordinates(Number[][] coordinates) {
         this.coordinates = coordinates;
     }
 
-    public Ring(double[][] coords) {
+    public Ring(Number[][] coords) {
         this.coordinates = coords;
     }
 
     public boolean isValid() {
         int size = coordinates.length;
         if (size > 0) {
-            double[] firstCoordinate = coordinates[0];
-            double[] lastCoordinate = coordinates[coordinates.length - 1];
+            Number[] firstCoordinate = coordinates[0];
+            Number[] lastCoordinate = coordinates[coordinates.length - 1];
             return Arrays.equals(firstCoordinate, lastCoordinate);
         }
         return false;

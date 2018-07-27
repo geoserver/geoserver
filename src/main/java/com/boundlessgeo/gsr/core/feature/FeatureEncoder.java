@@ -12,6 +12,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.boundlessgeo.gsr.Utils;
+import com.boundlessgeo.gsr.core.geometry.*;
+import com.boundlessgeo.gsr.core.geometry.QuantizedGeometryEncoder.Mode;
+import com.boundlessgeo.gsr.core.geometry.QuantizedGeometryEncoder.OriginPosition;
+import com.vividsolutions.jts.geom.Envelope;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -21,8 +28,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
-import com.boundlessgeo.gsr.core.geometry.SpatialReference;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class FeatureEncoder {
 
@@ -70,13 +76,16 @@ public class FeatureEncoder {
     }
 
     public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,
-        SpatialReference spatialReference, String objectIdFieldName) {
+                                  SpatialReference spatialReference, String objectIdFieldName) {
+        return feature(feature, returnGeometry, spatialReference, objectIdFieldName, new GeometryEncoder());
+    }
+    public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,
+                                  SpatialReference spatialReference, String objectIdFieldName, AbstractGeometryEncoder geometryEncoder) {
         GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
         Map<String, Object> attributes = FeatureEncoder.attributeList(feature, objectIdFieldName);
         if (returnGeometry) {
-            return new Feature(GeometryEncoder
-                .toRepresentation((com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(),
-                    spatialReference), attributes);
+            return new Feature(geometryEncoder.toRepresentation(
+                    (com.vividsolutions.jts.geom.Geometry) geometryAttribute.getValue(),spatialReference), attributes);
         } else {
             return new Feature(null, attributes);
         }

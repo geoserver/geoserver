@@ -55,7 +55,7 @@ class IdentifyServiceResult {
             IdentifyResult result = new IdentifyResult();
             result.setLayerName(layer.getName());
             result.setLayerId(layer.getId());
-            result.setGeometry(GeometryEncoder.toRepresentation(
+            result.setGeometry(new GeometryEncoder().toRepresentation(
                 (com.vividsolutions.jts.geom.Geometry) feature.getProperty(defaultGeometry.getName()).getValue(), spatialReference));
             result.setAttributes(FeatureEncoder.attributeList(feature, FeatureEncoder.OBJECTID_FIELD_NAME));
             result.setGeometryType(result.getGeometry().getGeometryType());

@@ -4,6 +4,7 @@
  */
  package com.boundlessgeo.gsr.core.geometry;
 
+import com.boundlessgeo.gsr.Utils;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.util.GenericName;
@@ -36,6 +37,16 @@ public final class SpatialReferences {
             return sr;
         } else {
             return new SpatialReferenceWKT(crs.toWKT());
+        }
+    }
+
+    public static CoordinateReferenceSystem fromSpatialReference(SpatialReference sr) throws FactoryException {
+        if (sr instanceof SpatialReferenceWKID) {
+            return Utils.parseSpatialReference(String.valueOf(((SpatialReferenceWKID) sr).getWkid()));
+        } else if (sr instanceof SpatialReferenceWKT) {
+            return CRS.parseWKT(((SpatialReferenceWKT) sr).getWkt());
+        } else {
+            throw new IllegalArgumentException("Unknown SpatialReference class: "+ sr.getClass());
         }
     }
 

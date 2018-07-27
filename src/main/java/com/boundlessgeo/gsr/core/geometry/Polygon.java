@@ -21,15 +21,15 @@ public class Polygon extends Geometry {
         this.geometryType = geometryType;
     }
 
-    private double[][][] rings;
+    private Number[][][] rings;
 
     private SpatialReference spatialReference;
 
-    public double[][][] getRings() {
+    public Number[][][] getRings() {
         return rings;
     }
 
-    public void setRings(double[][][] ring) {
+    public void setRings(Number[][][] ring) {
         this.rings = ring;
     }
 
@@ -41,7 +41,7 @@ public class Polygon extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Polygon(double[][][] rings, SpatialReference spatialRef) {
+    public Polygon(Number[][][] rings, SpatialReference spatialRef) {
         this.rings = rings;
         this.spatialReference = spatialRef;
         this.geometryType = GeometryTypeEnum.POLYGON;

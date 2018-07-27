@@ -53,7 +53,8 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
         @RequestParam(name = "where", required = false) String whereClause,
         @RequestParam(name = "returnGeometry", required = false, defaultValue = "true") Boolean returnGeometry,
         @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
-        @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly
+        @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly,
+        @RequestParam(name="quantizationParameters", required = false) String quantizationParameters
 
     ) throws IOException {
 
@@ -66,7 +67,7 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
         if (returnIdsOnly) {
             return FeatureEncoder.objectIds(features);
         } else {
-            FeatureList featureList = new FeatureList(features, returnGeometry, outSRText);
+            FeatureList featureList = new FeatureList(features, returnGeometry, outSRText, quantizationParameters);
             return featureList;
         }
     }

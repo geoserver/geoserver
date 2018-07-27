@@ -45,10 +45,12 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
 /**
  * Controller for the root Feature Service endpoint
+ *
+ * Also includes all endpoints from {@link QueryController}
  */
 @RestController
-@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE) public class FeatureServiceController
-    extends QueryController {
+@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
+public class FeatureServiceController extends QueryController {
 
     @Autowired
     public FeatureServiceController(@Qualifier("geoServer") GeoServer geoServer) {

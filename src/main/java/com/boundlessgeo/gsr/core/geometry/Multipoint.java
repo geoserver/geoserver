@@ -21,13 +21,13 @@ public class Multipoint extends Geometry {
         this.geometryType = geometryType;
     }
 
-    private double[][] points;
+    private Number[][] points;
 
-    public double[][] getPoints() {
+    public Number[][] getPoints() {
         return points;
     }
 
-    public void setPoints(double[][] points) {
+    public void setPoints(Number[][] points) {
         this.points = points;
     }
 
@@ -39,7 +39,7 @@ public class Multipoint extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    Multipoint(double[][] coords, SpatialReference spatialReference) {
+    Multipoint(Number[][] coords, SpatialReference spatialReference) {
         this.points = coords;
         this.spatialReference = spatialReference;
         this.geometryType = GeometryTypeEnum.MULTIPOINT;

@@ -16,14 +16,14 @@ public class GeometryArrayTest {
      */
     @Test
     public void isValidGeometryTypesTest() {
-        double[] coord1 = { -77.1, 40.07 };
-        double[] coord2 = { -79.1, 38.07 };
-        double[] coord3 = { -105.1, -29.08 };
+        Double[] coord1 = { -77.1, 40.07 };
+        Double[] coord2 = { -79.1, 38.07 };
+        Double[] coord3 = { -105.1, -29.08 };
         SpatialReference spatialRef = new SpatialReferenceWKID(4326);
         Point point1 = new Point(coord1[0], coord1[1], spatialRef);
         Point point2 = new Point(coord2[0], coord2[1], spatialRef);
-        double[][] coords = { coord1, coord2, coord3, coord1 };
-        double[][][] rings = { coords };
+        Double[][] coords = { coord1, coord2, coord3, coord1 };
+        Double[][][] rings = { coords };
         Polygon polygon = new Polygon(rings, spatialRef);
         Geometry[] geometries1 = { point1, point2 };
         Geometry[] geometries2 = { point1, point2, polygon };

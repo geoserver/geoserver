@@ -58,6 +58,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
@@ -82,6 +83,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.style.ExternalGraphic;
@@ -774,5 +776,22 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             Object delegate = field.get(fc);
             fc = (SimpleFeatureCollection) delegate;
         }
+    }
+
+    @Test
+    public void testDefaultGeometry() throws IOException {
+        FeatureTypeInfo featureType =
+                getCatalog().getResourceByName("cdf", "Nulls", FeatureTypeInfo.class);
+        GeometryDescriptor schemaDefaultGeometry =
+                featureType.getFeatureType().getGeometryDescriptor();
+
+        FeatureIterator i = featureType.getFeatureSource(null, null).getFeatures().features();
+        GeometryDescriptor featureDefaultGeometry =
+                i.next().getDefaultGeometryProperty().getDescriptor();
+
+        assertNotNull(schemaDefaultGeometry);
+        assertNotNull(featureDefaultGeometry);
+        assertEquals("pointProperty", schemaDefaultGeometry.getLocalName());
+        assertEquals(schemaDefaultGeometry, featureDefaultGeometry);
     }
 }

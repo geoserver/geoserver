@@ -1061,9 +1061,13 @@ public class ResourcePool {
             SimpleFeatureType sft = (SimpleFeatureType) ft;
             // create the feature type so it lines up with the "declared" schema
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+            tb.init(sft);
+            // Handle any aliases defined in info
             tb.setName(info.getName());
             tb.setNamespaceURI(info.getNamespace().getURI());
 
+            // Handle the attributes manually
+            tb.setAttributes((AttributeDescriptor[]) null);
             if (info.getAttributes() == null || info.getAttributes().isEmpty()) {
                 // take this to mean just load all native
                 for (PropertyDescriptor pd : ft.getDescriptors()) {

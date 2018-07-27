@@ -187,6 +187,40 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
     }
 
     @Test
+    public void testLoadFromXMLWithUnknownProcessGroups() throws Exception {
+        WPSInfo wpsInfo = loadFromXml("wps-test-error.xml");
+        assertNotNull(wpsInfo);
+
+        // This comes before the problematic definition
+        boolean foundGeometryFactory = false;
+        // This is expected to throw an error, but shouldn't be included in the list regardless
+        boolean foundMissingProcessFactory = false;
+        // This comes after the problematic definition
+        boolean foundRasterFactory = false;
+
+        for (ProcessGroupInfo pg : wpsInfo.getProcessGroups()) {
+            if (pg.getFactoryClass()
+                    .getName()
+                    .equals("org.geotools.process.geometry.GeometryProcessFactory")) {
+                assertTrue(pg.isEnabled());
+                foundGeometryFactory = true;
+            }
+            if (pg.getFactoryClass().getName().equals("org.geoserver.wps.MissingProcessFactory")) {
+                foundMissingProcessFactory = true;
+            }
+            if (pg.getFactoryClass()
+                    .getName()
+                    .equals("org.geotools.process.raster.RasterProcessFactory")) {
+                assertTrue(pg.isEnabled());
+                foundRasterFactory = true;
+            }
+        }
+        assertTrue(foundGeometryFactory);
+        assertTrue(foundRasterFactory);
+        assertFalse(foundMissingProcessFactory);
+    }
+
+    @Test
     public void testLoadFromXMLWithWorkSpace() throws Exception {
         // creating a workspace with same ID was the one in the wps-test-workspace.xml file
         WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();

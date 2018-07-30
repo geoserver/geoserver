@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -80,7 +82,7 @@ public class FeatureServiceController extends QueryController {
         @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
         @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly)
         throws IOException {
-        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspaceName);
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
         FeatureServiceQueryResult queryResult = new FeatureServiceQueryResult(layersAndTables);
 
@@ -91,7 +93,7 @@ public class FeatureServiceController extends QueryController {
             if (l.getType() != PublishedType.VECTOR) {
                 break;
             }
-            FeatureList features = new FeatureList(LayersAndTables.getFeatureCollectionForLayer(workspaceName,
+            FeatureList features = new FeatureList(FeatureDAO.getFeatureCollectionForLayer(workspaceName,
                     layerOrTable.getId(), geometryTypeName, geometryText, inSRText, outSRText, spatialRelText,
                     objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause, returnGeometry,
                     outFieldsText, l), returnGeometry, outSRText);

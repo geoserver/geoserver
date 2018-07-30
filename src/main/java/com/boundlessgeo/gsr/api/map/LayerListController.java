@@ -6,6 +6,7 @@ package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +30,6 @@ public class LayerListController extends AbstractGSRController {
 
     @GetMapping(path = "/layers")
     public LayersAndTables layersGet(@PathVariable String workspaceName) {
-        return LayersAndTables.find(catalog, workspaceName);
+        return LayerDAO.find(catalog, workspaceName);
     }
 }

@@ -3,6 +3,7 @@ package com.boundlessgeo.gsr.api.feature;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
 import com.boundlessgeo.gsr.model.feature.FeatureLayer;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
-import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Controller for the Feature Service layer endpoint
@@ -35,7 +35,7 @@ public class FeatureLayerController extends AbstractGSRController {
     public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable entry;
         try {
-            entry = LayersAndTables.find(catalog, workspaceName, layerId);
+            entry = LayerDAO.find(catalog, workspaceName, layerId);
         } catch (IOException e) {
             throw new NoSuchElementException("Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e);
         }

@@ -6,6 +6,8 @@ package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
 
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.config.GeoServer;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
@@ -58,9 +60,9 @@ import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
     ) throws IOException {
 
-        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspaceName);
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
-        FeatureCollection<? extends FeatureType, ? extends Feature> features = LayersAndTables
+        FeatureCollection<? extends FeatureType, ? extends Feature> features = FeatureDAO
             .getFeatureCollectionForLayerWithId(workspaceName, layerId, geometryTypeName, geometryText, inSRText,
                 outSRText, spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause,
                 returnGeometry, outFieldsText, layersAndTables);

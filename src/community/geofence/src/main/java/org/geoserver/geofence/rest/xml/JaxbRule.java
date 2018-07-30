@@ -299,7 +299,11 @@ public class JaxbRule {
             layerDetails = new LayerDetails();
             layerDetails.setAllowedArea(rule.getLayerDetails().getArea());
             layerDetails.getAllowedStyles().addAll(rule.getLayerDetails().getAllowedStyles());
-            layerDetails.setCatalogMode(rule.getLayerDetails().getCatalogMode().toString());
+            if (rule.getLayerDetails().getCatalogMode() != null) {
+                layerDetails.setCatalogMode(rule.getLayerDetails().getCatalogMode().toString());
+            } else {
+                layerDetails.setCatalogMode(CatalogMode.HIDE.toString());
+            }
             layerDetails.setCqlFilterRead(rule.getLayerDetails().getCqlFilterRead());
             layerDetails.setCqlFilterWrite(rule.getLayerDetails().getCqlFilterWrite());
             layerDetails.setDefaultStyle(rule.getLayerDetails().getDefaultStyle());

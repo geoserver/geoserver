@@ -42,7 +42,8 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
                 // (clients following the template to the letter will create keys with empty value)
                 for (String key : new HashSet<String>(request.getRawKvp().keySet())) {
                     Object value = rawKvp.get(key);
-                    if (!(value instanceof String) || StringUtils.isEmpty((String) value)) {
+                    if ((!(value instanceof String) || StringUtils.isEmpty((String) value))
+                            && !(value instanceof String[])) {
                         rawKvp.remove(key);
                         kvp.remove(key);
                     }

@@ -43,20 +43,20 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     @Test
     public void testGetCollections() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections", 200);
-        assertEquals(4, json.read("$.collections.*", List.class).size());
+        assertEquals(5, json.read("$.collections.*", List.class).size());
         // check the first (sorted alphabetically)
-        assertEquals("GS_TEST", json.read("$.collections[0].name"));
+        assertEquals("ATMTEST", json.read("$.collections[0].name"));
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/GS_TEST",
+                "http://localhost:8080/geoserver/rest/oseo/collections/ATMTEST",
                 json.read("$.collections[0].href"));
         assertEquals(
-                "http://localhost:8080/geoserver/oseo/description?parentId=GS_TEST",
+                "http://localhost:8080/geoserver/oseo/description?parentId=ATMTEST",
                 json.read("$.collections[0].search"));
     }
 
     @Test
     public void testGetCollectionsPaging() throws Exception {
-        DocumentContext json = getAsJSONPath("/rest/oseo/collections?offset=2&limit=1", 200);
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections?offset=3&limit=1", 200);
         assertEquals(1, json.read("$.collections.*", List.class).size());
         assertEquals("SENTINEL1", json.read("$.collections[0].name"));
         assertEquals(

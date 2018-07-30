@@ -38,10 +38,10 @@ public class SearchTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
+        print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("4")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("5")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -58,54 +58,55 @@ public class SearchTest extends OSEOTestSupport {
         assertNoResults(dom);
 
         // check entries
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("4")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("5")));
         // ... sorted by date
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("SENTINEL1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[4]/at:title", equalTo("LANDSAT8")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[4]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[5]/at:title", equalTo("LANDSAT8")));
 
         // check the sentinel2 one
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/at:id",
+                        "/at:feed/at:entry[2]/at:id",
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
         assertThat(
-                dom, hasXPath("/at:feed/at:entry[1]/at:updated", equalTo("2016-02-26T09:20:21Z")));
+                dom, hasXPath("/at:feed/at:entry[2]/at:updated", equalTo("2016-02-26T09:20:21Z")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/dc:date",
+                        "/at:feed/at:entry[2]/dc:date",
                         equalTo("2015-07-01T08:20:21Z/2016-02-26T09:20:21Z")));
         // ... mind the lat/lon order
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                        "/at:feed/at:entry[2]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                         equalTo("89 -179 89 179 -89 179 -89 -179 89 -179")));
         assertThat(
                 dom,
-                hasXPath("/at:feed/at:entry[1]/georss:box", equalTo("-89.0 -179.0 89.0 179.0")));
+                hasXPath("/at:feed/at:entry[2]/georss:box", equalTo("-89.0 -179.0 89.0 179.0")));
         // ... the links (self, metadata, search)
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/at:link[@rel='self' and  @type='application/atom+xml']/@href",
+                        "/at:feed/at:entry[2]/at:link[@rel='self' and  @type='application/atom+xml']/@href",
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/at:link[@rel='alternate' and @type='application/vnd.iso.19139+xml']/@href",
+                        "/at:feed/at:entry[2]/at:link[@rel='alternate' and @type='application/vnd.iso.19139+xml']/@href",
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/at:link[@rel='search' and @type='"
+                        "/at:feed/at:entry[2]/at:link[@rel='search' and @type='"
                                 + DescriptionResponse.OS_DESCRIPTION_MIME
                                 + "']/@href",
                         equalTo(
@@ -113,7 +114,7 @@ public class SearchTest extends OSEOTestSupport {
 
         // check the html description (right one, and param substitution in links
         XPath xPath = getXPath();
-        String summary = xPath.compile("/at:feed/at:entry[1]/at:summary").evaluate(dom);
+        String summary = xPath.compile("/at:feed/at:entry[2]/at:summary").evaluate(dom);
         assertThat(summary, containsString("Sentinel-2"));
         // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
         org.jsoup.nodes.Document sd = Jsoup.parse(summary);
@@ -134,26 +135,26 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/owc:offering/@code",
+                        "/at:feed/at:entry[2]/owc:offering/@code",
                         equalTo("http://www.opengis.net/spec/owc/1.0/req/atom/wms")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/owc:offering/owc:operation/@code",
+                        "/at:feed/at:entry[2]/owc:offering/owc:operation/@code",
                         equalTo("GetCapabilities")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/owc:offering/owc:operation/@method", equalTo("GET")));
+                        "/at:feed/at:entry[2]/owc:offering/owc:operation/@method", equalTo("GET")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/owc:offering/owc:operation/@type",
+                        "/at:feed/at:entry[2]/owc:offering/owc:operation/@type",
                         equalTo("application/xml")));
         assertThat(
                 dom,
                 hasXPath(
-                        "/at:feed/at:entry[1]/owc:offering/owc:operation/@href",
+                        "/at:feed/at:entry[2]/owc:offering/owc:operation/@href",
                         equalTo(
                                 "http://localhost:8080/geoserver/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities")));
 
@@ -172,7 +173,7 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("4")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("5")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("0")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -196,7 +197,7 @@ public class SearchTest extends OSEOTestSupport {
         DataStore dataStore =
                 (DataStore) getCatalog().getDataStoreByName("oseo_jdbc").getDataStore(null);
         SimpleFeatureStore store =
-                (SimpleFeatureStore) dataStore.getFeatureSource("COLLECTION_OGCLINK");
+                (SimpleFeatureStore) dataStore.getFeatureSource("collection_ogclink");
         store.removeFeatures(CQL.toFilter("href like '%landsat8%'"));
 
         // run request, we should get 3 feeds but only two links
@@ -208,7 +209,7 @@ public class SearchTest extends OSEOTestSupport {
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         print(dom);
 
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("4")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("5")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("2")));
     }
 
@@ -240,10 +241,10 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 1, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "next", 2, 1);
-        assertHasLink(dom, "last", 4, 1);
+        assertHasLink(dom, "last", 5, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
 
         // second page
         dom = getAsDOM("oseo/search?count=1&startIndex=2");
@@ -251,9 +252,9 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 1, 1);
         assertHasLink(dom, "next", 3, 1);
-        assertHasLink(dom, "last", 4, 1);
+        assertHasLink(dom, "last", 5, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
 
         // third page
         dom = getAsDOM("oseo/search?count=1&startIndex=3");
@@ -261,16 +262,26 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 2, 1);
         assertHasLink(dom, "next", 4, 1);
-        assertHasLink(dom, "last", 4, 1);
+        assertHasLink(dom, "last", 5, 1);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
 
-        // fourth and last page
+        // fourth page
         dom = getAsDOM("oseo/search?count=1&startIndex=4");
         assertHasLink(dom, "self", 4, 1);
         assertHasLink(dom, "first", 1, 1);
         assertHasLink(dom, "previous", 3, 1);
-        assertHasLink(dom, "last", 4, 1);
+        assertHasLink(dom, "next", 5, 1);
+        assertHasLink(dom, "last", 5, 1);
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+
+        // fifth and last page
+        dom = getAsDOM("oseo/search?count=1&startIndex=5");
+        assertHasLink(dom, "self", 5, 1);
+        assertHasLink(dom, "first", 1, 1);
+        assertHasLink(dom, "previous", 4, 1);
+        assertHasLink(dom, "last", 5, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
@@ -283,22 +294,34 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "self", 1, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "next", 3, 2);
-        assertHasLink(dom, "last", 3, 2);
+        assertHasLink(dom, "last", 5, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL2")));
 
         // second page
         dom = getAsDOM("oseo/search?count=2&startIndex=3");
+        print(dom);
         assertHasLink(dom, "self", 3, 2);
         assertHasLink(dom, "first", 1, 2);
         assertHasLink(dom, "previous", 1, 2);
-        assertHasLink(dom, "last", 3, 2);
-        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertHasLink(dom, "last", 5, 2);
+        assertHasLink(dom, "next", 5, 2);
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("LANDSAT8")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+
+        // third and last page
+        dom = getAsDOM("oseo/search?count=2&startIndex=5");
+        print(dom);
+        assertHasLink(dom, "self", 5, 2);
+        assertHasLink(dom, "first", 1, 2);
+        assertHasLink(dom, "previous", 3, 2);
+        assertHasLink(dom, "last", 5, 2);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
     }
 
     @Test
@@ -604,12 +627,12 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testSearchCollectionByTimeRangeDuring() throws Exception {
-        // only SENTINEL-* matches
+        // search time range
         Document dom = getAsDOM("oseo/search?timeStart=2012-01-01&timeRelation=during");
-        // print(dom);
+        print(dom);
 
         // basics
-        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("4")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
         assertThat(dom, hasXPath("/at:feed/os:Query"));
@@ -620,10 +643,11 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:updated"));
 
         // check entries, only SENTINEL ones match
-        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("gsTestCollection")));
-        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("4")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SAS1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("gsTestCollection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[4]/at:title", equalTo("SENTINEL1")));
     }
 
     @Test
@@ -868,5 +892,70 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry/media:group/media:content[@medium='image' and @type='image/jpeg']/@url",
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01")));
+    }
+
+    @Test
+    public void testAtmosphericSearchSpecies() throws Exception {
+        // match 03, both have it
+        Document dom = getAsDOM("oseo/search?parentId=SAS1&species=O3");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+
+        // match C02, only one has it
+        dom = getAsDOM("oseo/search?parentId=SAS1&species=O3&species=CO2");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+
+        // match 03 and NO2, only one has it
+        dom = getAsDOM("oseo/search?parentId=SAS1&species=O3&species=NO2");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+    }
+
+    @Test
+    public void testAtmosphericSearchVerticalRange() throws Exception {
+        // 1000 and above, both have it
+        Document dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[1000");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+
+        // below 300, only the first has it
+        dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=300]");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+
+        // between 300 and 700, only the second has it
+        dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[300,700]");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+    }
+
+    @Test
+    public void testAtmosphericCombinedFilter() throws Exception {
+        // 1000 and above, both have it
+        Document dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[1000&species=CO2");
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(
+                dom,
+                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
     }
 }

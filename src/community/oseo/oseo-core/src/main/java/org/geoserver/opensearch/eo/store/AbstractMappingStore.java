@@ -800,9 +800,12 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
                                         SimpleFeature sf = (SimpleFeature) f;
                                         for (AttributeDescriptor ad :
                                                 linksStore.getSchema().getAttributeDescriptors()) {
-                                            fb.set(
-                                                    ad.getLocalName(),
-                                                    sf.getAttribute(ad.getLocalName()));
+                                            if (sf.getFeatureType().getDescriptor(ad.getLocalName())
+                                                    != null) {
+                                                fb.set(
+                                                        ad.getLocalName(),
+                                                        sf.getAttribute(ad.getLocalName()));
+                                            }
                                         }
                                         fb.set(getLinkForeignKey(), id);
                                         SimpleFeature mappedLink = fb.buildFeature(null);

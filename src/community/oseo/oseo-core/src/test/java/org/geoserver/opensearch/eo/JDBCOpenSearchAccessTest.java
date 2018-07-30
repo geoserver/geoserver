@@ -26,10 +26,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,9 +37,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.easymock.EasyMock;
 import org.geoserver.config.GeoServer;
@@ -60,9 +58,9 @@ import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Polygon;
@@ -92,16 +90,19 @@ public class JDBCOpenSearchAccessTest {
     public static final ProductClass GS_PRODUCT =
             new ProductClass("geoServer", "gs", "http://www.geoserver.org/eo/test");
 
+    protected static Properties getFixture() {
+        Properties properties = GSFixtureUtilitiesDelegate.loadFixture("oseo-postgis");
+        properties.put("Expose primary keys", "true");
+        properties.put("dbtype", "postgis");
+        return properties;
+    }
+
     @BeforeClass
     public static void setupStore() throws IOException, SQLException {
-        Map<String, Serializable> params = new HashMap<>();
-        params.put("dbtype", "h2");
-        File dbFolder = new File("./target/oseo_db_store_test");
-        FileUtils.deleteQuietly(dbFolder);
-        dbFolder.mkdir();
-        File dbFile = new File(dbFolder, "oseo_db_store_test");
-        params.put("database", dbFile.getAbsolutePath());
-        params.put(JDBCDataStoreFactory.EXPOSE_PK.key, "true");
+        Assume.assumeNotNull(getFixture());
+
+        Map params = new HashMap<>();
+        params.putAll(getFixture());
         h2 = (JDBCDataStore) DataStoreFinder.getDataStore(params);
         JDBCOpenSearchAccessTest.populateTestDatabase(h2, true);
 
@@ -128,9 +129,9 @@ public class JDBCOpenSearchAccessTest {
 
     @After
     public void resetCollectionLayer() throws IOException, SQLException {
-        String s1 = "DELETE public.collection_layer";
+        String s1 = "DELETE from \"collection_layer\"";
         String s2 =
-                "INSERT into public.collection_layer\n"
+                "INSERT into \"collection_layer\"\n"
                         + "(\"cid\", \"workspace\", \"layer\", \"separateBands\", \"bands\", \"browseBands\", \"heterogeneousCRS\", \"mosaicCRS\")\n"
                         + "VALUES(17, 'gs', 'sentinel2', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', true, 'EPSG:4326')";
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
@@ -147,10 +148,10 @@ public class JDBCOpenSearchAccessTest {
             // setup for fast import
 
             // SET CACHE_SIZE (a large cache is faster)
-            st.execute("SET LOG 0");
-            st.execute("SET LOCK_MODE 0 ");
-            st.execute("SET UNDO_LOG 0");
-            st.execute("SET CACHE_SIZE 512000");
+            //            st.execute("SET LOG 0");
+            //            st.execute("SET LOCK_MODE 0 ");
+            //            st.execute("SET UNDO_LOG 0");
+            //            st.execute("SET CACHE_SIZE 512000");
             createTables(conn);
             populateCollections(conn);
             populateProducts(conn);
@@ -159,16 +160,22 @@ public class JDBCOpenSearchAccessTest {
             }
             addCustomProductClass(conn);
 
-            // add spatial indexes
-            st.execute(
-                    "CALL AddGeometryColumn(SCHEMA(), 'COLLECTION', 'footprint', 4326, 'POLYGON', 2)");
-            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'COLLECTION', 'footprint', 4326)");
-            st.execute(
-                    "CALL AddGeometryColumn(SCHEMA(), 'PRODUCT', 'footprint', 4326, 'POLYGON', 2)");
-            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'PRODUCT', 'footprint', 4326)");
-            st.execute(
-                    "CALL AddGeometryColumn(SCHEMA(), 'GRANULE', 'the_geom', 4326, 'POLYGON', 2)");
-            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'GRANULE', 'the_geom', 4326)");
+            //            // add spatial indexes
+            //            st.execute(
+            //                    "CALL AddGeometryColumn(SCHEMA(), 'COLLECTION', 'footprint', 4326,
+            // 'POLYGON', 2)");
+            //            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'COLLECTION', 'footprint',
+            // 4326)");
+            //            st.execute(
+            //                    "CALL AddGeometryColumn(SCHEMA(), 'PRODUCT', 'footprint', 4326,
+            // 'POLYGON', 2)");
+            //            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'PRODUCT', 'footprint',
+            // 4326)");
+            //            st.execute(
+            //                    "CALL AddGeometryColumn(SCHEMA(), 'GRANULE', 'the_geom', 4326,
+            // 'POLYGON', 2)");
+            //            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'GRANULE', 'the_geom',
+            // 4326)");
         }
     }
 
@@ -210,15 +217,24 @@ public class JDBCOpenSearchAccessTest {
         List<String> statements = loadScriptCommands("/postgis.sql");
         try (Statement st = conn.createStatement(); ) {
             for (String statement : statements) {
-                /* Skip statements H2 does not support */
-                if (statement.contains("GIST") || statement.contains("create extension")) {
-                    continue;
-                }
-                if (statement.contains("geography(Polygon, 4326)")) {
-                    statement = statement.replace("geography(Polygon, 4326)", "POLYGON");
-                } else if (statement.contains("geometry(Polygon, 4326)")) {
-                    statement = statement.replace("geometry(Polygon, 4326)", "POLYGON");
-                }
+                //                /* Skip statements H2 does not support */
+                //                if (statement.contains("GIST") || statement.contains("create
+                // extension")) {
+                //                    continue;
+                //                }
+                //                if (statement.contains("geography(Polygon, 4326)")) {
+                //                    statement = statement.replace("geography(Polygon, 4326)",
+                // "POLYGON");
+                //                } else if (statement.contains("geometry(Polygon, 4326)")) {
+                //                    statement = statement.replace("geometry(Polygon, 4326)",
+                // "POLYGON");
+                //                }
+                //                if (statement.contains("float[]")) {
+                //                    statement = statement.replace("float[]", "ARRAY");
+                //                }
+                //                if (statement.contains("varchar[]")) {
+                //                    statement = statement.replace("varchar[]", "ARRAY");
+                //                }
                 st.execute(statement);
             }
         }
@@ -226,12 +242,12 @@ public class JDBCOpenSearchAccessTest {
 
     /** Adds the collection data into the H2 database */
     static void populateCollections(Connection conn) throws SQLException, IOException {
-        runScript("/collection_h2_data.sql", conn);
+        runScript("/collection_test_data.sql", conn);
     }
 
     /** Adds the product data into the H2 database */
     static void populateProducts(Connection conn) throws SQLException, IOException {
-        runScript("/product_h2_data.sql", conn);
+        runScript("/product_test_data.sql", conn);
     }
 
     /**
@@ -242,7 +258,7 @@ public class JDBCOpenSearchAccessTest {
      * @throws IOException
      */
     static void populateGranules(Connection conn) throws SQLException, IOException {
-        runScript("/granule_h2_data.sql", conn);
+        runScript("/granule_test_data.sql", conn);
     }
 
     static void addCustomProductClass(Connection conn) throws SQLException, IOException {
@@ -293,8 +309,8 @@ public class JDBCOpenSearchAccessTest {
     @Test
     public void testTypeNames() throws Exception {
         List<Name> names = osAccess.getNames();
-        // product, collection, SENTINEL1, SENTINEL2, LANDSAT8
-        assertEquals(17, names.size());
+        // product, collection, SENTINEL1, SENTINEL2, LANDSAT8, ATM1,
+        assertEquals(18, names.size());
         Set<String> localNames = new HashSet<>();
         for (Name name : names) {
             assertEquals(TEST_NAMESPACE, name.getNamespaceURI());
@@ -308,6 +324,7 @@ public class JDBCOpenSearchAccessTest {
                         "SENTINEL1",
                         "LANDSAT8",
                         "GS_TEST",
+                        "ATMTEST",
                         "SENTINEL2__B01",
                         "SENTINEL2__B02",
                         "SENTINEL2__B03",

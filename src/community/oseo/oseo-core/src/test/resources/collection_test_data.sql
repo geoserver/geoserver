@@ -131,6 +131,18 @@ VALUES(31, 'LANDSAT8', NULL, '<table>
     </td>
   </tr>
 </table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '1988-02-26 10:20:21.000', '2013-03-01 10:20:21.000', NULL, NULL, 'LANDSAT8', NULL, '', NULL, 'OLI', 'OPTICAL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO collection
+("id", "name", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation")
+VALUES(18, 'ATMTEST', NULL, '<table>
+  <tr valign="top">
+    <td>
+      <b>Title</b>
+    </td>
+    <td>The sample atmospheric sensor (SAS)</td>
+  </tr>
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2018-02-26 10:20:21.000', '2018-03-01 10:20:21.000', NULL, NULL, 'SAS1', NULL, '', NULL, 'OLI', 'ATMOSPHERIC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-- setup sequence to allow new inserts
+select setval('collection_id_seq'::regclass, 33);
 -- metadata
 INSERT INTO collection_metadata ("mid","metadata") VALUES (
 17,'<?xml version="1.0" encoding="UTF-8"?>
@@ -3324,14 +3336,14 @@ INSERT INTO collection_metadata ("mid","metadata") VALUES (
 </gmd:MD_Metadata>');
 -- collection ogc links
 INSERT INTO public.collection_ogclink
-("lid", "collection_id", "offering", "method", "code", "type", "href")
-VALUES(1, 17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href")
+VALUES(17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities');
 INSERT INTO public.collection_ogclink
-("lid", "collection_id", "offering", "method", "code", "type", "href")
-VALUES(2, 31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href")
+VALUES(31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities');
 INSERT INTO public.collection_ogclink
-("lid", "collection_id", "offering", "method", "code", "type", "href")
-VALUES(3, 32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href")
+VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');
 -- collection publishing metadata
 INSERT into public.collection_layer
 ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS")

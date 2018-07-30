@@ -4,7 +4,6 @@
  */
 package org.geoserver.geofence.web;
 
-import org.locationtech.jts.geom.MultiPolygon;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.locationtech.jts.geom.MultiPolygon;
 
 /**
  * Functions as between webgui and internal geofence db

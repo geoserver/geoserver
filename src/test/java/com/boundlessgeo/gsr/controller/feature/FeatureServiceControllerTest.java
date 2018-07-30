@@ -124,7 +124,7 @@ public class FeatureServiceControllerTest extends ControllerTest {
         System.out.println(result.toString());
         JSONObject object = (JSONObject) result;
         assertFalse(object.has("error"));
-        assertFalse(object.has("transform"));
+        assertFalse(object.has("translate"));
         JSONArray layers = (JSONArray) object.get("features");
         assertEquals(1, layers.size());
 
@@ -141,7 +141,7 @@ public class FeatureServiceControllerTest extends ControllerTest {
         System.out.println(result.toString());
         JSONObject object = (JSONObject) result;
         assertFalse(object.has("error"));
-        assertFalse(object.has("transform"));
+        assertFalse(object.has("translate"));
         JSONArray layers = (JSONArray) object.get("features");
         assertEquals(1, layers.size());
 

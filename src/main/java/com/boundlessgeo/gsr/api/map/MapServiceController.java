@@ -37,11 +37,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import com.boundlessgeo.gsr.core.map.MapServiceRoot;
+import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
+import com.boundlessgeo.gsr.model.map.LayerNameComparator;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.map.MapServiceRoot;
 
 /**
  * Controller for the root Map Service endpoint

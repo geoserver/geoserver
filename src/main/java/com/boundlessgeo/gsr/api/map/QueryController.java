@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.feature.FeatureList;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.model.feature.FeatureList;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Controller for the Map Service query endpoint

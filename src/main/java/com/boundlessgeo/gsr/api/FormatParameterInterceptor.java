@@ -14,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.boundlessgeo.gsr.core.exception.ServiceError;
-import com.boundlessgeo.gsr.core.exception.ServiceException;
+import com.boundlessgeo.gsr.model.exception.ServiceError;
+import com.boundlessgeo.gsr.model.exception.ServiceException;
 
 /**
  * Handles the "f" parameter for all gsr api requests

@@ -5,9 +5,9 @@
 package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.map.LayerLegend;
-import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.Legends;
+import com.boundlessgeo.gsr.model.map.LayerLegend;
+import com.boundlessgeo.gsr.model.map.LayerNameComparator;
+import com.boundlessgeo.gsr.model.map.Legends;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;

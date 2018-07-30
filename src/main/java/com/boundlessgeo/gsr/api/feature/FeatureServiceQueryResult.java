@@ -3,9 +3,9 @@ package com.boundlessgeo.gsr.api.feature;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.boundlessgeo.gsr.core.feature.FeatureList;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.feature.FeatureList;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Wrapper for feature query responses

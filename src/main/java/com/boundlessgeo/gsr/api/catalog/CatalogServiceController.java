@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.api.catalog;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.service.*;
+import com.boundlessgeo.gsr.model.service.*;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;

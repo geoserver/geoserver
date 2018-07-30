@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.MutableRequestProxy;
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Handles ArcGIS ExportMap requests

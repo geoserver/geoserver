@@ -5,7 +5,7 @@
 package com.boundlessgeo.gsr.api.map;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

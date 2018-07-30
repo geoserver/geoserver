@@ -4,22 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
-import com.boundlessgeo.gsr.core.geometry.*;
-import org.geoserver.catalog.DimensionInfo;
+import com.boundlessgeo.gsr.model.geometry.*;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
+import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import org.opengis.feature.GeometryAttribute;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Holder for identify results

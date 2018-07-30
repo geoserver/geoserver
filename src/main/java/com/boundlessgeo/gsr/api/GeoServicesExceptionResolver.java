@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
-import com.boundlessgeo.gsr.core.exception.ServiceError;
-import com.boundlessgeo.gsr.core.exception.ServiceException;
+import com.boundlessgeo.gsr.model.exception.ServiceError;
+import com.boundlessgeo.gsr.model.exception.ServiceException;
 
 /**
  * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via

@@ -1,6 +1,6 @@
 package com.boundlessgeo.gsr.api;
 
-import com.boundlessgeo.gsr.core.GSRModel;
+import com.boundlessgeo.gsr.model.GSRModel;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.MediaType;
 

@@ -19,9 +19,9 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.temporal.Instant;
 import org.opengis.temporal.Period;
 
-import com.boundlessgeo.gsr.core.geometry.GeometryEncoder;
-import com.boundlessgeo.gsr.core.geometry.SpatialReferenceEncoder;
-import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
+import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
+import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -68,7 +68,7 @@ public class Utils {
                 mathTx = CRS.findMathTransform(requestCRS, nativeCRS, true);
             } catch (FactoryException e) {
                 throw new IllegalArgumentException(
-                    "Unable to transform between input and native coordinate reference systems", e);
+                    "Unable to translate between input and native coordinate reference systems", e);
             }
         } else {
             mathTx = null;

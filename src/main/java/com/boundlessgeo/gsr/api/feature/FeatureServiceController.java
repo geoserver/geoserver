@@ -2,29 +2,17 @@ package com.boundlessgeo.gsr.api.feature;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang.StringUtils;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.Query;
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -34,14 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boundlessgeo.gsr.Utils;
 import com.boundlessgeo.gsr.api.map.QueryController;
-import com.boundlessgeo.gsr.core.feature.FeatureList;
-import com.boundlessgeo.gsr.core.feature.FeatureServiceRoot;
-import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.feature.FeatureList;
+import com.boundlessgeo.gsr.model.feature.FeatureServiceRoot;
+import com.boundlessgeo.gsr.model.map.LayerNameComparator;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Controller for the root Feature Service endpoint
@@ -96,7 +82,7 @@ public class FeatureServiceController extends QueryController {
         @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
         @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly)
         throws IOException {
-        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspaceName);
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
         FeatureServiceQueryResult queryResult = new FeatureServiceQueryResult(layersAndTables);
 
@@ -107,7 +93,7 @@ public class FeatureServiceController extends QueryController {
             if (l.getType() != PublishedType.VECTOR) {
                 break;
             }
-            FeatureList features = new FeatureList(LayersAndTables.getFeatureCollectionForLayer(workspaceName,
+            FeatureList features = new FeatureList(FeatureDAO.getFeatureCollectionForLayer(workspaceName,
                     layerOrTable.getId(), geometryTypeName, geometryText, inSRText, outSRText, spatialRelText,
                     objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause, returnGeometry,
                     outFieldsText, l), returnGeometry, outSRText);

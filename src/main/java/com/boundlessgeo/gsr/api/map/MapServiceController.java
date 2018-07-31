@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -37,11 +39,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.core.map.LayerNameComparator;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
-import com.boundlessgeo.gsr.core.map.MapServiceRoot;
+import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
+import com.boundlessgeo.gsr.model.map.LayerNameComparator;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
+import com.boundlessgeo.gsr.model.map.MapServiceRoot;
 
 /**
  * Controller for the root Map Service endpoint
@@ -80,7 +81,7 @@ public class MapServiceController extends AbstractGSRController {
 
     @GetMapping(path = {"/{layerId}"})
     public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
-        return LayersAndTables.find(catalog, workspaceName, layerId);
+        return LayerDAO.find(catalog, workspaceName, layerId);
     }
 
     @GetMapping(path = "/identify")
@@ -93,9 +94,9 @@ public class MapServiceController extends AbstractGSRController {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
 
-        LayersAndTables.find(catalog, workspaceName).layers.forEach(layer -> {
+        LayerDAO.find(catalog, workspaceName).layers.forEach(layer -> {
             try {
-                FeatureCollection collection = LayersAndTables
+                FeatureCollection collection = FeatureDAO
                     .getFeatureCollectionForLayer(workspaceName, layer.getId(), geometryTypeName, geometryText,
                         srCode, srCode, SpatialRelationship.INTERSECTS.getName(), null, null, time, null, null, null,true,
                         null, layer.layer);
@@ -126,7 +127,7 @@ public class MapServiceController extends AbstractGSRController {
         for (String s : layers.split(",")) {
             Integer layerId = Integer.parseInt(s);
             try {
-                LayerOrTable layerOrTable = LayersAndTables.find(catalog, workspaceName, layerId);
+                LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId);
                 if (layerOrTable != null && layerOrTable.layer != null) {
                     FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerOrTable.layer.getResource();
                     FeatureType featureType = featureTypeInfo.getFeatureType();

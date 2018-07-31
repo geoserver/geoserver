@@ -7,6 +7,7 @@ package com.boundlessgeo.gsr.api.feature;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.FeatureSource;
@@ -21,10 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.feature.FeatureWrapper;
-import com.boundlessgeo.gsr.core.map.LayerOrTable;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.model.feature.FeatureWrapper;
+import com.boundlessgeo.gsr.model.map.LayerOrTable;
 
 /**
  * Controller for the Feature Service feature list endpoint
@@ -40,7 +40,7 @@ public class FeatureController extends AbstractGSRController {
 
     @GetMapping(path = "/{layerId}/{featureId}")
     public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException {
-        LayerOrTable l = LayersAndTables.find(catalog, workspaceName, layerId);
+        LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
         if (null == l) {
             throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);

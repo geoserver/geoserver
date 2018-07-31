@@ -6,6 +6,8 @@ package com.boundlessgeo.gsr.api.map;
 
 import java.io.IOException;
 
+import com.boundlessgeo.gsr.translate.feature.FeatureDAO;
+import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.config.GeoServer;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
@@ -20,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boundlessgeo.gsr.api.AbstractGSRController;
-import com.boundlessgeo.gsr.core.GSRModel;
-import com.boundlessgeo.gsr.core.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.core.feature.FeatureList;
-import com.boundlessgeo.gsr.core.map.LayersAndTables;
+import com.boundlessgeo.gsr.model.GSRModel;
+import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.model.feature.FeatureList;
+import com.boundlessgeo.gsr.model.map.LayersAndTables;
 
 /**
  * Controller for the Map Service query endpoint
@@ -58,9 +60,9 @@ import com.boundlessgeo.gsr.core.map.LayersAndTables;
 
     ) throws IOException {
 
-        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspaceName);
+        LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
-        FeatureCollection<? extends FeatureType, ? extends Feature> features = LayersAndTables
+        FeatureCollection<? extends FeatureType, ? extends Feature> features = FeatureDAO
             .getFeatureCollectionForLayerWithId(workspaceName, layerId, geometryTypeName, geometryText, inSRText,
                 outSRText, spatialRelText, objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause,
                 returnGeometry, outFieldsText, layersAndTables);

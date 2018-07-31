@@ -19,7 +19,7 @@
        default-autowire="byName">
 
 
-    <bean id="imageResourceController" class="com.boundlessgeo.gsr.core.controller.ImageResourceController">
+    <bean id="imageResourceController" class="com.boundlessgeo.gsr.model.controller.ImageResourceController">
         <constructor-arg ref="geoServer" />
     </bean>
 

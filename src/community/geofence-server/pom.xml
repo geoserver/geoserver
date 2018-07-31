@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.opengeo</groupId>
             <artifactId>geodb</artifactId>
-            <version>0.9</version>
+            <version>${opengeo-geodb.version}</version>
         </dependency>
 
         <dependency>

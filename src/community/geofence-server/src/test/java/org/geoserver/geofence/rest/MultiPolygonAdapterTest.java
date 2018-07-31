@@ -7,13 +7,13 @@ package org.geoserver.geofence.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.locationtech.jts.geom.MultiPolygon;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.geofence.rest.xml.MultiPolygonAdapter;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.geotools.gml3.v3_2.GML;
 import org.junit.Test;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

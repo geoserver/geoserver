@@ -4,8 +4,6 @@
  */
 package org.geoserver.geofence;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
 import java.util.*;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.*;
@@ -18,6 +16,8 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.mock.web.MockHttpServletRequest;

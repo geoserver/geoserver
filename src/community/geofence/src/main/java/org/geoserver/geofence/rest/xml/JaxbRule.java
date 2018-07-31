@@ -4,7 +4,6 @@
  */
 package org.geoserver.geofence.rest.xml;
 
-import org.locationtech.jts.geom.MultiPolygon;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -19,6 +18,7 @@ import org.geoserver.geofence.core.model.enums.AccessType;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.LayerType;
+import org.locationtech.jts.geom.MultiPolygon;
 
 @XmlRootElement(name = "Rule")
 public class JaxbRule {

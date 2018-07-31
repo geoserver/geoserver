@@ -19,10 +19,6 @@
  */
 package org.geoserver.geofence;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
@@ -88,6 +84,10 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;

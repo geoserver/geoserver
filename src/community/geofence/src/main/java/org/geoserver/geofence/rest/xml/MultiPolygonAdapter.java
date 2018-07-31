@@ -4,15 +4,15 @@
  */
 package org.geoserver.geofence.rest.xml;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.xml.DOMParser;
 import org.geotools.xml.Encoder;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

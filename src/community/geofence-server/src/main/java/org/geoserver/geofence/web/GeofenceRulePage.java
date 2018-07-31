@@ -4,11 +4,6 @@
  */
 package org.geoserver.geofence.web;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -65,6 +60,11 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
 import org.geotools.factory.CommonFactoryFinder;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.dao.DuplicateKeyException;

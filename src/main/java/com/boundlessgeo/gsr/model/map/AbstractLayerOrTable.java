@@ -82,7 +82,8 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
     }
 
     protected AbstractLayerOrTable(AbstractLayerOrTable layerOrTable) throws IOException {
-        this(layerOrTable.layer, layerOrTable.getId(), layerOrTable.getExtent(), layerOrTable.getDrawingInfo().renderer);
+        this(layerOrTable.layer, layerOrTable.getId(), layerOrTable.getExtent(),
+                (layerOrTable.getDrawingInfo() == null ? null : layerOrTable.getDrawingInfo().renderer));
     }
 
 
@@ -101,7 +102,12 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
 
         this.geometryType = geometryDescriptor(layer);
         this.extent = extent;
-        this.drawingInfo = new DrawingInfo(renderer);
+        if (renderer == null) {
+            //tables should not have a drawingInfo field
+            this.drawingInfo = null;
+        } else {
+            this.drawingInfo = new DrawingInfo(renderer);
+        }
 
         DimensionInfo timeDimensionInfo = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);
         this.timeInfo = timeDimensionInfo == null ? null : new TimeInfo(timeDimensionInfo);

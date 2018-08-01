@@ -1431,7 +1431,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1446,7 +1446,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1461,7 +1461,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1476,7 +1476,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

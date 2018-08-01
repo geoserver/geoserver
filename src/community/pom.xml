@@ -94,6 +94,8 @@
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
           <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+          <descriptor>release/ext-web-resource.xml</descriptor>
+          <descriptor>release/ext-s3-geotiff.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

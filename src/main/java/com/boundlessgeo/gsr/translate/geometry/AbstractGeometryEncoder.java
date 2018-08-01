@@ -295,6 +295,8 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      *
      * @param json the json object representing a geometry
      * @return the geometry
+     *
+     * TODO: 1. Add thorough tests 2. Split into json gsr.Geometry (should be able to use jackson converter) and gsr.Geometry to jts.Geometry
      */
     public static Geometry jsonToGeometry(net.sf.json.JSON json) {
         if (!(json instanceof JSONObject)) {

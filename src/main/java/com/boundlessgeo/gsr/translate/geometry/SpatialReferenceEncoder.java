@@ -31,7 +31,22 @@ public class SpatialReferenceEncoder {
         }
     }
 
+    public static SpatialReference fromJson(JSONObject json) {
+        if (json.containsKey("wkid")) {
+            return new SpatialReferenceWKID(json.getInt("wkid"));
+        } else if (json.containsKey("wkt")) {
+            return new SpatialReferenceWKT(json.getString("wkt"));
+        }
+        if (json.containsKey("uri")) {
+            // TODO: I'm not sure how to look these up - need to check out how GeoServer does this for WFS requests.
+            throw new RuntimeException("Spatial reference specified as URI - decoding these is not yet implemented.");
+        }
+
+        throw new JSONException("Could not determine spatial reference from JSON: " + json);
+    }
+
     public static CoordinateReferenceSystem coordinateReferenceSystemFromJSON(JSON json) {
+        //TODO: Delegate to fromJson and consolidate SpatialReference <-> CRS conversion
         if (!(json instanceof JSONObject)) {
             throw new JSONException("Spatial Reference must be encoded as JSON Object: was " + json);
         }
@@ -62,16 +77,6 @@ public class SpatialReferenceEncoder {
         }
 
         throw new JSONException("Could not determine spatial reference from JSON: " + json);
-    }
-
-    public static CoordinateReferenceSystem fromJson(JSONObject sr) throws FactoryException {
-        if (sr.containsKey("wkid")) {
-            return interpret(sr.getString("wkid"));
-        } else if (sr.containsKey("wkt")) {
-            return CRS.parseWKT(sr.getString("wkt"));
-        } else {
-            return null;
-        }
     }
 
     private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {

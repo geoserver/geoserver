@@ -63,8 +63,7 @@ public class FeatureDAO {
             //TODO: Do we need to handle geometry transforms?
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
-                    //TODO: Modify GeometryEncoder so this can be done in a less ugly fashion
-                    builder.add(GeometryEncoder.jsonToGeometry(JSONSerializer.toJSON(new GeoServicesJacksonJsonConverter().getMapper().writeValueAsString(sourceFeature.getGeometry()))));
+                    builder.add(GeometryEncoder.toJts(sourceFeature.getGeometry()));
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     builder.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
                 } else {
@@ -127,9 +126,7 @@ public class FeatureDAO {
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
                     names.add(descriptor.getName());
-
-                    //TODO: Modify GeometryEncoder so this can be done in a less ugly fashion
-                    values.add(GeometryEncoder.jsonToGeometry(JSONSerializer.toJSON(new GeoServicesJacksonJsonConverter().getMapper().writeValueAsString(sourceFeature.getGeometry()))));
+                    values.add(GeometryEncoder.toJts(sourceFeature.getGeometry()));
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     names.add(descriptor.getName());
                     values.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));

@@ -23,6 +23,8 @@ public class GeometryEncoderTest {
         assertRoundTrip("polygon_2d.json");
         assertRoundTrip("polyline_2d.json");
 
+        assertRoundTrip("geometrycollection_point.json");
+
         //TODO: add 3d support
         //assertRoundTrip("point_3d.json");
         //assertRoundTrip("multipoint_3d.json");
@@ -44,7 +46,7 @@ public class GeometryEncoderTest {
                 new File(getClass().getResource(filename).toURI()), "UTF-8");
         JSON jsonSource = JSONSerializer.toJSON(stringSource);
 
-        com.vividsolutions.jts.geom.Geometry jtsGeom = GeometryEncoder.jsonToGeometry(jsonSource);
+        com.vividsolutions.jts.geom.Geometry jtsGeom = GeometryEncoder.jsonToJtsGeometry(jsonSource);
         Geometry gsrGeom = encoder.toRepresentation(jtsGeom, new SpatialReferenceWKID(4326));
 
         String stringResult = jsonConverter.getMapper().writeValueAsString(gsrGeom);

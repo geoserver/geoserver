@@ -108,7 +108,7 @@ public class Utils {
         } else {
             try {
                 net.sf.json.JSON json = JSONSerializer.toJSON(geometryText);
-                com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToGeometry(json);
+                com.vividsolutions.jts.geom.Geometry g = GeometryEncoder.jsonToJtsGeometry(json);
                 if (mathTx != null) {
                     g = JTS.transform(g, mathTx);
                 }
@@ -176,7 +176,7 @@ public class Utils {
     private static com.vividsolutions.jts.geom.Point parseJsonPoint(String text) {
         net.sf.json.JSON json = JSONSerializer.toJSON(text);
         try {
-            com.vividsolutions.jts.geom.Geometry geometry = GeometryEncoder.jsonToGeometry(json);
+            com.vividsolutions.jts.geom.Geometry geometry = GeometryEncoder.jsonToJtsGeometry(json);
             if (geometry instanceof com.vividsolutions.jts.geom.Point) {
                 return (com.vividsolutions.jts.geom.Point) geometry;
             } else {
@@ -221,13 +221,11 @@ public class Utils {
             JSONObject jsonObject = JSONObject.fromObject(geometryText);
             Object sr = jsonObject.get("spatialReference");
             if (sr instanceof JSONObject)
-                return SpatialReferenceEncoder.fromJson((JSONObject) sr);
+                return SpatialReferenceEncoder.coordinateReferenceSystemFromJSON((JSONObject) sr);
             else
                 return parseSpatialReference(srText);
         } catch (JSONException e) {
             return parseSpatialReference(srText);
-        } catch (FactoryException e) {
-            throw new NoSuchElementException("Could not find spatial reference for id " + srText);
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package com.boundlessgeo.gsr.translate.geometry;
 
+import com.boundlessgeo.gsr.Utils;
 import com.boundlessgeo.gsr.model.geometry.*;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -257,6 +258,51 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         }
     }
 
+    /**
+     * Determines the geometry type of geometries in a geometry array.
+     *
+     * @param geometries The geometry array
+     * @return The type of all geometries in the collection, or {@link GeometryTypeEnum#POINT} if the collection is
+     *         empty.
+     * @throws IllegalArgumentException if the gemetry collection contains multiple geometry types
+     */
+    protected static GeometryTypeEnum determineGeometryType(com.boundlessgeo.gsr.model.geometry.Geometry[] geometries) {
+        if (geometries.length == 0) {
+            return GeometryTypeEnum.POINT;
+        } else {
+            GeometryTypeEnum type = geometries[0].getGeometryType();
+            for (int i = 0; i < geometries.length; i++) {
+                com.boundlessgeo.gsr.model.geometry.Geometry g = geometries[i];
+                if (! type.equals(g.getGeometryType())) {
+                    throw new IllegalArgumentException("GeoServices REST API Specification does not support mixed geometry types in geometry collections. (Core 9.8)");
+                }
+            }
+            return type;
+        }
+    }
+
+    protected static Number[] jsonArrayToPointArray(JSONArray array) {
+        if (array.size() != 2) {
+            throw new JSONException("Coordinate JSON must be an array with exactly two elements");
+        }
+        return new Number[]{array.getDouble(0), array.getDouble(1)};
+    }
+
+    protected static Number[][] jsonArrayToPointsArray(JSONArray array) {
+        Number[][] points = new Number[array.size()][];
+        for (int i = 0; i < array.size(); i++) {
+            points[i] = jsonArrayToPointArray(array.getJSONArray(i));
+        }
+        return points;
+    }
+    protected static Number[][][] jsonArrayToLinesArray(JSONArray array) {
+        Number[][][] lines = new Number[array.size()][][];
+        for (int i = 0; i < array.size(); i++) {
+            lines[i] = jsonArrayToPointsArray(array.getJSONArray(i));
+        }
+        return lines;
+    }
+
     protected static com.vividsolutions.jts.geom.Coordinate jsonArrayToCoordinate(JSONArray array) {
         if (array.size() != 2) {
             throw new JSONException("Coordinate JSON must be an array with exactly two elements");
@@ -268,6 +314,21 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.size()];
         for (int i = 0; i < array.size(); i++) {
             coordinates[i] = jsonArrayToCoordinate(array.getJSONArray(i));
+        }
+        return coordinates;
+    }
+
+    protected static com.vividsolutions.jts.geom.Coordinate arrayToCoordinate(Number[] array) {
+        if (array.length != 2) {
+            throw new JSONException("Coordinate must be an array with exactly two elements");
+        }
+        return new com.vividsolutions.jts.geom.Coordinate(array[0].doubleValue(), array[1].doubleValue());
+    }
+
+    protected static com.vividsolutions.jts.geom.Coordinate[] arrayToCoordinates(Number[][] array) {
+        com.vividsolutions.jts.geom.Coordinate[] coordinates = new com.vividsolutions.jts.geom.Coordinate[array.length];
+        for (int i = 0; i < array.length; i++) {
+            coordinates[i] = arrayToCoordinate(array[i]);
         }
         return coordinates;
     }
@@ -298,50 +359,113 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
      *
      * TODO: 1. Add thorough tests 2. Split into json gsr.Geometry (should be able to use jackson converter) and gsr.Geometry to jts.Geometry
      */
-    public static Geometry jsonToGeometry(net.sf.json.JSON json) {
-        if (!(json instanceof JSONObject)) {
-            throw new JSONException("A geometry must be encoded as a JSON Object");
-        }
-        JSONObject obj = (JSONObject) json;
-        GeometryFactory geometries = new GeometryFactory();
+    public static Geometry jsonToJtsGeometry(net.sf.json.JSON json) {
+        return toJts(jsonToGeometry(json));
+    }
 
-        if (obj.containsKey("x") && obj.containsKey("y")) {
+    /**
+     * Converts a JSON object to a geometry
+     *
+     * @param json the json object representing a geometry
+     * @return the geometry
+     *
+     * TODO: 1. Add thorough tests 2. Split into json gsr.Geometry (should be able to use jackson converter) and gsr.Geometry to jts.Geometry
+     */
+    public static com.boundlessgeo.gsr.model.geometry.Geometry jsonToGeometry(net.sf.json.JSON json) {
+        JSONObject obj = (JSONObject) json;
+
+        SpatialReference spatialReference = null;
+        if (obj.containsKey("spatialReference")) {
+            spatialReference = SpatialReferenceEncoder.fromJson(obj.getJSONObject("spatialReference"));
+        }
+
+        if (obj.containsKey("geometries")) {
+            JSONArray nestedGeometries = obj.getJSONArray("geometries");
+            com.boundlessgeo.gsr.model.geometry.Geometry[] parsedGeometries = new com.boundlessgeo.gsr.model.geometry.Geometry[nestedGeometries.size()];
+            for (int i = 0; i < nestedGeometries.size(); i++) {
+                parsedGeometries[i] = jsonToGeometry(nestedGeometries.getJSONObject(i));
+            }
+            return new GeometryArray(determineGeometryType(parsedGeometries),parsedGeometries,spatialReference);
+        } else if (obj.containsKey("x") && obj.containsKey("y") || geometryTypeEquals(obj, GeometryTypeEnum.POINT)) {
             double x = obj.getDouble("x");
             double y = obj.getDouble("y");
-            return geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(x, y));
-        } else if (obj.containsKey("points")) {
+            return new Point(x, y, spatialReference);
+        } else if (obj.containsKey("points") || geometryTypeEquals(obj, GeometryTypeEnum.MULTIPOINT)) {
             JSONArray points = obj.getJSONArray("points");
-            return geometries.createMultiPoint(jsonArrayToCoordinates(points));
-        } else if (obj.containsKey("paths")) {
+            return new Multipoint(jsonArrayToPointsArray(points), spatialReference);
+        } else if (obj.containsKey("paths") || geometryTypeEquals(obj, GeometryTypeEnum.POLYLINE)) {
             JSONArray paths = obj.getJSONArray("paths");
-            com.vividsolutions.jts.geom.LineString[] lines = new com.vividsolutions.jts.geom.LineString[paths.size()];
-            for (int i = 0; i < paths.size(); i++) {
-                com.vividsolutions.jts.geom.Coordinate[] coords = jsonArrayToCoordinates(paths.getJSONArray(i));
-                lines[i] = geometries.createLineString(coords);
-            }
-            return geometries.createMultiLineString(lines);
-        } else if (obj.containsKey("rings")) {
+            return new Polyline(jsonArrayToLinesArray(paths), spatialReference);
+        } else if (obj.containsKey("rings") || geometryTypeEquals(obj, GeometryTypeEnum.POLYGON)) {
+
             JSONArray rings = obj.getJSONArray("rings");
             if (rings.size() < 1) {
                 throw new JSONException("Polygon must have at least one ring");
             }
-            com.vividsolutions.jts.geom.LinearRing shell =
-                    geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(0)));
-            com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.size() - 1];
-            for (int i = 1; i < rings.size(); i++) {
-                holes[i - 1] = geometries.createLinearRing(jsonArrayToCoordinates(rings.getJSONArray(i)));
-            }
-            return geometries.createPolygon(shell, holes);
-        } else if (obj.containsKey("geometries")) {
-            JSONArray nestedGeometries = obj.getJSONArray("geometries");
-            Geometry[] parsedGeometries = new Geometry[nestedGeometries.size()];
-            for (int i = 0; i < nestedGeometries.size(); i++) {
-                parsedGeometries[i] = jsonToGeometry(nestedGeometries.getJSONObject(i));
-            }
-            return geometries.createGeometryCollection(parsedGeometries);
+            return new Polygon(jsonArrayToLinesArray(rings), spatialReference);
         } else {
             throw new JSONException("Could not parse Geometry from " + json);
         }
+    }
+
+    public static Geometry toJts(com.boundlessgeo.gsr.model.geometry.Geometry geometry) {
+        GeometryFactory geometries = new GeometryFactory();
+
+        if (geometry instanceof Point) {
+            Point p = (Point)geometry;
+
+            double x = p.getX().doubleValue();
+            double y = p.getY().doubleValue();
+            return geometries.createPoint(new com.vividsolutions.jts.geom.Coordinate(x, y));
+        } else if (geometry instanceof Multipoint) {
+            Multipoint mp = (Multipoint)geometry;
+
+            Number[][] points = mp.getPoints();
+            return geometries.createMultiPoint(arrayToCoordinates(points));
+        } else if (geometry instanceof Polyline) {
+
+            Polyline pl = (Polyline)geometry;
+
+            Number[][][] paths = pl.getPaths();
+
+            com.vividsolutions.jts.geom.LineString[] lines = new com.vividsolutions.jts.geom.LineString[paths.length];
+            for (int i = 0; i < paths.length; i++) {
+                com.vividsolutions.jts.geom.Coordinate[] coords = arrayToCoordinates(paths[i]);
+                lines[i] = geometries.createLineString(coords);
+            }
+            return geometries.createMultiLineString(lines);
+        } else if (geometry instanceof Polygon) {
+
+            Polygon pg = (Polygon)geometry;
+
+            Number[][][] rings = pg.getRings();
+            if (rings.length < 1) {
+                throw new JSONException("Polygon must have at least one ring");
+            }
+            com.vividsolutions.jts.geom.LinearRing shell =
+                    geometries.createLinearRing(arrayToCoordinates(rings[0]));
+            com.vividsolutions.jts.geom.LinearRing[] holes = new com.vividsolutions.jts.geom.LinearRing[rings.length - 1];
+            for (int i = 1; i < rings.length; i++) {
+                holes[i - 1] = geometries.createLinearRing(arrayToCoordinates(rings[i]));
+            }
+            return geometries.createPolygon(shell, holes);
+        } else if (geometry instanceof GeometryArray) {
+
+            GeometryArray ga = (GeometryArray)geometry;
+            com.boundlessgeo.gsr.model.geometry.Geometry[] nestedGeometries = ga.getGeometries();
+            Geometry[] parsedGeometries = new Geometry[nestedGeometries.length];
+            for (int i = 0; i < nestedGeometries.length; i++) {
+                parsedGeometries[i] = toJts(nestedGeometries[i]);
+            }
+            return geometries.createGeometryCollection(parsedGeometries);
+        } else {
+            //TODO: Use different exception type
+            throw new JSONException("Could not convert " + geometry.getGeometryType() + " to JTS");
+        }
+    }
+
+    private static boolean geometryTypeEquals(JSONObject obj, GeometryTypeEnum type) {
+        return obj.containsKey("geometryType") && obj.getString("geometryType").equals(type.value());
     }
 
     @Override

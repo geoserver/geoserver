@@ -21,6 +21,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
@@ -316,11 +318,16 @@ public class TestWfsPost extends HttpServlet {
     }
 
     String getProxyBaseURL() {
-        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
+        GeoServer geoServer = getGeoServer();
         if (geoServer != null) {
-            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+            return geoServer.getGlobal().getSettings().getProxyBaseUrl();
         }
         return null;
+    }
+
+    @VisibleForTesting
+    protected GeoServer getGeoServer() {
+        return (GeoServer) GeoServerExtensions.bean("geoServer");
     }
 
     void validateURL(HttpServletRequest request, String url, String proxyBase) {

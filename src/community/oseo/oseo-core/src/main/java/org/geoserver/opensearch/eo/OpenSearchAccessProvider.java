@@ -52,7 +52,11 @@ public class OpenSearchAccessProvider {
                     "Data access with identifier "
                             + openSearchAccessStoreId
                             + " does not point to a valid OpenSearchDataAccess, "
-                            + "please correct the configuration in the OpenSearch for EO panel");
+                            + "please correct the configuration in the OpenSearch for EO panel, "
+                            + "but got instead an istance of "
+                            + result.getClass()
+                            + "\n. ToString follows: "
+                            + result);
         }
 
         return (OpenSearchAccess) result;

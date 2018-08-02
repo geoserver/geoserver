@@ -44,6 +44,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.config.ConfigurationListenerAdapter;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.LocalHttpServletRequest;
@@ -55,6 +57,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -77,12 +80,14 @@ import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.beans.factory.DisposableBean;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
-public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
+public class GetMapKvpRequestReader extends KvpRequestReader
+        implements HttpServletRequestAware, DisposableBean {
 
     private static Map<String, Integer> interpolationMethods;
 
@@ -110,6 +115,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
     /** HTTP client used to fetch remote styles * */
     CloseableHttpClient httpClient;
+
+    /** Current cache configuration. */
+    private CacheConfiguration cacheCfg;
     /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
@@ -122,20 +130,62 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
     public GetMapKvpRequestReader(WMS wms, HttpClientConnectionManager manager) {
         super(GetMapRequest.class);
+        // configure the http client used to fetch remote styles
+        RequestConfig requestConfig = RequestConfig.DEFAULT;
+
+        wms.getGeoServer()
+                .addListener(
+                        new ConfigurationListenerAdapter() {
+
+                            @Override
+                            public void handleServiceChange(
+                                    ServiceInfo service,
+                                    List<String> propertyNames,
+                                    List<Object> oldValues,
+                                    List<Object> newValues) {
+                                if (service instanceof WMSInfo) {
+                                    WMSInfo info = (WMSInfo) service;
+                                    CacheConfiguration newCacheCfg = info.getCacheConfiguration();
+                                    if (!newCacheCfg.equals(cacheCfg)) {
+                                        createHttpClient(
+                                                wms,
+                                                manager,
+                                                requestConfig,
+                                                (CacheConfiguration) newCacheCfg.clone());
+                                    }
+                                }
+                            }
+                        });
         this.wms = wms;
         this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
+        createHttpClient(
+                wms,
+                manager,
+                requestConfig,
+                (CacheConfiguration) wms.getRemoteResourcesCacheConfiguration().clone());
+    }
 
-        // configure the http client used to fetch remote styles
-        RequestConfig requestConfig = RequestConfig.custom().build();
-
-        CacheConfiguration cacheCfg = wms.getRemoteResourcesCacheConfiguration();
-        if (cacheCfg != null && cacheCfg.isEnabled()) {
+    private synchronized void createHttpClient(
+            WMS wms,
+            HttpClientConnectionManager manager,
+            RequestConfig requestConfig,
+            CacheConfiguration cfg) {
+        this.cacheCfg = cfg;
+        if (cfg != null && cfg.isEnabled()) {
             CacheConfig cacheConfig =
                     CacheConfig.custom()
                             .setMaxCacheEntries(cacheCfg.getMaxEntries())
                             .setMaxObjectSize(cacheCfg.getMaxEntrySize())
                             .build();
-
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    if (LOGGER.isLoggable(Level.SEVERE)) {
+                        LOGGER.log(Level.SEVERE, "Error closing HTTPClient", e);
+                    }
+                }
+            }
             this.httpClient =
                     CachingHttpClientBuilder.create()
                             .setCacheConfig(cacheConfig)
@@ -367,63 +417,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             InputStream input = null;
             if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
-                HttpCacheContext cacheContext = HttpCacheContext.create();
-                CloseableHttpResponse response = null;
-                try {
-                    HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
-                    response = httpClient.execute(httpget, cacheContext);
-
-                    if (cacheContext != null) {
-                        CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
-                        if (responseStatus != null) {
-                            switch (responseStatus) {
-                                case CACHE_HIT:
-                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                        LOGGER.fine(
-                                                "A response was generated from the cache with "
-                                                        + "no requests sent upstream");
-                                    }
-                                    break;
-                                case CACHE_MODULE_RESPONSE:
-                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                        LOGGER.fine(
-                                                "The response was generated directly by the "
-                                                        + "caching module");
-                                    }
-                                    break;
-                                case CACHE_MISS:
-                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                        LOGGER.fine("The response came from an upstream server");
-                                    }
-                                    break;
-                                case VALIDATED:
-                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                        LOGGER.fine(
-                                                "The response was generated from the cache "
-                                                        + "after validating the entry with the origin server");
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                    input = response.getEntity().getContent();
-                    ByteArrayInputStream styleData =
-                            new ByteArrayInputStream(IOUtils.toByteArray(input));
-                    input.close();
-                    input = styleData;
-                    input.reset();
-                } catch (Exception ex) {
-                    LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
-                    // KMS: Replace with a generic exception so it can't be used to port scan the
-                    // local
-                    // network.
-                    throw new ServiceException("Error while getting SLD.");
-                } finally {
-                    if (response != null) {
-                        response.close();
-                    }
-                }
-
+                input = getHttpInputStream(styleUrl);
             } else {
                 try {
                     input = Requests.getInputStream(styleUrl);
@@ -692,6 +686,66 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         }
 
         return getMap;
+    }
+
+    private InputStream getHttpInputStream(URL styleUrl) throws IOException {
+        InputStream input = null;
+        HttpCacheContext cacheContext = HttpCacheContext.create();
+        CloseableHttpResponse response = null;
+        try {
+            HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
+            response = httpClient.execute(httpget, cacheContext);
+
+            if (cacheContext != null) {
+                CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
+                if (responseStatus != null) {
+                    switch (responseStatus) {
+                        case CACHE_HIT:
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine(
+                                        "A response was generated from the cache with "
+                                                + "no requests sent upstream");
+                            }
+                            break;
+                        case CACHE_MODULE_RESPONSE:
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine(
+                                        "The response was generated directly by the "
+                                                + "caching module");
+                            }
+                            break;
+                        case CACHE_MISS:
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine("The response came from an upstream server");
+                            }
+                            break;
+                        case VALIDATED:
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine(
+                                        "The response was generated from the cache "
+                                                + "after validating the entry with the origin server");
+                            }
+                            break;
+                    }
+                }
+            }
+            input = response.getEntity().getContent();
+            ByteArrayInputStream styleData = new ByteArrayInputStream(IOUtils.toByteArray(input));
+            input.close();
+            input = styleData;
+            input.reset();
+            return input;
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
+            // KMS: Replace with a generic exception so it can't be used to port scan the
+            // local
+            // network.
+            throw new ServiceException("Error while getting SLD.");
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 
     private List<Interpolation> parseInterpolations(
@@ -1407,5 +1461,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
     public void setLaxStyleMatchAllowed(boolean laxStyleMatchAllowed) {
         this.laxStyleMatchAllowed = laxStyleMatchAllowed;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (httpClient != null) {
+            httpClient.close();
+        }
     }
 }

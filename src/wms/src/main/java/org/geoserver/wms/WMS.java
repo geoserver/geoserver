@@ -144,8 +144,6 @@ public class WMS implements ApplicationContextAware {
 
     public static final String FEATURES_REPROJECTION_DISABLED = "featuresReprojectionDisabled";
 
-    public static final String CACHE_REMOTE_STYLES = "cacheRemoteStyles";
-
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";

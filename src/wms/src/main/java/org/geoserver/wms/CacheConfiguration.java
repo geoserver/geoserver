@@ -10,7 +10,7 @@ package org.geoserver.wms;
  *
  * @author maurobartolomeoli@gmail.com
  */
-public class CacheConfiguration {
+public class CacheConfiguration implements Cloneable {
 
     private boolean enabled;
     private int maxEntries = 1000;
@@ -23,6 +23,13 @@ public class CacheConfiguration {
     public CacheConfiguration(boolean enabled) {
         super();
         this.enabled = enabled;
+    }
+
+    public CacheConfiguration(boolean enabled, int maxEntries, long maxEntrySize) {
+        super();
+        this.enabled = enabled;
+        this.maxEntries = maxEntries;
+        this.maxEntrySize = maxEntrySize;
     }
 
     public boolean isEnabled() {
@@ -62,5 +69,20 @@ public class CacheConfiguration {
      */
     public void setMaxEntrySize(long maxEntrySize) {
         this.maxEntrySize = maxEntrySize;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CacheConfiguration) {
+            CacheConfiguration other = (CacheConfiguration) obj;
+            return other.enabled == enabled
+                    && other.maxEntries == maxEntries
+                    && other.maxEntrySize == maxEntrySize;
+        }
+        return false;
+    }
+
+    public Object clone() {
+        return new CacheConfiguration(enabled, maxEntries, maxEntrySize);
     }
 }

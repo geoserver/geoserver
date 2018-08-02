@@ -9,16 +9,19 @@ import static org.geoserver.wms.mapbox.MapBoxTileBuilderFactory.MIME_TYPE;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.vector.VectorTileBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 
 /** @author Niels Charlier */
 public class MapBoxTileBuilder implements VectorTileBuilder {
+    private static final Logger LOGGER = Logging.getLogger(MapBoxTileBuilder.class);
 
     private VectorTileEncoder encoder;
 
@@ -36,8 +39,19 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
             String geometryName,
             Geometry geometry,
             Map<String, Object> properties) {
+        int id = -1;
+        if (featureId.matches(".*\\.[0-9]+")) {
+            try {
+                id = Integer.parseInt(featureId.split("\\.")[1]);
+            } catch (NumberFormatException e) {
+            }
+        }
 
-        encoder.addFeature(layerName, properties, geometry);
+        if (id < 0) {
+            LOGGER.warning("Cannot obtain numeric id from featureId: " + featureId);
+        }
+
+        encoder.addFeature(layerName, properties, geometry, id);
     }
 
     @Override

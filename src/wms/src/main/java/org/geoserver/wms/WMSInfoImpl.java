@@ -67,7 +67,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     private Integer maxRequestedDimensionValues;
 
-    private CacheConfiguration cacheConfiguration = null;
+    private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
@@ -249,6 +249,9 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public CacheConfiguration getCacheConfiguration() {
+        if (cacheConfiguration == null) {
+            cacheConfiguration = new CacheConfiguration();
+        }
         return cacheConfiguration;
     }
 

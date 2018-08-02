@@ -46,37 +46,34 @@ public class SpatialReferenceEncoder {
     }
 
     public static CoordinateReferenceSystem coordinateReferenceSystemFromJSON(JSON json) {
-        //TODO: Delegate to fromJson and consolidate SpatialReference <-> CRS conversion
         if (!(json instanceof JSONObject)) {
             throw new JSONException("Spatial Reference must be encoded as JSON Object: was " + json);
         }
         JSONObject obj = (JSONObject) json;
+        return coordinateReferenceSystemFromSpatialReference(fromJson(obj));
+    }
 
-        if (obj.containsKey("wkid")) {
-            int wkid = obj.getInt("wkid");
+    public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(SpatialReference sr) {
+
+        if (sr instanceof SpatialReferenceWKID) {
+            int wkid = ((SpatialReferenceWKID) sr).getWkid();
 
             try {
                 return CRS.decode("EPSG:" + wkid);
             } catch (FactoryException e) {
-                throw new JSONException("SRID " + wkid + " does not correspond to any known spatial reference");
+                throw new IllegalArgumentException("SRID " + wkid + " does not correspond to any known spatial reference");
             }
         }
 
-        if (obj.containsKey("wkt")) {
-            String wkt = obj.getString("wkt");
+        if (sr instanceof SpatialReferenceWKT) {
+            String wkt = ((SpatialReferenceWKT) sr).getWkt();
             try {
                 return CRS.parseWKT(wkt);
             } catch (FactoryException e) {
-                throw new JSONException("wkt value (" + wkt + ") is not valid well-known text", e);
+                throw new IllegalArgumentException("wkt value (" + wkt + ") is not valid well-known text", e);
             }
         }
-
-        if (obj.containsKey("uri")) {
-            // TODO: I'm not sure how to look these up - need to check out how GeoServer does this for WFS requests.
-            throw new RuntimeException("Spatial reference specified as URI - decoding these is not yet implemented.");
-        }
-
-        throw new JSONException("Could not determine spatial reference from JSON: " + json);
+        throw new IllegalArgumentException("Could not determine coordinate reference system from spatial reference: " + sr);
     }
 
     private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {

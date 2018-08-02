@@ -4,12 +4,15 @@ import com.boundlessgeo.gsr.Utils;
 import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.model.exception.FeatureServiceErrors;
 import com.boundlessgeo.gsr.model.exception.ServiceError;
+import com.boundlessgeo.gsr.model.geometry.SpatialReference;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.model.map.EditResult;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
+import com.vividsolutions.jts.geom.Geometry;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.DimensionInfo;
@@ -26,6 +29,8 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -33,7 +38,10 @@ import org.opengis.feature.type.*;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,10 +68,14 @@ public class FeatureDAO {
                 return new EditResult(null, false, validationResult);
             }
 
-            //TODO: Do we need to handle geometry transforms?
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
-                    builder.add(GeometryEncoder.toJts(sourceFeature.getGeometry()));
+
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    builder.add(geom);
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     builder.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
                 } else {
@@ -122,11 +134,14 @@ public class FeatureDAO {
                 return new EditResult(objectId, false, validationResult);
             }
 
-            //TODO: Do we need to handle geometry transforms?
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
                     names.add(descriptor.getName());
-                    values.add(GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    values.add(geom);
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     names.add(descriptor.getName());
                     values.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
@@ -195,6 +210,15 @@ public class FeatureDAO {
             return FeatureServiceErrors.nonSpecific(errors);
         }
         return null;
+    }
+
+    private static Geometry transformGeometry(CoordinateReferenceSystem nativeCrs, SpatialReference inSr, Geometry geometry) throws FactoryException, TransformException {
+        CoordinateReferenceSystem inCrs = SpatialReferenceEncoder.coordinateReferenceSystemFromSpatialReference(inSr);
+        if (inCrs != null) {
+            MathTransform mathTx = CRS.findMathTransform(inCrs, nativeCrs, true);
+            return JTS.transform(geometry, mathTx);
+        }
+        return geometry;
     }
 
     private static FeatureStore featureStore(FeatureTypeInfo featureType) throws ReadOnlyLayerException, IOException {

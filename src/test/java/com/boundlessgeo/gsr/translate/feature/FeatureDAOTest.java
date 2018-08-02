@@ -3,7 +3,7 @@ package com.boundlessgeo.gsr.translate.feature;
 import com.boundlessgeo.gsr.model.feature.Feature;
 import com.boundlessgeo.gsr.model.geometry.Polyline;
 import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
-import com.boundlessgeo.gsr.model.map.EditResult;
+import com.boundlessgeo.gsr.model.feature.EditResult;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;

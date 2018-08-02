@@ -1,4 +1,4 @@
-package com.boundlessgeo.gsr.model.map;
+package com.boundlessgeo.gsr.model.feature;
 
 import com.boundlessgeo.gsr.model.exception.ServiceError;
 import com.fasterxml.jackson.annotation.JsonInclude;

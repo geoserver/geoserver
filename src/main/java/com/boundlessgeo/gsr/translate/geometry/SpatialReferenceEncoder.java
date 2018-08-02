@@ -17,6 +17,11 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 
 public class SpatialReferenceEncoder {
+    /**
+     * Converts a spatial reference to a json representation
+     * @param sr the spatial reference
+     * @param json a JSONBuilder which the json representation is added to
+     */
     public static void toJson(SpatialReference sr, JSONBuilder json) {
         if (sr instanceof SpatialReferenceWKID) {
             final SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
@@ -31,6 +36,11 @@ public class SpatialReferenceEncoder {
         }
     }
 
+    /**
+     * Convert a json representation to a {@link SpatialReference}
+     * @param json the json
+     * @return the spatial reference
+     */
     public static SpatialReference fromJson(JSONObject json) {
         if (json.containsKey("wkid")) {
             return new SpatialReferenceWKID(json.getInt("wkid"));
@@ -45,6 +55,12 @@ public class SpatialReferenceEncoder {
         throw new JSONException("Could not determine spatial reference from JSON: " + json);
     }
 
+    /**
+     * Convert a json reference to a {@link CoordinateReferenceSystem}
+     *
+     * @see #fromJson(JSONObject)
+     * @see #coordinateReferenceSystemFromSpatialReference(SpatialReference)
+     */
     public static CoordinateReferenceSystem coordinateReferenceSystemFromJSON(JSON json) {
         if (!(json instanceof JSONObject)) {
             throw new JSONException("Spatial Reference must be encoded as JSON Object: was " + json);
@@ -53,6 +69,11 @@ public class SpatialReferenceEncoder {
         return coordinateReferenceSystemFromSpatialReference(fromJson(obj));
     }
 
+    /**
+     * Convert a {@link SpatialReference} to a {@link CoordinateReferenceSystem}
+     * @param sr the spatial reference
+     * @return the coordinate reference system
+     */
     public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(SpatialReference sr) {
 
         if (sr instanceof SpatialReferenceWKID) {

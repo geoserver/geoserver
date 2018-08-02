@@ -1,19 +1,17 @@
 package com.boundlessgeo.gsr.translate.feature;
 
 import com.boundlessgeo.gsr.Utils;
-import com.boundlessgeo.gsr.api.GeoServicesJacksonJsonConverter;
 import com.boundlessgeo.gsr.model.exception.FeatureServiceErrors;
 import com.boundlessgeo.gsr.model.exception.ServiceError;
 import com.boundlessgeo.gsr.model.geometry.SpatialReference;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
-import com.boundlessgeo.gsr.model.map.EditResult;
+import com.boundlessgeo.gsr.model.feature.EditResult;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 import com.vividsolutions.jts.geom.Geometry;
-import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -53,6 +51,52 @@ public class FeatureDAO {
 
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(FeatureDAO.class);
 
+    /**
+     * Create new features
+     *
+     * @see #createFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    public static List<EditResult> createFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+        List<EditResult> results = new ArrayList<>();
+        for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
+            results.add(createFeature(featureType, sourceFeature));
+        }
+        return results;
+    }
+
+    /**
+     * Update existing features
+     *
+     * @see #updateFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    public static List<EditResult> updateFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+        List<EditResult> results = new ArrayList<>();
+        for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
+            results.add(updateFeature(featureType, sourceFeature));
+        }
+        return results;
+    }
+
+    /**
+     * Delete existing features
+     *
+     * @see #deleteFeature(FeatureTypeInfo, Long)
+     */
+    public static List<EditResult> deleteFeatures(FeatureTypeInfo featureType, List<Long> ids) {
+        List<EditResult> results = new ArrayList<>();
+        for (Long id : ids) {
+            results.add(deleteFeature(featureType, id));
+        }
+        return results;
+    }
+
+    /**
+     * Create a new feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param sourceFeature The GSR feature model to add
+     * @return the result of the add
+     */
     public static EditResult createFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         try {
             FeatureStore featureStore = featureStore(featureType);
@@ -98,6 +142,13 @@ public class FeatureDAO {
         }
     }
 
+    /**
+     * Update an existing feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param sourceFeature The GSR feature model to add. Must include the id
+     * @return the result of the edit
+     */
     public static EditResult updateFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         Long objectId = null;
         try {
@@ -156,6 +207,13 @@ public class FeatureDAO {
         }
     }
 
+    /**
+     * Delete an existing feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param objectId The id of the feature to delete
+     * @return the result of the delete
+     */
     public static EditResult deleteFeature(FeatureTypeInfo featureType, Long objectId) {
         try {
             Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));

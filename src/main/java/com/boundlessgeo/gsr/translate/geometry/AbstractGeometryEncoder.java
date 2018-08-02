@@ -14,6 +14,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -352,24 +353,23 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     }
 
     /**
-     * Converts a JSON object to a geometry
+     * Converts a JSON object to a {@link Geometry}
      *
      * @param json the json object representing a geometry
      * @return the geometry
      *
-     * TODO: 1. Add thorough tests 2. Split into json gsr.Geometry (should be able to use jackson converter) and gsr.Geometry to jts.Geometry
+     * @see #jsonToJtsGeometry(JSON)
+     * @see #toJts(com.boundlessgeo.gsr.model.geometry.Geometry)
      */
     public static Geometry jsonToJtsGeometry(net.sf.json.JSON json) {
         return toJts(jsonToGeometry(json));
     }
 
     /**
-     * Converts a JSON object to a geometry
+     * Converts a JSON object to a {@link com.boundlessgeo.gsr.model.geometry.Geometry}
      *
      * @param json the json object representing a geometry
      * @return the geometry
-     *
-     * TODO: 1. Add thorough tests 2. Split into json gsr.Geometry (should be able to use jackson converter) and gsr.Geometry to jts.Geometry
      */
     public static com.boundlessgeo.gsr.model.geometry.Geometry jsonToGeometry(net.sf.json.JSON json) {
         JSONObject obj = (JSONObject) json;
@@ -408,6 +408,11 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
         }
     }
 
+    /**
+     * Convert a {@link com.boundlessgeo.gsr.model.geometry.Geometry GSR Geometry} to a {@link Geometry JTS Geometry}
+     * @param geometry GSR Geometry
+     * @return JTS Geometry
+     */
     public static Geometry toJts(com.boundlessgeo.gsr.model.geometry.Geometry geometry) {
         GeometryFactory geometries = new GeometryFactory();
 
@@ -459,8 +464,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             }
             return geometries.createGeometryCollection(parsedGeometries);
         } else {
-            //TODO: Use different exception type
-            throw new JSONException("Could not convert " + geometry.getGeometryType() + " to JTS");
+            throw new IllegalArgumentException("Could not convert " + geometry.getGeometryType() + " to JTS");
         }
     }
 

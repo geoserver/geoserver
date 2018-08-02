@@ -288,7 +288,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     @After
     public void cleanCoverages() {
         for (GridCoverage coverage : coverages) {
-            CoverageCleanerCallback.disposeCoverage(coverage);
+            if (coverage != null) {
+                CoverageCleanerCallback.disposeCoverage(coverage);
+            }
         }
     }
 

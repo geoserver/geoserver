@@ -9,8 +9,13 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -1059,5 +1064,40 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(
                 response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
+    }
+
+    /**
+     * See https://osgeo-org.atlassian.net/browse/GEOS-8491
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testConcurrentRequests() throws Exception {
+        ExecutorService executor =
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 8);
+        try {
+            List<Future<Object>> futures = new ArrayList<>();
+            for (int i = 0; i < 100; i++) {
+                Future<Object> future =
+                        executor.submit(
+                                () -> {
+                                    // subsample
+                                    MockHttpServletResponse response =
+                                            getAsServletResponse(
+                                                    "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                                            + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0.5");
+
+                                    assertEquals("image/tiff", response.getContentType());
+                                    return null;
+                                });
+                futures.add(future);
+            }
+            // let it throw exceptions in case it fails
+            for (Future<Object> future : futures) {
+                future.get();
+            }
+        } finally {
+            executor.shutdownNow();
+        }
     }
 }

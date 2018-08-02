@@ -74,7 +74,6 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
@@ -101,7 +100,6 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
@@ -143,12 +141,6 @@ public class GetCoverage {
     /** Utility class to map envelope dimension */
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
-    /** A URI authorithy with lonlat order. */
-    private CRSAuthorityFactory lonLatCRSFactory;
-
-    /** A URI authorithy with latlon order. */
-    private CRSAuthorityFactory latLonCRSFactory;
-
     /** Factory used to create new coverages */
     private GridCoverageFactory gridCoverageFactory;
 
@@ -170,20 +162,6 @@ public class GetCoverage {
         this.catalog = catalog;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
         this.mimeMapper = mimeMapper;
-
-        // building the needed URI CRS Factories
-        Hints hints = GeoTools.getDefaultHints();
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
-        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        lonLatCRSFactory =
-                ReferencingFactoryFinder.getCRSAuthorityFactory(
-                        "http://www.opengis.net/def", hints);
-
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.FALSE));
-        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        latLonCRSFactory =
-                ReferencingFactoryFinder.getCRSAuthorityFactory(
-                        "http://www.opengis.net/def", hints);
         this.gridCoverageFactory =
                 CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
     }
@@ -760,8 +738,7 @@ public class GetCoverage {
         final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
         if (epsgCode != null && epsgCode > 0) {
             // final CRS
-            CoordinateReferenceSystem finalCRS =
-                    latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
+            CoordinateReferenceSystem finalCRS = CRS.decode(SRS_STARTER + epsgCode);
             if (CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))) {
                 return coverage;
             }
@@ -807,8 +784,7 @@ public class GetCoverage {
         try {
             final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
             if (epsgCode != null && epsgCode > 0) {
-                CoordinateReferenceSystem originalCRS =
-                        latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
+                CoordinateReferenceSystem originalCRS = CRS.decode(SRS_STARTER + epsgCode);
                 return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
             }
         } catch (FactoryException e) {
@@ -1306,9 +1282,15 @@ public class GetCoverage {
                         identifier + " was null", WCS20ExceptionCode.NotACrs, "null");
             }
 
-            // instantiate
+            // instantiate and make it go lon/lat order if possible
             try {
-                return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
+                CoordinateReferenceSystem crs = CRS.decode(crsName);
+                final Integer epsgCode = CRS.lookupEpsgCode(crs, false);
+                if (epsgCode != null && epsgCode > 0) {
+                    return CRS.decode("EPSG:" + epsgCode);
+                } else {
+                    return crs;
+                }
             } catch (Exception e) {
                 final WCS20Exception exception =
                         new WCS20Exception(

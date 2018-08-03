@@ -108,12 +108,13 @@ public class TestWfsPostTest {
         GeoServer gs = new GeoServerImpl();
         gs.setGlobal(info);
 
-        TestWfsPost servlet = new TestWfsPost() {
-            @Override
-            protected GeoServer getGeoServer() {
-                return gs;
-            }
-        };
+        TestWfsPost servlet =
+                new TestWfsPost() {
+                    @Override
+                    protected GeoServer getGeoServer() {
+                        return gs;
+                    }
+                };
         assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
     }
 

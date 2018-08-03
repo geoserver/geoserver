@@ -6,6 +6,8 @@ package com.boundlessgeo.gsr.model.geometry;
 
 /**
  * @author Juan Marin - OpenGeo
+ *
+ * See https://developers.arcgis.com/documentation/common-data-types/geometry-objects.htm
  */
 public class Geometry {
 

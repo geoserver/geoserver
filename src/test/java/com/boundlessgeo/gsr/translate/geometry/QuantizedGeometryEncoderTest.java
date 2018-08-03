@@ -25,7 +25,7 @@ public class QuantizedGeometryEncoderTest {
         File jsonFile = new File(getClass().getResource("sample_geometry.json").toURI());
         net.sf.json.JSON json = JSONSerializer.toJSON(FileUtils.readFileToString(jsonFile, "UTF-8"));
 
-        com.vividsolutions.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToGeometry(json);
+        com.vividsolutions.jts.geom.Geometry inputGeometry = GeometryEncoder.jsonToJtsGeometry(json);
 
         QuantizedGeometryEncoder geometryEncoder = new QuantizedGeometryEncoder(
                 QuantizedGeometryEncoder.Mode.view,

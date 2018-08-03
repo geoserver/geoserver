@@ -1,36 +1,293 @@
 package com.boundlessgeo.gsr.translate.feature;
 
 import com.boundlessgeo.gsr.Utils;
+import com.boundlessgeo.gsr.model.exception.FeatureServiceErrors;
+import com.boundlessgeo.gsr.model.exception.ServiceError;
+import com.boundlessgeo.gsr.model.geometry.SpatialReference;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
+import com.boundlessgeo.gsr.model.feature.EditResult;
 import com.boundlessgeo.gsr.model.map.LayerOrTable;
 import com.boundlessgeo.gsr.model.map.LayersAndTables;
+import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.*;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FeatureDAO {
     protected static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(FeatureDAO.class);
+
+    /**
+     * Create new features
+     *
+     * @see #createFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    public static List<EditResult> createFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+        List<EditResult> results = new ArrayList<>();
+        for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
+            results.add(createFeature(featureType, sourceFeature));
+        }
+        return results;
+    }
+
+    /**
+     * Update existing features
+     *
+     * @see #updateFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    public static List<EditResult> updateFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+        List<EditResult> results = new ArrayList<>();
+        for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
+            results.add(updateFeature(featureType, sourceFeature));
+        }
+        return results;
+    }
+
+    /**
+     * Delete existing features
+     *
+     * @see #deleteFeature(FeatureTypeInfo, Long)
+     */
+    public static List<EditResult> deleteFeatures(FeatureTypeInfo featureType, List<Long> ids) {
+        List<EditResult> results = new ArrayList<>();
+        for (Long id : ids) {
+            results.add(deleteFeature(featureType, id));
+        }
+        return results;
+    }
+
+    /**
+     * Create a new feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param sourceFeature The GSR feature model to add
+     * @return the result of the add
+     */
+    public static EditResult createFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
+        try {
+            FeatureStore featureStore = featureStore(featureType);
+
+            SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
+            SimpleFeatureBuilder builder = new SimpleFeatureBuilder(schema);
+
+            Set<String> attributeNames = sourceFeature.getAttributes().keySet();
+            GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+
+            ServiceError validationResult = validateSchema(schema, sourceFeature);
+            if (validationResult != null) {
+                return new EditResult(null, false, validationResult);
+            }
+
+            for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
+                if (descriptor.equals(geometryDescriptor)) {
+
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    builder.add(geom);
+                } else if (attributeNames.contains(descriptor.getLocalName())) {
+                    builder.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
+                } else {
+                    builder.add(null);
+                }
+
+            }
+            SimpleFeature destFeature = builder.buildFeature(null);
+            List<FeatureId> fid = featureStore.addFeatures(new ListFeatureCollection(schema, Collections.singletonList(destFeature)));
+            if (fid.size() < 1) {
+                return new EditResult(null, false, FeatureServiceErrors.insertError(Collections.singletonList("Could not create feature: " + sourceFeature.toString())));
+            } else if (fid.size() > 1){
+                return new EditResult(null, false, FeatureServiceErrors.insertError(Collections.singletonList("Multiple features created for: " + sourceFeature.toString())));
+            }
+            return new EditResult(FeatureEncoder.toGSRObjectId(fid.get(0).getID()));
+
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
+            return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+        }
+    }
+
+    /**
+     * Update an existing feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param sourceFeature The GSR feature model to add. Must include the id
+     * @return the result of the edit
+     */
+    public static EditResult updateFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
+        Long objectId = null;
+        try {
+            Object objectIdObject = sourceFeature.getAttributes().get(FeatureEncoder.OBJECTID_FIELD_NAME);
+            if (objectIdObject == null) {
+                return new EditResult(null, false, FeatureServiceErrors.updateError(Collections.singletonList("Missing id field")));
+            }
+            if (objectIdObject instanceof Long) {
+                objectId = (Long) objectIdObject;
+            } else {
+                objectId = Long.parseLong(objectIdObject.toString());
+            }
+
+            Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
+            FeatureStore featureStore = featureStore(featureType);
+            SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
+
+            int featureCount = featureStore.getFeatures(idFilter).size();
+            if (featureCount < 1) {
+                return new EditResult(objectId, false, FeatureServiceErrors.objectMissing(null));
+            } else if (featureCount > 1) {
+                return new EditResult(objectId, false, FeatureServiceErrors.updateError(Collections.singletonList("Multiple features found for id " + objectId)));
+            }
+
+            List<Name> names = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
+
+            Set<String> attributeNames = sourceFeature.getAttributes().keySet();
+
+            GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+
+            ServiceError validationResult = validateSchema(schema, sourceFeature);
+            if (validationResult != null) {
+                return new EditResult(objectId, false, validationResult);
+            }
+
+            for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
+                if (descriptor.equals(geometryDescriptor)) {
+                    names.add(descriptor.getName());
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    values.add(geom);
+                } else if (attributeNames.contains(descriptor.getLocalName())) {
+                    names.add(descriptor.getName());
+                    values.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
+                }
+            }
+
+            featureStore.modifyFeatures(names.toArray(new Name[names.size()]), values.toArray(), idFilter);
+            return new EditResult(objectId);
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Error updating object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(), e);
+            return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+        }
+    }
+
+    /**
+     * Delete an existing feature
+     *
+     * @param featureType The feature type in GeoServer
+     * @param objectId The id of the feature to delete
+     * @return the result of the delete
+     */
+    public static EditResult deleteFeature(FeatureTypeInfo featureType, Long objectId) {
+        try {
+            Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
+            FeatureStore featureStore = featureStore(featureType);
+
+            int featureCount = featureStore.getFeatures(idFilter).size();
+            if (featureCount < 1) {
+                return new EditResult(objectId, false, FeatureServiceErrors.objectMissing(null));
+            } else if (featureCount > 1) {
+                return new EditResult(objectId, false, FeatureServiceErrors.deleteError(Collections.singletonList("Multiple features found for id " + objectId)));
+            }
+
+            featureStore.removeFeatures(idFilter);
+            return new EditResult(objectId);
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Error deleting object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
+            return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+        }
+    }
+
+    private static ServiceError validateSchema(SimpleFeatureType schema, com.boundlessgeo.gsr.model.feature.Feature feature) {
+        List<String> objectNames = new ArrayList<>(feature.getAttributes().keySet());
+        GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+
+        //Verify geometry is consistent
+        if (feature.getGeometry() == null && geometryDescriptor != null) {
+            return FeatureServiceErrors.nonSpecific(Collections.singletonList("No geometry provided"));
+        }
+        if (feature.getGeometry() != null && geometryDescriptor == null) {
+            return FeatureServiceErrors.geometryNotSet(Collections.singletonList("No geometry descriptor in schema"));
+        }
+        //ignore objectid
+        if (objectNames.contains(FeatureEncoder.OBJECTID_FIELD_NAME)) {
+            objectNames.remove(FeatureEncoder.OBJECTID_FIELD_NAME);
+        }
+
+        List<String> errors = new ArrayList<>();
+
+        for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
+            if (!descriptor.equals(geometryDescriptor)) {
+                if (objectNames.contains(descriptor.getLocalName())) {
+                    objectNames.remove(descriptor.getLocalName());
+                } else {
+                    errors.add("Missing field: "+descriptor.getLocalName());
+                }
+            }
+        }
+        for (String extraField : objectNames) {
+            errors.add("Invalid field name: "+extraField);
+        }
+        if (errors.size() > 0) {
+            return FeatureServiceErrors.nonSpecific(errors);
+        }
+        return null;
+    }
+
+    private static Geometry transformGeometry(CoordinateReferenceSystem nativeCrs, SpatialReference inSr, Geometry geometry) throws FactoryException, TransformException {
+        CoordinateReferenceSystem inCrs = SpatialReferenceEncoder.coordinateReferenceSystemFromSpatialReference(inSr);
+        if (inCrs != null) {
+            MathTransform mathTx = CRS.findMathTransform(inCrs, nativeCrs, true);
+            return JTS.transform(geometry, mathTx);
+        }
+        return geometry;
+    }
+
+    private static FeatureStore featureStore(FeatureTypeInfo featureType) throws ReadOnlyLayerException, IOException {
+        FeatureSource featureSource = featureType.getFeatureSource(null, null);
+
+        if (!(featureSource instanceof FeatureStore)) {
+            throw new ReadOnlyLayerException();
+        }
+
+        return (FeatureStore) featureSource;
+    }
 
     /**
      * Searches the provided list of layersAndTables for layerId, then returns the result of
@@ -117,6 +374,42 @@ public class FeatureDAO {
                 "No table or layer in workspace \"" + workspaceName + " for id " + layerId);
         }
 
+        Filter filter = filter(featureType, geometryTypeName, geometryText, inSRText, spatialRelText,
+                objectIdsText, relatePattern, time, text, maxAllowableOffsets, whereClause);
+
+        // TODO update this to match outSR spec
+        // "If outSR is not specified, the geometry is returned in the spatial reference of the map."
+        final CoordinateReferenceSystem outSR = Utils
+                .parseSpatialReference(StringUtils.isNotEmpty(outSRText) ? outSRText : String.valueOf(SpatialReferences.DEFAULT_WKID));
+
+        String[] properties = parseOutFields(outFieldsText);
+
+        FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
+        final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
+
+        final Query query;
+        if (effectiveProperties == null) {
+            query = new Query(featureType.getName(), filter);
+        } else {
+            query = new Query(featureType.getName(), filter, effectiveProperties);
+        }
+        query.setCoordinateSystemReproject(outSR);
+
+        return source.getFeatures(query);
+    }
+
+    /**
+     * Converts a set of GSR query parameters into a {@link Filter}
+     *
+     * @see #getFeatureCollectionForLayerWithId(String, Integer, String, String, String, String, String, String, String, String, String, String, String, Boolean, String, LayersAndTables)
+     * for a description of all the parameters
+     */
+    public static Filter filter(FeatureTypeInfo featureType, String geometryTypeName, String geometryText,
+                                String inSRText, String spatialRelText, String objectIdsText, String relatePattern,
+                                String time, String text, String maxAllowableOffsets, String whereClause) throws IOException {
+
+        Filter filter = Filter.INCLUDE;
+
         final String geometryProperty;
         final String temporalProperty;
         final CoordinateReferenceSystem nativeCRS;
@@ -134,16 +427,12 @@ public class FeatureDAO {
             throw new IllegalArgumentException("Unable to determine geometry type for query request");
         }
 
-
         //Try to reverse-mask objectIds into featureIds
         String featureIdPrefix = FeatureEncoder.calculateFeatureIdPrefix(featureType);
         Filter objectIdFilter = parseObjectIdFilter(objectIdsText, featureIdPrefix);
 
         //Query Parameters
-        // TODO update this to match outSR spec
-        // "If outSR is not specified, the geometry is returned in the spatial reference of the map."
-        final CoordinateReferenceSystem outSR = Utils
-            .parseSpatialReference(StringUtils.isNotEmpty(outSRText) ? outSRText : String.valueOf(SpatialReferences.DEFAULT_WKID));
+
         SpatialRelationship spatialRel = null;
         if (StringUtils.isNotEmpty(spatialRelText)) {
             spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
@@ -151,12 +440,12 @@ public class FeatureDAO {
 
         String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : String.valueOf(SpatialReferences.DEFAULT_WKID);
         final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRCode, geometryText);
-        Filter filter = Filter.INCLUDE;
+
 
         if (StringUtils.isNotEmpty(geometryText)) {
             filter = Utils
-                .buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR,
-                    nativeCRS);
+                    .buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR,
+                            nativeCRS);
         }
 
         if (time != null) {
@@ -167,7 +456,7 @@ public class FeatureDAO {
         }
         if (maxAllowableOffsets != null) {
             throw new UnsupportedOperationException(
-                "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
+                    "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
         }
         if (whereClause != null) {
             Filter whereFilter;
@@ -185,20 +474,7 @@ public class FeatureDAO {
         }
         filter = SimplifyingFilterVisitor.simplify(filter);
 
-        String[] properties = parseOutFields(outFieldsText);
-
-        FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
-        final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
-
-        final Query query;
-        if (effectiveProperties == null) {
-            query = new Query(featureType.getName(), filter);
-        } else {
-            query = new Query(featureType.getName(), filter, effectiveProperties);
-        }
-        query.setCoordinateSystemReproject(outSR);
-
-        return source.getFeatures(query);
+        return filter;
     }
 
     /**

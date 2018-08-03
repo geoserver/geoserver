@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 public abstract class JsonSchemaTest {
 
@@ -25,9 +26,7 @@ public abstract class JsonSchemaTest {
     }
 
     public static boolean validateJSON(String json, String schemaPath) {
-//        File schemaFile = new java.io.File(System.getProperty("user.dir") + "/src/test/resources/schemas/" + schemaPath);
-//        return JSONValidator.isValidSchema(json, schemaFile);
-        return true;
+        return validateJSON(JSONSerializer.toJSON(json), schemaPath);
     }
 
     public static boolean validateJSON(JSON json, String schemaPath) {

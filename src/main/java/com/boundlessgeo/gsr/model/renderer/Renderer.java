@@ -6,8 +6,9 @@ package com.boundlessgeo.gsr.model.renderer;
 
 /**
  *
- * @author Juan Marin, OpenGeo
+ * See https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm
  *
+ * @author Juan Marin, OpenGeo
  */
 public abstract class Renderer {
 

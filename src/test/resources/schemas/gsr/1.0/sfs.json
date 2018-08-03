@@ -11,7 +11,7 @@
             "title":"marker type",
             "type":"string",
             "required":true,
-            "enum":["SFS"]
+            "enum":["esriSFS"]
         },
         "style":{
             "title":"marker style",

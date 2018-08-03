@@ -16,6 +16,7 @@ import com.boundlessgeo.gsr.model.feature.*;
 import com.boundlessgeo.gsr.model.geometry.*;
 import com.boundlessgeo.gsr.translate.geometry.AbstractGeometryEncoder;
 import com.boundlessgeo.gsr.translate.geometry.GeometryEncoder;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -63,6 +64,18 @@ public class FeatureEncoder {
         }
 
         return attributes;
+    }
+
+    public static Feature fromJson(JSONObject json) {
+        Geometry geometry = GeometryEncoder.jsonToGeometry(json.getJSONObject("geometry"));
+        Map<String, Object> attributes = new HashMap<>();
+        JSONObject jsonAttributes = json.getJSONObject("attributes");
+
+        for (Object key : jsonAttributes.keySet()) {
+            attributes.put((String) key, jsonAttributes.get(key));
+        }
+
+        return new Feature(geometry, attributes);
     }
 
     public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,

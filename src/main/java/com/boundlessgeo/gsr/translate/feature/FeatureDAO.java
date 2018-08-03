@@ -99,6 +99,10 @@ public class FeatureDAO {
      */
     public static EditResult createFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         try {
+            if (sourceFeature == null) {
+                return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
+            }
+
             FeatureStore featureStore = featureStore(featureType);
 
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
@@ -152,6 +156,10 @@ public class FeatureDAO {
     public static EditResult updateFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         Long objectId = null;
         try {
+            if (sourceFeature == null) {
+                return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
+            }
+
             Object objectIdObject = sourceFeature.getAttributes().get(FeatureEncoder.OBJECTID_FIELD_NAME);
             if (objectIdObject == null) {
                 return new EditResult(null, false, FeatureServiceErrors.updateError(Collections.singletonList("Missing id field")));

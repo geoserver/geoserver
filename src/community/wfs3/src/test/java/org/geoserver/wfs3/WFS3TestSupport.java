@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonContext;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +45,12 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
     }
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(path);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(path, expectedHttpCode);
+        return getAsJSONPath(response);
+    }
 
-        assertEquals(expectedHttpCode, response.getStatus());
+    protected DocumentContext getAsJSONPath(MockHttpServletResponse response)
+            throws UnsupportedEncodingException {
         assertThat(
                 response.getContentType(),
                 anyOf(startsWith("application/json"), startsWith("application/geo+json")));
@@ -55,6 +59,14 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
             print(json(response));
         }
         return json;
+    }
+
+    protected MockHttpServletResponse getAsMockHttpServletResponse(
+            String path, int expectedHttpCode) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+
+        assertEquals(expectedHttpCode, response.getStatus());
+        return response;
     }
 
     @Override
@@ -70,8 +82,7 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
     }
 
     protected Document getAsJSoup(String url) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(url);
-        assertEquals(200, response.getStatus());
+        MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
         assertEquals("text/html", response.getContentType());
 
         LOGGER.log(Level.INFO, "Last request returned\n:" + response.getContentAsString());

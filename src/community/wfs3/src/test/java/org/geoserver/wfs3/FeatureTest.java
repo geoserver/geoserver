@@ -6,6 +6,7 @@ package org.geoserver.wfs3;
 
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -14,11 +15,14 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.Map;
+import net.minidev.json.JSONArray;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends WFS3TestSupport {
 
@@ -158,11 +162,82 @@ public class FeatureTest extends WFS3TestSupport {
     }
 
     @Test
-    public void testLimit() throws Exception {
+    public void testFirstPage() throws Exception {
+        String expectedNextURL =
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?startIndex=3&limit=3";
+
         String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
-        DocumentContext json =
-                getAsJSONPath("wfs3/collections/" + roadSegments + "/items?limit=3", 200);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "wfs3/collections/" + roadSegments + "/items?limit=3", 200);
+        List<String> links = response.getHeaders("Link");
+        assertThat(links, Matchers.hasSize(1));
+        assertEquals(
+                links.get(0),
+                "<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"");
+
+        DocumentContext json = getAsJSONPath(response);
         assertEquals(3, (int) json.read("features.length()", Integer.class));
+        // check the paging link is there
+        assertThat(json.read("$.links[?(@.rel=='prev')].href"), Matchers.empty());
+        assertThat(
+                json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0),
+                equalTo(expectedNextURL));
+    }
+
+    @Test
+    public void testMiddlePage() throws Exception {
+        String expectedPrevURL =
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?startIndex=2&limit=1";
+        String expectedNextURL =
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?startIndex=4&limit=1";
+
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "wfs3/collections/" + roadSegments + "/items?startIndex=3&limit=1", 200);
+        List<String> links = response.getHeaders("Link");
+        assertThat(links, Matchers.hasSize(2));
+        assertEquals(
+                links.get(0),
+                "<" + expectedPrevURL + ">; rel=\"prev\"; type=\"application/geo+json\"");
+        assertEquals(
+                links.get(1),
+                "<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"");
+
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals(1, (int) json.read("features.length()", Integer.class));
+        // check the paging link is there
+        assertThat(
+                json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0),
+                equalTo(expectedPrevURL));
+        assertThat(
+                json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0),
+                equalTo(expectedNextURL));
+    }
+
+    @Test
+    public void testLastPage() throws Exception {
+        String expectedPrevLink =
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?startIndex=0&limit=3";
+
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse(
+                        "wfs3/collections/" + roadSegments + "/items?startIndex=3&limit=3", 200);
+        List<String> links = response.getHeaders("Link");
+        assertThat(links, Matchers.hasSize(1));
+        assertEquals(
+                links.get(0),
+                "<" + expectedPrevLink + ">; rel=\"prev\"; type=\"application/geo+json\"");
+
+        DocumentContext json = getAsJSONPath(response);
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        // check the paging link is there
+        assertThat(
+                json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0),
+                equalTo(expectedPrevLink));
+        assertThat(json.read("$.links[?(@.rel=='next')].href"), Matchers.empty());
     }
 
     @Test

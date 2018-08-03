@@ -133,5 +133,6 @@
     </property>
   </bean>
 
+  <bean id="headerLinksAppender" class="org.geoserver.wfs3.response.HttpHeaderLinksAppender"/>
 
 </beans>

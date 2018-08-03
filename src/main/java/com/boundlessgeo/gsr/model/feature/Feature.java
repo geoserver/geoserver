@@ -10,9 +10,11 @@ import com.boundlessgeo.gsr.model.geometry.Geometry;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
+ * Feature model object
+ *
+ * See https://developers.arcgis.com/documentation/common-data-types/feature-object.htm
  *
  * @author Juan Marin, OpenGeo
- *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Feature {

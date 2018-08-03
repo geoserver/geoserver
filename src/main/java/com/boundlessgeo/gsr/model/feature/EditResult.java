@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * The result of an Add, Update, or Delete operation
+ *
+ * See https://developers.arcgis.com/rest/services-reference/edit-result-object.htm
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EditResult {

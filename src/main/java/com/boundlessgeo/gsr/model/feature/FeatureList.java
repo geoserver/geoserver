@@ -33,6 +33,8 @@ import org.opengis.referencing.operation.TransformException;
 
 /**
  * List of {@link Feature}, that can be serialized as JSON
+ *
+ * See https://developers.arcgis.com/documentation/common-data-types/featureset-object.htm
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeatureList implements GSRModel {

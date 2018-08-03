@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Generalized model object for Add Features, Update Features, Delete Features, and Apply Edits operations
+ *
+ * See https://developers.arcgis.com/rest/services-reference/results-returned-from-feature-service-edit-operations.htm
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EditResults {

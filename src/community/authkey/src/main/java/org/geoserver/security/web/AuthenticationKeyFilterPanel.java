@@ -116,7 +116,7 @@ public class AuthenticationKeyFilterPanel
                             error(e);
                             LOGGER.log(Level.WARNING, "Authentication key  error ", e);
                         } finally {
-                            target.add(getPage().get("feedback"));
+                            target.add(getPage().get("topFeedback"));
                         }
                     }
                 }.setDefaultFormProcessing(true));

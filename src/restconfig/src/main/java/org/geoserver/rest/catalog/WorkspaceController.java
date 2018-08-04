@@ -175,7 +175,7 @@ public class WorkspaceController extends AbstractCatalogController {
             }
 
             String infoName = workspace.getName();
-            if (infoName != null && workspaceName.equals(infoName)) {
+            if (infoName != null && infoName.isEmpty()) {
                 throw new RestException("Can't change name of workspace", HttpStatus.FORBIDDEN);
             }
 

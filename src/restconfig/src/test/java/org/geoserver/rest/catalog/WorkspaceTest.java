@@ -304,7 +304,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutNameChangeForbidden() throws Exception {
-        String xml = "<workspace>" + "<name>changed</name>" + "</workspace>";
+        String xml = "<workspace>" + "<name></name>" + "</workspace>";
 
         MockHttpServletResponse response =
                 putAsServletResponse(

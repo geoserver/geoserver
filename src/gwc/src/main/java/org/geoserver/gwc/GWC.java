@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -2674,5 +2675,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /** @return the gwcEnvironment */
     public GeoWebCacheEnvironment getGwcEnvironment() {
         return gwcEnvironment;
+    }
+
+    /**
+     * Returns the list of pending tasks in the tile breeder
+     *
+     * @return
+     */
+    public Iterator<GWCTask> getPendingTasks() {
+        return tileBreeder.getPendingTasks();
     }
 }

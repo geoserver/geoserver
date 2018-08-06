@@ -8,12 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import java.util.List;
 
 public class LandingPageTest extends WFS3TestSupport {
 

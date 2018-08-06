@@ -49,7 +49,8 @@ public class LandingPageDocument extends AbstractDocument {
                         link.setRel(Link.REL_SELF);
                         link.setTitle("This document");
                     }
-                }, Link.REL_ALTERNATE);
+                },
+                Link.REL_ALTERNATE);
         // api
         addLinksFor(
                 baseUrl,
@@ -57,7 +58,8 @@ public class LandingPageDocument extends AbstractDocument {
                 OpenAPI.class,
                 "API definition for this endpoint as ",
                 "api",
-                null, Link.REL_SERVICE);
+                null,
+                Link.REL_SERVICE);
         // conformance
         addLinksFor(
                 baseUrl,
@@ -65,7 +67,8 @@ public class LandingPageDocument extends AbstractDocument {
                 ConformanceDocument.class,
                 "Conformance declaration as ",
                 "conformance",
-                null, "conformance");
+                null,
+                "conformance");
         // collections
         addLinksFor(
                 baseUrl,
@@ -73,7 +76,8 @@ public class LandingPageDocument extends AbstractDocument {
                 CollectionsDocument.class,
                 "Collections Metadata as ",
                 "collections",
-                null, "data");
+                null,
+                "data");
     }
 
     /** Builds service links for the given response types */
@@ -83,7 +87,8 @@ public class LandingPageDocument extends AbstractDocument {
             Class<?> responseType,
             String titlePrefix,
             String classification,
-            BiConsumer<String, Link> linkUpdater, String rel) {
+            BiConsumer<String, Link> linkUpdater,
+            String rel) {
         for (String format : DefaultWebFeatureService30.getAvailableFormats(responseType)) {
             Map<String, String> params = Collections.singletonMap("f", format);
             String url = buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);

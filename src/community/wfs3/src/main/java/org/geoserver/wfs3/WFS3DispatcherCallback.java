@@ -17,6 +17,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs3.response.OpenAPIResponse;
 import org.geoserver.wfs3.response.RFCGeoJSONFeaturesResponse;
 import org.springframework.http.HttpHeaders;
 
@@ -56,7 +57,7 @@ public class WFS3DispatcherCallback extends AbstractDispatcherCallback {
                         && formatSetter != null
                         && formatGetter.invoke(parsedRequest) == null) {
 
-                    if (header != null) {
+                    if (header != null && !"*/*".equalsIgnoreCase(header)) {
                         // figure out which format we want to use, take the fist supported one
                         LinkedHashSet<String> acceptedFormats =
                                 new LinkedHashSet<>(Arrays.asList(header.split("\\s*,\\s*")));
@@ -64,16 +65,17 @@ public class WFS3DispatcherCallback extends AbstractDispatcherCallback {
                                 DefaultWebFeatureService30.getAvailableFormats(result.getClass());
                         acceptedFormats.retainAll(availableFormats);
                         if (!acceptedFormats.isEmpty()) {
-
                             String format = acceptedFormats.iterator().next();
                             setOutputFormat(request, parsedRequest, formatSetter, format);
                         }
                     } else {
                         // handle defaults if really nothing is specified
-                        String defaultType =
-                                "getFeature".equals(request.getRequest())
-                                        ? RFCGeoJSONFeaturesResponse.MIME
-                                        : BaseRequest.JSON_MIME;
+                        String defaultType = BaseRequest.JSON_MIME;
+                        if ("getFeature".equals(request.getRequest())) {
+                            defaultType = RFCGeoJSONFeaturesResponse.MIME;
+                        } else if ("api".equals(request.getRequest())) {
+                            defaultType = OpenAPIResponse.OPEN_API_MIME;
+                        }
                         setOutputFormat(request, parsedRequest, formatSetter, defaultType);
                     }
                 }

@@ -24,6 +24,7 @@ public class OpenAPIResponse extends JacksonResponse {
                 OpenAPI.class,
                 new LinkedHashSet<>(
                         Arrays.asList(
+                                OPEN_API_MIME,
                                 BaseRequest.JSON_MIME,
                                 BaseRequest.YAML_MIME,
                                 BaseRequest.XML_MIME)));
@@ -39,7 +40,7 @@ public class OpenAPIResponse extends JacksonResponse {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        if (isJsonFormat(operation)) {
+        if (OPEN_API_MIME.equalsIgnoreCase(getFormat(operation))) {
             return OPEN_API_MIME;
         }
         return super.getMimeType(value, operation);

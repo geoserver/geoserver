@@ -34,7 +34,7 @@ public class LandingPageTest extends WFS3TestSupport {
     }
 
     private void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(15, (int) json.read("links.length()", Integer.class));
+        assertEquals(16, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -50,6 +50,7 @@ public class LandingPageTest extends WFS3TestSupport {
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*wfs3\\/api.*/)].rel",
+                "service",
                 "service",
                 "service",
                 "service",

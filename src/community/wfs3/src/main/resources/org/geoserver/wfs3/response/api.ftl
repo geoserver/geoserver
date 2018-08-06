@@ -40,7 +40,7 @@
 
       // Build a system
       const ui = SwaggerUIBundle({
-        url: "${serviceLink('wfs3/api?f=json')}",
+        url: "${serviceLink('wfs3/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0')}",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

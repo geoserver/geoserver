@@ -66,6 +66,7 @@ public class GetFeatureHTMLOutputFormat extends WFSGetFeatureOutputFormat {
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", request.getBaseURL());
         model.put("response", response);
+        AbstractHTMLResponse.addServiceLinkFunctions(response, getFeature, model);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(output)) {
             try {

@@ -80,7 +80,7 @@ public class FeatureEncoder {
 
     public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,
                                   SpatialReference spatialReference) {
-        return feature(feature, returnGeometry, spatialReference, null);
+        return feature(feature, returnGeometry, spatialReference, FeatureEncoder.OBJECTID_FIELD_NAME);
     }
 
     public static Feature feature(org.opengis.feature.Feature feature, boolean returnGeometry,

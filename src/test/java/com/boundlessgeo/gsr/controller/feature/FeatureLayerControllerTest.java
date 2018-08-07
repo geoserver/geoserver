@@ -5,9 +5,16 @@
 package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
+import com.boundlessgeo.gsr.model.geometry.SpatialReference;
+import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
+import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKT;
 import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import net.sf.json.JSONArray;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -180,32 +187,179 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertEquals( 0, resultObj.getInt("objectId"));
         assertEquals( false, resultObj.getBoolean("success"));
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
+    }
 
-        //wrong geometry type
-        body =
-                "[\n" +
-                        "  {\n" +
-                        "  \"geometry\" : {" +
-                        "      \"geometryType\":\"esriGeometryPoint\", " +
-                        "      \"x\" : 500050.0," +
-                        "      \"y\" : 499950.0, " +
-                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
-                        "    },\n" +
-                        "    \"attributes\" : {\n" +
-                        "      \"objectid\" : 0,\n" +
-                        "      \"id\" : \"t0001\",\n" +
-                        "    }\n" +
-                        "  }\n" +
-                        "]";
+    /*
+     * Get a MultiPoint geom from the Feature Layer endpoint
+     * Post it back to the update features endpoint
+     * Verify the native geometry is unchanged
+     */
+    @Test
+    public void testUpdateFeaturesRoundTripMPoint() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","MPoints");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+        FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        org.opengis.feature.Feature nativeFeature = iterator.next();
+        //geom should be valid, and not yet equal to the new value
+        MultiPoint nativeGeom = (MultiPoint) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+
+        //Get cgf:MPolygons, feature 0
+        String q = query("cgf", "2", "/0?f=json");
+        JSON result = getAsJSON(q);
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+        JSONObject feature = json.getJSONObject("feature");
+
+        JSONArray featureArray = new JSONArray();
+        featureArray.add(feature);
+
+        String body = featureArray.toString();
+
+        //do POST
+        q = query("cgf", "2", "/updateFeatures?f=json");
         result = postAsJSON(q, body, "application/json");
+
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         json = (JSONObject) result;
 
-        resultObj = json.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals( 0, resultObj.getInt("objectId"));
-        assertEquals( false, resultObj.getBoolean("success"));
-        assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
+        JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
 
+        assertEquals( true, resultObj.getBoolean("success"));
+        assertEquals( 0, resultObj.getInt("objectId"));
+
+
+        //verify feature was updated
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        nativeFeature = iterator.next();
+
+        //updated geom should be unchanged
+        MultiPoint updatedGeom = (MultiPoint) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+        assertEquals(nativeGeom, updatedGeom);
+    }
+
+    /*
+     * Get a MultiLine geom from the Feature Layer endpoint
+     * Post it back to the update features endpoint
+     * Verify the native geometry is unchanged
+     */
+    @Test
+    public void testUpdateFeaturesRoundTripMLine() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","MLines");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+        FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        org.opengis.feature.Feature nativeFeature = iterator.next();
+        //geom should be valid, and not yet equal to the new value
+        MultiLineString nativeGeom = (MultiLineString) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+
+        //Get cgf:MPolygons, feature 0
+        String q = query("cgf", "1", "/0?f=json");
+        JSON result = getAsJSON(q);
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+        JSONObject feature = json.getJSONObject("feature");
+
+        JSONArray featureArray = new JSONArray();
+        featureArray.add(feature);
+
+        String body = featureArray.toString();
+
+        //do POST
+        q = query("cgf", "1", "/updateFeatures?f=json");
+        result = postAsJSON(q, body, "application/json");
+
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        json = (JSONObject) result;
+
+        JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
+
+        assertEquals( true, resultObj.getBoolean("success"));
+        assertEquals( 0, resultObj.getInt("objectId"));
+
+
+        //verify feature was updated
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        nativeFeature = iterator.next();
+
+        //updated geom should be unchanged
+        MultiLineString updatedGeom = (MultiLineString) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+        assertEquals(nativeGeom, updatedGeom);
+    }
+
+    /*
+     * Get a MultiPolygon geom from the Feature Layer endpoint
+     * Post it back to the update features endpoint
+     * Verify the native geometry is unchanged
+     */
+    @Test
+    public void testUpdateFeaturesRoundTripMPolygon() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","MPolygons");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+        FeatureIterator iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        org.opengis.feature.Feature nativeFeature = iterator.next();
+        //geom should be valid, and not yet equal to the new value
+        MultiPolygon nativeGeom = (MultiPolygon) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+
+        //Get cgf:MPolygons, feature 0
+        String q = query("cgf", "3", "/0?f=json");
+        JSON result = getAsJSON(q);
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+        JSONObject feature = json.getJSONObject("feature");
+
+        JSONArray featureArray = new JSONArray();
+        featureArray.add(feature);
+
+        String body = featureArray.toString();
+
+        //do POST
+        q = query("cgf", "3", "/updateFeatures?f=json");
+        result = postAsJSON(q, body, "application/json");
+
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        json = (JSONObject) result;
+
+        JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
+
+        assertEquals( true, resultObj.getBoolean("success"));
+        assertEquals( 0, resultObj.getInt("objectId"));
+
+
+        //verify feature was updated
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        nativeFeature = iterator.next();
+
+        //updated geom should be unchanged
+        MultiPolygon updatedGeom = (MultiPolygon) nativeFeature.getDefaultGeometryProperty().getValue();
+        assertEquals(2, nativeGeom.getNumGeometries());
+        assertEquals(nativeGeom, updatedGeom);
     }
 }

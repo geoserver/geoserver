@@ -154,12 +154,15 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiPolygon) {
             com.vividsolutions.jts.geom.MultiPolygon mpoly = (com.vividsolutions.jts.geom.MultiPolygon) geom;
-            List<T[][]> rings = new ArrayList<>();
+
+            com.boundlessgeo.gsr.model.geometry.Geometry[] polygons = new com.boundlessgeo.gsr.model.geometry.Geometry[mpoly.getNumGeometries()];
 
             for (int i = 0; i < mpoly.getNumGeometries(); i++) {
                 //for now, assume these are all polygons. that SHOULD be the case anyway
                 com.vividsolutions.jts.geom.Polygon geometryN = (com.vividsolutions.jts.geom.Polygon) mpoly
                     .getGeometryN(i);
+
+                List<T[][]> rings = new ArrayList<>();
 
                 //encode the outer ring
                 rings.add(embeddedLineString(geometryN.getExteriorRing()));
@@ -167,9 +170,11 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 for (int j = 0; j < geometryN.getNumInteriorRing(); j++) {
                     rings.add(embeddedLineString(geometryN.getInteriorRingN(j)));
                 }
+
+                polygons[i] = new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
             }
 
-            return new Polygon(rings.toArray(new Number[rings.size()][][]), spatialReference);
+            return new GeometryArray(GeometryTypeEnum.POLYGON, polygons, spatialReference);
 
         } else if (geom instanceof com.vividsolutions.jts.geom.GeometryCollection) {
             com.vividsolutions.jts.geom.GeometryCollection collection = (com.vividsolutions.jts.geom.GeometryCollection) geom;

@@ -50,6 +50,23 @@ public class FeatureLayerController extends AbstractGSRController {
         return new FeatureLayer(entry);
     }
 
+    /**
+     * Update Feature enpoint
+     * 
+     * @param featureArray Array of features to update
+     * @param workspaceName Workspace name
+     * @param layerId layer id
+     *
+     * TODO: Unsupported parameters
+     * f - only json supported (used by default), ignored
+     * gdbVersion - GSR does not support versioned data, ignored.
+     * returnEditMoment - not currently supported, TODO
+     * rollbackOnFailure - not currently supported, TODO
+     * trueCurveClient - GSR does not support true curve encoding, ignored.
+     *
+     * @return Results of the update
+     * @throws IOException
+     */
     @PostMapping(path = "/{layerId}/updateFeatures")
     public EditResults updateFeatures(@RequestBody FeatureArray featureArray, @PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         List<Feature> features = featureArray == null ? null : featureArray.features;

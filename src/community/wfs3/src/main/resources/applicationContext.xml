@@ -140,4 +140,9 @@
 
   <bean id="headerLinksAppender" class="org.geoserver.wfs3.response.HttpHeaderLinksAppender"/>
 
+  <bean id="wfs3LocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="wfs3"/>
+  </bean>
+
+
 </beans>

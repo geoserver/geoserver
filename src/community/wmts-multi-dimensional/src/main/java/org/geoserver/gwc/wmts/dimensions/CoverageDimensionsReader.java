@@ -25,7 +25,9 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -33,13 +35,19 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 /**
  * This class allow us to abstract from the type of different raster readers (structured and non
  * structured ones).
  */
 abstract class CoverageDimensionsReader {
+
+    private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
 
     public enum DataType {
         TEMPORAL,
@@ -52,12 +60,13 @@ abstract class CoverageDimensionsReader {
     abstract String getGeometryAttributeName();
 
     public abstract Tuple<String, FeatureCollection> getValues(
-            String dimensionName, Query query, DataType dataType);
+            String dimensionName, Query query, DataType dataType, SortOrder sortOrder);
 
     List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
-        Tuple<String, FeatureCollection> values = getValues(dimensionName, query, dataType);
+        Tuple<String, FeatureCollection> values =
+                getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
         if (values == null) {
             return Collections.emptyList();
         }
@@ -68,7 +77,8 @@ abstract class CoverageDimensionsReader {
     Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
-        Tuple<String, FeatureCollection> values = getValues(dimensionName, query, dataType);
+        Tuple<String, FeatureCollection> values =
+                getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
         if (values == null) {
             return new TreeSet<>();
         }
@@ -154,7 +164,7 @@ abstract class CoverageDimensionsReader {
          */
         @Override
         public Tuple<String, FeatureCollection> getValues(
-                String dimensionName, Query query, DataType dataType) {
+                String dimensionName, Query query, DataType dataType, SortOrder sortOrder) {
             try {
                 // opening the source and descriptors for our raster
                 GranuleSource source = reader.getGranules(reader.getGridCoverageNames()[0], true);
@@ -163,14 +173,19 @@ abstract class CoverageDimensionsReader {
                 // let's find our dimension and query the data
                 for (DimensionDescriptor descriptor : descriptors) {
                     if (dimensionName.equalsIgnoreCase(descriptor.getName())) {
-                        // we found our dimension descriptor, creating a query
-                        query = new Query(query);
-                        query.setTypeName(source.getSchema().getName().getLocalPart());
-                        query.getHints().put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
-                        // reading the features using the build query
-                        FeatureCollection featureCollection = source.getGranules(query);
                         // get the features attribute that contain our dimension values
                         String attributeName = descriptor.getStartAttribute();
+                        // we found our dimension descriptor, creating a query
+                        Query internalQuery = new Query(query);
+                        internalQuery.setTypeName(source.getSchema().getName().getLocalPart());
+                        internalQuery
+                                .getHints()
+                                .put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
+                        internalQuery.setSortBy(
+                                new SortBy[] {FILTER_FACTORY.sort(attributeName, sortOrder)});
+                        // reading the features using the build query
+                        FeatureCollection featureCollection = source.getGranules(internalQuery);
+
                         return Tuple.tuple(attributeName, featureCollection);
                     }
                 }
@@ -270,7 +285,7 @@ abstract class CoverageDimensionsReader {
 
         @Override
         public Tuple<String, FeatureCollection> getValues(
-                String dimensionName, Query query, DataType dataType) {
+                String dimensionName, Query query, DataType dataType, SortOrder sortOrder) {
             String metaDataValue;
             try {
                 metaDataValue = reader.getMetadataValue(dimensionName.toUpperCase() + "_DOMAIN");
@@ -299,7 +314,14 @@ abstract class CoverageDimensionsReader {
                     memoryCollection.add(feature);
                 }
             }
-            SimpleFeatureCollection features = memoryCollection;
+            AttributeDescriptor dimensionAttribute =
+                    featureTypeAndConverter.first.getAttributeDescriptors().get(0);
+            SimpleFeatureCollection features =
+                    new SortedSimpleFeatureCollection(
+                            memoryCollection,
+                            new SortBy[] {
+                                FILTER_FACTORY.sort(dimensionAttribute.getLocalName(), sortOrder)
+                            });
             if (query.getPropertyNames() != Query.ALL_NAMES) {
                 SimpleFeatureType target =
                         SimpleFeatureTypeBuilder.retype(

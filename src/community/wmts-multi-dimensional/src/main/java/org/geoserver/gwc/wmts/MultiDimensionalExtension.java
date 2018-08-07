@@ -35,6 +35,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionFilterBuilder;
+import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -52,7 +53,10 @@ import org.geowebcache.service.wmts.WMTSExtensionImpl;
 import org.geowebcache.storage.StorageBroker;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.sort.SortOrder;
+import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 /**
  * WMTS extension that provides the necessary metadata and operations for handling multidimensional
@@ -65,15 +69,25 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     public static final Set<String> ALL_DOMAINS = Collections.emptySet();
     /** Configuration key for the maximum allowed value of expand_limit */
     public static final String EXPAND_LIMIT_MAX_KEY = "MD_DOMAIN_EXPAND_LIMIT_MAX";
+
+    public static final String LIMIT_MAX_KEY = "MD_GET_DOMAIN_VALUES_LIMIT_MAX";
     /** Default value for the maximum allowed value of expand_limit, if not configured */
     private static final int EXPAND_LIMIT_MAX_DEFAULT =
             Integer.getInteger(EXPAND_LIMIT_MAX_KEY, 100000);
+    /** Default value for the maximum allowed value of expand_limit, if not configured */
+    private static final int LIMIT_MAX_DEFAULT = Integer.getInteger(LIMIT_MAX_KEY, 100000);
+
     /** Configuration key for expand_limit, if none is provided */
     public static final String EXPAND_LIMIT_KEY = "MD_DOMAIN_EXPAND_LIMIT";
+
+    public static final String LIMIT_KEY = "MD_GET_DOMAIN_VALUES_LIMIT";
     /** Default value for the maximum allowed value of expand_limit, if not configured */
     private static final int EXPAND_LIMIT_DEFAULT = Integer.getInteger(EXPAND_LIMIT_KEY, 1000);
 
+    private static final int LIMIT_DEFAULT = Integer.getInteger(LIMIT_KEY, 1000);
+
     public static final String EXPAND_LIMIT = "expandLimit";
+    public static final String LIMIT = "limit";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
     private final GeoServer geoServer;
@@ -98,6 +112,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     {
         extraOperations.add(new OperationMetadata("DescribeDomains"));
+        extraOperations.add(new OperationMetadata("GetDomainValues"));
         extraOperations.add(new OperationMetadata("GetFeature"));
         extraOperations.add(new OperationMetadata("GetHistogram"));
     }
@@ -134,6 +149,18 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                             Level.SEVERE, "Error executing describe domains operation.", exception);
                     return rethrowException(
                             exception, "Error executing describe domains operation:");
+                }
+                break;
+            case GET_DOMAIN_VALUES:
+                try {
+                    executeGetDomainValuesOperation(conveyor);
+                } catch (Exception exception) {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Error executing get domains values operation.",
+                            exception);
+                    return rethrowException(
+                            exception, "Error executing get domain values operation:");
                 }
                 break;
             case GET_HISTOGRAM:
@@ -191,6 +218,127 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // getting this layer dimensions along with its values
         List<Dimension> dimensions =
                 DimensionsUtils.extractDimensions(wms, layerInfo, requestedDomains);
+        ReferencedEnvelope boundingBox = getRequestedBoundingBox(conveyor, tileLayer);
+
+        // add any domain provided restriction and set the bounding box
+        ResourceInfo resource = layerInfo.getResource();
+        Filter filter = getDomainRestrictions(conveyor, dimensions, boundingBox, resource);
+        // compute the bounding box
+        ReferencedEnvelope spatialDomain = null;
+        if (requestedDomains == ALL_DOMAINS || requestedDomains.contains(SPACE_DIMENSION)) {
+            spatialDomain = DimensionsUtils.getBounds(resource, filter);
+        }
+        // get the threshold
+        int expandLimit =
+                getExpandlimit(
+                        resource,
+                        conveyor.getParameter(EXPAND_LIMIT, false),
+                        conveyor.getResponse());
+        // encode the domains
+        return new Domains(
+                        dimensions,
+                        layerInfo,
+                        spatialDomain,
+                        SimplifyingFilterVisitor.simplify(filter))
+                .withExpandLimit(expandLimit);
+    }
+
+    private Domains getDomainValues(SimpleConveyor conveyor) throws Exception {
+        // getting and parsing the mandatory parameters
+        String layerName = (String) conveyor.getParameter("layer", true);
+        TileLayer tileLayer = tileLayerDispatcher.getTileLayer(layerName);
+        LayerInfo layerInfo = getLayerInfo(tileLayer, layerName);
+        Set<String> requestedDomains = getRequestedDomains(conveyor.getParameter("domain", true));
+        // getting this layer dimensions along with its values
+        List<Dimension> dimensions =
+                DimensionsUtils.extractDimensions(wms, layerInfo, requestedDomains);
+        Dimension dimension = dimensions.get(0);
+        ReferencedEnvelope boundingBox = getRequestedBoundingBox(conveyor, tileLayer);
+
+        // add any domain provided restriction and set the bounding box
+        ResourceInfo resource = layerInfo.getResource();
+        Filter filter = getDomainRestrictions(conveyor, dimensions, boundingBox, resource);
+
+        // add the filter and the sorting
+        SortOrder sortOrder = getSortOrder(conveyor);
+        String fromValue = (String) conveyor.getParameter("fromValue", false);
+        Filter fromValueFilter = getStartValueFilter(fromValue, dimension, sortOrder, resource);
+        if (!Filter.INCLUDE.equals(fromValueFilter)) {
+            filter = filterFactory.and(filter, fromValueFilter);
+        }
+
+        // get the limit, if any
+        int limit = getLimit(resource, conveyor.getParameter(LIMIT, false), conveyor.getResponse());
+
+        // encode the domains
+        return new Domains(dimensions, layerInfo, null, SimplifyingFilterVisitor.simplify(filter))
+                .withMaxReturnedValues(limit)
+                .withSortOrder(sortOrder)
+                .withFromValue(fromValue);
+    }
+
+    private SortOrder getSortOrder(SimpleConveyor conveyor) throws OWSException {
+        String sort = (String) conveyor.getParameter("sort", false);
+        if (sort == null || "ASC".equalsIgnoreCase(sort)) {
+            return SortOrder.ASCENDING;
+        } else if ("DESC".equalsIgnoreCase(sort)) {
+            return SortOrder.DESCENDING;
+        }
+        throw new OWSException(
+                HttpStatus.BAD_REQUEST.value(),
+                "InvalidParameterValue",
+                "sort",
+                "Invalid sort value, but be either asc or desc");
+    }
+
+    private Filter getStartValueFilter(
+            String fromValue, Dimension dimension, SortOrder sortOrder, ResourceInfo resource)
+            throws OWSException {
+        if (fromValue == null) {
+            return Filter.INCLUDE;
+        }
+
+        Object converted = Converters.convert(fromValue, dimension.getDimensionType());
+        if (converted == null) {
+            throw new OWSException(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "InvalidParameterValue",
+                    "fromValue",
+                    "Invalid fromValue, could not be converted to target type "
+                            + dimension.getDimensionType().getSimpleName());
+        }
+        Tuple<String, String> attributes = DimensionsUtils.getAttributes(resource, dimension);
+        String attribute = attributes.first; // getDomain only uses first attribute to list values
+        if (sortOrder == SortOrder.ASCENDING) {
+            return filterFactory.greater(
+                    filterFactory.property(attribute), filterFactory.literal(converted));
+        } else {
+            return filterFactory.less(
+                    filterFactory.property(attribute), filterFactory.literal(converted));
+        }
+    }
+
+    private Filter getDomainRestrictions(
+            SimpleConveyor conveyor,
+            List<Dimension> dimensions,
+            ReferencedEnvelope boundingBox,
+            ResourceInfo resource) {
+        Filter filter = DimensionsUtils.getBoundingBoxFilter(resource, boundingBox, filterFactory);
+        for (Dimension dimension : dimensions) {
+            Object restriction = conveyor.getParameter(dimension.getDimensionName(), false);
+            if (restriction != null) {
+                Tuple<String, String> attributes =
+                        DimensionsUtils.getAttributes(resource, dimension);
+                filter =
+                        appendDomainRestrictionsFilter(
+                                filter, attributes.first, attributes.second, restriction);
+            }
+        }
+        return filter;
+    }
+
+    private ReferencedEnvelope getRequestedBoundingBox(SimpleConveyor conveyor, TileLayer tileLayer)
+            throws FactoryException {
         // let's see if we have a spatial limitation
         ReferencedEnvelope boundingBox = (ReferencedEnvelope) conveyor.getParameter("bbox", false);
         // if we have a bounding box we need to set the crs based on the tile matrix set
@@ -207,37 +355,18 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             boundingBox =
                     new ReferencedEnvelope(boundingBox, CRS.decode(gridSubset.getSRS().toString()));
         }
-        // add any domain provided restriction and set the bounding box
-        ResourceInfo resource = layerInfo.getResource();
-        Filter filter = DimensionsUtils.getBoundingBoxFilter(resource, boundingBox, filterFactory);
-        for (Dimension dimension : dimensions) {
-            Object restriction = conveyor.getParameter(dimension.getDimensionName(), false);
-            if (restriction != null) {
-                Tuple<String, String> attributes =
-                        DimensionsUtils.getAttributes(resource, dimension);
-                filter =
-                        appendDomainRestrictionsFilter(
-                                filter, attributes.first, attributes.second, restriction);
-            }
+        return boundingBox;
+    }
+
+    private Set<String> getRequestedDomains(SimpleConveyor conveyor, Operation operation) {
+        Set<String> requestedDomains;
+        if (operation == Operation.GET_DOMAIN_VALUES) {
+            requestedDomains =
+                    Collections.singleton((String) conveyor.getParameter("domain", true));
+        } else {
+            requestedDomains = getRequestedDomains(conveyor.getParameter("domains", false));
         }
-        // compute the bounding box
-        ReferencedEnvelope spatialDomain = null;
-        if (requestedDomains == ALL_DOMAINS || requestedDomains.contains(SPACE_DIMENSION)) {
-            spatialDomain = DimensionsUtils.getBounds(resource, filter);
-        }
-        // get the threshold
-        int expandLimit =
-                getExpandlimit(
-                        resource,
-                        conveyor.getParameter(EXPAND_LIMIT, false),
-                        conveyor.getResponse());
-        // encode the domains
-        return new Domains(
-                dimensions,
-                layerInfo,
-                spatialDomain,
-                SimplifyingFilterVisitor.simplify(filter),
-                expandLimit);
+        return requestedDomains;
     }
 
     private int getExpandlimit(
@@ -288,6 +417,47 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         }
     }
 
+    private int getLimit(ResourceInfo resource, Object clientLimit, HttpServletResponse response)
+            throws OWSException {
+        if (clientLimit != null) {
+            Integer value = Converters.convert(clientLimit, Integer.class);
+            if (value == null) {
+                throw new OWSException(
+                        400,
+                        "InvalidParameterValue",
+                        LIMIT,
+                        "Invalid "
+                                + LIMIT
+                                + " "
+                                + "value "
+                                + clientLimit
+                                + ", expected an integer value");
+            }
+            int limitMax = LIMIT_MAX_DEFAULT;
+            if (value < limitMax) {
+                return value;
+            } else {
+                String message =
+                        "Client provided a limit value higher than the configured max, using the "
+                                + "internal value (provided/max): "
+                                + value
+                                + "/"
+                                + limitMax;
+                LOGGER.log(Level.INFO, message);
+                response.addHeader(HttpHeaders.WARNING, "299 " + message);
+                return limitMax;
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Client did not provide a limit, using the internal default value: "
+                                + LIMIT_DEFAULT);
+            }
+            return LIMIT_DEFAULT;
+        }
+    }
+
     private Integer getConfiguredExpansionLimit(
             ResourceInfo resource, WMTSInfo wmts, String limitKey, int defaultValue) {
         MetadataMap resourceMetadata = resource.getMetadata();
@@ -328,6 +498,13 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     private void executeDescribeDomainsOperation(SimpleConveyor conveyor) throws Exception {
         Domains domains = getDomains(conveyor);
         DescribeDomainsTransformer transformer = new DescribeDomainsTransformer(wms);
+        transformer.transform(domains, conveyor.getResponse().getOutputStream());
+        conveyor.getResponse().setContentType("text/xml");
+    }
+
+    private void executeGetDomainValuesOperation(SimpleConveyor conveyor) throws Exception {
+        Domains domains = getDomainValues(conveyor);
+        GetDomainValuesTransformer transformer = new GetDomainValuesTransformer(wms);
         transformer.transform(domains, conveyor.getResponse().getOutputStream());
         conveyor.getResponse().setContentType("text/xml");
     }
@@ -401,7 +578,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             // force it to return a min/max representation
             limit = 0;
         }
-        List<String> values = dimension.getDomainValuesAsStrings(Filter.INCLUDE, limit).second;
+        List<String> values = dimension.getDomainValuesAsStrings(Query.ALL, limit).second;
         for (String value : values) {
             xml.simpleElement("Value", value, true);
         }

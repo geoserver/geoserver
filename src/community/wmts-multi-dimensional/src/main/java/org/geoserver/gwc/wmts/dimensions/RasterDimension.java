@@ -15,6 +15,7 @@ import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortOrder;
 
 /** Base class for raster based dimensions */
 public abstract class RasterDimension extends Dimension {
@@ -46,13 +47,24 @@ public abstract class RasterDimension extends Dimension {
     }
 
     @Override
-    protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
+    protected DomainSummary getDomainSummary(Query query, int expandLimit) {
         CoverageDimensionsReader reader =
                 CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
 
         Tuple<String, FeatureCollection> values =
-                reader.getValues(getDimensionName(), new Query(null, filter), dataType);
+                reader.getValues(getDimensionName(), query, dataType, SortOrder.ASCENDING);
         return getDomainSummary(values.second, values.first, expandLimit);
+    }
+
+    @Override
+    protected DomainSummary getPagedDomainValues(
+            Query query, int maxNumberOfValues, SortOrder sortOrder) {
+        CoverageDimensionsReader reader =
+                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+
+        Tuple<String, FeatureCollection> values =
+                reader.getValues(getDimensionName(), query, dataType, sortOrder);
+        return getPagedDomainValues(values.second, values.first, maxNumberOfValues);
     }
 
     @Override

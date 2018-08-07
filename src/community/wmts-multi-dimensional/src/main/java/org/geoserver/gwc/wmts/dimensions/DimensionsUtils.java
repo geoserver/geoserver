@@ -241,20 +241,21 @@ public final class DimensionsUtils {
         return values;
     }
 
-    static TreeSet getUniqueValues(
+    static Set getUniqueValues(
             FeatureCollection featureCollection, String attributeName, int limit) {
         // using the unique visitor to remove duplicate values
         UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
         if (limit > 0 && limit < Integer.MAX_VALUE) {
             uniqueVisitor.setMaxFeatures(limit);
         }
+        uniqueVisitor.setPreserveOrder(true);
         try {
             featureCollection.accepts(uniqueVisitor, null);
         } catch (Exception exception) {
             throw new RuntimeException("Error visiting collection with unique visitor.");
         }
         // all dimension values are comparable
-        return new TreeSet(uniqueVisitor.getUnique());
+        return uniqueVisitor.getUnique();
     }
 
     /**

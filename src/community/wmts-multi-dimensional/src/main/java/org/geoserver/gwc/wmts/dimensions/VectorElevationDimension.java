@@ -17,7 +17,7 @@ public class VectorElevationDimension extends VectorDimension {
     }
 
     @Override
-    protected Class getDimensionType() {
+    public Class getDimensionType() {
         return Number.class;
     }
 

@@ -24,7 +24,7 @@ public class VectorTimeDimension extends VectorDimension {
     }
 
     @Override
-    protected Class getDimensionType() {
+    public Class getDimensionType() {
         return Date.class;
     }
 }

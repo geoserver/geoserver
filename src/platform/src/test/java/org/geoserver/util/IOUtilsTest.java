@@ -5,6 +5,8 @@
  */
 package org.geoserver.util;
 
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -48,11 +50,11 @@ public class IOUtilsTest {
     public void testDecompressStreamBadEntryName() throws IOException {
         File destDir = temp.newFolder("d3").toPath().toFile();
         destDir.mkdirs();
-        try (InputStream input = getClass().getResourceAsStream("/bad-zip-file.zip")) {
+        try (InputStream input = ZipTestUtil.getZipSlipInput()) {
             IOUtils.decompress(input, destDir);
             fail("Expected decompression to fail");
         } catch (IOException e) {
-            assertTrue(e.getMessage().startsWith("Entry is outside of the target directory"));
+            assertThat(e.getMessage(), startsWith("Entry is outside of the target directory"));
         }
     }
 
@@ -60,12 +62,12 @@ public class IOUtilsTest {
     public void testDecompressFileBadEntryName() throws IOException {
         File destDir = temp.newFolder("d4").toPath().toFile();
         destDir.mkdirs();
-        File input = new File("src/test/resources/bad-zip-file.zip");
+        File input = ZipTestUtil.initZipSlipFile(temp.newFile("d4.zip"));
         try {
             IOUtils.decompress(input, destDir);
             fail("Expected decompression to fail");
         } catch (IOException e) {
-            assertTrue(e.getMessage().startsWith("Entry is outside of the target directory"));
+            assertThat(e.getMessage(), startsWith("Entry is outside of the target directory"));
         }
     }
 }

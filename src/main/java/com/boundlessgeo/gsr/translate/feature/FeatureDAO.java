@@ -99,6 +99,10 @@ public class FeatureDAO {
      */
     public static EditResult createFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         try {
+            if (sourceFeature == null) {
+                return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
+            }
+
             FeatureStore featureStore = featureStore(featureType);
 
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
@@ -136,6 +140,9 @@ public class FeatureDAO {
             }
             return new EditResult(FeatureEncoder.toGSRObjectId(fid.get(0).getID()));
 
+        } catch (ReadOnlyLayerException re) {
+            LOGGER.log(Level.INFO, "Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName() + " - Permission Denied", re);
+            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
             return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
@@ -152,6 +159,10 @@ public class FeatureDAO {
     public static EditResult updateFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         Long objectId = null;
         try {
+            if (sourceFeature == null) {
+                return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
+            }
+
             Object objectIdObject = sourceFeature.getAttributes().get(FeatureEncoder.OBJECTID_FIELD_NAME);
             if (objectIdObject == null) {
                 return new EditResult(null, false, FeatureServiceErrors.updateError(Collections.singletonList("Missing id field")));
@@ -201,6 +212,9 @@ public class FeatureDAO {
 
             featureStore.modifyFeatures(names.toArray(new Name[names.size()]), values.toArray(), idFilter);
             return new EditResult(objectId);
+        } catch (ReadOnlyLayerException re) {
+            LOGGER.log(Level.INFO, "Error updating object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName() + " - Permission Denied", re);
+            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error updating object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(), e);
             return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
@@ -228,6 +242,9 @@ public class FeatureDAO {
 
             featureStore.removeFeatures(idFilter);
             return new EditResult(objectId);
+        } catch (ReadOnlyLayerException re) {
+            LOGGER.log(Level.INFO, "Error deleting object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName() + " - Permission Denied", re);
+            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error deleting object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
             return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));

@@ -7,12 +7,16 @@ package com.boundlessgeo.gsr.api.feature;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import com.boundlessgeo.gsr.model.geometry.SpatialReference;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
+import com.boundlessgeo.gsr.translate.geometry.SpatialReferences;
 import com.boundlessgeo.gsr.translate.map.LayerDAO;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.FactoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -39,7 +43,7 @@ public class FeatureController extends AbstractGSRController {
     }
 
     @GetMapping(path = "/{layerId}/{featureId}")
-    public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException {
+    public FeatureWrapper featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId) throws IOException, FactoryException {
         LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
         if (null == l) {
@@ -60,6 +64,7 @@ public class FeatureController extends AbstractGSRController {
         if (featureArr.length == 0) {
             throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
         }
-        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, null));
+        SpatialReference spatialReference = SpatialReferences.fromCRS(featureArr[0].getDefaultGeometryProperty().getDescriptor().getCoordinateReferenceSystem());
+        return new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
     }
 }

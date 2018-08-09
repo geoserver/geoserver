@@ -70,24 +70,26 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
     /** Configuration key for the maximum allowed value of expand_limit */
     public static final String EXPAND_LIMIT_MAX_KEY = "MD_DOMAIN_EXPAND_LIMIT_MAX";
 
-    public static final String LIMIT_MAX_KEY = "MD_GET_DOMAIN_VALUES_LIMIT_MAX";
+    public static final String DOMAIN_VALUES_LIMIT_MAX_KEY = "MD_GET_DOMAIN_VALUES_LIMIT_MAX";
     /** Default value for the maximum allowed value of expand_limit, if not configured */
     private static final int EXPAND_LIMIT_MAX_DEFAULT =
             Integer.getInteger(EXPAND_LIMIT_MAX_KEY, 100000);
     /** Default value for the maximum allowed value of expand_limit, if not configured */
-    private static final int LIMIT_MAX_DEFAULT = Integer.getInteger(LIMIT_MAX_KEY, 100000);
+    private static final int DOMAIN_VALUES_LIMIT_MAX_DEFAULT =
+            Integer.getInteger(DOMAIN_VALUES_LIMIT_MAX_KEY, 100000);
 
     /** Configuration key for expand_limit, if none is provided */
     public static final String EXPAND_LIMIT_KEY = "MD_DOMAIN_EXPAND_LIMIT";
 
-    public static final String LIMIT_KEY = "MD_GET_DOMAIN_VALUES_LIMIT";
+    public static final String DOMAIN_VALUES_LIMIT_KEY = "MD_GET_DOMAIN_VALUES_LIMIT";
     /** Default value for the maximum allowed value of expand_limit, if not configured */
     private static final int EXPAND_LIMIT_DEFAULT = Integer.getInteger(EXPAND_LIMIT_KEY, 1000);
 
-    private static final int LIMIT_DEFAULT = Integer.getInteger(LIMIT_KEY, 1000);
+    private static final int DOMAIN_VALUES_LIMIT_DEFAULT =
+            Integer.getInteger(DOMAIN_VALUES_LIMIT_KEY, 1000);
 
     public static final String EXPAND_LIMIT = "expandLimit";
-    public static final String LIMIT = "limit";
+    public static final String DOMAIN_VALUES_LIMIT = "limit";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
     private final GeoServer geoServer;
@@ -268,7 +270,11 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         }
 
         // get the limit, if any
-        int limit = getLimit(resource, conveyor.getParameter(LIMIT, false), conveyor.getResponse());
+        int limit =
+                getLimit(
+                        resource,
+                        conveyor.getParameter(DOMAIN_VALUES_LIMIT, false),
+                        conveyor.getResponse());
 
         // encode the domains
         return new Domains(dimensions, layerInfo, null, SimplifyingFilterVisitor.simplify(filter))
@@ -425,15 +431,15 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                 throw new OWSException(
                         400,
                         "InvalidParameterValue",
-                        LIMIT,
+                        DOMAIN_VALUES_LIMIT,
                         "Invalid "
-                                + LIMIT
+                                + DOMAIN_VALUES_LIMIT
                                 + " "
                                 + "value "
                                 + clientLimit
                                 + ", expected an integer value");
             }
-            int limitMax = LIMIT_MAX_DEFAULT;
+            int limitMax = DOMAIN_VALUES_LIMIT_MAX_DEFAULT;
             if (value < limitMax) {
                 return value;
             } else {
@@ -452,9 +458,9 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
                 LOGGER.log(
                         Level.FINE,
                         "Client did not provide a limit, using the internal default value: "
-                                + LIMIT_DEFAULT);
+                                + DOMAIN_VALUES_LIMIT_DEFAULT);
             }
-            return LIMIT_DEFAULT;
+            return DOMAIN_VALUES_LIMIT_DEFAULT;
         }
     }
 

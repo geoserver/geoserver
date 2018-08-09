@@ -15,7 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.boundlessgeo.gsr.model.exception.ServiceError;
-import com.boundlessgeo.gsr.model.exception.ServiceException;
+import com.boundlessgeo.gsr.model.exception.ServiceErrorWrapper;
 
 /**
  * Handles the "f" parameter for all gsr api requests
@@ -43,7 +43,7 @@ public class FormatParameterInterceptor extends HandlerInterceptorAdapter {
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            converter.writeToOutputStream(response.getOutputStream(), new ServiceException(new ServiceError(
+            converter.writeToOutputStream(response.getOutputStream(), new ServiceErrorWrapper(new ServiceError(
                     HttpStatus.BAD_REQUEST.value(), "Output format not supported", Collections.singletonList("Format " + format + " is not supported")
             )));
             return false;

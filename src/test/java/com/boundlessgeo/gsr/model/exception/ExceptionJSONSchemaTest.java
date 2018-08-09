@@ -32,7 +32,7 @@ public class ExceptionJSONSchemaTest extends JsonSchemaTest {
         List<String> details = new ArrayList<>();
         details.add("Bad request details");
         ServiceError error = new ServiceError(400, "Bad Request", details);
-        ServiceException serviceException = new ServiceException(error);
+        ServiceErrorWrapper serviceException = new ServiceErrorWrapper(error);
         String json = getJson(serviceException);
         assertTrue(validateJSON(json, "gsr/1.0/exception.json"));
     }

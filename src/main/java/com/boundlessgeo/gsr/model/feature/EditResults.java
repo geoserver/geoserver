@@ -12,11 +12,27 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EditResults {
-    public final Integer id;
+    public Integer id;
+    public Long editMoment;
 
     public final List<EditResult> addResults;
     public final List<EditResult> updateResults;
     public final List<EditResult> deleteResults;
+
+    /**
+     * @param id The id of the layer, or null. Only applicable for Apply Edits
+     * @param editMoment the timestamp the edit was applied
+     * @param addResults the add results, or null. Only applicable for Apply Edits and Add Features;
+     * @param updateResults the update results, or null. Only applicable for Apply Edits and Update Features;
+     * @param deleteResults the delete results, or null. Only applicable for Apply Edits and Delete Features;
+     */
+    public EditResults(Integer id, Long editMoment, List<EditResult> addResults, List<EditResult> updateResults, List<EditResult> deleteResults) {
+        this.id = id;
+        this.editMoment = editMoment;
+        this.addResults = addResults;
+        this.updateResults = updateResults;
+        this.deleteResults = deleteResults;
+    }
 
     /**
      * @param id The id of the layer, or null. Only applicable for Apply Edits
@@ -25,10 +41,7 @@ public class EditResults {
      * @param deleteResults the delete results, or null. Only applicable for Apply Edits and Delete Features;
      */
     public EditResults(Integer id, List<EditResult> addResults, List<EditResult> updateResults, List<EditResult> deleteResults) {
-        this.id = id;
-        this.addResults = addResults;
-        this.updateResults = updateResults;
-        this.deleteResults = deleteResults;
+        this(id, null, addResults, updateResults, deleteResults);
     }
 
     /**
@@ -38,5 +51,13 @@ public class EditResults {
      */
     public EditResults(List<EditResult> addResults, List<EditResult> updateResults, List<EditResult> deleteResults) {
         this(null, addResults, updateResults, deleteResults);
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setEditMoment(Long editMoment) {
+        this.editMoment = editMoment;
     }
 }

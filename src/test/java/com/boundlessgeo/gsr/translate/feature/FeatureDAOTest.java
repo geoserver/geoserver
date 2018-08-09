@@ -1,5 +1,6 @@
 package com.boundlessgeo.gsr.translate.feature;
 
+import com.boundlessgeo.gsr.api.ServiceException;
 import com.boundlessgeo.gsr.model.feature.Feature;
 import com.boundlessgeo.gsr.model.geometry.Polyline;
 import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
@@ -37,7 +38,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testCreateFeature() throws IOException {
+    public void testCreateFeature() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -51,7 +52,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         attributes.put("id", "t0002");
         Feature feature = new Feature(geom, attributes);
 
-        EditResult result = FeatureDAO.createFeature(fti, feature);
+        EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
         assertNull(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getError());
         //TODO: Cleanly increment ids?
@@ -69,7 +70,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testCreateFeatureReproject() throws IOException {
+    public void testCreateFeatureReproject() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -86,7 +87,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         attributes.put("id", "t0002");
         Feature feature = new Feature(geom, attributes);
 
-        EditResult result = FeatureDAO.createFeature(fti, feature);
+        EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
         assertNull(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getError());
         assertNotNull(result.getObjectId());
@@ -107,7 +108,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testCreateFeatureMultiline() throws IOException {
+    public void testCreateFeatureMultiline() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","MLines");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -121,7 +122,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         attributes.put("id", "t0002");
         Feature feature = new Feature(geom, attributes);
 
-        EditResult result = FeatureDAO.createFeature(fti, feature);
+        EditResult result = FeatureDAO.createFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
         assertNull(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getError());
         assertNotNull(result.getObjectId());
@@ -142,7 +143,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testUpdateFeature() throws IOException {
+    public void testUpdateFeature() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -156,7 +157,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         attributes.put("id", "t0001");
         Feature feature = new Feature(geom, attributes);
 
-        EditResult result = FeatureDAO.updateFeature(fti, feature);
+        EditResult result = FeatureDAO.updateFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertNull(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getError());
         assertTrue(result.getError() == null ? "" : result.getError().getDetails().toString(), result.getSuccess());
         assertNotNull(result.getObjectId());
@@ -173,7 +174,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testUpdateFeatureNotExists() throws IOException {
+    public void testUpdateFeatureNotExists() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -186,7 +187,7 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
         attributes.put(FeatureEncoder.OBJECTID_FIELD_NAME, 1L);
         Feature feature = new Feature(geom, attributes);
 
-        EditResult result = FeatureDAO.updateFeature(fti, feature);
+        EditResult result = FeatureDAO.updateFeature(fti, FeatureDAO.featureStore(fti), feature);
         assertFalse(result.getSuccess());
         assertNotNull(result.getError());
         assertNotNull(result.getObjectId());
@@ -203,11 +204,11 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testDeleteFeature() throws IOException {
+    public void testDeleteFeature() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Points");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
-        EditResult result = FeatureDAO.deleteFeature(fti, 0L);
+        EditResult result = FeatureDAO.deleteFeature(fti, FeatureDAO.featureStore(fti), 0L);
 
         assertTrue(result.getSuccess());
         assertNull(result.getError());
@@ -217,11 +218,11 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testDeleteFeatureNotExists() throws IOException {
+    public void testDeleteFeatureNotExists() throws IOException, ServiceException {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Points");
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
-        EditResult result = FeatureDAO.deleteFeature(fti, 42L);
+        EditResult result = FeatureDAO.deleteFeature(fti, FeatureDAO.featureStore(fti), 42L);
 
         assertFalse(result.getSuccess());
         assertNotNull(result.getError());

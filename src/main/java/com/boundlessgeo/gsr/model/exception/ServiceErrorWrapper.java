@@ -16,7 +16,7 @@ import static com.boundlessgeo.gsr.GSRConfig.CURRENT_VERSION;
  */
 
 @XStreamAlias(value = "")
-public class ServiceException implements GSRModel {
+public class ServiceErrorWrapper implements GSRModel {
 
     private ServiceError error;
 
@@ -30,7 +30,7 @@ public class ServiceException implements GSRModel {
         this.error = error;
     }
 
-    public ServiceException(ServiceError error) {
+    public ServiceErrorWrapper(ServiceError error) {
         this.error = error;
     }
 }

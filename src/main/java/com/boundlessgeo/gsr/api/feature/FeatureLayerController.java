@@ -3,7 +3,7 @@ package com.boundlessgeo.gsr.api.feature;
 import java.io.IOException;
 
 
-
+import com.boundlessgeo.gsr.api.ServiceException;
 import com.boundlessgeo.gsr.model.feature.*;
 
 
@@ -78,18 +78,29 @@ public class FeatureLayerController extends AbstractGSRController {
      *      *                   Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses |
      *      *                   esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps |
      *      *                   esriSpatialRelTouches | esriSpatialRelWithin
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted
+     *                          edits succeed. If false, the server will apply the edits that succeed even if some of
+     *                          the submitted edits fail. If true, the server will apply the edits only if all edits
+     *                          succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *                         updated. If returnEditMoment = true, the server will report the time in the response's
+     *                         editMoment key. The default value is false.
      * @return
      */
     @ResponseBody
     @PostMapping(path = "/{layerId}/deleteFeatures")
-    public EditResults featureDelete(@PathVariable String workspaceName, @PathVariable Integer layerId,
-                                     @RequestParam(name = "objectIds", required = false) String objectIdsText,
-                                     @RequestParam(name = "geometryType", required = false) String geometryTypeName,
-                                     @RequestParam(name = "where", required = false) String whereClause,
-                                     @RequestParam(name = "geometry", required = false) String geometryText,
-                                     @RequestParam(name = "inSR", required = false) String inSRText,
-                                     @RequestParam(name = "spatialRel", required = false) String
-                                                 spatialRelText) throws IOException {
+    public EditResults featureDelete(
+            @PathVariable String workspaceName, @PathVariable Integer layerId,
+            @RequestParam(name = "objectIds", required = false) String objectIdsText,
+            @RequestParam(name = "geometryType", required = false) String geometryTypeName,
+            @RequestParam(name = "where", required = false) String whereClause,
+            @RequestParam(name = "geometry", required = false) String geometryText,
+            @RequestParam(name = "inSR", required = false) String inSRText,
+            @RequestParam(name = "spatialRel", required = false) String spatialRelText,
+            @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false") boolean rollbackOnFailure,
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment
+    ) throws IOException, ServiceException {
+
         LayerOrTable entry;
         List<EditResult> editResults;
         Long id;
@@ -106,10 +117,7 @@ public class FeatureLayerController extends AbstractGSRController {
         long[] ids = FeatureEncoder.objectIds(features).getObjectIds();
         List<Long> idsList = Arrays.stream(ids).boxed().collect(Collectors.toList());
         FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) l.getResource();
-        editResults = FeatureDAO.deleteFeatures(featureTypeInfo, idsList);
-
-
-        return new EditResults(null, null, editResults);
+        return FeatureDAO.deleteFeatures(featureTypeInfo, idsList, returnEditMoment, rollbackOnFailure);
     }
 
     /**
@@ -118,12 +126,16 @@ public class FeatureLayerController extends AbstractGSRController {
      * @param featureArray Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
-     *
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted
+     *                          edits succeed. If false, the server will apply the edits that succeed even if some of
+     *                          the submitted edits fail. If true, the server will apply the edits only if all edits
+     *                          succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *                         updated. If returnEditMoment = true, the server will report the time in the response's
+     *                         editMoment key. The default value is false.
      * TODO: Unsupported parameters
      * f - only json supported (used by default), ignored
      * gdbVersion - GSR does not support versioned data, ignored.
-     * returnEditMoment - not currently supported, TODO
-     * rollbackOnFailure - not currently supported, TODO
      * trueCurveClient - GSR does not support true curve encoding, ignored.
      *
      * @return Results of the update
@@ -131,7 +143,12 @@ public class FeatureLayerController extends AbstractGSRController {
      */
 
     @PostMapping(path = "/{layerId}/updateFeatures")
-    public EditResults updateFeatures(@RequestBody FeatureArray featureArray, @PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
+    public EditResults updateFeatures(
+            @RequestBody FeatureArray featureArray, @PathVariable String workspaceName, @PathVariable Integer layerId,
+            @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false") boolean rollbackOnFailure,
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment
+    ) throws IOException, ServiceException {
+
         List<Feature> features = featureArray == null ? null : featureArray.features;
         if (features == null || features.size() < 1) {
             throw new IllegalArgumentException("No features provided");
@@ -142,7 +159,7 @@ public class FeatureLayerController extends AbstractGSRController {
         if (layer.getResource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo fti = (FeatureTypeInfo) layer.getResource();
 
-            return new EditResults(null, FeatureDAO.updateFeatures(fti, features), null);
+            return FeatureDAO.updateFeatures(fti, features, returnEditMoment, rollbackOnFailure);
         } else {
             throw new IllegalArgumentException("Layer is not a feature layer");
         }
@@ -155,13 +172,24 @@ public class FeatureLayerController extends AbstractGSRController {
      * @param featureArray Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted
+     *                          edits succeed. If false, the server will apply the edits that succeed even if some of
+     *                          the submitted edits fail. If true, the server will apply the edits only if all edits
+     *                          succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *                         updated. If returnEditMoment = true, the server will report the time in the response's
+     *                         editMoment key. The default value is false.
      * @return Results of the update
      * @throws IOException
      */
     @PostMapping(path = "/{layerId}/addFeatures")
-    public EditResults addFeatures(@RequestBody FeatureArray featureArray,
-                                   @PathVariable String workspaceName,
-                                   @PathVariable Integer layerId) throws IOException {
+    public EditResults addFeatures(
+            @RequestBody FeatureArray featureArray,
+            @PathVariable String workspaceName,
+            @PathVariable Integer layerId,
+            @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false") boolean rollbackOnFailure,
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment
+    ) throws IOException, ServiceException {
 
         List<Feature> features = featureArray == null ? null : featureArray.features;
         if (features == null || features.size() < 1) {
@@ -173,7 +201,7 @@ public class FeatureLayerController extends AbstractGSRController {
         if (layer.getResource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo fti = (FeatureTypeInfo) layer.getResource();
 
-            return new EditResults(FeatureDAO.createFeatures(fti, features),null, null);
+            return FeatureDAO.createFeatures(fti, features, returnEditMoment, rollbackOnFailure);
         } else {
             throw new IllegalArgumentException("Layer is not a feature layer");
         }

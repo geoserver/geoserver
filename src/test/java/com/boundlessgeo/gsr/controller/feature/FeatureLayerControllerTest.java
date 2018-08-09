@@ -79,7 +79,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].x - 500050.0) >= 0.1);
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].y - 499950.0) >= 0.1);
 
-        String q = query("cgf", "0", "/updateFeatures?f=json");
+        String q = query("cgf", "0", "/updateFeatures?f=json&returnEditMoment=true");
 
         String body =
                 "[\n" +
@@ -99,6 +99,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
+        assertTrue(json.has("editMoment"));
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
         assertEquals( 0, resultObj.getInt("objectId"));
@@ -397,6 +398,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
+        assertFalse(json.has("editMoment"));
 
         JSONObject resultObj = json.getJSONArray("addResults").getJSONObject(0);
         assertNotSame( 0, resultObj.getInt("objectId"));
@@ -485,6 +487,132 @@ public class FeatureLayerControllerTest extends ControllerTest {
         resultObj = json.getJSONArray("addResults").getJSONObject(0);
         assertEquals( true, resultObj.getBoolean("success"));
         assertNotSame(0,resultObj.get("objectId"));
+    }
+
+    @Test
+    public void testAddFeaturesWithoutRollback() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        String q = query("cgf", "0", "/addFeatures?f=json&rollbackOnFailure=false");
+
+        //3 features, one invalid
+        String body =
+                "[\n" +
+                        //valid
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"objectid\" : 1,\n" +
+                        "      \"id\" : \"t0001\",\n" +
+                        "    }\n" +
+                        "  },\n" +
+                        //invalid - missing attribute
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"objectid\" : 2\n" +
+                        "    }\n" +
+                        "  },\n" +
+                        //valid
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"objectid\" : 3,\n" +
+                        "      \"id\" : \"t0001\",\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]";
+        JSON result = postAsJSON(q, body, "application/json");
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+
+        JSONArray addResults = json.getJSONArray("addResults");
+        assertEquals( true, addResults.getJSONObject(0).getBoolean("success"));
+        assertEquals( false, addResults.getJSONObject(1).getBoolean("success"));
+        assertEquals( true, addResults.getJSONObject(2).getBoolean("success"));
+
+        //verify 2 valid features were added
+        assertEquals(3, fti.getFeatureSource(null, null).getFeatures().size());
+    }
+
+    @Test
+    public void testAddFeaturesWithRollback() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        String q = query("cgf", "0", "/addFeatures?f=json&rollbackOnFailure=true");
+
+        //3 features, one invalid
+        String body =
+                "[\n" +
+                //valid
+                "  {\n" +
+                "  \"geometry\" : {" +
+                "      \"geometryType\":\"esriGeometryPolyline\", " +
+                "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                "    },\n" +
+                "    \"attributes\" : {\n" +
+                "      \"objectid\" : 1,\n" +
+                "      \"id\" : \"t0001\",\n" +
+                "    }\n" +
+                "  },\n" +
+                //invalid - missing attribute
+                "  {\n" +
+                "  \"geometry\" : {" +
+                "      \"geometryType\":\"esriGeometryPolyline\", " +
+                "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                "    },\n" +
+                "    \"attributes\" : {\n" +
+                "      \"objectid\" : 2\n" +
+                "    }\n" +
+                "  },\n" +
+                //valid
+                "  {\n" +
+                "  \"geometry\" : {" +
+                "      \"geometryType\":\"esriGeometryPolyline\", " +
+                "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                "    },\n" +
+                "    \"attributes\" : {\n" +
+                "      \"objectid\" : 3,\n" +
+                "      \"id\" : \"t0001\",\n" +
+                "    }\n" +
+                "  }\n" +
+                "]";
+        JSON result = postAsJSON(q, body, "application/json");
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+
+        assertTrue(json.has("error"));
+        assertEquals("Operation rolled back.", json.getJSONObject("error").getString("message"));
+
+        //verify feature state unchanged
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
     }
 
     @Test

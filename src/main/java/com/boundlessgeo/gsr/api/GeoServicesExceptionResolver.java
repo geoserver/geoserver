@@ -20,10 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
 import com.boundlessgeo.gsr.model.exception.ServiceError;
-import com.boundlessgeo.gsr.model.exception.ServiceException;
+import com.boundlessgeo.gsr.model.exception.ServiceErrorWrapper;
 
 /**
- * Resolves unhandled exceptions by converting them to {@link ServiceException}, then encoding that to json via
+ * Resolves unhandled exceptions by converting them to {@link ServiceErrorWrapper}, then encoding that to json via
  * {@link GeoServicesJacksonJsonConverter}
  *
  * TODO: If this ever supports more than f=json, look up the right converter programmatically.
@@ -50,11 +50,13 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
     }
 
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        LOGGER.log(Level.SEVERE, "Error doing GSR processing", ex);
-
-        ServiceException exception = new ServiceException(new ServiceError(
-                500, "Internal Server Error", Collections.singletonList(ex.getMessage())));
-
+        ServiceErrorWrapper exception;
+        if (ex instanceof ServiceException) {
+            exception = new ServiceErrorWrapper(((ServiceException)ex).error);
+        } else {
+            exception = new ServiceErrorWrapper(new ServiceError(
+                    500, "Internal Server Error", Collections.singletonList(ex.getMessage())));
+        }
         //Log the full stack trace, since the response just has the error message.
         LOGGER.log(Level.INFO, "Error handling request", ex);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -1,8 +1,11 @@
 package com.boundlessgeo.gsr.translate.feature;
 
 import com.boundlessgeo.gsr.Utils;
+import com.boundlessgeo.gsr.api.ServiceException;
+import com.boundlessgeo.gsr.model.GSRModel;
 import com.boundlessgeo.gsr.model.exception.FeatureServiceErrors;
 import com.boundlessgeo.gsr.model.exception.ServiceError;
+import com.boundlessgeo.gsr.model.feature.EditResults;
 import com.boundlessgeo.gsr.model.geometry.SpatialReference;
 import com.boundlessgeo.gsr.model.geometry.SpatialRelationship;
 import com.boundlessgeo.gsr.model.feature.EditResult;
@@ -17,9 +20,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
+import org.geotools.data.*;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
@@ -54,12 +55,141 @@ public class FeatureDAO {
     /**
      * Create new features
      *
-     * @see #createFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     * @see #editFeatures(FeatureTypeInfo, List, List, List, boolean, boolean)
+     * @see #createFeature(FeatureTypeInfo, FeatureStore, com.boundlessgeo.gsr.model.feature.Feature)
      */
-    public static List<EditResult> createFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+    public static EditResults createFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures, boolean returnEditMoment, boolean rollbackOnFailure) throws ServiceException {
+        return editFeatures(featureType, sourceFeatures, null, null, returnEditMoment, rollbackOnFailure);
+    }
+
+    /**
+     * Update existing features
+     *
+     * @see #editFeatures(FeatureTypeInfo, List, List, List, boolean, boolean)
+     * @see #updateFeature(FeatureTypeInfo, FeatureStore, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    public static EditResults updateFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures, boolean returnEditMoment, boolean rollbackOnFailure) throws ServiceException {
+        return editFeatures(featureType, null, sourceFeatures, null, returnEditMoment, rollbackOnFailure);
+    }
+
+    /**
+     * Delete existing features
+     *
+     * @see #editFeatures(FeatureTypeInfo, List, List, List, boolean, boolean)
+     * @see #deleteFeature(FeatureTypeInfo, FeatureStore, Long)
+     */
+    public static EditResults deleteFeatures(FeatureTypeInfo featureType, List<Long> ids, boolean returnEditMoment, boolean rollbackOnFailure) throws ServiceException {
+        return editFeatures(featureType, null, null, ids, returnEditMoment, rollbackOnFailure);
+    }
+
+    /**
+     * Add, Update, and/or Delete features within a single FeatureType
+     * Handles acquiring a connection to the store, and (optionally) rolling back upon failure.
+     *
+     * TODO: Consolidate rollback logic to support multiple featureTypes for Apply Edits endpoint
+     *
+     * @param featureType The featureType
+     * @param createFeatures Features to add
+     * @param updateFeatures Features to update
+     * @param deleteIds Feature Ids to delete
+     * @param returnEditMoment Whether or not to incude the modification time in the result
+     * @param rollbackOnFailure Whether or not to rollback all edits if one edit fails
+     * @return Results of the operation
+     * @throws ServiceException if there was an unresolvable error, or if edits were rolled back
+     */
+    public static EditResults editFeatures(FeatureTypeInfo featureType,
+                                        List<com.boundlessgeo.gsr.model.feature.Feature> createFeatures,
+                                        List<com.boundlessgeo.gsr.model.feature.Feature> updateFeatures,
+                                        List<Long> deleteIds, boolean returnEditMoment, boolean rollbackOnFailure) throws ServiceException {
+
+        FeatureStore featureStore;
+        EditResults results;
+        try {
+            featureStore = featureStore(featureType);
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Error reading feature: " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(), e);
+            throw new ServiceException(e, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+        }
+        //Default is Transaction.AUTOCOMMIT
+        Transaction transaction = featureStore.getTransaction();
+        if (rollbackOnFailure) {
+            transaction = new DefaultTransaction();
+            featureStore.setTransaction(transaction);
+        }
+
+        try {
+            results = editFeatures(featureType, featureStore, createFeatures, updateFeatures, deleteIds, rollbackOnFailure);
+
+            if (rollbackOnFailure) {
+                transaction.commit();
+            }
+            if (returnEditMoment) {
+                results.setEditMoment(new Date().getTime());
+            }
+
+        } catch (ServiceException | IOException e) {
+            //Feature error
+            if (rollbackOnFailure) {
+                try {
+                    transaction.rollback();
+                    throw new ServiceException(e, FeatureServiceErrors.rolledBack1(Collections.singletonList(e.getMessage())));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                    throw new ServiceException(e1, FeatureServiceErrors.nonSpecific(Arrays.asList("Error rolling back after " + e.getMessage(), e1.getMessage())));
+                }
+            }
+            if (e instanceof ServiceException) {
+                throw (ServiceException) e;
+            } else {
+                //We should only get a ServiceException if rollbackOnFailure is true, so this should never happen...
+                throw new ServiceException(e, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Add, Update, and/or Delete features within a single FeatureType. Wraps create, update, and delete features
+     * methods, and aggregates the results into a {@link EditResults}
+     *
+     * @param exceptionOnFailure Whether to throw a {@link ServiceException} when an edit fails
+     * @return Results of the edits; if any of createFeatures, updateFeatures, or deleteIds are null, the corresponding
+     *         results list will also be null.
+     */
+    private static EditResults editFeatures(FeatureTypeInfo featureType, FeatureStore featureStore,
+                                           List<com.boundlessgeo.gsr.model.feature.Feature> createFeatures,
+                                           List<com.boundlessgeo.gsr.model.feature.Feature> updateFeatures,
+                                           List<Long> deleteIds, boolean exceptionOnFailure) throws ServiceException {
+
+            List<EditResult> createResults = null;
+            if (createFeatures != null) {
+                createResults = createFeatures(featureType, featureStore, createFeatures, exceptionOnFailure);
+            }
+
+            List<EditResult> updateResults = null;
+            if (updateFeatures != null) {
+                updateResults = updateFeatures(featureType, featureStore, updateFeatures, exceptionOnFailure);
+            }
+
+            List<EditResult> deleteResults = null;
+            if (deleteIds != null) {
+                deleteResults = deleteFeatures(featureType, featureStore, deleteIds, exceptionOnFailure);
+            }
+
+            return new EditResults(createResults, updateResults, deleteResults);
+    }
+
+    /**
+     * Create new features
+     *
+     * @see #createFeature(FeatureTypeInfo, FeatureStore, com.boundlessgeo.gsr.model.feature.Feature)
+     */
+    private static List<EditResult> createFeatures(FeatureTypeInfo featureType, FeatureStore featureStore,
+                                                   List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures,
+                                                   boolean exceptionOnFailure) throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
-            results.add(createFeature(featureType, sourceFeature));
+            results.add(validateResult(createFeature(featureType, featureStore, sourceFeature), exceptionOnFailure));
         }
         return results;
     }
@@ -67,12 +197,14 @@ public class FeatureDAO {
     /**
      * Update existing features
      *
-     * @see #updateFeature(FeatureTypeInfo, com.boundlessgeo.gsr.model.feature.Feature)
+     * @see #updateFeature(FeatureTypeInfo, FeatureStore, com.boundlessgeo.gsr.model.feature.Feature)
      */
-    public static List<EditResult> updateFeatures(FeatureTypeInfo featureType, List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures) {
+    private static List<EditResult> updateFeatures(FeatureTypeInfo featureType, FeatureStore featureStore,
+                                                   List<com.boundlessgeo.gsr.model.feature.Feature> sourceFeatures,
+                                                   boolean exceptionOnFailure) throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (com.boundlessgeo.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
-            results.add(updateFeature(featureType, sourceFeature));
+            results.add(validateResult(updateFeature(featureType, featureStore, sourceFeature), exceptionOnFailure));
         }
         return results;
     }
@@ -80,14 +212,22 @@ public class FeatureDAO {
     /**
      * Delete existing features
      *
-     * @see #deleteFeature(FeatureTypeInfo, Long)
+     * @see #deleteFeature(FeatureTypeInfo, FeatureStore, Long)
      */
-    public static List<EditResult> deleteFeatures(FeatureTypeInfo featureType, List<Long> ids) {
+    private static List<EditResult> deleteFeatures(FeatureTypeInfo featureType, FeatureStore featureStore,
+                                                   List<Long> ids, boolean exceptionOnFailure) throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (Long id : ids) {
-            results.add(deleteFeature(featureType, id));
+            results.add(validateResult(deleteFeature(featureType, featureStore, id), exceptionOnFailure));
         }
         return results;
+    }
+
+    private static EditResult validateResult(EditResult result, boolean exceptionOnFailure) throws ServiceException {
+        if (!result.getSuccess() && exceptionOnFailure) {
+            throw new ServiceException(result.getError());
+        }
+        return result;
     }
 
     /**
@@ -97,13 +237,11 @@ public class FeatureDAO {
      * @param sourceFeature The GSR feature model to add
      * @return the result of the add
      */
-    public static EditResult createFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
+    public static EditResult createFeature(FeatureTypeInfo featureType, FeatureStore featureStore, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         try {
             if (sourceFeature == null) {
                 return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
             }
-
-            FeatureStore featureStore = featureStore(featureType);
 
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
             SimpleFeatureBuilder builder = new SimpleFeatureBuilder(schema);
@@ -139,10 +277,6 @@ public class FeatureDAO {
                 return new EditResult(null, false, FeatureServiceErrors.insertError(Collections.singletonList("Multiple features created for: " + sourceFeature.toString())));
             }
             return new EditResult(FeatureEncoder.toGSRObjectId(fid.get(0).getID()));
-
-        } catch (ReadOnlyLayerException re) {
-            LOGGER.log(Level.INFO, "Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName() + " - Permission Denied", re);
-            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
             return new EditResult(null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
@@ -156,7 +290,7 @@ public class FeatureDAO {
      * @param sourceFeature The GSR feature model to add. Must include the id
      * @return the result of the edit
      */
-    public static EditResult updateFeature(FeatureTypeInfo featureType, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
+    public static EditResult updateFeature(FeatureTypeInfo featureType, FeatureStore featureStore, com.boundlessgeo.gsr.model.feature.Feature sourceFeature) {
         Long objectId = null;
         try {
             if (sourceFeature == null) {
@@ -174,7 +308,6 @@ public class FeatureDAO {
             }
 
             Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
-            FeatureStore featureStore = featureStore(featureType);
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
 
             int featureCount = featureStore.getFeatures(idFilter).size();
@@ -212,9 +345,6 @@ public class FeatureDAO {
 
             featureStore.modifyFeatures(names.toArray(new Name[names.size()]), values.toArray(), idFilter);
             return new EditResult(objectId);
-        } catch (ReadOnlyLayerException re) {
-            LOGGER.log(Level.INFO, "Error updating object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName() + " - Permission Denied", re);
-            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error updating object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(), e);
             return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
@@ -228,10 +358,9 @@ public class FeatureDAO {
      * @param objectId The id of the feature to delete
      * @return the result of the delete
      */
-    public static EditResult deleteFeature(FeatureTypeInfo featureType, Long objectId) {
+    public static EditResult deleteFeature(FeatureTypeInfo featureType, FeatureStore featureStore, Long objectId) {
         try {
             Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
-            FeatureStore featureStore = featureStore(featureType);
 
             int featureCount = featureStore.getFeatures(idFilter).size();
             if (featureCount < 1) {
@@ -242,9 +371,6 @@ public class FeatureDAO {
 
             featureStore.removeFeatures(idFilter);
             return new EditResult(objectId);
-        } catch (ReadOnlyLayerException re) {
-            LOGGER.log(Level.INFO, "Error deleting object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName() + " - Permission Denied", re);
-            return new EditResult(null, false, FeatureServiceErrors.permissionDenied(Collections.singletonList(re.getMessage())));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Error deleting object " + objectId + " in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName(), e);
             return new EditResult(objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
@@ -296,11 +422,12 @@ public class FeatureDAO {
         return geometry;
     }
 
-    private static FeatureStore featureStore(FeatureTypeInfo featureType) throws ReadOnlyLayerException, IOException {
+    protected static FeatureStore featureStore(FeatureTypeInfo featureType) throws IOException, ServiceException {
         FeatureSource featureSource = featureType.getFeatureSource(null, null);
 
         if (!(featureSource instanceof FeatureStore)) {
-            throw new ReadOnlyLayerException();
+            throw new ServiceException(FeatureServiceErrors.permissionDenied(
+                    Collections.singletonList("Error creating object in " + featureType.getNamespace().getPrefix() + ":" +featureType.getName())));
         }
 
         return (FeatureStore) featureSource;

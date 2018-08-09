@@ -14,6 +14,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
+import it.geosolutions.imageio.plugins.tiff.PrivateTIFFTagSet;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -758,12 +759,26 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     /**
+     * Test Writing parameters are used, nodata not being set
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadWithWriteParametersWithoutNodata() throws Exception {
+        testWriteParameters(false);
+    }
+
+    /**
      * Test Writing parameters are used
      *
      * @throws Exception the exception
      */
     @Test
     public void testDownloadWithWriteParameters() throws Exception {
+        testWriteParameters(true);
+    }
+
+    private void testWriteParameters(boolean writeNodata) throws Exception {
         // Estimator process for checking limits
         DownloadEstimatorProcess limits =
                 new DownloadEstimatorProcess(
@@ -799,6 +814,12 @@ public class DownloadProcessTest extends WPSTestSupport {
         parametersList.add(new Parameter("compression", compressionValue));
         parametersList.add(new Parameter("not_supported_ignore_this", "NOT_VALID_IGNORE_THIS"));
 
+        // Note that nodata is written by default on GeoTiffWriter as soon
+        // as a nodata is found on the input gridCoverage
+        if (!writeNodata) {
+            parametersList.add(new Parameter("writenodata", "false"));
+        }
+
         // Download the coverage as tiff
         File rasterZip =
                 downloadProcess.execute(
@@ -828,7 +849,14 @@ public class DownloadProcessTest extends WPSTestSupport {
                 Integer.toString(BaselineTIFFTagSet.TAG_TILE_LENGTH), tileHeightValue);
         expectedTiffTagValues.put(
                 Integer.toString(BaselineTIFFTagSet.TAG_COMPRESSION), compressionValue);
-        int matchingStillRequired = 3;
+        expectedTiffTagValues.put(Integer.toString(PrivateTIFFTagSet.TAG_GDAL_NODATA), "0.0");
+
+        int matchingStillRequired = expectedTiffTagValues.size();
+        if (!writeNodata) {
+            // we keep the map entry for scan but we make sure
+            // the matching is missing
+            matchingStillRequired--;
+        }
 
         try {
             final File[] tiffFiles = extractFiles(rasterZip, "GTIFF");

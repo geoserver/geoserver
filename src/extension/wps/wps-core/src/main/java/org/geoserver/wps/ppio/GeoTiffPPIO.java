@@ -23,9 +23,11 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.process.ProcessException;
 import org.geotools.util.logging.Logging;
+import org.opengis.parameter.ParameterValueGroup;
 
 /**
  * Decodes/encodes a GeoTIFF file
@@ -39,6 +41,7 @@ public class GeoTiffPPIO extends BinaryPPIO {
     protected static final String TILE_WIDTH_KEY = "tilewidth";
     protected static final String TILE_HEIGHT_KEY = "tileheight";
     protected static final String COMPRESSION_KEY = "compression";
+    protected static final String WRITENODATA_KEY = "writenodata";
 
     private static final Set<String> SUPPORTED_PARAMS = new HashSet<String>();
 
@@ -49,15 +52,15 @@ public class GeoTiffPPIO extends BinaryPPIO {
         SUPPORTED_PARAMS.add(TILE_HEIGHT_KEY);
         SUPPORTED_PARAMS.add(COMPRESSION_KEY);
         SUPPORTED_PARAMS.add(QUALITY_KEY);
+        SUPPORTED_PARAMS.add(WRITENODATA_KEY);
 
-        SUPPORTED_PARAMS_LIST =
-                TILE_WIDTH_KEY
-                        + " / "
-                        + TILE_HEIGHT_KEY
-                        + " / "
-                        + COMPRESSION_KEY
-                        + " / "
-                        + QUALITY_KEY;
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        for (String param : SUPPORTED_PARAMS) {
+            sb.append(prefix).append(param);
+            prefix = " / ";
+        }
+        SUPPORTED_PARAMS_LIST = sb.toString();
     }
 
     private static final Logger LOGGER = Logging.getLogger(GeoTiffPPIO.class);
@@ -167,6 +170,14 @@ public class GeoTiffPPIO extends BinaryPPIO {
                         }
                     }
                 }
+            }
+            ParameterValueGroup geotoolsWriteParams = helper.getGeotoolsWriteParams();
+            if (geotoolsWriteParams != null && encodingParameters.containsKey(WRITENODATA_KEY)) {
+                geotoolsWriteParams
+                        .parameter(GeoTiffFormat.WRITE_NODATA.getName().toString())
+                        .setValue(
+                                Boolean.parseBoolean(
+                                        (String) encodingParameters.get(WRITENODATA_KEY)));
             }
         }
     }

@@ -1883,7 +1883,7 @@
   <poi.version>3.17</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.24</imageio-ext.version>
+  <imageio-ext.version>1.1.25</imageio-ext.version>
   <jaiext.version>1.0.24</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>

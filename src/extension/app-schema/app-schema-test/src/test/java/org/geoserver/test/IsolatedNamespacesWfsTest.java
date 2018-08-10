@@ -112,25 +112,25 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                     MEASUREMENTS_1_PREFIX_GML31,
                     "gml31",
                     "measurements1",
-                    "isolatedMappings/measurements1.xml",
+                    "isolatedNamespaces/measurements1.xml",
                     gml31Parameters);
             addStationFeatureType(
                     STATIONS_1_PREFIX_GML31,
                     "gml31",
                     "stations1",
-                    "isolatedMappings/stations1.xml",
+                    "isolatedNamespaces/stations1.xml",
                     gml31Parameters);
             addMeasurementFeatureType(
                     MEASUREMENTS_1_PREFIX_GML32,
                     "gml32",
                     "measurements1",
-                    "isolatedMappings/measurements1.xml",
+                    "isolatedNamespaces/measurements1.xml",
                     gml32Parameters);
             addStationFeatureType(
                     STATIONS_1_PREFIX_GML32,
                     "gml32",
                     "stations1",
-                    "isolatedMappings/stations1.xml",
+                    "isolatedNamespaces/stations1.xml",
                     gml32Parameters);
 
             // add second use case namespaces
@@ -145,17 +145,17 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                     STATIONS_2_PREFIX_GML31,
                     "gml31",
                     "stations2",
-                    "isolatedMappings/stations2.xml",
+                    "isolatedNamespaces/stations2.xml",
                     "measurements2",
-                    "isolatedMappings/measurements2.xml",
+                    "isolatedNamespaces/measurements2.xml",
                     gml31Parameters);
             addStationFeatureType(
                     STATIONS_2_PREFIX_GML32,
                     "gml32",
                     "stations2",
-                    "isolatedMappings/stations2.xml",
+                    "isolatedNamespaces/stations2.xml",
                     "measurements2",
-                    "isolatedMappings/measurements2.xml",
+                    "isolatedNamespaces/measurements2.xml",
                     gml32Parameters);
         }
     }

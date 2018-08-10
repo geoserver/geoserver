@@ -301,12 +301,27 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
             Fill fill = symbolizer.getFill();
             if (fill != null) {
-                Double opacity = fill.getOpacity().evaluate(feature, Double.class);
+              Double opacity;
+              Expression opacityExpr = fill.getOpacity();
+              if (opacityExpr == null) {
+                opacity = 1.0; // default
+              } else {
+                opacity = opacityExpr.evaluate(feature, Double.class);
                 if (opacity == null || Double.isNaN(opacity)) {
-                    opacity = 1.0;
+                  opacity = 1.0;
                 }
-                Color color = fill.getColor().evaluate(feature, Color.class);
-                ls.setColor(colorToHex(color, opacity));
+              }
+              Color color;
+              Expression colorExpr = fill.getColor();
+              if (colorExpr == null) {
+                color = Color.WHITE;
+              } else {
+                color = colorExpr.evaluate(feature, Color.class);
+                if (color == null) {
+                  color = Color.WHITE;
+                }
+              }
+              ls.setColor(colorToHex(color, opacity));
             } else {
                 ls.setColor("ffffffff");
             }

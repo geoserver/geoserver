@@ -12,6 +12,7 @@ import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.filter.sort.SortOrder;
 
 /** Represents an elevation dimension of a raster. */
 public class RasterElevationDimension extends RasterDimension {
@@ -26,7 +27,7 @@ public class RasterElevationDimension extends RasterDimension {
     }
 
     @Override
-    protected Class getDimensionType() {
+    public Class getDimensionType() {
         return Number.class;
     }
 
@@ -36,7 +37,10 @@ public class RasterElevationDimension extends RasterDimension {
                 CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         Tuple<String, FeatureCollection> values =
                 reader.getValues(
-                        this.dimensionName, query, CoverageDimensionsReader.DataType.NUMERIC);
+                        this.dimensionName,
+                        query,
+                        CoverageDimensionsReader.DataType.NUMERIC,
+                        SortOrder.ASCENDING);
 
         return values.second;
     }

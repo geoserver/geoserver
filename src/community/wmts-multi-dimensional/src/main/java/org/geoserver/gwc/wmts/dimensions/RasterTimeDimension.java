@@ -14,6 +14,7 @@ import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.filter.sort.SortOrder;
 
 /** Represents a time dimension of a raster. */
 public class RasterTimeDimension extends RasterDimension {
@@ -33,7 +34,7 @@ public class RasterTimeDimension extends RasterDimension {
     }
 
     @Override
-    protected Class getDimensionType() {
+    public Class getDimensionType() {
         return Date.class;
     }
 
@@ -43,7 +44,10 @@ public class RasterTimeDimension extends RasterDimension {
                 CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         Tuple<String, FeatureCollection> values =
                 reader.getValues(
-                        this.dimensionName, query, CoverageDimensionsReader.DataType.TEMPORAL);
+                        this.dimensionName,
+                        query,
+                        CoverageDimensionsReader.DataType.TEMPORAL,
+                        SortOrder.ASCENDING);
 
         return values.second;
     }

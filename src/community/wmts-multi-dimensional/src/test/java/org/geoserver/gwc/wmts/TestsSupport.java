@@ -25,8 +25,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.dimension.RasterTimeDimensionDefaultValueTest;
 import org.geoserver.wms.dimension.VectorElevationDimensionDefaultValueTest;
+import org.geotools.data.Query;
 import org.junit.Before;
-import org.opengis.filter.Filter;
 
 public abstract class TestsSupport extends WMSTestSupport {
 
@@ -120,7 +120,7 @@ public abstract class TestsSupport extends WMSTestSupport {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         List<String> valuesAsStrings =
-                dimension.getDomainValuesAsStrings(Filter.INCLUDE, expandLimit).second;
+                dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.Aggregate;
 import org.geotools.feature.visitor.GroupByVisitor;
@@ -35,6 +37,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortOrder;
 
 /**
  * This class represents a dimension providing an abstraction over all types of dimensions and
@@ -44,6 +47,8 @@ import org.opengis.filter.expression.PropertyName;
  * merge several dimensions restrictions when working with domains.
  */
 public abstract class Dimension {
+
+    static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder.getFilterFactory2();
 
     /** Empty histogram representation */
     public static final Tuple<String, List<Integer>> EMPTY_HISTOGRAM =
@@ -84,18 +89,35 @@ public abstract class Dimension {
             FeatureCollection features, String attribute, int expandLimit) {
         // grab domain, but at most expandLimit + 1, to know if there are too many
         if (expandLimit != 0) {
-            TreeSet uniqueValues =
+            Set uniqueValues =
                     DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
             if (uniqueValues.size() <= expandLimit || expandLimit < 0) {
-                return new DomainSummary(uniqueValues);
+                return new DomainSummary(new TreeSet(uniqueValues));
             }
         }
         Map<Aggregate, Object> minMax =
                 DimensionsUtils.getAggregates(attribute, features, Aggregate.MIN, Aggregate.MAX);
-        // size fixed to 2 as doing a full count might require a lot of time on vector data,
-        // e.g. we have a time enabled wind layer that takes tens of seconds as it has tens
-        // of millions of points
-        return new DomainSummary(minMax.get(Aggregate.MIN), minMax.get(Aggregate.MAX), 2);
+        // we return only the number of non null mix/max elements, as computing the whole count
+        // might take just too much time on large datasets
+        return new DomainSummary(
+                minMax.get(Aggregate.MIN),
+                minMax.get(Aggregate.MAX),
+                minMax.values().stream().filter(v -> v != null).count());
+    }
+
+    /**
+     * Returns the domain summary. If the count is lower than <code>expandLimit</code> then only the
+     * count will be returned, otherwise min and max will also be returned
+     *
+     * @param features
+     * @param attribute
+     * @param expandLimit
+     * @return
+     */
+    protected DomainSummary getPagedDomainValues(
+            FeatureCollection features, String attribute, int maxValues) {
+        Set uniqueValues = DimensionsUtils.getUniqueValues(features, attribute, maxValues);
+        return new DomainSummary(uniqueValues);
     }
 
     /**
@@ -103,7 +125,7 @@ public abstract class Dimension {
      *
      * @return
      */
-    protected abstract Class getDimensionType();
+    public abstract Class getDimensionType();
 
     /**
      * Computes an histogram of this dimension domain values. The provided resolutionSpec value can
@@ -127,8 +149,9 @@ public abstract class Dimension {
         FilterFactory2 ff = DimensionsUtils.FF;
         String dimensionAttributeName = getDimensionAttributeName();
         PropertyName dimensionProperty = ff.property(dimensionAttributeName);
+        Query query = new Query(null, filter);
         if (Number.class.isAssignableFrom(getDimensionType())) {
-            DomainSummary summary = getDomainSummary(filter, 0);
+            DomainSummary summary = getDomainSummary(query, 0);
             // empty domain case?
             if (summary.getMin() == null || summary.getMax() == null) {
                 return EMPTY_HISTOGRAM;
@@ -161,7 +184,7 @@ public abstract class Dimension {
             }
             return Tuple.tuple(specAndBuckets.first, counts);
         } else if (Date.class.isAssignableFrom(getDimensionType())) {
-            DomainSummary summary = getDomainSummary(filter, 0);
+            DomainSummary summary = getDomainSummary(query, 0);
             Date min = (Date) summary.getMin();
             Date max = (Date) summary.getMax();
             // empty domain case?
@@ -303,17 +326,36 @@ public abstract class Dimension {
         return dimensionInfo;
     }
 
+    /** Returns a list of formatted domain values */
+    public Tuple<Integer, List<String>> getDomainValuesAsStrings(
+            Query query, int maxNumberOfValues) {
+        DomainSummary summary = getDomainSummary(query, maxNumberOfValues);
+        return Tuple.tuple(summary.getCount(), DimensionsUtils.getDomainValuesAsStrings(summary));
+    }
+
     /**
      * Returns this dimension values represented as strings taking in account this dimension
      * representation strategy. The returned values will be sorted. The provided filter will be used
      * to filter the domain values. The provided filter can be NULL.
      */
-    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter, int expandLimit) {
-        DomainSummary summary = getDomainSummary(filter, expandLimit);
+    public Tuple<Integer, List<String>> getPagedDomainValuesAsStrings(
+            Query query, int maxValues, SortOrder sortOrder) {
+        DomainSummary summary = getPagedDomainValues(query, maxValues, sortOrder);
         return Tuple.tuple(summary.getCount(), DimensionsUtils.getDomainValuesAsStrings(summary));
     }
 
-    protected abstract DomainSummary getDomainSummary(Filter filter, int expandLimit);
+    protected abstract DomainSummary getDomainSummary(Query query, int expandLimit);
+
+    /**
+     * Returns a page of domain values
+     *
+     * @param expandLimit
+     * @param query
+     * @param sortOrder
+     * @return
+     */
+    protected abstract DomainSummary getPagedDomainValues(
+            Query query, int maxNumberOfValues, SortOrder sortOrder);
 
     /**
      * Return this dimension default value as a string taking in account this dimension default

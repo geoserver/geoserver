@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.catalog.testreader.CustomFormat.CUSTOM_DIMENSION_NAME;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -31,7 +33,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.junit.Test;
@@ -99,7 +100,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         CoverageInfo rasterCustom = getCatalog().getCoverageByName(RASTER_CUSTOM.getLocalPart());
         registerLayerDimension(
                 rasterCustom,
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
+                ResourceInfo.CUSTOM_DIMENSION_PREFIX + CUSTOM_DIMENSION_NAME,
                 null,
                 DimensionPresentation.LIST,
                 null);
@@ -167,11 +168,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart());
+                        getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // both domains contain two elements
@@ -211,10 +211,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&domains=elevation,time");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=elevation,time");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -240,10 +237,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&domains=bbox");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=bbox");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -274,10 +268,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&domains=abcd");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=abcd");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result =
                 getResultAsDocument(
@@ -296,11 +287,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        VECTOR_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart());
+                        getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
 
@@ -334,12 +324,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&elevation=100");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&elevation=100");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the elevation domain
@@ -380,12 +368,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        VECTOR_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart()
-                                + "&time=1980-10-31T00:00:00.000Z");
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&time=1980-10-31T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
+        print(result);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // the domain should not contain any values
@@ -401,10 +387,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&bbox=5,5,6,6");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -423,10 +406,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&bbox=5,5,6,6");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         // this request should fail because of the invalid tile matrix set
         assertThat(response.getContentAsString(), containsString("Unknown grid set"));
@@ -439,10 +419,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        VECTOR_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart()
-                                + "&bbox=-180,-90,180,90");
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -487,10 +464,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        VECTOR_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart()
-                                + "&bbox=-180,-90,180,90&expandLimit=0");
+                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90&expandLimit=0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -529,9 +503,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart());
+                        getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -578,13 +550,11 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 String.format(
                         "request=GetHistogram&Version=1.0.0&Layer=%s"
                                 + "&TileMatrixSet=EPSG:4326&histogram=%s&%s=FOOBAR",
-                        getLayerId(RASTER_CUSTOM),
-                        CustomFormat.CUSTOM_DIMENSION_NAME,
-                        CustomFormat.CUSTOM_DIMENSION_NAME);
+                        getLayerId(RASTER_CUSTOM), CUSTOM_DIMENSION_NAME, CUSTOM_DIMENSION_NAME);
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
-        assertEmptyHistogram(result, CustomFormat.CUSTOM_DIMENSION_NAME);
+        assertEmptyHistogram(result, CUSTOM_DIMENSION_NAME);
     }
 
     @Test
@@ -693,9 +663,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                        VECTOR_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart());
+                        getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -751,9 +719,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart());
+                        getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -771,10 +737,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + RASTER_ELEVATION_TIME.getLocalPart()
-                                + "&bbox=-1,-1,0,0");
+                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=-1,-1,0,0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the no features were returned
@@ -787,9 +750,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart());
+                        getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -809,9 +770,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest =
                 String.format(
                         "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        RASTER_ELEVATION_TIME.getPrefix()
-                                + ":"
-                                + VECTOR_ELEVATION_TIME.getLocalPart()
+                        getLayerId(VECTOR_ELEVATION_TIME)
                                 + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
@@ -891,5 +850,250 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Override
     protected Dimension buildDimension(DimensionInfo dimensionInfo) {
         return null;
+    }
+
+    @Test
+    public void testVectorGetDomainValuesOnTime() throws Exception {
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(VECTOR_ELEVATION_TIME)
+                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        Document dom = getAsDOM(baseRequest);
+        print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo(
+                "2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z",
+                "/md:DomainValues/md:Domain",
+                dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("2012-02-11T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending
+        dom = getAsDOM(baseRequest + "&fromValue=2012-02-11T00:00:00.000Z&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2012-02-12T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // first page descending
+        dom = getAsDOM(baseRequest + "&limit=1&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2012-02-12T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // second page descending
+        dom = getAsDOM(baseRequest + "&fromValue=2012-02-12T00:00:00.000Z&limit=1&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2012-02-11T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testRasterGetDomainValuesOnTime() throws Exception {
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(RASTER_ELEVATION_TIME)
+                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        Document dom = getAsDOM(baseRequest);
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z",
+                "/md:DomainValues/md:Domain",
+                dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending
+        dom = getAsDOM(baseRequest + "&fromValue=2008-10-31T00:00:00.000ZZ&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // first page descending
+        dom = getAsDOM(baseRequest + "&limit=1&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+
+        // second page descending
+        dom = getAsDOM(baseRequest + "&fromValue=2008-11-01T00:00:00.000Z&limit=1&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testVectorGetDomainValuesOnElevations() throws Exception {
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(VECTOR_ELEVATION_TIME)
+                        + "&TileMatrixSet=EPSG:4326&domain=elevation";
+        Document dom = getAsDOM(baseRequest);
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("4", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("1.0,2.0,3.0,5.0", "/md:DomainValues/md:Domain", dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=3");
+        print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("1.0,2.0,3.0", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending (partial)
+        dom = getAsDOM(baseRequest + "&fromValue=3.0&limit=3");
+        print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("5.0", "/md:DomainValues/md:Domain", dom);
+
+        // trying a page outside of the domain
+        dom = getAsDOM(baseRequest + "&fromValue=5.0&limit=3");
+        print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("0", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("", "/md:DomainValues/md:Domain", dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=3&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("desc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("5.0,3.0,2.0", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending
+        dom = getAsDOM(baseRequest + "&fromValue=2&limit=3&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("desc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("1.0", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testRasterGetDomainValuesOnElevation() throws Exception {
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(RASTER_ELEVATION_TIME)
+                        + "&TileMatrixSet=EPSG:4326&domain=elevation";
+        Document dom = getAsDOM(baseRequest);
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("0,100", "/md:DomainValues/md:Domain", dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("1", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo("0", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending
+        dom = getAsDOM(baseRequest + "&fromValue=1&limit=1");
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("100", "/md:DomainValues/md:Domain", dom);
+
+        // first page descending
+        dom = getAsDOM(baseRequest + "&limit=1&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("100", "/md:DomainValues/md:Domain", dom);
+
+        // second page descending
+        dom = getAsDOM(baseRequest + "&fromValue=100&limit=1&sort=desc");
+        print(dom);
+        assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("0", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testRasterCustomGetDomainValues() throws Exception {
+        // full domain (only 2 entries)
+        String baseRequest =
+                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                        + getLayerId(RASTER_CUSTOM)
+                        + "&TileMatrixSet=EPSG:4326&domain="
+                        + CUSTOM_DIMENSION_NAME;
+        Document dom = getAsDOM(baseRequest);
+        // print(dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("3", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo(
+                "CustomDimValueA,CustomDimValueB,CustomDimValueC",
+                "/md:DomainValues/md:Domain",
+                dom);
+
+        // first page ascending
+        dom = getAsDOM(baseRequest + "&limit=2");
+        // print(dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Limit", dom);
+        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
+        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
+        assertXpathEvaluatesTo(
+                "CustomDimValueA,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
+
+        // second page ascending
+        dom = getAsDOM(baseRequest + "&fromValue=CustomDimValueB&limit=2");
+        // print(dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("CustomDimValueC", "/md:DomainValues/md:Domain", dom);
+
+        // first page descending
+        dom = getAsDOM(baseRequest + "&limit=2&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo(
+                "CustomDimValueC,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
+
+        // second page descending
+        dom = getAsDOM(baseRequest + "&fromValue=CustomDimValueB&limit=2&sort=desc");
+        // print(dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
+        assertXpathEvaluatesTo("CustomDimValueA", "/md:DomainValues/md:Domain", dom);
     }
 }

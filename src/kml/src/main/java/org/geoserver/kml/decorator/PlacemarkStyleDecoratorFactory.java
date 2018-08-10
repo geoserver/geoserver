@@ -292,7 +292,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Font font = symbolizer.getFont();
             if (font != null && font.getSize() != null) {
                 // we make the scale proportional to the normal font size
-                double size = evaluate( font.getSize(), feature, Font.DEFAULT_FONTSIZE);
+                double size = evaluate(font.getSize(), feature, Font.DEFAULT_FONTSIZE);
                 scale = Math.round(size / Font.DEFAULT_FONTSIZE * 100) / 100.0;
             }
             ls.setScale(scale);
@@ -336,10 +336,10 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 ps.setOutline(true);
             }
         }
-        
+
         /**
          * Safe expression execution with default fallback.
-         * 
+         *
          * @param expression
          * @param feature
          * @param defaultValue
@@ -357,7 +357,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         }
         /**
          * Safe expression execution with default fallback.
-         * 
+         *
          * @param expression
          * @param feature
          * @param defaultColor
@@ -380,8 +380,8 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
             if (stroke != null) {
                 // opacity
-                Double opacity = evaluate( stroke.getOpacity(),  feature,  1.0);
-                
+                Double opacity = evaluate(stroke.getOpacity(), feature, 1.0);
+
                 Color color = null;
                 Expression sc = stroke.getColor();
                 if (sc != null) {
@@ -394,7 +394,8 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 ls.setColor(colorToHex(color, opacity));
 
                 // width
-                Double width = evaluate( stroke.getWidth(), feature, 1d ); // from Stroke.DEFAULT.getWidth()
+                Double width =
+                        evaluate(stroke.getWidth(), feature, 1d); // from Stroke.DEFAULT.getWidth()
                 ls.setWidth(width);
             } else {
                 // default

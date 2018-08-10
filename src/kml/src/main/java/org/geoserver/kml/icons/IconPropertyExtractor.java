@@ -64,6 +64,24 @@ public final class IconPropertyExtractor {
         public FeatureProperties(SimpleFeature feature) {
             this.feature = feature;
         }
+        /**
+         * Safe expression execution with default fallback.
+         *
+         * @param expression
+         * @param feature
+         * @param defaultValue
+         * @return evaluated value or defaultValue if unavailable
+         */
+        private Double evaluate(Expression expression, SimpleFeature feature, double defaultValue) {
+            if (expression == null) {
+                return defaultValue;
+            }
+            Double value = expression.evaluate(feature, Double.class);
+            if (value == null || Double.isNaN(value)) {
+                return defaultValue;
+            }
+            return value;
+        }
 
         public IconProperties properties() {
             IconProperties singleExternalGraphic = trySingleExternalGraphic();
@@ -116,10 +134,10 @@ public final class IconPropertyExtractor {
             }
             ExternalGraphic exGraphic = (ExternalGraphic) gSym;
             try {
-                Double opacity = g.getOpacity().evaluate(feature, Double.class);
+                Double opacity = evaluate(g.getOpacity(), feature, 1.0);
                 Double size = 1d * Icons.getExternalSize(exGraphic, feature);
                 if (size != null) size = size / Icons.DEFAULT_SYMBOL_SIZE;
-                Double rotation = g.getRotation().evaluate(feature, Double.class);
+                Double rotation = evaluate(g.getRotation(), feature, 0.0);
                 Expression urlExpression =
                         ExpressionExtractor.extractCqlExpressions(
                                 exGraphic.getLocation().toExternalForm());

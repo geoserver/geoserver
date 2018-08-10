@@ -129,6 +129,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         // StringWriter sw = new StringWriter();
         // json.write(sw);
         // System.out.println(sw.toString());
+        LOGGER.info("JSON model: " + json.toString(2));
 
         // make assertions
         assertTrue(json != null);

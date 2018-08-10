@@ -479,6 +479,7 @@ public class StoredQueryTest extends WFS20TestSupport {
 
         // create
         Document dom = postAsDOM("wfs", xml);
+        // print(dom);
         assertEquals("wfs:CreateStoredQueryResponse", dom.getDocumentElement().getNodeName());
         assertEquals("OK", dom.getDocumentElement().getAttribute("status"));
 

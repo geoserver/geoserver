@@ -24,6 +24,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.datum.PixelInCell;
@@ -110,7 +111,8 @@ public class GetCoverageTest extends WCSTestSupport {
                         return mt;
                     }
                 };
-        getCoverage.run(getCoverageRequest);
+        GridCoverage result = getCoverage.run(getCoverageRequest);
+        scheduleForCleaning(result);
     }
 
     private Map<String, String> setupGetCoverageRain() {

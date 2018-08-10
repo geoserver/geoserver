@@ -30,12 +30,13 @@ public class FileSystemResourceStore implements ResourceStore {
 
     static final Logger LOGGER = Logging.getLogger(FileSystemResource.class);
 
+    public static final String GS_LOCK_TRACE = "gs.lock.trace";
     /**
      * When true, the stack trace that got an input stream that wasn't closed is recorded and then
      * printed out when warning the user about this.
      */
     protected static final Boolean TRACE_ENABLED =
-            "true".equalsIgnoreCase(System.getProperty("gs.lock.trace"));
+            "true".equalsIgnoreCase(System.getProperty(GS_LOCK_TRACE));
 
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
@@ -221,7 +222,7 @@ public class FileSystemResourceStore implements ResourceStore {
                             if (!TRACE_ENABLED) {
                                 warn +=
                                         "Add -D"
-                                                + TRACE_ENABLED
+                                                + GS_LOCK_TRACE
                                                 + "=true to your JVM options to get a full stack trace of the code that acquired the input stream";
                             }
                             LOGGER.warning(warn);

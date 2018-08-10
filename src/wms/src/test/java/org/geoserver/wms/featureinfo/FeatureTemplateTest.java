@@ -9,6 +9,9 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.dummy.Dummy;
@@ -109,12 +112,16 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         FeatureTemplate template = new FeatureTemplate();
+        String defaultHeightTemplate;
+        try (InputStream is = FeatureTemplate.class.getResourceAsStream("height.ftl")) {
+            defaultHeightTemplate = IOUtils.toString(is, Charset.forName("UTF8"));
+        }
         assertTrue(
                 template.isTemplateEmpty(
                         source.getSchema(),
                         "height.ftl",
                         FeatureTemplate.class,
-                        "0" + System.getProperty("line.separator")));
+                        defaultHeightTemplate));
         assertTrue(
                 template.isTemplateEmpty(
                         source.getSchema(), "time.ftl", FeatureTemplate.class, null));

@@ -33,10 +33,7 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -197,13 +194,14 @@ public class KMLTest extends WMSTestSupport {
         String expectedDescription =
                 String.format(
                         "<h4>RoadSegments</h4>%n"
-                                + "%n"
-                                + "<ul class=\"textattributes\">%n"
-                                + "  %n"
-                                + "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>%n"
-                                + "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>%n"
-                                + "</ul>%n");
-        assertXpathEvaluatesTo(expectedDescription, "//kml:Placemark/kml:description", doc);
+                                + "\n"
+                                + "<ul class=\"textattributes\">\n"
+                                + "  \n"
+                                + "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n"
+                                + "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n"
+                                + "</ul>\n");
+        String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
+        assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);
         // check look-at
         assertXpathEvaluatesTo(
                 "-0.0020000000000095497", "//kml:Placemark/kml:LookAt/kml:longitude", doc);

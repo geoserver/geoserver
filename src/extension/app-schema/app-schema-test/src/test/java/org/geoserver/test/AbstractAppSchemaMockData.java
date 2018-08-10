@@ -258,16 +258,25 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param fileName short name of the file in test-data to copy
      * @param data mock data root directory
      */
-    private void copyFileToFeatureTypeDir(
-            String namespacePrefix, String typeName, String fileName) {
-        InputStream input = openResource(fileName);
-        copy(
-                input,
-                "featureTypes"
-                        + "/"
-                        + getDataStoreName(namespacePrefix, typeName)
-                        + "/"
-                        + fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length()));
+    private void copyFileToFeatureTypeDir(String namespacePrefix, String typeName, String fileName)
+            throws IOException {
+        try (InputStream input = openResource(fileName)) {
+            copy(
+                    input,
+                    "featureTypes"
+                            + "/"
+                            + getDataStoreName(namespacePrefix, typeName)
+                            + "/"
+                            + getFileNamePart(fileName));
+        }
+    }
+
+    private String getFileNamePart(String fileName) {
+        if (fileName.indexOf(File.separator) > 0) {
+            return fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length());
+        } else {
+            return fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length());
+        }
     }
 
     /**
@@ -508,8 +517,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     buildAppSchemaDatastoreParams(
                             namespacePrefix,
                             typeName,
-                            mappingFileName.substring(
-                                    mappingFileName.lastIndexOf("/") + 1, mappingFileName.length()),
+                            getFileNamePart(mappingFileName),
                             featureTypesBaseDir,
                             dataStoreName));
         } catch (Exception e) {
@@ -662,7 +670,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             String namespacePrefix,
             String typeName,
             String mappingFileName,
-            String... supportFileNames) {
+            String... supportFileNames)
+            throws IOException {
         onlineTestId = System.getProperty("testDatabase");
         if (onlineTestId != null) {
             onlineTestId = onlineTestId.toLowerCase().trim();
@@ -675,9 +684,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                         "featureTypes/"
                                 + getDataStoreName(namespacePrefix, typeName)
                                 + "/"
-                                + mappingFileName.substring(
-                                        mappingFileName.lastIndexOf("/") + 1,
-                                        mappingFileName.length()));
+                                + getFileNamePart(mappingFileName));
 
                 for (String propertyFileName : supportFileNames) {
                     if (propertyFileName.endsWith(".xml")) {
@@ -688,9 +695,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                                 "featureTypes/"
                                         + getDataStoreName(namespacePrefix, typeName)
                                         + "/"
-                                        + propertyFileName.substring(
-                                                propertyFileName.lastIndexOf("/") + 1,
-                                                propertyFileName.length()));
+                                        + getFileNamePart(propertyFileName));
                     } else {
                         copyFileToFeatureTypeDir(namespacePrefix, typeName, propertyFileName);
                         if (propertyFileName.endsWith(".properties")) {

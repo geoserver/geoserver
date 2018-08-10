@@ -298,7 +298,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                                 .getFeatureSource(null, null);
         Envelope env = fs.getBounds();
         SimpleFeatureCollection features = fs.getFeatures();
-        SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 10);
+        SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 50);
         map.addLayer(new FeatureLayer(delayedCollection, basicStyle));
 
         LOGGER.info(

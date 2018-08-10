@@ -99,7 +99,7 @@ public class FeatureEncoder {
         }
     }
 
-    public static Field field(PropertyDescriptor field) {
+    public static Field field(PropertyDescriptor field, Boolean featureIsEditable) {
         // Similar to LayerListResource encodeSchemaProperties
         // Similar to FeatureEncoder descriptorToJson.
 
@@ -115,7 +115,11 @@ public class FeatureEncoder {
         case GLOBAL_ID:
         case XML:
             fieldLength = fieldLength == -1 ? 4000 : fieldLength;
-            editable = false;
+            editable = featureIsEditable;
+            break;
+        case GEOMETRY:
+            fieldLength = null;
+            editable = featureIsEditable;
             break;
         default:
             // length and editable are optional

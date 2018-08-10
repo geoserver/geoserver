@@ -16,6 +16,7 @@ import com.boundlessgeo.gsr.translate.renderer.StyleEncoder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Geometry;
 import org.geoserver.catalog.*;
+import org.geotools.data.FeatureStore;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -118,13 +119,14 @@ public abstract class AbstractLayerOrTable  implements GSRModel {
             try {
                 // generated field
                 FeatureType schema = featureTypeInfo.getFeatureType();
+                boolean editable = featureTypeInfo.getFeatureSource(null, null) instanceof FeatureStore;
                 fields.add(new Field(FeatureEncoder.OBJECTID_FIELD_NAME, FieldTypeEnum.OID, "Feature Id", 4000, false, false));
 
 
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
                     try {
                         if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
-                            fields.add(FeatureEncoder.field(desc));
+                            fields.add(FeatureEncoder.field(desc, editable));
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Omitting fields for PropertyDescriptor: " + desc, e);

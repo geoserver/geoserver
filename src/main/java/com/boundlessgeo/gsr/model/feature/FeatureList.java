@@ -152,7 +152,7 @@ public class FeatureList implements GSRModel {
 
         for (PropertyDescriptor desc : schema.getDescriptors()) {
             if (schema.getGeometryDescriptor() != null && !desc.getName().equals(schema.getGeometryDescriptor().getName())) {
-                fields.add(FeatureEncoder.field(desc));
+                fields.add(FeatureEncoder.field(desc, null));
             }
         }
 

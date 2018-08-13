@@ -7,8 +7,10 @@ package org.geoserver.wms;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.lang.SystemUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -27,6 +29,10 @@ public class WMSLifecycleHandlerTest extends WMSTestSupport {
 
     @Test
     public void testOTFFontRegistration() throws IOException {
+        // loading fonts causes Java to open a Channel on the file, but there is no way to
+        // release it from client code, thus the test will fail to delete filse on Windows
+        Assume.assumeFalse(SystemUtils.IS_OS_WINDOWS);
+
         // in case this font is already on the machine we cannot run a meaningful test
         FontCache fontCache = FontCache.getDefaultInstance();
         String fontName = "League Mono Regular";
@@ -44,9 +50,7 @@ public class WMSLifecycleHandlerTest extends WMSTestSupport {
         getGeoServer().reset();
 
         // now the font should be in font cache
-        assertThat(
-                fontCache.getAvailableFonts().toString(),
-                fontCache.getFont(fontName),
-                CoreMatchers.notNullValue());
+        Font theFont = fontCache.getFont(fontName);
+        assertThat(fontCache.getAvailableFonts().toString(), theFont, CoreMatchers.notNullValue());
     }
 }

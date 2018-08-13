@@ -42,7 +42,6 @@
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
-          <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-colormap.xml</descriptor>
           <descriptor>release/ext-mbtiles.xml</descriptor>
@@ -209,7 +208,6 @@
         <module>dds</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
-        <module>feature-aggregate</module>
         <!--module>script</module-->
         <module>wms-eo</module>
         <module>colormap</module>
@@ -275,12 +273,6 @@
       <id>sextante</id>
       <modules>
         <module>wps-sextante</module>
-      </modules>
-    </profile>
-    <profile>      
-      <id>feature-aggregate</id>
-      <modules>
-        <module>feature-aggregate</module>
       </modules>
     </profile>
     <profile>      

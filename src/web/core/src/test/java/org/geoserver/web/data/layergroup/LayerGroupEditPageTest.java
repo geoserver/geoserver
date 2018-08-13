@@ -8,6 +8,7 @@ package org.geoserver.web.data.layergroup;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -20,7 +21,12 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.wicket.DecimalTextField;
@@ -410,5 +416,35 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
             }
         }
         assertThat(found, is(true));
+    }
+
+    @Test
+    public void testGroupManyLayers() throws Exception {
+        String groupName = "many-lakes";
+        buildManyLakes(groupName);
+
+        LayerGroupEditPage page =
+                new LayerGroupEditPage(new PageParameters().add("group", groupName));
+        tester.startPage(page);
+        // print(tester.getLastRenderedPage(), true, true, true);
+
+        // check we have all the expected components showing up
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:layers:layers:listContainer:items:50");
+        assertNotNull(component);
+    }
+
+    private void buildManyLakes(String groupName) throws Exception {
+        Catalog catalog = getCatalog();
+        String lakes = MockData.LAKES.getLocalPart();
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName(groupName);
+        for (int i = 0; i < 50; i++) {
+            lg.getLayers().add(catalog.getLayerByName(lakes));
+        }
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.calculateLayerGroupBounds(lg);
+        catalog.add(lg);
     }
 }

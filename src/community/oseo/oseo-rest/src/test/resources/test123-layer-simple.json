@@ -2,5 +2,5 @@
 	"workspace": "gs",
 	"layer": "test123",
 	"separateBands": false,
-	"heterogeneousCRS": false
+	"heterogeneousCRS": true
 }

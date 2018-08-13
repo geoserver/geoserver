@@ -3,5 +3,5 @@
 	"layer": "test123",
 	"separateBands": false,
 	"browseBands": ["RED_BAND"],
-	"heterogeneousCRS": false
+	"heterogeneousCRS": true
 }

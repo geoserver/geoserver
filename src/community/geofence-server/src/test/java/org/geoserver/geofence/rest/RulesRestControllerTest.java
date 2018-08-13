@@ -7,7 +7,11 @@ package org.geoserver.geofence.rest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import org.geoserver.geofence.GeofenceBaseTest;
@@ -21,7 +25,10 @@ import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geotools.gml3.bindings.GML3MockData;
+import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -31,10 +38,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     protected RuleAdminService adminService;
 
-    @Override
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
+    @Before
+    public void initGeoFenceControllers() {
         controller = (RulesRestController) applicationContext.getBean("rulesRestController");
         adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
     }
@@ -43,7 +48,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testInsertUpdateDelete() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
@@ -51,6 +56,49 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setWorkspace("workspace");
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
+
+        JaxbRuleList rules =
+                controller.count(
+                        "pippo",
+                        false,
+                        "clown",
+                        false,
+                        null,
+                        null,
+                        false,
+                        "wfs",
+                        false,
+                        "getFeature",
+                        false,
+                        "workspace",
+                        false,
+                        "layer",
+                        false);
+        if (rules.getCount() > 0) {
+            rules =
+                    controller.get(
+                            0,
+                            (int) rules.getCount(),
+                            true,
+                            "pippo",
+                            false,
+                            "clown",
+                            false,
+                            null,
+                            null,
+                            false,
+                            "wfs",
+                            false,
+                            "getFeature",
+                            false,
+                            "workspace",
+                            false,
+                            "layer",
+                            false);
+            for (JaxbRule r : rules.getRules()) {
+                controller.delete(r.getId());
+            }
+        }
 
         long id = controller.insert(rule).getBody();
 
@@ -128,7 +176,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testLimits() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
@@ -140,6 +188,49 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
         rule.getLimits().setCatalogMode("MIXED");
 
+        JaxbRuleList rules =
+                controller.count(
+                        "pippo",
+                        false,
+                        "clown",
+                        false,
+                        null,
+                        null,
+                        false,
+                        "wfs",
+                        false,
+                        "getFeature",
+                        false,
+                        "workspace",
+                        false,
+                        "layer",
+                        false);
+        if (rules.getCount() > 0) {
+            rules =
+                    controller.get(
+                            0,
+                            (int) rules.getCount(),
+                            true,
+                            "pippo",
+                            false,
+                            "clown",
+                            false,
+                            null,
+                            null,
+                            false,
+                            "wfs",
+                            false,
+                            "getFeature",
+                            false,
+                            "workspace",
+                            false,
+                            "layer",
+                            false);
+            for (JaxbRule r : rules.getRules()) {
+                controller.delete(r.getId());
+            }
+        }
+
         Long id = controller.insert(rule).getBody();
 
         Rule realRule = adminService.get(id);
@@ -147,7 +238,13 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals(
                 rule.getLimits().getCatalogMode(),
                 realRule.getRuleLimits().getCatalogMode().toString());
-        assertEquals(rule.getLimits().getAllowedArea(), realRule.getRuleLimits().getAllowedArea());
+        try {
+            assertEquals(
+                    new WKTReader().read(rule.getLimits().getAllowedArea()),
+                    realRule.getRuleLimits().getAllowedArea());
+        } catch (ParseException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
 
         rule.getLimits().setCatalogMode("HIDE");
 
@@ -200,11 +297,59 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
         rule.getLayerDetails().setLayerType("VECTOR");
 
+        JaxbRuleList rules =
+                controller.count(
+                        "pippo",
+                        false,
+                        "clown",
+                        false,
+                        null,
+                        null,
+                        false,
+                        "wfs",
+                        false,
+                        "getFeature",
+                        false,
+                        "workspace",
+                        false,
+                        "layer",
+                        false);
+        if (rules.getCount() > 0) {
+            rules =
+                    controller.get(
+                            0,
+                            (int) rules.getCount(),
+                            true,
+                            "pippo",
+                            false,
+                            "clown",
+                            false,
+                            null,
+                            null,
+                            false,
+                            "wfs",
+                            false,
+                            "getFeature",
+                            false,
+                            "workspace",
+                            false,
+                            "layer",
+                            false);
+            for (JaxbRule r : rules.getRules()) {
+                controller.delete(r.getId());
+            }
+        }
+
         Long id = controller.insert(rule).getBody();
 
         Rule realRule = adminService.get(id);
-
-        assertEquals(rule.getLayerDetails().getAllowedArea(), realRule.getLayerDetails().getArea());
+        try {
+            assertEquals(
+                    new WKTReader().read(rule.getLayerDetails().getAllowedArea()),
+                    realRule.getLayerDetails().getArea());
+        } catch (ParseException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
         assertEquals(
                 rule.getLayerDetails().getCatalogMode(),
                 realRule.getLayerDetails().getCatalogMode().toString());
@@ -255,8 +400,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLayerDetails().getDefaultStyle(),
                 realRule.getLayerDetails().getDefaultStyle());
 
-        assertEquals(3, realRule.getLayerDetails().getAllowedStyles().size());
-        assertEquals(3, realRule.getLayerDetails().getAttributes().size());
+        assertEquals(1, realRule.getLayerDetails().getAllowedStyles().size());
+        assertEquals(2, realRule.getLayerDetails().getAttributes().size());
 
         for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
             if (la.getName().equals("layerAttribute2")) {

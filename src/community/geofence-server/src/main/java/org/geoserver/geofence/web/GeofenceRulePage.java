@@ -594,10 +594,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
                             ruleFormModel.getObject().layerDetailsCheck =
                                     ruleFormModel.getObject().layerDetailsCheck
-                                            && grantTypeChoice
-                                                    .getConvertedInput()
-                                                    .equals(GrantType.ALLOW)
-                                            && !layerChoice.getConvertedInput().isEmpty();
+                                            && (grantTypeChoice.getConvertedInput() != null
+                                                    && grantTypeChoice
+                                                            .getConvertedInput()
+                                                            .equals(GrantType.ALLOW))
+                                            && (layerChoice.getConvertedInput() != null
+                                                    && !layerChoice.getConvertedInput().isEmpty());
                         }
                     });
 

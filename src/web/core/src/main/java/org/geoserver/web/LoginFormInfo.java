@@ -15,6 +15,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
+    private String filterClass;
     private String include;
     private String loginPath;
 
@@ -45,6 +46,24 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
      */
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    /**
+     * Returns the GeoServerSecurityFilter class requiring the Login Button
+     *
+     * @return the filterClass
+     */
+    public String getFilterClass() {
+        return filterClass;
+    }
+
+    /**
+     * Sets the GeoServerSecurityFilter class requiring the Login Button
+     *
+     * @param filterClass the filterClass to set
+     */
+    public void setFilterClass(String filterClass) {
+        this.filterClass = filterClass;
     }
 
     /**

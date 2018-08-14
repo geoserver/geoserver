@@ -50,6 +50,7 @@
  		<property name="componentClass" value="org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanel" />
  		<property name="name" value="github" />
  		<property name="icon" value="github.png" />
+ 		<property name="filterClass" value="org.geoserver.security.oauth2.GitHubOAuthAuthenticationFilter" />
  		<property name="loginPath" value="web/j_spring_oauth2_github_login" />
  	</bean>
 

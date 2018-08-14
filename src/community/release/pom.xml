@@ -230,11 +230,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-sec-oauth2-openid-connect</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-onelogin</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -309,7 +304,7 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
     <version>${project.version}</version>
    </dependency>
@@ -321,8 +316,18 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-taskmanager-s3</artifactId>
+    <version>${project.version}</version>
+   </dependency>
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-s3-geotiff</artifactId>
      <version>${project.version}</version>
-   </dependency>   
+   </dependency>
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-resource</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

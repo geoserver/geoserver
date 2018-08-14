@@ -5,8 +5,7 @@
  */
 package org.geoserver.wcs2_0;
 
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -871,6 +870,10 @@ public class GetCoverage {
 
         List<GridCoverage2D> readCoverages = new ArrayList<>();
         for (GeneralEnvelope readEnvelope : readEnvelopes) {
+            // according to spec we need to return pixel in the intersection between
+            // the requested area and the declared bounds, readers might return less
+            GeneralEnvelope padEnvelope = computePadEnvelope(readEnvelope, reader);
+
             // check if a previous read already covered this envelope, readers
             // can return more than we asked
             GridCoverage2D cov = null;
@@ -901,18 +904,51 @@ public class GetCoverage {
                 }
                 readCoverages.add(cov);
             }
+            // do we have more than requested?
             Envelope2D covEnvelope = cov.getEnvelope2D();
+            GridCoverage2D cropped = cov;
             if (covEnvelope.contains(readBoundingBox)
                     && (covEnvelope.getWidth() > readBoundingBox.getWidth()
                             || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
-                GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
-                result.add(cropped);
-            } else {
-                result.add(cov);
+                cropped = cropOnEnvelope(cov, readEnvelope);
             }
+
+            // do we have less than expected?
+            GridCoverage2D padded = cropped;
+            Envelope croppedEnvelope = cropped.getEnvelope();
+            if (!new GeneralEnvelope(croppedEnvelope).contains(padEnvelope, true)) {
+                padded = padOnEnvelope(cropped, padEnvelope);
+            }
+
+            result.add(padded);
         }
 
         return result;
+    }
+
+    /**
+     * Computes the envelope that GetCoveage should be returning given a reading envelope and the
+     * reader own native envelope (which is also the envelope we are declaring in output)
+     */
+    private GeneralEnvelope computePadEnvelope(
+            GeneralEnvelope readEnvelope, GridCoverage2DReader reader) {
+        CoordinateReferenceSystem sourceCRS = reader.getCoordinateReferenceSystem();
+        CoordinateReferenceSystem subsettingCRS = readEnvelope.getCoordinateReferenceSystem();
+        try {
+            if (!CRS.equalsIgnoreMetadata(subsettingCRS, sourceCRS)) {
+                readEnvelope = CRS.transform(readEnvelope, sourceCRS);
+            }
+        } catch (TransformException e) {
+            throw new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT(),
+                    e);
+        }
+        GeneralEnvelope padEnvelope = new GeneralEnvelope(readEnvelope);
+        padEnvelope.intersect(reader.getOriginalEnvelope());
+
+        return padEnvelope;
     }
 
     private void addEnvelopes(
@@ -1691,6 +1727,17 @@ public class GetCoverage {
         GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
         cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
         return cropped;
+    }
+
+    private GridCoverage2D padOnEnvelope(GridCoverage2D coverage, GeneralEnvelope padEnvelope)
+            throws TransformException {
+        GridCoverage2D padded = WCSUtils.padToEnvelope(coverage, padEnvelope);
+        // in case of no padding just return the original coverage without wrapping
+        if (padded == coverage) {
+            return coverage;
+        }
+        padded = GridCoverageWrapper.wrapCoverage(padded, coverage, null, null, false);
+        return padded;
     }
 
     /**

@@ -211,7 +211,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                             if (securityProvider.getFilterClass() != null
                                     && securityProvider
                                             .getFilterClass()
-                                            .getName()
                                             .equals(info.getFilterClass())) {
                                 filterInChain = true;
                                 break;

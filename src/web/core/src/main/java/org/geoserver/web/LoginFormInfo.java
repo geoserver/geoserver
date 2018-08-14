@@ -4,6 +4,8 @@
  */
 package org.geoserver.web;
 
+import org.geoserver.security.GeoServerSecurityProvider;
+
 /**
  * Information about a login form that should be shown from the main page in the GeoServer UI. The
  * "order" field is based on the "name".
@@ -15,7 +17,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
-    private String filterClass;
+    private Class<GeoServerSecurityProvider> filterClass;
     private String include;
     private String loginPath;
 
@@ -53,7 +55,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
      *
      * @return the filterClass
      */
-    public String getFilterClass() {
+    public Class<GeoServerSecurityProvider> getFilterClass() {
         return filterClass;
     }
 
@@ -62,7 +64,7 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
      *
      * @param filterClass the filterClass to set
      */
-    public void setFilterClass(String filterClass) {
+    public void setFilterClass(Class<GeoServerSecurityProvider> filterClass) {
         this.filterClass = filterClass;
     }
 

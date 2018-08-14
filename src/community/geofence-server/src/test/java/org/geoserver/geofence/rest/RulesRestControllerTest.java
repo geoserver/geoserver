@@ -15,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.geofence.GeofenceBaseTest;
@@ -27,6 +26,7 @@ import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
+import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
@@ -452,12 +452,6 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     @Test
     public void testRestControllerPaths() throws Exception {
-        JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
-        // print(json);
-        
-        assertEquals(json.getInt("count"), 0);
-        
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
         rule.setUserName("pippo");
@@ -468,171 +462,162 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setWorkspace("workspace");
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
-        
+
         long id = prepareGeoFenceTestRules(rule);
-        
+
+        JSONObject json =
+                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
+        // print(json);
+
         assertNotNull(id);
-        
+        assertEquals(1, json.getInt("count"));
+
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertEquals(json.getInt("count"), 1);
+        assertEquals(1, json.getInt("count"));
 
         JSONArray jsonRules = json.getJSONArray("rules");
         // print(jsonRules);
-        
+
         assertNotNull(jsonRules);
-        assertEquals(jsonRules.size(), 1);
-        
-        final String jsonRuleBody = "{\n" + 
-                "  'Rule': {\n" + 
-                "    'priority': 0,\n" + 
-                "    'userName': null,\n" + 
-                "    'roleName': null,\n" + 
-                "    'addressRange': null,\n" + 
-                "    'workspace': 'geonode',\n" + 
-                "    'layer': 'DE_USNG_UTM18',\n" + 
-                "    'service': null,\n" + 
-                "    'request': null,\n" + 
-                "    'access': 'ALLOW',\n" + 
-                "    'limits': null,\n" + 
-                "    'layerDetails': {\n" + 
-                "      'layerType': 'VECTOR',\n" + 
-                "      'defaultStyle': 'DE_USNG_UTM18',\n" + 
-                "      'cqlFilterRead': 'Northings >= 100',\n" + 
-                "      'cqlFilterWrite': null,\n" + 
-                "      'allowedArea': 'MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n" + 
-                "      'catalogMode': null,\n" + 
-                "      'allowedStyles': [],\n" + 
-                "      'attributes': [\n" + 
-                "        {\n" + 
-                "          'name': 'Eastings',\n" + 
-                "          'dataType': 'java.lang.String',\n" + 
-                "          'accessType': 'READWRITE'\n" + 
-                "        },\n" + 
-                "        {\n" + 
-                "          'name': 'the_geom',\n" + 
-                "          'dataType': 'org.locationtech.jts.geom.MultiPolygon',\n" + 
-                "          'accessType': 'READONLY'\n" + 
-                "        },\n" + 
-                "        {\n" + 
-                "          'name': 'GRID1MIL',\n" + 
-                "          'dataType': 'java.lang.String',\n" + 
-                "          'accessType': 'NONE'\n" + 
-                "        },\n" + 
-                "        {\n" + 
-                "          'name': 'GRID100K',\n" + 
-                "          'dataType': 'java.lang.String',\n" + 
-                "          'accessType': 'READONLY'\n" + 
-                "        },\n" + 
-                "        {\n" + 
-                "          'name': 'Northings',\n" + 
-                "          'dataType': 'java.lang.String',\n" + 
-                "          'accessType': 'NONE'\n" + 
-                "        },\n" + 
-                "        {\n" + 
-                "          'name': 'USNG',\n" + 
-                "          'dataType': 'java.lang.String',\n" + 
-                "          'accessType': 'NONE'\n" + 
-                "        }\n" + 
-                "      ]\n" + 
-                "    }\n" + 
-                "  }\n" + 
-                "}";
-        
-        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/rules", jsonRuleBody, "text/json");
+        assertEquals(1, jsonRules.size());
+
+        final String jsonRuleBody =
+                "{\n"
+                        + "  'Rule': {\n"
+                        + "    'priority': 0,\n"
+                        + "    'userName': null,\n"
+                        + "    'roleName': null,\n"
+                        + "    'addressRange': null,\n"
+                        + "    'workspace': 'geonode',\n"
+                        + "    'layer': 'DE_USNG_UTM18',\n"
+                        + "    'service': null,\n"
+                        + "    'request': null,\n"
+                        + "    'access': 'ALLOW',\n"
+                        + "    'limits': null,\n"
+                        + "    'layerDetails': {\n"
+                        + "      'layerType': 'VECTOR',\n"
+                        + "      'defaultStyle': 'DE_USNG_UTM18',\n"
+                        + "      'cqlFilterRead': 'Northings >= 100',\n"
+                        + "      'cqlFilterWrite': null,\n"
+                        + "      'allowedArea': 'MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
+                        + "      'catalogMode': null,\n"
+                        + "      'allowedStyles': [],\n"
+                        + "      'attributes': [\n"
+                        + "        {\n"
+                        + "          'name': 'Eastings',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'READWRITE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'the_geom',\n"
+                        + "          'dataType': 'org.locationtech.jts.geom.MultiPolygon',\n"
+                        + "          'accessType': 'READONLY'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'GRID1MIL',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'GRID100K',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'READONLY'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'Northings',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'USNG',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        }\n"
+                        + "      ]\n"
+                        + "    }\n"
+                        + "  }\n"
+                        + "}";
+
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/geofence/rules",
+                        jsonRuleBody,
+                        "text/json");
         assertEquals(201, response.getStatus());
-        
+
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertEquals(json.getInt("count"), 2);
-        
+        assertEquals(2, json.getInt("count"));
+
         jsonRules = json.getJSONArray("rules");
         // print(jsonRules);
-        
+
         assertNotNull(jsonRules);
-        assertEquals(jsonRules.size(), 2);
-        
+        assertEquals(2, jsonRules.size());
+
         JSONObject jsonRule = null;
-        for(Object jsonObj : jsonRules) {
+        for (Object jsonObj : jsonRules) {
             assertNotNull(jsonObj);
             assertTrue(jsonObj instanceof JSONObject);
             jsonRule = (JSONObject) jsonObj;
-            // print(jsonRule);
-            
-            if (jsonRule.getInt("id") == 2) {
-                assertEquals(jsonRule.getString("workspace"), "geonode");
-                assertEquals(jsonRule.getString("layer"), "DE_USNG_UTM18");
-                assertEquals(jsonRule.getString("access"), "ALLOW");
-                
+            print(jsonRule);
+
+            if (jsonRule.getString("layer").equals("DE_USNG_UTM18")) {
+                assertEquals("geonode", jsonRule.getString("workspace"));
+                assertEquals("DE_USNG_UTM18", jsonRule.getString("layer"));
+                assertEquals("ALLOW", jsonRule.getString("access"));
+
                 JSONObject layerDetails = jsonRule.getJSONObject("layerDetails");
                 assertNotNull(layerDetails);
-                assertEquals(layerDetails.getString("layerType"), "VECTOR");
-                assertEquals(layerDetails.getString("defaultStyle"), "DE_USNG_UTM18");
-                assertEquals(layerDetails.getString("cqlFilterRead"), "Northings >= 100");
-                assertEquals(layerDetails.getString("allowedArea"), "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))");
+                assertEquals("VECTOR", layerDetails.getString("layerType"));
+                assertEquals("DE_USNG_UTM18", layerDetails.getString("defaultStyle"));
+                assertEquals("Northings >= 100", layerDetails.getString("cqlFilterRead"));
+                assertEquals(
+                        "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))",
+                        layerDetails.getString("allowedArea"));
                 break;
+            } else {
+                jsonRule = null;
             }
         }
-        
+
         assertNotNull(jsonRule);
-        
-        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules/id/2.json", 200);
+
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/geofence/rules/id/"
+                                        + jsonRule.getInt("id")
+                                        + ".json",
+                                200);
         // print(json);
-        
+
         assertEquals(json.toString(), jsonRule.toString());
-        
-        response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/rules/id/2");
+
+        response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/geofence/rules/id/"
+                                + jsonRule.getInt("id"));
         assertEquals(200, response.getStatus());
-        
+
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
         // print(json);
 
-        assertEquals(json.getInt("count"), 1);
+        assertEquals(1, json.getInt("count"));
     }
-    
-    /** Helper method that checks if the rule already exists and create a new one by returning its ID. */
+
+    /**
+     * Helper method that checks if the rule already exists and create a new one by returning its
+     * ID.
+     */
     protected long prepareGeoFenceTestRules(JaxbRule rule) {
-        JaxbRuleList rules =
-                controller.count(
-                        "pippo",
-                        false,
-                        "clown",
-                        false,
-                        null,
-                        null,
-                        false,
-                        "wfs",
-                        false,
-                        "getFeature",
-                        false,
-                        "workspace",
-                        false,
-                        "layer",
-                        false);
-        if (rules.getCount() > 0) {
-            rules =
-                    controller.get(
-                            0,
-                            (int) rules.getCount(),
-                            true,
-                            "pippo",
-                            false,
-                            "clown",
-                            false,
-                            null,
-                            null,
-                            false,
-                            "wfs",
-                            false,
-                            "getFeature",
-                            false,
-                            "workspace",
-                            false,
-                            "layer",
-                            false);
-            for (JaxbRule r : rules.getRules()) {
+        if (adminService.getCountAll() > 0) {
+            for (ShortRule r : adminService.getAll()) {
                 controller.delete(r.getId());
             }
         }
@@ -640,7 +625,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         long id = controller.insert(rule).getBody();
         return id;
     }
-    
+
     /** Helper method that will validate a move result. */
     private void validateResult(
             ResponseEntity<JaxbRuleList> result, HttpStatus expectedHttpStatus, int rules) {

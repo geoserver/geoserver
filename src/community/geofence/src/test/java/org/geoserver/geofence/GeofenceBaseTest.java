@@ -7,7 +7,6 @@ package org.geoserver.geofence;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;

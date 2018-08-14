@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/geofence" + RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
 public class AdminRulesRestController extends RestBaseController {
 
     private AdminRuleAdminService adminService;

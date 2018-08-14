@@ -256,7 +256,26 @@ abstract class DimensionHelper {
     private void handleElevationDimensionRaster(
             CoverageInfo cvInfo, DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions)
             throws IOException {
-        TreeSet<Object> elevations = dimensions.getElevationDomain();
+        TreeSet<Object> elevations = null;
+        try {
+            if (elevInfo.getPresentation() != DimensionPresentation.LIST) {
+                Double minValue = dimensions.getMinElevation();
+                if (minValue != null) {
+                    elevations = new TreeSet<>();
+                    elevations.add(minValue);
+                    elevations.add(dimensions.getMaxElevation());
+                }
+            }
+            if (elevations == null) {
+                throw new Exception(
+                        "The \"List\" presentation of the elevation dimension has been selected");
+            }
+        } catch (Exception ex) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
+            }
+            elevations = dimensions.getElevationDomain();
+        }
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
         String defaultValue = getDefaultValueRepresentation(cvInfo, ResourceInfo.ELEVATION, "0");
         writeElevationDimension(
@@ -283,7 +302,26 @@ abstract class DimensionHelper {
     private void handleTimeDimensionRaster(
             CoverageInfo cvInfo, DimensionInfo timeInfo, ReaderDimensionsAccessor dimension)
             throws IOException {
-        TreeSet<Object> temporalDomain = dimension.getTimeDomain();
+        TreeSet<Object> temporalDomain = null;
+        try {
+            if (timeInfo.getPresentation() != DimensionPresentation.LIST) {
+                Date minValue = dimension.getMinTime();
+                if (minValue != null) {
+                    temporalDomain = new TreeSet<>();
+                    temporalDomain.add(minValue);
+                    temporalDomain.add(dimension.getMaxTime());
+                }
+            }
+            if (temporalDomain == null) {
+                throw new Exception(
+                        "The \"List\" presentation of the temporal dimension has been selected");
+            }
+        } catch (Exception ex) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
+            }
+            temporalDomain = dimension.getTimeDomain();
+        }
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
         String defaultValue =
                 getDefaultValueRepresentation(

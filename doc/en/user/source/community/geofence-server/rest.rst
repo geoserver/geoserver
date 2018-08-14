@@ -73,7 +73,7 @@ Encoding of a rule in XML::
 
 Encoding of a rule in JSON::
 
-	{"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","access":".."}
+	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","access":".."}}
 
 In case a rule that has "any" ("*") for a particular field the field is either not included (default), left empty or specified with a single asterisk 
 (the latter two may be used for updates to distinguish from "do not change this field").
@@ -153,7 +153,7 @@ All filter parameters are optional.
 Requests
 --------
 
-``/geofence/rest/rules/``
+``/rest/geofence/rules/``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query all rules or add a new rule.
@@ -176,7 +176,7 @@ Query all rules or add a new rule.
      - 201 Inserted. Created ``ID`` header.
 
 
-``/geofence/rest/rules/count``
+``/rest/geofence/rules/count``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Counts (filtered) rules.
@@ -194,7 +194,7 @@ Counts (filtered) rules.
      - userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny
      - 200 OK. Rule list count in XML.
 
-``/geofence/rest/rules/id/<id>``
+``/rest/geofence/rules/id/<id>``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query, modify or delete a specific rule.

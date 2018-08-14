@@ -64,6 +64,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.opengeo</groupId>
+            <artifactId>geodb</artifactId>
+            <version>${opengeo-geodb.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.geoserver.extension</groupId>
             <artifactId>gs-monitor-core</artifactId>
             <version>${project.version}</version>

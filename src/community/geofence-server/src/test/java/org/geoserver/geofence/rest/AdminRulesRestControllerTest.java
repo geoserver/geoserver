@@ -7,7 +7,9 @@ package org.geoserver.geofence.rest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 import org.geoserver.geofence.GeofenceBaseTest;
@@ -19,6 +21,7 @@ import org.geoserver.geofence.rest.xml.JaxbAdminRuleList;
 import org.geoserver.geofence.server.rest.AdminRulesRestController;
 import org.geoserver.geofence.services.AdminRuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +32,8 @@ public class AdminRulesRestControllerTest extends GeofenceBaseTest {
 
     protected AdminRuleAdminService adminService;
 
-    @Override
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
+    @Before
+    public void initGeoFenceControllers() {
         controller =
                 (AdminRulesRestController) applicationContext.getBean("adminRulesRestController");
         adminService = (AdminRuleAdminService) applicationContext.getBean("adminRuleAdminService");

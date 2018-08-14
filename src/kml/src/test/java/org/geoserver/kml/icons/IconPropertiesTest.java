@@ -12,7 +12,9 @@ import static org.junit.Assert.assertNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
@@ -21,6 +23,7 @@ import org.geotools.styling.Style;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.expression.Expression;
+import org.opengis.style.Stroke;
 
 public class IconPropertiesTest extends IconTestSupport {
     @Test
@@ -82,6 +85,27 @@ public class IconPropertiesTest extends IconTestSupport {
         final Style s = styleFromRules(catchAllRule(symbolizer));
         assertEquals("0.0.0=&0.0.0.name=circle", encode(s, fieldIs1));
         assertEquals("0.0.0=&0.0.0.name=square", encode(s, fieldIs2));
+    }
+
+    @Test
+    public void testDynamicColor() throws CQLException {
+        Expression color = toExpression("if_then_else(equalTo(field, 1), '#8080C0', '#CC8030')");
+        Stroke stroke = styleFactory.stroke(color, null, null, null, null, null, null);
+        Fill fill = styleFactory.fill(null, color, null);
+        Mark mark = styleFactory.mark(toExpression("circle"), fill, stroke);
+        Graphic graphic =
+                styleFactory.graphic(Collections.singletonList(mark), null, null, null, null, null);
+        PointSymbolizer symbolizer =
+                styleFactory.pointSymbolizer(
+                        "symbolizer", toExpression("geom"), null, null, graphic);
+
+        final Style s = styleFromRules(catchAllRule(symbolizer));
+        assertEquals(
+                "0.0.0=&0.0.0.fill.color=%238080C0&0.0.0.name=&0.0.0.stroke.color=%238080C0",
+                encode(s, fieldIs1));
+        assertEquals(
+                "0.0.0=&0.0.0.fill.color=%23CC8030&0.0.0.name=&0.0.0.stroke.color=%23CC8030",
+                encode(s, fieldIs2));
     }
 
     @Test

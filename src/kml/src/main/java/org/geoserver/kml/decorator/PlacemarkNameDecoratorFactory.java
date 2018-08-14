@@ -63,10 +63,12 @@ public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
                     for (Symbolizer sym : context.getCurrentSymbolizers()) {
                         if (sym instanceof TextSymbolizer) {
                             Expression e = SLD.textLabel((TextSymbolizer) sym);
-                            String value = e.evaluate(sf, String.class);
+                            if (e != null) {
+                                String value = e.evaluate(sf, String.class);
 
-                            if ((value != null) && !"".equals(value.trim())) {
-                                label.append(value);
+                                if ((value != null) && !"".equals(value.trim())) {
+                                    label.append(value);
+                                }
                             }
                         }
                     }

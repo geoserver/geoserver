@@ -28,7 +28,6 @@ import org.geoserver.kml.icons.IconPropertyInjector;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
-import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
 import org.geotools.styling.LineSymbolizer;
@@ -45,7 +44,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
-import org.opengis.style.GraphicalSymbol;
 
 /**
  * Encodes the SLD styles into KML corresponding styles and adds them to the Placemark
@@ -290,22 +288,19 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         protected void setLabelStyle(
                 Style style, SimpleFeature feature, TextSymbolizer symbolizer) {
             LabelStyle ls = style.createAndSetLabelStyle();
-            double scale = 1;
+            double scale = 1.0;
             Font font = symbolizer.getFont();
             if (font != null && font.getSize() != null) {
                 // we make the scale proportional to the normal font size
-                double size = font.getSize().evaluate(feature, Double.class);
+                double size = evaluate(font.getSize(), feature, Font.DEFAULT_FONTSIZE);
                 scale = Math.round(size / Font.DEFAULT_FONTSIZE * 100) / 100.0;
             }
             ls.setScale(scale);
 
             Fill fill = symbolizer.getFill();
             if (fill != null) {
-                Double opacity = fill.getOpacity().evaluate(feature, Double.class);
-                if (opacity == null || Double.isNaN(opacity)) {
-                    opacity = 1.0;
-                }
-                Color color = fill.getColor().evaluate(feature, Color.class);
+                Double opacity = evaluate(fill.getOpacity(), feature, 1.0);
+                Color color = evaluate(fill.getColor(), feature, Color.WHITE);
                 ls.setColor(colorToHex(color, opacity));
             } else {
                 ls.setColor("ffffffff");
@@ -328,13 +323,8 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             PolyStyle ps = style.createAndSetPolyStyle();
             Fill fill = symbolizer.getFill();
             if (fill != null) {
-                // get opacity
-                Double opacity = fill.getOpacity().evaluate(feature, Double.class);
-                if (opacity == null || Double.isNaN(opacity)) {
-                    opacity = 1.0;
-                }
-
-                Color color = (Color) fill.getColor().evaluate(feature, Color.class);
+                Double opacity = evaluate(fill.getOpacity(), feature, 1.0);
+                Color color = evaluate(fill.getColor(), feature, new Color(0xAAAAAA));
                 ps.setColor(colorToHex(color, opacity));
             } else {
                 // make it transparent
@@ -347,16 +337,50 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             }
         }
 
+        /**
+         * Safe expression execution with default fallback.
+         *
+         * @param expression
+         * @param feature
+         * @param defaultValue
+         * @return evaluated value or defaultValue if unavailable
+         */
+        private Double evaluate(Expression expression, SimpleFeature feature, double defaultValue) {
+            if (expression == null) {
+                return defaultValue;
+            }
+            Double value = expression.evaluate(feature, Double.class);
+            if (value == null || Double.isNaN(value)) {
+                return defaultValue;
+            }
+            return value;
+        }
+        /**
+         * Safe expression execution with default fallback.
+         *
+         * @param expression
+         * @param feature
+         * @param defaultColor
+         * @return evaluated value or defaultColor if unavailable
+         */
+        private Color evaluate(Expression expression, SimpleFeature feature, Color defaultColor) {
+            if (expression == null) {
+                return defaultColor;
+            }
+            Color color = expression.evaluate(feature, Color.class);
+            if (color == null) {
+                return defaultColor;
+            }
+            return color;
+        }
+
         /** Encodes a KML IconStyle + LineStyle from a polygon style and symbolizer. */
         protected void setLineStyle(Style style, SimpleFeature feature, Stroke stroke) {
             LineStyle ls = style.createAndSetLineStyle();
 
             if (stroke != null) {
                 // opacity
-                Double opacity = stroke.getOpacity().evaluate(feature, Double.class);
-                if (opacity == null || Double.isNaN(opacity)) {
-                    opacity = 1.0;
-                }
+                Double opacity = evaluate(stroke.getOpacity(), feature, 1.0);
 
                 Color color = null;
                 Expression sc = stroke.getColor();
@@ -364,35 +388,20 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                     color = (Color) sc.evaluate(feature, Color.class);
                 }
                 if (color == null) {
+                    // Different from BLACK provided by Stroke.DEFAULT.getColor()
                     color = Color.DARK_GRAY;
                 }
                 ls.setColor(colorToHex(color, opacity));
 
                 // width
-                Double width = null;
-                Expression sw = stroke.getWidth();
-                if (sw != null) {
-                    width = sw.evaluate(feature, Double.class);
-                }
-                if (width == null) {
-                    width = 1d;
-                }
+                Double width =
+                        evaluate(stroke.getWidth(), feature, 1d); // from Stroke.DEFAULT.getWidth()
                 ls.setWidth(width);
             } else {
                 // default
                 ls.setColor("ffaaaaaa");
                 ls.setWidth(1);
             }
-        }
-
-        private ExternalGraphic getExternalGraphic(PointSymbolizer symbolizer) {
-            for (GraphicalSymbol s : symbolizer.getGraphic().graphicalSymbols()) {
-                if (s instanceof ExternalGraphic) {
-                    return (ExternalGraphic) s;
-                }
-            }
-
-            return null;
         }
 
         /**
@@ -431,7 +440,10 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
          * @param opacity Opacity / alpha, double from 0 to 1.0.
          * @return A String of the form "AABBGGRR".
          */
-        String colorToHex(Color c, double opacity) {
+        String colorToHex(Color c, Double opacity) {
+            if (opacity == null || Double.isNaN(opacity)) {
+                opacity = 1.0;
+            }
             return new StringBuffer()
                     .append(intToHex(new Float(255 * opacity).intValue()))
                     .append(intToHex(c.getBlue()))

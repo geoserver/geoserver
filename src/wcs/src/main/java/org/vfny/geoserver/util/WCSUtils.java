@@ -43,12 +43,14 @@ import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.metadata.spatial.PixelOrientation;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -121,6 +123,48 @@ public class WCSUtils {
         param.parameter("Source").setValue(coverage);
         param.parameter("Envelope").setValue(bounds);
         param.parameter("ROI").setValue(roi);
+
+        return (GridCoverage2D) PROCESSOR.doOperation(param);
+    }
+
+    /**
+     * Pads the coverage to the specified bounds
+     *
+     * @param coverage The coverage to be padded
+     * @param bounds The bounds to pad to
+     * @return The padded covearge, or the original one, if the padding would not add a single pixel
+     *     to it
+     */
+    public static GridCoverage2D padToEnvelope(final GridCoverage2D coverage, final Envelope bounds)
+            throws TransformException {
+        GridGeometry2D gg = coverage.getGridGeometry();
+        GeneralEnvelope padRange =
+                CRS.transform(gg.getCRSToGrid2D(PixelOrientation.UPPER_LEFT), bounds);
+        GridEnvelope2D targetRange =
+                new GridEnvelope2D(
+                        (int) Math.round(padRange.getMinimum(0)),
+                        (int) Math.round(padRange.getMinimum(1)),
+                        (int) Math.round(padRange.getMinimum(0) + padRange.getSpan(0)),
+                        (int) Math.round(padRange.getMinimum(1) + padRange.getSpan(1)));
+        GridEnvelope2D sourceRange = gg.getGridRange2D();
+        if (sourceRange.x == targetRange.x
+                && sourceRange.y == sourceRange.y
+                && sourceRange.width == targetRange.width
+                && sourceRange.height == targetRange.height) {
+            return coverage;
+        }
+
+        GridGeometry2D target =
+                new GridGeometry2D(
+                        targetRange, gg.getGridToCRS(), gg.getCoordinateReferenceSystem2D());
+
+        List<GridCoverage2D> sources = new ArrayList<GridCoverage2D>(2);
+        sources.add(coverage);
+
+        // perform the mosaic
+        final ParameterValueGroup param = PROCESSOR.getOperation("Mosaic").getParameters();
+        param.parameter("Sources").setValue(sources);
+        param.parameter("geometry").setValue(target);
 
         return (GridCoverage2D) PROCESSOR.doOperation(param);
     }

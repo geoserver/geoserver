@@ -502,6 +502,81 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    public void testCoverageTrimmingBordersOverlap() throws Exception {
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlap.xml");
+        testCoverageResult(
+                xml,
+                targetCoverage -> {
+                    final GeneralEnvelope expectedEnvelope =
+                            new GeneralEnvelope(new double[] {7, 40}, new double[] {11, 43});
+                    expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+                    double pixelSize = 0.057934032977228;
+                    // check the whole extent has been returned
+                    assertTrue(
+                            expectedEnvelope.equals(
+                                    targetCoverage.getEnvelope(), pixelSize, false));
+                });
+    }
+
+    @Test
+    public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapOutside.xml");
+        testCoverageResult(
+                xml,
+                targetCoverage -> {
+                    // the expected envelope is the intersection between the requested and native
+                    // one
+                    final GeneralEnvelope expectedEnvelope =
+                            new GeneralEnvelope(new double[] {6.344, 40}, new double[] {11, 46.59});
+                    expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+                    double pixelSize = 0.057934032977228;
+                    // check the whole extent has been returned
+                    assertTrue(
+                            expectedEnvelope.equals(
+                                    targetCoverage.getEnvelope(), pixelSize, false));
+                });
+    }
+
+    @FunctionalInterface
+    public interface GridTester {
+        void test(GridCoverage2D coverage) throws Exception;
+    }
+
+    void testCoverageResult(File xml, GridTester tester) throws Exception {
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file =
+                File.createTempFile("borderOverlap", "borderOverlap.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+
+            tester.test(targetCoverage);
+        } finally {
+            try {
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try {
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
+    @Test
     public void testCoverageSlicingLongitudeNativeCRSXML() throws Exception {
         final File xml =
                 new File(

@@ -23,12 +23,14 @@ public class LayerModel implements IModel<LayerInfo> {
         setObject(layerInfo);
     }
 
+    @Override
     public LayerInfo getObject() {
         if (layerInfo.getResource().getCatalog() == null)
             new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(layerInfo);
         return layerInfo;
     }
 
+    @Override
     public void setObject(LayerInfo object) {
         // workaround for dbconfig, by "dettaching" we force hibernate to reload the object
         // fully initialized with no lazy lists or proxies

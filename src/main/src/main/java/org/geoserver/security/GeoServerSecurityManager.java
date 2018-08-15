@@ -2019,7 +2019,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * @throws IOException
      */
     public boolean dumpMasterPassword(Resource file) throws IOException {
-
+        if (file.getType() != Resource.Type.UNDEFINED) {
+            LOGGER.warning("Master password dump attempted to overwrite existing resource");
+            return false;
+        }
         if (checkAuthenticationForAdminRole() == false) {
             LOGGER.warning("Unautorized user tries to dump master password");
             return false;

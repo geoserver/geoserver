@@ -127,6 +127,33 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     @Test
+    public void testEnabled() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setEnabled(false);
+        catalog.add(ft1);
+        StyleInfo s1;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        LayerInfo l1 = newLayer(ft1, s1);
+        catalog.add(l1);
+        CloseableIterator<LayerInfo> it =
+                catalog.list(LayerInfo.class, ff.equals(ff.property("enabled"), ff.literal(true)));
+        assertFalse(it.hasNext());
+
+        ft1 = catalog.getFeatureTypeByName("ft1");
+        ft1.setEnabled(true);
+        catalog.save(ft1);
+
+        it = catalog.list(LayerInfo.class, ff.equals(ff.property("enabled"), ff.literal(true)));
+        assertTrue(it.hasNext());
+        assertEquals(l1.getName(), it.next().getName());
+    }
+
+    @Test
     public void testOrderByMultiple() {
         addDataStore();
         addNamespace();

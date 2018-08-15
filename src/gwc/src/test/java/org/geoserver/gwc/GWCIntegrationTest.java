@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -443,7 +443,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         String lastModifiedHeader = response.getHeader("Last-Modified");
         assertNotNull(lastModifiedHeader);
-        Date lastModified = DateUtil.parseDate(lastModifiedHeader);
+        Date lastModified = DateUtils.parseDate(lastModifiedHeader);
 
         MockHttpServletRequest httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", lastModifiedHeader);
@@ -454,7 +454,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // set the If-Modified-Since header to some point in the past of the last modified value
         Date past = new Date(lastModified.getTime() - 5000);
-        String ifModifiedSince = DateUtil.formatDate(past);
+        String ifModifiedSince = DateUtils.formatDate(past);
 
         httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
@@ -462,7 +462,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Date future = new Date(lastModified.getTime() + 5000);
-        ifModifiedSince = DateUtil.formatDate(future);
+        ifModifiedSince = DateUtils.formatDate(future);
 
         httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);

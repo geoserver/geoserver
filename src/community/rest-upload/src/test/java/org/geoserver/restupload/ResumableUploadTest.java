@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Random;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;

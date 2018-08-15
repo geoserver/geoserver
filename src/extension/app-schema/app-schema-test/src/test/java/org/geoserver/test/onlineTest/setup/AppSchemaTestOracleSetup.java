@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.resources.Classes;

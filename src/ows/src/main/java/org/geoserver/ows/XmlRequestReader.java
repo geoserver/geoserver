@@ -8,8 +8,8 @@ package org.geoserver.ows;
 import java.io.Reader;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.geotools.util.Version;
 
 /**
@@ -74,7 +74,7 @@ public abstract class XmlRequestReader {
         return element;
     }
 
-    /** @return The version of hte element that this reader reads. */
+    /** @return The version of the element that this reader reads. */
     public Version getVersion() {
         return version;
     }

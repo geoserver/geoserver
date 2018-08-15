@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
@@ -125,7 +125,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
                 return new String[][] {{HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate"}};
             } else {
                 // will add only if not already there
-                Map<String, String> map = ArrayUtils.toMap(headers);
+                Map<String, String> map = (Map) ArrayUtils.toMap(headers);
                 map.putIfAbsent(HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate");
                 headers = new String[map.size()][2];
                 int i = 0;

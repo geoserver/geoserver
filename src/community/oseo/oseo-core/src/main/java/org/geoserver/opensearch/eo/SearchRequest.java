@@ -5,8 +5,8 @@
 package org.geoserver.opensearch.eo;
 
 import java.util.Map;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 

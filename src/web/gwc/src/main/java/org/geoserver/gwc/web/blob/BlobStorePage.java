@@ -4,10 +4,9 @@
  */
 package org.geoserver.gwc.web.blob;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -217,7 +216,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                                                             .getString());
                                             for (String layer : assignedLayers) {
                                                 sb.append("\n&nbsp;&nbsp;");
-                                                sb.append(escapeHtml(layer));
+                                                sb.append(StringEscapeUtils.escapeHtml4(layer));
                                             }
                                             return new MultiLineLabel("userPanel", sb.toString())
                                                     .setEscapeModelStrings(false);

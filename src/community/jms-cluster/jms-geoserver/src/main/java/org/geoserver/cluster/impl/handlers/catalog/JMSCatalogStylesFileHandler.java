@@ -6,7 +6,6 @@
 package org.geoserver.cluster.impl.handlers.catalog;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.ReadOnlyConfiguration;
@@ -37,7 +36,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
     @Override
     public boolean synchronize(DocumentFile event) throws Exception {
         if (event == null) {
-            throw new NullArgumentException("Incoming object is null");
+            throw new NullPointerException("Incoming object is null");
         }
         if (config == null) {
             throw new IllegalStateException("Unable to load configuration");

@@ -4,12 +4,11 @@
  */
 package org.geoserver.taskmanager.web;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -220,7 +219,9 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                                                     for (Configuration config :
                                                             configurationsPanel.getSelection()) {
                                                         sb.append("\n&nbsp;&nbsp;");
-                                                        sb.append(escapeHtml(config.getName()));
+                                                        sb.append(
+                                                                StringEscapeUtils.escapeHtml4(
+                                                                        config.getName()));
                                                     }
                                                     return new MultiLabelCheckBoxPanel(
                                                             id,

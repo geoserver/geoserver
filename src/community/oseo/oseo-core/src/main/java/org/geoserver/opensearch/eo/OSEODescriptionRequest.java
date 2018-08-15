@@ -4,8 +4,8 @@
  */
 package org.geoserver.opensearch.eo;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Description request for a 2 step search OpenSearch for EO. May have no parameters for collection

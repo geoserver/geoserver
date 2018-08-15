@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.util.logging.Logging;
 

@@ -4,8 +4,6 @@
  */
 package org.geoserver.taskmanager.web;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +12,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
@@ -374,7 +373,9 @@ public class BatchPage extends GeoServerSecuredPage {
                                                 .getString());
                                 for (BatchElement be : elementsPanel.getSelection()) {
                                     sb.append("\n&nbsp;&nbsp;");
-                                    sb.append(escapeHtml(be.getTask().getFullName()));
+                                    sb.append(
+                                            StringEscapeUtils.escapeHtml4(
+                                                    be.getTask().getFullName()));
                                 }
                                 return new MultiLineLabel(id, sb.toString())
                                         .setEscapeModelStrings(false);

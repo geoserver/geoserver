@@ -9,6 +9,8 @@ package org.geoserver.security.oauth2.services;
 import java.util.Map;
 import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
+import org.geoserver.security.oauth2.GeoServerUserAuthenticationConverter;
+import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -65,5 +67,11 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         transformNonStandardValuesToStandardValues(checkTokenResponse);
 
         return tokenConverter.extractAuthentication(checkTokenResponse);
+    }
+
+    public void setConfiguration(OpenIdConnectFilterConfig config) {
+        setAccessTokenConverter(
+                new GeoServerAccessTokenConverter(
+                        new GeoServerUserAuthenticationConverter(config.getPrincipalKey())));
     }
 }

@@ -12,6 +12,8 @@ package org.geoserver.security.oauth2;
  */
 public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
+    String principalKey = "email";
+
     public OpenIdConnectFilterConfig() {
         this.redirectUri = "http://localhost:8080/geoserver";
         this.scopes = "user";
@@ -21,4 +23,12 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.loginEndpoint = "/j_spring_oauth2_openid_connect_login";
         this.logoutEndpoint = "/j_spring_oauth2_openid_connect_logout";
     };
+
+    public String getPrincipalKey() {
+        return principalKey == null ? "email" : principalKey;
+    }
+
+    public void setPrincipalKey(String principalKey) {
+        this.principalKey = principalKey;
+    }
 }

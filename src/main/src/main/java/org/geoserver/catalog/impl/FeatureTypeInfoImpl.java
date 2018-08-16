@@ -42,6 +42,9 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     boolean skipNumberMatched = false;
     boolean circularArcPresent;
 
+    // we don't use the primitive because we need to detect the situation where no value was set
+    Boolean encodeMeasures;
+
     public boolean isCircularArcPresent() {
         return circularArcPresent;
     }
@@ -238,5 +241,16 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     public void setCqlFilter(String cqlFilter) {
         this.cqlFilter = cqlFilter;
         this.filter = null;
+    }
+
+    @Override
+    public boolean getEncodeMeasures() {
+        // by default encoding of coordinates measures is not activated
+        return encodeMeasures == null ? false : encodeMeasures;
+    }
+
+    @Override
+    public void setEncodeMeasures(boolean encodeMeasures) {
+        this.encodeMeasures = encodeMeasures;
     }
 }

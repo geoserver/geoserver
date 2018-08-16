@@ -55,6 +55,12 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new PropertyModel<Boolean>(model, "resource.skipNumberMatched"));
         add(skipNumberMatched);
 
+        // coordinates measures encoding
+        CheckBox encodeMeasures =
+                new CheckBox(
+                        "encodeMeasures", new PropertyModel<>(model, "resource.encodeMeasures"));
+        add(encodeMeasures);
+
         // other srs list
         dialog = new GeoServerDialog("wfsDialog");
         add(dialog);
@@ -110,6 +116,22 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                                 new StringResourceModel("otherSRS", WFSLayerConfig.this, null),
                                 new StringResourceModel(
                                         "otherSRS.message", WFSLayerConfig.this, null));
+                    }
+                });
+        add(
+                new AjaxLink<String>("coordinatesEncodingHelp") {
+                    private static final long serialVersionUID = 926171216768726057L;
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        dialog.showInfo(
+                                target,
+                                new StringResourceModel(
+                                        "coordinatesEncodingTitle", WFSLayerConfig.this, null),
+                                new StringResourceModel(
+                                        "coordinatesEncodingHelp.message",
+                                        WFSLayerConfig.this,
+                                        null));
                     }
                 });
     }

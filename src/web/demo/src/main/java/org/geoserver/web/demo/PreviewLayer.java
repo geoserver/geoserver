@@ -9,6 +9,7 @@ import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -184,13 +185,12 @@ public class PreviewLayer {
         return layers;
     }
 
-    String getBaseUrl(String service) {
-        return getBaseUrl(service, false);
+    String getBaseURL(String service) {
+        return getBaseURL(service, false);
     }
 
-    String getBaseUrl(String service, boolean useGlobalRef) {
-        HttpServletRequest req = GeoServerApplication.get().servletRequest();
-        String base = ResponseUtils.baseURL(req);
+    String getBaseURL(String service, boolean useGlobalRef) {
+        String base = getBaseURL();
 
         String ws = getWorkspace();
         if (ws == null || useGlobalRef) {
@@ -198,6 +198,21 @@ public class PreviewLayer {
             return ResponseUtils.buildURL(base, service, null, URLType.SERVICE);
         } else {
             return ResponseUtils.buildURL(base, ws + "/" + service, null, URLType.SERVICE);
+        }
+    }
+
+    private String getBaseURL() {
+        HttpServletRequest req = GeoServerApplication.get().servletRequest();
+        return ResponseUtils.baseURL(req);
+    }
+
+    String getPath(String service, boolean useGlobalRef) {
+        String ws = getWorkspace();
+        if (ws == null || useGlobalRef) {
+            // global reference
+            return service;
+        } else {
+            return ws + "/" + service;
         }
     }
 
@@ -212,25 +227,19 @@ public class PreviewLayer {
         final Envelope bbox = request.getBbox();
         if (bbox == null) return null;
 
-        return getBaseUrl("wms")
-                + "?service=WMS&version=1.1.0&request=GetMap" //
-                + "&layers="
-                + getName() //
-                + "&styles=" //
-                + "&bbox="
-                + bbox.getMinX()
-                + ","
-                + bbox.getMinY() //
-                + ","
-                + bbox.getMaxX()
-                + ","
-                + bbox.getMaxY() //
-                + "&width="
-                + request.getWidth() //
-                + "&height="
-                + request.getHeight()
-                + "&srs="
-                + request.getSRS();
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("service", "WMS");
+        params.put("version", "1.1.0");
+        params.put("request", "GetMap");
+        params.put("layers", getName());
+        String bboxValue =
+                bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
+        params.put("bbox", bboxValue);
+        params.put("width", String.valueOf(request.getWidth()));
+        params.put("height", String.valueOf(request.getHeight()));
+        params.put("srs", String.valueOf(request.getSRS()));
+
+        return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
     }
 
     /**
@@ -258,7 +267,7 @@ public class PreviewLayer {
                             } else {
                                 // use global OWS service to make sure all secondary namespaces
                                 // are accessible
-                                gmlParams.baseUrl = getBaseUrl("ows", false);
+                                gmlParams.baseUrl = getBaseURL();
                                 // always use WFS 1.1.0 for app-schema layers
                                 gmlParams.wfsVersion =
                                         org.geotools.wfs.v1_1.WFS.getInstance().getVersion();
@@ -287,7 +296,7 @@ public class PreviewLayer {
             }
         }
 
-        return buildGmlLink(gmlParams);
+        return buildWfsLink(gmlParams);
     }
 
     /**
@@ -354,19 +363,22 @@ public class PreviewLayer {
         }
     }
 
-    String buildGmlLink(GMLOutputParams gmlParams) {
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(gmlParams.baseUrl).append("?");
-        urlBuilder.append("service=WFS").append("&");
-        urlBuilder.append("version=").append(gmlParams.wfsVersion).append("&");
-        urlBuilder.append("request=GetFeature").append("&");
-        urlBuilder.append("typeName=").append(getName());
+    String buildWfsLink() {
+        return this.buildWfsLink(new GMLOutputParams());
+    }
+
+    String buildWfsLink(GMLOutputParams gmlParams) {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("service", "WFS");
+        params.put("version", gmlParams.wfsVersion);
+        params.put("request", "GetFeature");
+        params.put("typeName", getName());
         if (gmlParams.gmlVersion != null) {
-            urlBuilder.append("&");
-            urlBuilder.append("outputFormat=").append(gmlParams.gmlVersion);
+            params.put("outputFormat", gmlParams.gmlVersion);
         }
 
-        return urlBuilder.toString();
+        return ResponseUtils.buildURL(
+                gmlParams.baseUrl, getPath("ows", false), params, URLType.SERVICE);
     }
 
     class GMLOutputParams {
@@ -374,13 +386,13 @@ public class PreviewLayer {
         String gmlVersion;
         String baseUrl;
 
-        private GMLOutputParams() {
+        public GMLOutputParams() {
             // by default, use WFS 1.0.0
             wfsVersion = org.geotools.wfs.v1_0.WFS.getInstance().getVersion();
             // by default, infer GML version from WFS version
             gmlVersion = null;
             // by default, use virtual ows services
-            baseUrl = getBaseUrl("ows");
+            baseUrl = getBaseURL();
         }
     }
 }

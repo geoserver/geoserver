@@ -37,7 +37,6 @@ public class MultiPolygonAdapterTest {
     public void testUnmarshal() throws Exception {
         GML3MockData.setGML(GML.getInstance());
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        ;
         Element allowedArea =
                 GML3MockData.element(new QName(null, "allowedArea"), document, document);
         Element multiGeometry =

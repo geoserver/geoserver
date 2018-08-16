@@ -9,7 +9,7 @@ Requests
 --------
 
 ``/geofence/ruleCache/info``
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Retrieve information about the geofence cache status.
 
@@ -28,7 +28,7 @@ Retrieve information about the geofence cache status.
 
 
 ``/geofence/ruleCache/invalidate``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Invalidate the geofence cache.
 

@@ -78,7 +78,6 @@
 
     <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
 	<constructor-arg ref="geofenceConfigurationManager" />
-
         <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
     </bean>
 

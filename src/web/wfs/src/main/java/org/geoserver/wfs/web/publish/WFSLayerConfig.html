@@ -55,6 +55,20 @@
         </ul>
       </fieldset>
     </li>
+      <li>
+          <fieldset>
+              <legend>
+                  <span><wicket:message key="coordinatesEncodingTitle">Coordinates Encoding</wicket:message></span>
+                  <a href="#" wicket:id="coordinatesEncodingHelp" class="help-link"></a>
+              </legend>
+              <ul class="choiceList">
+                  <li>
+                      <input id="encodeMeasures" wicket:id="encodeMeasures" type="checkbox"/>
+                      <label for="encodeMeasures"><wicket:message key="encodeMeasures">Encode coordinates measures</wicket:message></label>
+                  </li>
+              </ul>
+          </fieldset>
+      </li>
     </ul>
     <div wicket:id="wfsDialog"></div>
   </wicket:panel>

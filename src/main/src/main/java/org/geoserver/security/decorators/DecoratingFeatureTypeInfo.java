@@ -324,4 +324,14 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setCqlFilter(String cqlFilter) {
         delegate.setCqlFilter(cqlFilter);
     }
+
+    @Override
+    public boolean getEncodeMeasures() {
+        return delegate.getEncodeMeasures();
+    }
+
+    @Override
+    public void setEncodeMeasures(boolean encodeMeasures) {
+        delegate.setEncodeMeasures(encodeMeasures);
+    }
 }

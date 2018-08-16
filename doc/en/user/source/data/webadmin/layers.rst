@@ -262,6 +262,8 @@ WFS Settings
 
      The list will be used only for the capabilities document generation, but will not be used to limit the actual target SRS usage in GetFeature requests.
 
+* **Encode coordinates measures**-Checking this setting will cause coordinate measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.  
+
 WCS Settings
 ^^^^^^^^^^^^
 

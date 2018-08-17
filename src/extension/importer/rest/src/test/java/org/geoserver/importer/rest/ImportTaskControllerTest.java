@@ -160,6 +160,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertTrue(task.getData() instanceof SpatialFile);
         SpatialFile data = ((SpatialFile) task.getData());
         assertFalse(new File(data.getFile().getParentFile(), ".locking").exists());
+        assertTrue(new File(data.getFile().getParentFile(), ".clean-me").exists());
         return id;
     }
 

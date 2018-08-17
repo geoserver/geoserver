@@ -1007,6 +1007,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
 
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".clean-me").exists());
     }
 
     @Test

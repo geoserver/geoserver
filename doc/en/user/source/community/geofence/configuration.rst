@@ -66,7 +66,7 @@ Basic GeoServer configuration
 
 - Testing connection to GeoFence.
 
-   We altready performed a connection test from GeoFence to GeoServer. Using the button **Test connection** we can also test that GeoServer can communicate to GeoFence. If everything is ok, you'll get this message:
+   We already performed a connection test from GeoFence to GeoServer. Using the button **Test connection** we can also test that GeoServer can communicate to GeoFence. If everything is ok, you'll get this message:
    
    .. figure:: images/basic_003.png
       :align: center

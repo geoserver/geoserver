@@ -19,6 +19,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
@@ -26,7 +27,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
-import org.geoserver.wfs3.GetFeatureType;
+import org.geotools.util.Converters;
 
 public abstract class AbstractHTMLResponse extends Response {
 
@@ -119,13 +120,11 @@ public abstract class AbstractHTMLResponse extends Response {
 
     static String getBaseURL(Operation operation) {
         Object firstParam = operation.getParameters()[0];
-        if (firstParam instanceof BaseRequest) {
-            BaseRequest request = (BaseRequest) firstParam;
-            return request.getBaseUrl();
-        } else if (firstParam instanceof GetFeatureType) {
-            return ((GetFeatureType) firstParam).getBaseUrl();
+        String baseURL = Converters.convert(OwsUtils.get(firstParam, "baseUrl"), String.class);
+        if (baseURL == null) {
+            throw new IllegalArgumentException("Cannot extract base URL from " + firstParam);
         }
-        throw new IllegalArgumentException("Cannot extract base URL from " + firstParam);
+        return baseURL;
     }
 
     /**

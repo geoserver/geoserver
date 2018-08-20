@@ -5,6 +5,8 @@
 package org.geoserver.wfs3;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -110,6 +112,9 @@ public class WFS3Filter implements GeoServerFilter {
                             if (matches) {
                                 request = "getFeature";
                                 String layerName = matcher.group(1);
+                                if (layerName != null) {
+                                    layerName = urlDecode(layerName);
+                                }
                                 setLayerName(layerName);
                                 this.featureId = matcher.group(2);
                             }
@@ -123,6 +128,9 @@ public class WFS3Filter implements GeoServerFilter {
                             if (matches) {
                                 request = "getFeature";
                                 String layerName = matcher.group(1);
+                                if (layerName != null) {
+                                    layerName = urlDecode(layerName);
+                                }
                                 setLayerName(layerName);
                             }
                             return matches;
@@ -135,6 +143,9 @@ public class WFS3Filter implements GeoServerFilter {
                             if (matches) {
                                 request = "collection";
                                 String layerName = matcher.group(1);
+                                if (layerName != null) {
+                                    layerName = urlDecode(layerName);
+                                }
                                 setLayerName(layerName);
                             }
                             return matches;
@@ -212,7 +223,7 @@ public class WFS3Filter implements GeoServerFilter {
                 typeName = layers.get(0).prefixedName();
             } else {
                 throw new HttpErrorCodeException(
-                        HttpStatus.NOT_FOUND.value(), "Could not find layer " + layerName);
+                        HttpStatus.NOT_FOUND.value(), "Could not find feature type " + layerName);
             }
         }
 
@@ -280,5 +291,20 @@ public class WFS3Filter implements GeoServerFilter {
                 return values[0];
             }
         }
+    }
+
+    /**
+     * URL decodes the given string
+     *
+     * @param name
+     * @return
+     */
+    private String urlDecode(String name) {
+        try {
+            name = URLDecoder.decode(name, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return name;
     }
 }

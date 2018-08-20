@@ -153,4 +153,23 @@ public interface FeatureTypeInfo extends ResourceInfo {
     boolean isCircularArcPresent();
 
     void setCircularArcPresent(boolean arcsPresent);
+
+    /**
+     * Controls if coordinates measures should be included in WFS outputs.
+     *
+     * @return TRUE if measures should be encoded, otherwise FALSE
+     */
+    default boolean getEncodeMeasures() {
+        // by default coordinates measures are not encoded
+        return false;
+    }
+
+    /**
+     * Sets if coordinates measures should be included in WFS outputs.
+     *
+     * @param encodeMeasures TRUE if measures should be encoded, otherwise FALSE
+     */
+    default void setEncodeMeasures(boolean encodeMeasures) {
+        // nothing to do
+    }
 }

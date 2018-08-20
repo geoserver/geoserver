@@ -16,20 +16,22 @@ import org.geoserver.web.GeoServerApplication;
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
-public class LayerModel implements IModel {
+public class LayerModel implements IModel<LayerInfo> {
     LayerInfo layerInfo;
 
     public LayerModel(LayerInfo layerInfo) {
         setObject(layerInfo);
     }
 
-    public Object getObject() {
+    @Override
+    public LayerInfo getObject() {
         if (layerInfo.getResource().getCatalog() == null)
             new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(layerInfo);
         return layerInfo;
     }
 
-    public void setObject(Object object) {
+    @Override
+    public void setObject(LayerInfo object) {
         // workaround for dbconfig, by "dettaching" we force hibernate to reload the object
         // fully initialized with no lazy lists or proxies
         this.layerInfo = GeoServerApplication.get().getCatalog().detach((LayerInfo) object);

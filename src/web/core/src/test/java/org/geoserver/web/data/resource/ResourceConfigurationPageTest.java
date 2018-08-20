@@ -8,9 +8,14 @@ package org.geoserver.web.data.resource;
 import static org.geotools.coverage.grid.io.AbstractGridFormat.*;
 import static org.geotools.gce.imagemosaic.ImageMosaicFormat.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.xml.namespace.QName;
 import org.apache.wicket.Component;
@@ -19,6 +24,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -93,6 +99,41 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // verify contents were updated
         tester.assertContains("the_geom");
+    }
+
+    @Test
+    public void testSerializedModel() throws Exception {
+        CatalogFactory fac = getGeoServerApplication().getCatalog().getFactory();
+        FeatureTypeInfo fti = fac.createFeatureType();
+        fti.setName("mylayer");
+        fti.setStore(
+                getGeoServerApplication()
+                        .getCatalog()
+                        .getDataStoreByName(MockData.POLYGONS.getPrefix()));
+        LayerInfo layer = fac.createLayer();
+        layer.setResource(fti);
+
+        login();
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, true);
+
+        byte[] serialized;
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
+                oos.writeObject(page);
+            }
+            serialized = os.toByteArray();
+        }
+        ResourceConfigurationPage page2;
+        try (ByteArrayInputStream is = new ByteArrayInputStream(serialized)) {
+            try (ObjectInputStream ois = new ObjectInputStream(is)) {
+                page2 = (ResourceConfigurationPage) ois.readObject();
+            }
+        }
+
+        assertTrue(page2.getPublishedInfo() instanceof LayerInfo);
+        assertEquals(layer.prefixedName(), page2.getPublishedInfo().prefixedName());
+        // the crucial test: the layer is attached to the catalog
+        assertNotNull(((LayerInfo) page2.getPublishedInfo()).getResource().getCatalog());
     }
 
     @Test

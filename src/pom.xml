@@ -1304,6 +1304,17 @@
      </exclusion>
     </exclusions>
    </dependency>
+   <dependency>
+     <groupId>org.locationtech.jts</groupId>
+     <artifactId>jts-core</artifactId>
+     <version>${jts.version}</version>
+     <exclusions>
+     <exclusion>
+       <groupId>xerces</groupId>
+       <artifactId>xercesImpl</artifactId>
+       </exclusion>
+     </exclusions>
+   </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1886,6 +1897,7 @@
   <gs.version>2.14-SNAPSHOT</gs.version>
   <gt.version>20-SNAPSHOT</gt.version>
   <gwc.version>1.14-SNAPSHOT</gwc.version>
+  <jts.version>1.16.0-RC1</jts.version>
   <spring.version>4.3.18.RELEASE</spring.version>
   <spring.security.version>4.2.7.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>

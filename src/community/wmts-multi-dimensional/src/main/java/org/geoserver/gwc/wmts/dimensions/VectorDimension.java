@@ -16,6 +16,8 @@ import org.geotools.data.Query;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 /** Base class for vector based dimension */
 public abstract class VectorDimension extends Dimension {
@@ -71,10 +73,21 @@ public abstract class VectorDimension extends Dimension {
     }
 
     @Override
-    protected DomainSummary getDomainSummary(Filter filter, int expandLimit) {
-        FeatureCollection features = getDomain(new Query(null, filter));
+    protected DomainSummary getDomainSummary(Query query, int expandLimit) {
+        FeatureCollection features = getDomain(query);
         String attribute = dimensionInfo.getAttribute();
 
         return getDomainSummary(features, attribute, expandLimit);
+    }
+
+    @Override
+    protected DomainSummary getPagedDomainValues(
+            Query query, int maxNumberOfValues, SortOrder sortOrder) {
+        String attribute = dimensionInfo.getAttribute();
+        Query sortedQuery = new Query(query);
+        sortedQuery.setSortBy(new SortBy[] {FILTER_FACTORY.sort(attribute, sortOrder)});
+        FeatureCollection features = getDomain(sortedQuery);
+
+        return getPagedDomainValues(features, attribute, maxNumberOfValues);
     }
 }

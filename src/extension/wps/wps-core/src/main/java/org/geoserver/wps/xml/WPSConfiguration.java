@@ -8,7 +8,7 @@ package org.geoserver.wps.xml;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.CatalogNamespaceSupport;

@@ -7,7 +7,7 @@ package org.geoserver.web.data.layer;
 
 import static org.geoserver.web.data.layer.LayerProvider.*;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;

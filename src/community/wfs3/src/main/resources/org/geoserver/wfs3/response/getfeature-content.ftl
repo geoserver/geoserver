@@ -4,7 +4,7 @@
     -->
     <#if collection??>
       <#-- Expended only in WFS3 -->
-      <h2><a href="${baseURL}wfs3/collections/${collection}">${collection}</a></h2>
+      <h2><a href="${serviceLink("wfs3/collections/${collection}")}"></a></h2>
     <#else>
       <h2>${data.type.name}</h2>
     </#if>

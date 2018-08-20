@@ -50,6 +50,7 @@
  		<property name="componentClass" value="org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanel" />
  		<property name="name" value="google" />
  		<property name="icon" value="google.png" />
+ 		<property name="filterClass" value="org.geoserver.security.oauth2.GoogleOAuthAuthenticationFilter" />
  		<property name="loginPath" value="web/j_spring_oauth2_google_login" />
  	</bean>
 

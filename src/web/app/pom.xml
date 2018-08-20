@@ -817,26 +817,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>imagecollection</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-imagecollection</artifactId>
-          <version>${gt.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>feature-aggregate</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-feature-aggregate</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>authkey</id>
       <dependencies>
         <dependency>
@@ -1431,7 +1411,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1446,7 +1426,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1461,7 +1441,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -1476,7 +1456,7 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2</artifactId>
+          <artifactId>gs-sec-oauth2-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

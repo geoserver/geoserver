@@ -19,7 +19,10 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.renderer.style.*;
+import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
+import org.geotools.renderer.style.ExternalGraphicFactory;
+import org.geotools.renderer.style.FontCache;
+import org.geotools.renderer.style.GraphicCache;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -113,7 +116,8 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     List<Font> loadFontsFromDataDirectory() {
         List<Font> result = new ArrayList<Font>();
         for (Resource file :
-                Resources.list(data.getStyles(), new Resources.ExtensionFilter("TTF"), true)) {
+                Resources.list(
+                        data.getStyles(), new Resources.ExtensionFilter("TTF", "OTF"), true)) {
             try {
                 final Font font = Font.createFont(Font.TRUETYPE_FONT, file.file());
                 result.add(font);

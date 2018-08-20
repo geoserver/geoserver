@@ -84,6 +84,11 @@
       <artifactId>log4j</artifactId> </exclusion> </exclusions> </dependency -->
 
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
       <version>${amq.version}</version>

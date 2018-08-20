@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc;
 
+import static java.lang.String.format;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.Matchers.equalTo;
@@ -30,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,14 +41,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -432,7 +443,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         String lastModifiedHeader = response.getHeader("Last-Modified");
         assertNotNull(lastModifiedHeader);
-        Date lastModified = DateUtil.parseDate(lastModifiedHeader);
+        Date lastModified = DateUtils.parseDate(lastModifiedHeader);
 
         MockHttpServletRequest httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", lastModifiedHeader);
@@ -443,7 +454,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // set the If-Modified-Since header to some point in the past of the last modified value
         Date past = new Date(lastModified.getTime() - 5000);
-        String ifModifiedSince = DateUtil.formatDate(past);
+        String ifModifiedSince = DateUtils.formatDate(past);
 
         httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
@@ -451,7 +462,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Date future = new Date(lastModified.getTime() + 5000);
-        ifModifiedSince = DateUtil.formatDate(future);
+        ifModifiedSince = DateUtils.formatDate(future);
 
         httpReq = createGetRequest(path);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
@@ -666,6 +677,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // update the catalog
         catalog.save(styleToRewrite);
 
+        waitTileBreederCompletion();
+
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
         assertEquals("image/png", response3.getContentType());
@@ -710,6 +723,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // Change the style; this should truncate the blobStore
         layer.setDefaultStyle(catalog.getStyleByName("generic"));
         catalog.save(layer);
+
+        waitTileBreederCompletion();
 
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
@@ -765,6 +780,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         catalog.save(layer);
         layer = catalog.getLayerByName(qualifiedName);
 
+        waitTileBreederCompletion();
+
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
         assertEquals("image/png", response3.getContentType());
@@ -813,15 +830,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // Rewrite the contents of the style; this should truncate the blobStore
         StyleInfo styleToRewrite = catalog.getStyleByName("generic");
-        StyleInfo generic = catalog.getStyleByName("generic");
-        catalog.getResourcePool()
-                .writeStyle(
-                        styleToRewrite,
-                        new GeoServerDataDirectory(catalog.getResourceLoader())
-                                .style(generic)
-                                .in());
+        try (InputStream is = GeoServerLoader.class.getResourceAsStream("default_generic.sld")) {
+            catalog.getResourcePool().writeStyle(styleToRewrite, is);
+        }
 
         catalog.save(styleToRewrite);
+
+        waitTileBreederCompletion();
 
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
@@ -889,10 +904,28 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse wfsResponse = postAsServletResponse(wfsRequest, wfsInsert);
         assertEquals(200, wfsResponse.getStatus());
 
+        waitTileBreederCompletion();
+
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
         assertEquals("image/png", response3.getContentType());
         assertThat(response3.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+    }
+
+    private void waitTileBreederCompletion() throws InterruptedException {
+        long start = System.currentTimeMillis();
+        final int MAX_WAIT_SECS = 10;
+        while (GWC.get().getPendingTasks().hasNext()) {
+            Thread.sleep(10);
+            long now = System.currentTimeMillis();
+            if (now - start > MAX_WAIT_SECS * 1000) {
+                String message =
+                        format(
+                                "Waited for tile breeder to finish its tasks for more than % seconds",
+                                MAX_WAIT_SECS);
+                fail(message);
+            }
+        }
     }
 
     @Test

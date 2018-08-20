@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.wms.WMS;
+import org.geotools.data.Query;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.transform.TransformerBase;
@@ -58,7 +59,8 @@ class DescribeDomainsTransformer extends TransformerBase {
                             dimension -> {
                                 Tuple<Integer, List<String>> dimensionValues =
                                         dimension.getDomainValuesAsStrings(
-                                                domains.getFilter(), domains.getExpandLimit());
+                                                new Query(null, domains.getFilter()),
+                                                domains.getExpandLimit());
                                 domainsValues.put(dimension.getDimensionName(), dimensionValues);
                             });
             if (domains.getSpatialDomain() != null && !domains.getSpatialDomain().isEmpty()) {

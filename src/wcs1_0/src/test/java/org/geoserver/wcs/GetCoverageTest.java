@@ -230,7 +230,7 @@ public class GetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(queryString);
         assertEquals("text/plain", response.getContentType());
         String content = response.getContentAsString();
-        assertTrue(content.startsWith("NCOLS 50\nNROWS 60\n"));
+        assertTrue(content.startsWith("NCOLS 50" + System.lineSeparator() + "NROWS 60"));
         assertEquals(
                 "inline; filename=sf:rasterFilter.asc", response.getHeader("Content-Disposition"));
     }
@@ -247,7 +247,9 @@ public class GetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(queryString);
         String content = response.getContentAsString();
         assertEquals("text/plain", response.getContentType());
-        assertTrue(content.startsWith("NCOLS 50\nNROWS 60\n"));
+        assertTrue(
+                content.startsWith(
+                        "NCOLS 50" + System.lineSeparator() + "NROWS 60" + System.lineSeparator()));
         assertEquals(
                 "inline; filename=sf:rasterFilter.asc", response.getHeader("Content-Disposition"));
     }

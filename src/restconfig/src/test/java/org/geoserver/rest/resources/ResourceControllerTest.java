@@ -17,7 +17,7 @@ import java.util.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.test.JSONAssert;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;

@@ -23,7 +23,7 @@ import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticat
  */
 public class GeoServerUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
 
-    private static Object USERNAME_KEY = USERNAME;
+    private Object usernameKey = USERNAME;
 
     /**
      * Default Constructor.
@@ -42,13 +42,13 @@ public class GeoServerUserAuthenticationConverter extends DefaultUserAuthenticat
     public GeoServerUserAuthenticationConverter(final String username_key) {
         super();
 
-        USERNAME_KEY = username_key;
+        usernameKey = username_key;
     }
 
     @Override
     public Authentication extractAuthentication(Map<String, ?> map) {
-        if (map.containsKey(USERNAME_KEY)) {
-            return new UsernamePasswordAuthenticationToken(map.get(USERNAME_KEY), "N/A", null);
+        if (map.containsKey(usernameKey)) {
+            return new UsernamePasswordAuthenticationToken(map.get(usernameKey), "N/A", null);
         }
         return null;
     }

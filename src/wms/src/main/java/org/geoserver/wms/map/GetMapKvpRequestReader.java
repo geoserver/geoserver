@@ -5,9 +5,7 @@
  */
 package org.geoserver.wms.map;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -389,19 +387,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader
             }
 
             if (getMap.getValidateSchema().booleanValue()) {
-                ByteArrayInputStream stream =
-                        new ByteArrayInputStream(getMap.getSldBody().getBytes());
-                List errors = validateStyle(stream, getMap);
+                StringReader reader = new StringReader(getMap.getSldBody());
+                List errors = validateStyle(reader, getMap);
 
                 if (errors.size() != 0) {
                     throw new ServiceException(
                             SLDValidator.getErrorMessage(
-                                    new ByteArrayInputStream(getMap.getSldBody().getBytes()),
-                                    errors));
+                                    new StringReader(getMap.getSldBody()), errors));
                 }
             }
 
-            InputStream input = new ByteArrayInputStream(getMap.getSldBody().getBytes());
+            StringReader input = new StringReader(getMap.getSldBody());
             StyledLayerDescriptor sld = parseStyle(getMap, input);
             processSld(getMap, requestedLayerInfos, sld, styleNameList);
 
@@ -430,8 +426,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader
                 }
             }
             if (input != null) {
-                try {
-
+                try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
                         List errors = validateStyle(input, getMap);
                         if ((errors != null) && (errors.size() != 0)) {
@@ -439,7 +434,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader
                         }
                     }
 
-                    StyledLayerDescriptor sld = parseStyle(getMap, input);
+                    StyledLayerDescriptor sld = parseStyle(getMap, reader);
                     processSld(getMap, requestedLayerInfos, sld, styleNameList);
                 } catch (Exception ex) {
                     final Level l = Level.WARNING;
@@ -872,25 +867,25 @@ public class GetMapKvpRequestReader extends KvpRequestReader
     }
 
     /** validates an style document. */
-    private List validateStyle(InputStream stream, GetMapRequest getMap) {
+    private List validateStyle(Object input, GetMapRequest getMap) {
         try {
             String language = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
-            return Styles.handler(language).validate(stream, getMap.styleVersion(), entityResolver);
+            return Styles.handler(language).validate(input, getMap.styleVersion(), entityResolver);
         } catch (IOException e) {
             throw new ServiceException("Error validating style", e);
         }
     }
 
     /** Parses an style document. */
-    private StyledLayerDescriptor parseStyle(GetMapRequest getMap, InputStream stream) {
+    private StyledLayerDescriptor parseStyle(GetMapRequest getMap, Reader reader) {
         try {
             String format = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
             return Styles.handler(format)
-                    .parse(stream, getMap.styleVersion(), null, entityResolver);
+                    .parse(reader, getMap.styleVersion(), null, entityResolver);
         } catch (IOException e) {
             throw new ServiceException("Error parsing style", e);
         }

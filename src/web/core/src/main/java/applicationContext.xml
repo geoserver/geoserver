@@ -445,6 +445,7 @@
 		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
 		<property name="name" value="form" />
 		<property name="icon" value="img/icons/silk/door-in.png" />
+		<property name="filterClass" value="org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter" />
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>

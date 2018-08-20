@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
+import net.minidev.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
@@ -61,6 +63,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     public static final String PRODUCT_CREATE_UPDATE_ID =
             "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04";
+    public static final String PRODUCT_ATM_CREATE_UPDATE_ID = "SAS1_20180101T000000.01";
 
     @Override
     protected boolean populateGranulesTable() {
@@ -87,6 +90,16 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         FF.equal(
                                 FF.property(new NameImpl(GENERIC.getPrefix(), "identifier")),
                                 FF.literal(PRODUCT_CREATE_UPDATE_ID),
+                                true)));
+        store.removeFeatures(
+                FF.and(
+                        FF.equal(
+                                FF.property(new NameImpl(GENERIC.getPrefix(), "parentIdentifier")),
+                                FF.literal("SAS1"),
+                                true),
+                        FF.equal(
+                                FF.property(new NameImpl(GENERIC.getPrefix(), "identifier")),
+                                FF.literal(PRODUCT_ATM_CREATE_UPDATE_ID),
                                 true)));
     }
 
@@ -187,6 +200,27 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
+    public void testGetAtmosphericProduct() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("/rest/oseo/collections/SAS1/products/SAS1_20180226102021.01", 200);
+        assertEquals("SAS1_20180226102021.01", json.read("$.id"));
+        assertEquals("Feature", json.read("$.type"));
+        assertEquals("SAS1_20180226102021.01", json.read("$.properties['eop:identifier']"));
+        assertEquals("SAS1", json.read("$.properties['eop:parentIdentifier']"));
+        assertEquals(jsonArray("O3", "O3", "CO2"), json.read("$.properties['atm:species']"));
+        assertEquals(
+                jsonArray(1000.0, 2000.0, 0.0), json.read("$.properties['atm:verticalRange']"));
+    }
+
+    private JSONArray jsonArray(Object... values) {
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < values.length; i++) {
+            array.add(values[i]);
+        }
+        return array;
+    }
+
+    @Test
     public void testCreateProduct() throws Exception {
         MockHttpServletResponse response =
                 postAsServletResponse(
@@ -201,6 +235,41 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         // check it's really there
         assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
+    }
+
+    @Test
+    public void testCreateAtmosphericProduct() throws Exception {
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections/SAS1/products",
+                        getTestData("/product-atm.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/SAS1/products/"
+                        + PRODUCT_ATM_CREATE_UPDATE_ID,
+                response.getHeader("location"));
+
+        // check it's really there
+        DocumentContext json =
+                getAsJSONPath(
+                        "/rest/oseo/collections/SAS1/products/" + PRODUCT_ATM_CREATE_UPDATE_ID,
+                        200);
+        assertEquals(PRODUCT_ATM_CREATE_UPDATE_ID, json.read("$.id"));
+        assertEquals("Feature", json.read("$.type"));
+        assertEquals("SAS1", json.read("$.properties['eop:parentIdentifier']"));
+        assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
+        assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
+        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeEnd']"));
+        assertEquals("EPSG:32632", json.read("$.properties['crs']"));
+        assertEquals(jsonArray("O2", "O2", "NO3", "NO3"), json.read("$.properties['atm:species']"));
+        assertEquals(
+                jsonArray(250d, 500d, 250d, 500d), json.read("$.properties['atm:verticalRange']"));
+
+        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
+        assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
 
     @Test
@@ -291,6 +360,44 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         200);
         assertEquals(Integer.valueOf(66), json.read("$.properties['eop:orbitNumber']"));
         assertEquals("2017-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+    }
+
+    @Test
+    public void testUpdateAtmosphericProduct() throws Exception {
+        // create the product
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections/SAS1/products",
+                        getTestData("/product-atm.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/SAS1/products/"
+                        + PRODUCT_ATM_CREATE_UPDATE_ID,
+                response.getHeader("location"));
+
+        // grab the JSON to modify some bits
+        JSONObject feature =
+                (JSONObject)
+                        getAsJSON(
+                                "rest/oseo/collections/SAS1/products/"
+                                        + PRODUCT_ATM_CREATE_UPDATE_ID);
+        JSONObject properties = feature.getJSONObject("properties");
+        properties.element("atm:species", Arrays.asList("A", "B", "C", "D"));
+
+        // send it back
+        response =
+                putAsServletResponse(
+                        "rest/oseo/collections/SAS1/products/" + PRODUCT_ATM_CREATE_UPDATE_ID,
+                        feature.toString(),
+                        "application/json");
+        assertEquals(200, response.getStatus());
+
+        // check the changes
+        DocumentContext json =
+                getAsJSONPath(
+                        "rest/oseo/collections/SAS1/products/" + PRODUCT_ATM_CREATE_UPDATE_ID, 200);
+        assertEquals(jsonArray("A", "B", "C", "D"), json.read("$.properties['atm:species']"));
     }
 
     @Test

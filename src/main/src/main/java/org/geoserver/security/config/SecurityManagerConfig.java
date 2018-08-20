@@ -8,7 +8,7 @@ package org.geoserver.security.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerAuthenticationProvider;

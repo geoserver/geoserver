@@ -37,6 +37,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -487,16 +488,15 @@ public class CollectionsController extends AbstractOpenSearchController {
                         HttpStatus.BAD_REQUEST);
             }
         }
-        if (layer.isHeterogeneousCRS()) {
-            if (layer.getMosaicCRS() == null) {
-                throw new RestException(
-                        "Invalid layer configuration, mosaic is heterogeneous but the mosaic CRS is missing",
-                        HttpStatus.BAD_REQUEST);
-            }
-        }
+        // right now the mosaic can only be in 4326 because the granule table is in that CRS
         if (layer.getMosaicCRS() != null) {
             try {
-                CRS.decode(layer.getMosaicCRS());
+                if (!CRS.equalsIgnoreMetadata(
+                        DefaultGeographicCRS.WGS84, CRS.decode(layer.getMosaicCRS()))) {
+                    throw new RestException(
+                            "Invalid mosaicCRS value, can only be EPSG:4326 for the time being",
+                            HttpStatus.BAD_REQUEST);
+                }
             } catch (FactoryException e) {
                 throw new RestException(
                         "Invalid mosaicCRS value, cannot be decoded: " + e.getMessage(),

@@ -7,7 +7,6 @@ package org.geoserver.cluster.impl.handlers.configuration;
 
 import com.thoughtworks.xstream.XStream;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.LoggingInfo;
@@ -37,7 +36,7 @@ public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
     @Override
     public boolean synchronize(LoggingInfo info) throws Exception {
         if (info == null) {
-            throw new NullArgumentException("Incoming object is null");
+            throw new NullPointerException("Incoming object is null");
         }
         try {
             // LOCALIZE service

@@ -18,6 +18,7 @@ import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortOrder;
 
 /**
  * Utility class for aggregating several dimensions. All the dimensions will share the same spatial
@@ -30,22 +31,70 @@ public class Domains {
     private final Filter filter;
 
     private final LayerInfo layerInfo;
-    private final int expandLimit;
+    private int expandLimit;
+    private int maxReturnedValues;
+    private SortOrder sortOrder;
 
     private String histogram;
     private String resolution;
+    private String fromValue;
 
     public Domains(
             List<Dimension> dimensions,
             LayerInfo layerInfo,
             ReferencedEnvelope boundingBox,
-            Filter filter,
-            int expandLimit) {
+            Filter filter) {
         this.dimensions = dimensions;
         this.layerInfo = layerInfo;
         this.spatialDomain = boundingBox;
         this.filter = filter;
+    }
+
+    public Domains withExpandLimit(int expandLimit) {
         this.expandLimit = expandLimit;
+        return this;
+    }
+
+    public Domains withMaxReturnedValues(int maxReturnedValues) {
+        this.maxReturnedValues = maxReturnedValues;
+        return this;
+    }
+
+    public Domains withSortOrder(SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        return this;
+    }
+
+    public Domains withFromValue(String fromValue) {
+        this.fromValue = fromValue;
+        return this;
+    }
+
+    /**
+     * The maximum number of returned values in a GetDomainValues request
+     *
+     * @return
+     */
+    public int getMaxReturnedValues() {
+        return maxReturnedValues;
+    }
+
+    /**
+     * Returns the "fromValue" parameter in a GetDomainValues request
+     *
+     * @return
+     */
+    public String getFromValue() {
+        return fromValue;
+    }
+
+    /**
+     * The sort direction in a GetDomainValues request
+     *
+     * @return
+     */
+    public SortOrder getSortOrder() {
+        return sortOrder;
     }
 
     public List<Dimension> getDimensions() {

@@ -32,7 +32,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/geofence" + RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
 public class RulesRestController extends RestBaseController {
 
     private RuleAdminService adminService;
@@ -180,8 +179,9 @@ public class RulesRestController extends RestBaseController {
         return new JaxbRuleList(adminService.count(filter));
     }
 
-    @PostMapping(
-        value = {"/rules"},
+    @RequestMapping(
+        value = "/rules",
+        method = RequestMethod.POST,
         consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -198,10 +198,10 @@ public class RulesRestController extends RestBaseController {
 
         Long id = adminService.insert(rule.toRule());
 
-        if (rule.getLimits() != null) {
+        if (rule.getLimits() != null && rule.getAccess().equals("LIMIT")) {
             adminService.setLimits(id, rule.getLimits().toRuleLimits(null));
         }
-        if (rule.getLayerDetails() != null) {
+        if (rule.getLayerDetails() != null && !rule.getAccess().equals("LIMIT")) {
             adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         }
 

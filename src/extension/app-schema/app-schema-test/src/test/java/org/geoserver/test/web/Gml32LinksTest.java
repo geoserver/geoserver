@@ -15,7 +15,7 @@ public class Gml32LinksTest extends AbstractMapPreviewPageTest {
     public Gml32LinksTest() {
         super(
                 Arrays.asList(
-                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
+                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml%3AMappedFeature&amp;outputFormat=gml32&amp;maxFeatures=50"));
     }
 
     @Override

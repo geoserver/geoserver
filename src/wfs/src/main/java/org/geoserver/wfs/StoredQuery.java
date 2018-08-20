@@ -5,8 +5,8 @@
  */
 package org.geoserver.wfs;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +41,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class StoredQuery {
 
@@ -140,7 +141,7 @@ public class StoredQuery {
             // verify that the return feature types matched the ones specified by the actual query
             Set<QName> queryTypes = new HashSet();
             try {
-                Document doc = db.parse(new ByteArrayInputStream(qe.getValue().getBytes()));
+                Document doc = db.parse(new InputSource(new StringReader(qe.getValue())));
                 NodeList queries = doc.getElementsByTagName("wfs:Query");
                 if (queries.getLength() == 0) {
                     queries = doc.getElementsByTagName("Query");
@@ -266,7 +267,7 @@ public class StoredQuery {
             p.getNamespaces().declarePrefix("gml", GML.NAMESPACE);
             try {
                 QueryType compiled =
-                        (QueryType) p.parse(new ByteArrayInputStream(sb.toString().getBytes()));
+                        (QueryType) p.parse(new InputSource(new StringReader(sb.toString())));
                 list.add(compiled);
             } catch (Exception e) {
                 throw new RuntimeException(e);

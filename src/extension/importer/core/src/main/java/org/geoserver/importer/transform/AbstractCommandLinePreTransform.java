@@ -16,7 +16,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;

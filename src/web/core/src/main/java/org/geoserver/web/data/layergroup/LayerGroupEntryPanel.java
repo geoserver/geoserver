@@ -126,6 +126,7 @@ public class LayerGroupEntryPanel extends Panel {
                         }.setFilterable(false));
         layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId(true);
+        layerTable.setPageable(false);
 
         add(
                 new AjaxLink<LayerInfo>("addLayer") {

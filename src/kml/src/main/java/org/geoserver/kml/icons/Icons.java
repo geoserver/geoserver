@@ -83,7 +83,11 @@ public class Icons {
      * @param f
      */
     public static @Nullable Double getRotation(Graphic g, @Nullable Feature f) {
-        return g.getRotation().evaluate(f, Double.class);
+        if (g.getRotation() != null) {
+            return g.getRotation().evaluate(f, Double.class);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -93,7 +97,11 @@ public class Icons {
      * @param f
      */
     public static @Nullable Double getSpecifiedSize(Graphic g, @Nullable Feature f) {
-        return g.getSize().evaluate(f, Double.class);
+        if (g.getSize() != null) {
+            return g.getSize().evaluate(f, Double.class);
+        } else {
+            return null;
+        }
     }
 
     private static @Nullable Icon getIcon(ExternalGraphic eg, @Nullable Feature f) {
@@ -158,7 +166,7 @@ public class Icons {
 
         if (gs instanceof Mark) {
             Stroke stroke = ((Mark) gs).getStroke();
-            if (stroke != null) {
+            if (stroke != null && stroke.getWidth() != null) {
                 Double width = stroke.getWidth().evaluate(f, Double.class);
                 if (width != null) {
                     border = width;

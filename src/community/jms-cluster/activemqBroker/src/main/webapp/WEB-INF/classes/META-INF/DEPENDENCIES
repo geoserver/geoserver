@@ -129,7 +129,7 @@ From: 'The Apache Software Foundation' (http://www.apache.org)
 From: 'The Apache Software Foundation' (http://www.apache.org/)
   - Commons Collections (http://commons.apache.org/collections/) commons-collections:commons-collections:jar:3.2.1
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
-  - Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
+  - Commons Lang (http://commons.apache.org/lang/) org.apache.commons:commons-lang3:jar:3.7
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Commons Net (http://commons.apache.org/net/) commons-net:commons-net:jar:2.0
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)

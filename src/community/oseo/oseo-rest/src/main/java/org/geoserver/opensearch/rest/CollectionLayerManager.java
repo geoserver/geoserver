@@ -246,11 +246,11 @@ class CollectionLayerManager {
             // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous
             // in general, unless we know the data is uniformly in something else, in that
             // case we could reproject the view reporting the footprints...
-            // if (layerConfiguration.isHeterogeneousCRS()) {
-            mosaicConfig.put("HeterogeneousCRS", "true");
-            mosaicConfig.put("MosaicCRS", "EPSG:4326" /* layerConfiguration.getMosaicCRS() */);
-            mosaicConfig.put("CrsAttribute", "crs");
-            // }
+            if (layerConfiguration.isHeterogeneousCRS()) {
+                mosaicConfig.put("HeterogeneousCRS", "true");
+                mosaicConfig.put("MosaicCRS", "EPSG:4326");
+                mosaicConfig.put("CrsAttribute", "crs");
+            }
             Resource propertyResource = mosaicDirectory.get(band + ".properties");
             try (OutputStream os = propertyResource.out()) {
                 mosaicConfig.store(
@@ -272,7 +272,7 @@ class CollectionLayerManager {
 
         // this is ridicolous, but for the moment, multi-crs mosaics won't work if there
         // is no indexer.properties around, even if no collection is actually done
-        buildIndexer(collection, mosaicDirectory);
+        buildIndexer(collection, layerConfiguration, mosaicDirectory);
 
         // mosaic datastore connection
         createDataStoreProperties(collection, mosaicDirectory);
@@ -417,7 +417,7 @@ class CollectionLayerManager {
                     HttpStatus.PRECONDITION_FAILED);
         }
 
-        buildIndexer(collection, mosaic);
+        buildIndexer(collection, layerConfiguration, mosaic);
 
         createDataStoreProperties(collection, mosaic);
 
@@ -436,7 +436,9 @@ class CollectionLayerManager {
         createStyle(layerConfiguration, layerInfo);
     }
 
-    private void buildIndexer(String collection, Resource mosaic) throws IOException {
+    private void buildIndexer(
+            String collection, CollectionLayer layerConfiguration, Resource mosaic)
+            throws IOException {
         // prepare the mosaic configuration
         Properties indexer = new Properties();
         indexer.put("UseExistingSchema", "true");
@@ -449,11 +451,11 @@ class CollectionLayerManager {
         // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous
         // in general, unless we know the data is uniformly in something else, in that
         // case we could reproject the view reporting the footprints...
-        // if (layerConfiguration.isHeterogeneousCRS()) {
-        indexer.put("HeterogeneousCRS", "true");
-        indexer.put("MosaicCRS", "EPSG:4326" /* layerConfiguration.getMosaicCRS() */);
-        indexer.put("CrsAttribute", "crs");
-        // }
+        if (layerConfiguration.isHeterogeneousCRS()) {
+            indexer.put("HeterogeneousCRS", "true");
+            indexer.put("MosaicCRS", "EPSG:4326");
+            indexer.put("CrsAttribute", "crs");
+        }
         Resource resource = mosaic.get("indexer.properties");
         try (OutputStream os = resource.out()) {
             indexer.store(os, "Indexer for collection: " + collection);

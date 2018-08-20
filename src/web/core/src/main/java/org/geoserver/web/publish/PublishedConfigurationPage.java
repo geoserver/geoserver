@@ -29,9 +29,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.data.resource.LayerModel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 
 /**
@@ -83,8 +85,12 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         setupPublished(info);
     }
 
+    @SuppressWarnings("unchecked")
     protected void setupPublished(T info) {
-        setupPublished(new Model<T>(info));
+        setupPublished(
+                info instanceof LayerInfo
+                        ? (IModel<T>) new LayerModel((LayerInfo) info)
+                        : new Model<T>(info));
     }
 
     protected void setupPublished(IModel<T> infoModel) {

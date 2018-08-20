@@ -38,6 +38,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -203,8 +204,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         item.add(loginForm);
 
                         boolean filterInChain = false;
-                        for (String filterName : securityFilters) {
-                            if (filterName.toLowerCase().contains(info.getName())) {
+                        List<GeoServerSecurityProvider> securityProviders =
+                                getGeoServerApplication()
+                                        .getBeansOfType(GeoServerSecurityProvider.class);
+                        for (GeoServerSecurityProvider securityProvider : securityProviders) {
+                            if (securityProvider.getFilterClass() != null
+                                    && securityProvider
+                                            .getFilterClass()
+                                            .equals(info.getFilterClass())) {
                                 filterInChain = true;
                                 break;
                             }

@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -45,7 +44,7 @@ public abstract class CatalogUtils {
      */
     public static WorkspaceInfo localizeWorkspace(final WorkspaceInfo info, final Catalog catalog) {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final WorkspaceInfo localObject = catalog.getWorkspaceByName(info.getName());
         if (localObject != null) {
@@ -60,7 +59,7 @@ public abstract class CatalogUtils {
 
     public static NamespaceInfo localizeNamespace(final NamespaceInfo info, final Catalog catalog) {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final NamespaceInfo localObject = catalog.getNamespaceByURI(info.getURI());
         if (localObject != null) {
@@ -79,7 +78,7 @@ public abstract class CatalogUtils {
      */
     public static StyleInfo localizeStyle(final StyleInfo info, final Catalog catalog) {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final StyleInfo localObject = catalog.getStyleByName(info.getWorkspace(), info.getName());
         if (localObject != null) {
@@ -100,7 +99,7 @@ public abstract class CatalogUtils {
     public static Set<StyleInfo> localizeStyles(
             final Set<StyleInfo> stileSet, final Catalog catalog) {
         if (stileSet == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
         final Set<StyleInfo> localStileSet = new HashSet<StyleInfo>();
         final Iterator<StyleInfo> deserStyleSetIterator = stileSet.iterator();
         while (deserStyleSetIterator.hasNext()) {
@@ -117,7 +116,7 @@ public abstract class CatalogUtils {
             final List<T> info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
         final List<LayerInfo> localLayerList = new ArrayList<LayerInfo>(info.size());
         final Iterator<LayerInfo> it = localLayerList.iterator();
         while (it.hasNext()) {
@@ -140,7 +139,7 @@ public abstract class CatalogUtils {
     public static LayerInfo localizeLayer(final LayerInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         // make sure we use the prefixed name to include the workspace
         final LayerInfo localObject = catalog.getLayerByName(info.prefixedName());
@@ -198,7 +197,7 @@ public abstract class CatalogUtils {
     public static MapInfo localizeMapInfo(final MapInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final MapInfo localObject = catalog.getMapByName(info.getName());
         if (localObject != null) {
@@ -217,7 +216,7 @@ public abstract class CatalogUtils {
             final LayerGroupInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         // make sure we use the prefixed name to include the workspace
         final LayerGroupInfo localObject = catalog.getLayerGroupByName(info.prefixedName());
@@ -270,7 +269,7 @@ public abstract class CatalogUtils {
     public static StoreInfo localizeStore(final StoreInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         if (info instanceof CoverageStoreInfo) {
             return localizeCoverageStore((CoverageStoreInfo) info, catalog);
@@ -287,7 +286,7 @@ public abstract class CatalogUtils {
     public static DataStoreInfo localizeDataStore(final DataStoreInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final DataStoreInfo localObject =
                 catalog.getDataStoreByName(info.getWorkspace(), info.getName());
@@ -312,7 +311,7 @@ public abstract class CatalogUtils {
     public static WMSStoreInfo localizeWMSStore(final WMSStoreInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final WMSStoreInfo localObject =
                 catalog.getStoreByName(info.getWorkspace(), info.getName(), WMSStoreInfo.class);
@@ -338,7 +337,7 @@ public abstract class CatalogUtils {
             final CoverageStoreInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final CoverageStoreInfo localObject =
                 catalog.getCoverageStoreByName(info.getWorkspace(), info.getName());
@@ -363,7 +362,7 @@ public abstract class CatalogUtils {
     public static ResourceInfo localizeResource(final ResourceInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         if (info instanceof CoverageInfo) {
             // coverage
@@ -386,7 +385,7 @@ public abstract class CatalogUtils {
     public static WMSLayerInfo localizeWMSLayer(final WMSLayerInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final WMSLayerInfo localObject =
                 catalog.getResourceByName(info.getNamespace(), info.getName(), WMSLayerInfo.class);
@@ -416,7 +415,7 @@ public abstract class CatalogUtils {
             final FeatureTypeInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final FeatureTypeInfo localObject =
                 catalog.getFeatureTypeByName(info.getNamespace(), info.getName());
@@ -443,7 +442,7 @@ public abstract class CatalogUtils {
     public static CoverageInfo localizeCoverage(final CoverageInfo info, final Catalog catalog)
             throws IllegalAccessException, InvocationTargetException {
         if (info == null || catalog == null)
-            throw new NullArgumentException("Arguments may never be null");
+            throw new NullPointerException("Arguments may never be null");
 
         final CoverageInfo localObject =
                 catalog.getCoverageByName(info.getNamespace(), info.getName());

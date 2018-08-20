@@ -8,7 +8,7 @@ package org.geoserver.restupload;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.util.NumberRange;

@@ -145,7 +145,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals("gs", json.read("$.workspace"));
         assertEquals("test123", json.read("$.layer"));
         assertEquals(Boolean.FALSE, json.read("$.separateBands"));
-        assertEquals(Boolean.FALSE, json.read("$.heterogeneousCRS"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
 
         // check the configuration elements are there too
         Catalog catalog = getCatalog();
@@ -200,7 +200,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals("test", json.read("$.workspace"));
         assertEquals("test123", json.read("$.layer"));
         assertEquals(Boolean.FALSE, json.read("$.separateBands"));
-        assertEquals(Boolean.FALSE, json.read("$.heterogeneousCRS"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
 
         // check the configuration elements are there too
         Catalog catalog = getCatalog();
@@ -256,7 +256,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals("gs", json.read("$.workspace"));
         assertEquals("test123", json.read("$.layer"));
         assertEquals(Boolean.FALSE, json.read("$.separateBands"));
-        assertEquals(Boolean.FALSE, json.read("$.heterogeneousCRS"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
 
         // check the configuration elements are there too
         Catalog catalog = getCatalog();

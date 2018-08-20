@@ -6,7 +6,6 @@ package org.geoserver.cluster.impl.handlers.configuration;
 
 import com.thoughtworks.xstream.XStream;
 import java.util.logging.Level;
-import org.apache.commons.lang.NullArgumentException;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSSettingsModifyEvent;
@@ -34,7 +33,7 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
     @Override
     public boolean synchronize(JMSSettingsModifyEvent event) throws Exception {
         if (event == null) {
-            throw new NullArgumentException("Incoming event is NULL.");
+            throw new NullPointerException("Incoming event is NULL.");
         }
         try {
             // disable the message producer to avoid recursion

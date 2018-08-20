@@ -6,7 +6,7 @@
 package org.vfny.geoserver.global;
 
 import java.util.Comparator;
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.geoserver.catalog.CoverageInfo;
 
 /**

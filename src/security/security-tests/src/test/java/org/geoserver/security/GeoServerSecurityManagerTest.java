@@ -9,7 +9,9 @@ import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -107,6 +109,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         GeoServerSecurityManager secMgr = getSecurityManager();
         File f = File.createTempFile("masterpw", "info");
+        f.delete();
         try {
             assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
@@ -139,6 +142,32 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
+        } finally {
+            f.delete();
+        }
+    }
+
+    @Test
+    public void testMasterPasswordDumpNotOverwrite() throws Exception {
+
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        File f = File.createTempFile("masterpw", "info");
+        try (FileOutputStream os = new FileOutputStream(f)) {
+            os.write("This should not be overwritten!".getBytes(StandardCharsets.UTF_8));
+        }
+        try {
+            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
+
+            TestingAuthenticationToken auth =
+                    new TestingAuthenticationToken(
+                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+            auth.setAuthenticated(true);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
+            dumpPWInfoFile(f);
+            assertTrue(masterPWInfoFileContains(f, "This should not be overwritten!"));
+            assertFalse(masterPWInfoFileContains(f, new String(secMgr.getMasterPassword())));
         } finally {
             f.delete();
         }

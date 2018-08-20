@@ -9,6 +9,11 @@ import static junit.framework.TestCase.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -152,6 +157,35 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
             } catch (Exception e) {
                 // TODO: handle exception
             }
+        }
+    }
+
+    /**
+     * See https://osgeo-org.atlassian.net/browse/GEOS-8491
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testConcurrentRequests() throws Exception {
+        ExecutorService executor =
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+        try {
+            List<Future<Object>> futures = new ArrayList<>();
+            for (int i = 0; i < 100; i++) {
+                Future<Object> future =
+                        executor.submit(
+                                () -> {
+                                    subsettingNativeCRSReprojectTo3857();
+                                    return null;
+                                });
+                futures.add(future);
+            }
+            // let it throw exceptions in case it fails
+            for (Future<Object> future : futures) {
+                future.get();
+            }
+        } finally {
+            executor.shutdownNow();
         }
     }
 

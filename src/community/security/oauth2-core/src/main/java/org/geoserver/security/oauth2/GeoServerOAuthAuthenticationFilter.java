@@ -385,6 +385,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
         Authentication authentication = null;
         try {
             authentication = filter.attemptAuthentication(req, null);
+            LOGGER.log(
+                    Level.FINE,
+                    "Authenticated OAuth request for principal {0}",
+                    authentication.getPrincipal());
         } catch (Exception e) {
             if (e instanceof UserRedirectRequiredException) {
                 if (filterConfig.getEnableRedirectAuthenticationEntryPoint()

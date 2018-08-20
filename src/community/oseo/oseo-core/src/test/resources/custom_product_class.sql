@@ -1,7 +1,7 @@
 ALTER TABLE product ADD COLUMN "gsTest" VARCHAR DEFAULT 'abc';
 INSERT INTO collection("id", "name", "footprint", "timeStart", "timeEnd", "eoIdentifier", "eoSensorType")
        VALUES(33, 'GS_TEST', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), 
-              '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', 'gsTestCollection', 'geoServer');
+              '2015-06-01 10:20:21.000', '2016-02-26 10:20:21.000', 'gsTestCollection', 'geoServer');
 commit ;
 INSERT INTO product ("id", "timeStart", "timeEnd", "eoIdentifier", "eoParentIdentifier", "footprint", "gsTest")
        VALUES(372, '2017-02-26 10:20:21.026', '2017-02-26 10:20:21.026', 'GS_TEST_PRODUCT.01', 'gsTestCollection',

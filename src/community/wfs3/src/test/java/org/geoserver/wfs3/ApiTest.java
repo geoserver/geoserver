@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs3;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs3.response.OpenAPIResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -37,12 +39,45 @@ public class ApiTest extends WFS3TestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        String json = getAsString("wfs3/api");
+        MockHttpServletResponse response = getAsMockHttpServletResponse("wfs3/api", 200);
+        assertEquals(OpenAPIResponse.OPEN_API_MIME, response.getContentType());
+        String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
         ObjectMapper mapper = Json.mapper();
         OpenAPI api = mapper.readValue(json, OpenAPI.class);
         validateApi(api);
+    }
+
+    @Test
+    public void testApiHTML() throws Exception {
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("wfs3/api?f=text/html", 200);
+        assertEquals("text/html", response.getContentType());
+        String html = response.getContentAsString();
+        LOGGER.info(html);
+
+        // check template expansion worked properly
+        assertThat(
+                html,
+                containsString(
+                        "<link rel=\"icon\" type=\"image/png\" href=\"http://localhost:8080/geoserver/swagger-ui/favicon-32x32.png\" sizes=\"32x32\" />"));
+        assertThat(
+                html,
+                containsString(
+                        "<link rel=\"icon\" type=\"image/png\" href=\"http://localhost:8080/geoserver/swagger-ui/favicon-16x16.png\" sizes=\"16x16\" />"));
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-standalone-preset.js\">"));
+        assertThat(
+                html,
+                containsString(
+                        "url: \"http://localhost:8080/geoserver/wfs3/api?f=application%2Fopenapi%2Bjson%3Bversion%3D3.0\""));
     }
 
     @Test

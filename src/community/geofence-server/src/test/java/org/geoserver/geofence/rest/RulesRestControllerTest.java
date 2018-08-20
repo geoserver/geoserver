@@ -7,9 +7,16 @@ package org.geoserver.geofence.rest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
 import org.geoserver.geofence.core.model.LayerAttribute;
@@ -19,11 +26,17 @@ import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
+import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
+import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RulesRestControllerTest extends GeofenceBaseTest {
 
@@ -31,10 +44,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     protected RuleAdminService adminService;
 
-    @Override
-    public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
+    @Before
+    public void initGeoFenceControllers() {
         controller = (RulesRestController) applicationContext.getBean("rulesRestController");
         adminService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
     }
@@ -43,7 +54,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testInsertUpdateDelete() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
@@ -52,7 +63,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setLayer("layer");
         rule.setAccess("ALLOW");
 
-        long id = controller.insert(rule).getBody();
+        long id = prepareGeoFenceTestRules(rule);
 
         Rule realRule = adminService.get(id);
 
@@ -128,7 +139,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testLimits() {
         JaxbRule rule = new JaxbRule();
         rule.setPriority(5L);
-        rule.setUserName("pipo");
+        rule.setUserName("pippo");
         rule.setRoleName("clown");
         rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
@@ -140,14 +151,20 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.getLimits().setAllowedArea(GML3MockData.multiPolygon());
         rule.getLimits().setCatalogMode("MIXED");
 
-        Long id = controller.insert(rule).getBody();
+        long id = prepareGeoFenceTestRules(rule);
 
         Rule realRule = adminService.get(id);
 
         assertEquals(
                 rule.getLimits().getCatalogMode(),
                 realRule.getRuleLimits().getCatalogMode().toString());
-        assertEquals(rule.getLimits().getAllowedArea(), realRule.getRuleLimits().getAllowedArea());
+        try {
+            assertEquals(
+                    new WKTReader().read(rule.getLimits().getAllowedArea()),
+                    realRule.getRuleLimits().getAllowedArea());
+        } catch (ParseException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
 
         rule.getLimits().setCatalogMode("HIDE");
 
@@ -200,11 +217,16 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
         rule.getLayerDetails().setLayerType("VECTOR");
 
-        Long id = controller.insert(rule).getBody();
+        long id = prepareGeoFenceTestRules(rule);
 
         Rule realRule = adminService.get(id);
-
-        assertEquals(rule.getLayerDetails().getAllowedArea(), realRule.getLayerDetails().getArea());
+        try {
+            assertEquals(
+                    new WKTReader().read(rule.getLayerDetails().getAllowedArea()),
+                    realRule.getLayerDetails().getArea());
+        } catch (ParseException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
         assertEquals(
                 rule.getLayerDetails().getCatalogMode(),
                 realRule.getLayerDetails().getCatalogMode().toString());
@@ -255,8 +277,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLayerDetails().getDefaultStyle(),
                 realRule.getLayerDetails().getDefaultStyle());
 
-        assertEquals(3, realRule.getLayerDetails().getAllowedStyles().size());
-        assertEquals(3, realRule.getLayerDetails().getAttributes().size());
+        assertEquals(1, realRule.getLayerDetails().getAllowedStyles().size());
+        assertEquals(2, realRule.getLayerDetails().getAttributes().size());
 
         for (LayerAttribute la : realRule.getLayerDetails().getAttributes()) {
             if (la.getName().equals("layerAttribute2")) {
@@ -426,6 +448,182 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         validateRules(1, 7, 8);
         validateRules(2, prefix, "user6", "user4");
         validateRules(2, 9, 11);
+    }
+
+    @Test
+    public void testRestControllerPaths() throws Exception {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setUserName("pippo");
+        rule.setRoleName("clown");
+        rule.setAddressRange("127.0.0.1/32");
+        rule.setService("wfs");
+        rule.setRequest("getFeature");
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        JSONObject json =
+                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
+        // print(json);
+
+        assertNotNull(id);
+        assertEquals(1, json.getInt("count"));
+
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
+        // print(json);
+
+        assertEquals(1, json.getInt("count"));
+
+        JSONArray jsonRules = json.getJSONArray("rules");
+        // print(jsonRules);
+
+        assertNotNull(jsonRules);
+        assertEquals(1, jsonRules.size());
+
+        final String jsonRuleBody =
+                "{\n"
+                        + "  'Rule': {\n"
+                        + "    'priority': 0,\n"
+                        + "    'userName': null,\n"
+                        + "    'roleName': null,\n"
+                        + "    'addressRange': null,\n"
+                        + "    'workspace': 'geonode',\n"
+                        + "    'layer': 'DE_USNG_UTM18',\n"
+                        + "    'service': null,\n"
+                        + "    'request': null,\n"
+                        + "    'access': 'ALLOW',\n"
+                        + "    'limits': null,\n"
+                        + "    'layerDetails': {\n"
+                        + "      'layerType': 'VECTOR',\n"
+                        + "      'defaultStyle': 'DE_USNG_UTM18',\n"
+                        + "      'cqlFilterRead': 'Northings >= 100',\n"
+                        + "      'cqlFilterWrite': null,\n"
+                        + "      'allowedArea': 'MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
+                        + "      'catalogMode': null,\n"
+                        + "      'allowedStyles': [],\n"
+                        + "      'attributes': [\n"
+                        + "        {\n"
+                        + "          'name': 'Eastings',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'READWRITE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'the_geom',\n"
+                        + "          'dataType': 'org.locationtech.jts.geom.MultiPolygon',\n"
+                        + "          'accessType': 'READONLY'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'GRID1MIL',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'GRID100K',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'READONLY'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'Northings',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "          'name': 'USNG',\n"
+                        + "          'dataType': 'java.lang.String',\n"
+                        + "          'accessType': 'NONE'\n"
+                        + "        }\n"
+                        + "      ]\n"
+                        + "    }\n"
+                        + "  }\n"
+                        + "}";
+
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/geofence/rules",
+                        jsonRuleBody,
+                        "text/json");
+        assertEquals(201, response.getStatus());
+
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
+        // print(json);
+
+        assertEquals(2, json.getInt("count"));
+
+        jsonRules = json.getJSONArray("rules");
+        // print(jsonRules);
+
+        assertNotNull(jsonRules);
+        assertEquals(2, jsonRules.size());
+
+        JSONObject jsonRule = null;
+        for (Object jsonObj : jsonRules) {
+            assertNotNull(jsonObj);
+            assertTrue(jsonObj instanceof JSONObject);
+            jsonRule = (JSONObject) jsonObj;
+            print(jsonRule);
+
+            if (jsonRule.getString("layer").equals("DE_USNG_UTM18")) {
+                assertEquals("geonode", jsonRule.getString("workspace"));
+                assertEquals("DE_USNG_UTM18", jsonRule.getString("layer"));
+                assertEquals("ALLOW", jsonRule.getString("access"));
+
+                JSONObject layerDetails = jsonRule.getJSONObject("layerDetails");
+                assertNotNull(layerDetails);
+                assertEquals("VECTOR", layerDetails.getString("layerType"));
+                assertEquals("DE_USNG_UTM18", layerDetails.getString("defaultStyle"));
+                assertEquals("Northings >= 100", layerDetails.getString("cqlFilterRead"));
+                assertEquals(
+                        "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))",
+                        layerDetails.getString("allowedArea"));
+                break;
+            } else {
+                jsonRule = null;
+            }
+        }
+
+        assertNotNull(jsonRule);
+
+        json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/geofence/rules/id/"
+                                        + jsonRule.getInt("id")
+                                        + ".json",
+                                200);
+        // print(json);
+
+        assertEquals(json.toString(), jsonRule.toString());
+
+        response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/geofence/rules/id/"
+                                + jsonRule.getInt("id"));
+        assertEquals(200, response.getStatus());
+
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/geofence/rules.json", 200);
+        // print(json);
+
+        assertEquals(1, json.getInt("count"));
+    }
+
+    /**
+     * Helper method that checks if the rule already exists and create a new one by returning its
+     * ID.
+     */
+    protected long prepareGeoFenceTestRules(JaxbRule rule) {
+        if (adminService.getCountAll() > 0) {
+            for (ShortRule r : adminService.getAll()) {
+                controller.delete(r.getId());
+            }
+        }
+
+        long id = controller.insert(rule).getBody();
+        return id;
     }
 
     /** Helper method that will validate a move result. */

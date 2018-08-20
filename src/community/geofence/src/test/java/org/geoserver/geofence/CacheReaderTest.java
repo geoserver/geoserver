@@ -5,6 +5,9 @@
  */
 package org.geoserver.geofence;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 import com.google.common.base.Ticker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +18,7 @@ import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
+import org.junit.Before;
 import org.springframework.core.io.UrlResource;
 
 /** @author ETj (etj at geo-solutions.it) */
@@ -26,10 +30,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     private GeoFencePropertyPlaceholderConfigurer configurer;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+    @Before
+    public void initGeoFenceControllers() {
         configurer =
                 (GeoFencePropertyPlaceholderConfigurer)
                         applicationContext.getBean("geofence-configurer");

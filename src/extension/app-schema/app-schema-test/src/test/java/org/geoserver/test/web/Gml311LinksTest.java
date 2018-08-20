@@ -15,12 +15,12 @@ public class Gml311LinksTest extends AbstractMapPreviewPageTest {
     public Gml311LinksTest() {
         super(
                 Arrays.asList(
-                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:GeologicUnit&amp;outputFormat=gml3&amp;maxFeatures=50",
-                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:FirstParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:SecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:ParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                        "http://localhost:80/context/om/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om:Observation&amp;outputFormat=gml3&amp;maxFeatures=50"));
+                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml%3AMappedFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                        "http://localhost:80/context/gsml/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml%3AGeologicUnit&amp;outputFormat=gml3&amp;maxFeatures=50",
+                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex%3AFirstParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex%3ASecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                        "http://localhost:80/context/ex/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex%3AParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                        "http://localhost:80/context/om/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om%3AObservation&amp;outputFormat=gml3&amp;maxFeatures=50"));
     }
 
     @Override

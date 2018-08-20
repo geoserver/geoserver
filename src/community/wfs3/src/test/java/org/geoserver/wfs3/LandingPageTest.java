@@ -34,7 +34,7 @@ public class LandingPageTest extends WFS3TestSupport {
     }
 
     private void checkJSONLandingPage(DocumentContext json) {
-        assertEquals(14, (int) json.read("links.length()", Integer.class));
+        assertEquals(16, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
                 json,
@@ -43,27 +43,33 @@ public class LandingPageTest extends WFS3TestSupport {
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "alternate",
+                "alternate",
+                "alternate");
+        // check API links
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*wfs3\\/api.*/)].rel",
+                "service",
+                "service",
                 "service",
                 "service",
                 "service");
-        // check API links
-        assertJSONList(
-                json, "links[?(@.href =~ /.*wfs3\\/api.*/)].rel", "service", "service", "service");
         // check conformance links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*wfs3\\/conformance.*/)].rel",
-                "service",
-                "service",
-                "service");
+                "conformance",
+                "conformance",
+                "conformance");
         // check collection links
         assertJSONList(
                 json,
                 "links[?(@.href =~ /.*wfs3\\/collections.*/)].rel",
-                "service",
-                "service",
-                "service",
-                "service");
+                "data",
+                "data",
+                "data",
+                "data");
     }
 
     private <T> void assertJSONList(DocumentContext json, String path, T... expected) {
@@ -99,7 +105,19 @@ public class LandingPageTest extends WFS3TestSupport {
                 "http://localhost:8080/geoserver/wfs3/collections?f=text%2Fhtml",
                 document.select("#htmlCollectionsLink").attr("href"));
         assertEquals(
-                "http://localhost:8080/geoserver/wfs3/api?f=application%2Fjson",
-                document.select("#jsonApiLink").attr("href"));
+                "http://localhost:8080/geoserver/wfs3/api?f=text%2Fhtml",
+                document.select("#htmlApiLink").attr("href"));
+    }
+
+    @Test
+    public void testLandingPageHTMLInWorkspace() throws Exception {
+        org.jsoup.nodes.Document document = getAsJSoup("sf/wfs3?f=html");
+        // check a couple of links
+        assertEquals(
+                "http://localhost:8080/geoserver/sf/wfs3/collections?f=text%2Fhtml",
+                document.select("#htmlCollectionsLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/sf/wfs3/api?f=text%2Fhtml",
+                document.select("#htmlApiLink").attr("href"));
     }
 }

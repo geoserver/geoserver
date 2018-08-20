@@ -24,12 +24,14 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.opengis.filter.sort.SortBy;
 
 @RunWith(Parameterized.class)
@@ -74,6 +76,34 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     @Test
+    public void testAdvertised() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setAdvertised(false);
+        catalog.add(ft1);
+        StyleInfo s1;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        LayerInfo l1 = newLayer(ft1, s1);
+        catalog.add(l1);
+        CloseableIterator<LayerInfo> it =
+                catalog.list(
+                        LayerInfo.class, ff.equals(ff.property("advertised"), ff.literal(true)));
+        assertFalse(it.hasNext());
+
+        ft1 = catalog.getFeatureTypeByName("ft1");
+        ft1.setAdvertised(true);
+        catalog.save(ft1);
+
+        it = catalog.list(LayerInfo.class, ff.equals(ff.property("advertised"), ff.literal(true)));
+        assertTrue(it.hasNext());
+        assertEquals(l1.getName(), it.next().getName());
+    }
+
+    @Test
     public void testCharacterEncoding() {
         addDataStore();
         addNamespace();
@@ -94,6 +124,33 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         facade.getConfigDatabase().dispose();
         FeatureTypeInfo saved = catalog.getFeatureTypeByName(name);
         assertEquals(degF, saved.getAbstract());
+    }
+
+    @Test
+    public void testEnabled() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setEnabled(false);
+        catalog.add(ft1);
+        StyleInfo s1;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        LayerInfo l1 = newLayer(ft1, s1);
+        catalog.add(l1);
+        CloseableIterator<LayerInfo> it =
+                catalog.list(LayerInfo.class, ff.equals(ff.property("enabled"), ff.literal(true)));
+        assertFalse(it.hasNext());
+
+        ft1 = catalog.getFeatureTypeByName("ft1");
+        ft1.setEnabled(true);
+        catalog.save(ft1);
+
+        it = catalog.list(LayerInfo.class, ff.equals(ff.property("enabled"), ff.literal(true)));
+        assertTrue(it.hasNext());
+        assertEquals(l1.getName(), it.next().getName());
     }
 
     @Test

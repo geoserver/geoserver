@@ -6,8 +6,10 @@ drop table if exists granule;
 drop table if exists collection_ogclink;
 drop table if exists product_ogclink;
 drop table if exists product_metadata;
+drop table if exists product_thumb;
 drop table if exists product;
 drop table if exists collection_metadata;
+drop table if exists collection_layer;
 drop table if exists collection;
 
 -- the collections and the attributes describing them
@@ -16,7 +18,7 @@ create table collection (
   "name" varchar,
   "primary" boolean,
   "htmlDescription" text,
-  "footprint" geography(Polygon, 4326),
+  "footprint" geometry(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,
   "productCqlFilter" varchar,
@@ -80,7 +82,7 @@ create table collection_metadata (
 create table product (
   "id" serial primary key,
   "htmlDescription" text,
-  "footprint" geography(Polygon, 4326),
+  "footprint" geometry(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,
   "originalPackageLocation" varchar,
@@ -124,7 +126,14 @@ create table product (
   "sarMaximumIncidenceAngle" float,
   "sarDopplerFrequency" float,
   "sarIncidenceAngleVariation" float,
-  "eoResolution" float
+  "eoResolution" float,
+  "atmVerticalRange" float[],
+  "atmVerticalResolution" float[],
+  "atmSpecies" varchar[],
+  "atmSpeciesError" float[],
+  "atmUnit" varchar[],
+  "atmAlgorithmName" varchar[],
+  "atmAlgorithmVersion" varchar[]
 );
 
 -- index all (really, this is a search engine)
@@ -170,6 +179,13 @@ create index "idx_product_footprint" on product using GIST("footprint");
  CREATE INDEX "idx_product_sarDopplerFrequency" ON product ("sarDopplerFrequency");
  CREATE INDEX "idx_product_sarIncidenceAngleVariation" ON product ("sarIncidenceAngleVariation");
  CREATE INDEX "idx_product_eoResolution" ON product ("eoResolution");
+ CREATE INDEX "idx_product_atmVerticalRange" on product using GIN("atmVerticalRange");
+ CREATE INDEX "idx_product_atmVerticalResolution" on product using GIN("atmVerticalResolution");
+ CREATE INDEX "idx_product_atmSpecies" on product using GIN("atmSpecies");
+ CREATE INDEX "idx_product_atmSpeciesError" on product using GIN("atmSpeciesError");
+ CREATE INDEX "idx_product_atmAlgorithmName" on product using GIN("atmAlgorithmName");
+ CREATE INDEX "idx_product_atmAlgorithmVersion" on product using GIN("atmAlgorithmVersion");
+ 
 
  -- the eo metadata storage (large files, not used for search, thus separate table)
 create table product_metadata (

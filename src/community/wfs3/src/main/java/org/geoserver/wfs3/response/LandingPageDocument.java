@@ -49,7 +49,8 @@ public class LandingPageDocument extends AbstractDocument {
                         link.setRel(Link.REL_SELF);
                         link.setTitle("This document");
                     }
-                });
+                },
+                Link.REL_ALTERNATE);
         // api
         addLinksFor(
                 baseUrl,
@@ -57,7 +58,8 @@ public class LandingPageDocument extends AbstractDocument {
                 OpenAPI.class,
                 "API definition for this endpoint as ",
                 "api",
-                null);
+                null,
+                Link.REL_SERVICE);
         // conformance
         addLinksFor(
                 baseUrl,
@@ -65,7 +67,8 @@ public class LandingPageDocument extends AbstractDocument {
                 ConformanceDocument.class,
                 "Conformance declaration as ",
                 "conformance",
-                null);
+                null,
+                "conformance");
         // collections
         addLinksFor(
                 baseUrl,
@@ -73,7 +76,8 @@ public class LandingPageDocument extends AbstractDocument {
                 CollectionsDocument.class,
                 "Collections Metadata as ",
                 "collections",
-                null);
+                null,
+                "data");
     }
 
     /** Builds service links for the given response types */
@@ -83,13 +87,13 @@ public class LandingPageDocument extends AbstractDocument {
             Class<?> responseType,
             String titlePrefix,
             String classification,
-            BiConsumer<String, Link> linkUpdater) {
+            BiConsumer<String, Link> linkUpdater,
+            String rel) {
         for (String format : DefaultWebFeatureService30.getAvailableFormats(responseType)) {
             Map<String, String> params = Collections.singletonMap("f", format);
             String url = buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_SERVICE;
             String linkTitle = titlePrefix + format;
-            Link link = new Link(url, linkType, format, linkTitle);
+            Link link = new Link(url, rel, format, linkTitle);
             link.setClassification(classification);
             if (linkUpdater != null) {
                 linkUpdater.accept(format, link);

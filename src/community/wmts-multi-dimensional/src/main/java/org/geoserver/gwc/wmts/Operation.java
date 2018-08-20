@@ -12,6 +12,7 @@ import org.geowebcache.storage.StorageBroker;
 /** WMTS multidimensional specific operations. */
 enum Operation {
     DESCRIBE_DOMAINS,
+    GET_DOMAIN_VALUES,
     GET_HISTOGRAM,
     GET_FEATURE;
 
@@ -41,6 +42,9 @@ enum Operation {
             case "DESCRIBEDOMAINS":
                 return new SimpleConveyor(
                         Operation.DESCRIBE_DOMAINS, request, response, storageBroker, parameters);
+            case "GETDOMAINVALUES":
+                return new SimpleConveyor(
+                        Operation.GET_DOMAIN_VALUES, request, response, storageBroker, parameters);
             case "GETHISTOGRAM":
                 return new SimpleConveyor(
                         Operation.GET_HISTOGRAM, request, response, storageBroker, parameters);

@@ -4,7 +4,7 @@
  */
 package org.geoserver.gwc;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.util.URLMangler;

@@ -58,6 +58,10 @@
   <bean id="openAPIResponse" class="org.geoserver.wfs3.response.OpenAPIResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="openAPIHTMLResponse" class="org.geoserver.wfs3.response.OpenAPIHTMLResponse">
+    <constructor-arg ref="resourceLoader"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
   <bean id="landingPageResponse" class="org.geoserver.wfs3.response.LandingPageResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
@@ -117,8 +121,6 @@
       <props>
         <prop key="/wfs3">dispatcher</prop>
         <prop key="/wfs3/*">dispatcher</prop>
-        <prop key="*/wfs3">dispatcher</prop>
-        <prop key="*/wfs3/*">dispatcher</prop>
       </props>
     </property>
   </bean>
@@ -129,8 +131,15 @@
     <property name="mappings">
       <props>
         <prop key="/wfs3css/**">classpathPublisher</prop>
+        <prop key="/swagger-ui/**">classpathPublisher</prop>
       </props>
     </property>
+  </bean>
+
+  <bean id="headerLinksAppender" class="org.geoserver.wfs3.response.HttpHeaderLinksAppender"/>
+
+  <bean id="wfs3LocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="wfs3"/>
   </bean>
 
 

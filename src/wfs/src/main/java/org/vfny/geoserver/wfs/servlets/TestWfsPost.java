@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.wfs.servlets;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -316,11 +317,16 @@ public class TestWfsPost extends HttpServlet {
     }
 
     String getProxyBaseURL() {
-        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
+        GeoServer geoServer = getGeoServer();
         if (geoServer != null) {
-            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+            return geoServer.getGlobal().getSettings().getProxyBaseUrl();
         }
         return null;
+    }
+
+    @VisibleForTesting
+    protected GeoServer getGeoServer() {
+        return (GeoServer) GeoServerExtensions.bean("geoServer");
     }
 
     void validateURL(HttpServletRequest request, String url, String proxyBase) {

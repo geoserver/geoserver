@@ -111,23 +111,38 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             Feature feature, Operation operation, GeoJSONBuilder jw) {
         String featureId = WFS3_FEATURE_ID.get();
         if (featureId != null) {
-            writeLinks(operation, jw, featureId);
+            writeLinks(null, operation, jw, featureId);
         }
     }
 
     @Override
-    protected void writeExtraCollectionProperties(
+    protected void writePagingLinks(
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
-        writeLinks(operation, jw, null);
+        // we have more than just paging links here
+        writeLinks(response, operation, jw, null);
     }
 
-    private void writeLinks(Operation operation, GeoJSONBuilder jw, String featureId) {
+    private void writeLinks(
+            FeatureCollectionResponse response,
+            Operation operation,
+            GeoJSONBuilder jw,
+            String featureId) {
         List<String> formats = getAvailableFormats(FeatureCollectionResponse.class);
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         FeatureTypeInfo featureType = getFeatureType(request);
         String baseUrl = request.getBaseUrl();
         jw.key("links");
         jw.array();
+        // paging links
+        if (response != null) {
+            if (response.getPrevious() != null) {
+                writeLink(jw, "Previous page", MIME, "prev", response.getPrevious());
+            }
+            if (response.getNext() != null) {
+                writeLink(jw, "Next page", MIME, "next", response.getNext());
+            }
+        }
+        // alternate/self links
         for (String format : formats) {
             String path = "wfs3/collections/" + NCNameResourceCodec.encode(featureType) + "/items";
             if (featureId != null) {

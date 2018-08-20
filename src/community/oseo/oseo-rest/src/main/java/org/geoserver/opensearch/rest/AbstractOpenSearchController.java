@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import org.geotools.feature.collection.BaseSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
@@ -388,11 +390,40 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             }
 
             ab.setDescriptor((AttributeDescriptor) pd);
-            Attribute attribute = ab.buildSimple(null, feature.getAttribute(sourceName));
+            Object originalValue = feature.getAttribute(sourceName);
+            Object converted = convert(originalValue, pd.getType().getBinding());
+            Attribute attribute = ab.buildSimple(null, converted);
             builder.append(pd.getName(), attribute);
         }
         Feature collectionFeature = builder.buildFeature(feature.getID());
         return collectionFeature;
+    }
+
+    protected Object convert(Object value, Class<?> targetClass) {
+        if (value == null) {
+            return null;
+        }
+        Object converted = Converters.convert(value, targetClass);
+        // custom array handling, unsure about adding a generally available converter
+        // might have too many side effects as a globally available converter
+        // we might revisit this decision later
+        if (converted == null) {
+            if (targetClass.isArray() && value instanceof List) {
+                Class componentType = targetClass.getComponentType();
+                List list = (List) value;
+                converted = Array.newInstance(componentType, list.size());
+                int i = 0;
+                for (Object o : list) {
+                    Object convertedItem = Converters.convert(o, componentType);
+                    Array.set(converted, i++, convertedItem);
+                }
+            } else {
+                throw new RestException(
+                        value + " cannot be converted to a " + targetClass.getSimpleName(),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return converted;
     }
 
     protected Name toName(String sourceName, String defaultNamespace) {

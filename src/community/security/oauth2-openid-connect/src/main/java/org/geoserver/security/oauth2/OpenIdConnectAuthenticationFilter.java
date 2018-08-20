@@ -7,6 +7,7 @@
 package org.geoserver.security.oauth2;
 
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 
@@ -19,5 +20,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration,
             OAuth2RestOperations oauth2RestTemplate) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
+        // reconfigure the token services
+        if (tokenServices instanceof OpenIdConnectTokenServices
+                && config instanceof OpenIdConnectFilterConfig) {
+            ((OpenIdConnectTokenServices) tokenServices)
+                    .setConfiguration((OpenIdConnectFilterConfig) config);
+        }
     }
 }

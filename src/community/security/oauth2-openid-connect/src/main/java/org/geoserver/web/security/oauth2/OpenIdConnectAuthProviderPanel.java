@@ -13,9 +13,11 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
+import org.geoserver.web.wicket.HelpLink;
 
 /**
  * Configuration panel for {@link GeoServerOAuthAuthenticationFilter}.
@@ -27,5 +29,8 @@ public class OpenIdConnectAuthProviderPanel
 
     public OpenIdConnectAuthProviderPanel(String id, IModel<OpenIdConnectFilterConfig> model) {
         super(id, model);
+
+        add(new HelpLink("principalKeyHelp", this).setDialog(dialog));
+        add(new TextField<String>("principalKey"));
     }
 }

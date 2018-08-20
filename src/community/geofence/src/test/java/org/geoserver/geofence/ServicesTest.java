@@ -5,6 +5,8 @@
 package org.geoserver.geofence;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +18,14 @@ import org.w3c.dom.Document;
 
 public class ServicesTest extends GeofenceBaseTest {
 
+    void loginAsCite() {
+        login("cite", "cite", "ROLE_CITE_ADMIN");
+    }
+
+    void loginAsSf() {
+        login("sf", "sf", "ROLE_SF_ADMIN");
+    }
+
     /** Enable the Spring Security auth filters, otherwise there will be no auth */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
@@ -25,7 +35,9 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testAdmin() throws Exception {
-        authenticate("admin", "geoserver");
+        if (!IS_GEOFENCE_AVAILABLE) {
+            return;
+        }
 
         // check from the caps he can access everything
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=WMS");
@@ -38,7 +50,11 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteCapabilities() throws Exception {
-        authenticate("cite", "cite");
+        if (!IS_GEOFENCE_AVAILABLE) {
+            return;
+        }
+
+        loginAsCite();
 
         // check from the caps he can access cite and sf, but not others
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.1&service=wms");
@@ -51,7 +67,11 @@ public class ServicesTest extends GeofenceBaseTest {
 
     @Test
     public void testCiteLayers() throws Exception {
-        authenticate("cite", "cite");
+        if (!IS_GEOFENCE_AVAILABLE) {
+            return;
+        }
+
+        loginAsCite();
 
         // try a getmap/reflector on a sf layer, should work
         MockHttpServletResponse response =

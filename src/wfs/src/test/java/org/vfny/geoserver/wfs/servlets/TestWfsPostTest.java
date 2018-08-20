@@ -4,9 +4,16 @@
  */
 package org.vfny.geoserver.wfs.servlets;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.impl.GeoServerInfoImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.ows.util.ResponseUtils;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -88,6 +95,27 @@ public class TestWfsPostTest {
                             .contains(
                                     "Invalid url requested, the demo requests should be hitting: http://geoserver.org/geoserver"));
         }
+    }
+
+    @Test
+    public void testGetProxyBaseURL() {
+        SettingsInfo settings = new SettingsInfoImpl();
+        settings.setProxyBaseUrl("https://foo.com/geoserver");
+
+        GeoServerInfo info = new GeoServerInfoImpl();
+        info.setSettings(settings);
+
+        GeoServer gs = new GeoServerImpl();
+        gs.setGlobal(info);
+
+        TestWfsPost servlet =
+                new TestWfsPost() {
+                    @Override
+                    protected GeoServer getGeoServer() {
+                        return gs;
+                    }
+                };
+        assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
     }
 
     protected static MockHttpServletRequest buildMockRequest() {

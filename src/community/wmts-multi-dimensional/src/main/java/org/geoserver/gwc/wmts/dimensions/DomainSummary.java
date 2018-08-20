@@ -4,17 +4,17 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import java.util.TreeSet;
+import java.util.Set;
 
 /** Simple containers of statistics about a domain */
 class DomainSummary {
 
     private Object min;
     private Object max;
-    private TreeSet<Object> uniqueValues;
+    private Set<Object> uniqueValues;
     private int count = -1;
 
-    public DomainSummary(TreeSet<Object> uniqueValues) {
+    public DomainSummary(Set<Object> uniqueValues) {
         this.count = uniqueValues.size();
         this.uniqueValues = uniqueValues;
     }
@@ -37,7 +37,7 @@ class DomainSummary {
         return count;
     }
 
-    public TreeSet<Object> getUniqueValues() {
+    public Set<Object> getUniqueValues() {
         return uniqueValues;
     }
 }

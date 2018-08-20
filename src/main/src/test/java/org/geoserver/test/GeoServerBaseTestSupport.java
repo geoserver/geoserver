@@ -13,11 +13,7 @@ import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.*;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -224,5 +220,25 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         return qName.getNamespaceURI() != null
                 ? new NameImpl(qName.getNamespaceURI(), qName.getLocalPart())
                 : new NameImpl(qName.getLocalPart());
+    }
+
+    protected static boolean equalsIgnoringNewlineStyle(String s1, String s2) {
+        if (s1 == null) {
+            return s2 == null;
+        } else if (s2 == null) {
+            return false;
+        }
+
+        return normalizeLineEnds(s1).equals(normalizeLineEnds(s2));
+    }
+
+    private static String normalizeLineEnds(String s) {
+        return s.replace("\r\n", "\n").replace('\r', '\n');
+    }
+
+    protected void assertEqualsIgnoreNewLineStyle(String expected, String actual) {
+        if (!equalsIgnoringNewlineStyle(expected, actual)) {
+            throw new ComparisonFailure("", expected, actual);
+        }
     }
 }

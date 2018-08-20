@@ -4,7 +4,7 @@
  */
 package org.geoserver.opensearch.eo.store;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 

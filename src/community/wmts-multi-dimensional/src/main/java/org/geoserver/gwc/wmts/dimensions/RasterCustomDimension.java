@@ -12,6 +12,7 @@ import org.geoserver.gwc.wmts.dimensions.CoverageDimensionsReader.DataType;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.filter.sort.SortOrder;
 
 /** Represents a custom dimension of a raster. */
 public class RasterCustomDimension extends RasterDimension {
@@ -22,7 +23,7 @@ public class RasterCustomDimension extends RasterDimension {
     }
 
     @Override
-    protected Class getDimensionType() {
+    public Class getDimensionType() {
         return String.class;
     }
 
@@ -31,7 +32,7 @@ public class RasterCustomDimension extends RasterDimension {
         CoverageDimensionsReader reader =
                 CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         Tuple<String, FeatureCollection> values =
-                reader.getValues(this.dimensionName, query, DataType.CUSTOM);
+                reader.getValues(this.dimensionName, query, DataType.CUSTOM, SortOrder.ASCENDING);
 
         return values.second;
     }

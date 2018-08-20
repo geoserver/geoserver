@@ -5,8 +5,7 @@
  */
 package org.geoserver.wcs2_0;
 
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -74,7 +73,6 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
@@ -101,7 +99,6 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
@@ -143,12 +140,6 @@ public class GetCoverage {
     /** Utility class to map envelope dimension */
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
-    /** A URI authorithy with lonlat order. */
-    private CRSAuthorityFactory lonLatCRSFactory;
-
-    /** A URI authorithy with latlon order. */
-    private CRSAuthorityFactory latLonCRSFactory;
-
     /** Factory used to create new coverages */
     private GridCoverageFactory gridCoverageFactory;
 
@@ -170,20 +161,6 @@ public class GetCoverage {
         this.catalog = catalog;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
         this.mimeMapper = mimeMapper;
-
-        // building the needed URI CRS Factories
-        Hints hints = GeoTools.getDefaultHints();
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
-        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        lonLatCRSFactory =
-                ReferencingFactoryFinder.getCRSAuthorityFactory(
-                        "http://www.opengis.net/def", hints);
-
-        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.FALSE));
-        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        latLonCRSFactory =
-                ReferencingFactoryFinder.getCRSAuthorityFactory(
-                        "http://www.opengis.net/def", hints);
         this.gridCoverageFactory =
                 CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
     }
@@ -760,8 +737,7 @@ public class GetCoverage {
         final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
         if (epsgCode != null && epsgCode > 0) {
             // final CRS
-            CoordinateReferenceSystem finalCRS =
-                    latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
+            CoordinateReferenceSystem finalCRS = CRS.decode(SRS_STARTER + epsgCode);
             if (CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))) {
                 return coverage;
             }
@@ -807,8 +783,7 @@ public class GetCoverage {
         try {
             final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
             if (epsgCode != null && epsgCode > 0) {
-                CoordinateReferenceSystem originalCRS =
-                        latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER + epsgCode);
+                CoordinateReferenceSystem originalCRS = CRS.decode(SRS_STARTER + epsgCode);
                 return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
             }
         } catch (FactoryException e) {
@@ -895,6 +870,10 @@ public class GetCoverage {
 
         List<GridCoverage2D> readCoverages = new ArrayList<>();
         for (GeneralEnvelope readEnvelope : readEnvelopes) {
+            // according to spec we need to return pixel in the intersection between
+            // the requested area and the declared bounds, readers might return less
+            GeneralEnvelope padEnvelope = computePadEnvelope(readEnvelope, reader);
+
             // check if a previous read already covered this envelope, readers
             // can return more than we asked
             GridCoverage2D cov = null;
@@ -925,18 +904,51 @@ public class GetCoverage {
                 }
                 readCoverages.add(cov);
             }
+            // do we have more than requested?
             Envelope2D covEnvelope = cov.getEnvelope2D();
+            GridCoverage2D cropped = cov;
             if (covEnvelope.contains(readBoundingBox)
                     && (covEnvelope.getWidth() > readBoundingBox.getWidth()
                             || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
-                GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
-                result.add(cropped);
-            } else {
-                result.add(cov);
+                cropped = cropOnEnvelope(cov, readEnvelope);
             }
+
+            // do we have less than expected?
+            GridCoverage2D padded = cropped;
+            Envelope croppedEnvelope = cropped.getEnvelope();
+            if (!new GeneralEnvelope(croppedEnvelope).contains(padEnvelope, true)) {
+                padded = padOnEnvelope(cropped, padEnvelope);
+            }
+
+            result.add(padded);
         }
 
         return result;
+    }
+
+    /**
+     * Computes the envelope that GetCoveage should be returning given a reading envelope and the
+     * reader own native envelope (which is also the envelope we are declaring in output)
+     */
+    private GeneralEnvelope computePadEnvelope(
+            GeneralEnvelope readEnvelope, GridCoverage2DReader reader) {
+        CoordinateReferenceSystem sourceCRS = reader.getCoordinateReferenceSystem();
+        CoordinateReferenceSystem subsettingCRS = readEnvelope.getCoordinateReferenceSystem();
+        try {
+            if (!CRS.equalsIgnoreMetadata(subsettingCRS, sourceCRS)) {
+                readEnvelope = CRS.transform(readEnvelope, sourceCRS);
+            }
+        } catch (TransformException e) {
+            throw new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT(),
+                    e);
+        }
+        GeneralEnvelope padEnvelope = new GeneralEnvelope(readEnvelope);
+        padEnvelope.intersect(reader.getOriginalEnvelope());
+
+        return padEnvelope;
     }
 
     private void addEnvelopes(
@@ -1306,9 +1318,15 @@ public class GetCoverage {
                         identifier + " was null", WCS20ExceptionCode.NotACrs, "null");
             }
 
-            // instantiate
+            // instantiate and make it go lon/lat order if possible
             try {
-                return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
+                CoordinateReferenceSystem crs = CRS.decode(crsName);
+                final Integer epsgCode = CRS.lookupEpsgCode(crs, false);
+                if (epsgCode != null && epsgCode > 0) {
+                    return CRS.decode("EPSG:" + epsgCode);
+                } else {
+                    return crs;
+                }
             } catch (Exception e) {
                 final WCS20Exception exception =
                         new WCS20Exception(
@@ -1709,6 +1727,17 @@ public class GetCoverage {
         GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
         cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
         return cropped;
+    }
+
+    private GridCoverage2D padOnEnvelope(GridCoverage2D coverage, GeneralEnvelope padEnvelope)
+            throws TransformException {
+        GridCoverage2D padded = WCSUtils.padToEnvelope(coverage, padEnvelope);
+        // in case of no padding just return the original coverage without wrapping
+        if (padded == coverage) {
+            return coverage;
+        }
+        padded = GridCoverageWrapper.wrapCoverage(padded, coverage, null, null, false);
+        return padded;
     }
 
     /**

@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -26,7 +27,7 @@ import org.geoserver.wfs3.BaseRequest;
 public abstract class JacksonResponse extends WFSResponse {
 
     public JacksonResponse(GeoServer gs, Class targetClass) {
-        super(
+        this(
                 gs,
                 targetClass,
                 new LinkedHashSet<>(
@@ -34,6 +35,10 @@ public abstract class JacksonResponse extends WFSResponse {
                                 BaseRequest.JSON_MIME,
                                 BaseRequest.YAML_MIME,
                                 BaseRequest.XML_MIME)));
+    }
+
+    protected JacksonResponse(GeoServer gs, Class targetClass, Set<String> formats) {
+        super(gs, targetClass, formats);
     }
 
     @Override
@@ -54,21 +59,31 @@ public abstract class JacksonResponse extends WFSResponse {
         }
     }
 
-    private String getFormat(Operation operation) {
+    /**
+     * Returns the requested format from the operation, falls back to {@link BaseRequest#JSON_MIME}
+     * if none was requested
+     *
+     * @param operation
+     * @return
+     */
+    protected String getFormat(Operation operation) {
         BaseRequest request = (BaseRequest) operation.getParameters()[0];
         Optional<String> format = Optional.ofNullable(request.getOutputFormat());
         return format.orElse(BaseRequest.JSON_MIME);
     }
 
-    private boolean isJsonFormat(Operation operation) {
+    /** Checks if the operation requested the JSON format */
+    protected boolean isJsonFormat(Operation operation) {
         return BaseRequest.JSON_MIME.equalsIgnoreCase(getFormat(operation));
     }
 
-    private boolean isYamlFormat(Operation operation) {
+    /** Checks if the operation requested the YAML format */
+    protected boolean isYamlFormat(Operation operation) {
         return BaseRequest.YAML_MIME.equalsIgnoreCase(getFormat(operation));
     }
 
-    private boolean isXMLFormat(Operation operation) {
+    /** Checks if the operation requested the XML format */
+    protected boolean isXMLFormat(Operation operation) {
         return BaseRequest.XML_MIME.equalsIgnoreCase(getFormat(operation));
     }
 

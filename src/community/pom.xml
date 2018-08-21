@@ -57,7 +57,6 @@
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
-          <descriptor>release/ext-sldservice.xml</descriptor>
           <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>
@@ -141,12 +140,6 @@
       </modules>
     </profile>
     <profile>
-      <id>sldService</id>
-      <modules> 
-        <module>sldService</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dds</id>
       <modules>
         <module>dds</module>
@@ -225,7 +218,6 @@
         <!-- <module>rest-upload</module> -->
         <module>geofence</module>
         <module>geofence-server</module>
-        <module>sldService</module>
         <module>params-extractor</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>

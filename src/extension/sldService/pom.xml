@@ -10,11 +10,11 @@
 
  <parent>
    <groupId>org.geoserver</groupId>
-   <artifactId>community</artifactId>
+   <artifactId>extension</artifactId>
    <version>2.14-SNAPSHOT</version>
  </parent>
   
- <groupId>org.geoserver.community</groupId>
+ <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-sldservice</artifactId>
  <name>REST SLD service</name>
 

@@ -33,6 +33,7 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
+   <!--
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
@@ -48,6 +49,7 @@
      <artifactId>gs-script-groovy</artifactId>
      <version>${project.version}</version>
    </dependency>
+   -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
@@ -309,7 +311,7 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
     <version>${project.version}</version>
    </dependency>

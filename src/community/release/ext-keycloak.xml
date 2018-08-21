@@ -10,11 +10,13 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-sec-keycloak*</include>
+        <include>http*</include>
         <include>keycloak*</include>
         <include>spring-security*</include>
-        <include>spring-security-oauth2*</include>
         <include>commons-codec*</include>
+        <include>commons-httpclient*</include>
         <include>jackson*</include>
+        <include>jboss*</include>
         <include>jettison*</include>
         <include>json*</include>
         <include>org.json*</include>

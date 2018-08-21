@@ -12,13 +12,13 @@
 	<parent>
 		<groupId>org.geoserver.web</groupId>
 		<artifactId>gs-web-sec</artifactId>
-		<version>2.14-SNAPSHOT</version>
+		<version>2.15-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>gs-web-sec-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.14-SNAPSHOT</version>
+	<version>2.15-SNAPSHOT</version>
 	<name>Security UI Core Module</name>
 
 	<dependencies>

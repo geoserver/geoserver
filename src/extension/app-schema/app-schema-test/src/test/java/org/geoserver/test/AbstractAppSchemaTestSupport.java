@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -602,5 +604,21 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         NestedFilterToSQL nestedFilterToSQL = new NestedFilterToSQL(mapping, original);
         nestedFilterToSQL.setInline(true);
         return nestedFilterToSQL;
+    }
+
+    /**
+     * Returns xml String from Document Object
+     *
+     * @param document
+     * @return
+     * @throws TransformerException
+     */
+    protected String toString(Document document) throws TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(document), new StreamResult(writer));
+        return writer.getBuffer().toString();
     }
 }

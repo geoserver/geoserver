@@ -1,0 +1,24 @@
+<wfs:GetFeature service="WFS" version="1.1.0"
+                xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:ms_gml31="http://www.measurements_gml31.org/1.0"
+    			xmlns:st_gml31="http://www.stations_gml31.org/1.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <wfs:Query typeName="ms_gml31:Measurement_gml31">
+      	<ogc:Filter>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>Measurement_gml31/@gml:id</ogc:PropertyName>
+                <ogc:Literal>ms.1</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+          </ogc:Filter>  
+      </wfs:Query>
+      <wfs:Query typeName="st_gml31:Station_gml31">
+        <ogc:Filter>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>Station_gml31/@gml:id</ogc:PropertyName>
+                <ogc:Literal>st.1</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+          </ogc:Filter>  
+      </wfs:Query>
+    </wfs:GetFeature>

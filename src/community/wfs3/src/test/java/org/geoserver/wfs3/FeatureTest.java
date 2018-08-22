@@ -81,6 +81,20 @@ public class FeatureTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testBBoxDatelineCrossingFilter() throws Exception {
+        String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
+        DocumentContext json =
+                getAsJSONPath("wfs3/collections/" + roadSegments + "/items?bbox=170,0,60,3", 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        // should return only f002 and f003
+        assertEquals(2, (int) json.read("features.length()", Integer.class));
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+        assertEquals(
+                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+    }
+
+    @Test
     public void testTimeFilter() throws Exception {
         String roadSegments = getEncodedName(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =

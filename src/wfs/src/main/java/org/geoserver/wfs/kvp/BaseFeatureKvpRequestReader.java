@@ -110,7 +110,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             if (typeNames == null) {
                 typeNames = (List) kvp.get("typeNames");
             }
-            List list = new ArrayList();
+            List<List<QName>> list = new ArrayList<>();
 
             for (Iterator itr = typeNames.iterator(); itr.hasNext(); ) {
                 Object obj = itr.next();
@@ -135,6 +135,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
             kvp.put("typeName", list);
             querySet(eObject, "typeName", list);
+            typeNames = list;
         } else {
             // check for featureId and infer typeName
             // in WFS 2.0 it is resourceId

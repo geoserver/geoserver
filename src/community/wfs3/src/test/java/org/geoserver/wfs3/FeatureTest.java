@@ -13,9 +13,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
@@ -299,5 +301,43 @@ public class FeatureTest extends WFS3TestSupport {
         Map<String, Object> expectedKVP = KvpUtils.parseQueryString(expectedPath);
         Map<String, Object> actualKVP = KvpUtils.parseQueryString(expectedPath);
         assertEquals(expectedKVP, actualKVP);
+    }
+
+    @Test
+    public void testSpecialCharsInTypeName() throws Exception {
+        FeatureTypeInfo genericEntity =
+                getCatalog().getFeatureTypeByName(getLayerId(MockData.GENERICENTITY));
+        genericEntity.setName("EntitéGénérique");
+        getCatalog().save(genericEntity);
+        try {
+            String encodedLocalName = URLEncoder.encode(genericEntity.getName(), "UTF-8");
+            String typeName = MockData.GENERICENTITY.getPrefix() + "__" + encodedLocalName;
+            String encodedFeatureId = encodedLocalName + ".f004";
+            DocumentContext json =
+                    getAsJSONPath(
+                            "wfs3/collections/" + typeName + "/items/" + encodedFeatureId, 200);
+
+            assertEquals("Feature", json.read("type", String.class));
+            // check self link
+            String geoJsonLinkPath = "links[?(@.type == 'application/geo+json')]";
+            List selfRels = json.read(geoJsonLinkPath + ".rel");
+            assertEquals(1, selfRels.size());
+            assertEquals("self", selfRels.get(0));
+            String href = (String) ((List) json.read(geoJsonLinkPath + "href")).get(0);
+            String expected =
+                    "http://localhost:8080/geoserver/wfs3/collections/"
+                            + typeName
+                            + "/items/"
+                            + encodedFeatureId
+                            + "?f=application%2Fgeo%2Bjson";
+            assertEquals(expected, href);
+            // check alternate link
+            List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
+            assertEquals(1, alternatefRels.size());
+            assertEquals("alternate", alternatefRels.get(0));
+        } finally {
+            genericEntity.setName(MockData.GENERICENTITY.getLocalPart());
+            getCatalog().save(genericEntity);
+        }
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs3.response;
 
+import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 import static org.geoserver.wfs3.DefaultWebFeatureService30.getAvailableFormats;
 
 import java.io.BufferedWriter;
@@ -144,9 +145,12 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
         // alternate/self links
         for (String format : formats) {
-            String path = "wfs3/collections/" + NCNameResourceCodec.encode(featureType) + "/items";
+            String path =
+                    "wfs3/collections/"
+                            + urlEncode(NCNameResourceCodec.encode(featureType))
+                            + "/items";
             if (featureId != null) {
-                path += "/" + featureId;
+                path += "/" + urlEncode(featureId);
             }
             String href =
                     ResponseUtils.buildURL(

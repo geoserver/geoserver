@@ -116,7 +116,7 @@ public class WFS3Filter implements GeoServerFilter {
                                     layerName = urlDecode(layerName);
                                 }
                                 setLayerName(layerName);
-                                this.featureId = matcher.group(2);
+                                this.featureId = urlDecode(matcher.group(2));
                             }
                             return matches;
                         });
@@ -263,6 +263,7 @@ public class WFS3Filter implements GeoServerFilter {
             }
             if (typeName != null) {
                 filtered.put("typeName", new String[] {typeName});
+                filtered.put("typeNames", new String[] {typeName});
             }
             if (outputFormat != null) {
                 filtered.put("outputFormat", new String[] {outputFormat});

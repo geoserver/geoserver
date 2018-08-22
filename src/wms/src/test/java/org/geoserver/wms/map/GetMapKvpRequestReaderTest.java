@@ -10,6 +10,8 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -37,6 +39,7 @@ import org.geoserver.ows.kvp.URLKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.wms.CacheConfiguration;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -57,7 +60,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     GetMapKvpRequestReader reader;
 
     Dispatcher dispatcher;
-
     public static final String STATES_SLD =
             "<StyledLayerDescriptor version=\"1.0.0\">"
                     + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
@@ -466,6 +468,82 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
+    }
+
+    public void testSldCache() throws Exception {
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+        WMSInfo info = new WMSInfoImpl();
+        info.setCacheConfiguration(new CacheConfiguration(true));
+        getGeoServer().remove(oldInfo);
+        getGeoServer().add(info);
+        URL sld = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
+        StringBuilder builder = new StringBuilder();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(sld.openStream()))) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) builder.append(inputLine);
+        }
+
+        MockHttpClientConnectionManager manager =
+                new MockHttpClientConnectionManager(builder.toString(), true);
+        reader = new GetMapKvpRequestReader(wms, manager);
+        // no style name, but the sld has a default for that layer
+        HashMap kvp = new HashMap();
+        String url = "http://cached_sld";
+        kvp.put("sld", url);
+        kvp.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+
+        assertNotNull(request.getSld());
+        assertEquals(manager.getConnections(), 1);
+
+        request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+
+        // no connection is done, the result is taken from cache
+        assertEquals(manager.getConnections(), 1);
+    }
+
+    public void testSldCacheNotEnabled() throws Exception {
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+        WMSInfo info = new WMSInfoImpl();
+        info.setCacheConfiguration(new CacheConfiguration(true));
+        getGeoServer().remove(oldInfo);
+        getGeoServer().add(info);
+        URL sld = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
+        StringBuilder builder = new StringBuilder();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(sld.openStream()))) {
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) builder.append(inputLine);
+        }
+
+        MockHttpClientConnectionManager manager =
+                new MockHttpClientConnectionManager(builder.toString(), false);
+        reader = new GetMapKvpRequestReader(wms, manager);
+        // no style name, but the sld has a default for that layer
+        HashMap kvp = new HashMap();
+        String url = "http://cached_sld";
+        kvp.put("sld", url);
+        kvp.put(
+                "layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+
+        assertNotNull(request.getSld());
+        assertEquals(manager.getConnections(), 1);
+
+        request = (GetMapRequest) reader.createRequest();
+        request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+
+        // new connection is done, the result is NOT taken from cache
+        assertEquals(manager.getConnections(), 2);
     }
 
     public void testSldDisabled() throws Exception {

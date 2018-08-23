@@ -18,4 +18,6 @@ public class AdminPagePanel extends Panel {
     public AdminPagePanel(String id, IModel<?> model) {
         super(id, model);
     }
+
+    public void onMainFormSubmit() {}
 }

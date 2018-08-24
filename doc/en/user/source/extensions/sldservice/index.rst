@@ -1,4 +1,4 @@
-.. _community_sldservice:
+.. _extensions_sldservice:
 
 SLD REST Service
 ================

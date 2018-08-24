@@ -331,6 +331,12 @@
         <module>mongodb</module>
       </modules>
     </profile>
+    <profile>
+      <id>sldService</id>
+      <modules> 
+        <module>sldService</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -372,6 +378,7 @@
         <module>vectortiles</module>
         <module>ysld</module>
         <module>mongodb</module>
+        <module>sldService</module>
       </modules>
     </profile>
 
@@ -415,6 +422,7 @@
         <module>vectortiles</module>
         <module>ysld</module>
         <module>mongodb</module>
+        <module>sldService</module>
       </modules>
     </profile>
   </profiles>

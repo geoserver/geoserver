@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.catalog.Predicates.asc;
+import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
@@ -12,6 +14,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,6 +39,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -43,6 +47,7 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
@@ -50,6 +55,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
@@ -74,7 +80,8 @@ import org.geotools.util.NumberRange;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.locationtech.jts.geom.Envelope;
-import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -664,24 +671,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          */
         private void handleLayers() {
             start("Layer");
-
-            final List<LayerInfo> layers;
-
-            // filter the layers if a namespace filter has been set
-            if (request.getNamespace() != null) {
-                final List<LayerInfo> allLayers = wmsConfig.getLayers();
-                layers = new ArrayList<LayerInfo>();
-
-                String namespace = wmsConfig.getNamespaceByPrefix(request.getNamespace());
-                for (LayerInfo layer : allLayers) {
-                    Name name = layer.getResource().getQualifiedName();
-                    if (name.getNamespaceURI().equals(namespace)) {
-                        layers.add(layer);
-                    }
-                }
-            } else {
-                layers = wmsConfig.getLayers();
-            }
+            // get filtered and ordered layers:
+            final List<LayerInfo> layers = getOrderedLayers();
 
             // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             if (StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
@@ -716,7 +707,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
             // encode layer groups
             try {
-                List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
+                List<LayerGroupInfo> layerGroups = getOrderedLayerGroups();
                 layersAlreadyProcessed =
                         handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
             } catch (Exception e) {
@@ -729,6 +720,58 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleLayerTree(featuresLayerTree, layersAlreadyProcessed);
 
             end("Layer");
+        }
+
+        /**
+         * Returns a list of name-ordered LayerGroupInfo, and filtered by namespace if needed
+         *
+         * @return LayerGroupInfo list
+         */
+        private List<LayerGroupInfo> getOrderedLayerGroups() {
+            Catalog catalog = wmsConfig.getCatalog();
+            // namespace filter
+            Filter filter = Predicates.acceptAll();
+            addNameSpaceFilterIfNeed(filter, "workspace.name");
+            // order by name ASC
+            SortBy order = asc("name");
+            // get list from iterator
+            try (CloseableIterator<LayerGroupInfo> iter =
+                    catalog.list(LayerGroupInfo.class, filter, null, null, order)) {
+                return Lists.newArrayList(iter);
+            }
+        }
+
+        /**
+         * Returns a list of name-ordered LayerInfo, and filtered by namespace if needed
+         *
+         * @return LayerInfo list
+         */
+        private List<LayerInfo> getOrderedLayers() {
+            Catalog catalog = wmsConfig.getCatalog();
+            Filter filter = equal("enabled", Boolean.TRUE);
+            // namespace filter
+            addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
+            // order by name ASC
+            SortBy order = asc("name");
+            // get list:
+            try (CloseableIterator<LayerInfo> iter =
+                    catalog.list(LayerInfo.class, filter, null, null, order)) {
+                return Lists.newArrayList(iter);
+            }
+        }
+
+        /**
+         * If the current request contains a namespace we build a filter using the provided property
+         * and request namespace and adds it to the provided filter. If the request doesn't contain
+         * a namespace the original filter is returned as is.
+         */
+        private Filter addNameSpaceFilterIfNeed(Filter filter, String nameSpaceProperty) {
+            String nameSpacePrefix = request.getNamespace();
+            if (nameSpacePrefix == null) {
+                return filter;
+            }
+            Filter equals = Predicates.equal(nameSpaceProperty, nameSpacePrefix);
+            return Predicates.and(filter, equals);
         }
 
         /**

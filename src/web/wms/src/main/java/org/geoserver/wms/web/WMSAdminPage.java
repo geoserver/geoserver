@@ -344,6 +344,16 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new CheckBox(
                         "disableFeaturesReproject",
                         new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
+        TextField<Integer> cacheMaxExtries =
+                new TextField<Integer>("cacheConfiguration.maxEntries");
+        cacheMaxExtries.add(RangeValidator.minimum(1));
+        form.add(cacheMaxExtries);
+
+        TextField<Long> cacheEntrySize = new TextField<Long>("cacheConfiguration.maxEntrySize");
+        cacheEntrySize.add(new RangeValidator<Long>(1L, Long.MAX_VALUE));
+        form.add(cacheEntrySize);
+
+        form.add(new CheckBox("cacheConfiguration.enabled"));
     }
 
     @Override

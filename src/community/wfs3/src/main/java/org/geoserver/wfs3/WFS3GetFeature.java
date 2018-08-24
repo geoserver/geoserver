@@ -7,6 +7,8 @@
 
 package org.geoserver.wfs3;
 
+import static org.geoserver.ows.util.ResponseUtils.urlEncode;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +61,7 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
             }
         }
         String collectionName = NCNameResourceCodec.encode(typeInfo);
-        String itemsPath = "wfs3/collections/" + collectionName + "/items";
+        String itemsPath = "wfs3/collections/" + urlEncode(collectionName) + "/items";
 
         // clean up the KVP params, remove the ones that are not WFS3 specific
         List<String> PARAMS_BLACKLIST =
@@ -68,6 +70,7 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
                         "VERSION",
                         "REQUEST",
                         "TYPENAME",
+                        "TYPENAMES",
                         "COUNT",
                         "OUTPUTFORMAT",
                         "STARTINDEX",

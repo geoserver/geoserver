@@ -5,12 +5,12 @@
     <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-nsg-profiles</artifactId>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
   </parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-nsg-wmts-profile</artifactId>
     <packaging>jar</packaging>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
     <name>NSG WMTS 1.0 Profile</name>
     <dependencies>
         <dependency>

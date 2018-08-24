@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.geoserver</groupId>		
     <artifactId>extension</artifactId>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-feature-pregeneralized</artifactId>
   <packaging>jar</packaging>
-  <version>2.14-SNAPSHOT</version>
+  <version>2.15-SNAPSHOT</version>
   <name>Feature Generalization Extension</name>
 
   <dependencies>

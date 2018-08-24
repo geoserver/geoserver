@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
+import org.geoserver.web.util.SerializableConsumer;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.KeywordsEditor;
@@ -69,6 +71,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
     protected GeoServerDialog dialog;
+    protected List<SerializableConsumer<Void>> onSubmitHooks = new ArrayList<>();
 
     public BaseServiceAdminPage() {
         this(new PageParameters());
@@ -143,7 +146,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     public void onSubmit() {
                         try {
                             handleSubmit((T) infoModel.getObject());
+                            // execute all submit hooks
+                            onSubmitHooks.forEach(
+                                    x -> {
+                                        x.accept(null);
+                                    });
                             doReturn();
+                        } catch (IllegalArgumentException ex) {
+                            error(ex.getMessage());
                         } catch (Exception e) {
                             error(e);
                         }
@@ -182,6 +192,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                                     .getConstructor(String.class, IModel.class)
                                     .newInstance("content", infoModel);
                     item.add(panel);
+                    // add onMainFormSubmit to hooks
+                    onSubmitHooks.add(x -> panel.onMainFormSubmit());
                 } catch (Exception e) {
                     throw new WicketRuntimeException(
                             "Failed to create admin extension panel of "

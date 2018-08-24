@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.14-SNAPSHOT</version>
+  <version>2.15-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -33,6 +33,7 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
+   <!--
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
@@ -48,6 +49,7 @@
      <artifactId>gs-script-groovy</artifactId>
      <version>${project.version}</version>
    </dependency>
+   -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
@@ -304,7 +306,7 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
     <version>${project.version}</version>
    </dependency>
@@ -318,6 +320,11 @@
      <artifactId>gs-taskmanager-s3</artifactId>
      <version>${project.version}</version>
    </dependency>   
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-qos</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
  </dependencies>
  <build>
   <plugins>

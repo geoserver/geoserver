@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.14-SNAPSHOT</version>
+        <version>2.15-SNAPSHOT</version>
     </parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-gwc-sqlite</artifactId>
     <packaging>jar</packaging>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
     <name>GeoWebCache SQLite</name>
     <dependencies>
         <dependency>

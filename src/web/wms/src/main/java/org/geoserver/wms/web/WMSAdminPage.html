@@ -270,6 +270,25 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="remoteStylesCache">Remote Styles Cache</wicket:message></span></legend>
+        <ul>
+          <li class="choiceItem">
+            <input type="checkbox" wicket:id="cacheConfiguration.enabled"></input>
+            <label for="cache.enabled"><wicket:message key="cacheEnabled">Enabled</wicket:message></label>
+          </li>
+          <li>
+            <label><wicket:message key="cacheEntries">Max entries</wicket:message></label>
+            <input class="text" type="text" wicket:id="cacheConfiguration.maxEntries"></input>
+          </li>
+          <li>
+            <label><wicket:message key="cacheEntrySize">Max entry size</wicket:message></label>
+            <input class="text" type="text" wicket:id="cacheConfiguration.maxEntrySize"></input>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

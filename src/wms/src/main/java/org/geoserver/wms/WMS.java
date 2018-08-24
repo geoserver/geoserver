@@ -403,6 +403,19 @@ public class WMS implements ApplicationContextAware {
         return watermark.getURL();
     }
 
+    public boolean isRemoteStylesCacheEnabled() {
+        CacheConfiguration cache = getServiceInfo().getCacheConfiguration();
+        return cache != null && cache.isEnabled() ? true : false;
+    }
+
+    public CacheConfiguration getRemoteResourcesCacheConfiguration() {
+        return getServiceInfo().getCacheConfiguration();
+    }
+
+    public void setRemoteResourcesCacheConfiguration(CacheConfiguration cacheCfg) {
+        getServiceInfo().setCacheConfiguration(cacheCfg);
+    }
+
     public FeatureTypeInfo getFeatureTypeInfo(final Name name) {
         Catalog catalog = getCatalog();
         FeatureTypeInfo resource = catalog.getResourceByName(name, FeatureTypeInfo.class);

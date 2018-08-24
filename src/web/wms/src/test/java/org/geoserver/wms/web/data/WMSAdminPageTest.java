@@ -103,6 +103,16 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testCacheConfiguration() throws Exception {
+        assertFalse(wms.getCacheConfiguration().isEnabled());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("cacheConfiguration.enabled", true);
+        ft.submit("submit");
+        assertTrue(wms.getCacheConfiguration().isEnabled());
+    }
+
+    @Test
     public void testFeaturesReprojectionDisabled() throws Exception {
         assertFalse(wms.isFeaturesReprojectionDisabled());
         tester.startPage(WMSAdminPage.class);

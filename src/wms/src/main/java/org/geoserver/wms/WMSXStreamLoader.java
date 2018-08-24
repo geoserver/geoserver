@@ -63,7 +63,10 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
         xs.registerConverter(new WMSInfoConverter(xp));
         xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
-        xs.allowTypes(new Class[] {WatermarkInfo.class, WatermarkInfoImpl.class});
+        xs.allowTypes(
+                new Class[] {
+                    WatermarkInfo.class, WatermarkInfoImpl.class, CacheConfiguration.class
+                });
     }
 
     @Override

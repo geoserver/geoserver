@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-importer</artifactId>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.importer</groupId>
   <artifactId>gs-importer-rest</artifactId>

@@ -8,26 +8,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs3.GetFeatureType;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.geometry.Envelope;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
@@ -81,8 +85,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
             filters.add(filterFactory.id(ids));
         }
         if (kvp.containsKey("bbox")) {
-            Envelope bbox = (Envelope) kvp.get("bbox");
-            BBOX bboxFilter = bboxFilter((org.locationtech.jts.geom.Envelope) bbox);
+            Filter bboxFilter = bboxFilter(kvp.get("bbox"));
             filters.add(bboxFilter);
         }
         if (kvp.containsKey("time")) {
@@ -161,5 +164,51 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
     @Override
     protected void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         // no op, we actually want to handle multiple filters
+    }
+
+    protected void handleBBOX(Map kvp, EObject eObject) throws Exception {
+        // set filter from bbox
+        Filter bboxFilter = bboxFilter(kvp.get("bbox"));
+
+        List<Query> queries = getQueries(eObject);
+        List filters = new ArrayList();
+
+        for (Iterator<Query> it = queries.iterator(); it.hasNext(); ) {
+            Query q = it.next();
+
+            List typeName = q.getTypeNames();
+            Filter filter;
+            if (typeName.size() > 1) {
+                // TODO: not sure what to do here, just going to and them up
+                List and = new ArrayList(typeName.size());
+
+                for (Iterator t = typeName.iterator(); t.hasNext(); ) {
+                    and.add(bboxFilter);
+                }
+
+                filter = filterFactory.and(and);
+            } else {
+                filter = bboxFilter;
+            }
+
+            filters.add(filter);
+        }
+
+        querySet(eObject, "filter", filters);
+    }
+
+    private Filter bboxFilter(Object bbox) {
+        if (bbox instanceof Envelope) {
+            return super.bboxFilter((Envelope) bbox);
+        } else if (bbox instanceof ReferencedEnvelope[]) {
+            ReferencedEnvelope[] envelopes = (ReferencedEnvelope[]) bbox;
+            List<Filter> filters =
+                    Stream.of(envelopes)
+                            .map(e -> (Filter) super.bboxFilter(e))
+                            .collect(Collectors.toList());
+            return filterFactory.or(filters);
+        }
+        throw new ServiceException(
+                "Internal error, did not expect to find this value for the bbox: " + bbox);
     }
 }

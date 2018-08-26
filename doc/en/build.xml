@@ -87,7 +87,7 @@
   <target name="developer" depends="init"
     description="Generate developers guide for GeoServer">
     <mkdir dir="${build.directory}"/>
-    <antcall target="sphinx-ignore-warnings">
+    <antcall target="sphinx">
       <param name="id" value="developer"/>
       <param name="build" value="html"/>
     </antcall>

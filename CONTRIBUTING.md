@@ -76,7 +76,7 @@ GeoServer does not have much in the way of strict commit policies. Our current c
    * Remember to add a copyright header with the year of creation to any new file. As an example, if you are adding a file in 2016 the copyright header would be:
 
    ```
-   /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+   /* (c) 2018 Open Source Geospatial Foundation - all rights reserved
     * This code is licensed under the GPL 2.0 license, available at the root
     * application directory.
     */
@@ -106,10 +106,9 @@ GeoServer does not have much in the way of strict commit policies. Our current c
 
 3. **Do not commit jars or libs, use Maven instead:** In general never commit a depending library directly into the repository, this is what we use Maven for. If you have a jar that is not present in any maven repositories, ask on the developer list to get it uploaded to one of the project maven repositories.
 
-4. **Ensure code is properly formatted:** Ensure that the IDE or editor used to edit source files is setup with proper
-   formatting rules. This means spaces instead of tabs, 100 character line break, etc...
-
-   If using Eclipse ensure you have configured it with the [template and formatter](http://docs.geotools.org/latest/developer/conventions/code/style.html#use-of-formatting-tools) used for GeoTools.
+4. **Ensure code is properly formatted:** We follow the [Google formatting conventions](https://google.github.io/styleguide/javaguide.html) with the AOSP variant (4 spaces indent instead of 2).
+   
+   The [google-java-format project](https://github.com/google/google-java-format) offers plugins for various IDEs. If your IDE is not supported, please just build once on the command line before committing.
 
 ## Community commit access
 

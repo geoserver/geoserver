@@ -136,41 +136,32 @@ Eclipse preferences
 Code formatting
 ^^^^^^^^^^^^^^^
 
-#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/formatter.xml
+The Google formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build before committing!
+
+The `google-java-format <https://github.com/google/google-java-format>`__ project offers a plugin for Eclipse, but we are waiting an support for ASOP variant. While we wait for this fix build once on the command line, to format the any code changes before committing.
+
+You may also:
+
+#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/eclipse-java-google-style.xml
 #. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
-
-   .. image:: code_formatting1.jpg
-
-#. Select the ``formatter.xml`` file downloaded in step 1
+#. Select the ``eclipse-java-google-style.xml`` file downloaded in step 1
 #. Click ``Apply``
 
-   .. image:: code_formatting2.jpg
+   .. image:: code_formatting2.png
 
-#. We follow "Sun Coding Conventions and a little bit more":
+#. We follow `Google Code Formatting <https://google.github.io/styleguide/javaguide.html>`__ with the AOSP variant (4 spaces indent instead of 2).
   
-  * `Code Conventions for the Java Programming Language <http://www.oracle.com/technetwork/java/index-135089.html>`__
-  * but allow for 100 characters in width
-  * developers should use spaces for indentations, not tabulations. The tab width (4 or 8 spaces) is not the same on all editors.
-  
-  For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
+   For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
 
 Code templates
 ^^^^^^^^^^^^^^
 
-#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/codetemplates.xml
+#. Download :download:`codetemplates.xml </../../../../build/codetemplates.xml>`.
 #. Navigate to ``Java``, ``Code Style``, ``Code Templates`` and click ``Import...``
-
-   .. image:: code_templates.jpg
-
-#. Select the ``codetemplates.xml`` file downloaded in step 1
-#. Update the file header::
-      
-      /* (c) ${year} Open Source Geospatial Foundation - all rights reserved
-       * This code is licensed under the GPL 2.0 license, available at the root
-       * application directory.
-       */
-   
+#. Select the ``codetemplates.xml`` file downloaded in step 1   
 #. Click ``Apply``
+
+.. image:: code-template.png
 
 Text editors
 ^^^^^^^^^^^^
@@ -186,18 +177,6 @@ Text editors
       Showing whitespace characters can help insure that unecessary whitespace 
       is not unintentionaly comitted.
    
-   .. image:: text_editors.jpg
+   .. image:: text_editors.png
 
 #. Click ``Apply``
-
-Compiler
-^^^^^^^^
-
-#. Navigate to ``Java``, ``Compiler``, ``Building``
-#. Expand ``Output folder`` and add ".svn/" to the list of 
-   ``Filtered resources``
-
-   .. image:: compiler.jpg
-
-#. Click ``Apply``
-

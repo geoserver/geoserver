@@ -1,7 +1,11 @@
 .. _quickstart_eclipse:
 
-Maven Eclipse PLugin Quickstart
+Maven Eclipse Plugin Quickstart
 ===============================
+
+This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the the :ref:`eclipse_guide`.
+
+.. include:: checkout.txt
 
 Generate Eclipse project files with Maven
 -----------------------------------------

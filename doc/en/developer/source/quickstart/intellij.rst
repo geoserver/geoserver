@@ -3,6 +3,8 @@
 Intellij Quickstart
 ===================
 
+.. include:: checkout.txt
+
 Import modules into Intellij
 ----------------------------
 

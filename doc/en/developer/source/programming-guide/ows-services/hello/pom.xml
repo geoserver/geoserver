@@ -30,7 +30,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <repository>
         <id>boundless</id>
         <name>Boundless Maven Repository</name>
-        <url>https://boundless.artifactoryonline.com/boundless/snapshot</url>
+        <url>https://repo.boundlessgeo.com/snapshot</url>
         <snapshots>
             <enabled>true</enabled>
         </snapshots>

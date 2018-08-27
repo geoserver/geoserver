@@ -1,7 +1,7 @@
 .. _quickstart_eclipse:
 
-Eclipse Quickstart
-==================
+Maven Eclipse PLugin Quickstart
+===============================
 
 Generate Eclipse project files with Maven
 -----------------------------------------

@@ -104,8 +104,9 @@ The next step is to import the GeoServer project into the IDE of your choice:
 .. toctree::
    :maxdepth: 1
 
-   eclipse
    intellij
+   eclipse
+   eclipse_m2
 
 If your IDE is not listed, consider :docguide:`adding <contributing>` a new quickstart page for it.
 

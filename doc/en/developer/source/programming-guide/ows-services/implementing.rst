@@ -12,7 +12,7 @@ Setup
 
 The first step in creating our plug-in is setting up a maven project for it. The project will be called "hello".
 
-#. Create a new directory called hello anywhere on your file system.
+#. Create a new directory called :file:`hello` anywhere on your file system.
 
 #. Add a maven pom called :file:`pom.xml` to the :file:`hello` directory: 
 
@@ -140,11 +140,13 @@ Trying it Out
     [INFO] Final Memory: 23M/589M
     [INFO] ------------------------------------------------------------------------
 
-#. Copy :file:`target/hello-1.0.jar` into the :file:`WEB-INF/lib` directory of your GeoServer install
+#. Next we need to make sure :file:`hello-1.0.jar` is included when we run GeoServer:
    
-   .. note::
-      
-      If running GeoServer from eclipse you can edit the :file:`web-app/pom.xml` with the following dependency:
+   * If you are running a GeoServer in Tomcat, copy :file:`target/hello-1.0.jar` into :file:`webapps/geoserver/WEB-INF/lib` (just like we manually install extensions or community modules).
+     
+     Restart GeoServer to pick up the change.
+   
+   * If running with :command:`Eclipse` using maven eclipse plugin, the easiest approach is edit the :file:`web-app/pom.xml` with the following dependency:
       
       .. code-block:: xml
       
@@ -154,11 +156,11 @@ Trying it Out
             <version>1.0-SNAPSHOT</version>
         </dependency>
       
-      You will need to run `mvn eclipse:eclipse` after editing :file:`web-app/pom.xml` for the change to be reflected in the eclipse configuration.
-
-#. Restart GeoServer
-
-#. Visit:: 
+      After editing :file:`webapps/pom.xml` we need run `mvn eclipse:eclipse`, and then from :command:`Eclipse` right click on web-app project and :guilabel:`Refresh` for the IDE to notice the change.
+      
+   * If and IDE like IntellJ, Eclipse M2 Maven plugin or NetBeans refresh the project so it picks up the changes to :file:`pom.xml`
+   
+#. Restart GeoServer and visit:: 
 
       http://<host>/geoserver/ows?request=sayHello&service=hello&version=1.0.0
 
@@ -183,7 +185,7 @@ Trying it Out
    directory of the hello module.
 
 Bundling with Web Module
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 An alternative to plugging into an existing installation is to build a complete
 GeoServer war that includes the custom hello plugin. To achieve this a new 
@@ -218,7 +220,7 @@ A GeoServer war including the hello extension should now be present in the
    hello jar is present.
 
 Running from Source
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 During development the most convenient way to work with the extension is to run
 it directly from sources.

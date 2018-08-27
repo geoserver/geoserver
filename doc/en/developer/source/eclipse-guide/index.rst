@@ -7,16 +7,38 @@ A reference for developing GeoServer with Eclipse.
 
 .. contents:: :local:
 
-Importing modules
------------------
+Setting up Eclipse
+------------------
 
-See the Eclipse section of the :ref:`maven_guide`.
+Use of Maven M2 Plugin
+^^^^^^^^^^^^^^^^^^^^^^
 
+The Eclipse built-in support for maven can be used to build and run GeoServer, see :ref:`quickstart_eclipse_m2` for details.
+
+Use of maven eclipse plugin
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The maven eclipse plugin is used to generate eclipse projects for a set of 
+modules::
+
+  mvn eclipse:eclipse
+
+After which the modules can be imported into an eclipse workspace, see :ref:`quickstart_eclipse` for details.
+
+A useful feature of the plugin is the ability to download associated source code
+for third party dependencies. This is done with the ``downloadSources`` flag::
+
+  mvn -DdownloadSources eclipse:eclipse
+
+.. warning::
+
+   The first time you enable the ``downloadSources`` flag the build will take a  long time as it will attempt to download the sources for every single library GeoServer depends on.
+   
 Running and debugging
 ---------------------
 
 Run or debug the class ``org.geoserver.web.Start`` in the ``web-app`` 
-module. The steps to do so are detailed in the :ref:`quickstart`.
+module. The steps to do so are detailed in the :ref:`quickstart_eclipse` or :ref:`quickstart_eclipse_m2`.
 
 Running GeoServer with Extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

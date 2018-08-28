@@ -47,6 +47,7 @@
       <artifactId>gs-security-tests</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

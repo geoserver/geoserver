@@ -6,7 +6,7 @@ When submitting pull request:
 
   We understand that fixing a single source file may require changes to several test case files to verify the fix addresses its intended problem.
 
-* **Large Contributions / Multiple Files / New Files:** To  contribute a new file, or if your change effects several files, sign a [Code Contribution License](http://docs.geotools.org/latest/developer/procedures/contribution_license.html). It does not take long and you can send it via email.
+* **Large Contributions / Multiple Files / New Files:** To  contribute a new file, or if your change effects several files, sign a [Code Contribution License]( http://docs.geoserver.org/latest/en/developer/policies/committing.html). It does not take long and you can send it via email.
    * [Corporate contributor license](https://www.osgeo.org/resources/corporate-contributor-license/)
    * [Individual contributor license](https://www.osgeo.org/resources/individual-contributor-license/)
 

@@ -17,6 +17,7 @@ officially part of the GeoServer releases. They are however built along with the
 
    authkey/index
    oauth2/index
+   keycloak/index
    dds/index
    scripting/index
    spatialite/index
@@ -29,7 +30,6 @@ officially part of the GeoServer releases. They are however built along with the
    wps-download/index
    jms-cluster/index
    solr/index
-   sldservice/index
    rest-upload/index
    geomesa/index
    gwc-distributed/index

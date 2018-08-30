@@ -5,16 +5,13 @@
 package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
-import com.boundlessgeo.gsr.model.geometry.SpatialReference;
-import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKID;
-import com.boundlessgeo.gsr.model.geometry.SpatialReferenceWKT;
-import com.boundlessgeo.gsr.translate.feature.FeatureEncoder;
-import com.boundlessgeo.gsr.translate.geometry.SpatialReferenceEncoder;
+
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -24,6 +21,7 @@ import org.junit.Test;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;
 
@@ -37,6 +35,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
     private String query(String service, String layer, String params) {
         return getBaseURL() + service + "/FeatureServer/" + layer + params;
+    }
+
+    private String serviceQuery(String service,String params){
+        return getBaseURL() + service + "/FeatureServer" + params;
     }
 
     @Before
@@ -701,4 +703,231 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
 
     }
+
+    @Test
+    public void testApplyEditsServiceLayer() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("cgf","Lines");
+
+        //verify initial feature state
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        String q = query("cgf", "0", "/applyEdits?f=json&rollbackOnFailure=false&returnEditMoment=false");
+
+
+        String addsBody =
+                "[\n" +
+                "  {\n" +
+                "  \"geometry\" : {" +
+                "      \"geometryType\":\"esriGeometryPolyline\", " +
+                "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                "    },\n" +
+                "    \"attributes\" : {\n" +
+                        "\"objectid\" : 1535485437364,\n" +
+                "      \"id\" : \"t0002\",\n" +
+                "    }\n" +
+                "  }\n" +
+                "]" ;
+        String updatesBody =
+                "[\n" +
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "\"objectid\" : 0,\n" +
+                        "      \"id\" : \"t0001\",\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]" ;
+        String deletesBody = "0";
+
+
+        JSON result = postServiceLayerEditsAsForm(q,deletesBody,addsBody,updatesBody);
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
+
+        JSONObject json = (JSONObject) result;
+
+        JSONObject resultObj = json.getJSONArray("deleteResults").getJSONObject(0);
+        assertEquals( true, resultObj.getBoolean("success"));
+
+        //verify feature was deleted
+        assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
+
+        assertNotSame("Lines.0",fti.getFeatureSource(null, null).getFeatures().features().next().getIdentifier().getID());
+
+        System.out.println(fti.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
+        //verify feature was added
+        JSONObject resultObj2 = json.getJSONArray("addResults").getJSONObject(0);
+        assertEquals( true, resultObj2.getBoolean("success"));
+        assertEquals("t0002",fti.getFeatureSource(null, null).getFeatures().features().next().getProperty("id").getValue());
+
+        JSONObject resultObj3 = json.getJSONArray("updateResults").getJSONObject(0);
+        assertEquals( true, resultObj3.getBoolean("success"));
+
+        System.out.println(json);
+
+    }
+
+    @Test
+    public void testApplyEditsService() throws Exception {
+        //Use 'cgf' workspace - 0 Lines, 1 MLines, 2 MPoints, 3 MPolygons, 4 Points, 5 Polygons,
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo ftiLines = catalog.getFeatureTypeByName("cgf","Lines");
+        FeatureTypeInfo ftiPoints = catalog.getFeatureTypeByName("cgf","Points");
+
+        //verify initial feature state
+        assertEquals(1, ftiLines.getFeatureSource(null, null).getFeatures().size());
+        assertEquals(1, ftiPoints.getFeatureSource(null, null).getFeatures().size());
+
+        String q = serviceQuery("cgf", "/applyEdits?f=json&rollbackOnFailure=false&returnEditMoment=false");
+
+
+        String addsBodyLine =
+                "[\n" +
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"id\" : \"t0002\",\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]" ;
+        String updatesBodyLine =
+                "[\n" +
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPolyline\", " +
+                        "      \"paths\" : [[[500050.0, 499950.0],[500150.0, 500050.0]]], " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"objectid\" : 0,\n" +
+                        "      \"id\" : \"t0001\",\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]" ;
+        String deletesBodyLine = "[0]";
+
+        String layerEdit0 = "{\"id\":0," + "\"adds\":" + addsBodyLine + "," + "\"updates\":" + updatesBodyLine + "," +  "\"deletes\":" + deletesBodyLine + "}";
+
+        String addsBodyPoint =
+                "[\n" +
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPoint\", " +
+                        "      \"x\" : 50051, " +
+                        "      \"y\" : 50051, " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"id\" : \"t0002\",\n" +
+                        "      \"altitude\" : 400,\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]" ;
+        String updatesBodyPoint =
+                "[\n" +
+                        "  {\n" +
+                        "  \"geometry\" : {" +
+                        "      \"geometryType\":\"esriGeometryPoint\", " +
+                        "      \"x\" : 50051, " +
+                        "      \"y\" : 50051, " +
+                        "      \"spatialReference\" : {\"wkid\" : 32615}" +
+                        "    },\n" +
+                        "    \"attributes\" : {\n" +
+                        "      \"objectid\" : 0,\n" +
+                        "      \"id\" : \"t0001\",\n" +
+                        "      \"altitude\" : 350,\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]" ;
+        String deletesBodyPoint = "[0]";
+
+        String layerEdit4 = "{\"id\":4," + "\"adds\":" + addsBodyPoint + "," + "\"updates\":" + updatesBodyPoint + "," +  "\"deletes\":" + deletesBodyPoint + "}";
+
+        String serviceEdits = "[" + layerEdit0 + "," + layerEdit4 + "]";
+
+
+        JSON result = postServiceEditsAsForm(q,serviceEdits);
+        assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONArray);
+
+        JSONArray json = (JSONArray) result;
+
+        JSONObject resultLineLayer = (JSONObject)json.get(0);
+        JSONObject resultLineDelete = resultLineLayer.getJSONArray("deleteResults").getJSONObject(0);
+        assertEquals( true, resultLineDelete.getBoolean("success"));
+
+
+        //verify feature was deleted
+        assertEquals(1, ftiLines.getFeatureSource(null, null).getFeatures().size());
+
+        assertNotSame("Lines.0",ftiLines.getFeatureSource(null, null).getFeatures().features().next().getIdentifier().getID());
+
+        System.out.println(ftiLines.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
+        //verify feature was added
+        JSONObject resultLineAdd = resultLineLayer.getJSONArray("addResults").getJSONObject(0);
+        assertEquals( true, resultLineAdd.getBoolean("success"));
+        assertEquals("t0002",ftiLines.getFeatureSource(null, null).getFeatures().features().next().getProperty("id").getValue());
+
+        JSONObject resultLineUpdate = resultLineLayer.getJSONArray("updateResults").getJSONObject(0);
+        assertEquals( true, resultLineUpdate.getBoolean("success"));
+
+
+
+
+
+
+        JSONObject resultPointLayer = (JSONObject)json.get(1);
+        JSONObject resultPointDelete = resultPointLayer.getJSONArray("deleteResults").getJSONObject(0);
+        assertEquals( true, resultPointDelete.getBoolean("success"));
+
+
+        //verify feature was deleted
+        assertEquals(1, ftiPoints.getFeatureSource(null, null).getFeatures().size());
+
+        assertNotSame("Points.0",ftiLines.getFeatureSource(null, null).getFeatures().features().next().getIdentifier().getID());
+
+        System.out.println(ftiPoints.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
+        //verify feature was added
+        JSONObject resultPointAdd = resultPointLayer.getJSONArray("addResults").getJSONObject(0);
+        assertEquals( true, resultPointAdd.getBoolean("success"));
+        assertEquals("t0002",ftiPoints.getFeatureSource(null, null).getFeatures().features().next().getProperty("id").getValue());
+
+        JSONObject resultPointUpdate = resultPointLayer.getJSONArray("updateResults").getJSONObject(0);
+        assertEquals( true, resultPointUpdate.getBoolean("success"));
+
+        System.out.println(json);
+
+    }
+
+    protected JSON postServiceLayerEditsAsForm(
+            String path, String deletes, String adds, String updates) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        request.addParameter("deletes",deletes);
+        request.addParameter("adds",adds);
+        request.addParameter("updates",updates);
+
+        return JSONSerializer.toJSON(dispatch(request).getContentAsString());
+    }
+
+    protected JSON postServiceEditsAsForm(
+            String path, String edits) throws Exception {
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        request.addParameter("edits",edits);
+        return JSONSerializer.toJSON(dispatch(request).getContentAsString());
+    }
+
+
 }

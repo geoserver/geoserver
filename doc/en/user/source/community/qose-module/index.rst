@@ -67,7 +67,8 @@ slowness or a Log file.
 Representative Operations
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this section, the user can declare the performance of the service (as a statement) on a specific layer for a specific request (GetMap and GetFeatureInfo Operations). 
+In this section, the user can set the parameters of an operation such as a GetMap or GetFeatureInfo request to auto-configure external monitoring tools. Then, as a statement can 
+declare the expected performance of the service for the latter monitored operation. 
 
 .. figure:: images/qose-6.png
       :align: center
@@ -143,7 +144,7 @@ The module will inject the settings in the XML GetCapabilities file of the servi
       </qos:OperationAnomalyFeed>
     </qos-wms:QualityOfServiceMetadata>
 
-.. note:: The module works only for the latest versions of WMS (i.e. 1.3.0) and WFS (i.e. 2.0.0 later on) services.
+.. note:: The module works only for the latest versions of WMS (i.e. 1.3.0) and WFS (i.e. 2.0.2 later on) services.
 
 
 

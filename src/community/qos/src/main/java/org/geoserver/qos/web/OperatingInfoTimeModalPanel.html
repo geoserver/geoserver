@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div style="margin: 1em" class="qos-panel" >
+        <h4>Operating Info Time:</h4>
+        <div wicket:id="opInfoTimeForm" class="inputForm">
+	        <table>
+        		<tr>
+        			<td>
+		       	 		<span wicket:id="daysOfWeekCheckGroup">
+			              <label><wicket:message key="daysOfWeek" /> </label>             
+			                <span wicket:id="days">
+			                    <input type="checkbox" wicket:id="daysCheck"/>
+			                    <label wicket:id="day" style="display:inline;"></label>
+			                </span>
+		              	</span>
+		              	<table>
+		              		<tr>
+		              			<td>
+		              				<label>Start</label>
+			              			<input type="text" wicket:id="startTimeField"/> 
+		              			</td>
+			              		<td>
+			              			<label>End</label>
+			              			<input type="text" wicket:id="endTimeField"/>
+		              			</td>
+		              		</tr>
+		              	</table>
+	              	</td>
+	              	<td>
+              			<a href="#" wicket:id="deleteLink" class="remove-link">Delete</a>
+              		</td>
+              	</tr>
+              	</table>
+              	
+        </div>
+    </div>
+    
+</wicket:panel>

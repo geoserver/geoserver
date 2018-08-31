@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div wicket:id="mainDiv" class="qos-panel">
+        
+        <table>
+        	<tr>
+        		<td>
+			        <div wicket:id="layersDiv" class="" >
+			        	<label>TypeNames</label>
+			        	<ul wicket:id="layersList">
+			        		<li>
+			        			<input type="text" wicket:id="layerName"/>
+			        			<a wicket:id="deleteLayer" class="remove-link"> </a>
+			        		</li>
+			        	</ul>
+			        	<a wicket:id="addLayer" class="add-link">Add...</a>
+			        </div>
+	        	</td>
+	        </tr>
+        </table>
+        <div wicket:id="innerConstraintsDiv">
+	        <div wicket:id="formatsDiv">
+	   			<label>Output Formats</label>
+	   			<select wicket:id="formatsChoice" ></select>
+	   		</div>
+	        <div>
+	        	<label><wicket:message key="bounds">Bounds</wicket:message></label>
+	            <div wicket:id="bounds" class="selfclear"></div>
+	        </div>
+	        
+	        <div>
+	        	<input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"/>
+	         	<input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/> 
+	        </div>
+	        
+	        <div>
+	        	<ul>
+	        		<li>
+	        			<label>Count</label>
+	        			<input wicket:id="countInput" />
+	        		</li>
+	        		<li>
+	        			<label>Resolve References</label>
+	        			<input wicket:id="resolveReferencesInput" />
+	        		</li>
+	        		<li>
+	        			<label>SortBy</label>
+	        			<input wicket:id="sortByInput" />
+	        		</li>
+	        		<li>
+	        			<label>Property Name</label>
+	        			<input wicket:id="propertyNameInput" />
+	        		</li>
+	        	</ul>
+	        </div>
+	    </div>
+    </div>
+    <div wicket:id="selectLayerModal" ></div>
+ </wicket:panel>

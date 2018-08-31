@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <div style="margin: 1em">
+        <!-- <h1>Operating Info:</h1>  -->
+        <div wicket:id="opInfoForm" class="inputForm qos-panel">
+	        <ul>
+		        <li>
+			        <table>
+				        <tr>
+				        	<td>
+								<label for="title"><wicket:message key="opinfo_title" /></label>
+				        		<select wicket:id="titleSelect"></select>
+			        		</td>
+			        		<td>
+				        		<label for="title"><wicket:message key="opinfo_title2" /></label>
+				        		<input wicket:id="titleInput" />
+			        		</td>
+				        </tr>
+			        </table>
+			        
+		        </li>
+		        <li>
+		        	<div wicket:id="timeListContainer" >
+		        		<a class="add-link" href="#" wicket:id="addTime">Add new Days of Week...</a>
+		        		<div wicket:id="timeList" style="display: table-row;">
+		        			<div wicket:id="timePanel" ></div>
+		        		</div>
+		        	</div>
+		        </li>
+		        <li>
+		        	<a href="#" wicket:id="deleteLink" class="remove-link">Delete Operating Info</a>
+		        </li>
+	        </ul>
+	        
+        </div>
+    </div>
+    <div wicket:id="timeModal"></div>
+</wicket:panel>

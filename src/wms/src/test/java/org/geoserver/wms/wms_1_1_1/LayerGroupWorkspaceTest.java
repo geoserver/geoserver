@@ -8,9 +8,19 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -25,6 +35,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
@@ -522,5 +534,77 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         wms.getSRS().remove("3857");
         wms.setBBOXForEachCRS(false);
         getGeoServer().save(wms);
+    }
+
+    /** Tests Layer group order */
+    @Test
+    public void testGetCapabilitiesGroupOrder() throws Exception {
+        Document doc = getAsDOM("/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        List<String> originalList = layerGroupNameList(doc);
+        assertFalse(originalList.isEmpty());
+        List<String> normal =
+                originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
+        List<String> ordered = normal.stream().sorted().collect(Collectors.toList());
+        assertTrue(ordered.equals(normal));
+    }
+
+    /** Test Layer group order on a workspace virtual service */
+    @Test
+    public void testWorkspaceGetCapabilitiesGroupOrder() throws Exception {
+        Document doc = getAsDOM("sf/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        assertXpathExists("//Layer/Name[text() = 'base']", doc);
+        assertXpathNotExists("//Layer/Name[text() = 'sf:base']", doc);
+        assertBounds(sf, "base", doc);
+        String layer = "base";
+        assertXpathNotExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", doc);
+        List<String> originalList = layerGroupNameList(doc);
+        assertFalse(originalList.isEmpty());
+        List<String> normal =
+                originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
+        List<String> ordered = normal.stream().sorted().collect(Collectors.toList());
+        assertTrue(ordered.equals(normal));
+    }
+
+    /**
+     * removes prefix from layer name
+     *
+     * @param prefixedName
+     * @return
+     */
+    private String removeLayerPrefix(String prefixedName) {
+        if (prefixedName.indexOf(":") > -1) {
+            return prefixedName.split(":")[1];
+        }
+        return prefixedName;
+    }
+
+    /**
+     * returns list of prefixed layer groups names from document
+     *
+     * @param doc
+     * @return
+     * @throws Exception
+     */
+    private List<String> layerGroupNameList(Document doc) throws Exception {
+        List<Node> nlist =
+                xpathList("//WMT_MS_Capabilities/Capability/Layer/Layer[not(@opaque)]/Name", doc);
+        List<String> result = new ArrayList<>();
+        nlist.forEach(
+                x -> {
+                    result.add(x.getTextContent().trim());
+                });
+        return result;
+    }
+
+    private List<Node> xpathList(String xpathString, Document doc) throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression expr = xpath.compile(xpathString);
+        NodeList nlist = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        List<Node> nodeList = new ArrayList<>();
+        for (int i = 0; i < nlist.getLength(); i++) {
+            nodeList.add(nlist.item(i));
+        }
+        return nodeList;
     }
 }

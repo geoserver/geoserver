@@ -15,7 +15,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.opengis.wfs20.StoredQueryDescriptionType;
+import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geotools.wfs.v2_0.WFS;
@@ -103,6 +106,13 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
                         "http://www.opengis.net/wfs/2.0",
                         "gml",
                         "http://www.opengis.net/gml/3.2");
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        // inject a test namespace to check on responses
+        addTestNamespaceToCatalog();
     }
 
     /** * GetFeature tests ** */
@@ -335,5 +345,81 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
         }
+    }
+
+    /**
+     * Test a request with two queries (to different featureTypes and namespaces) Checks null
+     * prefixes issue on multiple query WFS 2.0.0 GML 3.2 versions
+     */
+    @Test
+    public void testTwoQueriesNamespacesGml32() throws Exception {
+        String wfsQuery =
+                IOUtils.toString(
+                        getClass()
+                                .getClassLoader()
+                                .getResourceAsStream(
+                                        "test-data/stations/stations_two_queries.xml"));
+        Document document = postAsDOM("wfs", wfsQuery);
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/wfs:member/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
+
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "/wfs:FeatureCollection/wfs:member/wfs:FeatureCollection/wfs:member/"
+                        + "ms_gml32:Measurement_gml32");
+        // check prefixes:
+        String output = toString(document);
+        assertTrue(output.indexOf("null:Measurement_gml32") < 0);
+        assertTrue(output.indexOf("null:Station_gml32") < 0);
+        assertTrue(output.indexOf("ms_gml32:Measurement_gml32") > -1);
+        assertTrue(output.indexOf("st_gml32:Station_gml32") > -1);
+        // check test1 namespace injected:
+        assertTrue(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\"") >= 0);
+    }
+
+    /**
+     * Test a request with two queries (to different featureTypes and namespaces) Checks null
+     * prefixes issue on multiple query WFS 1.1.0 GML 3.1 version
+     */
+    @Test
+    public void testTwoQueriesNamespacesGml31() throws Exception {
+        String wfsQuery =
+                IOUtils.toString(
+                        getClass()
+                                .getClassLoader()
+                                .getResourceAsStream(
+                                        "test-data/stations/stations_two_queries_1.1.xml"));
+        Document document = postAsDOM("wfs", wfsQuery);
+        String output = toString(document);
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "/wfs:FeatureCollection/gml:featureMember/" + "ms_gml31:Measurement_gml31");
+        // check prefixes:
+        assertTrue(output.indexOf("null:Measurement_gml31") < 0);
+        assertTrue(output.indexOf("null:Station_gml31") < 0);
+        assertTrue(output.indexOf("ms_gml31:Measurement_gml31") > -1);
+        assertTrue(output.indexOf("st_gml31:Station_gml31") > -1);
+        // check test1 namespace injected:
+        assertTrue(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\"") >= 0);
+    }
+
+    private void addTestNamespaceToCatalog() {
+        NamespaceInfoImpl ns1 = new NamespaceInfoImpl();
+        ns1.setURI("http://www.test1.org/test1");
+        ns1.setPrefix("test1");
+        getCatalog().add(ns1);
     }
 }

@@ -53,4 +53,4 @@ officially part of the GeoServer releases. They are however built along with the
    netcdf-ghrsst/index
    monitor-hibernate/index
    taskmanager/index
-   qose-plugin/index
+   qose-module/index

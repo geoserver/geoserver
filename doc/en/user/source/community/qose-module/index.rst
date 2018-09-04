@@ -1,4 +1,4 @@
-.. _qose-plugin:
+.. _qose-module:
 
 Quality of Service and Experience Module (QoSE)
 ===============================================

@@ -98,7 +98,7 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return
      */
     @ResponseBody
-    @PostMapping(path = "/{layerId}/deleteFeatures")
+    @PostMapping(path = "/{layerId}/deleteFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
     public EditResults featureDelete(
             @PathVariable String workspaceName, @PathVariable Integer layerId,
             @RequestParam(name = "objectIds", required = false) String objectIdsText,
@@ -147,7 +147,7 @@ public class FeatureLayerController extends AbstractGSRController {
     /**
      * Update Feature endpoint
      *
-     * @param featureArray Array of features to update
+     * @param features Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
      * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted
@@ -165,13 +165,14 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return Results of the update
      * @throws IOException
      */
-    @PostMapping(path = "/{layerId}/updateFeatures")
+    @PostMapping(path = "/{layerId}/updateFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
     public EditResults updateFeaturesPost(
-            @RequestBody FeatureArray featureArray, @PathVariable String workspaceName, @PathVariable Integer layerId,
+            @PathVariable String workspaceName, @PathVariable Integer layerId,
+            @RequestParam String features,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false") boolean rollbackOnFailure,
             @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment
     ) throws IOException, ServiceException {
-
+        FeatureArray featureArray = jsonStringToFeatureArray(features);
         return updateFeatures(featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
 
 
@@ -199,7 +200,7 @@ public class FeatureLayerController extends AbstractGSRController {
 
     /**
      *
-     * @param featureArray Array of features to update
+     * @param features Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
      * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted
@@ -212,15 +213,15 @@ public class FeatureLayerController extends AbstractGSRController {
      * @return Results of the update
      * @throws IOException
      */
-    @PostMapping(path = "/{layerId}/addFeatures")
+    @PostMapping(path = "/{layerId}/addFeatures", consumes = APPLICATION_FORM_URLENCODED_VALUE)
     public EditResults addFeaturesPost(
-            @RequestBody FeatureArray featureArray,
             @PathVariable String workspaceName,
             @PathVariable Integer layerId,
+            @RequestParam String features,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false") boolean rollbackOnFailure,
             @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment
     ) throws IOException, ServiceException {
-
+        FeatureArray featureArray = jsonStringToFeatureArray(features);
         return addFeatures(featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
 
 

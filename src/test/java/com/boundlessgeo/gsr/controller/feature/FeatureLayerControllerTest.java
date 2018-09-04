@@ -6,6 +6,7 @@ package com.boundlessgeo.gsr.controller.feature;
 
 import com.boundlessgeo.gsr.controller.ControllerTest;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -81,7 +82,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].x - 500050.0) >= 0.1);
         assertTrue(Math.abs(nativeGeom.getGeometryN(0).getCoordinates()[0].y - 499950.0) >= 0.1);
 
-        String q = query("cgf", "0", "/updateFeatures?f=json&returnEditMoment=true");
+        String q = query("cgf", "0", "/updateFeatures?f=json");
 
         String body =
                 "[\n" +
@@ -97,7 +98,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,true, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -136,7 +137,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -157,7 +158,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -181,7 +182,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         json = (JSONObject) result;
@@ -226,7 +227,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         //do POST
         q = query("cgf", "2", "/updateFeatures?f=json");
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -284,7 +285,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         //do POST
         q = query("cgf", "1", "/updateFeatures?f=json");
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -342,7 +343,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         //do POST
         q = query("cgf", "3", "/updateFeatures?f=json");
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -396,7 +397,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -433,7 +434,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,false, null);
 
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
@@ -457,7 +458,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         json = (JSONObject) result;
@@ -481,7 +482,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        result = postAsJSON(q, body, "application/json");
+        result = postUpdatesAsForm(q,body,false, null);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         json = (JSONObject) result;
@@ -500,7 +501,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         //verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        String q = query("cgf", "0", "/addFeatures?f=json&rollbackOnFailure=false");
+        String q = query("cgf", "0", "/addFeatures?f=json");
 
         //3 features, one invalid
         String body =
@@ -541,7 +542,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         "    }\n" +
                         "  }\n" +
                         "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,false,false);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -564,7 +565,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         //verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        String q = query("cgf", "0", "/addFeatures?f=json&rollbackOnFailure=true");
+        String q = query("cgf", "0", "/addFeatures?f=json");
 
         //3 features, one invalid
         String body =
@@ -605,7 +606,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                 "    }\n" +
                 "  }\n" +
                 "]";
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postUpdatesAsForm(q,body,false,true);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -626,11 +627,10 @@ public class FeatureLayerControllerTest extends ControllerTest {
         //verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        String q = query("cgf", "0", "/deleteFeatures?f=json&objectIds=0");
+        String q = query("cgf", "0", "/deleteFeatures?f=json");
 
-        String body = "";
-
-        JSON result = postAsJSON(q, body, "application/json");
+        //JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postDeletesAsForm(q,"0",null,null,null,null,null,null,false,false);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -653,16 +653,11 @@ public class FeatureLayerControllerTest extends ControllerTest {
         //verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        String q = query("cgf", "0", "/deleteFeatures?f=json" +
-                "&geometry=500124,500024,500176,500076" +
-                "&geometryType=esriGeometryEnvelope" +
-                "&inSR=32615" +
-                "&outSR=32615" +
-                "&spatialRel=esriSpatialRelEnvelopeIntersects");
+        String q = query("cgf", "0", "/deleteFeatures?f=json");
 
-        String body = "";
+        //JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postDeletesAsForm(q,null,null,"500124,500024,500176,500076","esriGeometryEnvelope","32615","32615","esriSpatialRelEnvelopeIntersects",false,false);
 
-        JSON result = postAsJSON(q, body, "application/json");
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -685,12 +680,11 @@ public class FeatureLayerControllerTest extends ControllerTest {
         //verify initial feature state
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        String q = query("cgf", "0", "/deleteFeatures?f=json" +
-                "&where=id in ('Lines.0')" );
+        String q = query("cgf", "0", "/deleteFeatures?f=json");
 
         String body = "";
 
-        JSON result = postAsJSON(q, body, "application/json");
+        JSON result = postDeletesAsForm(q,null,"id in ('Lines.0')",null,null,null,null,null,false,false);
         assertTrue(String.valueOf(result) + " is a JSON object", result instanceof JSONObject);
 
         JSONObject json = (JSONObject) result;
@@ -926,6 +920,49 @@ public class FeatureLayerControllerTest extends ControllerTest {
         request.setMethod("POST");
         request.setContentType("application/x-www-form-urlencoded");
         request.addParameter("edits",edits);
+        return JSONSerializer.toJSON(dispatch(request).getContentAsString());
+    }
+
+    protected JSON postDeletesAsForm(String path, String objectIds, String where,
+                                     String geometry, String geometryType, String inSR, String outSR, String spatialRel,
+                                     Boolean returnEditMoment, Boolean rollbackOnFailure) throws Exception{
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        if(objectIds!=null){
+            request.addParameter("objectIds",objectIds);
+        }
+        if(geometry!=null){
+            request.addParameter("geometry",geometry);
+        }
+        if(geometryType!=null){
+            request.addParameter("geometryType",geometryType);
+        }
+        if(inSR!=null){
+            request.addParameter("inSR",inSR);
+        }
+        if(outSR!=null){
+            request.addParameter("outSR",outSR);
+        }
+        if(spatialRel!=null){
+            request.addParameter("spatialRel",spatialRel);
+        }
+        return JSONSerializer.toJSON(dispatch(request).getContentAsString());
+    }
+
+    protected JSON postUpdatesAsForm(String path, String features, Boolean returnEditMoment, Boolean rollbackOnFailure) throws Exception{
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        if(features!=null){
+            request.addParameter("features",features);
+        }
+        if(returnEditMoment!=null){
+            request.addParameter("returnEditMoment",returnEditMoment.toString());
+        }
+        if(rollbackOnFailure!=null){
+            request.addParameter("rollbackOnFailure",rollbackOnFailure.toString());
+        }
         return JSONSerializer.toJSON(dispatch(request).getContentAsString());
     }
 

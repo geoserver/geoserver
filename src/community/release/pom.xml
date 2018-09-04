@@ -304,9 +304,19 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-    <groupId>org.geoserver.extension</groupId>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
-    <version>${project.version}</version>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-s3-geotiff</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-resource</artifactId>
+     <version>${project.version}</version>
    </dependency>
  </dependencies>
  <build>

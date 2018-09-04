@@ -294,16 +294,18 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         menu.add(previewLinks);
 
         // build the wms request, redirect to it in a new window, reset the selection
-        String demoUrl =
+        final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
+        // Since we're working with an absolute URL, build the URL this way to ensure proxy
+        // mangling is applied.
+        final String demoURL =
                 "'"
-                        + ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
-                        + "gwc/demo/"
-                        + layer.getName()
+                        + ResponseUtils.buildURL(
+                                baseURL, "gwc/demo/" + layer.getName(), null, URLType.EXTERNAL)
                         + "?' + this.options[this.selectedIndex].value";
         menu.add(
                 new AttributeAppender(
                         "onchange",
-                        new Model<String>("window.open(" + demoUrl + ");this.selectedIndex=0"),
+                        new Model<String>("window.open(" + demoURL + ");this.selectedIndex=0"),
                         ";"));
 
         f.add(menu);

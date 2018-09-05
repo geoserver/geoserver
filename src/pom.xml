@@ -1539,6 +1539,8 @@
       <descriptor>release/ext-vectortiles.xml</descriptor>
       <descriptor>release/ext-ysld.xml</descriptor>
       <descriptor>release/ext-sldservice.xml</descriptor>
+      <descriptor>release/ext-geofence.xml</descriptor>
+      <descriptor>release/ext-geofence-server.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.15-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

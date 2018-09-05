@@ -1,21 +1,6 @@
-/*
- *  Copyright (C) 2007 - 2014 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
- *
- *  GPLv3 + Classpath exception
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.geofence;
 
@@ -36,7 +21,6 @@ import org.geoserver.geofence.web.GeofencePage;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 
@@ -63,7 +47,6 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     /** @FIXME This test fails in 2.6 */
-    @Ignore
     @Test
     public void testSave() throws URISyntaxException, IOException {
         GeofenceTestUtils.emptyFile("test-config.properties");
@@ -78,7 +61,6 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     }
 
     /** @FIXME This test fails in 2.6 */
-    @Ignore
     @Test
     public void testCancel() throws URISyntaxException, IOException {
         GeofenceTestUtils.emptyFile("test-config.properties");

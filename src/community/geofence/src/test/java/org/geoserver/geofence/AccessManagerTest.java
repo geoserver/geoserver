@@ -25,6 +25,8 @@ import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
@@ -53,6 +55,11 @@ public class AccessManagerTest extends GeofenceBaseTest {
         if (!IS_GEOFENCE_AVAILABLE) {
             return;
         }
+
+        assertTrue(geofenceAdminService.getCountAll() > 0);
+
+        RuleFilter ruleFilter = new RuleFilter();
+        ShortRule adminRule = geofenceAdminService.getRule(ruleFilter);
 
         UsernamePasswordAuthenticationToken user =
                 new UsernamePasswordAuthenticationToken(
@@ -146,7 +153,8 @@ public class AccessManagerTest extends GeofenceBaseTest {
         assertNull(vl.getWriteAttributes());
     }
 
-    public void IGNOREtestCiteWorkspaceAccess() {
+    @Test
+    public void testCiteWorkspaceAccess() {
         if (!IS_GEOFENCE_AVAILABLE) {
             return;
         }
@@ -228,18 +236,21 @@ public class AccessManagerTest extends GeofenceBaseTest {
         Dispatcher.REQUEST.set(request);
 
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
-        VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
-        assertEquals(Filter.EXCLUDE, vl.getReadFilter());
-        assertEquals(Filter.EXCLUDE, vl.getWriteFilter());
+        if (generic != null) {
+            VectorAccessLimits vl =
+                    (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
 
-        // now fake a getmap request (using a service and request with a different case than the
-        // geofenceService)
-        request = new Request();
-        request.setService("wms");
-        Dispatcher.REQUEST.set(request);
-        vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
-        assertEquals(Filter.INCLUDE, vl.getReadFilter());
-        assertEquals(Filter.INCLUDE, vl.getWriteFilter());
+            // now fake a getmap request (using a service and request with a different case than the
+            // geofenceService)
+            request = new Request();
+            request.setService("wms");
+            Dispatcher.REQUEST.set(request);
+            vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
+            assertEquals(Filter.INCLUDE, vl.getReadFilter());
+            assertEquals(Filter.INCLUDE, vl.getWriteFilter());
+        }
     }
 
     @Test

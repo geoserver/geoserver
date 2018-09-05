@@ -5,6 +5,7 @@
 package org.geoserver.geofence;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -14,7 +15,10 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.RuleReaderService;
+import org.geoserver.geofence.services.dto.RuleFilter;
+import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
@@ -25,13 +29,15 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     protected static XpathEngine xp;
 
-    protected static Boolean IS_GEOFENCE_AVAILABLE = isGeoFenceAvailable();
+    protected Boolean IS_GEOFENCE_AVAILABLE = false;
 
     protected GeofenceAccessManager accessManager;
 
     protected GeoFenceConfigurationManager configManager;
 
     protected static RuleReaderService geofenceService;
+
+    protected static RuleAdminService geofenceAdminService;
 
     GeoServerDataDirectory dd;
 
@@ -78,7 +84,8 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
                 (GeoFenceConfigurationManager)
                         applicationContext.getBean("geofenceConfigurationManager");
 
-        if (IS_GEOFENCE_AVAILABLE) {
+        if (isGeoFenceAvailable()) {
+            IS_GEOFENCE_AVAILABLE = true;
             System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
         } else {
             System.out.println(
@@ -114,21 +121,32 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         }
     }
 
-    protected static boolean isGeoFenceAvailable() {
+    protected boolean isGeoFenceAvailable() {
+        geofenceService =
+                (RuleReaderService)
+                        applicationContext.getBean(
+                                applicationContext
+                                        .getBeanFactory()
+                                        .resolveEmbeddedValue("${ruleReaderBackend}"));
         try {
-            geofenceService =
-                    (RuleReaderService)
-                            applicationContext.getBean(
-                                    applicationContext
-                                            .getBeanFactory()
-                                            .resolveEmbeddedValue("${ruleReaderBackend}"));
-
-            geofenceService.getMatchingRules(null, null, null, null, null, null, null, null);
-            return true;
+            /**
+             * In order to run live tests, you will need to run an instance of GeoFence on port 9191
+             * and create two rules:
+             *
+             * <p>1) User: admin - grant ALLOW ALL 2) User: * - grant Service: "WMS" ALLOW 3) * -
+             * DENY
+             */
+            final RuleFilter ruleFilter = new RuleFilter();
+            ruleFilter.setService("WMS");
+            final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
+            if (geofenceService != null && matchingRules != null && matchingRules.size() > 0) {
+                return true;
+            }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error connecting to GeoFence", e);
             geofenceService = null;
-            return false;
         }
+
+        return false;
     }
 }

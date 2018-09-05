@@ -6,6 +6,7 @@
 package org.geoserver.geofence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 import com.google.common.base.Ticker;
@@ -13,12 +14,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 
 /** @author ETj (etj at geo-solutions.it) */
@@ -26,12 +29,16 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     static final Logger LOGGER = Logging.getLogger(CacheReaderTest.class);
 
-    private RuleReaderService realReader;
+    private CustomTicker ticker;
+
+    private CachedRuleReader cachedRuleReader;
 
     private GeoFencePropertyPlaceholderConfigurer configurer;
 
+    private RuleReaderService realReader;
+
     @Before
-    public void initGeoFenceControllers() {
+    public void onInitCachedReader() {
         configurer =
                 (GeoFencePropertyPlaceholderConfigurer)
                         applicationContext.getBean("geofence-configurer");
@@ -39,6 +46,32 @@ public class CacheReaderTest extends GeofenceBaseTest {
                 new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
 
         realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
+
+        ticker = new CustomTicker();
+
+        CacheConfiguration config = new CacheConfiguration();
+        config.setSize(100);
+        config.setRefreshMilliSec(500);
+        config.setExpireMilliSec(1000);
+        config.setCustomTicker(ticker);
+
+        if (configManager == null) {
+            configManager =
+                    (GeoFenceConfigurationManager)
+                            applicationContext.getBean("geofenceConfigurationManager");
+        }
+        assertNotNull(configManager);
+        configManager.setCacheConfiguration(config);
+
+        cachedRuleReader = new CachedRuleReader(configManager);
+        cachedRuleReader.setRealRuleReaderService(realReader);
+
+        cachedRuleReader.getCacheInitParams().setSize(100);
+        cachedRuleReader.getCacheInitParams().setRefreshMilliSec(500);
+        cachedRuleReader.getCacheInitParams().setExpireMilliSec(1000);
+        cachedRuleReader.getCacheInitParams().setCustomTicker(ticker);
+
+        cachedRuleReader.init();
     }
 
     static class CustomTicker extends Ticker {
@@ -55,19 +88,11 @@ public class CacheReaderTest extends GeofenceBaseTest {
         }
     }
 
-    public void IGNOREtestSize() {
-        CustomTicker ticker = new CustomTicker();
-
-        CacheConfiguration config = new CacheConfiguration();
-        config.setSize(2);
-        config.setRefreshMilliSec(500);
-        config.setExpireMilliSec(1000);
-        config.setCustomTicker(ticker);
-
-        configManager.setCacheConfiguration(config);
-
-        CachedRuleReader cachedRuleReader = new CachedRuleReader(configManager);
-        cachedRuleReader.setRealRuleReaderService(realReader);
+    @Test
+    public void testSize() {
+        if (!IS_GEOFENCE_AVAILABLE) {
+            return;
+        }
 
         System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());
@@ -123,7 +148,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(++evictExp, cachedRuleReader.getStats().evictionCount());
+        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
 
         // filter1 is the oldest one:
         ticker.setMillisec(4);
@@ -140,31 +165,16 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(6);
         cachedRuleReader.getAccessInfo(filter1);
         System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(++evictExp, cachedRuleReader.getStats().evictionCount());
+        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
+        assertEquals(missExp, cachedRuleReader.getStats().missCount());
+        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
     }
 
+    @Test
     public void testExpire() throws InterruptedException {
-        CustomTicker ticker = new CustomTicker();
-
-        CacheConfiguration config = new CacheConfiguration();
-        config.setSize(100);
-        config.setRefreshMilliSec(500);
-        config.setExpireMilliSec(1000);
-        config.setCustomTicker(ticker);
-
-        configManager.setCacheConfiguration(config);
-
-        CachedRuleReader cachedRuleReader = new CachedRuleReader(configManager);
-        cachedRuleReader.setRealRuleReaderService(realReader);
-
-        cachedRuleReader.getCacheInitParams().setSize(100);
-        cachedRuleReader.getCacheInitParams().setRefreshMilliSec(500);
-        cachedRuleReader.getCacheInitParams().setExpireMilliSec(1000);
-        cachedRuleReader.getCacheInitParams().setCustomTicker(ticker);
-
-        cachedRuleReader.init();
+        if (!IS_GEOFENCE_AVAILABLE) {
+            return;
+        }
 
         System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());

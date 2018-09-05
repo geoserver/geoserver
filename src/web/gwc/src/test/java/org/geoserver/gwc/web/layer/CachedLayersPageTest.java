@@ -7,6 +7,11 @@ package org.geoserver.gwc.web.layer;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -24,6 +29,21 @@ import org.junit.Rule;
 import org.junit.Test;
 
 public class CachedLayersPageTest extends GeoServerWicketTestSupport {
+    private static final Method getReplaceModelMethod;
+    /*
+     * Yes, we do need to use reflection here as the stupid wicket model is private and has no setter which
+     * makes it hard to test!
+     * See https://cwiki.apache.org/confluence/display/WICKET/Testing+Pages
+     */
+    static {
+        try {
+            getReplaceModelMethod = AttributeModifier.class.getDeclaredMethod("getReplaceModel");
+            getReplaceModelMethod.setAccessible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 
     @Rule
     public GeoServerExtensionsHelper.ExtensionsHelperRule extensions =
@@ -108,5 +128,60 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(
                 "table:listContainer:items:1:itemProperties:7:component:seedLink",
                 "http://rewrite/gwc/rest/seed/cgf:Polygons");
+    }
+
+    @Test
+    public void testNoManglePreviewLink() {
+
+        // Don't add a mangler
+
+        CachedLayersPage page = new CachedLayersPage();
+
+        tester.startPage(page);
+        // print(page, true, true);
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "table:listContainer:items:1:itemProperties:6:component:menu");
+        List<AttributeModifier> attr = component.getBehaviors(AttributeModifier.class);
+        try {
+            IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
+            assertTrue(
+                    "Unmangled names fail",
+                    model.getObject()
+                            .toString()
+                            .contains("http://localhost:80/context/gwc/demo/cgf"));
+            return;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testManglePreviewLink() {
+        // Mimic a Proxy URL mangler
+        URLMangler testMangler =
+                (base, path, map, type) -> {
+                    base.setLength(0);
+                    base.append("http://rewrite/");
+                };
+        extensions.singleton("testMangler", testMangler, URLMangler.class);
+
+        CachedLayersPage page = new CachedLayersPage();
+
+        tester.startPage(page);
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "table:listContainer:items:1:itemProperties:6:component:menu");
+        List<AttributeModifier> attr = component.getBehaviors(AttributeModifier.class);
+        try {
+            IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
+
+            assertTrue(
+                    "Mangled names fail",
+                    model.getObject().toString().contains("http://rewrite/gwc/demo/cgf"));
+            return;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

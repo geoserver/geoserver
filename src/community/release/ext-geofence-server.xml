@@ -21,7 +21,7 @@
         <include>*geofence-services*</include>
         <include>*geofence-persistence*</include>
         <include>hatbox*</include>
-        <include>*hibernate*</include>
+        <include>hibernate*</include>
         <include>jackson*</include>
         <include>javassist*</include>
         <include>jta*</include>

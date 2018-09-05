@@ -244,6 +244,7 @@
         <module>security/oauth2-github</module>
         <module>security/oauth2-geonode</module>
         <module>security/oauth2-openid-connect</module>
+        <module>security/keycloak</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
         <module>notification</module>
@@ -527,6 +528,12 @@
         <module>security/oauth2-openid-connect</module>
       </modules>
     </profile>
+    <profile>
+      <id>keycloak</id>
+      <modules>
+        <module>security/keycloak</module>
+      </modules>
+    </profile>    
     <profile>
       <id>wmts-multi-dimensional</id>
       <modules>

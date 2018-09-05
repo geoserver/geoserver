@@ -5,8 +5,16 @@
  */
 package org.geoserver.web.data.resource;
 
-import static org.geotools.coverage.grid.io.AbstractGridFormat.*;
-import static org.geotools.gce.imagemosaic.ImageMosaicFormat.*;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.BACKGROUND_COLOR;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.FOOTPRINT_BEHAVIOR;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.INPUT_TRANSPARENT_COLOR;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.OVERVIEW_POLICY;
+import static org.geotools.coverage.grid.io.AbstractGridFormat.USE_JAI_IMAGEREAD;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ACCURATE_RESOLUTION;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.ALLOW_MULTITHREADING;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.EXCESS_GRANULE_REMOVAL;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.MERGE_BEHAVIOR;
+import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -16,12 +24,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.xml.namespace.QName;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -202,9 +214,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                             || INPUT_TRANSPARENT_COLOR.getName().getCode().equals(parameterKey)) {
                         assertThat(
                                 parameterKey, c, CoreMatchers.instanceOf(ColorPickerPanel.class));
-                    } else if (SORT_BY.getName().getCode().equals(parameterKey)
-                            || BACKGROUND_VALUES.getName().getCode().equals(parameterKey)
-                            || SUGGESTED_TILE_SIZE.getName().getCode().equals(parameterKey)) {
+                    } else {
                         assertThat(parameterKey, c, CoreMatchers.instanceOf(TextParamPanel.class));
                     }
                 });
@@ -243,5 +253,42 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                     }
                 });
         assertTrue("Bands parameter not found", editorFound.get());
+    }
+
+    @Test
+    public void testSaveEnumsAsString() {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        LayerInfo layer = catalog.getLayerByName(getLayerId(TIMERANGES));
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        // locate the overview parameter editor
+        ListView parametersList =
+                (ListView)
+                        tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:1:content:parameters");
+        AtomicReference ref = new AtomicReference(null);
+        parametersList.visitChildren(
+                ParamPanel.class,
+                (c, v) -> {
+                    MapModel mapModel = (MapModel) c.getDefaultModel();
+                    String parameterKey = mapModel.getExpression();
+                    if (OVERVIEW_POLICY.getName().getCode().equals(parameterKey)) {
+                        ref.set(c.getPageRelativePath().substring("publishedInfo".length() + 1));
+                    }
+                });
+
+        FormTester ft = tester.newFormTester("publishedinfo");
+        ft.select(ref.get() + ":border:border_body:paramValue", 2);
+        ft.submit("save");
+        tester.assertNoErrorMessage();
+
+        // check it was saved
+        CoverageInfo ci =
+                catalog.getResourceByName(
+                        TIMERANGES.getPrefix(), TIMERANGES.getLocalPart(), CoverageInfo.class);
+        Map<String, Serializable> parameters = ci.getParameters();
+        assertEquals("NEAREST", parameters.get(OVERVIEW_POLICY.getName().toString()));
     }
 }

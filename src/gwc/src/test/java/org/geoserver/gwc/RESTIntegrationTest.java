@@ -704,4 +704,25 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(jsonArr);
         assertTrue(jsonArr.size() > 0);
     }
+
+    @Test
+    public void testPostReloadHtmlForm() throws Exception {
+        final String url = "gwc/rest/reload";
+
+        final String formData = "reload_configuration=1";
+
+        // Manually construct request and wrap in BufferedRequestWrapper so that the form data gets
+        // parsed as parameters
+        MockHttpServletRequest request = createRequest(url);
+        request.setMethod("POST");
+        request.setContentType("application/x-www-form-urlencoded");
+        request.setContent(formData.getBytes("UTF-8"));
+
+        BufferedRequestWrapper wrapper =
+                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes("UTF-8"));
+
+        MockHttpServletResponse sr = dispatch(wrapper);
+
+        assertEquals(200, sr.getStatus());
+    }
 }

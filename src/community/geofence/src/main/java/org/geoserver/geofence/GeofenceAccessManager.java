@@ -1,21 +1,6 @@
-/*
- *  Copyright (C) 2007 - 2017 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
- *
- *  GPLv3 + Classpath exception
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.geofence;
 
@@ -193,7 +178,10 @@ public class GeofenceAccessManager
 
         ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
         ruleFilter.setWorkspace(workspaceName);
-        ruleFilter.setUser(user.getName());
+        String username = user.getName();
+        if (username == null || username.isEmpty()) {
+            ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
+        }
 
         String sourceAddress = retrieveCallerIpAddress();
         if (sourceAddress != null) {
@@ -317,6 +305,9 @@ public class GeofenceAccessManager
             }
 
             username = user.getName();
+            if (username != null && username.isEmpty()) {
+                username = null;
+            }
         }
 
         // get info from the current request
@@ -402,7 +393,7 @@ public class GeofenceAccessManager
                 ruleFilter.setRole(role);
             } else {
                 String username = user.getName();
-                if (username == null) {
+                if (username == null || username.isEmpty()) {
                     ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
                 } else {
                     LOGGER.log(Level.FINE, "Setting user for filter: {0}", new Object[] {username});
@@ -605,6 +596,9 @@ public class GeofenceAccessManager
                 return operation;
             } else {
                 username = user.getName();
+                if (username != null && username.isEmpty()) {
+                    username = null;
+                }
             }
         }
 

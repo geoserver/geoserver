@@ -1195,7 +1195,7 @@
       <id>geofence</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-geofence</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1245,7 +1245,7 @@
       <id>geofence-server</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
         </dependency>

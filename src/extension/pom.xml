@@ -337,6 +337,25 @@
         <module>sldService</module>
       </modules>
     </profile>
+    <profile>
+      <id>geofence</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+        </modules>
+    </profile>
+    <profile>
+      <id>geofence-server</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+	  <module>geofence-server</module>
+        </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -423,6 +442,8 @@
         <module>ysld</module>
         <module>mongodb</module>
         <module>sldService</module>
+        <module>geofence</module>
+        <module>geofence-server</module>
       </modules>
     </profile>
   </profiles>

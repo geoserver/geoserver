@@ -100,7 +100,11 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-        super.onTearDown(testData);
+        /** Dispose Services */
+        this.accessManager = null;
+        this.configManager = null;
+        this.geofenceService = null;
+        this.testData = new SystemTestData();
 
         try {
             if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {

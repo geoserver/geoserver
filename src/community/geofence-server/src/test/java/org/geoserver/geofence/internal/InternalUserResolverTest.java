@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
@@ -95,6 +96,24 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         service = createRoleService("test");
         service = getSecurityManager().loadRoleService("test");
         System.setProperty(InternalUserResolver.DEFAULT_USER_GROUP_SERVICE_KEY, "test");
+    }
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        /** Dispose Services */
+        this.service = null;
+        this.testData = new SystemTestData();
+
+        try {
+            if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {
+                System.clearProperty("IS_GEOFENCE_AVAILABLE");
+            }
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
+                    e);
+        }
     }
 
     protected void addTestUser(

@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
@@ -19,6 +21,23 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        /** Dispose Services */
+        this.testData = new SystemTestData();
+
+        try {
+            if (System.getProperty("IS_GEOFENCE_AVAILABLE") != null) {
+                System.clearProperty("IS_GEOFENCE_AVAILABLE");
+            }
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
+                    e);
+        }
+    }
 
     @Test
     public void testRulesModel() {

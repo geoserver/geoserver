@@ -56,7 +56,7 @@
                   <property name="grantWriteToWorkspacesToAuthenticatedUsers" value="${grantWriteToWorkspacesToAuthenticatedUsers:False}"/>
                   <property name="useRolesToFilter" value="${useRolesToFilter:False}"/>
                   <property name="acceptedRoles" value="${acceptedRoles:}"/>
-		  <property name="gwcContextSuffix" value="${gwc.context.suffix:gwc}"/>
+                  <property name="gwcContextSuffix" value="${gwc.context.suffix:gwc}"/>
                   <property name="defaultUserGroupServiceName" value="${org.geoserver.rest.DefaultUserGroupServiceName:default}"/>
             </bean>
         </property>
@@ -77,15 +77,14 @@
     </bean>
 
     <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
-	<constructor-arg ref="geofenceConfigurationManager" />
-
+        <constructor-arg ref="geofenceConfigurationManager" />
         <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
     </bean>
 
     <bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
-            <constructor-arg index="0" ref="${ruleReaderFrontend}" />
-            <constructor-arg index="1" ref="rawCatalog" />
-            <constructor-arg index="2" ref="geofenceConfigurationManager" />
+        <constructor-arg index="0" ref="${ruleReaderFrontend}" />
+        <constructor-arg index="1" ref="rawCatalog" />
+        <constructor-arg index="2" ref="geofenceConfigurationManager" />
     </bean>
 
     <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">

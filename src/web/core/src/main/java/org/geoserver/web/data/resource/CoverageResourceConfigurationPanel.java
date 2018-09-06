@@ -173,11 +173,12 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
                 return new CheckBoxParamPanel(id, valueModel, labelModel);
             }
 
-            // dropdown for enumerations
+            // dropdown for enumerations (don't use the enum value but its name to avoid
+            // breaking configuration save (XStream whitelist) and backwards compatibility
             if (descriptor.getValueClass().isEnum()) {
                 List<? extends Serializable> values =
                         Arrays.stream(descriptor.getValueClass().getEnumConstants())
-                                .map(v -> (Serializable) v)
+                                .map(v -> ((Enum) v).name())
                                 .collect(Collectors.toList());
                 return new DropDownChoiceParamPanel(id, valueModel, labelModel, values, false);
             }

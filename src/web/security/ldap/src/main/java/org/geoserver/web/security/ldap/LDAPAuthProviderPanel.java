@@ -26,6 +26,7 @@ import org.geoserver.security.ldap.LDAPSecurityProvider;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
+import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.util.MapModel;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -194,7 +195,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                                     (LDAPSecurityServiceConfig) getForm().getModelObject();
                             doTest(ldapConfig, username, password);
 
-                            target.add(getPage().get("feedback"));
+                            ((GeoServerBasePage) this.getPage()).addFeedbackPanels(target);
                         }
 
                         void doTest(

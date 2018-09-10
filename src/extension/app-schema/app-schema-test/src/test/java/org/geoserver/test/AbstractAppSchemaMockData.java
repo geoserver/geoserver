@@ -42,6 +42,8 @@ import org.locationtech.jts.geom.Envelope;
 public abstract class AbstractAppSchemaMockData extends SystemTestData
         implements NamespaceTestData {
 
+    private String layerNamePrefix;
+
     /** Folder for for test data. */
     private static final String TEST_DATA = "/test-data/";
 
@@ -394,7 +396,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param featureTypeDir feature type directory
      * @param dataStoreName data store directory name
      */
-    private static void writeInfoFile(
+    private void writeInfoFile(
             String namespacePrefix, String typeName, File featureTypeDir, String dataStoreName) {
         // prepare extra params default
         Map<String, Object> params = new HashMap<String, Object>();
@@ -410,7 +412,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             info.createNewFile();
             FileWriter writer = new FileWriter(info);
             writer.write("<featureType datastore=\"" + dataStoreName + "\">");
-            writer.write("<name>" + typeName + "</name>");
+            writer.write("<name>" + getLayerName(typeName) + "</name>");
+            writer.write("<nativeName>" + typeName + "</nativeName>");
             if (params.get(KEY_ALIAS) != null)
                 writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
             writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
@@ -487,6 +490,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getLayerName(String typeName) {
+        if (layerNamePrefix != null) return layerNamePrefix + "_" + typeName;
+        return typeName;
     }
 
     /**
@@ -632,8 +640,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param typeName local name of the WFS feature type
      * @return name of the data store for the feature type
      */
-    protected static String getDataStoreName(String namespacePrefix, String typeName) {
-        return namespacePrefix + "_" + typeName;
+    protected String getDataStoreName(String namespacePrefix, String typeName) {
+        return namespacePrefix + "_" + getLayerName(typeName);
     }
 
     /**
@@ -652,7 +660,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param typeName local name of the WFS feature type
      * @return directory that contains the mapping and property files
      */
-    private static File getFeatureTypeDir(
+    private File getFeatureTypeDir(
             File featureTypesBaseDir, String namespacePrefix, String typeName) {
         return new File(featureTypesBaseDir, getDataStoreName(namespacePrefix, typeName));
     }
@@ -780,5 +788,18 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
         }
         return content.toString();
+    }
+
+    /**
+     * Prefix for layer name, to test name vs nativeName
+     *
+     * @return layer name prefix
+     */
+    public String getLayerNamePrefix() {
+        return layerNamePrefix;
+    }
+
+    public void setLayerNamePrefix(String layerNamePrefix) {
+        this.layerNamePrefix = layerNamePrefix;
     }
 }

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,14 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.impl.DataStoreInfoImpl;
-import org.geoserver.catalog.impl.NamespaceInfoImpl;
-import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
-import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,7 +30,7 @@ import org.w3c.dom.Document;
  * types, i.e. that is possible to create a layer with a name different from the App-Schema feature
  * type.
  */
-public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
+public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport {
 
     // xpath engines used to check WFS responses
     private XpathEngine WFS11_XPATH_ENGINE;
@@ -59,52 +52,30 @@ public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
-        WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();
-        workspace.setName("st");
-        NamespaceInfoImpl nameSpace = new NamespaceInfoImpl();
-        nameSpace.setPrefix("st");
-        nameSpace.setURI("http://www.stations.org/1.0");
-        catalog.add(workspace);
-        catalog.add(nameSpace);
-        // create the app-schema data store
-        Map<String, Serializable> params = new HashMap<>();
-        params.put("dbtype", "app-schema");
-        params.put(
-                "url",
-                Paths.get(mappingsFolderPath.toString(), "stationsDefaultGeometry.xml")
-                        .toUri()
-                        .toString());
-        DataStoreInfoImpl dataStore = new DataStoreInfoImpl(getCatalog());
-        dataStore.setId("stations");
-        dataStore.setName("stations");
-        dataStore.setType("app-schema");
-        dataStore.setConnectionParameters(params);
-        dataStore.setWorkspace(workspace);
-        dataStore.setEnabled(true);
-        catalog.add(dataStore);
-        // build the feature type for the root mapping (StationFeature)
-        CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.setStore(dataStore);
-        builder.setWorkspace(workspace);
-        FeatureTypeInfo featureType =
-                builder.buildFeatureType(new NameImpl(nameSpace.getURI(), "Station"));
-        featureType.setName("MyStation");
-        featureType.setNativeName("Station");
-        catalog.add(featureType);
-        LayerInfo layer = builder.buildLayer(featureType);
-        layer.setDefaultStyle(catalog.getStyleByName("point"));
-        catalog.add(layer);
+
+        FeatureTypeInfo info = catalog.getFeatureTypeByName("st_gml31", "lyr_Station_gml31");
+        info.setEnabled(true);
+        info.setNativeName("Station_gml31");
+        catalog.save(info);
+
+        info = catalog.getFeatureTypeByName("st_gml32", "lyr_Station_gml32");
+        info.setEnabled(true);
+        info.setNativeName("Station_gml32");
+        catalog.save(info);
     }
 
     @Test
     public void testAliasedNameWfsGetFeature11() throws Exception {
-        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:MyStation");
-        // requested with MyStation, must returns Station:
+        Document document =
+                getAsDOM(
+                        "ows?service=wfs&request=GetFeature&version=1.1.0"
+                                + "&typenames=st_gml31:lyr_Station_gml31");
+        // requested with lyr_Station_gml31, must returns Station:
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
-                3,
-                "//wfs:FeatureCollection/gml:featureMembers/st:Station");
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
     }
 
     @Test
@@ -115,15 +86,20 @@ public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
                 WFS11_XPATH_ENGINE,
                 document,
                 1,
-                "//wfs:FeatureCollection/gml:featureMembers/st:Station");
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
     }
 
     @Test
     public void testAliasedNameWfsGetFeature20() throws Exception {
-        Document document = getAsDOM("wfs?request=GetFeature&version=2.0.0&typeNames=st:MyStation");
-        // requested with MyStation, must returns Station:
+        Document document =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=2.0.0"
+                                + "&typeNames=st_gml32:lyr_Station_gml32");
         checkCount(
-                WFS20_XPATH_ENGINE, document, 3, "//wfs:FeatureCollection/wfs:member/st:Station");
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
     }
 
     @Test
@@ -132,7 +108,56 @@ public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
         String xmlQuery = resourceToString("wfs200query.xml");
         Document document = postAsDOM("wfs", xmlQuery);
         checkCount(
-                WFS20_XPATH_ENGINE, document, 1, "//wfs:FeatureCollection/wfs:member/st:Station");
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
+    }
+
+    @Test
+    public void testGetFeatureLocalWspace() throws Exception {
+        Document document =
+                getAsDOM(
+                        "st_gml31/wfs?request=GetFeature&version=1.1.0&typename=lyr_Station_gml31");
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+    }
+
+    @Test
+    public void testGetFeaturePostQueryLocalWspace() throws Exception {
+        String xmlQuery = resourceToString("wfs110queryNoPrefix.xml");
+        Document document = postAsDOM("st_gml31/wfs", xmlQuery);
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+    }
+
+    @Test
+    public void testGetFeature20LocalWspace() throws Exception {
+        Document document =
+                getAsDOM(
+                        "st_gml32/wfs?request=GetFeature&version=2.0.0&typeNames=lyr_Station_gml32");
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
+    }
+
+    @Test
+    public void testGetFeaturePostQuery20LocalWspace() throws Exception {
+        String xmlQuery = resourceToString("wfs200queryNoPrefix.xml");
+        Document document = postAsDOM("st_gml32/wfs", xmlQuery);
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
     }
 
     private String resourceToString(String filename) throws IOException {
@@ -165,8 +190,10 @@ public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
 
     protected Map<String, String> getBaseNamespaces() {
         Map<String, String> nss = new HashMap<>();
-        nss.put("st", "http://www.stations.org/1.0");
-        nss.put("ms", "http://www.measurements.org/1.0");
+        nss.put("st_gml31", "http://www.stations_gml31.org/1.0");
+        nss.put("ms_gml31", "http://www.measurements_gml31.org/1.0");
+        nss.put("st_gml32", "http://www.stations_gml32.org/1.0");
+        nss.put("ms_gml32", "http://www.measurements_gml32.org/1.0");
         return nss;
     }
 
@@ -187,5 +214,12 @@ public final class LayersNamesAliasingTests extends GeoServerSystemTestSupport {
     public static void copyResource(String resourcePath, Path directoryPath) throws IOException {
         ClassLoader cl = LayersNamesAliasingTests.class.getClassLoader();
         Files.copy(cl.getResourceAsStream(resourcePath), directoryPath);
+    }
+
+    /** * GetFeature tests ** */
+    @Override
+    protected AliasStationsMockData createTestData() {
+        // instantiate our custom complex types
+        return new AliasStationsMockData();
     }
 }

@@ -1202,7 +1202,7 @@ public class ResourcePool {
 
         // TODO: support aliasing (renaming), reprojection, versioning, and locking for DataAccess
         if (!(dataAccess instanceof DataStore)) {
-            return dataAccess.getFeatureSource(info.getQualifiedName());
+            return getFeatureSource(dataAccess, info);
         }
 
         DataStore dataStore = (DataStore) dataAccess;
@@ -1335,6 +1335,28 @@ public class ResourcePool {
                     info.getProjectionPolicy().getCode(),
                     getTolerance(info),
                     info.getMetadata());
+        }
+    }
+
+    /**
+     * Helper method that will search for the feature source corresponding to the provided feature
+     * type info on the provided data access. We will first search based on the published name
+     * (layer name) and only if this search fails we will search based on the native name.
+     */
+    private FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, FeatureTypeInfo info)
+            throws IOException {
+        try {
+            // first try to search based on the published name, to avoid any unexpected aliasing
+            return dataAccess.getFeatureSource(info.getQualifiedName());
+        } catch (Exception exception) {
+            LOGGER.log(
+                    Level.FINE,
+                    String.format(
+                            "Error retrieving feature type using published name '%s'.",
+                            info.getQualifiedName()));
+            // let's try now to search based on the native name
+            return dataAccess.getFeatureSource(info.getQualifiedNativeName());
         }
     }
 

@@ -610,13 +610,12 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     }
 
     /**
-     * Returns xml String from Document Object
+     * Utility method that converts a XML document object to a string.
      *
-     * @param document
-     * @return
-     * @throws TransformerException
+     * @param document Xml Document to parse
+     * @return String representation of xml document
      */
-    protected String toString(Document document) throws TransformerException {
+    protected static String toString(Document document) throws TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");

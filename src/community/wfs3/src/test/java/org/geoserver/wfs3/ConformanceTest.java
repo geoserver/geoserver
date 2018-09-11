@@ -18,7 +18,7 @@ public class ConformanceTest extends WFS3TestSupport {
 
     @Test
     public void testCollectionsXML() throws Exception {
-        Document dom = getAsDOM("wfs3/conformance?f=text/xml");
+        Document dom = getAsDOM("wfs3/conformance?f=application/xml");
         print(dom);
     }
 

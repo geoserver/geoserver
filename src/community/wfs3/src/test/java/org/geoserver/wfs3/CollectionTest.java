@@ -52,7 +52,7 @@ public class CollectionTest extends WFS3TestSupport {
                 getAsDOM(
                         "wfs3/collections/"
                                 + getEncodedName(MockData.ROAD_SEGMENTS)
-                                + "?f=text/xml");
+                                + "?f=application/xml");
         print(dom);
         String expected =
                 "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/items?f=application%2Fjson";

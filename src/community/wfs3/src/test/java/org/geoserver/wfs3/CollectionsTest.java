@@ -67,7 +67,7 @@ public class CollectionsTest extends WFS3TestSupport {
 
     @Test
     public void testCollectionsXML() throws Exception {
-        Document dom = getAsDOM("wfs3/collections?f=text/xml");
+        Document dom = getAsDOM("wfs3/collections?f=application/xml");
         print(dom);
         // TODO: add actual tests
     }

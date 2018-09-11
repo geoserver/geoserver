@@ -9,7 +9,7 @@ public abstract class BaseRequest {
 
     public static final String JSON_MIME = "application/json";
     public static final String YAML_MIME = "application/x-yaml";
-    public static final String XML_MIME = "text/xml";
+    public static final String XML_MIME = "application/xml";
     public static final String HTML_MIME = "text/html";
 
     String outputFormat;

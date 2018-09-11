@@ -85,7 +85,7 @@ public class LandingPageTest extends WFS3TestSupport {
 
     @Test
     public void testLandingPageXML() throws Exception {
-        Document dom = getAsDOM("wfs3/?f=text/xml");
+        Document dom = getAsDOM("wfs3/?f=application/xml");
         print(dom);
         // TODO: add actual tests in here
     }

@@ -270,7 +270,12 @@ public class BufferedImageLegendGraphicBuilder {
                 legendImage = getLayerLegend(legend, w, h, transparent, request);
             }
 
-            if (buildRasterLegend) {
+            if (useProvidedLegend && legendImage != null) {
+                if (titleImage != null) {
+                    layersImages.add(titleImage);
+                }
+                layersImages.add(legendImage);
+            } else if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper =
                         new RasterLayerLegendHelper(request, gt2Style, ruleName);
                 final BufferedImage image = rasterLegendHelper.getLegend();
@@ -280,11 +285,6 @@ public class BufferedImageLegendGraphicBuilder {
                     }
                     layersImages.add(image);
                 }
-            } else if (useProvidedLegend && legendImage != null) {
-                if (titleImage != null) {
-                    layersImages.add(titleImage);
-                }
-                layersImages.add(legendImage);
             } else {
                 final Feature sampleFeature;
                 if (layer == null || hasVectorTransformation) {

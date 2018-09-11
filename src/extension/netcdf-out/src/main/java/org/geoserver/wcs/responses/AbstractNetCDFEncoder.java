@@ -80,6 +80,18 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     add("missing_value");
                     // this one is better not copied over in case of subsetting instead
                     add("_ChunkSizes");
+                }
+            };
+
+    /**
+     * Global Attributes that are never copied from a NetCDF/GRIB source because they require
+     * special handling.
+     */
+    @SuppressWarnings("serial")
+    protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST =
+            new HashSet<String>() {
+                {
+                    // Not copying this since the UCAR writer will create it again
                     add("_NCProperties");
                 }
             };
@@ -211,7 +223,11 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             try (NetcdfDataset source = getSourceNetcdfDataset(sampleGranule)) {
                 if (source != null) {
                     for (Attribute att : source.getGlobalAttributes()) {
-                        writer.addGroupAttribute(null, att);
+                        // part of the blacklist?
+                        String shortName = att.getShortName();
+                        if (!COPY_GLOBAL_ATTRIBUTES_BLACKLIST.contains(shortName)) {
+                            writer.addGroupAttribute(null, att);
+                        }
                     }
                 }
             } catch (Exception e) {

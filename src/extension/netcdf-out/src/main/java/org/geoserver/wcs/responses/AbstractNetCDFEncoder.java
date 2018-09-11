@@ -78,6 +78,9 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     // value
                     add("_FillValue");
                     add("missing_value");
+                    // this one is better not copied over in case of subsetting instead
+                    add("_ChunkSizes");
+                    add("_NCProperties");
                 }
             };
 

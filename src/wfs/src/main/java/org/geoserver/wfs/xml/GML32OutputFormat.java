@@ -76,6 +76,12 @@ public class GML32OutputFormat extends GML3OutputFormat {
         this.geoServer = geoServer;
     }
 
+    protected GML32OutputFormat(
+            GeoServer geoServer, Set<String> formats, WFSConfiguration configuration) {
+        super(formats, geoServer, configuration);
+        this.geoServer = geoServer;
+    }
+
     @Override
     public String getMimeType(Object value, Operation operation) {
         return MIME_TYPES[0];

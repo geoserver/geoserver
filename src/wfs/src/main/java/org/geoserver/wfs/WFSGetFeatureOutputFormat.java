@@ -25,6 +25,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.response.WFSResponse;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.util.Version;
 import org.opengis.feature.type.FeatureType;
 
 /**
@@ -159,6 +160,17 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         Collections.sort(result);
 
         return result;
+    }
+
+    /**
+     * Allows to have version specific output formats. By default a WFS format is allowed on every
+     * version, override to filter specific ones
+     *
+     * @param version
+     * @return
+     */
+    public boolean canHandle(Version version) {
+        return true;
     }
 
     /**

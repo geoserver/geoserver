@@ -5,6 +5,7 @@
 package org.geoserver.wfs3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs3.response.GML32WFS3OutputFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -40,6 +42,8 @@ public class CollectionTest extends WFS3TestSupport {
             assertEquals("cite__RoadSegments items as " + format, item.get("title"));
             assertEquals("item", item.get("rel"));
         }
+        // the WFS3 specific GML3.2 output format is available
+        assertNotNull(json.read("$.links[?(@.type=='" + GML32WFS3OutputFormat.FORMAT + "')]"));
     }
 
     @Test

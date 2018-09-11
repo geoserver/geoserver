@@ -97,6 +97,11 @@
     <constructor-arg ref="resourceLoader"/>
     <constructor-arg ref="geoServer"/>
   </bean>
+  <bean id="featuresGML32WFS3Response" class="org.geoserver.wfs3.response.GML32WFS3OutputFormat">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="xmlConfiguration-1.1"/>
+  </bean>
+
 
   <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
   <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">

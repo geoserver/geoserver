@@ -28,6 +28,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQueryProvider;
+import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -140,6 +141,10 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
         for (Iterator i = responses.iterator(); i.hasNext(); ) {
             Response format = (Response) i.next();
             if (!responseType.isAssignableFrom(format.getBinding())) {
+                continue;
+            }
+            if (format instanceof WFSGetFeatureOutputFormat
+                    && !((WFSGetFeatureOutputFormat) format).canHandle(WebFeatureService30.V3)) {
                 continue;
             }
             // TODO: get better collaboration from content

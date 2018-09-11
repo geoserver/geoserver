@@ -196,14 +196,16 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         return sortedFunctions;
     }
 
-    protected String[] getAvailableOutputFormatNames(String first) {
+    protected String[] getAvailableOutputFormatNames(String first, Version wfsVersion) {
         List<String> oflist = new ArrayList<String>();
         Collection featureProducers =
                 GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
         for (Iterator i = featureProducers.iterator(); i.hasNext(); ) {
             WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
-            for (Iterator f = format.getOutputFormats().iterator(); f.hasNext(); ) {
-                oflist.add(f.next().toString());
+            if (format.canHandle(wfsVersion)) {
+                for (Iterator f = format.getOutputFormats().iterator(); f.hasNext(); ) {
+                    oflist.add(f.next().toString());
+                }
             }
         }
         Collections.sort(oflist);
@@ -1395,7 +1397,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             protected String[] getoutputFormatNames() {
-                return getAvailableOutputFormatNames(GML_3_1_1_FORMAT);
+                return getAvailableOutputFormatNames(GML_3_1_1_FORMAT, VERSION_11);
             }
 
             /** Encodes the GetFeatureWithLock ows:Operation element. */
@@ -2353,7 +2355,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
             /** Encodes the GetFeature ows:Operation element. */
             protected OperationMetadata getFeature() {
-                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT);
+                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT, VERSION_20);
                 OperationMetadata operation = new OperationMetadata("GetFeature", true, true);
                 operation
                         .getParameters()
@@ -2371,7 +2373,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
             /** Encodes the GetFeatureWithLock ows:Operation element. */
             protected OperationMetadata getFeatureWithLock() {
-                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT);
+                String[] formats = getAvailableOutputFormatNames(GML32_FORMAT, VERSION_20);
                 OperationMetadata operation =
                         new OperationMetadata("GetFeatureWithLock", true, true);
                 operation

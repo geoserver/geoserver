@@ -10,8 +10,11 @@ import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geotools.util.Version;
 
 public interface WebFeatureService30 {
+
+    static final Version V3 = new Version("3.0.0");
 
     /**
      * Returns the landing page of WFS 3.0

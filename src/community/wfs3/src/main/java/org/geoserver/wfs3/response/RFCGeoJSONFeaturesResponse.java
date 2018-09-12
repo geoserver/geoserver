@@ -144,11 +144,9 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             }
         }
         // alternate/self links
+        String basePath = "wfs3/collections/" + urlEncode(NCNameResourceCodec.encode(featureType));
         for (String format : formats) {
-            String path =
-                    "wfs3/collections/"
-                            + urlEncode(NCNameResourceCodec.encode(featureType))
-                            + "/items";
+            String path = basePath + "/items";
             if (featureId != null) {
                 path += "/" + urlEncode(featureId);
             }
@@ -164,6 +162,18 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
                 linkType = Link.REL_SELF;
                 linkTitle = "This document";
             }
+            writeLink(jw, linkTitle, format, linkType, href);
+        }
+        // backpointer to the collection
+        for (String format : getAvailableFormats(CollectionDocument.class)) {
+            String href =
+                    ResponseUtils.buildURL(
+                            baseUrl,
+                            basePath,
+                            Collections.singletonMap("f", format),
+                            URLMangler.URLType.SERVICE);
+            String linkType = Link.REL_COLLECTION;
+            String linkTitle = "The collection description as " + format;
             writeLink(jw, linkTitle, format, linkType, href);
         }
         jw.endArray();

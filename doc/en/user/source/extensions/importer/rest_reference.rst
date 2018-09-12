@@ -720,7 +720,7 @@ Requesting the task layer will result in the following::
 		attributes: [
 			{
 				name: "the_geom",
-				binding: "com.vividsolutions.jts.geom.MultiPoint"
+				binding: "org.locationtech.jts.geom.MultiPoint"
 			},
 			{
 				name: "CITY_NAME",

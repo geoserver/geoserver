@@ -309,7 +309,7 @@ Given the following content saved as :file:`annotations.xml`:
      <attributes>
        <attribute>
          <name>the_geom</name>
-         <binding>com.vividsolutions.jts.geom.Point</binding>
+         <binding>org.locationtech.jts.geom.Point</binding>
        </attribute>
        <attribute>
          <name>description</name>
@@ -339,4 +339,4 @@ Given the following content saved as :file:`annotations.xml`:
 
    201 Created
 
-A new and empty table named "annotations" in the "nyc" database will be created as well.
+A new and empty table named "annotations" in the "nyc" database will be created as well.vivid

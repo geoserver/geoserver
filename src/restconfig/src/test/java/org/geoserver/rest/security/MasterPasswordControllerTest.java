@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.text.MessageFormat;
 import net.sf.json.JSONObject;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -51,6 +53,19 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
                     + "\""
                     + MasterPasswordController.MP_NEW_KEY
                     + "\":\"%s\"}";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setLoginEnabled(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+    }
 
     @Test
     public void testGetAsXML() throws Exception {

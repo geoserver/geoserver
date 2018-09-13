@@ -23,6 +23,7 @@ public class MasterPasswordProviderPanel<T extends MasterPasswordProviderConfig>
         super(id, model);
 
         add(new CheckBox("readOnly"));
+        add(new CheckBox("loginEnabled"));
         add(new HelpLink("settingsHelp", this).setDialog(dialog));
     }
 

@@ -21,6 +21,7 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAut
 import org.geoserver.security.filter.*;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
@@ -191,7 +192,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                                         (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
                                                 .getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(GeoServerUser.ROOT_USERNAME, "geoserver", null, null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -546,6 +547,14 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         headerValue =
                 clientDigestString(
                         tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
@@ -713,7 +722,19 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                                         (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
                                                 .getBytes())));
         getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+
+        // Let's try again by allowing the Master Root to login
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+        response = new MockHttpServletResponse();
+        getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+
         auth = getAuth(testFilterName5, GeoServerUser.ROOT_USERNAME, null, null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());

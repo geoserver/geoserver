@@ -1719,6 +1719,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     /** Checks the specified password against the master password. */
     public boolean checkMasterPassword(char[] passwd) {
+        try {
+            if (!this.masterPasswordProviderHelper
+                    .loadConfig(this.masterPasswordConfig.getProviderName())
+                    .isCanLogin()) {
+                return false;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load master password provider config", e);
+        }
+
         GeoServerDigestPasswordEncoder pwEncoder =
                 loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
         if (masterPasswdDigest == null) {

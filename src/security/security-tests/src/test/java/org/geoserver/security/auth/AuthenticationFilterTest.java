@@ -26,6 +26,7 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAut
 import org.geoserver.security.filter.*;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
@@ -204,6 +205,14 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
+
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
                 "Authorization",
@@ -853,6 +862,14 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         headerValue =
                 clientDigestString(
                         tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
@@ -1036,6 +1053,14 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter("_spring_security_remember_me", "yes");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
+
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
                 "Authorization",
@@ -1405,6 +1430,15 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter("_spring_security_remember_me", "yes");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
+
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setCanLogin(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         request.setMethod("POST");
         request.addParameter(config.getUsernameParameterName(), GeoServerUser.ROOT_USERNAME);
         request.addParameter(config.getPasswordParameterName(), getMasterPassword());

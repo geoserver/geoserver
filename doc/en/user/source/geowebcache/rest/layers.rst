@@ -10,7 +10,7 @@ The GeoWebCache REST API provides a RESTful interface through which users can ad
 Layer list
 ----------
 
-URL: ``/gwc/rest/seed/layers.xml``
+URL: ``/gwc/rest/layers.xml``
 
 .. list-table::
    :header-rows: 1
@@ -62,7 +62,7 @@ The following example will request a full list of layers:
 Layer Operations
 ----------------
 
-URL: ``/gwc/rest/seed/layers/<layer>.xml``
+URL: ``/gwc/rest/layers/<layer>.xml``
 
 .. note:: JSON is not recommended for managing layers as the JSON library has a number of issues with multi-valued properties such as "parameterFilters".
 

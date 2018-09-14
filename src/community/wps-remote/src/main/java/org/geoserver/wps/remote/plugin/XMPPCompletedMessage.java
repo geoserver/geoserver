@@ -40,7 +40,8 @@ public class XMPPCompletedMessage implements XMPPMessage {
 
     @Override
     public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
+            throws IOException {
 
         final String pID = signalArgs.get("id");
         final String msg = signalArgs.get("message");
@@ -186,6 +187,9 @@ public class XMPPCompletedMessage implements XMPPMessage {
                                         Level.SEVERE,
                                         "Exception occurred while trying to produce the result:",
                                         e);
+                                throw new IOException(
+                                        "Exception occurred while trying to produce the result:",
+                                        e);
                             }
                         }
                     }
@@ -196,8 +200,11 @@ public class XMPPCompletedMessage implements XMPPMessage {
                 }
             } catch (PickleException e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
+                throw new IOException(e.getMessage(), e);
+
             } catch (IOException e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
+                throw new IOException(e.getMessage(), e);
             }
         }
         // In any case stop the process by notifying the listeners ...

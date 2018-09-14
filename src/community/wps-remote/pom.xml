@@ -17,7 +17,7 @@
 	<name>Web Processing Service - Remote processes invocation</name>
 
 	<properties>
-		<smack.version>4.0.3</smack.version>
+		<smack.version>4.0.5</smack.version>
 		<vysper.version>0.7</vysper.version>
 	</properties>
 

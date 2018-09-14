@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.remote.plugin;
 
+import java.io.IOException;
 import java.util.Map;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -18,5 +19,6 @@ public interface XMPPMessage {
     public boolean canHandle(Map<String, String> signalArgs);
 
     public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs);
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
+            throws IOException;
 }

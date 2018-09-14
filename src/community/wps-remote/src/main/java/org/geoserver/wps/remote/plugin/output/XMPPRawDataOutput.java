@@ -271,12 +271,25 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         if (file != null && file.exists() && file.canRead() && file.isFile()) {
             return file;
         } else {
-            // 1. try first if they are present on "uploadedFilesBasePath"
-            if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
-                final String uploadedFilesBasePath =
-                        xmppClient.getConfiguration().get("uploadedFilesBasePath");
-                final File uploadedFile = new File(uploadedFilesBasePath, value);
+            try {
+                // 1. try first if they are present on "uploadedFilesBasePath"
+                if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
+                    final String uploadedFilesBasePath =
+                            xmppClient.getConfiguration().get("uploadedFilesBasePath");
+                    final File uploadedFile = new File(uploadedFilesBasePath, value);
 
+                    if (uploadedFile != null
+                            &&
+                            /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
+                            && uploadedFile.canRead()
+                            && uploadedFile.isFile()) {
+                        return uploadedFile;
+                    }
+                }
+
+                // 2. check if the file has stored on the GeoServer Data Dir
+                final File uploadedFile =
+                        xmppClient.getGeoServer().getCatalog().getResourceLoader().find(value);
                 if (uploadedFile != null
                         &&
                         /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
@@ -284,17 +297,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                         && uploadedFile.isFile()) {
                     return uploadedFile;
                 }
-            }
-
-            // 2. check if the file has stored on the GeoServer Data Dir
-            final File uploadedFile =
-                    xmppClient.getGeoServer().getCatalog().getResourceLoader().find(value);
-            if (uploadedFile != null
-                    &&
-                    /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
-                    && uploadedFile.canRead()
-                    && uploadedFile.isFile()) {
-                return uploadedFile;
+            } catch (Exception e) {
+                throw new IOException("Produced Output file is not reachable!", e);
             }
         }
 

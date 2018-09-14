@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.remote;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -291,7 +292,11 @@ public class RemoteProcessTest extends WPSTestSupport {
                         return null;
                     }
                 };
-        msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+        try {
+            msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+        } catch (IOException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
     }
 
     @Test
@@ -346,7 +351,11 @@ public class RemoteProcessTest extends WPSTestSupport {
                         return null;
                     }
                 };
-        msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+        try {
+            msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+        } catch (IOException e) {
+            assertFalse(e.getLocalizedMessage(), true);
+        }
 
         assertTrue(
                 "LoadAverage does not match!",

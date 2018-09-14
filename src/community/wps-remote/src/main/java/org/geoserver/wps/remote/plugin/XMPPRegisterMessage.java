@@ -73,9 +73,14 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         final JSONArray jsonArray = (JSONArray) obj;
 
                         final String paramName = (String) jsonArray.get(0);
-                        String ss = ((String) jsonArray.get(1));
-                        ss = ss.substring(1, ss.length() - 1);
-                        final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        JSONObject paramType = null;
+                        if (jsonArray.get(1) instanceof String) {
+                            String ss = ((String) jsonArray.get(1));
+                            ss = ss.substring(1, ss.length() - 1);
+                            paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        } else {
+                            paramType = (JSONObject) jsonArray.get(1);
+                        }
                         final String className = (String) paramType.get("type");
 
                         final ParameterTemplate paramTemplate =
@@ -84,26 +89,17 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                         XMPPClient.class.getClassLoader(),
                                         paramType.get("default"));
 
-                        final String choosenInputMimeTypeParam = paramName + "InputMimeType";
                         if (paramTemplate.getMeta() != null
-                                && paramTemplate.getMeta().get("mimeTypes") != null
                                 && (paramType.get("input_mime_type") instanceof String)) {
+                            // mimeTypes=application/x-netcdf, chosenMimeType=application/x-netcdf
                             paramTemplate
                                     .getMeta()
-                                    .put("chosenMimeType", choosenInputMimeTypeParam);
-
-                            final Parameter inputChoosenMimeTypeParam =
-                                    new Parameter(
-                                            choosenInputMimeTypeParam,
-                                            String.class,
-                                            Text.text(""),
-                                            Text.text(""),
-                                            false,
-                                            0,
-                                            1,
-                                            paramType.get("input_mime_type").toString(),
-                                            null);
-                            inputs.put(choosenInputMimeTypeParam, inputChoosenMimeTypeParam);
+                                    .put("mimeTypes", paramType.get("input_mime_type").toString());
+                            paramTemplate
+                                    .getMeta()
+                                    .put(
+                                            "chosenMimeType",
+                                            paramType.get("input_mime_type").toString());
                         }
 
                         final InternationalString inputTitle =
@@ -147,9 +143,14 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         final JSONArray jsonArray = (JSONArray) obj;
 
                         final String paramName = (String) jsonArray.get(0);
-                        String ss = ((String) jsonArray.get(1));
-                        ss = ss.substring(1, ss.length() - 1);
-                        final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        JSONObject paramType = null;
+                        if (jsonArray.get(1) instanceof String) {
+                            String ss = ((String) jsonArray.get(1));
+                            ss = ss.substring(1, ss.length() - 1);
+                            paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        } else {
+                            paramType = (JSONObject) jsonArray.get(1);
+                        }
                         final String className = (String) paramType.get("type");
 
                         ParameterTemplate paramTemplate =
@@ -158,26 +159,17 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                         XMPPClient.class.getClassLoader(),
                                         paramType.get("default"));
 
-                        final String choosenOutputMimeTypeParam = paramName + "OutputMimeType";
                         if (paramTemplate.getMeta() != null
-                                && paramTemplate.getMeta().get("mimeTypes") != null
                                 && (paramType.get("output_mime_type") instanceof String)) {
+                            // mimeTypes=application/x-netcdf, chosenMimeType=application/x-netcdf
                             paramTemplate
                                     .getMeta()
-                                    .put("chosenMimeType", choosenOutputMimeTypeParam);
-
-                            final Parameter outputChoosenMimeTypeParam =
-                                    new Parameter(
-                                            choosenOutputMimeTypeParam,
-                                            String.class,
-                                            Text.text(""),
-                                            Text.text(""),
-                                            false,
-                                            0,
-                                            1,
-                                            paramType.get("output_mime_type").toString(),
-                                            null);
-                            outputs.put(choosenOutputMimeTypeParam, outputChoosenMimeTypeParam);
+                                    .put("mimeTypes", paramType.get("output_mime_type").toString());
+                            paramTemplate
+                                    .getMeta()
+                                    .put(
+                                            "chosenMimeType",
+                                            paramType.get("output_mime_type").toString());
                         }
 
                         final InternationalString outputTitle =

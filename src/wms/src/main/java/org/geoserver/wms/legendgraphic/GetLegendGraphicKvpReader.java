@@ -248,7 +248,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             throws FactoryRegistryException, IOException, TransformException, SchemaException {
         FeatureType featureType = getLayerFeatureType(layerInfo);
         if (featureType != null) {
-            LegendRequest legend = request.new LegendRequest(featureType);
+            LegendRequest legend =
+                    request
+                    .new LegendRequest(featureType, layerInfo.getResource().getQualifiedName());
             legend.setLayerInfo(layerInfo);
 
             MapLayerInfo mli = new MapLayerInfo(layerInfo);

@@ -134,6 +134,21 @@ public class GetLegendGraphicRequest extends WMSRequest {
             this.layerName = featureType.getName();
         }
 
+        /**
+         * LegendRequest for a feature type, additional details (title and legend graphic) provided
+         * by MapLayerInfo.
+         *
+         * @param featureType
+         * @param layerName layerName distinct to featureType name
+         */
+        public LegendRequest(FeatureType featureType, Name layerName) {
+            if (featureType == null) {
+                throw new NullPointerException("FeatureType required for LegendRequest");
+            }
+            this.featureType = featureType;
+            this.layerName = layerName;
+        }
+
         public String getLayer() {
             return layer;
         }

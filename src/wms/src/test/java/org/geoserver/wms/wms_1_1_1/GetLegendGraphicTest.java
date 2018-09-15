@@ -60,7 +60,8 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         File file = getResourceLoader().createFile("styles", "legend.png");
         getResourceLoader().copyFromClassPath("../legend.png", file, getClass());
         testData.addStyle(null, "custom", "point_test.sld", getClass(), catalog, legend);
-
+        // add a raster_legend style with legend to test on raster
+        testData.addStyle(null, "raster_legend", "raster.sld", getClass(), catalog, legend);
         // setup a ws specific style with custom legend too
         WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
         File wsFile =
@@ -362,5 +363,23 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                         + "&format=image/png&width=20&height=20";
         BufferedImage image = getAsImage(base, "image/png");
         assertEquals(80, image.getHeight());
+    }
+
+    /**
+     * Test for GEOS-7636 GetLegendGraphic ignores the OnlineResource configured in the style for
+     * raster layers
+     */
+    @Test
+    public void testLegendOnRaster() throws Exception {
+        String base =
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer=wcs:World&style=raster_legend"
+                        + "&format=image/png&width=22&height=22";
+
+        BufferedImage image = getAsImage(base, "image/png");
+        Resource resource = getResourceLoader().get("styles/legend.png");
+        BufferedImage expected = ImageIO.read(resource.file());
+
+        assertEquals(getPixelColor(expected, 10, 2).getRGB(), getPixelColor(image, 10, 2).getRGB());
     }
 }

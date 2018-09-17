@@ -13,6 +13,8 @@ import java.util.Collections;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
@@ -110,6 +112,36 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                 getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(1, dom.getElementsByTagName("workspace").getLength());
+    }
+
+    @Test
+    public void testWorkspacesWithProxyHeaders() throws Exception {
+        GeoServerInfo ginfo = getGeoServer().getGlobal();
+        SettingsInfo settings = getGeoServer().getGlobal().getSettings();
+        ginfo.setUseHeadersProxyURL(true);
+        settings.setProxyBaseUrl(
+                "${X-Forwarded-Proto}://${X-Forwarded-Host}/${X-Forwarded-Path} ${X-Forwarded-Proto}://${X-Forwarded-Host}");
+        ginfo.setSettings(settings);
+        getGeoServer().save(ginfo);
+        assertEquals(
+                200,
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
+        assertEquals(0, dom.getElementsByTagName("workspace").getLength());
+
+        super.login();
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
+        assertEquals(
+                getCatalog().getWorkspaces().size(),
+                dom.getElementsByTagName("workspace").getLength());
+
+        assertEquals(
+                200,
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
+        assertEquals(
+                getCatalog().getWorkspaces().size(),
+                dom.getElementsByTagName("workspace").getLength());
     }
 
     @Test

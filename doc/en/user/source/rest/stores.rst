@@ -339,4 +339,4 @@ Given the following content saved as :file:`annotations.xml`:
 
    201 Created
 
-A new and empty table named "annotations" in the "nyc" database will be created as well.vivid
+A new and empty table named "annotations" in the "nyc" database will be created as well.

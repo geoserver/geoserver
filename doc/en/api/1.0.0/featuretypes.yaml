@@ -427,7 +427,7 @@ paths:
                         "minOccurs": 0,
                         "maxOccurs": 1,
                         "nillable": true,
-                        "binding": "com.vividsolutions.jts.geom.Point"
+                        "binding": "org.locationtech.jts.geom.Point"
                       },
                       {
                         "name": "NAME",
@@ -546,7 +546,7 @@ paths:
                                   <minOccurs>0</minOccurs>
                                   <maxOccurs>1</maxOccurs>
                                   <nillable>true</nillable>
-                                  <binding>com.vividsolutions.jts.geom.Point</binding>
+                                  <binding>org.locationtech.jts.geom.Point</binding>
                             </attribute>
                             <attribute>
                                   <name>NAME</name>
@@ -799,7 +799,7 @@ paths:
                         "minOccurs": 0,
                         "maxOccurs": 1,
                         "nillable": true,
-                        "binding": "com.vividsolutions.jts.geom.Point"
+                        "binding": "org.locationtech.jts.geom.Point"
                       },
                       {
                         "name": "NAME",
@@ -918,7 +918,7 @@ paths:
                                   <minOccurs>0</minOccurs>
                                   <maxOccurs>1</maxOccurs>
                                   <nillable>true</nillable>
-                                  <binding>com.vividsolutions.jts.geom.Point</binding>
+                                  <binding>org.locationtech.jts.geom.Point</binding>
                             </attribute>
                             <attribute>
                                   <name>NAME</name>
@@ -1317,7 +1317,7 @@ definitions:
                       "minOccurs": 0,
                       "maxOccurs": 1,
                       "nillable": true,
-                      "binding": "com.vividsolutions.jts.geom.Point"
+                      "binding": "org.locationtech.jts.geom.Point"
                     },
                     {
                       "name": "NAME",

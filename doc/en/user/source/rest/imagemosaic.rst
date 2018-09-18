@@ -83,7 +83,7 @@ Listing image mosaic details
           <minOccurs>0</minOccurs>
           <maxOccurs>1</maxOccurs>
           <nillable>true</nillable>
-          <binding>com.vividsolutions.jts.geom.Polygon</binding>
+          <binding>org.locationtech.jts.geom.Polygon</binding>
         </Attribute>
         <Attribute>
           <name>location</name>

@@ -309,7 +309,7 @@ Given the following content saved as :file:`annotations.xml`:
      <attributes>
        <attribute>
          <name>the_geom</name>
-         <binding>com.vividsolutions.jts.geom.Point</binding>
+         <binding>org.locationtech.jts.geom.Point</binding>
        </attribute>
        <attribute>
          <name>description</name>

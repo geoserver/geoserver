@@ -16,7 +16,6 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
@@ -70,10 +69,30 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
     static final Property<ExecutionStatus> PROGRESS =
             new BeanProperty<ExecutionStatus>("progress", "progress");
 
+    static final Property<ExecutionStatus> EXPIRATION =
+            new BeanProperty<ExecutionStatus>("expirationDate", "expirationDate");
+
+    static final Property<ExecutionStatus> COMPLETION =
+            new BeanProperty<ExecutionStatus>("estimatedCompletion", "estimatedCompletion");
+
+    static final Property<ExecutionStatus> NEXT_POLL =
+            new BeanProperty<ExecutionStatus>("nextPoll", "nextPoll");
+
     static final Property<ExecutionStatus> TASK = new BeanProperty<ExecutionStatus>("task", "task");
 
     static final List<Property<ExecutionStatus>> PROPERTIES =
-            Arrays.asList(TYPE, NODE, USER, PROCESS, CREATED, PHASE, PROGRESS, TASK);
+            Arrays.asList(
+                    TYPE,
+                    NODE,
+                    USER,
+                    PROCESS,
+                    CREATED,
+                    PHASE,
+                    PROGRESS,
+                    EXPIRATION,
+                    COMPLETION,
+                    NEXT_POLL,
+                    TASK);
 
     private long first;
 
@@ -165,6 +184,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             SortByImpl[] sortBys = new SortByImpl[1];
             final Property<?> property = getProperty(sort);
             if (property.isSearchable()) { // we really need another flag
+                sortBys[0] = new SortByImpl(FF.property(property.getName()), SortOrder.ASCENDING);
                 FF.sort(property.getName(), SortOrder.ASCENDING);
                 if (!sort.isAscending()) {
                     sortBys[0].setSortOrder(SortOrder.DESCENDING);

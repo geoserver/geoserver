@@ -4,13 +4,18 @@
  */
 package org.geoserver.wps.web;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -46,6 +51,15 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                             IModel<ExecutionStatus> itemModel,
                             Property<ExecutionStatus> property) {
                         // have the base class create a label for us
+                        Object value = property.getPropertyValue(itemModel.getObject());
+                        if (value instanceof Date) {
+                            SimpleDateFormat gmtFrmt =
+                                    new SimpleDateFormat(
+                                            "E, d MMM yyyy HH:mm:ss.SSS 'GMT'",
+                                            Session.get().getLocale());
+                            return DateLabel.forDatePattern(
+                                    id, Model.of((Date) value), gmtFrmt.toPattern());
+                        }
                         return null;
                     }
 

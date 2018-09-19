@@ -99,4 +99,9 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
     public ExecuteResponseType dismiss(DismissType request) throws WPSException {
         return new Dismiss(executionManager, tracker, resources, context).run(request);
     }
+
+    @Override
+    public Object getExecutions(GetExecutionsType request) throws WPSException {
+        return new Executions(gs, executionManager, tracker, resources, context).run(request);
+    }
 }

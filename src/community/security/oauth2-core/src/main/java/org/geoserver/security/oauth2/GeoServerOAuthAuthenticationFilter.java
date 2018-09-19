@@ -100,10 +100,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
             throws IOException, ServletException {
 
         // Search for an access_token on the request (simulating SSO)
-        String accessToken = getParameterValue("access_token", request);
-        if (accessToken == null) {
-            accessToken = getBearerToken(request);
-        }
+        String accessToken = getAccessTokenFromRequest(request);
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
@@ -201,7 +198,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     /** The cache key is the authentication key (global identifier) */
     @Override
     public String getCacheKey(HttpServletRequest request) {
-        final String access_token = getParameterValue("access_token", request);
+        final String access_token = getAccessTokenFromRequest(request);
         return access_token != null ? access_token : getCustomSessionCookieValue(request);
     }
 
@@ -369,7 +366,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
          */
 
         // Search for an access_token on the request (simulating SSO)
-        final String accessToken = getParameterValue("access_token", req);
+        String accessToken = getAccessTokenFromRequest(req);
 
         if (accessToken != null) {
             restTemplate
@@ -458,6 +455,14 @@ public abstract class GeoServerOAuthAuthenticationFilter
         req.setAttribute(UserNameAlreadyRetrieved, Boolean.TRUE);
         if (principal != null) req.setAttribute(UserName, principal);
         return principal;
+    }
+
+    private String getAccessTokenFromRequest(ServletRequest req) {
+        String accessToken = getParameterValue("access_token", req);
+        if (accessToken == null) {
+            accessToken = getBearerToken(req);
+        }
+        return accessToken;
     }
 
     protected void configureRestTemplate() {

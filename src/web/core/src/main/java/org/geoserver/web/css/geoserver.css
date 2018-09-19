@@ -93,6 +93,39 @@ input[readonly] {
   padding: 0;
 }
 
+
+.palette-header {
+  margin-right: -2px;
+}
+
+.palette-theme-default .palette-choices > div {
+  width: 100%;
+  overflow-x: scroll;
+  border: 1px solid rgb(187, 187, 187);
+  margin: 0.5em 0;
+}
+
+.palette-theme-default .palette-selected > div {
+  width: 100%;
+  overflow-x: scroll;
+  border: 1px solid rgb(187, 187, 187);
+  margin: 0.5em 0;
+}
+
+.palette-theme-default .palette-choices select {
+  min-width: 100%;
+  width: auto;
+  margin: 0;
+  border: none;
+}
+
+.palette-theme-default .palette-selected select {
+  min-width: 100%;
+  width: auto;
+  margin: 0;
+  border: none;
+}
+
 /*-----------------------
 Utility Classes
 -----------------------*/

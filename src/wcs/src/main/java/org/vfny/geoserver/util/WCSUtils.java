@@ -144,8 +144,8 @@ public class WCSUtils {
                 new GridEnvelope2D(
                         (int) Math.round(padRange.getMinimum(0)),
                         (int) Math.round(padRange.getMinimum(1)),
-                        (int) Math.round(padRange.getMinimum(0) + padRange.getSpan(0)),
-                        (int) Math.round(padRange.getMinimum(1) + padRange.getSpan(1)));
+                        (int) Math.round(padRange.getSpan(0)),
+                        (int) Math.round(padRange.getSpan(1)));
         GridEnvelope2D sourceRange = gg.getGridRange2D();
         if (sourceRange.x == targetRange.x
                 && sourceRange.y == sourceRange.y

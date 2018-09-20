@@ -178,7 +178,10 @@ public class GeofenceAccessManager
 
         ruleFilter.setInstance(configurationManager.getConfiguration().getInstanceName());
         ruleFilter.setWorkspace(workspaceName);
-        ruleFilter.setUser(user.getName());
+        String username = user.getName();
+        if (username == null || username.isEmpty()) {
+            ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
+        }
 
         String sourceAddress = retrieveCallerIpAddress();
         if (sourceAddress != null) {
@@ -302,6 +305,9 @@ public class GeofenceAccessManager
             }
 
             username = user.getName();
+            if (username != null && username.isEmpty()) {
+                username = null;
+            }
         }
 
         // get info from the current request
@@ -387,7 +393,7 @@ public class GeofenceAccessManager
                 ruleFilter.setRole(role);
             } else {
                 String username = user.getName();
-                if (username == null) {
+                if (username == null || username.isEmpty()) {
                     ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
                 } else {
                     LOGGER.log(Level.FINE, "Setting user for filter: {0}", new Object[] {username});
@@ -590,6 +596,9 @@ public class GeofenceAccessManager
                 return operation;
             } else {
                 username = user.getName();
+                if (username != null && username.isEmpty()) {
+                    username = null;
+                }
             }
         }
 

@@ -521,6 +521,25 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageTrimmingBordersOverlapVertical.xml");
+        testCoverageResult(
+                xml,
+                targetCoverage -> {
+                    final GeneralEnvelope expectedEnvelope =
+                            new GeneralEnvelope(new double[] {13, 37}, new double[] {14, 39});
+                    expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
+                    double pixelSize = 0.057934032977228;
+                    // check the whole extent has been returned
+                    assertTrue(
+                            expectedEnvelope.equals(
+                                    targetCoverage.getEnvelope(), pixelSize, false));
+                });
+    }
+
+    @Test
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml =
                 new File(

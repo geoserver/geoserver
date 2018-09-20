@@ -1038,6 +1038,36 @@ public class XStreamPersisterTest {
         assertNotNull(vt2.getNativeSrid(geometryName));
     }
 
+    /* Test for GEOS-8929 */
+    @Test
+    public void testOldJTSBindingConversion() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        catalog.add(ws);
+
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace(ws);
+        ds.setName("foo");
+        catalog.add(ds);
+
+        persister.setCatalog(catalog);
+        FeatureTypeInfo ft =
+                persister.load(
+                        getClass().getResourceAsStream("/org/geoserver/config/old_jts_binding.xml"),
+                        FeatureTypeInfo.class);
+        assertNotNull(ft);
+        assertEquals(
+                org.locationtech.jts.geom.LineString.class, ft.getAttributes().get(0).getBinding());
+    }
+
     @Test
     public void testCRSConverter() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");

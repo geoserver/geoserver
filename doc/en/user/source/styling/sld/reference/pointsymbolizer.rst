@@ -126,7 +126,7 @@ The ``<Mark>`` element has the sub-elements:
      - **Required?**
      - **Description**
    * - ``<WellKnownName>``
-     - Yes
+     - No
      - The name of the shape.  
        Standard SLD shapes are ``circle``, ``square``, ``triangle``, ``star``, ``cross``, or ``x``.  Default is ``square``.
    * - ``<Fill>``

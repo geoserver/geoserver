@@ -37,7 +37,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-class PipelineBuilder {
+public class PipelineBuilder {
 
     // The base simplification tolerance for screen coordinates.
     private static final double PIXEL_BASE_SAMPLE_SIZE = 0.25;

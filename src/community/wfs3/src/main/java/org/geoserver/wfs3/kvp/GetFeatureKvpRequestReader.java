@@ -49,6 +49,10 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         if (!kvp.containsKey("outputFormat")) {
             gf.setOutputFormat(null);
         }
+        // resolution vendor parameter:
+        if (kvp.containsKey("resolution")) {
+            gf.setResolution((String) kvp.get("resolution"));
+        }
         return gf;
     }
 

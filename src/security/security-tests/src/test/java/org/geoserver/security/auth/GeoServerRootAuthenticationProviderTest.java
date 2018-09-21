@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,6 +47,13 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
         assertNull(provider.authenticate(token));
 
         String masterPassword = getMasterPassword();
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setLoginEnabled(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
         token =
                 new UsernamePasswordAuthenticationToken(
                         GeoServerUser.ROOT_USERNAME, masterPassword);

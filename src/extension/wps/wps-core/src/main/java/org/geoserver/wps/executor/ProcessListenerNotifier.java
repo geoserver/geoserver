@@ -71,12 +71,12 @@ public class ProcessListenerNotifier {
             // By default we estimate the completion as:
             // "time elapsed millis / percentage completed"
             if (progress > 0) {
-                long timeEalpsedMillis =
+                long timeElapsedMillis =
                         (new Date().getTime() - status.getCreationTime().getTime());
                 int estimatedCompletionMillis =
                         (int)
-                                ((timeEalpsedMillis / progress) * timeEalpsedMillis
-                                        + timeEalpsedMillis);
+                                ((timeElapsedMillis / progress) * timeElapsedMillis
+                                        + timeElapsedMillis);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(status.getCreationTime());
                 calendar.add(Calendar.MILLISECOND, estimatedCompletionMillis);

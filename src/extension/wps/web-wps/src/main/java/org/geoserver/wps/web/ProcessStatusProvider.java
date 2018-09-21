@@ -23,7 +23,6 @@ import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -186,13 +185,11 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
 
         SortBy sortOrder = null;
         if (sort != null) {
-            SortBy[] sortBys = new SortByImpl[1];
             final Property<?> property = getProperty(sort);
             if (property.isSearchable()) { // we really need another flag
                 final String sortProperty = ((BeanProperty<StoreInfo>) property).getPropertyPath();
                 sortOrder = sortBy(sortProperty, sort.isAscending());
-                sortBys[0] = sortOrder;
-                query.setSortBy(sortBys);
+                query.setSortBy(new SortBy[] {sortOrder});
             }
         }
         LOGGER.fine("built query " + query + " to filter statuses");

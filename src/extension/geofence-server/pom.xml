@@ -50,9 +50,9 @@
                 <version>${hibernate-spatial-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernatespatial</groupId>
-            <artifactId>hibernate-spatial-h2-geodb</artifactId>
-            <version>${hibernate-spatial-h2-version}</version>
+                <groupId>org.hibernatespatial</groupId>
+                <artifactId>hibernate-spatial-h2-geodb</artifactId>
+                <version>${hibernate-spatial-h2-version}</version>
         </dependency>
 
         <dependency>
@@ -220,5 +220,29 @@
             </resource>
         </resources>
     </build>
+
+    <profiles>
+        <profile>
+            <id>geofence-postgis</id>
+            <activation>
+                <property>
+                    <name>geofence-postgis</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.hibernatespatial</groupId>
+                    <artifactId>hibernate-spatial-postgis</artifactId>
+                    <version>${hibernate-spatial-version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc</artifactId>
+                    <version>${postgis.jdbc.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>
 

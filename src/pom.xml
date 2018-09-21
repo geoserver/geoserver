@@ -1956,6 +1956,7 @@
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.7.5-Unsafe</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
   <jacoco.version>0.8.1</jacoco.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>

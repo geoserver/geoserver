@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -76,6 +77,7 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         DateFormat df =
                 new SimpleDateFormat(
                         "E, d MMM yyyy HH:mm:ss.SSS 'GMT'", tester.getSession().getLocale());
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
         tester.assertLabel(
                 "table:listContainer:items:1:itemProperties:7:component",
                 df.format(status.getExpirationDate()));

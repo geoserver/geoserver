@@ -159,7 +159,7 @@ public class Executions {
                     Executions.NO_SUCH_PROCESS_CODE, "No Process Execution available.");
         }
 
-        // Are we done? How to collect all the responses outputs?
+        // Going to collect all the responses outputs
         GetExecutionsTransformer executionsTransformer =
                 new GetExecutionsTransformer(
                         gs.getService(WPSInfo.class),

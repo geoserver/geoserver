@@ -528,7 +528,7 @@ public class GetExecutionsTransformer extends TransformerBase {
                                                         inputAttributes);
                                             }
                                         } catch (Exception e) {
-                                            // LOGGER.log(Level.WARNING, "", e);
+                                            LOGGER.log(Level.WARNING, "", e);
                                         }
                                     } else {
                                         if (ppio instanceof LiteralPPIO) {

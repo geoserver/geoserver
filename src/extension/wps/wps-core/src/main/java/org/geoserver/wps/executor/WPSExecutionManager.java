@@ -175,7 +175,6 @@ public class WPSExecutionManager
         // Therefore at this stage we cannot still have an idea about such estimation.
         // We'll need to wait for the next poll / call to the ProcessListener
         status.setEstimatedCompletion(null);
-        /** TODO: add / search for completion estimators extensions */
 
         // By default, at the beginning, we'd suggest to make the next poll at least
         // half of the maximum execution time (if > 0).
@@ -184,7 +183,6 @@ public class WPSExecutionManager
         calendar.setTime(new Date());
         calendar.add(Calendar.SECOND, nextPollTimeDelta);
         status.setNextPoll(new Date());
-        /** TODO: add / search for next poll estimators extensions */
         Executor executor =
                 new Executor(
                         request,

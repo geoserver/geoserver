@@ -6,6 +6,7 @@ package org.geoserver.wps.web;
 
 import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.or;
+import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.wps.ProcessStatusStore;
@@ -25,7 +27,7 @@ import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortOrder;
+import org.opengis.filter.sort.SortBy;
 
 /**
  * Provides a filtered, sorted view over the running/recently completed processes
@@ -179,16 +181,17 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             query.setStartIndex((int) first);
             query.setMaxFeatures((int) count);
         }
-        SortParam sort = getSort();
+
+        final SortParam sort = getSort();
+
+        SortBy sortOrder = null;
         if (sort != null) {
-            SortByImpl[] sortBys = new SortByImpl[1];
+            SortBy[] sortBys = new SortByImpl[1];
             final Property<?> property = getProperty(sort);
             if (property.isSearchable()) { // we really need another flag
-                sortBys[0] = new SortByImpl(FF.property(property.getName()), SortOrder.ASCENDING);
-                FF.sort(property.getName(), SortOrder.ASCENDING);
-                if (!sort.isAscending()) {
-                    sortBys[0].setSortOrder(SortOrder.DESCENDING);
-                }
+                final String sortProperty = ((BeanProperty<StoreInfo>) property).getPropertyPath();
+                sortOrder = sortBy(sortProperty, sort.isAscending());
+                sortBys[0] = sortOrder;
                 query.setSortBy(sortBys);
             }
         }

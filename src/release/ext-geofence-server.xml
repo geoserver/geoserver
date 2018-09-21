@@ -22,6 +22,8 @@
         <include>*geofence-persistence*</include>
         <include>hatbox*</include>
         <include>hibernate*</include>
+        <include>hibernate-spatial*</include>
+        <include>postgis-jdbc*</include>
         <include>jackson*</include>
         <include>javassist*</include>
         <include>jta*</include>

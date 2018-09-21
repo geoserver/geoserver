@@ -37,7 +37,7 @@ This section provides the options for adding, removing, and editing master passw
 
 .. note:: By default the login to Admin GUI and REST APIs with Master Password is disabled. In order to enable it you will need to manually change the Master Password Provider ``config.xml``, usually located into ``security/masterpw/default/config.xml``, by adding the following statement::
 
-    ``<canLogin>true</canLogin>``
+    ``<loginEnabled>true</loginEnabled>``
 
 Password policies
 -----------------

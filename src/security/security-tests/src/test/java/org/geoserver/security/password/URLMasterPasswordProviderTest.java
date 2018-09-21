@@ -29,7 +29,7 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         URLMasterPasswordProviderConfig config = new URLMasterPasswordProviderConfig();
         config.setName("test");
         config.setReadOnly(false);
-        config.setCanLogin(true);
+        config.setLoginEnabled(true);
         config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
         config.setURL(URLs.fileToUrl(tmp));
         config.setEncrypting(true);

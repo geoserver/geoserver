@@ -63,7 +63,7 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
     }
 

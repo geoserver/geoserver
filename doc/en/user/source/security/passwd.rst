@@ -103,7 +103,7 @@ Refer to :ref:`security_webadmin_masterpasswordprovider` for information on how 
 
 .. note:: By default the login to Admin GUI and REST APIs with Master Password is disabled. In order to enable it you will need to manually change the Master Password Provider ``config.xml``, usually located into ``security/masterpw/default/config.xml``, by adding the following statement::
 
-    ``<canLogin>true</canLogin>``
+    ``<loginEnabled>true</loginEnabled>``
 
 .. _security_passwd_policy:
 

@@ -52,7 +52,7 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
         token =
                 new UsernamePasswordAuthenticationToken(

@@ -552,7 +552,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         headerValue =
@@ -729,7 +729,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
         response = new MockHttpServletResponse();
         getProxy().doFilter(request, response, chain);

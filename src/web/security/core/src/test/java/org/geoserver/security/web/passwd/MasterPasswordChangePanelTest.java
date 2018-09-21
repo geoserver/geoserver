@@ -24,7 +24,7 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         login();

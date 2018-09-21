@@ -211,7 +211,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
@@ -867,7 +867,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         headerValue =
@@ -1059,7 +1059,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
@@ -1436,7 +1436,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.setMethod("POST");

@@ -50,7 +50,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
                 getSecurityManager()
                         .loadMasterPassswordProviderConfig(
                                 getSecurityManager().getMasterPasswordConfig().getProviderName());
-        masterPasswordConfig.setCanLogin(true);
+        masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         String masterPWAsString = getMasterPassword();
@@ -119,7 +119,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
 
         /////////////////////// change simulating spring injection
         MasterPasswordProviderConfig mpConfig2 = new MasterPasswordProviderConfig();
-        mpConfig2.setCanLogin(true);
+        mpConfig2.setLoginEnabled(true);
         mpConfig2.setName("test");
         mpConfig2.setClassName(TestMasterPasswordProvider.class.getCanonicalName());
         getSecurityManager().saveMasterPasswordProviderConfig(mpConfig2);

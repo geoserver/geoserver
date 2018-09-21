@@ -1722,7 +1722,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         try {
             if (!this.masterPasswordProviderHelper
                     .loadConfig(this.masterPasswordConfig.getProviderName())
-                    .isCanLogin()) {
+                    .isLoginEnabled()) {
                 return false;
             }
         } catch (IOException e) {

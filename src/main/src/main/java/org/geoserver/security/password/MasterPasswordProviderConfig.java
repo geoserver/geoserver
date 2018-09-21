@@ -16,14 +16,14 @@ public class MasterPasswordProviderConfig extends BaseSecurityNamedServiceConfig
 
     boolean readOnly;
 
-    boolean canLogin;
+    boolean loginEnabled;
 
     public MasterPasswordProviderConfig() {}
 
     public MasterPasswordProviderConfig(MasterPasswordProviderConfig other) {
         super(other);
         this.readOnly = other.isReadOnly();
-        this.canLogin = other.canLogin;
+        this.loginEnabled = other.loginEnabled;
     }
 
     /** Flag determining if the url is read only and may not be written back to. */
@@ -37,12 +37,12 @@ public class MasterPasswordProviderConfig extends BaseSecurityNamedServiceConfig
     }
 
     /** Flag determining if the root can login to GeoServer or not. */
-    public boolean isCanLogin() {
-        return canLogin;
+    public boolean isLoginEnabled() {
+        return loginEnabled;
     }
 
     /** Sets flag determining if the root can login to GeoServer or not. */
-    public void setCanLogin(boolean canLogin) {
-        this.canLogin = canLogin;
+    public void setLoginEnabled(boolean loginEnabled) {
+        this.loginEnabled = loginEnabled;
     }
 }

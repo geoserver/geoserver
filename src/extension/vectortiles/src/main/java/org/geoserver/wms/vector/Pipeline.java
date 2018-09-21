@@ -10,7 +10,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 /** A chainable unary operation on a geometry. */
-abstract class Pipeline {
+public abstract class Pipeline {
 
     protected static final Geometry EMPTY = new GeometryFactory().createPoint((Coordinate) null);
 
@@ -19,7 +19,7 @@ abstract class Pipeline {
             new Pipeline() {
 
                 @Override
-                protected final Geometry execute(Geometry geom) {
+                public final Geometry execute(Geometry geom) {
                     return geom;
                 }
 
@@ -48,7 +48,7 @@ abstract class Pipeline {
      * @return
      * @throws Exception
      */
-    Geometry execute(Geometry geom) throws Exception {
+    public Geometry execute(Geometry geom) throws Exception {
         Preconditions.checkNotNull(next, getClass().getName());
         Geometry g = _run(geom);
         if (g == null || g.isEmpty()) {

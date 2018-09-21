@@ -101,7 +101,9 @@
     <constructor-arg ref="geoServer"/>
     <constructor-arg ref="xmlConfiguration-1.1"/>
   </bean>
-
+  <bean id="featuresMapboxResponse" class="org.geoserver.wfs3.response.GetFeatureMapboxOutputFormat">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 
   <!-- Hack to map WFS3 requests parameters to OGC KVP lookalikes -->
   <bean id="wfs3Filter" class="org.geoserver.wfs3.WFS3Filter">

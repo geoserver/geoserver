@@ -532,6 +532,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         try {
             rp.getGridCoverageReader(info, null);
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Unable to add an imagepyramid with a space in it's name");
         }
         rp.dispose();

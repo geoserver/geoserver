@@ -515,27 +515,28 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertEquals(source2, clonedCs);
     }
 
-    @Test 
+    @Test
     public void testAddFilePathWithSpaces() throws Exception {
-   // Other tests mess with or reset the resourcePool, so lets make it is initialized properly
-      GeoServerExtensions.extensions(ResourcePoolInitializer.class)
-              .get(0)
-              .initialize(getGeoServer());
+        // Other tests mess with or reset the resourcePool, so lets make it is initialized properly
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
 
-      ResourcePool rp = getCatalog().getResourcePool();
+        ResourcePool rp = getCatalog().getResourcePool();
 
-      CoverageStoreInfo info = getCatalog().getFactory().createCoverageStore();
-      info.setName("spaces");
-      info.setType("ImagePyramid");
-      info.setEnabled(true);
-      info.setURL("file:///data/os-data/rasters/vector map dist/pyramid");
-      try {
-        rp.getGridCoverageReader(info, null);
-      } catch (Exception e) {
-        fail("Unable to add an imagepyramid with a space in it's name");
-      }
-      rp.dispose();
+        CoverageStoreInfo info = getCatalog().getFactory().createCoverageStore();
+        info.setName("spaces");
+        info.setType("ImagePyramid");
+        info.setEnabled(true);
+        info.setURL("file:///data/os-data/rasters/vector map dist/pyramid");
+        try {
+            rp.getGridCoverageReader(info, null);
+        } catch (Exception e) {
+            fail("Unable to add an imagepyramid with a space in it's name");
+        }
+        rp.dispose();
     }
+
     @Test
     public void testWmsCascadeEntityExpansion() throws Exception {
         // Other tests mess with or reset the resourcePool, so lets make it is initialized properly

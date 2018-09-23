@@ -188,6 +188,6 @@ public class FileRootsFinder implements Serializable {
             }
         }
 
-        return result.sorted();
+        return result.distinct().sorted();
     }
 }

@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
@@ -185,6 +186,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         List<String> values =
                 rootsFinder.getMatches(rootPath, fileFilter).collect(Collectors.toList());
         assertThat(values.size(), greaterThan(0));
+        assertEquals(new HashSet(values).size(), values.size());
         assertThat(
                 values,
                 hasItem("file://" + new File(rootPath, MockData.CITE_PREFIX).getAbsolutePath()));

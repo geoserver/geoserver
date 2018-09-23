@@ -517,7 +517,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testAddFilePathWithSpaces() throws Exception {
-        // Other tests mess with or reset the resourcePool, so lets make it is initialized properly
+        // Other tests mess with or reset the resourcePool, so lets make it is initialised properly
         GeoServerExtensions.extensions(ResourcePoolInitializer.class)
                 .get(0)
                 .initialize(getGeoServer());
@@ -528,7 +528,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         info.setName("spaces");
         info.setType("ImagePyramid");
         info.setEnabled(true);
-        info.setURL("file:///data/os-data/rasters/vector map dist/pyramid");
+        info.setURL(
+                "file://./src/test/resources/data_dir/nested_layer_groups/data/pyramid with space");
         try {
             rp.getGridCoverageReader(info, null);
         } catch (Exception e) {

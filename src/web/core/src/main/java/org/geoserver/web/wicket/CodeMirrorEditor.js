@@ -1,10 +1,48 @@
+function completeAfter(cm, pred) {
+    if(cm.getOption("mode") && cm.getOption("mode").startsWith("text/sld")) {
+        var cur = cm.getCursor();
+        if (!pred || pred()) setTimeout(function() {
+          if (!cm.state.completionActive)
+            cm.showHint({completeSingle: false});
+        }, 100);
+        return CodeMirror.Pass;
+     }
+    
+}
+    
+function completeIfAfterLt(cm) {
+    if(cm.getOption("mode") && cm.getOption("mode").startsWith("text/sld")) {
+        return completeAfter(cm, function() {
+          var cur = cm.getCursor();
+          return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) == "<";
+        });
+    }
+}
+    
+function completeIfInTag(cm) {
+    if(cm.getOption("mode") && cm.getOption("mode").startsWith("text/sld")) {
+        return completeAfter(cm, function() {
+          var tok = cm.getTokenAt(cm.getCursor());
+          if (tok.type == "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1)) return false;
+          var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
+          return inner.tagName;
+        });
+    }
+}
+
 var textarea = document.getElementById('$componentId');
 var editor = CodeMirror.fromTextArea(textarea, { 
     mode: '$mode',
     theme: 'default',
     lineWrapping: true,
     lineNumbers: true,
-    extraKeys: {"Ctrl-Space": "autocomplete"}
+    extraKeys: {
+        "'<'": completeAfter,
+        "'/'": completeIfAfterLt,
+        "' '": completeIfInTag,
+        "'='": completeIfInTag, 
+        "Ctrl-Space": "autocomplete" 
+    }
 });
 editor.getWrapperElement().style.fontSize = "12px"; 
 editor.refresh();

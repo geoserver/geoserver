@@ -71,7 +71,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                 new PackageResourceReference(
                         CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
                 new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js")
+                        CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js")
             };
 
     private TextArea<String> editor;

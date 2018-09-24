@@ -145,6 +145,7 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
         config.setName("default2");
         config.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
         config.setURL(new URL("file:passwd"));
+        config.setLoginEnabled(true);
 
         getSecurityManager().saveMasterPasswordProviderConfig(config);
         activatePanel();

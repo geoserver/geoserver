@@ -45,6 +45,14 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         // keytool -storepasswd -new geoserver1 -storepass geoserver -storetype jceks -keystore
         // geoserver.jks
 
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setLoginEnabled(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         String masterPWAsString = getMasterPassword();
         MasterPasswordConfig config = getSecurityManager().getMasterPasswordConfig();
 
@@ -111,6 +119,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
 
         /////////////////////// change simulating spring injection
         MasterPasswordProviderConfig mpConfig2 = new MasterPasswordProviderConfig();
+        mpConfig2.setLoginEnabled(true);
         mpConfig2.setName("test");
         mpConfig2.setClassName(TestMasterPasswordProvider.class.getCanonicalName());
         getSecurityManager().saveMasterPasswordProviderConfig(mpConfig2);

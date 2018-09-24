@@ -5,9 +5,10 @@
  */
 package org.geoserver.security.web.passwd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.security.password.MasterPasswordProviderConfig;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,14 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
 
     @Before
     public void setUp() throws Exception {
+        // We need to enable Master Root login first
+        MasterPasswordProviderConfig masterPasswordConfig =
+                getSecurityManager()
+                        .loadMasterPassswordProviderConfig(
+                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        masterPasswordConfig.setLoginEnabled(true);
+        getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
+
         login();
         tester.startPage(new MasterPasswordChangePage());
         tester.assertRenderedPage(MasterPasswordChangePage.class);

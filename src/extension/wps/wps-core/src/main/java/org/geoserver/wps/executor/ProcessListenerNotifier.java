@@ -4,6 +4,8 @@
  */
 package org.geoserver.wps.executor;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -64,6 +66,23 @@ public class ProcessListenerNotifier {
             }
             status.setProgress(progress);
             status.setTask(task);
+
+            // Update the estimated completion.
+            // By default we estimate the completion as:
+            // "time elapsed millis / percentage completed"
+            if (progress > 0) {
+                long timeElapsedMillis =
+                        (new Date().getTime() - status.getCreationTime().getTime());
+                int estimatedCompletionMillis =
+                        (int)
+                                ((timeElapsedMillis / progress) * timeElapsedMillis
+                                        + timeElapsedMillis);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(status.getCreationTime());
+                calendar.add(Calendar.MILLISECOND, estimatedCompletionMillis);
+                status.setEstimatedCompletion(calendar.getTime());
+            }
+
             ProcessEvent event = new ProcessEvent(status, inputs, outputs);
             for (ProcessListener listener : listeners) {
                 listener.progress(event);

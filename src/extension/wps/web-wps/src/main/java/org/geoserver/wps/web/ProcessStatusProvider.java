@@ -6,6 +6,7 @@ package org.geoserver.wps.web;
 
 import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.or;
+import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,19 +15,18 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.wps.ProcessStatusStore;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.sort.SortOrder;
+import org.opengis.filter.sort.SortBy;
 
 /**
  * Provides a filtered, sorted view over the running/recently completed processes
@@ -70,10 +70,30 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
     static final Property<ExecutionStatus> PROGRESS =
             new BeanProperty<ExecutionStatus>("progress", "progress");
 
+    static final Property<ExecutionStatus> EXPIRATION =
+            new BeanProperty<ExecutionStatus>("expirationDate", "expirationDate");
+
+    static final Property<ExecutionStatus> COMPLETION =
+            new BeanProperty<ExecutionStatus>("estimatedCompletion", "estimatedCompletion");
+
+    static final Property<ExecutionStatus> NEXT_POLL =
+            new BeanProperty<ExecutionStatus>("nextPoll", "nextPoll");
+
     static final Property<ExecutionStatus> TASK = new BeanProperty<ExecutionStatus>("task", "task");
 
     static final List<Property<ExecutionStatus>> PROPERTIES =
-            Arrays.asList(TYPE, NODE, USER, PROCESS, CREATED, PHASE, PROGRESS, TASK);
+            Arrays.asList(
+                    TYPE,
+                    NODE,
+                    USER,
+                    PROCESS,
+                    CREATED,
+                    PHASE,
+                    PROGRESS,
+                    EXPIRATION,
+                    COMPLETION,
+                    NEXT_POLL,
+                    TASK);
 
     private long first;
 
@@ -160,16 +180,16 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             query.setStartIndex((int) first);
             query.setMaxFeatures((int) count);
         }
-        SortParam sort = getSort();
+
+        final SortParam sort = getSort();
+
+        SortBy sortOrder = null;
         if (sort != null) {
-            SortByImpl[] sortBys = new SortByImpl[1];
             final Property<?> property = getProperty(sort);
             if (property.isSearchable()) { // we really need another flag
-                FF.sort(property.getName(), SortOrder.ASCENDING);
-                if (!sort.isAscending()) {
-                    sortBys[0].setSortOrder(SortOrder.DESCENDING);
-                }
-                query.setSortBy(sortBys);
+                final String sortProperty = ((BeanProperty<StoreInfo>) property).getPropertyPath();
+                sortOrder = sortBy(sortProperty, sort.isAscending());
+                query.setSortBy(new SortBy[] {sortOrder});
             }
         }
         LOGGER.fine("built query " + query + " to filter statuses");

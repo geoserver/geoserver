@@ -31,6 +31,14 @@ public interface WebProcessingService {
     ExecuteResponseType execute(ExecuteType request) throws WPSException;
 
     /**
+     * Returns the list of executions run by a user
+     *
+     * @param request
+     * @throws WPSException
+     */
+    Object getExecutions(GetExecutionsType request) throws WPSException;
+
+    /**
      * Returns the status of a given process execution, either as a {@link ExecuteResponseType} or
      * as a stored response File
      *

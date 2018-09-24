@@ -421,3 +421,75 @@ Multivalued properties from denormalised sources (the same source feature ID app
 
 .. warning:: Denormalised sources must grouped so that features with duplicate IDs are provided without any intervening features. This can be achieved by ensuring that denormalised source features are sorted by ID. Failure to observe this restriction will result in data corruption. This restriction is however not necessary when using :ref:`app-schema.joining` because then ordering will happen automatically.
 
+Attributes with cardinality 1..N
+--------------------------------
+
+Consider the following two tables, the first table contains information related to meteorological stations:
+
+======== ========== 
+ID       NAME                    
+======== ==========
+st.1     Station 1  
+st.2     Station 2  
+======== ========== 
+
+The second table contains tags that are associated with meteorological stations:
+
+======== =========== ============ =====
+ID       STATION_ID  TAG          CODE
+======== =========== ============ =====
+tg.1     st.1        temperature  X1Y
+tg.2     st.1        wind         X2Y
+tg.2     st.2        pressure     X3Y
+======== =========== ============ =====
+
+A station can have multiple tags, establishing a one to many relationship between stations and tags, the GML representation of the first station should look like this::
+
+  (...)
+  <st:Station gml:id="st.1">
+    <st:name>Station 1</st:name>
+    <st:tag st:code="X1Y">temperature</st:tag>
+    <st:tag st:code="X2Y">wind</st:tag>
+  </st:Station_gml32>
+  (...)
+
+Mappings with a one to many relationship are supported with a custom syntax in JDBC based data stores and Apache Solr data store. 
+
+SQL based data stores
+`````````````````````
+
+When using JDBC based data stores attributes with a 1..N relationship can be mapped like this::
+
+  (...)
+  <AttributeMapping>
+    <targetAttribute>st:tag</targetAttribute>
+    <jdbcMultipleValue>
+      <sourceColumn>ID</sourceColumn>
+      <targetTable>TAGS</targetTable>
+      <targetColumn>STATION_ID</targetColumn>
+      <targetValue>TAG</targetValue>
+    </jdbcMultipleValue>
+    <ClientProperty>
+      <name>st:code</name>
+      <value>CODE</value>
+    </ClientProperty>
+  </AttributeMapping>
+  (...)
+
+The ``targetValue`` refers to the value of the ``<st:tag>`` element, the client property is mapped with the usual syntax. Behind the scenes App-Schema will take care of associating the ``st:code`` attribute value with the correct tag. 
+
+Apache Solr
+```````````
+
+When using Apache Solr data stores, 1..N relationships can be handled with ``multiValued`` fields and mapped like this::
+
+  (...)
+  <AttributeMapping>
+    <targetAttribute>st:tag</targetAttribute>
+    <solrMultipleValue>TAG</solrMultipleValue>
+    <ClientProperty>
+      <name>st:code</name>
+      <value>CODE</value>
+    </ClientProperty>
+  </AttributeMapping>
+  (...)

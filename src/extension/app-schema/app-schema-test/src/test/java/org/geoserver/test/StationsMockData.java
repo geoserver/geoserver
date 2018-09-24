@@ -107,14 +107,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 MEASUREMENTS_PREFIX_GML31,
                 "gml31",
                 "measurements",
-                "normalMappings/measurements.xml",
+                "base/measurements.xml",
                 gml31Parameters);
         addStationFeatureType(
-                STATIONS_PREFIX_GML31,
-                "gml31",
-                "stations",
-                "normalMappings/stations.xml",
-                gml31Parameters);
+                STATIONS_PREFIX_GML31, "gml31", "stations", "base/stations.xml", gml31Parameters);
         // add GML 3.1 feature type
         Map<String, String> gml32Parameters = new HashMap<>();
         gml32Parameters.put("GML_PREFIX", "gml32");
@@ -124,14 +120,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 MEASUREMENTS_PREFIX_GML32,
                 "gml32",
                 "measurements",
-                "normalMappings/measurements.xml",
+                "base/measurements.xml",
                 gml32Parameters);
         addStationFeatureType(
-                STATIONS_PREFIX_GML32,
-                "gml32",
-                "stations",
-                "normalMappings/stations.xml",
-                gml32Parameters);
+                STATIONS_PREFIX_GML32, "gml32", "stations", "base/stations.xml", gml32Parameters);
     }
 
     /**
@@ -192,11 +184,11 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         substituteParameters(
                 "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
         substituteParameters(
-                "/test-data/stations/data/measurements.properties",
+                "/test-data/stations/base/measurements.properties",
                 parameters,
                 measurementsProperties);
         substituteParameters(
-                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
+                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
         // create measurements feature type
         addFeatureType(
                 namespacePrefix,
@@ -230,11 +222,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         // perform the parameterization
         substituteParameters("/test-data/stations/" + mappingsPath, parameters, stationsMappings);
         substituteParameters(
-                "/test-data/stations/data/stations.properties", parameters, stationsProperties);
+                "/test-data/stations/base/stations.properties", parameters, stationsProperties);
+        substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/schemas/stations.xsd", parameters, stationsSchema);
-        substituteParameters(
-                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
+                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
         // create station feature type
         addFeatureType(
                 namespacePrefix,
@@ -282,11 +273,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 parameters,
                 measurementsMappings);
         substituteParameters(
-                "/test-data/stations/data/stations.properties", parameters, stationsProperties);
+                "/test-data/stations/base/stations.properties", parameters, stationsProperties);
+        substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/schemas/stations.xsd", parameters, stationsSchema);
-        substituteParameters(
-                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
+                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
         // create station feature type
         addFeatureType(
                 namespacePrefix,
@@ -297,6 +287,63 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 measurementsSchema.getAbsolutePath(),
                 measurementsMappings.getAbsolutePath(),
                 measurementsProperties.getAbsolutePath());
+    }
+
+    /**
+     * Helper method that will add the desired App-Schema defined feature type customizing it for
+     * the desired GML version.
+     */
+    protected void addAppSchemaFeatureType(
+            String namespacePrefix,
+            String gmlPrefix,
+            String typeName,
+            String mappingsFileResource,
+            Map<String, String> parameters,
+            String... otherResources) {
+        // create root directory
+        File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
+        gmlDirectory.mkdirs();
+        // create the mappings target file
+        File targetMappingsFile = getTargetFile(mappingsFileResource, gmlPrefix, gmlDirectory);
+        substituteParameters(mappingsFileResource, parameters, targetMappingsFile);
+        // create target files for the other resources
+        String[] otherResourcesFiles = new String[otherResources.length + 1];
+        otherResourcesFiles[0] = targetMappingsFile.getAbsolutePath();
+        for (int i = 0; i < otherResources.length; i++) {
+            File targetFile = getTargetFile(otherResources[i], gmlPrefix, gmlDirectory);
+            substituteParameters(otherResources[i], parameters, targetFile);
+            otherResourcesFiles[i + 1] = targetFile.getAbsolutePath();
+        }
+        // create station feature type
+        addFeatureType(
+                namespacePrefix,
+                typeName,
+                targetMappingsFile.getAbsolutePath(),
+                otherResourcesFiles);
+    }
+
+    /**
+     * Helper method that
+     *
+     * @param resource
+     * @param gmlPrefix
+     * @param gmlDirectory
+     * @return
+     */
+    private File getTargetFile(String resource, String gmlPrefix, File gmlDirectory) {
+        int index = resource.lastIndexOf("/");
+        if (index < 0) {
+            throw new RuntimeException(String.format("Invalid resource '%s'.", resource));
+        }
+        String name = resource.substring(index + 1);
+        index = name.lastIndexOf(".");
+        if (index < 0) {
+            throw new RuntimeException(
+                    String.format("Invalid resource name '%s' of resource '%s'.", name, resource));
+        }
+        String extension = name.substring(index);
+        name = name.substring(0, index);
+        return new File(gmlDirectory, name + "_" + gmlPrefix + extension);
     }
 
     /**

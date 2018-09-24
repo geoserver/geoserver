@@ -1594,12 +1594,12 @@ public class ResourcePool {
         // Check to see if our "url" points to a file or not, otherwise we use the string
         // itself for reading
         Object readObject = urlString;
-        boolean isFile = false;
+        boolean isFile = true;
         URI uri;
         try {
             uri = new URI(urlString);
-            if (uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme())) {
-                isFile = true;
+            if (uri.getScheme() != null && !"file".equalsIgnoreCase(uri.getScheme())) {
+                isFile = false;
             }
         } catch (URISyntaxException e) {
             LOGGER.warning(

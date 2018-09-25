@@ -9,14 +9,14 @@ import net.opengis.wfs20.impl.GetFeatureTypeImpl;
 /** This class extends WFS 2.0 GetFeatureType just to allow having a custom KVP reader for it */
 public class GetFeatureType extends GetFeatureTypeImpl {
 
-    private String resolution;
+    private Integer resolution;
 
     /** Custom vector tile resolution */
-    public String getResolution() {
+    public Integer getResolution() {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(Integer resolution) {
         this.resolution = resolution;
     }
 }

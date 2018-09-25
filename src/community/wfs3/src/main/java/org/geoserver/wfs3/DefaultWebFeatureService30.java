@@ -37,7 +37,9 @@ import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.config.DefaultGridsets;
 import org.opengis.filter.FilterFactory2;
 
 /** WFS 3.0 implementation */
@@ -47,10 +49,17 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     private FilterFactory2 filterFactory;
     private final GeoServer geoServer;
     private WebFeatureService20 wfs20;
+    private final DefaultGridsets gridSets;
 
     public DefaultWebFeatureService30(GeoServer geoServer, WebFeatureService20 wfs20) {
+        this(geoServer, wfs20, new DefaultGridsets(true, true));
+    }
+
+    public DefaultWebFeatureService30(
+            GeoServer geoServer, WebFeatureService20 wfs20, DefaultGridsets gridSets) {
         this.geoServer = geoServer;
         this.wfs20 = wfs20;
+        this.gridSets = gridSets;
     }
 
     public FilterFactory2 getFilterFactory() {
@@ -165,5 +174,21 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     public WFSInfo getServiceInfo() {
         return geoServer.getService(WFSInfo.class);
+    }
+
+    @Override
+    public TilingSchemesDocument tilingSchemes(TilingSchemesRequest request) {
+        return new TilingSchemesDocument(geoServer, gridSets);
+    }
+
+    @Override
+    public FeatureCollectionResponse getTile(org.geoserver.wfs3.GetFeatureType request) {
+
+        WFS3GetFeature gf = new WFS3GetFeature(getServiceInfo(), getCatalog());
+        gf.setFilterFactory(filterFactory);
+        gf.setStoredQueryProvider(getStoredQueryProvider());
+        FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
+
+        return response;
     }
 }

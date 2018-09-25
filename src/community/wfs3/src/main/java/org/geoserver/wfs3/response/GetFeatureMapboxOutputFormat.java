@@ -12,7 +12,9 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs3.GetFeatureType;
+import org.geoserver.wfs3.TileDataRequest;
 import org.geoserver.wfs3.WebFeatureService30;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
 import org.geoserver.wms.vector.Pipeline;
@@ -20,10 +22,14 @@ import org.geoserver.wms.vector.PipelineBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
+import org.geowebcache.config.DefaultGridsets;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
-import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -33,7 +39,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /** Mapbox protobuf WFS3 output format */
 public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
 
-    private double overSamplingFactor = 2.0;
+    private static final double OVER_SAMPLING_FACTOR = 2.0;
+    private TileDataRequest tileData;
+    private DefaultGridsets gridSets;
 
     public GetFeatureMapboxOutputFormat(GeoServer gs) {
         super(gs, MapBoxTileBuilderFactory.MIME_TYPE);
@@ -49,12 +57,8 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         GetFeatureType getFeatureType = (GetFeatureType) getFeature.getParameters()[0];
-        Integer resolution = 256;
-        try {
-            resolution = Integer.parseInt(getFeatureType.getResolution());
-        } catch (NumberFormatException e) {
-            // continue with default
-        }
+        Integer resolution =
+                getFeatureType.getResolution() != null ? getFeatureType.getResolution() : 256;
         FeatureCollection collection = featureCollection.getFeatures().get(0);
         // paint area, default 256x256
         final Rectangle paintArea = new Rectangle(resolution, resolution);
@@ -65,7 +69,13 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
                         .getGeometryDescriptor()
                         .getType()
                         .getCoordinateReferenceSystem();
-        ReferencedEnvelope area = ReferencedEnvelope.create(collection.getBounds(), refSys);
+        // get area envelope from GridSet if tile request data, else from collection
+        ReferencedEnvelope area =
+                ReferencedEnvelope.create(
+                        tileData.isTileRequest()
+                                ? envelopeFromTileRequestData()
+                                : collection.getBounds(),
+                        refSys);
         // Build the Pipeline (sort of coordinates transformer)
         Pipeline pipeline = getPipeline(area, paintArea, refSys, resolution / 32);
         // setup the vector tile encoder
@@ -86,23 +96,19 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
             // write encoded stream
             output.write(encoder.encode());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    private Map<String, Object> getProperties(ComplexAttribute feature) {
+    private Map<String, Object> getProperties(SimpleFeature feature) {
         Map<String, Object> props = new TreeMap<>();
         for (Property p : feature.getProperties()) {
             if (!(p instanceof Attribute) || (p instanceof GeometryAttribute)) {
                 continue;
             }
             String name = p.getName().getLocalPart();
-            Object value;
-            if (p instanceof ComplexAttribute) {
-                value = getProperties((ComplexAttribute) p);
-            } else {
-                value = p.getValue();
-            }
+            Object value = p.getValue();
+            ;
             if (value != null) {
                 props.put(name, value);
             }
@@ -128,7 +134,7 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
         try {
             final PipelineBuilder builder =
                     PipelineBuilder.newBuilder(
-                            renderingArea, paintArea, sourceCrs, overSamplingFactor, buffer);
+                            renderingArea, paintArea, sourceCrs, OVER_SAMPLING_FACTOR, buffer);
 
             pipeline =
                     builder.preprocess()
@@ -151,5 +157,51 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
     @Override
     public boolean canHandle(Version version) {
         return WebFeatureService30.V3.compareTo(version) <= 0;
+    }
+
+    @Override
+    public boolean canHandle(Operation operation) {
+        if ("GetFeature".equalsIgnoreCase(operation.getId())
+                || "GetFeatureWithLock".equalsIgnoreCase(operation.getId())
+                || "getTile".equalsIgnoreCase(operation.getId())) {
+            // also check that the resultType is "results"
+            GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
+            if (req.isResultTypeResults()) {
+                // call subclass hook
+                return canHandleInternal(operation);
+            }
+        }
+        return false;
+    }
+
+    /** obtains the ReferencedEnvelope for the current tile */
+    private ReferencedEnvelope envelopeFromTileRequestData() {
+        GridSet gridset = gridSets.getGridSet(tileData.getTilingScheme()).get();
+        BoundingBox bbox =
+                gridset.boundsFromIndex(
+                        new long[] {tileData.getCol(), tileData.getRow(), tileData.getLevel()});
+        try {
+            return ReferencedEnvelope.create(
+                    new Envelope(bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY()),
+                    CRS.decode(gridset.getSrs().toString()));
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public TileDataRequest getTileData() {
+        return tileData;
+    }
+
+    public void setTileData(TileDataRequest tileData) {
+        this.tileData = tileData;
+    }
+
+    public DefaultGridsets getGridSets() {
+        return gridSets;
+    }
+
+    public void setGridSets(DefaultGridsets gridSets) {
+        this.gridSets = gridSets;
     }
 }

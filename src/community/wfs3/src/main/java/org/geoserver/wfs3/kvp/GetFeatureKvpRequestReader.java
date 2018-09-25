@@ -23,8 +23,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs3.GetFeatureType;
+import org.geoserver.wfs3.TileDataRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
+import org.geowebcache.config.DefaultGridsets;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -35,8 +39,13 @@ import org.opengis.filter.identity.FeatureId;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
-    public GetFeatureKvpRequestReader(GeoServer geoServer, FilterFactory filterFactory) {
+    private DefaultGridsets gridSets;
+    private TileDataRequest tileData;
+
+    public GetFeatureKvpRequestReader(
+            GeoServer geoServer, FilterFactory filterFactory, DefaultGridsets gridSets) {
         super(GetFeatureType.class, null, geoServer, filterFactory);
+        this.gridSets = gridSets;
     }
 
     @Override
@@ -51,7 +60,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         }
         // resolution vendor parameter:
         if (kvp.containsKey("resolution")) {
-            gf.setResolution((String) kvp.get("resolution"));
+            gf.setResolution((Integer) kvp.get("resolution"));
         }
         return gf;
     }
@@ -99,7 +108,46 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
             Filter filter = buildTimeFilter(timeSpecification, timeProperties);
             filters.add(filter);
         }
+        // BBOX filter for tileScheme, level, col, row
+        if (kvp.containsKey("level")
+                && kvp.containsKey("row")
+                && kvp.containsKey("col")
+                && kvp.containsKey("tilingScheme")) {
+            try {
+                long level = Long.parseLong((String) kvp.get("level"));
+                long col = Long.parseLong((String) kvp.get("col"));
+                long row = Long.parseLong((String) kvp.get("row"));
+                String tilingScheme = (String) kvp.get("tilingScheme");
+                GridSet gridset = gridSet(tilingScheme);
+                // gridset.getSrs()
+                if (gridset != null) {
+                    BoundingBox gbbox = gridset.boundsFromIndex(new long[] {col, row, level});
+                    filters.add(
+                            filterFactory.bbox(
+                                    "",
+                                    gbbox.getMinX(),
+                                    gbbox.getMinY(),
+                                    gbbox.getMaxX(),
+                                    gbbox.getMaxY(),
+                                    gridset.getSrs().toString()));
+                    // tile request scoped data
+                    tileData.setTilingScheme(tilingScheme);
+                    tileData.setLevel(level);
+                    tileData.setCol(col);
+                    tileData.setRow(row);
+                }
+            } catch (NumberFormatException e) {
+                // don't worry, all will be fine
+            }
+        }
         return mergeFiltersAnd(filters);
+    }
+
+    private GridSet gridSet(String tilingScheme) {
+        if (gridSets.getGridSet(tilingScheme).isPresent()) {
+            return gridSets.getGridSet(tilingScheme).get();
+        }
+        return null;
     }
 
     private Filter buildTimeFilter(Object timeSpec, List<String> timeProperties) {
@@ -214,5 +262,13 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         }
         throw new ServiceException(
                 "Internal error, did not expect to find this value for the bbox: " + bbox);
+    }
+
+    public TileDataRequest getTileData() {
+        return tileData;
+    }
+
+    public void setTileData(TileDataRequest tileData) {
+        this.tileData = tileData;
     }
 }

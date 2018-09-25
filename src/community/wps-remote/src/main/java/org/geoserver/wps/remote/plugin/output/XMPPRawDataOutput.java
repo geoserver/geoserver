@@ -276,7 +276,10 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
                     final String uploadedFilesBasePath =
                             xmppClient.getConfiguration().get("uploadedFilesBasePath");
-                    final File uploadedFile = new File(uploadedFilesBasePath, value);
+                    final File uploadedFile =
+                            new File(
+                                    new File(uploadedFilesBasePath).getCanonicalPath(),
+                                    com.google.common.io.Files.simplifyPath(value));
 
                     if (uploadedFile != null
                             &&

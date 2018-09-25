@@ -49,16 +49,24 @@ class AuthResults implements AuthenticationEntryPoint {
      * @param authentication valid credentials
      */
     public AuthResults(Authentication authentication) {
-        assert authentication.getDetails() instanceof SimpleKeycloakAccount;
-        final SimpleKeycloakAccount details = (SimpleKeycloakAccount) authentication.getDetails();
+        Object username = null;
+        Object details = null;
+        if (authentication.getDetails() instanceof SimpleKeycloakAccount) {
+            details = (SimpleKeycloakAccount) authentication.getDetails();
 
-        assert details.getPrincipal() instanceof KeycloakPrincipal;
-        final KeycloakPrincipal principal = (KeycloakPrincipal) details.getPrincipal();
+            assert ((SimpleKeycloakAccount) details).getPrincipal() instanceof KeycloakPrincipal;
+            final KeycloakPrincipal principal =
+                    (KeycloakPrincipal) ((SimpleKeycloakAccount) details).getPrincipal();
 
-        Object username = principal.getName();
+            username = principal.getName();
 
-        if (principal.getKeycloakSecurityContext().getIdToken() != null) {
-            username = principal.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
+            if (principal.getKeycloakSecurityContext().getIdToken() != null) {
+                username =
+                        principal.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
+            }
+        } else {
+            username = authentication.getPrincipal();
+            details = authentication.getDetails();
         }
 
         this.authentication =

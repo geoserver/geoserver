@@ -107,12 +107,15 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         }
         // put the auth into the context and cache
         saveAuthn(request, authResults);
+
         // use the results as the entrypoint in the event of failure
         request.setAttribute(
                 GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, authResults);
+
         // if successful, then continue the chain
         LOG.log(Level.FINER, "continuing filter chain");
         LOG.log(Level.FINEST, chain.getClass().getCanonicalName());
+
         chain.doFilter(request, response);
         logHttpResponse(Level.FINEST, response);
         LOG.log(Level.FINEST, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -204,6 +207,8 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
                 } else {
                     return new AuthResults(challenge);
                 }
+            case FAILED:
+                return new AuthResults();
             default:
                 return new AuthResults(challenge);
         }
@@ -217,21 +222,28 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
      */
     protected void saveAuthn(HttpServletRequest request, AuthResults authResults) {
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.cacheAuthn ENTRY");
-        Authentication authn = authResults.getAuthentication();
-        // set the auth in the cache
-        GeoServerSecurityManager mgr = getSecurityManager();
-        String cacheKey = getCacheKey(request);
-        if (mgr != null && cacheKey != null && !cacheKey.isEmpty()) {
-            if (authn != null) {
-                LOG.log(Level.FINE, () -> "cachinig auth for " + authn.getName());
+        if (authResults != null && authResults.hasAuthentication()) {
+            Authentication authn = authResults.getAuthentication();
+            // set the auth in the cache
+            GeoServerSecurityManager mgr = getSecurityManager();
+            String cacheKey = getCacheKey(request);
+            if (mgr != null && cacheKey != null && !cacheKey.isEmpty()) {
+                if (authn != null) {
+                    LOG.log(Level.FINE, () -> "cachinig auth for " + authn.getName());
+                }
+                mgr.getAuthenticationCache().put(getName(), cacheKey, authn);
             }
-            mgr.getAuthenticationCache().put(getName(), cacheKey, authn);
+            // set the auth in the context
+            if (authn != null) {
+                LOG.log(Level.FINE, "adding auth to context");
+            }
+            SecurityContextHolder.getContext().setAuthentication(authn);
+        } else {
+            SecurityContextHolder.clearContext();
+            if (request != null && request.getSession(false) != null) {
+                request.getSession(false).invalidate();
+            }
         }
-        // set the auth in the context
-        if (authn != null) {
-            LOG.log(Level.FINE, "adding auth to context");
-        }
-        SecurityContextHolder.getContext().setAuthentication(authn);
     }
 
     /**
@@ -244,7 +256,7 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.getCachedAuthn ENTRY");
         // get auth from context
         Authentication contextAuthn = SecurityContextHolder.getContext().getAuthentication();
-        if (contextAuthn != null) {
+        if (contextAuthn != null && contextAuthn.isAuthenticated()) {
             LOG.log(Level.FINE, "auth already exists in context");
             return new AuthResults(contextAuthn);
         }

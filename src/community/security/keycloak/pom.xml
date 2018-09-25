@@ -37,8 +37,13 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-security-adapter</artifactId>
-			<version>3.4.3.Final</version>
+			<version>4.4.0.Final</version>
 		</dependency>
+                <dependency>
+                        <groupId>org.keycloak</groupId>
+                        <artifactId>keycloak-authz-client</artifactId>
+                        <version>4.4.0.Final</version>
+                </dependency>
 
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>

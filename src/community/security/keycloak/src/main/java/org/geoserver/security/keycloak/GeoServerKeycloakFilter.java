@@ -107,11 +107,11 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
         }
         // put the auth into the context and cache
         saveAuthn(request, authResults);
-        
+
         // use the results as the entrypoint in the event of failure
         request.setAttribute(
                 GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, authResults);
-        
+
         // if successful, then continue the chain
         LOG.log(Level.FINER, "continuing filter chain");
         LOG.log(Level.FINEST, chain.getClass().getCanonicalName());
@@ -240,7 +240,9 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
             SecurityContextHolder.getContext().setAuthentication(authn);
         } else {
             SecurityContextHolder.clearContext();
-            request.getSession(false).invalidate();
+            if (request != null && request.getSession(false) != null) {
+                request.getSession(false).invalidate();
+            }
         }
     }
 

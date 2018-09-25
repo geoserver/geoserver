@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.remote.plugin.output;
 
+import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -45,8 +45,6 @@ import org.geoserver.wps.remote.plugin.XMPPClient;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
-
-import freemarker.template.Template;
 
 /**
  * Actual implementation of a RAW DATA Output Type
@@ -278,8 +276,10 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
                     final String uploadedFilesBasePath =
                             xmppClient.getConfiguration().get("uploadedFilesBasePath");
-                    final File uploadedFile = new File(new File(uploadedFilesBasePath).getCanonicalPath(), 
-                            com.google.common.io.Files.simplifyPath(value));
+                    final File uploadedFile =
+                            new File(
+                                    new File(uploadedFilesBasePath).getCanonicalPath(),
+                                    com.google.common.io.Files.simplifyPath(value));
 
                     if (uploadedFile != null
                             &&

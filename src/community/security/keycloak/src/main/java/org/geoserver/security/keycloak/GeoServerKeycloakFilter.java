@@ -240,7 +240,9 @@ public class GeoServerKeycloakFilter extends GeoServerSecurityFilter
             SecurityContextHolder.getContext().setAuthentication(authn);
         } else {
             SecurityContextHolder.clearContext();
-            request.getSession(false).invalidate();
+            if (request != null && request.getSession(false) != null) {
+                request.getSession(false).invalidate();
+            }
         }
     }
 

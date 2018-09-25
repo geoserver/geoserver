@@ -202,7 +202,7 @@ public class GeoServerKeycloakFilterTest {
 
         // verify the results
         verify(chain).doFilter(request, response);
-        verify(response).setStatus(HttpStatus.UNAUTHORIZED.value());
+        verify(response).setStatus(HttpStatus.FORBIDDEN.value());
         Authentication authn = SecurityContextHolder.getContext().getAuthentication();
         assertNull(authn);
     }

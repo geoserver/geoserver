@@ -29,6 +29,7 @@ import net.razorvine.pickle.PickleException;
 import net.razorvine.pickle.PickleUtils;
 import net.razorvine.pickle.Pickler;
 import net.razorvine.pickle.Unpickler;
+import net.sf.json.JSONNull;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.SSLContexts;
@@ -661,7 +662,9 @@ public class XMPPClient extends RemoteProcessClient {
                 }
             }
 
-            fixedInputs.put(key, fixedValue);
+            if (value != null && !(value instanceof JSONNull)) {
+                fixedInputs.put(key, fixedValue);
+            }
         }
 
         return fixedInputs;

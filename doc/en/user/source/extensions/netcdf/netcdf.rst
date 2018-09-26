@@ -200,3 +200,49 @@ GeoServer creates hidden index files when accessing NetCDF files. Because these 
 To permit access to NetCDF files in read-only directories, specify an alternate writeable directory for NetCDF index files by setting the ``NETCDF_DATA_DIR`` Java system property::
 
     -DNETCDF_DATA_DIR=/path/to/writeable/index/file/directory
+
+Supporting Custom NetCDF Units
+------------------------------
+
+The NetCDF format expresses units using a syntax that is not always understood by our unit parser,
+and often, uses unit names using unrecognized symbols or that simply unknown to it.
+The system already comes with some smarts, but in case a unit is not recognized, it's possible
+to act on the configuration and extend it.
+
+There are two property files that can be setup in order to modify unit magement, one is an alias
+file, the other is a replacement file:
+
+* An "alias" is a different symbol/name for a base unit (e.g., instead of using "g" the NetCDF files might be using "grammes")
+* A (text) "replacement" is used when the unit is a derived one, needing a full expression, or the syntax of the unit is simply unrecognized
+
+The alias file is called ``netcdf-unit-aliases.properties``, if not provided these contents are assumed::
+
+   # Aliases for unit names that can in turn be used to build more complex units
+   Meter=m
+   meter=m
+   Metre=m
+   microgram=µg
+   microgrammes=µg
+   nanograms=ng
+   degree=deg
+   percentage=%
+   celsius=°C
+   ````
+
+The replacement file is called ``netcdf-unit-replacements.properties``, if not provided the following contents are assumed::
+
+   microgrammes\ per\ cubic\ meter=µg*m^-3
+   DU=µmol*m^-2*446.2
+   m2=m^2
+   m3=m^3
+   s2=s^2
+
+Both files express the NetCDF unit as the key, and the standard symbol or replacement text as the value.
+
+It is possible to place the files in three different locations:
+
+* If the ``NETCDF_UNIT_ALIASES`` and/or ``NETCDF_UNIT_REPLACEMENTS`` system variables are defined, the respective files will be looked up at the specified location (must be full paths, including the file name)
+* If the above are missing and external NetCDF data dir is defined via ``NETCDF_DATA_DIR`` then the files will be looked up in there
+* If the above are missing the root of the GeoServer data directory will be searched
+* If none of the above provide a file, then the built-in configuration will be used
+

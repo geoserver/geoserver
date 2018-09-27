@@ -29,6 +29,7 @@ if not exist "%GEOSERVER_HOME%\bin\startup.bat" goto badHome
 goto checkDataDir
 
 :trySystemJava
+  echo The JAVA_HOME environment variable is not defined, trying to use System Java
 for /f %%i in ('where java') do set RUN_JAVA=%%i
 rem --- we might be on amd64 having only x86 jre installed ---
 if "%RUN_JAVA%"=="" if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
@@ -38,7 +39,10 @@ if "%RUN_JAVA%"=="" if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE
     %SystemRoot%\SysWOW64\cmd.exe /c %0 %*
     exit /b %ERRORLEVEL%
   )
-if "RUN_JAVA%"=="" goto noJava
+if "%RUN_JAVA%"=="" goto noJava
+  echo Using System Java at:
+  echo    %RUN_JAVA%
+  echo.
 goto checkGeoServerHome
 
 :noJava

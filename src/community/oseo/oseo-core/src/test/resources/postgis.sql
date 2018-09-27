@@ -229,3 +229,6 @@ create table granule (
   "location" varchar not null,
   "the_geom" geometry(Polygon, 4326) not null
 );
+
+-- manually generated indexes
+CREATE INDEX "idx_granule_the_geom" ON granule USING GIST("the_geom");

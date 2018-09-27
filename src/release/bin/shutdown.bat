@@ -85,8 +85,8 @@ goto setHome
 goto shutdown
 
 :shutdown
-  set RUN_JAVA=%JAVA_HOME%\bin\java
-  cd %GEOSERVER_HOME%
+
+  cd "%GEOSERVER_HOME%"
   "%RUN_JAVA%" -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar --stop
   cd bin
 goto end

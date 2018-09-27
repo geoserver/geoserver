@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
@@ -199,24 +200,32 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         }
     }
 
+    private <T> T getFeatureTypeInfoProperty(
+            Catalog catalog, FeatureCollection features, Function<FeatureTypeInfo, T> callback) {
+        FeatureType featureType = features.getSchema();
+
+        ResourceInfo meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+        if (meta instanceof FeatureTypeInfo) {
+            FeatureTypeInfo fti = (FeatureTypeInfo) meta;
+            return callback.apply(fti);
+        }
+        return null;
+    }
+
     protected int getNumDecimals(List featureCollections, GeoServer geoServer, Catalog catalog) {
         int numDecimals = -1;
         for (int i = 0; i < featureCollections.size(); i++) {
-            FeatureCollection features = (FeatureCollection) featureCollections.get(i);
-            FeatureType featureType = features.getSchema();
-
-            ResourceInfo meta =
-                    catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+            Integer ftiDecimals =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollections.get(i),
+                            fti -> fti.getNumDecimals());
 
             // track num decimals, in cases where the query has multiple types we choose the max
             // of all the values (same deal as above, might not be a vector due to GetFeatureInfo
             // reusing this)
-            if (meta instanceof FeatureTypeInfo) {
-                int ftiDecimals = ((FeatureTypeInfo) meta).getNumDecimals();
-                if (ftiDecimals > 0) {
-                    numDecimals =
-                            numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
-                }
+            if (ftiDecimals != null && ftiDecimals > 0) {
+                numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
             }
         }
 
@@ -227,6 +236,38 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
         }
 
         return numDecimals;
+    }
+
+    protected boolean getPadWithZeros(
+            List featureCollections, GeoServer geoServer, Catalog catalog) {
+        boolean padWithZeros = false;
+        for (int i = 0; i < featureCollections.size(); i++) {
+            Boolean pad =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollections.get(i),
+                            fti -> fti.getPadWithZeros());
+            if (pad != null && pad.booleanValue()) {
+                padWithZeros = true;
+            }
+        }
+        return padWithZeros;
+    }
+
+    protected boolean getForcedDecimal(
+            List featureCollections, GeoServer geoServer, Catalog catalog) {
+        boolean forcedDecimal = false;
+        for (int i = 0; i < featureCollections.size(); i++) {
+            Boolean forced =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollections.get(i),
+                            fti -> fti.getForcedDecimal());
+            if (forced != null && forced.booleanValue()) {
+                forcedDecimal = true;
+            }
+        }
+        return forcedDecimal;
     }
 
     /**
@@ -240,18 +281,14 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected boolean encodeMeasures(List featureCollections, Catalog catalog) {
         boolean encodeMeasures = true;
         for (int i = 0; i < featureCollections.size(); i++) {
-            // get the feature type of the current collection
-            FeatureCollection features = (FeatureCollection) featureCollections.get(i);
-            FeatureType featureType = features.getSchema();
-            ResourceInfo resourceInfo =
-                    catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
-            // let's see if this is a feature type
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) resourceInfo;
-                if (!featureTypeInfo.getEncodeMeasures()) {
-                    // no measures should be encoded
-                    encodeMeasures = false;
-                }
+            Boolean measures =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollections.get(i),
+                            fti -> fti.getEncodeMeasures());
+            if (measures != null && !measures.booleanValue()) {
+                // no measures should be encoded
+                encodeMeasures = false;
             }
         }
         return encodeMeasures;

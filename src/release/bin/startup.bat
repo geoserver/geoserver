@@ -125,7 +125,7 @@ goto end
 goto setMarlinRenderer
 
 :setMarlinRenderer
-  cd %GEOSERVER_HOME%
+  cd "%GEOSERVER_HOME%"
   for /f "delims=" %%i in ('dir /b/s "%GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\marlin*.jar"') do set MARLIN_JAR=%%i
   if "%MARLIN_JAR%" == "" (
     echo Marlin renderer jar not found
@@ -136,7 +136,7 @@ goto setMarlinRenderer
 goto run
 
 :run
-  cd %GEOSERVER_HOME%
+  cd "%GEOSERVER_HOME%"
   echo Please wait while loading GeoServer...
   echo.
   "%RUN_JAVA%" %JAVA_OPTS% -DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar

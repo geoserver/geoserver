@@ -91,4 +91,9 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
         Document document = Jsoup.parse(response.getContentAsString());
         return document;
     }
+
+    protected byte[] getAsByteArray(String url) throws Exception {
+        MockHttpServletResponse response = getAsMockHttpServletResponse(url, 200);
+        return response.getContentAsByteArray();
+    }
 }

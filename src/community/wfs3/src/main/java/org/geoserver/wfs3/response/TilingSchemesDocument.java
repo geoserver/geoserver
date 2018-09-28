@@ -1,3 +1,7 @@
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -7,6 +11,7 @@ import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geowebcache.config.DefaultGridsets;
 
+/** The object representing the list of available tiling schemes */
 @JacksonXmlRootElement(localName = "TilingSchemes")
 public class TilingSchemesDocument {
 

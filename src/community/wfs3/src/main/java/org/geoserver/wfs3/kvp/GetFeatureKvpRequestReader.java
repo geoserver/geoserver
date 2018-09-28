@@ -39,6 +39,7 @@ import org.opengis.filter.identity.FeatureId;
 
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
+    public static final String DEFAULT_GEOMETRY = "";
     private DefaultGridsets gridSets;
     private TileDataRequest tileData;
 
@@ -119,12 +120,11 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                 long row = Long.parseLong((String) kvp.get("row"));
                 String tilingScheme = (String) kvp.get("tilingScheme");
                 GridSet gridset = gridSet(tilingScheme);
-                // gridset.getSrs()
                 if (gridset != null) {
                     BoundingBox gbbox = gridset.boundsFromIndex(new long[] {col, row, level});
                     filters.add(
                             filterFactory.bbox(
-                                    "",
+                                    DEFAULT_GEOMETRY,
                                     gbbox.getMinX(),
                                     gbbox.getMinY(),
                                     gbbox.getMaxX(),
@@ -137,7 +137,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                     tileData.setRow(row);
                 }
             } catch (NumberFormatException e) {
-                // don't worry, all will be fine
+                throw new ServiceException("Failed to parse request, invalid number", e);
             }
         }
         return mergeFiltersAnd(filters);

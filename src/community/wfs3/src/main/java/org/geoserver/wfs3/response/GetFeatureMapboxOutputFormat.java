@@ -3,8 +3,8 @@ package org.geoserver.wfs3.response;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
 import org.geoserver.config.GeoServer;
@@ -96,19 +96,18 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
             // write encoded stream
             output.write(encoder.encode());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServiceException("Failed to build MVT output", e);
         }
     }
 
     private Map<String, Object> getProperties(SimpleFeature feature) {
-        Map<String, Object> props = new TreeMap<>();
+        Map<String, Object> props = new LinkedHashMap<>();
         for (Property p : feature.getProperties()) {
             if (!(p instanceof Attribute) || (p instanceof GeometryAttribute)) {
                 continue;
             }
             String name = p.getName().getLocalPart();
             Object value = p.getValue();
-            ;
             if (value != null) {
                 props.put(name, value);
             }

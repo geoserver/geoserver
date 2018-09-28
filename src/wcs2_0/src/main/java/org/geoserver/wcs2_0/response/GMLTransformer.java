@@ -39,6 +39,7 @@ import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.DateRange;
+import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Utilities;
 import org.geotools.xml.transform.TransformerBase;
@@ -721,7 +722,7 @@ class GMLTransformer extends TransformerBase {
             if (crs instanceof GeographicCRS) {
                 return "Deg";
             }
-            return SimpleUnitFormat.getInstance().format(uom);
+            return GeoToolsUnitFormat.getInstance().format(uom);
         }
 
         /**

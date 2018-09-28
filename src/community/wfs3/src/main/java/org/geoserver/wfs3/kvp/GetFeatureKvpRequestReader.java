@@ -115,11 +115,10 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                 && kvp.containsKey("col")
                 && kvp.containsKey("tilingScheme")) {
             try {
-                long level = Long.parseLong((String) kvp.get("level"));
-                long col = Long.parseLong((String) kvp.get("col"));
-                long row = Long.parseLong((String) kvp.get("row"));
-                String tilingScheme = (String) kvp.get("tilingScheme");
-                GridSet gridset = gridSet(tilingScheme);
+                long level = (Long) kvp.get("level");
+                long col = (Long) kvp.get("col");
+                long row = (Long) kvp.get("row");
+                GridSet gridset = (GridSet) kvp.get("tilingScheme");
                 if (gridset != null) {
                     BoundingBox gbbox = gridset.boundsFromIndex(new long[] {col, row, level});
                     filters.add(
@@ -131,7 +130,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                                     gbbox.getMaxY(),
                                     gridset.getSrs().toString()));
                     // tile request scoped data
-                    tileData.setTilingScheme(tilingScheme);
+                    tileData.setTilingScheme(gridset.getName());
                     tileData.setLevel(level);
                     tileData.setCol(col);
                     tileData.setRow(row);
@@ -141,13 +140,6 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
             }
         }
         return mergeFiltersAnd(filters);
-    }
-
-    private GridSet gridSet(String tilingScheme) {
-        if (gridSets.getGridSet(tilingScheme).isPresent()) {
-            return gridSets.getGridSet(tilingScheme).get();
-        }
-        return null;
     }
 
     private Filter buildTimeFilter(Object timeSpec, List<String> timeProperties) {

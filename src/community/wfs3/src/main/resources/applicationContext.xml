@@ -57,7 +57,29 @@
     <property name="service" value="WFS"/>
     <property name="version" value="3.0.0"/>
   </bean>
-  <bean id="wfs3ResolutionKvpParser" class="org.geoserver.wfs3.kvp.WFS3TileResolutionKvpParser">
+  <bean id="wfs3ResolutionKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+    <constructor-arg value="resolution"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3LevelKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="level"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3ColKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="col"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3RowKvpParser" class="org.geoserver.ows.kvp.LongKvpParser">
+    <constructor-arg value="row"/>
+    <property name="service" value="WFS"/>
+    <property name="version" value="3.0.0"/>
+  </bean>
+  <bean id="wfs3TilingSchemeKvpParser" class="org.geoserver.wfs3.kvp.GridSetKVPParser">
+    <constructor-arg value="tilingScheme"/>
+    <constructor-arg ref="wfs3DefaultGridsets"/>
     <property name="service" value="WFS"/>
     <property name="version" value="3.0.0"/>
   </bean>
@@ -73,7 +95,6 @@
     <property name="tileData" ref="wfs3TileDataRequest" />
   </bean>
   <bean id="tilingSchemesKvpRequestReader" class="org.geoserver.wfs3.kvp.TilingSchemesKVPReader"/>
-  
   <!-- response generation -->
   <bean id="openAPIResponse" class="org.geoserver.wfs3.response.OpenAPIResponse">
     <constructor-arg ref="geoServer"/>

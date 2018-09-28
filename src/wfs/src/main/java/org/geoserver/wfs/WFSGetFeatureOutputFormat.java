@@ -247,7 +247,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
                             catalog,
                             (FeatureCollection) featureCollections.get(i),
                             fti -> fti.getPadWithZeros());
-            if (pad != null && pad.booleanValue()) {
+            if (Boolean.TRUE.equals(pad)) {
                 padWithZeros = true;
             }
         }
@@ -263,7 +263,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
                             catalog,
                             (FeatureCollection) featureCollections.get(i),
                             fti -> fti.getForcedDecimal());
-            if (forced != null && forced.booleanValue()) {
+            if (Boolean.TRUE.equals(forced)) {
                 forcedDecimal = true;
             }
         }
@@ -286,7 +286,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
                             catalog,
                             (FeatureCollection) featureCollections.get(i),
                             fti -> fti.getEncodeMeasures());
-            if (measures != null && !measures.booleanValue()) {
+            if (Boolean.FALSE.equals(measures)) {
                 // no measures should be encoded
                 encodeMeasures = false;
             }

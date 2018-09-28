@@ -93,8 +93,19 @@ public interface FeatureTypeInfo extends ResourceInfo {
      */
     void setPadWithZeros(boolean padWithZeros);
 
+    /**
+     * True if numbers should always be formatted as decimal (no scientific notation allowed).
+     *
+     * @return
+     */
     boolean getForcedDecimal();
 
+    /**
+     * Set to true if numbers should always be formatted as decimal (no scientific notation
+     * allowed).
+     *
+     * @param forcedDecimal
+     */
     void setForcedDecimal(boolean forcedDecimal);
 
     /**

@@ -14,10 +14,47 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GMLOutputFormatTest extends WFSTestSupport {
+    private int defaultNumDecimals = -1;
+    private boolean defaultForceDecimal = false;
+    private boolean defaultPadWithZeros = false;
+
+    @Before
+    public void saveDefaultFormattingOptions() {
+        if (defaultNumDecimals < 0) {
+            FeatureTypeInfo info =
+                    getGeoServer()
+                            .getCatalog()
+                            .getResourceByName(
+                                    new NameImpl(
+                                            MockData.BASIC_POLYGONS.getPrefix(),
+                                            MockData.BASIC_POLYGONS.getLocalPart()),
+                                    FeatureTypeInfo.class);
+            defaultNumDecimals = info.getNumDecimals();
+            defaultForceDecimal = info.getForcedDecimal();
+            defaultPadWithZeros = info.getPadWithZeros();
+        }
+    }
+
+    @After
+    public void restoreDefaultFormattingOptions() {
+        FeatureTypeInfo info =
+                getGeoServer()
+                        .getCatalog()
+                        .getResourceByName(
+                                new NameImpl(
+                                        MockData.BASIC_POLYGONS.getPrefix(),
+                                        MockData.BASIC_POLYGONS.getLocalPart()),
+                                FeatureTypeInfo.class);
+        info.setNumDecimals(defaultNumDecimals);
+        info.setForcedDecimal(defaultForceDecimal);
+        info.setPadWithZeros(defaultPadWithZeros);
+    }
 
     @Test
     public void testGML2() throws Exception {

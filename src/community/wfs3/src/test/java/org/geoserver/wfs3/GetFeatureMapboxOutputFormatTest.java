@@ -28,11 +28,11 @@ public class GetFeatureMapboxOutputFormatTest extends WFS3TestSupport {
         FeatureIterable fiter = decoder.decode(responseBytes);
         List<Feature> featuresList = fiter.asList();
         assertEquals(2, featuresList.size());
-        assertEquals("Buildings", featuresList.get(0).getLayerName());
+        assertEquals("cite__Buildings", featuresList.get(0).getLayerName());
         assertEquals(
                 "POLYGON ((0 256, 0 153.6, 64 153.6, 64 256, 0 256))",
                 featuresList.get(0).getGeometry().toText());
-        assertEquals("Buildings", featuresList.get(1).getLayerName());
+        assertEquals("cite__Buildings", featuresList.get(1).getLayerName());
         assertEquals(
                 "POLYGON ((192 102.4, 192 0, 256 0, 256 102.4, 192 102.4))",
                 featuresList.get(1).getGeometry().toText());
@@ -53,11 +53,11 @@ public class GetFeatureMapboxOutputFormatTest extends WFS3TestSupport {
         FeatureIterable fiter = decoder.decode(responseBytes);
         List<Feature> featuresList = fiter.asList();
         assertEquals(5, featuresList.size());
-        assertEquals("RoadSegments", featuresList.get(0).getLayerName());
+        assertEquals("cite__RoadSegments", featuresList.get(0).getLayerName());
         assertEquals(
                 "LINESTRING (0 160, 30.464 144, 48.768 133.3248, 85.3248 117.3248, 134.0928 90.6752)",
                 featuresList.get(0).getGeometry().toText());
-        assertEquals("RoadSegments", featuresList.get(1).getLayerName());
+        assertEquals("cite__RoadSegments", featuresList.get(1).getLayerName());
         assertEquals(
                 "LINESTRING (134.0928 90.6752, 170.6752 74.6752, 213.3248 53.3248)",
                 featuresList.get(1).getGeometry().toText());

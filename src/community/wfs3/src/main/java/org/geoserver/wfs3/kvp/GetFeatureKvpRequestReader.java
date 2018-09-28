@@ -63,6 +63,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         if (kvp.containsKey("resolution")) {
             gf.setResolution((Integer) kvp.get("resolution"));
         }
+
         return gf;
     }
 
@@ -120,7 +121,11 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                 long row = (Long) kvp.get("row");
                 GridSet gridset = (GridSet) kvp.get("tilingScheme");
                 if (gridset != null) {
-                    BoundingBox gbbox = gridset.boundsFromIndex(new long[] {col, row, level});
+                    final long tilesHigh = gridset.getGrid((int) level).getNumTilesHigh();
+                    long y = tilesHigh - row - 1;
+                    long x = col;
+
+                    BoundingBox gbbox = gridset.boundsFromIndex(new long[] {x, y, level});
                     filters.add(
                             filterFactory.bbox(
                                     DEFAULT_GEOMETRY,
@@ -132,9 +137,10 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
                     // tile request scoped data
                     tileData.setTilingScheme(gridset.getName());
                     tileData.setLevel(level);
-                    tileData.setCol(col);
-                    tileData.setRow(row);
+                    tileData.setCol(x);
+                    tileData.setRow(y);
                 }
+
             } catch (NumberFormatException e) {
                 throw new ServiceException("Failed to parse request, invalid number", e);
             }

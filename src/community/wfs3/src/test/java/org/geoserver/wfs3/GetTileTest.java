@@ -32,12 +32,12 @@ public class GetTileTest extends WFS3TestSupport {
         FeatureIterable fiter = decoder.decode(responseBytes);
         List<Feature> featuresList = fiter.asList();
         assertEquals(2, featuresList.size());
-        assertEquals("RoadSegments", featuresList.get(0).getLayerName());
+        assertEquals("cite__RoadSegments", featuresList.get(0).getLayerName());
         assertEquals(
-                "LINESTRING (232 3, 241 1, 248 -1, 257 -4)",
+                "LINESTRING (232 259, 241 257, 248 255, 257 252)",
                 featuresList.get(0).getGeometry().toText());
-        assertEquals("RoadSegments", featuresList.get(1).getLayerName());
-        assertEquals("LINESTRING (248 14, 248 -1)", featuresList.get(1).getGeometry().toText());
+        assertEquals("cite__RoadSegments", featuresList.get(1).getLayerName());
+        assertEquals("LINESTRING (248 270, 248 255)", featuresList.get(1).getGeometry().toText());
     }
 
     /** Tests getTile with MVT format, Web Mercator projection */
@@ -52,12 +52,12 @@ public class GetTileTest extends WFS3TestSupport {
         FeatureIterable fiter = decoder.decode(responseBytes);
         List<Feature> featuresList = fiter.asList();
         assertEquals(2, featuresList.size());
-        assertEquals("RoadSegments", featuresList.get(0).getLayerName());
+        assertEquals("cite__RoadSegments", featuresList.get(0).getLayerName());
         assertEquals(
-                "LINESTRING (87 276, 107 270, 135 261, 191 247, 265 223)",
+                "LINESTRING (60 28, 107 14, 135 5, 191 -9, 225 -20)",
                 featuresList.get(0).getGeometry().toText());
-        assertEquals("RoadSegments", featuresList.get(1).getLayerName());
-        assertEquals("LINESTRING (191 276, 191 247)", featuresList.get(1).getGeometry().toText());
+        assertEquals("cite__RoadSegments", featuresList.get(1).getLayerName());
+        assertEquals("LINESTRING (191 112, 191 -9)", featuresList.get(1).getGeometry().toText());
     }
 
     /** Tests getTile with GeoJSON format */

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -14,6 +15,7 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs3.GetFeatureType;
+import org.geoserver.wfs3.NCNameResourceCodec;
 import org.geoserver.wfs3.TileDataRequest;
 import org.geoserver.wfs3.WebFeatureService30;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
@@ -33,6 +35,7 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -86,8 +89,8 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
                 // get Feature and its attributes
                 SimpleFeature feature = features.next();
                 Geometry geom = (Geometry) feature.getDefaultGeometryProperty().getValue();
-                Geometry finalGeom = finalGeom = pipeline.execute(geom);
-                final String layerName = feature.getName().getLocalPart();
+                Geometry finalGeom = pipeline.execute(geom);
+                final String layerName = getFeatureName(feature);
                 final Map<String, Object> properties = getProperties(feature);
                 // add to encoder (if have at least a coordinate to encode)
                 if (finalGeom.getCoordinates().length > 0)
@@ -98,6 +101,20 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
         } catch (Exception e) {
             throw new ServiceException("Failed to build MVT output", e);
         }
+    }
+
+    private String getFeatureName(SimpleFeature feature) {
+        Name name = feature.getFeatureType().getName();
+        String ns = name.getNamespaceURI();
+        String localName = name.getLocalPart();
+
+        NamespaceInfo nsInfo = gs.getCatalog().getNamespaceByURI(ns);
+        if (nsInfo != null) {
+            String encodedName = NCNameResourceCodec.encode(nsInfo.getPrefix(), localName);
+            return encodedName;
+        }
+
+        return localName;
     }
 
     private Map<String, Object> getProperties(SimpleFeature feature) {

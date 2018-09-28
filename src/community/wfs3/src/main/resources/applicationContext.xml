@@ -28,6 +28,7 @@
         <value>collection</value>
         <value>GetFeature</value> <!-- this allows to re-use the WFS 2.0 machinery for getting features -->
         <value>tilingSchemes</value>
+        <value>describeTilingScheme</value>
         <value>getTile</value>
       </list>
     </constructor-arg>
@@ -95,6 +96,8 @@
     <property name="tileData" ref="wfs3TileDataRequest" />
   </bean>
   <bean id="tilingSchemesKvpRequestReader" class="org.geoserver.wfs3.kvp.TilingSchemesKVPReader"/>
+  <bean id="tilingSchemeDetailKvpRequestReader" class="org.geoserver.wfs3.kvp.TilingSchemeDetailKVPReader"/>
+  
   <!-- response generation -->
   <bean id="openAPIResponse" class="org.geoserver.wfs3.response.OpenAPIResponse">
     <constructor-arg ref="geoServer"/>
@@ -146,6 +149,9 @@
     <property name="gridSets" ref="wfs3DefaultGridsets" />
   </bean>
   <bean id="tilingSchemesResponse" class="org.geoserver.wfs3.response.TilingSchemesResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="tilingSchemeDetailResponse" class="org.geoserver.wfs3.response.TilingSchemeDetailResponse">
     <constructor-arg ref="geoServer"/>
   </bean>
 

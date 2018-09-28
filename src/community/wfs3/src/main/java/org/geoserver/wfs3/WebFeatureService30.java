@@ -10,6 +10,7 @@ import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geoserver.wfs3.response.TilingSchemeDescriptionDocument;
 import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.util.Version;
 
@@ -67,6 +68,9 @@ public interface WebFeatureService30 {
 
     /** Tiling Schemes available list */
     TilingSchemesDocument tilingSchemes(TilingSchemesRequest request);
+
+    /** Tiling Scheme detail */
+    TilingSchemeDescriptionDocument describeTilingScheme(TilingSchemeDescriptionRequest request);
 
     /** Queries Features for the requested tile coordinate */
     FeatureCollectionResponse getTile(GetFeatureType request);

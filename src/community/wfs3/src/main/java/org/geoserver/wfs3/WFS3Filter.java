@@ -105,6 +105,11 @@ public class WFS3Filter implements GeoServerFilter {
                 request = "api";
             } else if (pathInfo.endsWith("/conformance") || pathInfo.endsWith("/conformance/")) {
                 request = "conformance";
+            } else if (pathInfo.matches("/tilingSchemes/([^/]+)/?")) {
+                request = "describeTilingScheme";
+                Matcher matcher = Pattern.compile("/tilingSchemes/([^/]+)/?").matcher(pathInfo);
+                boolean matches = matcher.matches();
+                this.tilingScheme = matcher.group(1);
             } else if (pathInfo.startsWith("/collections")) {
                 List<Function<String, Boolean>> matchers = new ArrayList<>();
                 matchers.add(

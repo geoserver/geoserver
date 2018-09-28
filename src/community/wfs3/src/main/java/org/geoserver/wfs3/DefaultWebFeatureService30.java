@@ -37,6 +37,7 @@ import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geoserver.wfs3.response.TilingSchemeDescriptionDocument;
 import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.DefaultGridsets;
@@ -190,5 +191,11 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
         FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
 
         return response;
+    }
+
+    @Override
+    public TilingSchemeDescriptionDocument describeTilingScheme(
+            TilingSchemeDescriptionRequest request) {
+        return new TilingSchemeDescriptionDocument(geoServer, request.getGridSet());
     }
 }

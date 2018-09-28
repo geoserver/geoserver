@@ -200,16 +200,19 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                                 ((ResourceRawData) sample).getFileExtension());
                 if (publish) {
                     try {
-                        xmppClient.importLayer(
-                                outputFile,
-                                type,
-                                null,
-                                name + "_" + pID,
-                                title,
-                                description,
-                                defaultStyle,
-                                targetWorkspace,
-                                metadata);
+                        LayerInfo layer =
+                                xmppClient.importLayer(
+                                        outputFile,
+                                        type,
+                                        null,
+                                        name + "_" + pID,
+                                        title,
+                                        description,
+                                        defaultStyle,
+                                        targetWorkspace,
+                                        metadata);
+
+                        xmppClient.getGeoServer().getCatalog().save(layer);
                     } catch (Exception e) {
                         LOGGER.log(
                                 Level.WARNING,

@@ -7,7 +7,8 @@ package org.geoserver.test.onlineTest;
 import org.geoserver.data.test.SystemTestData;
 
 /**
- * Tests the integration between MongoDB and App-schema using mappings defined using the legacy full paths.
+ * Tests the integration between MongoDB and App-schema using mappings defined using the legacy full
+ * paths.
  */
 public class ComplexMongoDBLegacyTest extends ComplexMongoDBSupport {
 

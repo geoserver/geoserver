@@ -233,37 +233,94 @@ public class IOUtils {
      * @returns true if the directory could be deleted, false otherwise
      */
     public static boolean delete(File directory) throws IOException {
-        emptyDirectory(directory);
-        return directory.delete();
+        return emptyDirectory(directory, false);
+    }
+
+    /**
+     * Recursively deletes the contents of the specified directory, and finally wipes out the
+     * directory itself. If running in quite mode no exception or log message will be issued by this
+     * method. Otherwise, an exception will be throw if the directory doesn't exists and a warning
+     * log will be issued for each file that cannot be deleted.
+     *
+     * @param directory the directory to delete recursively
+     * @return TRUE if the directory and its content could be deleted, FALSE otherwise
+     */
+    public static boolean delete(File directory, boolean quiet) throws IOException {
+        try {
+            // recursively delete the directory content
+            emptyDirectory(directory, quiet);
+            // delete the directory
+            return directory.delete();
+        } catch (Exception exception) {
+            if (!quiet) {
+                // no quiet mode, let's rethrow the exception
+                throw exception;
+            }
+            // quite mode, something bad happen
+            return false;
+        }
     }
 
     /**
      * Recursively deletes the contents of the specified directory (but not the directory itself).
      * For each file that cannot be deleted a warning log will be issued.
      *
-     * @param dir
-     * @throws IOException
-     * @returns true if all the directory contents could be deleted, false otherwise
+     * @param directory the directory whose content will be deleted
+     * @return TRUE if all the directory contents could be deleted, FALSE otherwise
      */
     public static boolean emptyDirectory(File directory) throws IOException {
-        if (!directory.isDirectory())
-            throw new IllegalArgumentException(
-                    directory + " does not appear to be a directory at all...");
+        return emptyDirectory(directory, false);
+    }
 
-        boolean allClean = true;
+    /**
+     * Recursively deletes the contents of the specified directory, but not the directory itself. If
+     * running in quite mode no exception or log message will be issued by this method. Otherwise,
+     * an exception will be throw if the directory doesn't exists and a warning log will be issued
+     * for each file that cannot be deleted.
+     *
+     * @param directory the directory whose content will be deleted
+     * @param quiet if TRUE no exception or log will be issued
+     * @return TRUE if all the directory contents could be deleted, FALSE otherwise
+     */
+    public static boolean emptyDirectory(File directory, boolean quiet) throws IOException {
+        if (!directory.isDirectory()) {
+            if (!quiet) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "The provide file '%s' doesn't appear to be a directory.",
+                                directory.getAbsolutePath()));
+            }
+            // in quiet mode, let's just move on
+            return false;
+        }
+        // get directory list of files
         File[] files = directory.listFiles();
-
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                allClean &= delete(files[i]);
+        if (files == null) {
+            // this should only happen if the file is not a directory or some IO exception happened
+            if (!quiet) {
+                // unlikely to happen
+                throw new IllegalStateException(
+                        String.format(
+                                "Not able to list files of '%s'.", directory.getAbsolutePath()));
+            }
+            // in quiet mode, let's just move on
+            return false;
+        }
+        // let's remove the directory files
+        boolean allClean = true;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // recursively delete directory content
+                allClean &= delete(file);
             } else {
-                if (!files[i].delete()) {
-                    LOGGER.log(Level.WARNING, "Could not delete {0}", files[i].getAbsolutePath());
+                if (!file.delete()) {
+                    if (!quiet) {
+                        LOGGER.log(Level.WARNING, "Could not delete {0}", file.getAbsolutePath());
+                    }
                     allClean = false;
                 }
             }
         }
-
         return allClean;
     }
 

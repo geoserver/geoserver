@@ -4,10 +4,32 @@
  */
 package org.geoserver.test.onlineTest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -31,29 +53,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 /**
  * Support for integration tests between MongoDB and App-schema. This test are integration tests
@@ -80,6 +79,9 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
 
     @Before
     public void beforeTest() {
+        // check that the test should run
+        File fixtureFile = getFixtureFile();
+        assumeTrue(fixtureFile.exists());
         // instantiate WFS 1.1 xpath engine
         WFS11_XPATH_ENGINE =
                 buildXpathEngine(
@@ -99,7 +101,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
     public static void tearDown() throws Exception {
         // remove the temporary directory
         if (ROOT_DIRECTORY != null) {
-            IOUtils.delete(ROOT_DIRECTORY.toFile());
+            IOUtils.delete(ROOT_DIRECTORY.toFile(), true);
         }
         // remove test data base from MongoDB
         try {

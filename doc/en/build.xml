@@ -26,11 +26,11 @@
       <isset property="build.directory" />
     </condition>
 
-    <condition property="project.version" value="${project.version}" else="2.14-SNAPSHOT">
+    <condition property="project.version" value="${project.version}" else="2.15-SNAPSHOT">
       <isset property="project.version" />
     </condition>
 
-    <echo message="Base directgory is ${basedir}"/>
+    <echo message="Base directory is ${basedir}"/>
     <echo message="Build directory is ${build.directory} and project version is ${project.version}"/>
   </target>
 

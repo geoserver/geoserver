@@ -98,7 +98,7 @@ This example adds a stroke (or border) around the :ref:`mbstyle_cookbook_points_
 Code
 ~~~~
 
-:download:`Download the "Simple point with stroke" MBStyle JSON <artifacts/point_simplepointwithstroke.ysld>`
+:download:`Download the "Simple point with stroke" MBStyle JSON <artifacts/mbstyle_simple_point_circle_stroke.json>`
 
 .. code-block:: json
   :linenos:
@@ -124,4 +124,5 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`mbstyle_cookbook_points_simplepoint` example. **Lines 12-13** specify the stroke, with **line 12** setting the color to black (``'#000000'``) and **line 13** setting the width to 2 pixels.
+This example is similar to the :ref:`mbstyle_cookbook_points_simplepoint` example. **Lines 12-13** specify the stroke,
+with **line 12** setting the color to black (``'#000000'``) and **line 13** setting the width to 2 pixels.

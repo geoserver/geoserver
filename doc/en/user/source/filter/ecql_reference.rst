@@ -62,7 +62,7 @@ Predicates are boolean-valued expressions which specify relationships between va
      - Simple pattern matching.  
        *like-pattern* uses the ``%`` character as a wild-card for any number of characters.
        ``ILIKE`` does case-insensitive matching.
-   * - :ref:`attribute` **[** ``NOT`` **]** ``IN (`` :ref:`ecql_expr`  **{** ``,``:ref:`ecql_expr`  **}**  ``)`` 
+   * - :ref:`ecql_attr` **[** ``NOT`` **]** ``IN (`` :ref:`ecql_expr`  **{** ``,``:ref:`ecql_expr`  **}**  ``)`` 
      - Tests whether an expression value is (not) in a set of values
    * - ``IN (`` :ref:`ecql_literal`  **{** ``,``:ref:`ecql_literal`  **}**  ``)`` 
      - Tests whether a feature ID value is in a given set. ID values are integers or string literals

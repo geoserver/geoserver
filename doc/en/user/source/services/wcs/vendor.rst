@@ -8,9 +8,7 @@ namespace
 
 Requests to the WCS GetCapabilities operation can be filtered to only return layers corresponding to a particular namespace.
 
-Sample code:
-
-.. code-block:: xml
+Sample code: ::
 
    http://example.com/geoserver/wcs?
       service=wcs&

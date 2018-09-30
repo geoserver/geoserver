@@ -5,15 +5,11 @@ WMS Reflector
 
 Overview
 --------
-Standard WMS requests can be quite long and verbose. For instance the following, which returns an OpenLayers application with an 800x600 image set to display the feature ``topp:states``, with bounds set to the northwestern hemisphere by providing the appropriate bounding box.
-
-.. code-block:: html 
+Standard WMS requests can be quite long and verbose. For instance the following, which returns an OpenLayers application with an 800x600 image set to display the feature ``topp:states``, with bounds set to the northwestern hemisphere by providing the appropriate bounding box::
 
    http://localhost:8080/geoserver/wms?service=WMS&request=GetMap&version=1.1.1&format=application/openlayers&width=800&height=600&srs=EPSG:4326&layers=topp:states&styles=population&bbox=-180,0,0,90
   
-Typing into a browser, or HTML editor, can be quite cumbersome and error prone. The WMS Reflector solves this problem nicely by using good default values for the options that you do not specify. Using the reflector one can shorten the above request to:
-
-.. code-block:: html
+Typing into a browser, or HTML editor, can be quite cumbersome and error prone. The WMS Reflector solves this problem nicely by using good default values for the options that you do not specify. Using the reflector one can shorten the above request to::
 
     http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states&width=800
   
@@ -65,33 +61,25 @@ Any parameter you send with a WMS request is also legitimate when requesting dat
 
 Example 1
 `````````
-Request the layer topp:states , it will come back with the default style (demographic), width (512 pixels) and height (adjusted to aspect ratio).
-
-.. code-block:: html
+Request the layer topp:states , it will come back with the default style (demographic), width (512 pixels) and height (adjusted to aspect ratio)::
 
     http://localhost:8080/geoserver/wms/reflect?layers=topp:states
 
 Example 2
 `````````
-Request the layers topp:states and sf:restricted, it will come back with the default styles, and the specified width (640 pixels) and the height automatically adjusted to the aspect ratio.
-
-.. code-block:: html
+Request the layers topp:states and sf:restricted, it will come back with the default styles, and the specified width (640 pixels) and the height automatically adjusted to the aspect ratio::
 
     http://localhost:8080/geoserver/wms/reflect?layers=topp:states,sf:restricted&width=640
 
 Example 3
 `````````
-In the example above the sf:restricted layer is very difficult to see, because it is so small compared to the United States. To give the user a chance to get a better view, if they choose, we can return an OpenLayers application instead. Zoom in on South Dakota (SD) to see the restricted areas.
-
-.. code-block:: html
+In the example above the sf:restricted layer is very difficult to see, because it is so small compared to the United States. To give the user a chance to get a better view, if they choose, we can return an OpenLayers application instead. Zoom in on South Dakota (SD) to see the restricted areas::
 
     http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states,sf:restricted&width=640
     
 Example 4
 `````````
-Now, if you mainly want to show the restricted layer, but also provide the context, you can set the bounding box for the the request. The easiest way to obtain the coordinates is to use the application in example three and the coordinates at the bottom right of the map. The coordinates displayed in OpenLayers are x , y , the reflector service expects to be given bbox=minx,miny,maxx,maxy . Make sure it contains no whitespaces and users a period (".") as the decimal separator. In our case, it will be bbox=-103.929,44.375,-103.633,44.500 
-
-.. code-block:: html
+Now, if you mainly want to show the restricted layer, but also provide the context, you can set the bounding box for the the request. The easiest way to obtain the coordinates is to use the application in example three and the coordinates at the bottom right of the map. The coordinates displayed in OpenLayers are x , y , the reflector service expects to be given bbox=minx,miny,maxx,maxy . Make sure it contains no whitespaces and users a period (".") as the decimal separator. In our case, it will be bbox=-103.929,44.375,-103.633,44.500 ::
 
   http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&layers=topp:states,sf:restricted&width=640&bbox=-103.929,44.375,-103.633,44.500
   
@@ -111,9 +99,7 @@ If you want the page to render in the browser before GeoServer is done, you shou
   
 If you are worried that the bounds of the layer may change, so that the height changes relative to the width, you may also want to specify the height in the URL to the reflector. This ensures the layer will always be centered and fit on the 400x169 canvas.
 
-The reflector can also create a simple instance of `OpenLayers <http://www.openlayers.org/>`_ that shows the layers you specify in your request. One possible application is to turn the image above into a link that refers to the OpenLayers instance for the same feature, which is especially handy if you think a minority of your users will want to take closer look. To link to this JavaScript application, you need to specify the output format of the reflector: ``format=application/OpenLayers``
-  
-.. code-block:: html
+The reflector can also create a simple instance of `OpenLayers <http://www.openlayers.org/>`_ that shows the layers you specify in your request. One possible application is to turn the image above into a link that refers to the OpenLayers instance for the same feature, which is especially handy if you think a minority of your users will want to take closer look. To link to this JavaScript application, you need to specify the output format of the reflector: ``format=application/OpenLayers``::
 
     http://localhost:8080/geoserver/wms/reflect?format=application/openlayers&width=400
     

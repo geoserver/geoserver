@@ -4,9 +4,7 @@
  */
 package org.geoserver.test.onlineTest;
 
-/**
- * Tests the integration between MongoDB and App-schema.
- */
+/** Tests the integration between MongoDB and App-schema. */
 public class ComplexMongoDBTest extends ComplexMongoDBSupport {
 
     @Override

@@ -311,7 +311,7 @@ To update an ImageMosaic through the file system:
 
    This mosaic contains 9 granules
 
-.. note:: Please see the REST section for information on :ref:`rest_examples_curl_imagemosaic`.
+.. note:: Please see the REST section for information on :ref:`rest_imagemosaic`.
 
 .. _multi-crs-mosaic:
 

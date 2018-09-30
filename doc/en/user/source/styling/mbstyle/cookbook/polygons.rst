@@ -48,6 +48,7 @@ The :download:`polygons layer <artifacts/mbstyle_cookbook_polygon.zip>` used bel
 
 
 .. _mbstyle_cookbook_polygons_simplepolygon:
+
 Simple polygon
 --------------
 
@@ -60,7 +61,7 @@ This example shows a polygon filled in blue.
 Code
 ~~~~
 
-:download:`Download the "Simple polygon" MBStyle <artifacts/mbstyle_polygon_simplepolygon.json>`
+:download:`Download the "Simple polygon" MBStyle <artifacts/mbstyle_cookbook_polygons_simplepolygon.json>`
 
 .. code-block:: json
   :linenos:
@@ -100,7 +101,7 @@ This example adds a 1 pixel white outline to the :ref:`mbstyle_cookbook_polygons
 Code
 ~~~~
 
-:download:`Download the "Simple polygon with stroke" MBStyle <artifacts/mbstyle_polygon_simplepolygonwithstroke.json>`
+:download:`Download the "Simple polygon with stroke" MBStyle <artifacts/mbstyle_cookbook_polygons_simplepolygonwithstroke.json>`
 
 .. code-block:: json
   :linenos:

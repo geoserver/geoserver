@@ -261,19 +261,19 @@ It's now possible to test the authentication:
 #. Try to login again, you should be able now to see the external Google login form.
 
    .. figure:: images/test1.jpg
-:align: center
+      :align: center
 
    .. figure:: images/test2.jpg
-:align: center
+      :align: center
 
    .. figure:: images/test3.jpg
-:align: center
+      :align: center
 
    .. figure:: images/test4.jpg
-:align: center
+      :align: center
 
    .. figure:: images/test5.jpg
-:align: center
+      :align: center
 
 OpenID connect authentication
 -----------------------------
@@ -289,7 +289,7 @@ where the client is supposed to have autonomously retrieved a valid bearer token
 
 .. warning:: The oauth2-openid-connect does not implement the full protocol and has been tested
    against a single server, more development and testing is needed before it can be consumed by
-   a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md`_
+   a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_
    to improve the module are welcomed.
 
 

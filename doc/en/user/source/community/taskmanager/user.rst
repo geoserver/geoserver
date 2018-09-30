@@ -192,6 +192,7 @@ existing templates), existing templates can be edited and removed.
    :alt: templates
 
    templates
+
 Once you open a new or existing template, attributes, tasks and batches
 can be edited. The attribute table adjusts automatically based on the
 information in the tasks table; and only the values must be filled in.
@@ -206,6 +207,7 @@ the ``apply`` button) before they can be added to a batch.
    :alt: template db workflow
 
    template db workflow
+
 Configurations
 ~~~~~~~~~~~~~~
 
@@ -218,6 +220,7 @@ removed.
    :alt: configurations
 
    configurations
+
 When removing a configuration, you have to option to do a *clean-up*,
 which will attempt to remove all resources (database tables, files,
 layers) that were created by (tasks of) this configuration. If this
@@ -231,6 +234,7 @@ batches can be edited.
    :alt: workflow config 2
 
    workflow config 2
+
 The attribute table adjusts automatically based on the information in
 the tasks table; and only the values must be filled in. In the task
 table, the name and parameters of each task can be edited, and new tasks
@@ -266,6 +270,7 @@ templates <basic.html#initializing-templates>`__).
    :alt: batches
 
    batches
+
 In case that the `conditions <basic.html#batches>`__ are met, batch runs
 can be started, and the status/history of current and past batch runs
 can be displayed. Current batch runs can be interrupted (which is not
@@ -279,6 +284,7 @@ guaranteed to happen immediately).
    :alt: batchrun
 
    batchrun
+
 Once you open a new or existing batch, one can add or remove tasks from
 it and change the order of the tasks. You can also enable/disable the
 batch (if disabled, the batch is not scheduled) and choose the
@@ -291,6 +297,7 @@ expression <http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/c
    :alt: batch synchronize
 
    batch synchronize
+
 Task Types
 ----------
 
@@ -412,30 +419,35 @@ could make the following template:
    :alt: template db workflow
 
    template db workflow
+
 with the following batches:
 
 .. figure:: img/template-db-workflow-batches.png
    :alt: template db workflow batches
 
    template db workflow batches
+
 The ``@Initialize`` batch:
 
 .. figure:: img/template-db-workflow-batch-init.png
    :alt: batch initialize
 
    batch initialize
+
 The ``PublishRemotely`` batch:
 
 .. figure:: img/template-db-workflow-batch-pubrem.png
    :alt: batch publish remotely
 
    batch publish remotely
+
 The ``Synchronize`` batch:
 
 .. figure:: img/template-db-workflow-batch-sync.png
    :alt: batch synchronize
 
    batch synchronize
+
 When we now create a new configuration based on this template we choose
 a source database, table name and layer name:
 
@@ -443,6 +455,7 @@ a source database, table name and layer name:
    :alt: workflow config
 
    workflow config
+
 After clicking apply, the configuration is being initialized (the layer
 is created locally)...
 
@@ -450,6 +463,7 @@ is created locally)...
    :alt: initializing...
 
    initializing...
+
 We can now fill in the rest of the details, save, and make the remote
 publication. The synchronization is scheduled weekly.
 

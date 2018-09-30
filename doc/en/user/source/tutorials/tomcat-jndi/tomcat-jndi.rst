@@ -39,8 +39,8 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
         poolPreparedStatements="true"
         maxOpenPreparedStatements="100"
         validationQuery="SELECT SYSDATE FROM DUAL"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
         />
    </Context>
 
@@ -122,8 +122,8 @@ Then the following code must be written in the Tomcat configuration file :file:`
         minEvictableIdleTimeMillis="60000"
         testWhileIdle="true"
         validationQuery="SELECT 1"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
       />
   </Context>
 
@@ -171,12 +171,12 @@ Then the following code must be written in the Tomcat configuration file :file:`
         poolPreparedStatements="true"
         maxOpenPreparedStatements="100"
         validationQuery="SELECT SYSDATE FROM DUAL"
-        maxAge="600000" <!-- only on Tomcat >= 7 -->
-        rollbackOnReturn="true" <!-- only on Tomcat >= 7 -->
+        maxAge="600000"
+        rollbackOnReturn="true"
         />
   </Context>
 
-.. note:: Note that database name,username and password must be defined directly in the URL.  
+.. note:: Note that database name, username and password must be defined directly in the URL.  
   
 GeoServer setup
 ```````````````

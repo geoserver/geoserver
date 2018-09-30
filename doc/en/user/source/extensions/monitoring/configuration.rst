@@ -39,6 +39,8 @@ With memory storage only the most recent 100 requests are stored. And by definit
 storage is volatile in that if the GeoServer instance is restarted, shutdown, or crashes 
 this data is lost.
 
+.. _monitor_mode:
+
 Monitor Mode
 ------------
 

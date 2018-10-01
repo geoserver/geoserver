@@ -80,6 +80,35 @@ public interface FeatureTypeInfo extends ResourceInfo {
     void setNumDecimals(int numDecimals);
 
     /**
+     * If numbers float should be formatted right-padding them with zeros.
+     *
+     * @return
+     */
+    boolean getPadWithZeros();
+
+    /**
+     * Sets wether float numbers should be formatted right-padding them with zeros.
+     *
+     * @param padWithZeros
+     */
+    void setPadWithZeros(boolean padWithZeros);
+
+    /**
+     * True if numbers should always be formatted as decimal (no scientific notation allowed).
+     *
+     * @return
+     */
+    boolean getForcedDecimal();
+
+    /**
+     * Set to true if numbers should always be formatted as decimal (no scientific notation
+     * allowed).
+     *
+     * @param forcedDecimal
+     */
+    void setForcedDecimal(boolean forcedDecimal);
+
+    /**
      * Tolerance used to linearize this feature type, as an absolute value expressed in the
      * geometries own CRS
      */

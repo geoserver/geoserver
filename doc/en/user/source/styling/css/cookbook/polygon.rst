@@ -185,9 +185,7 @@ This example fills the polygons with a hatching pattern.
 Code
 ~~~~
 
-
-.. code-block:: css 
-   :linenos:
+Example: ::
  
     * { 
       fill: symbol("shape://times");

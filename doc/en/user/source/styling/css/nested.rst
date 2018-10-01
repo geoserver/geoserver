@@ -3,7 +3,6 @@
 Nested rules
 ============
 
-.. highlight:: css
 
 Starting with GeoServer 2.10 the CSS modules supports rule nesting, that is, 
 a child rule can be written among properties of a parent rule.
@@ -17,7 +16,9 @@ Nesting is a pure syntax improvement, as such it does not actually provide extra
 functionality, besides more compact and hopefully readable styles.
 
 This is an example of a CSS style using only cascading to get a different shape,
-fill and stroke color for a point symbol in case the ``type`` attribute equals to ``important``::
+fill and stroke color for a point symbol in case the ``type`` attribute equals to ``important``:
+
+.. code-block:: css
 
   [@sd < 3000] {
     mark: symbol(circle)

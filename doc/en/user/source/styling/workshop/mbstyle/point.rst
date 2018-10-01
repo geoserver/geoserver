@@ -722,7 +722,7 @@ Dynamic Styling
    This expression should result in sizes between 5 and 9 and will need to be applied to both point **size** and label **displacement**.
    
    .. code-block:: json
-      :emphasize-lines: 8-15, 30-37
+      :emphasize-lines: 8-15
 
       {
         "id": "point_0",
@@ -742,7 +742,11 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+   .. code-block:: json
+      :emphasize-lines: 14-21
+
       {
         "id": "point_0_text",
         "type": "symbol",
@@ -766,7 +770,7 @@ Dynamic Styling
           },
         }
       }
-   
+
    .. image:: ../style/img/point_07_expression.png
 
 #. Next we can use ``FEATURECLA`` to check for capital cities.
@@ -797,11 +801,13 @@ Dynamic Styling
    Also add the spritesheet url to the top of the style if it is not present:
 
    .. code-block:: json
-      :emphasize-lines: 3
+      :emphasize-lines: 4
 
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites",
+      {
+        "version": 8,
+        "name": "point_example",
+        "sprite": "http://localhost:8080/geoserver/styles/sprites"
+      }
 
    
    And updating the populated places selectors to ignore capital cities:
@@ -828,7 +834,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_7_text",
         "type": "symbol",
@@ -853,7 +862,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_5",
         "type": "circle",
@@ -874,7 +886,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_5_text",
         "type": "symbol",
@@ -899,7 +914,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_4",
         "type": "circle",
@@ -920,7 +938,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+      
       {
         "id": "point_4_text",
         "type": "symbol",
@@ -945,7 +966,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_3",
         "type": "circle",
@@ -959,7 +983,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_3_text",
         "type": "symbol",
@@ -984,7 +1011,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_2",
         "type": "circle",
@@ -1005,7 +1035,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_2_text",
         "type": "symbol",
@@ -1030,7 +1063,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_1",
         "type": "circle",
@@ -1050,7 +1086,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_1_text",
         "type": "symbol",
@@ -1074,7 +1113,10 @@ Dynamic Styling
             ]
           }
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_0",
         "type": "circle",
@@ -1094,7 +1136,10 @@ Dynamic Styling
           "circle-stroke-color": "black",
           "circle-stroke-width": 1
         }
-      },
+      }
+
+  .. code-block:: json
+
       {
         "id": "point_0_text",
         "type": "symbol",
@@ -1120,7 +1165,7 @@ Dynamic Styling
         }
       }
 
-   .. image:: ../style/img/point_09_fill.png
+  .. image:: ../style/img/point_09_fill.png
 
 #. If you would like to check your work the final file is here: :download:`point_example.mbstyle <../files/point_example.json>`
 

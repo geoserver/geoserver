@@ -3,13 +3,13 @@
 Styled marks
 ============
 
-.. highlight:: css
-
 GeoServer's CSS module provides a collection of predefined symbols that you can
 use and combine to create simple marks, strokes, and fill patterns without
 needing an image editing program.  You can access these symbols via the
 symbol() CSS function.  For example, the built-in circle symbol makes it easy
-to create a simple 'dot' marker for a point layer::
+to create a simple 'dot' marker for a point layer:
+
+.. code-block:: css
 
     * {
       mark: symbol(circle);
@@ -95,7 +95,8 @@ feature:
 Example styled symbol
 ---------------------
 
-As an example, consider a situation where you are styling a layer that includes data about hospitals in your town.  You can create a simple hospital logo by placing a red cross symbol on top of a white circle background::
+As an example, consider a situation where you are styling a layer that includes data about hospitals in your town.  You can create a simple hospital logo
+by placing a red cross symbol on top of a white circle background::
 
     [usage='hospital'] {
       mark: symbol('circle'), symbol('cross');

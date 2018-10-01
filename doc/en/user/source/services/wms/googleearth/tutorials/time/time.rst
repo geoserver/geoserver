@@ -48,11 +48,9 @@ Next we will create a template which allows us to specify the temporal aspects o
 The temporal attribute is ``RPT_YEAR`` and is the one that matters to us. Ok, time to create the template.
 
 1. In your text editor of choice, create a new text file called ``time.ftl``.
-2. Add the following text:
+2. Add the following text: ::
 
-.. code-block:: html
-
-  ${RPT_YEAR.value?date('yyyy')}
+    ${RPT_YEAR.value?date('yyyy')}
 
 3. Save the file to the ``<GEOSERVER_DATA_DIR>/workspaces/topp/inet_weu_shapefile/inet_weu`` directory. Where ``<GEOSERVER_DATA_DIR>`` is the location of the "data directory" of your GeoServer installation. Usually pointed to via the ``GEOSERVER_DATA_DIR`` environment variable.
 
@@ -90,23 +88,20 @@ References
 
 Specifying a Date Format
 ````````````````````````
-When setting up a time template for your own dataset the most important issue is the format of your temporal data. It may or may not be in a format in which GeoServer can read directly. You can check if the date/time format can be used directly by GeoServer by using the following time template.  This is an example time template file (time.ftl) file without explicit formatting.
-
-.. code-block:: html
+When setting up a time template for your own dataset the most important issue is the format of your temporal data. It may or may not be
+in a format in which GeoServer can read directly. You can check if the date/time format can be used directly by GeoServer by using the
+following time template.  This is an example time template file (time.ftl) file without explicit formatting ::
 
   ${DATETIME_ATTRIBUTE_NAME.value}
 
 While GeoServer will try its best to parse the data there are cases in which your data is in a format which it cannot parse. When this occurs it is necessary to explicitly specify the format. Luckily Freemarker provides us with functionality to do just this.
 
-Consider the date time ``12:30 on January 01, 2007`` specified in the following format: ``01?01%2007&12$30!00``. When creating the template we need to explicitly tell Freemarker the format the date time is in with the datetime function.  This is an example time template file (time.ftl) file with explicit formatting:
-
-.. code-block:: html
+Consider the date time ``12:30 on January 01, 2007`` specified in the following format: ``01?01%2007&12$30!00``. When creating the template we need to
+explicitly tell Freemarker the format the date time is in with the datetime function.  This is an example time template file (time.ftl) file with explicit formatting: ::
 
   ${DATETIME_ATTRIBUTE_NAME.value?datetime("M?d%y&H:m:s")}
 
-The process is similar for dates (no time). The date ``01?01%2007`` would be specified in a template with explicit formatting:
-
-.. code-block:: html
+The process is similar for dates (no time). The date ``01?01%2007`` would be specified in a template with explicit formatting: ::
 
   ${DATETIME_ATTRIBUTE_NAME.value?date("M?d%y")}
 

@@ -226,7 +226,7 @@ This is also our first example making use of a dynamic style (where the value of
         font-fill: black;
         label-offset: 7px;
       }
-      
+
 #. The **label-offset** property is used to adjust the starting position used for labeling.
    
    Normally the displacement offset is supplied using two numbers (allowing an x and y offset from the the midway point used for LineString labeling).

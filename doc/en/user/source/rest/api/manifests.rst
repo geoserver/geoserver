@@ -57,9 +57,7 @@ Usage
 ~~~~~
 
 
-The model is very simple and is shared between the version and the resource requests to parse both requests.
-
-.. code-block:: xml
+The model is very simple and is shared between the version and the resource requests to parse both requests.::
  
    <about>
      <resource name="{NAME}">

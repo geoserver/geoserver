@@ -5,6 +5,7 @@
 package org.geoserver.wfs3;
 
 import org.apache.commons.lang3.StringUtils;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /** Current tiling request scope data, for context propagation */
 public class TileDataRequest {
@@ -13,6 +14,7 @@ public class TileDataRequest {
     private Long level;
     private Long row;
     private Long col;
+    private ReferencedEnvelope bboxEnvelope;
 
     public TileDataRequest() {}
 
@@ -50,5 +52,13 @@ public class TileDataRequest {
 
     public void setCol(Long col) {
         this.col = col;
+    }
+
+    public ReferencedEnvelope getBboxEnvelope() {
+        return bboxEnvelope;
+    }
+
+    public void setBboxEnvelope(ReferencedEnvelope bboxEnvelope) {
+        this.bboxEnvelope = bboxEnvelope;
     }
 }

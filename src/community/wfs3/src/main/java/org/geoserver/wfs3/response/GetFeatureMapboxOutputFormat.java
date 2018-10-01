@@ -60,6 +60,7 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         GetFeatureType getFeatureType = (GetFeatureType) getFeature.getParameters()[0];
+
         Integer resolution =
                 getFeatureType.getResolution() != null ? getFeatureType.getResolution() : 256;
         FeatureCollection collection = featureCollection.getFeatures().get(0);
@@ -73,12 +74,7 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
                         .getType()
                         .getCoordinateReferenceSystem();
         // get area envelope from GridSet if tile request data, else from collection
-        ReferencedEnvelope area =
-                ReferencedEnvelope.create(
-                        tileData.isTileRequest()
-                                ? envelopeFromTileRequestData()
-                                : collection.getBounds(),
-                        refSys);
+        ReferencedEnvelope area = getArea(collection);
         // Build the Pipeline (sort of coordinates transformer)
         Pipeline pipeline = getPipeline(area, paintArea, refSys, resolution / 32);
         // setup the vector tile encoder
@@ -203,6 +199,26 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
         } catch (FactoryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private ReferencedEnvelope getArea(FeatureCollection collection) {
+        if (tileData.getBboxEnvelope() != null) {
+            return tileData.getBboxEnvelope();
+        }
+        CoordinateReferenceSystem refSys =
+                collection
+                        .getSchema()
+                        .getGeometryDescriptor()
+                        .getType()
+                        .getCoordinateReferenceSystem();
+        // get area envelope from GridSet if tile request data, else from collection
+        ReferencedEnvelope area =
+                ReferencedEnvelope.create(
+                        tileData.isTileRequest()
+                                ? envelopeFromTileRequestData()
+                                : collection.getBounds(),
+                        refSys);
+        return area;
     }
 
     public TileDataRequest getTileData() {

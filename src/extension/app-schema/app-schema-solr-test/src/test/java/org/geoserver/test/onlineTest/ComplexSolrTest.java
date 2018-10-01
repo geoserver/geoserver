@@ -4,6 +4,11 @@
  */
 package org.geoserver.test.onlineTest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,11 +42,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
 import org.geotools.xml.resolver.SchemaCache;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -8,5 +8,6 @@
 <beans>
 
   <bean id="balancedRequestTester" class="org.geoserver.gwc.BalancedRequestTester"/>
+  <bean id="requestRecorder" class="org.geoserver.gwc.HttpRequestRecorderCallback"/>
 
 </beans>

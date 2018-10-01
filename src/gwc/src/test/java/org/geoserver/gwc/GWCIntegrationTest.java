@@ -8,6 +8,7 @@ package org.geoserver.gwc;
 import static java.lang.String.format;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.greaterThan;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
@@ -186,6 +188,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 "BasicPolygonsNoCrs.properties",
                 this.getClass(),
                 catalog);
+
+        // clean up the recorded http requests
+        HttpRequestRecorderCallback.reset();
     }
 
     protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {
@@ -1066,6 +1071,38 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(
                 response.getContentAsString(),
                 response.getContentAsString().contains("Could not find layer cdf:BasicPolygons"));
+    }
+
+    @Test
+    public void testDirectWMSIntegrationCustomHost() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+
+        String requestURL = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        MockHttpServletRequest request = createRequest(requestURL);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        final String THE_HOST = "foobar";
+        request.setRemoteHost(THE_HOST);
+        MockHttpServletResponse response = dispatch(request, null);
+
+        // check everything went as expected
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertEquals(layerName, response.getHeader("geowebcache-layer"));
+        assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
+        assertEquals("-180.0,-90.0,0.0,90.0", response.getHeader("geowebcache-tile-bounds"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-gridset"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-crs"));
+
+        // check we have the two requests recorded, and the
+        ArrayList<HttpServletRequest> requests = HttpRequestRecorderCallback.getRequests();
+        assertEquals(2, requests.size());
+        assertThat(requests.get(1), instanceOf(FakeHttpServletRequest.class));
+        FakeHttpServletRequest fake = (FakeHttpServletRequest) requests.get(1);
+        assertEquals(THE_HOST, fake.getRemoteHost());
     }
 
     @Test

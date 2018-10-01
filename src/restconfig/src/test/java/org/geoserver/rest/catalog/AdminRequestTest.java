@@ -114,7 +114,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertEquals(1, dom.getElementsByTagName("workspace").getLength());
     }
 
-    @Test 
+    @Test
     public void testWorkspacesWithProxyHeaders() throws Exception {
         GeoServerInfo ginfo = getGeoServer().getGlobal();
         SettingsInfo settings = getGeoServer().getGlobal().getSettings();

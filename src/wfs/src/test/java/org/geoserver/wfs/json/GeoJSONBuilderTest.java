@@ -29,6 +29,7 @@ public class GeoJSONBuilderTest {
     public void setUp() {
         writer = new StringWriter();
         builder = new GeoJSONBuilder(writer);
+        builder.setEncodeMeasures(true);
     }
 
     @Test
@@ -389,5 +390,97 @@ public class GeoJSONBuilderTest {
         assertEquals(2, o2.get("a"));
         assertEquals(u2.toString(), o2.get("b"));
         assertEquals("object2", o2.get("c"));
+    }
+
+    @Test
+    public void testWritePointZM() throws Exception {
+        Geometry g = new WKTReader().read("POINT ZM (2 0 20 2)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[2,0,20,2]}", writer.toString());
+    }
+
+    @Test
+    public void testWritePointM() throws Exception {
+        Geometry g = new WKTReader().read("POINT M (2 0 20)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[2,0,0,20]}", writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiPointZM() throws Exception {
+        Geometry g = new WKTReader().read("MULTIPOINT ZM (2 0 20 2, 1 1 1 1)");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,20,2],[1,1,1,1]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiPointM() throws Exception {
+        Geometry g = new WKTReader().read("MULTIPOINT M (2 0 20, 1 1 1)");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,0,20],[1,1,0,1]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteLineZM() throws Exception {
+        Geometry g = new WKTReader().read("LINESTRING ZM (0 0 0 0, 0 10 1 1, 10 10 2 2)");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"LineString\",\"coordinates\":[[0,0,0,0],[0,10,1,1],[10,10,2,2]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiLineZM() throws Exception {
+        Geometry g = new WKTReader().read("MULTILINESTRING ZM ((1 2 3 4,5 6 7 8))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,3,4],[5,6,7,8]]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiLineM() throws Exception {
+        Geometry g = new WKTReader().read("MULTILINESTRING M ((1 2 4,5 6 8))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,0,4],[5,6,0,8]]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWritePolygonZM() throws Exception {
+        Geometry g =
+                new WKTReader()
+                        .read(
+                                "POLYGON ZM "
+                                        + "((0 0 0 3, 0 10 1 3, 10 10 2 3, 10 0 3 3, 0 0 0 3),"
+                                        + "(1 1 4 3, 1 2 5 3, 2 2 6 3, 2 1 7 3, 1 1 4 3))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0,3],[0,10,1,3],[10,10,2,3],[10,0,3,3],[0,0,0,3]]"
+                        + ",[[1,1,4,3],[1,2,5,3],[2,2,6,3],[2,1,7,3],[1,1,4,3]]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiPolygonZM() throws Exception {
+        Geometry g = new WKTReader().read("MULTIPOLYGON ZM (((0 0 3 1,1 1 7 2,1 0 7 3,0 0 3 1)))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[0,0,3,1],[1,1,7,2],[1,0,7,3],[0,0,3,1]]]]}",
+                writer.toString());
+    }
+
+    @Test
+    public void testWriteMultiPolygonM() throws Exception {
+        Geometry g = new WKTReader().read("MULTIPOLYGON M (((0 0 1,1 1 2,1 0 3,0 0 1)))");
+        builder.writeGeom(g);
+        assertEquals(
+                "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[0,0,0,1],[1,1,0,2],[1,0,0,3],[0,0,0,1]]]]}",
+                writer.toString());
     }
 }

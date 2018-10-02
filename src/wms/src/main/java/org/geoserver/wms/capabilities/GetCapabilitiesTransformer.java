@@ -1252,7 +1252,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         } else {
                             LOGGER.log(
                                     Level.WARNING,
-                                    "Skipping a null layer group during caps during caps document generation",
+                                    "Skipping a null layer group during caps document generation",
                                     e);
                         }
 

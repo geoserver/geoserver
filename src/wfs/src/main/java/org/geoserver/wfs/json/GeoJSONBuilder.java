@@ -15,7 +15,6 @@ import net.sf.json.util.JSONBuilder;
 import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -26,7 +25,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 /**
  * This class extends the JSONBuilder to be able to write out geometric types. It is coded against
@@ -42,6 +40,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
     private int numDecimals = 6;
+
+    private boolean encodeMeasures = false;
 
     public GeoJSONBuilder(Writer w) {
         super(w);
@@ -68,14 +68,17 @@ public class GeoJSONBuilder extends JSONBuilder {
             switch (geometryType) {
                 case POINT:
                     Point point = (Point) geometry;
-                    Coordinate c = point.getCoordinate();
-                    writeCoordinate(c.x, c.y, c.z);
+                    writeCoordinate(point);
                     break;
                 case LINESTRING:
                     writeCoordinates(((LineString) geometry).getCoordinateSequence());
                     break;
                 case MULTIPOINT:
-                    writeCoordinates(geometry.getCoordinates());
+                    this.array();
+                    for (int i = 0, n = geometry.getNumGeometries(); i < n; i++) {
+                        writeCoordinate((Point) geometry.getGeometryN(i));
+                    }
+                    this.endArray();
                     break;
                 case POLYGON:
                     writePolygon((Polygon) geometry);
@@ -123,8 +126,21 @@ public class GeoJSONBuilder extends JSONBuilder {
         return this.endArray();
     }
 
-    private JSONBuilder writeCoordinates(Coordinate[] coords) throws JSONException {
-        return writeCoordinates(new CoordinateArraySequence(coords));
+    private JSONBuilder writeCoordinate(Point point) throws JSONException {
+        CoordinateSequence seq = point.getCoordinateSequence();
+        if (!seq.hasM() || !encodeMeasures) {
+            if (seq.hasZ()) {
+                return writeCoordinate(seq.getX(0), seq.getY(0), seq.getZ(0));
+            } else {
+                return writeCoordinate(seq.getX(0), seq.getY(0));
+            }
+        } else {
+            if (seq.hasZ()) {
+                return writeCoordinate(seq.getX(0), seq.getY(0), seq.getZ(0), seq.getM(0));
+            } else {
+                return writeCoordinate(seq.getX(0), seq.getY(0), 0, seq.getM(0));
+            }
+        }
     }
 
     /**
@@ -139,13 +155,31 @@ public class GeoJSONBuilder extends JSONBuilder {
 
         // guess the dimension of the coordinate sequence
         int dim = CoordinateSequences.coordinateDimension(coords);
+        // measure
+        int measures = coords.getMeasures();
+        int dimension = coords.getDimension();
 
         final int coordCount = coords.size();
         for (int i = 0; i < coordCount; i++) {
-            if (dim > 2) {
-                writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
+            // if has not measures coordinate
+            if (measures == 0 || !encodeMeasures) {
+                if (dim > 2) {
+                    writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
+                } else {
+                    writeCoordinate(coords.getX(i), coords.getY(i));
+                }
             } else {
-                writeCoordinate(coords.getX(i), coords.getY(i));
+                // if is XYZM
+                if (dimension - measures > 2) {
+                    writeCoordinate(
+                            coords.getX(i),
+                            coords.getY(i),
+                            coords.getOrdinate(i, 2),
+                            coords.getOrdinate(i, 3));
+                } else {
+                    // if is XYM -> fill Z with 0
+                    writeCoordinate(coords.getX(i), coords.getY(i), 0, coords.getOrdinate(i, 2));
+                }
             }
         }
 
@@ -157,6 +191,10 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     private JSONBuilder writeCoordinate(double x, double y, double z) {
+        return writeCoordinate(x, y, z, Double.NaN);
+    }
+
+    private JSONBuilder writeCoordinate(double x, double y, double z, double m) {
         this.array();
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
             roundedValue(y);
@@ -167,6 +205,10 @@ public class GeoJSONBuilder extends JSONBuilder {
         }
         if (!Double.isNaN(z)) {
             roundedValue(z);
+            // measure value
+            if (!Double.isNaN(m)) {
+                roundedValue(m);
+            }
         }
 
         return this.endArray();
@@ -363,5 +405,14 @@ public class GeoJSONBuilder extends JSONBuilder {
 
     public void setNumberOfDecimals(int numberOfDecimals) {
         this.numDecimals = numberOfDecimals;
+    }
+
+    /**
+     * Sets if coordinates measures (M) should be encoded.
+     *
+     * @param encodeMeasures TRUE if coordinates measures should be encoded, otherwise FALSE
+     */
+    public void setEncodeMeasures(boolean encodeMeasures) {
+        this.encodeMeasures = encodeMeasures;
     }
 }

@@ -167,7 +167,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         return filename + (filename.endsWith(".zip") ? "" : ".zip");
     }
 
-    protected void write(
+    public void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();

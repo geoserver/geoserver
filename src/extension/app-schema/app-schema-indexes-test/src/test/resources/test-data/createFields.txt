@@ -1,0 +1,20 @@
+
+{
+  "add-field":[
+  { "name":"station_id",
+   	"type":"strings",
+   	"multiValued":false },
+ 	{ "name":"station_name",
+   	"type":"strings",
+   	"multiValued":false },
+    { "name":"stations_comments",
+   	"type":"strings",
+   	"multiValued":false },
+   	{ "name":"observation_id",
+   	"type":"strings",
+   	"multiValued":false },
+    { "name":"observation_description",
+   	"type":"strings",
+   	"multiValued":false }
+  ]
+}

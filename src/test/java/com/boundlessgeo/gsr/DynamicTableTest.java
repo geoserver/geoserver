@@ -1,6 +1,5 @@
 package com.boundlessgeo.gsr;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -9,6 +8,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -19,10 +19,14 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
+//import org.locationtech.jts.geom.Coordinate;
+//import org.locationtech.jts.geom.GeometryFactory;
+//import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.opengis.geometry.coordinate.GeometryFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class DynamicTableTest extends GeoServerSystemTestSupport {
@@ -56,6 +61,24 @@ public class DynamicTableTest extends GeoServerSystemTestSupport {
 
         return LOCATION;
     }
+
+    private static SimpleFeatureType newFeatureType() {
+
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Location");
+        builder.setCRS(DefaultGeographicCRS.WGS84); // <- Coordinate reference system
+
+        // add attributes in order
+        builder.add("the_geom", Point.class);
+        builder.length(15).add("Name", String.class); // <- 15 chars width for name field
+        builder.add("number", Integer.class);
+
+        // build the type
+        final SimpleFeatureType LOCATION = builder.buildFeatureType();
+
+        return LOCATION;
+    }
+
 
     public DataStore createH2DataStore(String wsName, String dsName) throws IOException {
         /*
@@ -85,7 +108,7 @@ public class DynamicTableTest extends GeoServerSystemTestSupport {
          * LAT        LON        NAME    NUMBER
          * 46.066667, 11.116667, Trento, 140
          */
-        Point point1 = geometryFactory.createPoint(new Coordinate(46, 11));
+        org.locationtech.jts.geom.Point point1 = geometryFactory.createPoint((new Coordinate(46, 11)));
 
         // Build feature
         featureBuilder.add(point1);
@@ -151,18 +174,26 @@ public class DynamicTableTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void createH2DataStoreInfo() throws IOException {
+    public void testUpdateCacheClear() throws IOException {
         System.out.println();
         //create data store info
         DataStore ds = createH2DataStore("gs", "test");
 
         assertNotNull(cat.getDataStores().get(4).getDataStore(null));
 
-        FeatureTypeInfo ft = cat.getFeatureType("Location");
+        FeatureSource ft = cat.getFeatureType("Location");
 
         System.out.println("FTI = " + ft);
 
         ds.getFeatureSource("Location");
+
+        FeatureSource updatedFs = updateFeature();
+
+        assertEquals(cat.getFeatureSource("Location"), fs);
+
+        cat.getResourcePool().getFeatureTypeAttributeCache().get("Location").clear();
+
+        assertEquals((cat.getFeatureSource("Location"), updatedFs));
 
         System.out.println(ds);
     }

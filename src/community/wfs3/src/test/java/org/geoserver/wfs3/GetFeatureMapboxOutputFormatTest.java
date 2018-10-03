@@ -62,4 +62,28 @@ public class GetFeatureMapboxOutputFormatTest extends WFS3TestSupport {
                 "LINESTRING (134.0928 90.6752, 170.6752 74.6752, 213.3248 53.3248)",
                 featuresList.get(1).getGeometry().toText());
     }
+
+    /** Tests mapbox protobuf encoding for features in items, with bbox filter */
+    @Test
+    public void testItemsFeatureBuildingsBBOX() throws Exception {
+        // get ptb inputstream
+        String roadSegments = getEncodedName(MockData.BUILDINGS);
+        // real building bbox is BBOX=0.002,0.001,0.0024,0.0008
+        // we will crop it to BBOX=0.002,0.001,0.0024,0.0003
+        String path =
+                "wfs3/collections/"
+                        + roadSegments
+                        + "/items?f=application%2Fx-protobuf%3Btype%3Dmapbox-vector&resolution=10000"
+                        + "&BBOX=0.002,0.001,0.0024,0.0003";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        byte[] responseBytes = response.getContentAsByteArray();
+        VectorTileDecoder decoder = new VectorTileDecoder();
+        FeatureIterable fiter = decoder.decode(responseBytes);
+        List<Feature> featuresList = fiter.asList();
+        assertEquals(1, featuresList.size());
+        assertEquals("cite__Buildings", featuresList.get(0).getLayerName());
+        assertEquals(
+                "POLYGON ((0 73.1392, 0 0, 256 0, 256 73.1392, 0 73.1392))",
+                featuresList.get(0).getGeometry().toText());
+    }
 }

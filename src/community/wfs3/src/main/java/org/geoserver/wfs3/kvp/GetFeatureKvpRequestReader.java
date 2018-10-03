@@ -100,8 +100,12 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
             filters.add(filterFactory.id(ids));
         }
         if (kvp.containsKey("bbox")) {
-            Filter bboxFilter = bboxFilter(kvp.get("bbox"));
+            Object bbox = kvp.get("bbox");
+            Filter bboxFilter = bboxFilter(bbox);
             filters.add(bboxFilter);
+            // trace requested bbox envelope for use on MVT output crop
+            if (bbox instanceof ReferencedEnvelope)
+                tileData.setBboxEnvelope((ReferencedEnvelope) bbox);
         }
         if (kvp.containsKey("time")) {
             Object timeSpecification = kvp.get("time");

@@ -596,6 +596,24 @@
       <!-- The extension is actually dynamically determined -->
       <property name="extension" value="jpg-png"/>
     </bean>
+
+    <bean id="JpegPng8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+        <constructor-arg>
+            <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+            <value>image/vnd.jpeg-png8</value>
+        </constructor-arg>
+        <constructor-arg ref="wms" />
+        <property name="transparencySupported">
+            <description>JPEG-PNG8 does support transparency</description>
+            <value>true</value>
+        </property>
+        <property name="paletteSupported">
+            <description>JPEG-PNG8 does support 8-bit indexed color maps</description>
+            <value>true</value>
+        </property>
+        <!-- The extension is actually dynamically determined -->
+        <property name="extension" value="jpg-png8"/>
+    </bean>
     
     <bean id="JpegPngMapResponse" class="org.geoserver.wms.map.JpegPngMapResponse">
         <constructor-arg index="0" ref="wms"/>

@@ -51,7 +51,7 @@ public class PNGJWriter {
         try {
             output = writer.writePNG(image, outStream, quality, filterType);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to encode the PNG", e);
+            LOGGER.log(Level.FINER, "Failed to encode the PNG", e);
             throw new ServiceException(e);
         }
 

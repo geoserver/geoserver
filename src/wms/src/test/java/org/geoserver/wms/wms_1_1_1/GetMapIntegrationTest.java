@@ -69,6 +69,7 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1471,9 +1472,42 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testJpegPng8Transparent() throws Exception {
+        String request =
+                "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png8&TRANSPARENT=true&STYLES"
+                        + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-2.4%2C1.4%2C0.4%2C4.2";
+        // checks it's a PNG
+        MockHttpServletResponse resp = getAsServletResponse(request);
+        assertEquals("image/png", resp.getContentType());
+        assertEquals(
+                "inline; filename=cite-BasicPolygons.png",
+                resp.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+        BufferedImage image = ImageIO.read(getBinaryInputStream(resp));
+        assertNotBlank("testJpegPngTransparent", image);
+        // check it's paletted
+        assertThat(image.getColorModel(), instanceOf(IndexColorModel.class));
+    }
+
+    @Test
     public void testJpegPngOpaque() throws Exception {
         String request =
                 "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                        + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.4%2C3.6%2C1%2C5";
+        // checks it's a JPEG, since it's opaque
+        MockHttpServletResponse resp = getAsServletResponse(request);
+        assertEquals("image/jpeg", resp.getContentType());
+        assertEquals(
+                "inline; filename=cite-BasicPolygons.jpg",
+                resp.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+        InputStream is = getBinaryInputStream(resp);
+        BufferedImage image = ImageIO.read(is);
+        assertNotBlank("testJpegPngOpaque", image);
+    }
+
+    @Test
+    public void testJpegPng8Opaque() throws Exception {
+        String request =
+                "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png8&TRANSPARENT=true&STYLES"
                         + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.4%2C3.6%2C1%2C5";
         // checks it's a JPEG, since it's opaque
         BufferedImage image = getAsImage(request, "image/jpeg");

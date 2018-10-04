@@ -489,6 +489,7 @@
                         <option value="image/gif">GIF</option>
                         <option id="jpeg" value="image/jpeg">JPEG</option>
                         <option id="jpeg-png" value="image/vnd.jpeg-png">JPEG-PNG</option>
+                        <option id="jpeg-png8" value="image/vnd.jpeg-png8">JPEG-PNG8</option>
                     </select>
                 </li>
                 <li>

@@ -202,11 +202,21 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
 
     private <T> T getFeatureTypeInfoProperty(
             Catalog catalog, FeatureCollection features, Function<FeatureTypeInfo, T> callback) {
-        FeatureType featureType = features.getSchema();
-
-        ResourceInfo meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+        FeatureTypeInfo fti;
+        ResourceInfo meta = null;
+        // if it's a complex feature collection get the proper ResourceInfo
+        if (features instanceof TypeInfoCollectionWrapper.Complex) {
+            TypeInfoCollectionWrapper.Complex fcollection =
+                    (TypeInfoCollectionWrapper.Complex) features;
+            fti = fcollection.getFeatureTypeInfo();
+            meta = catalog.getResourceByName(fti.getName(), ResourceInfo.class);
+        } else {
+            // no complex, normal behavior
+            FeatureType featureType = features.getSchema();
+            meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+        }
         if (meta instanceof FeatureTypeInfo) {
-            FeatureTypeInfo fti = (FeatureTypeInfo) meta;
+            fti = (FeatureTypeInfo) meta;
             return callback.apply(fti);
         }
         return null;

@@ -16,11 +16,16 @@
  */
 package org.geoserver.test;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -209,6 +214,8 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 measurementsProperties);
         substituteParameters(
                 "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
+        //add extra features
+        addMeasurementFeatures(measurementsProperties);
         // create measurements feature type
         addFeatureType(
                 namespacePrefix,
@@ -245,7 +252,11 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 "/test-data/stations/base/stations.properties", parameters, stationsProperties);
         substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
+                "/test-data/stations/base/stations.xsd", parameters, stationsSchema);
+        substituteParameters(
+                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
+        //extra features to add:
+        addStationFeatures(stationsProperties);
         // create station feature type
         addFeatureType(
                 namespacePrefix,
@@ -296,7 +307,11 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 "/test-data/stations/base/stations.properties", parameters, stationsProperties);
         substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
+                "/test-data/stations/base/stations.xsd", parameters, stationsSchema);
+        substituteParameters(
+                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
+        //extra features to add:
+        addStationFeatures(stationsProperties);
         // create station feature type
         addFeatureType(
                 namespacePrefix,
@@ -384,6 +399,51 @@ public class StationsMockData extends AbstractAppSchemaMockData {
             return testRootDirectory;
         }
         return new File(testRootDirectory, gmlPrefix);
+    }
+
+    private void addTextToFile(File file, String content) {
+        Writer output;
+        try {
+            output = new BufferedWriter(new FileWriter(file, true));
+            output.append(content);
+            output.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addStationFeatures(File file) {
+        extraStationFeatures()
+                .ifPresent(
+                        content -> {
+                            addTextToFile(file, content);
+                        });
+    }
+
+    private void addMeasurementFeatures(File file) {
+        extraMeasurementFeatures()
+                .ifPresent(
+                        content -> {
+                            addTextToFile(file, content);
+                        });
+    }
+
+    /**
+     * String of features to add to Stations feature type
+     *
+     * @return Optional String of features
+     */
+    protected Optional<String> extraStationFeatures() {
+        return Optional.ofNullable(null);
+    }
+
+    /**
+     * String of features to add to Measurements feature type
+     *
+     * @return Optional String of features
+     */
+    protected Optional<String> extraMeasurementFeatures() {
+        return Optional.ofNullable(null);
     }
 
     @Override

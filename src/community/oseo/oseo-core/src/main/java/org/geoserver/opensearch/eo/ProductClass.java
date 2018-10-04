@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import org.geoserver.config.GeoServer;
 
-public class ProductClass implements Serializable {
+public class ProductClass implements Serializable, Cloneable {
 
     /** The generic product class */
     public static final ProductClass GENERIC =
@@ -204,5 +204,10 @@ public class ProductClass implements Serializable {
         } else {
             return oseo.getProductClasses();
         }
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ProductClass(this.name, this.prefix, this.namespace);
     }
 }

@@ -627,6 +627,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             }
         }
 
+        featuresModified();
+
         return result;
     }
 
@@ -640,6 +642,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         // finally drop the collections themselves
         SimpleFeatureStore store = getDelegateCollectionStore();
         store.removeFeatures(mappedFilter);
+
+        featuresModified();
     }
 
     /**
@@ -843,7 +847,15 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Object[] valueArray = (Object[]) localValues.toArray(new Object[localValues.size()]);
             getDelegateCollectionStore().modifyFeatures(nameArray, valueArray, mappedFilter);
         }
+
+        featuresModified();
     }
+
+    /**
+     * Hooks for subclasses that need to track feature modification and deletion. By default it does
+     * nothing.
+     */
+    protected void featuresModified() {}
 
     /**
      * Allows subclasses to handle other attributes mapped in secondary tables

@@ -46,6 +46,7 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.jdbc.VirtualTable;
+import org.geotools.util.SoftValueHashMap;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -102,6 +103,10 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     List<Name> typeNames;
 
     private GeoServer geoServer;
+
+    private LowercasingDataStore delegateStoreCache;
+    private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache =
+            new SoftValueHashMap<>();
 
     public JDBCOpenSearchAccess(
             Repository repository, Name delegateStoreName, String namespaceURI, GeoServer geoServer)
@@ -317,8 +322,12 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
      */
     DataStore getDelegateStore() throws IOException {
         DataStore store = getRawDelegateStore();
-        LowercasingDataStore ds = new LowercasingDataStore(store);
-        return ds;
+        if (delegateStoreCache != null && delegateStoreCache.wraps(store)) {
+            return delegateStoreCache;
+        }
+        LowercasingDataStore result = new LowercasingDataStore(store);
+        this.delegateStoreCache = result;
+        return result;
     }
 
     JDBCDataStore getRawDelegateStore() {
@@ -420,10 +429,13 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         } else if (productFeatureType.getName().equals(typeName)) {
             return getProductSource();
         }
-        if (Objects.equal(namespaceURI, typeName.getNamespaceURI())
-                && getNames().contains(typeName)) {
-            // silly generics...
-            return (FeatureSource) getCollectionGranulesSource(typeName.getLocalPart());
+        if (Objects.equal(namespaceURI, typeName.getNamespaceURI())) {
+            SimpleFeatureSource result = featureSourceCache.get(typeName);
+            if (result == null && getNames().contains(typeName)) {
+                result = getCollectionGranulesSource(typeName.getLocalPart());
+                featureSourceCache.put(typeName, result);
+            }
+            return (FeatureSource) result;
         }
 
         throw new IOException("Schema '" + typeName + "' does not exist.");
@@ -540,7 +552,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         sb.append(" JOIN ");
         encodeTableName(dialect, dbSchema, collectionTableName, sb);
         sb.append(" as collection ON product.\"eoParentIdentifier\" = collection.\"eoIdentifier\"");
-        // comparing with false on purpose, allows to defaul to true if primary is null or empty
+        // comparing with false on purpose, allows to default to true if primary is null or empty
         boolean primaryTable = !Boolean.FALSE.equals(collectionFeature.getAttribute("primary"));
         if (primaryTable || band != null) {
             sb.append(" WHERE ");
@@ -737,5 +749,9 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         } catch (SchemaException e) {
             throw new IOException(e);
         }
+    }
+
+    void clearFeatureSourceCaches() {
+        featureSourceCache.clear();
     }
 }

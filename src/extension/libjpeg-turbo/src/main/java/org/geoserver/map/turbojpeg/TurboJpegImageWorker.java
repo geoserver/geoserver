@@ -88,8 +88,8 @@ final class TurboJpegImageWorker extends ImageWorker {
 
         // go to component color model if needed
         ColorModel cm = image.getColorModel();
+        forceComponentColorModel(false, true, true);
         final boolean hasAlpha = cm.hasAlpha();
-        forceComponentColorModel();
         cm = image.getColorModel();
 
         // rescale to 8 bit

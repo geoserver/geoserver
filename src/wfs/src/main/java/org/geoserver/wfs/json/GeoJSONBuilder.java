@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
-import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -126,63 +125,40 @@ public class GeoJSONBuilder extends JSONBuilder {
         return this.endArray();
     }
 
+    /**
+     * Helper method that encodes a {@see Point} coordinate to the JSON output. This method will
+     * respect the configured axis order. If activated, coordinates measures (M) will be encoded,
+     * otherwise measures will be ignored.
+     *
+     * @param point the point whose coordinate will be encoded
+     * @return the JSON builder instance, this allow chained calls
+     */
     private JSONBuilder writeCoordinate(Point point) throws JSONException {
-        CoordinateSequence seq = point.getCoordinateSequence();
-        if (!seq.hasM() || !encodeMeasures) {
-            if (seq.hasZ()) {
-                return writeCoordinate(seq.getX(0), seq.getY(0), seq.getZ(0));
-            } else {
-                return writeCoordinate(seq.getX(0), seq.getY(0));
-            }
-        } else {
-            if (seq.hasZ()) {
-                return writeCoordinate(seq.getX(0), seq.getY(0), seq.getZ(0), seq.getM(0));
-            } else {
-                return writeCoordinate(seq.getX(0), seq.getY(0), 0, seq.getM(0));
-            }
-        }
+        CoordinateSequence coordinates = point.getCoordinateSequence();
+        // let's see if we need to encode measures, NaN values will not be encoded
+        double m = encodeMeasures ? coordinates.getM(0) : Double.NaN;
+        return writeCoordinate(coordinates.getX(0), coordinates.getY(0), coordinates.getZ(0), m);
     }
 
     /**
-     * Write the coordinates of a geometry
+     * Helper method that encodes a sequence of coordinates to the JSON output as an array. This
+     * method will respect the configured axis order. If activated, coordinates measures (M) will be
+     * encoded, otherwise measures will be ignored.
      *
-     * @param coords The coordinates to write
-     * @return this
-     * @throws JSONException
+     * @param coordinates the coordinates sequence that will be encoded
+     * @return the JSON builder instance, this allow chained calls
      */
-    private JSONBuilder writeCoordinates(CoordinateSequence coords) throws JSONException {
+    private JSONBuilder writeCoordinates(CoordinateSequence coordinates) throws JSONException {
+        // start encoding the JSON array of coordinates
         this.array();
-
-        // guess the dimension of the coordinate sequence
-        int dim = CoordinateSequences.coordinateDimension(coords);
-        // measure
-        int measures = coords.getMeasures();
-        int dimension = coords.getDimension();
-
-        final int coordCount = coords.size();
-        for (int i = 0; i < coordCount; i++) {
-            // if has not measures coordinate
-            if (measures == 0 || !encodeMeasures) {
-                if (dim > 2) {
-                    writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
-                } else {
-                    writeCoordinate(coords.getX(i), coords.getY(i));
-                }
-            } else {
-                // if is XYZM
-                if (dimension - measures > 2) {
-                    writeCoordinate(
-                            coords.getX(i),
-                            coords.getY(i),
-                            coords.getOrdinate(i, 2),
-                            coords.getOrdinate(i, 3));
-                } else {
-                    // if is XYM -> fill Z with 0
-                    writeCoordinate(coords.getX(i), coords.getY(i), 0, coords.getOrdinate(i, 2));
-                }
-            }
+        // each coordinate will be encoded has an array of ordinates
+        for (int i = 0; i < coordinates.size(); i++) {
+            // let's see if we need to encode measures, NaN values will not be encoded
+            double m = encodeMeasures ? coordinates.getM(i) : Double.NaN;
+            // encode the coordinate ordinates to the JSON output
+            writeCoordinate(coordinates.getX(i), coordinates.getY(i), coordinates.getZ(i), m);
         }
-
+        // we are done with the array
         return this.endArray();
     }
 
@@ -194,23 +170,44 @@ public class GeoJSONBuilder extends JSONBuilder {
         return writeCoordinate(x, y, z, Double.NaN);
     }
 
+    /**
+     * Helper method that will encode the provided coordinate values. The order the {@code X} and
+     * {@code Y} coordinates will be encoded will depend on the configured axis order.
+     *
+     * <p>If both provided {@code Z} or {@code M} values are {@code NaN} they will not be encoded.
+     * If a valid {@code M} value was provided but {@code Z} is {@code NaN}, zero (0) will be used
+     * for {@code Z}.
+     *
+     * @param x X ordinate
+     * @param y X ordinate
+     * @param z Z ordinate, can be {@code NaN}
+     * @param m M ordinate, can be {@code NaN}
+     * @return the JSON builder instance, this allow chained calls
+     */
     private JSONBuilder writeCoordinate(double x, double y, double z, double m) {
+        // start encoding JSON array
         this.array();
+        // adjust the order of X and Y ordinates if needed
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
+            // encode latitude first and then longitude
             roundedValue(y);
             roundedValue(x);
         } else {
+            // encode longitude first and then latitude
             roundedValue(x);
             roundedValue(y);
         }
+        // if Z value is not available but we have a measure, we set Z value to zero
+        z = Double.isNaN(z) && !Double.isNaN(m) ? 0 : z;
+        // encode Z value if available
         if (!Double.isNaN(z)) {
             roundedValue(z);
-            // measure value
-            if (!Double.isNaN(m)) {
-                roundedValue(m);
-            }
         }
-
+        // encode M value if available
+        if (!Double.isNaN(m)) {
+            roundedValue(m);
+        }
+        // we are done with the array
         return this.endArray();
     }
 

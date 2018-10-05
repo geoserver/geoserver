@@ -8,6 +8,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.geoserver.config.GeoServer;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
@@ -54,8 +55,8 @@ public class TilingSchemeDescriptionDocument {
     public BoundingBoxDocument getBoundingBox() {
         BoundingBox bbox = gridSet.getBounds();
         BoundingBoxDocument bboxDoc = new BoundingBoxDocument();
-        bboxDoc.setLowerCorner(String.format("%f %f", bbox.getMinX(), bbox.getMinY()));
-        bboxDoc.setUpperCorner(String.format("%f %f", bbox.getMaxX(), bbox.getMaxY()));
+        bboxDoc.setLowerCorner(String.format(Locale.US, "%f %f", bbox.getMinX(), bbox.getMinY()));
+        bboxDoc.setUpperCorner(String.format(Locale.US, "%f %f", bbox.getMaxX(), bbox.getMaxY()));
         bboxDoc.setCrs("http://www.opengis.net/def/crs/EPSG/0/" + gridSet.getSrs().getNumber());
         return bboxDoc;
     }
@@ -74,6 +75,7 @@ public class TilingSchemeDescriptionDocument {
             tm.setTileWeidht(256);
             tm.setTopLeftCorner(
                     String.format(
+                            Locale.US,
                             "%f %f",
                             gridSet.getOrderedTopLeftCorner(i)[0],
                             gridSet.getOrderedTopLeftCorner(i)[1]));

@@ -10,9 +10,26 @@ import static org.junit.Assert.assertTrue;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TilingSchemesTest extends WFS3TestSupport {
+
+    private Locale originalLocale;
+
+    @Before
+    public void setup() {
+        originalLocale = Locale.getDefault();
+        // locale setting to test coordinate encode on US locale
+        Locale.setDefault(Locale.ITALY);
+    }
+
+    @After
+    public void onFinish() {
+        Locale.setDefault(originalLocale);
+    }
 
     /** Tests the "wfs3/tilingScheme" json response */
     @Test
@@ -63,6 +80,9 @@ public class TilingSchemesTest extends WFS3TestSupport {
                 0.000000000000001E8d);
         assertEquals(
                 new Integer(4194304), jsonDoc.read("tileMatrix[21].matrixWidth", Integer.class));
+        assertEquals(
+                "90.000000 -180.000000",
+                jsonDoc.read("tileMatrix[21].topLeftCorner", String.class));
     }
 
     @Test

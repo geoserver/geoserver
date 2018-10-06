@@ -218,8 +218,7 @@ thickness for the main line and a 1 pixel width for the perpendicular hatches.
 Code
 ~~~~
 
-.. code-block:: css 
-   :linenos:
+Example: ::
 
     * { 
       stroke: #333333, symbol("shape://vertline");
@@ -255,8 +254,7 @@ Without using the dash array the lines would be densely populated with dots, eac
 Code
 ~~~~
 
-.. code-block:: css
-   :linenos:
+Example: ::
 
     * { 
       stroke: symbol(circle);
@@ -310,9 +308,7 @@ one drawing line segments and the other symbols.
 Code
 ~~~~
 
-
-.. code-block:: css
-   :linenos:
+Example: ::
 
     * { 
       stroke: blue, symbol(circle);

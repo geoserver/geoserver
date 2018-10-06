@@ -410,23 +410,23 @@ So far, we haven't set titles for any of the style rules. This doesn't really ca
     /* @title Population < 2M */
     [PERSONS < 2000000] {
     
-      ...
-
+      /* ... */
+    }
     /* @title 2M < Population < 4M */
     [PERSONS > 2000000] [PERSONS < 4000000] {
 
-      ...
-    
+      /* ... */
+    }
     /* @title Population > 4M */
     [PERSONS > 4000000] {
 
-      ...
-
-
+      /* ... */
+    }
     /* @title Boundaries */
     * {
 
-      ...
+      /* ... */
+    }
 
 Because of the way that CSS is translated to SLD, each SLD rule is a combination of several CSS rules. This is handled by combining the titles with the word "with". If the title is omitted for a rule, then it is simply not included in the SLD output.
 
@@ -474,7 +474,9 @@ The final CSS should looks like this::
 Applying rule nesting
 ^^^^^^^^^^^^^^^^^^^^^
 
-As a final variation, the style can be made more compact by leveraging rule nesting::
+As a final variation, the style can be made more compact by leveraging rule nesting:
+
+.. code-block:: text
 
   * {
     stroke: black;

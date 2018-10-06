@@ -11,9 +11,7 @@ Use Case
 
 The use case for this tutorial will be to serve through app-schema the information about some meteorological stations stored in a MongoDB database. Note that this use case is completely fictional and only used to demonstrate the MongoDB and app-schema integration.
 
-First of all let's insert some test data in a MongoDB data store:
-
-.. code-block:: json 
+First of all let's insert some test data in a MongoDB data store: ::
 
     db.stations.insert({
         "id": "1",

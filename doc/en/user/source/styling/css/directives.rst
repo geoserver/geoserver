@@ -15,7 +15,7 @@ For example:
 .. code-block:: css
 
   @mode 'Flat';
-  @styleTitle 'The title;
+  @styleTitle 'The title';
   @styleAbstract 'This is a longer description'
   
   * { 

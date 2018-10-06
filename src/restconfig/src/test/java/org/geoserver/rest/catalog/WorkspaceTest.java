@@ -304,12 +304,47 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutNameChangeForbidden() throws Exception {
-        String xml = "<workspace>" + "<name>changed</name>" + "</workspace>";
+        String xml = "<workspace>" + "<name></name>" + "</workspace>";
 
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/workspaces/gs", xml, "text/xml");
         assertEquals(403, response.getStatus());
+
+        String json = "{'workspace':{ 'name': '' }}";
+        response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/gs", json, "application/json");
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test
+    public void testPutNameChange() throws Exception {
+        String xml = "<workspace>" + "<name>changed</name>" + "</workspace>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/gs", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        // verify if changed
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/changed.json");
+        JSONObject workspace = ((JSONObject) json).getJSONObject("workspace");
+        assertEquals("changed", workspace.get("name"));
+
+        // undo name change -- this workspace is needed by other tests
+
+        xml = "<workspace>" + "<name>gs</name>" + "</workspace>";
+
+        response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/changed", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        // verify if changed
+        json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/gs.json");
+        workspace = ((JSONObject) json).getJSONObject("workspace");
+        assertEquals("gs", workspace.get("name"));
     }
 
     @Test

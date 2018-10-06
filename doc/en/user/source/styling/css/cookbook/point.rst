@@ -57,7 +57,7 @@ This example specifies points be styled as red circles with a diameter of 6 pixe
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos: 
 
     * { 
@@ -90,7 +90,7 @@ This example adds a stroke (or border) around the :ref:`css_cookbook_points_simp
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos: 
 
     * { 
@@ -122,7 +122,7 @@ This example creates a square instead of a circle, colors it green, sizes it to 
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos: 
 
     * { 
@@ -153,7 +153,7 @@ This example draws a triangle, creates a black stroke identical to the :ref:`css
 Code
 ~~~~   
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -185,7 +185,7 @@ This example styles each point as a graphic instead of as a simple shape.
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -218,7 +218,7 @@ This example shows a text label on the :ref:`css_cookbook_points_simplepoint` th
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -253,7 +253,7 @@ Code
 ~~~~   
 
 
-.. code-block:: css 
+.. code-block:: scss 
    :linenos:
 
     * { 
@@ -293,7 +293,7 @@ This example builds on the previous example, :ref:`css_cookbook_points_pointwith
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -333,7 +333,7 @@ This example alters the size of the symbol based on the value of the population 
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * {
@@ -411,7 +411,7 @@ This example alters the style of the points at different zoom levels.
 Code
 ~~~~
 
-.. code-block:: css 
+.. code-block:: scss 
    :linenos:
 
 
@@ -474,7 +474,7 @@ The result of this style is that points are drawn larger as one zooms in and sma
 
 While this example uses on purpose cascading to show a different possible setup, the same style could be written as:
 
-.. code-block:: css 
+.. code-block:: scss 
    :linenos:
 
     * {

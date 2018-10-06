@@ -268,7 +268,7 @@ The fourth and final rule is a bit different. It applies a label and outline to 
       </TextSymbolizer>
     </Rule>
 
-.. highlight:: css
+.. highlight:: scss
 
 This introduces the idea of rendering an extracted value (``STATE_ABBR``) directly into the map, unlike all of the rules thus far. For this, you can use a CQL expression wrapped in square braces (``[]``) as the value of a CSS property. It is also necessary to surround values containing whitespace, such as ``Times New Roman``, with single- or double-quotes (``"``, ``'``). With these details in mind, let's write the rule::
 

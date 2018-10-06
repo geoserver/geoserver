@@ -3,7 +3,7 @@
 Rendering transformations in CSS
 ================================
 
-.. highlight:: css
+.. highlight:: scss
 
 Starting with GeoServer 2.10 the CSS modules supports rendering transformations via the
 ``transform`` property.

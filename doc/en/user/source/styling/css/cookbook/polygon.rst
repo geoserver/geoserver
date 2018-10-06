@@ -186,7 +186,7 @@ Code
 ~~~~
 
 
-.. code-block:: css 
+.. code-block:: scss 
    :linenos:
  
     * { 

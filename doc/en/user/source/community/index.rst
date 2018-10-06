@@ -51,7 +51,4 @@ officially part of the GeoServer releases. They are however built along with the
    taskmanager/index
    qose-module/index
 
-.. Temporarily disabled (see src/community/pom.xml)
-   rest-upload/index
-   rest/index
    

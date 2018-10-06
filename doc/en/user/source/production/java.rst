@@ -34,6 +34,8 @@ The `Java Image I/O Technology <http://docs.oracle.com/javase/6/docs/technotes/g
 
 By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**.
 
+Native version of JAI has **issues handling "nodata" (transparency) for overlapping granules**. Consider sticking with default version if this feature is going to be used.
+
 Native JAI and ImageIO extensions are available for:
 
 +----------+-----------+-----------+

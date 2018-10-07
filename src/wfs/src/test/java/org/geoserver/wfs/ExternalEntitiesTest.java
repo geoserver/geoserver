@@ -184,7 +184,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             getGeoServer().save(cfg);
 
             output = string(post("wfs", WFS_2_0_0_REQUEST));
-            System.out.println(output);
+            // System.out.println(output);
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
             Assert.assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
 

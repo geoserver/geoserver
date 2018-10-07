@@ -151,7 +151,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
 
             Catalog cat = getCatalog();
             NamespaceInfo ns = cat.getNamespaceByURI(namespace);
-            System.out.println(ns.getPrefix());
+            // System.out.println(ns.getPrefix());
             // %2c == , (url-encoded, comma is not considered a safe char)
             assertEquals(cat.getFeatureTypesByNamespace(ns).size(), types.split("%2c").length);
         }

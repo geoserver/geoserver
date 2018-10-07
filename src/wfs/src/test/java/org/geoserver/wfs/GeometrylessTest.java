@@ -88,7 +88,7 @@ public class GeometrylessTest extends WFSTestSupport {
                         + "xsi:schemaLocation=\"http://www.opengis.net/wfs "
                         + "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">"
                         + "<wfs:Query typeName=\"cite:Geometryless\" srsName=\"EPSG:900913\"/></wfs:GetFeature>";
-        System.out.println(request);
+        // System.out.println(request);
         Document doc = postAsDOM("wfs", request);
 
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());

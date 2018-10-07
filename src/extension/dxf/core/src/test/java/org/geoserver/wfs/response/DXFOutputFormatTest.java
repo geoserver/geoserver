@@ -202,7 +202,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                 getAsServletResponse(
                         "wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf&bbox=929636,6013554.5,930744,6014601.5&srsName=EPSG:900913");
         String sResponse = testBasicResult(resp, "MPolygons");
-        System.out.println(sResponse);
+        // System.out.println(sResponse);
         for (int i = 0; i < sResponse.length(); i++) {
             char c = sResponse.charAt(i);
             assertTrue("Invalid non-ASCII char: '" + c + "'", c < 128);

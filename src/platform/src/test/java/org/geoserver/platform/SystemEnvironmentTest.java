@@ -64,10 +64,11 @@ public class SystemEnvironmentTest {
         gsext.setApplicationContext(appContext);
 
         // By default ALLOW_ENV_PARAMETRIZATION flag is set to FALSE
-        LOGGER.info("ALLOW_ENV_PARAMETRIZATION = " + sysProperty);
+        // LOGGER.info("ALLOW_ENV_PARAMETRIZATION = " + sysProperty);
         if (sysProperty == null || !Boolean.valueOf(sysProperty)) {
             GeoServerEnvironment genv = new GeoServerEnvironment();
-            LOGGER.info("GeoServerEnvironment = " + GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
+            // LOGGER.info("GeoServerEnvironment = " +
+            // GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
             assertTrue(!GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
         }
     }

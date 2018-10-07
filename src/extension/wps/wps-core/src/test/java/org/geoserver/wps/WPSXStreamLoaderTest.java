@@ -134,7 +134,6 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
 
         // check the xml
         String xml = FileUtils.readFileToString(new File(root, "wps.xml"));
-        System.out.println(xml);
         Document dom = dom(xml);
 
         // geometry factory

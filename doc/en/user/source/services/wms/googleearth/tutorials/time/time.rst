@@ -98,9 +98,7 @@ When setting up a time template for your own dataset the most important issue is
 
 While GeoServer will try its best to parse the data there are cases in which your data is in a format which it cannot parse. When this occurs it is necessary to explicitly specify the format. Luckily Freemarker provides us with functionality to do just this.
 
-Consider the date time ``12:30 on January 01, 2007`` specified in the following format: ``01?01%2007&12$30!00``. When creating the template we need to explicitly tell Freemarker the format the date time is in with the datetime function.  This is an example time template file (time.ftl) file with explicit formatting:
-
-.. code-block:: html
+Consider the date time ``12:30 on January 01, 2007`` specified in the following format: ``01?01%2007&12$30!00``. When creating the template we need to explicitly tell Freemarker the format the date time is in with the datetime function.  This is an example time template file (time.ftl) file with explicit formatting: ::
 
   ${DATETIME_ATTRIBUTE_NAME.value?datetime("M?d%y&H:m:s")}
 

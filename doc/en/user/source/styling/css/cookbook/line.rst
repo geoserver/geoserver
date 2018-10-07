@@ -218,7 +218,7 @@ thickness for the main line and a 1 pixel width for the perpendicular hatches.
 Code
 ~~~~
 
-.. code-block:: css 
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -255,7 +255,7 @@ Without using the dash array the lines would be densely populated with dots, eac
 Code
 ~~~~
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 
@@ -311,7 +311,7 @@ Code
 ~~~~
 
 
-.. code-block:: css
+.. code-block:: scss
    :linenos:
 
     * { 

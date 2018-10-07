@@ -57,9 +57,7 @@ The following root-level properties are required for all MBStyles. Additional ro
 `layers`    An array of layer style objects
 =========== ========================================================================
 
-For example:
-
- .. code-block:: json
+For example: ::
 
     {
         "version": 8,
@@ -77,15 +75,16 @@ A GeoServer vector tile source would be defined like this:
 
  .. code-block:: json
 
-    "cookbook": {
-      "type": "vector",
-      "tiles": [
-        "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=cookbook&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector&TILECOL={x}&TILEROW={y}"
-      ],
-      "minZoom": 0,
-      "maxZoom": 14
+    {
+      "cookbook": {
+        "type": "vector",
+        "tiles": [
+          "http://localhost:8080/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=cookbook&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/x-protobuf;type=mapbox-vector&TILECOL={x}&TILEROW={y}"
+        ],
+        "minZoom": 0,
+        "maxZoom": 14
+      }
     }
-
 
 Layers
 ~~~~~~

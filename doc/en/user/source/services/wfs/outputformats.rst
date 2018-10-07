@@ -105,19 +105,20 @@ The JSON output format (and JSONP if enabled) return feature content as a `GeoJS
 The output properties can include the use of lists and maps:
 
 .. code-block:: json
-   
-   {   "type": "Feature",
-       "id": "example.3",
-       "geometry": {
-          "type": "POINT",
-          "coordinates": [ -75.70742, 38.557476 ],
-       },
-       "geometry_name": "geom",
-       "properties": {
-            "CONDITION": "Orange",
-            "RANGE": ​{"min":"37","max":"93"}
-       }
-   }
+
+    {
+      "type": "Feature",
+      "id": "example.3",
+      "geometry": {
+        "type": "POINT",
+        "coordinates": [ -75.70742, 38.557476 ],
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "CONDITION": "Orange",
+        "RANGE": {"min":"37","max":"93"}
+      }
+    }
 
 JSON output ``format_options``:
 

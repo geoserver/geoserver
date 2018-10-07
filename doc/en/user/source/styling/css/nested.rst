@@ -3,7 +3,7 @@
 Nested rules
 ============
 
-.. highlight:: css
+.. highlight:: scss
 
 Starting with GeoServer 2.10 the CSS modules supports rule nesting, that is, 
 a child rule can be written among properties of a parent rule.

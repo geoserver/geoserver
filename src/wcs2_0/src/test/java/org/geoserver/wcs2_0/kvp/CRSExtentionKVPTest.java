@@ -31,7 +31,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
     @Test
     public void capabilties() throws Exception {
         Document dom = getAsDOM("wcs?reQueSt=GetCapabilities&seErvIce=WCS");
-        print(dom);
+        // print(dom);
 
         // check the KVP extension 1.0.1
         assertXpathEvaluatesTo(

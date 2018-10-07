@@ -365,7 +365,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setInputLimit(1);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
-        System.out.println(new String(this.getBinary(response)));
+        // System.out.println(new String(this.getBinary(response)));
         assertEquals("application/xml", response.getContentType());
         // reset imits
         setInputLimit(-1);
@@ -757,7 +757,7 @@ public class GetCoverageTest extends WCSTestSupport {
     public void testCoverageTimeSlicingTimeSecond() throws Exception {
         setupRasterDimension(
                 getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        System.out.println(getDataDirectory().root());
+        // System.out.println(getDataDirectory().root());
         final File xml =
                 new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request = FileUtils.readFileToString(xml);

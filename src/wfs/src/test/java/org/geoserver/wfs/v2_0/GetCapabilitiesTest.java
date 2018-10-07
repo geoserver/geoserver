@@ -314,7 +314,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         p.validate(in);
 
         for (Exception e : (List<Exception>) p.getValidationErrors()) {
-            System.out.println(e.getLocalizedMessage());
+            // System.out.println(e.getLocalizedMessage());
         }
         assertTrue(p.getValidationErrors().isEmpty());
     }

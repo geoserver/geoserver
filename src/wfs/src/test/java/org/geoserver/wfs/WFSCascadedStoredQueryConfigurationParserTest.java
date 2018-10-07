@@ -109,7 +109,7 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
 
         String xml = new String(baos.toByteArray(), "UTF-8");
 
-        System.err.println(xml);
+        // System.err.println(xml);
         assertTrue(xml.contains("numberFormat"));
     }
 }

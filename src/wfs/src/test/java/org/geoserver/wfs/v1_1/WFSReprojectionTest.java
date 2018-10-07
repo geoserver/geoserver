@@ -7,7 +7,6 @@ package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.StringTokenizer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSInfo;
@@ -141,7 +140,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             CoordinateReferenceSystem epsgAUTO = CRS.decode(targetCrsCode);
             MathTransform txAuto = CRS.findMathTransform(epsg32615, epsgAUTO);
 
-            System.out.println(Arrays.toString(c));
+            // System.out.println(Arrays.toString(c));
 
             double[] cr = new double[4];
             txAuto.transform(c, 0, cr, 0, 2);

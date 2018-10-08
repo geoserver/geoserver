@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
-import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -26,7 +24,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 /**
  * This class extends the JSONBuilder to be able to write out geometric types. It is coded against
@@ -42,6 +39,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
     private int numDecimals = 6;
+
+    private boolean encodeMeasures = false;
 
     public GeoJSONBuilder(Writer w) {
         super(w);
@@ -68,14 +67,17 @@ public class GeoJSONBuilder extends JSONBuilder {
             switch (geometryType) {
                 case POINT:
                     Point point = (Point) geometry;
-                    Coordinate c = point.getCoordinate();
-                    writeCoordinate(c.x, c.y, c.z);
+                    writeCoordinate(point);
                     break;
                 case LINESTRING:
                     writeCoordinates(((LineString) geometry).getCoordinateSequence());
                     break;
                 case MULTIPOINT:
-                    writeCoordinates(geometry.getCoordinates());
+                    this.array();
+                    for (int i = 0, n = geometry.getNumGeometries(); i < n; i++) {
+                        writeCoordinate((Point) geometry.getGeometryN(i));
+                    }
+                    this.endArray();
                     break;
                 case POLYGON:
                     writePolygon((Polygon) geometry);
@@ -123,32 +125,40 @@ public class GeoJSONBuilder extends JSONBuilder {
         return this.endArray();
     }
 
-    private JSONBuilder writeCoordinates(Coordinate[] coords) throws JSONException {
-        return writeCoordinates(new CoordinateArraySequence(coords));
+    /**
+     * Helper method that encodes a {@see Point} coordinate to the JSON output. This method will
+     * respect the configured axis order. If activated, coordinates measures (M) will be encoded,
+     * otherwise measures will be ignored.
+     *
+     * @param point the point whose coordinate will be encoded
+     * @return the JSON builder instance, this allow chained calls
+     */
+    private JSONBuilder writeCoordinate(Point point) throws JSONException {
+        CoordinateSequence coordinates = point.getCoordinateSequence();
+        // let's see if we need to encode measures, NaN values will not be encoded
+        double m = encodeMeasures ? coordinates.getM(0) : Double.NaN;
+        return writeCoordinate(coordinates.getX(0), coordinates.getY(0), coordinates.getZ(0), m);
     }
 
     /**
-     * Write the coordinates of a geometry
+     * Helper method that encodes a sequence of coordinates to the JSON output as an array. This
+     * method will respect the configured axis order. If activated, coordinates measures (M) will be
+     * encoded, otherwise measures will be ignored.
      *
-     * @param coords The coordinates to write
-     * @return this
-     * @throws JSONException
+     * @param coordinates the coordinates sequence that will be encoded
+     * @return the JSON builder instance, this allow chained calls
      */
-    private JSONBuilder writeCoordinates(CoordinateSequence coords) throws JSONException {
+    private JSONBuilder writeCoordinates(CoordinateSequence coordinates) throws JSONException {
+        // start encoding the JSON array of coordinates
         this.array();
-
-        // guess the dimension of the coordinate sequence
-        int dim = CoordinateSequences.coordinateDimension(coords);
-
-        final int coordCount = coords.size();
-        for (int i = 0; i < coordCount; i++) {
-            if (dim > 2) {
-                writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
-            } else {
-                writeCoordinate(coords.getX(i), coords.getY(i));
-            }
+        // each coordinate will be encoded has an array of ordinates
+        for (int i = 0; i < coordinates.size(); i++) {
+            // let's see if we need to encode measures, NaN values will not be encoded
+            double m = encodeMeasures ? coordinates.getM(i) : Double.NaN;
+            // encode the coordinate ordinates to the JSON output
+            writeCoordinate(coordinates.getX(i), coordinates.getY(i), coordinates.getZ(i), m);
         }
-
+        // we are done with the array
         return this.endArray();
     }
 
@@ -157,18 +167,47 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     private JSONBuilder writeCoordinate(double x, double y, double z) {
+        return writeCoordinate(x, y, z, Double.NaN);
+    }
+
+    /**
+     * Helper method that will encode the provided coordinate values. The order the {@code X} and
+     * {@code Y} coordinates will be encoded will depend on the configured axis order.
+     *
+     * <p>If both provided {@code Z} or {@code M} values are {@code NaN} they will not be encoded.
+     * If a valid {@code M} value was provided but {@code Z} is {@code NaN}, zero (0) will be used
+     * for {@code Z}.
+     *
+     * @param x X ordinate
+     * @param y X ordinate
+     * @param z Z ordinate, can be {@code NaN}
+     * @param m M ordinate, can be {@code NaN}
+     * @return the JSON builder instance, this allow chained calls
+     */
+    private JSONBuilder writeCoordinate(double x, double y, double z, double m) {
+        // start encoding JSON array
         this.array();
+        // adjust the order of X and Y ordinates if needed
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
+            // encode latitude first and then longitude
             roundedValue(y);
             roundedValue(x);
         } else {
+            // encode longitude first and then latitude
             roundedValue(x);
             roundedValue(y);
         }
+        // if Z value is not available but we have a measure, we set Z value to zero
+        z = Double.isNaN(z) && !Double.isNaN(m) ? 0 : z;
+        // encode Z value if available
         if (!Double.isNaN(z)) {
             roundedValue(z);
         }
-
+        // encode M value if available
+        if (!Double.isNaN(m)) {
+            roundedValue(m);
+        }
+        // we are done with the array
         return this.endArray();
     }
 
@@ -363,5 +402,14 @@ public class GeoJSONBuilder extends JSONBuilder {
 
     public void setNumberOfDecimals(int numberOfDecimals) {
         this.numDecimals = numberOfDecimals;
+    }
+
+    /**
+     * Sets if coordinates measures (M) should be encoded.
+     *
+     * @param encodeMeasures TRUE if coordinates measures should be encoded, otherwise FALSE
+     */
+    public void setEncodeMeasures(boolean encodeMeasures) {
+        this.encodeMeasures = encodeMeasures;
     }
 }

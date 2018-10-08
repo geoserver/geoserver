@@ -121,7 +121,7 @@ public class RenderingBufferTest extends WMSTestSupport {
                         + layerName
                         + "&info_format=application/vnd.ogc.gml&buffer=30";
         Document dom = getAsDOM(request);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }
 

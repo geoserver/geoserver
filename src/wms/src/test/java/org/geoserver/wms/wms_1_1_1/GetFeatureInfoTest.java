@@ -259,7 +259,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
         Document dom2d =
                 getAsDOM(base2d + "&width=" + 100 + "&height=" + 100 + "&x=" + 50 + "&y=" + 50);
-        print(dom2d);
+        // print(dom2d);
         // used to throw an exception and fail
         XMLAssert.assertXpathEvaluatesTo("2", "count(/html/body/table/tr)", dom2d);
     }
@@ -400,7 +400,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                         + layer
                         + "&width=20&height=20&x=10&y=10&propertyName=NAME,FID";
         String result = getAsString(request);
-        System.out.println(result);
+        // System.out.println(result);
         assertNotNull(result);
         int idxGeom = result.indexOf("the_geom");
         int idxFid = result.indexOf("FID");
@@ -487,7 +487,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                         + "&width=300&height=300&x=111&y=229";
         String url = base + "&styles=";
         Document dom = getAsDOM(url);
-        print(dom);
+        // print(dom);
         // make sure the document is empty, the style we chose has thin lines
         XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
@@ -549,7 +549,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // second request, should provide oe result, scale is 1:50
         w = (int) (200.0 / 0.28 * 1000); // dpi compensation
         dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&x=20&y=" + (w - 20));
-        print(dom);
+        // print(dom);
         XMLAssert.assertXpathEvaluatesTo(
                 "1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
         XMLAssert.assertXpathEvaluatesTo(

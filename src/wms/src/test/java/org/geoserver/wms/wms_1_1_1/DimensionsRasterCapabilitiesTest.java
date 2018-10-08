@@ -154,7 +154,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
-        print(dom);
+        // print(dom);
 
         assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Dimension/@name", dom);

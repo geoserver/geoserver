@@ -1,0 +1,42 @@
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:gml="${GML_NAMESPACE}"
+           xmlns:ms="http://www.measurements_${GML_PREFIX}.org/1.0"
+           targetNamespace="http://www.measurements_${GML_PREFIX}.org/1.0"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="${GML_NAMESPACE}" schemaLocation="${GML_LOCATION}"/>
+
+  <xs:complexType name="MeasurementPropertyType">
+    <xs:sequence>
+      <xs:element ref="ms:Measurement_${GML_PREFIX}"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+
+  <xs:complexType name="MeasurementType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="unit" type="xs:string"/>
+          <xs:element name="sampledArea" type="ms:SampledAreaPropertyType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SampledAreaType">
+    <xs:sequence>
+      <xs:element name="code" type="xs:string"/>
+      <xs:element name="geometry" type="gml:GeometryPropertyType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SampledAreaPropertyType">
+    <xs:sequence>
+      <xs:element name="SampledArea" type="ms:SampledAreaType" />
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+
+  <xs:element name="Measurement_${GML_PREFIX}" type="ms:MeasurementType" substitutionGroup="gml:AbstractFeature"/>
+
+</xs:schema>

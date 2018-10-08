@@ -129,6 +129,7 @@ The ``typeMappings`` section is the heart of the app-schema module. It defines t
             <sourceType>mappedfeature</sourceType>
             <targetElement>gsml:MappedFeature</targetElement>
             <isDenormalised>true</isDenormalised>
+            <defaultGeometry>gsml:MappedFeature/gsml:shape/gml:Polygon</defaultGeometry>
             <attributeMappings>
                 <AttributeMapping>
                     ...
@@ -143,6 +144,8 @@ The ``typeMappings`` section is the heart of the app-schema module. It defines t
 * ``targetElement`` is the the element name in the target application schema. This is the same as the WFS feature type name.
 
 * ``isDenormalised`` is an optional tag (default true) to indicate whether this type contains denormalised data or not. If data is not denormalised, then app-schema will build a more efficient query to apply the global feature limit.  When combined with a low global feature limit (via `Services --> WFS`), setting this option to false can prevent unnecessary processing and database lookups from taking place.
+
+* ``defaultGeometry`` can be used to explicitly define the attribute of the feature type that should be used as the default geometry, this is more relevant in WMS than WFS. The default geometry XML path can reference any attribute of the feature type, exactly the same path that would be used to reference the desired property in a OGC filter. The path can reference a nested attribute belonging to a chained feature having a zero or one relationship with the root feature type.
 
 attributeMappings and AttributeMapping
 ``````````````````````````````````````

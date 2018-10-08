@@ -202,6 +202,7 @@
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
                                 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>**/PagingTest.java</exclude>
+                                <exclude>**/DefaultGeometryTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
                             </excludes>
                         </configuration>

@@ -9,7 +9,6 @@ import ar.com.hjg.pngj.FilterType;
 import it.geosolutions.imageio.plugins.png.PNGWriter;
 import java.awt.image.RenderedImage;
 import java.io.OutputStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
@@ -51,8 +50,7 @@ public class PNGJWriter {
         try {
             output = writer.writePNG(image, outStream, quality, filterType);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to encode the PNG", e);
-            throw new ServiceException(e);
+            throw new ServiceException("Failed to encode the PNG", e);
         }
 
         return output;

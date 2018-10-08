@@ -94,7 +94,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
             return;
         }
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());
         assertEquals(0, cachedRuleReader.getStats().missCount());
         assertEquals(0, cachedRuleReader.getStats().evictionCount());
@@ -116,7 +116,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // first loading, obviously a miss
         AccessInfo ai1_1 = cachedRuleReader.getAccessInfo(filter1);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(++missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -125,7 +125,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(1);
         AccessInfo ai1_2 = cachedRuleReader.getAccessInfo(filter1);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -136,7 +136,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(2);
         AccessInfo ai2 = cachedRuleReader.getAccessInfo(filter2);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(++missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -145,7 +145,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(3);
         AccessInfo ai3 = cachedRuleReader.getAccessInfo(filter3);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(++missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -153,18 +153,18 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // filter1 is the oldest one:
         ticker.setMillisec(4);
         cachedRuleReader.getAccessInfo(filter2);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
 
         ticker.setMillisec(5);
         cachedRuleReader.getAccessInfo(filter3);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
 
         // reload filter1, ==> filter 2 should be evicted
         ticker.setMillisec(6);
         cachedRuleReader.getAccessInfo(filter1);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -176,7 +176,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
             return;
         }
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(0, cachedRuleReader.getStats().hitCount());
         assertEquals(0, cachedRuleReader.getStats().missCount());
         assertEquals(0, cachedRuleReader.getStats().evictionCount());
@@ -195,7 +195,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // first loading
         AccessInfo ai1_1 = cachedRuleReader.getAccessInfo(filter1);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(++missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -204,7 +204,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(1);
         AccessInfo ai1_2 = cachedRuleReader.getAccessInfo(filter1);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -215,10 +215,10 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // loading the same filter, after the refresh time
         ticker.setMillisec(600);
         // LOGGER.log(Level.INFO, "We expect a reload() now....");
-        System.out.println("---> We expect a reload() now....");
+        // System.out.println("---> We expect a reload() now....");
         AccessInfo ai1_3 = cachedRuleReader.getAccessInfo(filter1);
 
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -229,7 +229,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(700);
         System.out.println("sleeping...");
         Thread.sleep(500);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
         assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
         assertEquals(missExp, cachedRuleReader.getStats().missCount());
         assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
@@ -243,11 +243,11 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         ticker.setMillisec(800);
         cachedRuleReader.getAccessInfo(filter1);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
 
         ticker.setMillisec(2000);
         cachedRuleReader.getAccessInfo(filter1);
-        System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cachedRuleReader.getStats());
     }
 
     // public void testSave() throws IOException, URISyntaxException {

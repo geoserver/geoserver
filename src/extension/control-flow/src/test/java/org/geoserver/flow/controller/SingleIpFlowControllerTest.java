@@ -59,7 +59,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
@@ -109,7 +109,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);

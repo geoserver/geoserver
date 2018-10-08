@@ -58,7 +58,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
@@ -113,7 +113,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t2, MAX_WAIT);
             assertEquals(ThreadState.COMPLETE, t2.state);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
@@ -159,7 +159,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
             t2.interrupt();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         } finally {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);

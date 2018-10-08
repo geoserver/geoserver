@@ -167,7 +167,7 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
             waitAndKill(t1, MAX_WAIT);
             waitAndKill(t2, MAX_WAIT);
 
-            System.out.println("Done -----------------------\n\n");
+            // System.out.println("Done -----------------------\n\n");
         }
     }
 

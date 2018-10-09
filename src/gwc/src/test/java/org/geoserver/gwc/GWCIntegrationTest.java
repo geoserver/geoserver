@@ -1353,7 +1353,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
-        System.out.println(response.getContentAsString());
+        // System.out.println(response.getContentAsString());
         assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
         assertEquals(
                 "inline;filename=wms-getcapabilities.xml",

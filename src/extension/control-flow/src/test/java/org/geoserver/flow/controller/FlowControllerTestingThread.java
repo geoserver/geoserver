@@ -42,7 +42,7 @@ public class FlowControllerTestingThread extends Thread {
     public void run() {
         state = ThreadState.STARTED;
         try {
-            System.out.println(this + " calling requestIncoming");
+            // System.out.println(this + " calling requestIncoming");
             for (FlowController controller : controllers) {
                 if (!controller.requestIncoming(request, timeout)) {
                     state = ThreadState.TIMED_OUT;
@@ -57,20 +57,20 @@ public class FlowControllerTestingThread extends Thread {
         try {
             // wait on wait latch if available
             if (waitLatch != null) {
-                System.out.println(this + " waiting on wait latch");
+                // System.out.println(this + " waiting on wait latch");
                 waitLatch.await();
             }
-            System.out.println(this + " waiting");
+            // System.out.println(this + " waiting");
             if (processingDelay > 0) {
                 sleep(processingDelay);
             }
         } catch (InterruptedException e) {
-            System.out.println(e.getLocalizedMessage());
+            // System.out.println(e.getLocalizedMessage());
             Thread.currentThread().interrupt();
         }
 
         try {
-            System.out.println(this + " calling requestComplete");
+            // System.out.println(this + " calling requestComplete");
             for (FlowController controller : controllers) {
                 controller.requestComplete(request);
             }
@@ -78,6 +78,6 @@ public class FlowControllerTestingThread extends Thread {
             this.error = t;
         }
         state = ThreadState.COMPLETE;
-        System.out.println(this + " done");
+        // System.out.println(this + " done");
     }
 }

@@ -57,7 +57,7 @@ public abstract class AbstractFlowControllerTest {
                 Thread.sleep(20);
             }
         } catch (Exception e) {
-            System.out.println("Could not terminate thread " + t);
+            // System.out.println("Could not terminate thread " + t);
         }
     }
 

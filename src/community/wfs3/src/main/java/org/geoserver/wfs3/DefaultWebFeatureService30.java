@@ -42,15 +42,19 @@ import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.DefaultGridsets;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /** WFS 3.0 implementation */
-public class DefaultWebFeatureService30 implements WebFeatureService30 {
+public class DefaultWebFeatureService30 implements WebFeatureService30, ApplicationContextAware {
 
     private static final Logger LOGGER = Logging.getLogger(DefaultWebFeatureService30.class);
     private FilterFactory2 filterFactory;
     private final GeoServer geoServer;
     private WebFeatureService20 wfs20;
     private final DefaultGridsets gridSets;
+    private List<WFS3Extension> extensions;
 
     public DefaultWebFeatureService30(GeoServer geoServer, WebFeatureService20 wfs20) {
         this(geoServer, wfs20, new DefaultGridsets(true, true));
@@ -170,7 +174,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public OpenAPI api(APIRequest request) {
-        return new OpenAPIBuilder().build(request, getService());
+        return new OpenAPIBuilder().build(request, getService(), extensions);
     }
 
     public WFSInfo getServiceInfo() {
@@ -197,5 +201,9 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
     public TilingSchemeDescriptionDocument describeTilingScheme(
             TilingSchemeDescriptionRequest request) {
         return new TilingSchemeDescriptionDocument(geoServer, request.getGridSet());
+    }
+
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        extensions = GeoServerExtensions.extensions(WFS3Extension.class, context);
     }
 }

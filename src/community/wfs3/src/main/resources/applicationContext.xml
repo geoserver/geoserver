@@ -221,4 +221,6 @@
   	<aop:scoped-proxy/>
   </bean>
 
+  <bean id="vectorTilesExtension" class="org.geoserver.wfs3.VectorTilesExtension"/>
+
 </beans>

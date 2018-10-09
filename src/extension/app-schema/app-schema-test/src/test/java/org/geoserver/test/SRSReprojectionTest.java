@@ -21,6 +21,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQLException;
 import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
@@ -219,7 +220,7 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
-    public void testNestedSpatialFilterEncoding() throws IOException {
+    public void testNestedSpatialFilterEncoding() throws IOException, FilterToSQLException {
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("ex", "geomContainer");
         FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
         AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
@@ -261,20 +262,25 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
                         bounds.getMaxY(),
                         "EPSG:4283");
 
-        // Filter involving nested geometry attribute --> CANNOT be encoded
+        // Filter involving nested geometry attribute --> CAN be encoded
         ComplexFilterSplitter splitter =
                 new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitter.visit(intersects, null);
         Filter preFilter = splitter.getFilterPre();
         Filter postFilter = splitter.getFilterPost();
 
-        assertEquals(Filter.INCLUDE, preFilter);
-        assertEquals(intersects, postFilter);
+        assertEquals(intersects, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
 
         // filter must be "unrolled" (i.e. reverse mapped) first
         Filter unrolled = AppSchemaDataAccess.unrollFilter(intersects, rootMapping);
 
         // Filter is nested
         assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        // Encode nested filter
+        NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
+        String encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
+        assertTrue(encodedFilter.contains("EXISTS"));
     }
 }

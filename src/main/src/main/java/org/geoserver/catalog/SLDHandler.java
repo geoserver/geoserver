@@ -373,6 +373,4 @@ public class SLDHandler extends StyleHandler {
                 .append("</ExternalGraphic>\\n")
                 .toString();
     }
-    
-    
 }

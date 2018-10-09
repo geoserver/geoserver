@@ -17,7 +17,14 @@
       ],
       "sld:StyledLayerDescriptor": {
           "attrs": {
-          "version": null
+          "version": null,
+          "xsi:schemaLocation": ["http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd"],
+          "xmlns": ["http://www.opengis.net/sld"],
+          "xmlns:gml": ["http://www.opengis.net/gml"],
+          "xmlns:ogc": ["http://www.opengis.net/ogc"],
+          "xmlns:sld": ["http://www.opengis.net/sld"],
+          "xmlns:xlink": ["http://www.w3.org/1999/xlink"],
+          "xmlns:xsi": ["http://www.w3.org/2001/XMLSchema-instance"],
           },
           "children": [
           "sld:Name",
@@ -2361,14 +2368,18 @@
   };
   
   function getPrefixReplacements(style, basePrefixes) {
-    var styleDeclaration = style.match(/<.*StyledLayerDescriptor[^]+?>/)[0];
-  
+    var styleHeader = style.match(/<.*StyledLayerDescriptor[^]+?>/);
     var replacements = {};
-    var nsMatcher = /xmlns:?([^=]*)="([^"]+)"/g;
-    var m;
-    while (m = nsMatcher.exec(styleDeclaration)) {
-      if (basePrefixes[m[2]] && m[1] != basePrefixes[m[2]]) {
-        replacements[basePrefixes[m[2]]] = m[1];
+
+    if (styleHeader != null && styleHeader[0] != null) {
+      var styleDeclaration = styleHeader[0];
+
+      var nsMatcher = /xmlns:?([^=]*)="([^"]+)"/g;
+      var m;
+      while (m = nsMatcher.exec(styleDeclaration)) {
+        if (basePrefixes[m[2]] && m[1] != basePrefixes[m[2]]) {
+          replacements[basePrefixes[m[2]]] = m[1];
+        }
       }
     }
     return replacements;

@@ -195,6 +195,7 @@
                     <!-- These tests are already run on the parent module -->
                     <excludes>
                         <exclude>**/onlineTest/*.java</exclude>
+                        <exclude>**/DefaultGeometryTest.java</exclude>
                         <exclude>${test.exclude.pattern}</exclude>
                     </excludes>
                     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}

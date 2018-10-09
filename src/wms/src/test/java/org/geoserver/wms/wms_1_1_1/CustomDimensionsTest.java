@@ -210,7 +210,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                     + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
             assertEquals("text/xml", response.getContentType());
             Document dom = dom(response, true);
-            print(dom);
+            // print(dom);
             String text =
                     checkLegacyException(
                             dom,

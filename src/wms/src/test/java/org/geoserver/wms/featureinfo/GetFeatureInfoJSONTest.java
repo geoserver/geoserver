@@ -175,7 +175,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertNotNull(result);
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        print(rootObject);
+        // print(rootObject);
         assertEquals(rootObject.get("type"), "FeatureCollection");
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);

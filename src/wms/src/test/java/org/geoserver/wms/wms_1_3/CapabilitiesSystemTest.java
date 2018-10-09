@@ -238,7 +238,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     @Test
     public void testRequestMandatoryServiceParameter() throws Exception {
         Document dom = getAsDOM("ows?request=GetCapabilities&version=1.3.0");
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo(
                 "InvalidParameterValue", "/ows:ExceptionReport/ows:Exception/@exceptionCode", dom);
     }
@@ -288,7 +288,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
                 getAsDOM(
                         "ows?service=WMS&request=GetCapabilities&version=1.3.0&updateSequence="
                                 + updateSeq);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1.3.0", "/ogc:ServiceExceptionReport/@version", dom);
         assertXpathEvaluatesTo(
                 "CurrentUpdateSequence",

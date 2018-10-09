@@ -2318,11 +2318,20 @@
           result.push(attr);
       }
     }
-    return {
-      list: result,
-      from: replaceToken ? Pos(cur.line, tagStart == null ? token.start : tagStart) : cur,
-      to: replaceToken ? Pos(cur.line, token.end) : cur
-    };
+    if (token.string == "</" && result.length == 1) {
+      //Autocomplete closing tag without showing suggestion
+      var doc = cm.getDoc();
+      doc.replaceRange(result[0], CodeMirror.Pos(cur.line, token.start), CodeMirror.Pos(cur.line, token.end));
+      return {
+        list: []
+      };
+    } else {
+      return {
+        list: result,
+        from: replaceToken ? Pos(cur.line, tagStart == null ? token.start : tagStart) : cur,
+        to: replaceToken ? Pos(cur.line, token.end) : cur
+      };
+    }
   }
   
   function isObjectEmpty(obj) {

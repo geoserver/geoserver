@@ -832,8 +832,16 @@ public class CatalogBuilder {
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
 
-        if (cinfo.getSRS() == null) {
-            cinfo.setSRS(nativeCRS.getIdentifiers().toArray()[0].toString());
+        if (nativeCRS != null) {
+            try {
+                Integer code = CRS.lookupEpsgCode(nativeCRS, false);
+                if (code != null) {
+                    cinfo.setSRS("EPSG:" + code);
+                    cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+                }
+            } catch (FactoryException e) {
+                LOGGER.log(Level.WARNING, "SRS lookup failed", e);
+            }
         }
 
         if (cinfo.getProjectionPolicy() == null) {

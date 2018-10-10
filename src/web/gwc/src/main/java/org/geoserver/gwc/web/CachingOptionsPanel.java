@@ -121,10 +121,11 @@ public class CachingOptionsPanel extends Panel {
         configs.add(gutterChoice);
 
         {
-            List<String> formats;
-            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+            List<String> formats =
+                    new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
             IModel<List<String>> vectorFormatsModel =
                     new PropertyModel<List<String>>(gwcConfigModel, "defaultVectorCacheFormats");
+            mergeExisting(formats, vectorFormatsModel.getObject());
             vectorFormatsGroup = new CheckGroup<String>("vectorFormatsGroup", vectorFormatsModel);
             configs.add(vectorFormatsGroup);
             ListView<String> formatsList =
@@ -146,6 +147,7 @@ public class CachingOptionsPanel extends Panel {
             formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
             IModel<List<String>> rasterFormatsModel =
                     new PropertyModel<List<String>>(gwcConfigModel, "defaultCoverageCacheFormats");
+            mergeExisting(formats, rasterFormatsModel.getObject());
             rasterFormatsGroup = new CheckGroup<String>("rasterFormatsGroup", rasterFormatsModel);
             configs.add(rasterFormatsGroup);
             ListView<String> formatsList =
@@ -166,6 +168,7 @@ public class CachingOptionsPanel extends Panel {
             formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
             IModel<List<String>> otherFormatsModel =
                     new PropertyModel<List<String>>(gwcConfigModel, "defaultOtherCacheFormats");
+            mergeExisting(formats, otherFormatsModel.getObject());
             otherFormatsGroup = new CheckGroup<String>("otherFormatsGroup", otherFormatsModel);
             configs.add(otherFormatsGroup);
             ListView<String> formatsList =
@@ -232,5 +235,12 @@ public class CachingOptionsPanel extends Panel {
         vectorFormatsGroup.add(validator);
         rasterFormatsGroup.add(validator);
         otherFormatsGroup.add(validator);
+    }
+
+    /** Merges the elements of existingFormats missing from formats into formats */
+    private void mergeExisting(List<String> formats, Collection<String> existingFormats) {
+        for (String x : existingFormats) {
+            if (!formats.contains(x)) formats.add(x);
+        }
     }
 }

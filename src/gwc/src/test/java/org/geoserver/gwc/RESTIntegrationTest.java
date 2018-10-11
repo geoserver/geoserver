@@ -62,7 +62,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/xml"));
 
         Document dom = getAsDOM(url);
-        print(dom);
+        // print(dom);
 
         ArrayList<String> tileLayerNames = Lists.newArrayList(GWC.get().getTileLayerNames());
         Collections.sort(tileLayerNames);
@@ -93,7 +93,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(sr.getContentType(), sr.getContentType().startsWith("application/xml"));
 
         Document dom = getAsDOM(url);
-        print(dom);
+        // print(dom);
 
         assertXpathExists("/GeoServerLayer", dom);
         assertXpathEvaluatesTo(id, "/GeoServerLayer/id", dom);

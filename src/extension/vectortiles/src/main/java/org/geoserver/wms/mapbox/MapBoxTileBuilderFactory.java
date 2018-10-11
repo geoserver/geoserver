@@ -5,7 +5,7 @@
 package org.geoserver.wms.mapbox;
 
 import com.google.common.collect.ImmutableSet;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Set;
 import org.geoserver.wms.vector.VectorTileBuilderFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -13,9 +13,11 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 /** @author Niels Charlier */
 public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
 
-    public static final String MIME_TYPE = "application/x-protobuf;type=mapbox-vector";
+    public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
+    public static final String LEGACY_MIME_TYPE = "application/x-protobuf;type=mapbox-vector";
 
-    public static final Set<String> OUTPUT_FORMATS = ImmutableSet.of(MIME_TYPE, "pbf");
+    public static final Set<String> OUTPUT_FORMATS =
+            ImmutableSet.of(MIME_TYPE, LEGACY_MIME_TYPE, "pbf");
 
     @Override
     public Set<String> getOutputFormats() {

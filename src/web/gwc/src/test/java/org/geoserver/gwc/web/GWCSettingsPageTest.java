@@ -38,6 +38,14 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         super.login();
     }
 
+    @Before
+    public void cleanupBogusVectorFormat() throws IOException {
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.getDefaultVectorCacheFormats().remove("foo/bar");
+        gwc.saveConfig(config);
+    }
+
     @Test
     public void testPageLoad() {
         GWCSettingsPage page = new GWCSettingsPage();
@@ -149,6 +157,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
         config.setCacheLayersByDefault(true);
+        config.getDefaultVectorCacheFormats().add("foo/bar");
         gwc.saveConfig(config);
 
         GWCSettingsPage page = new GWCSettingsPage();
@@ -158,6 +167,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
         final List<String> vectorFormats =
                 new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
+        vectorFormats.add("foo/bar");
         final List<String> rasterFormats =
                 new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
         final List<String> groupFormats =

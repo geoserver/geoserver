@@ -83,7 +83,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
 
     @Override
     public CollectionsDocument collections(CollectionsRequest request) {
-        return new CollectionsDocument(request, geoServer);
+        return new CollectionsDocument(request, geoServer, extensions);
     }
 
     @Override
@@ -100,8 +100,10 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
                     "typeName");
         } else {
             CollectionsDocument collections =
-                    new CollectionsDocument(request, geoServer, featureType);
-            return collections.getCollections().next();
+                    new CollectionsDocument(request, geoServer, featureType, extensions);
+            CollectionDocument collection = collections.getCollections().next();
+
+            return collection;
         }
     }
 

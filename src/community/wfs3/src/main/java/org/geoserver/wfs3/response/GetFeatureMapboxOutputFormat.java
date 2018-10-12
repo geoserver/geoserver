@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import no.ecc.vectortile.VectorTileEncoder;
 import no.ecc.vectortile.VectorTileEncoderNoClip;
@@ -47,7 +48,14 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
     private DefaultGridsets gridSets;
 
     public GetFeatureMapboxOutputFormat(GeoServer gs) {
-        super(gs, MapBoxTileBuilderFactory.MIME_TYPE);
+        super(
+                gs,
+                new LinkedHashSet<String>() {
+                    {
+                        add(MapBoxTileBuilderFactory.MIME_TYPE);
+                        add(MapBoxTileBuilderFactory.LEGACY_MIME_TYPE);
+                    }
+                });
     }
 
     @Override

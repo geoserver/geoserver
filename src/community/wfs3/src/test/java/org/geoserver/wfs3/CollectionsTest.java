@@ -4,8 +4,10 @@
  */
 package org.geoserver.wfs3;
 
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
@@ -43,8 +45,9 @@ public class CollectionsTest extends WFS3TestSupport {
         // check we have the expected number of links and they all use the right "rel" relation
         List<String> formats =
                 DefaultWebFeatureService30.getAvailableFormats(FeatureCollectionResponse.class);
-        assertEquals(
-                formats.size(), (int) json.read("collections[0].links.length()", Integer.class));
+        assertThat(
+                formats.size(),
+                lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
         for (String format : formats) {
             // check title and rel.
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);

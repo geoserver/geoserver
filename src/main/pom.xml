@@ -135,7 +135,12 @@
     <groupId>it.geosolutions.jaiext.concurrent-tile-cache</groupId>
     <artifactId>jt-concurrent-tile-cache</artifactId>
   </dependency>
-  
+  <dependency>
+   <groupId>javax.activation</groupId>
+   <artifactId>activation</artifactId>
+  </dependency>
+
+
   <dependency>
    <groupId>org.springframework</groupId>
    <artifactId>spring-test</artifactId>

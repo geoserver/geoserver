@@ -385,18 +385,17 @@ paths:
           required: false
           description: A CQL filter to reduce the returned granules
           type: string
-        - name: offset
+        - name: purge
           in: query
-          description: Used for paging, the start of the current page
+          description: The purge parameter specifies if and how the underlying raster data source is deleted.
+                      Allowable values for this parameter are "none", "metadata" and "all".
+                      When set to "none" data and auxiliary files are preserved, only the registration in the mosaic is removed
+                      When set to "metadata" delete only auxiliary files and metadata (e.g. NetCDF sidecar indexes). 
+                      It’s recommended when data files (such as granules) should not be deleted from disk.
+                      Finally, when set to "all" both data and auxiliary files are removed.
           required: false
-          type: integer
+          type: string
           minimum: 0
-        - name: limit
-          in: query
-          description: Used for paging, the number of items to be removed
-          required: false
-          type: integer
-          minimum: 1
       responses:
         200:
           description: OK
@@ -574,6 +573,17 @@ paths:
           in: path
           required: true
           description: The granule ID
+        - name: purge
+          in: query
+          description: The purge parameter specifies if and how the underlying raster data source is deleted.
+            Allowable values for this parameter are "none", "metadata" and "all".
+            When set to "none" data and auxiliary files are preserved, only the registration in the mosaic is removed
+            When set to "metadata" delete only auxiliary files and metadata (e.g. NetCDF sidecar indexes).
+            It’s recommended when data files (such as granules) should not be deleted from disk.
+            Finally, when set to "all" both data and auxiliary files are removed.
+          required: false
+          type: string
+          minimum: 0         
       responses:
         200:
           description: OK

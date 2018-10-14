@@ -20,7 +20,7 @@
   <name>Web process status sharing with Hazelcast</name>
 
   <properties>
-    <hazelcast.version>3.3.1</hazelcast.version>
+    <hazelcast.version>3.11-BETA-1</hazelcast.version>
   </properties>
 
   <dependencies>

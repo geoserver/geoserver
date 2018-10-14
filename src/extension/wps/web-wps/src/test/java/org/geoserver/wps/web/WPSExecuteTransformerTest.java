@@ -52,6 +52,8 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         namespaces.put("feature", "http://geoserver.sf.net");
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        XMLUnit.setIgnoreWhitespace(true);
     }
 
     @Test
@@ -61,6 +63,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         WPSExecuteTransformer tx = new WPSExecuteTransformer();
         tx.setIndentation(2);
         String xml = tx.transform(executeBuffer);
+        System.out.println(xml);
 
         String expected =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

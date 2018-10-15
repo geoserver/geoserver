@@ -171,7 +171,7 @@ public class DefaultTileLayerCatalogTest {
     public void testEvents() throws IOException, InterruptedException {
 
         ((FileSystemWatcher) resourceLoader.getResourceNotificationDispatcher())
-                .schedule(100, TimeUnit.MILLISECONDS);
+                .schedule(50, TimeUnit.MILLISECONDS);
 
         AtomicBoolean hasBeenCreated = new AtomicBoolean(false);
 
@@ -210,6 +210,10 @@ public class DefaultTileLayerCatalogTest {
         GeoServerTileLayerInfo info = catalog.getLayerById("id1");
         assertEquals("originalname", info.getName());
         assertNotNull(catalog.getLayerByName("originalname"));
+
+        // it is necessary to wait a second, otherwise
+        // the change is not detected because it is too soon after creation
+        Thread.sleep(1000);
 
         FileUtils.writeStringToFile(
                 file,

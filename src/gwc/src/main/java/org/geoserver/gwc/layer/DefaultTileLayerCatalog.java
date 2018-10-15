@@ -199,7 +199,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 Resource file = getFile(tileLayerId);
                 layersById.remove(tileLayerId);
                 layersByName.remove(info.getName());
-                stopToListen(file);
+                stopListening(file);
                 file.delete();
                 listenersByFileName.remove(file.name());
             }
@@ -258,7 +258,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         GeoServerTileLayerInfoImpl info;
         try {
             info = depersist(res);
-            startToListen(res, info.getId());
+            startListening(res, info.getId());
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -285,7 +285,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         load(res);
     }
 
-    private void startToListen(Resource file, String tileLayerId) {
+    private void startListening(Resource file, String tileLayerId) {
         ResourceListener existingLayerListener =
                 new ResourceListener() {
                     @Override
@@ -307,7 +307,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         file.addListener(existingLayerListener);
     }
 
-    private void stopToListen(Resource file) {
+    private void stopListening(Resource file) {
         ResourceListener existingLayerListener = listenersByFileName.get(file.name());
         if (existingLayerListener != null) {
             file.removeListener(existingLayerListener);
@@ -318,7 +318,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         final String tileLayerId = real.getId();
         Resource file = getFile(tileLayerId);
 
-        stopToListen(file);
+        stopListening(file);
 
         boolean cleanup = false;
         if (file.getType() == Type.UNDEFINED) {
@@ -353,7 +353,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         }
         rename(tmp, file);
 
-        startToListen(file, tileLayerId);
+        startListening(file, tileLayerId);
     }
 
     private GeoServerTileLayerInfoImpl loadInternal(final String tileLayerId)

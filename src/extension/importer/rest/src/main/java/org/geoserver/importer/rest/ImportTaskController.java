@@ -247,11 +247,11 @@ public class ImportTaskController extends ImportBaseController {
             @PathVariable Long id,
             @PathVariable Integer taskId,
             @RequestParam(required = false) String expand,
-            @RequestBody LayerInfo layer) {
+            @RequestBody ImportLayer layer) {
         ImportTask task = task(id, taskId);
 
         return (writer, builder, converter) -> {
-            updateLayer(task, layer, importer, converter);
+            updateLayer(task, layer.getLayer(), importer, converter);
             importer.changed(task);
             converter.layer(builder, task, true, converter.expand(expand, 1));
         };

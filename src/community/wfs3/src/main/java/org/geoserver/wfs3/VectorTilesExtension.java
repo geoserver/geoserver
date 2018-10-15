@@ -83,7 +83,7 @@ public class VectorTilesExtension implements WFS3Extension {
                                 "tilingScheme",
                                 MapBoxTileBuilderFactory.MIME_TYPE,
                                 collectionId
-                                        + " associated tiling schemes. he link is a URI template \"\n"
+                                        + " associated tiling schemes. The link is a URI template \"\n"
                                         + "                                        + \"where {tilingSchemeId} is one of the schemes listed in the 'tilingSchemes' resource",
                                 "items"));
 

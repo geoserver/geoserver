@@ -54,6 +54,18 @@ public class CollectionsTest extends WFS3TestSupport {
             Map item = (Map) items.get(0);
             assertEquals("item", item.get("rel"));
         }
+        // tiling scheme extension
+        Map tilingScheme =
+                (Map)
+                        json.read("collections[0].links[?(@.rel=='tilingScheme')]", List.class)
+                                .get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/cgf__Lines/tiles/{tilingSchemeId}",
+                tilingScheme.get("href"));
+        Map tiles = (Map) json.read("collections[0].links[?(@.rel=='tiles')]", List.class).get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/cgf__Lines/tiles/{tilingSchemeId}/{level}/{row}/{col}",
+                tiles.get("href"));
     }
 
     @Test

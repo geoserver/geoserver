@@ -6,6 +6,7 @@ package org.geoserver.wfs3;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs3.response.GML32WFS3OutputFormat;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -21,8 +23,8 @@ public class CollectionTest extends WFS3TestSupport {
 
     @Test
     public void testCollectionJson() throws Exception {
-        DocumentContext json =
-                getAsJSONPath("wfs3/collections/" + getEncodedName(MockData.ROAD_SEGMENTS), 200);
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        DocumentContext json = getAsJSONPath("wfs3/collections/" + roadSegments, 200);
 
         assertEquals("cite__RoadSegments", json.read("$.name", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
@@ -34,7 +36,9 @@ public class CollectionTest extends WFS3TestSupport {
         // check we have the expected number of links and they all use the right "rel" relation
         List<String> formats =
                 DefaultWebFeatureService30.getAvailableFormats(FeatureCollectionResponse.class);
-        assertEquals(formats.size(), (int) json.read("$.links.length()", Integer.class));
+        assertThat(
+                (int) json.read("$.links.length()", Integer.class),
+                Matchers.greaterThanOrEqualTo(formats.size()));
         for (String format : formats) {
             // check title and rel.
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
@@ -44,6 +48,20 @@ public class CollectionTest extends WFS3TestSupport {
         }
         // the WFS3 specific GML3.2 output format is available
         assertNotNull(json.read("$.links[?(@.type=='" + GML32WFS3OutputFormat.FORMAT + "')]"));
+
+        // tiling scheme extension
+        Map tilingScheme = (Map) json.read("links[?(@.rel=='tilingScheme')]", List.class).get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/"
+                        + roadSegments
+                        + "/tiles/{tilingSchemeId}",
+                tilingScheme.get("href"));
+        Map tiles = (Map) json.read("links[?(@.rel=='tiles')]", List.class).get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/"
+                        + roadSegments
+                        + "/tiles/{tilingSchemeId}/{level}/{row}/{col}",
+                tiles.get("href"));
     }
 
     @Test

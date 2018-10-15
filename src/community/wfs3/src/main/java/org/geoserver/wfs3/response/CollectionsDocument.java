@@ -85,8 +85,9 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         // single collection case
         if (featureType != null) {
-            return Collections.singleton(new CollectionDocument(geoServer, request, featureType))
-                    .iterator();
+            CollectionDocument document = new CollectionDocument(geoServer, request, featureType);
+            decorateWithExtensions(document);
+            return Collections.singleton(document).iterator();
         }
 
         // full scan case
@@ -111,11 +112,7 @@ public class CollectionsDocument extends AbstractDocument {
                         FeatureTypeInfo featureType = featureTypes.next();
                         CollectionDocument collection =
                                 new CollectionDocument(geoServer, request, featureType);
-                        if (extensions != null) {
-                            for (WFS3Extension extension : extensions) {
-                                extension.extendCollection(collection, request);
-                            }
-                        }
+                        decorateWithExtensions(collection);
 
                         next = collection;
                         return true;
@@ -134,5 +131,13 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+    }
+
+    private void decorateWithExtensions(CollectionDocument collection) {
+        if (extensions != null) {
+            for (WFS3Extension extension : extensions) {
+                extension.extendCollection(collection, request);
+            }
+        }
     }
 }

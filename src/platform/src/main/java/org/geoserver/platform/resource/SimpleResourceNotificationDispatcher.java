@@ -100,11 +100,21 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
                             path,
                             isCreate ? Kind.ENTRY_CREATE : Kind.ENTRY_MODIFY,
                             notification.getTimestamp(),
-                            notification.events()));
+                            relative(notification.events(), path)));
 
             // stop propagating after first modify
             path = isCreate ? Paths.parent(path) : null;
         }
+    }
+
+    private List<Event> relative(List<Event> events, String path) {
+        // FileSystemResourceStore sends events with relative paths,
+        // so we must do as well
+        List<Event> result = new ArrayList<Event>();
+        for (Event event : events) {
+            result.add(new Event(event.getPath().replace(path + "/", ""), event.getKind()));
+        }
+        return result;
     }
 
     /**

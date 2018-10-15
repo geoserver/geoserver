@@ -9,6 +9,8 @@ import java.util.Set;
 
 public interface TileLayerCatalog {
 
+    public void addListener(TileLayerCatalogListener listener);
+
     public Set<String> getLayerIds();
 
     public Set<String> getLayerNames();

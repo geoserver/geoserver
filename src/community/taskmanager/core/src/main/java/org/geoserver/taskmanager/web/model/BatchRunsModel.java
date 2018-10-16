@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.wicket.model.IModel;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchRun;
-import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class BatchRunsModel extends GeoServerDataProvider<BatchRun> {
@@ -47,7 +46,8 @@ public class BatchRunsModel extends GeoServerDataProvider<BatchRun> {
 
     @Override
     protected List<BatchRun> getItems() {
-        return new ArrayList<BatchRun>(
-                TaskManagerBeans.get().getDataUtil().init(batchModel.getObject()).getBatchRuns());
+        List<BatchRun> list = new ArrayList<BatchRun>(batchModel.getObject().getBatchRuns());
+        list.removeIf(br -> br.getRuns().isEmpty());
+        return list;
     }
 }

@@ -4,11 +4,13 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.util.Date;
 import org.geoserver.taskmanager.AbstractWicketTaskManagerTest;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
+import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Run.Status;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
@@ -44,6 +46,7 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
     @After
     public void after() {
         dao.delete(batch.getConfiguration());
+        logout();
     }
 
     public Batch createBatch() {
@@ -122,7 +125,7 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
 
         tester.clickLink("form:runsPanel:listContainer:items:1:itemProperties:3:component:link");
 
-        BatchRun br = util.init(batch).getBatchRuns().get(0);
+        BatchRun br = dao.initHistory(batch).getBatchRuns().get(0);
         while (!(br = dao.reload(br)).getStatus().isClosed()) {
             Thread.sleep(100);
         }
@@ -156,5 +159,37 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.assertModelValue(
                 "batchesPanel:form:batchesPanel:listContainer:items:3:itemProperties:7:component",
                 Status.ROLLED_BACK);
+    }
+
+    @Test
+    public void testEmptyBatchRun() throws InterruptedException {
+
+        BatchRun br1 = fac.createBatchRun();
+        Run run = fac.createRun();
+        run.setStart(new Date());
+        run.setStatus(Status.RUNNING);
+        run.setBatchRun(br1);
+        br1.getRuns().add(run);
+        br1.setBatch(batch);
+        br1 = dao.save(br1);
+
+        BatchRun br2 = fac.createBatchRun();
+        br2.setBatch(batch);
+        dao.save(br2);
+
+        tester.startPage(new BatchesPage());
+        tester.assertRenderedPage(BatchesPage.class);
+
+        tester.assertModelValue(
+                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component",
+                Status.RUNNING);
+
+        tester.clickLink(
+                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component:link");
+
+        tester.assertRenderedPage(BatchRunsPage.class);
+
+        tester.assertModelValue(
+                "form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
     }
 }

@@ -24,7 +24,6 @@ import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.schedule.BatchJobService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,6 +110,7 @@ public class TaskManagerDataUtil {
         task.setConfiguration(config);
         config.getTasks().put(task.getName(), task);
     }
+
     /**
      * Add a batch to configuration.
      *
@@ -140,6 +140,10 @@ public class TaskManagerDataUtil {
             batch.getElements().add(batchElement);
             batchElement.setBatch(batch);
         }
+        if (!task.getBatchElements().contains(batchElement)) {
+            task.getBatchElements().add(batchElement);
+            batchElement.setTask(task);
+        }
         return batchElement;
     }
 
@@ -158,6 +162,10 @@ public class TaskManagerDataUtil {
         batch.getElements().remove(batchElement);
         batch.getElements().add(position, batchElement);
         batchElement.setBatch(batch);
+        if (!task.getBatchElements().contains(batchElement)) {
+            task.getBatchElements().add(batchElement);
+            batchElement.setTask(task);
+        }
         return batchElement;
     }
 
@@ -232,7 +240,9 @@ public class TaskManagerDataUtil {
      * @param config the config to verify
      * @return whether it is deletable
      */
+    @Transactional("tmTransactionManager")
     public boolean isDeletable(Configuration config) {
+        config = dao.reload(config);
         for (Batch batch : config.getBatches().values()) {
             if (!dao.getCurrentBatchRuns(batch).isEmpty()) {
                 return false;
@@ -295,12 +305,6 @@ public class TaskManagerDataUtil {
      */
     @Transactional("tmTransactionManager")
     public Run startCommitIfPossible(Run run) {
-        if (run == null) {
-            System.out.println("run is null");
-        }
-        if (run.getBatchElement() == null) {
-            System.out.println("batchelement " + run.getId() + " is null");
-        }
         if (dao.getCommittingRun(run.getBatchElement().getTask()) == null) {
             run.setStatus(Run.Status.COMMITTING);
             return dao.save(run);
@@ -337,46 +341,39 @@ public class TaskManagerDataUtil {
         return dao.reload(br);
     }
 
-    // -----------------------
-    // Init methods
-    // -----------------------
-
-    /**
-     * Initialize lazy collection(s) in Task
-     *
-     * @param task the task to be initialized
-     * @return return the initialized task
-     */
     @Transactional("tmTransactionManager")
-    public Task init(Task task) {
-        task = dao.reload(task);
-        Hibernate.initialize(task.getBatchElements());
-        return task;
+    public BatchElement taskInUse(Task task, Configuration config) {
+        if (task.getId() != null) {
+            task = dao.reload(task);
+            for (BatchElement element : task.getBatchElements()) {
+                if (element.getBatch().isActive()) {
+                    return element;
+                }
+            }
+        } else {
+            config = dao.reload(config);
+            for (Batch batch : config.getBatches().values()) {
+                for (BatchElement element : batch.getElements()) {
+                    if (element.getTask().equals(task)) {
+                        return element;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
-    /**
-     * Initialize lazy collection(s) in BatchElement
-     *
-     * @param be the BatchElement to be initialized
-     * @return return the initialized BatchElement
-     */
     @Transactional("tmTransactionManager")
-    public BatchElement init(BatchElement be) {
-        be = dao.reload(be);
-        Hibernate.initialize(be.getRuns());
-        return be;
-    }
-
-    /**
-     * Initialize lazy collection(s) in Batch
-     *
-     * @param be the Batch to be initialized
-     * @return return the initialized Batch
-     */
-    @Transactional("tmTransactionManager")
-    public Batch init(Batch b) {
-        b = dao.reload(b);
-        Hibernate.initialize(b.getBatchRuns());
-        return b;
+    public BatchElement taskInUseByExternalBatch(Configuration config) {
+        config = dao.reload(config);
+        for (Task task : config.getTasks().values()) {
+            for (BatchElement element : task.getBatchElements()) {
+                if (element.getBatch().getConfiguration() == null
+                        && element.getBatch().isActive()) {
+                    return element;
+                }
+            }
+        }
+        return null;
     }
 }

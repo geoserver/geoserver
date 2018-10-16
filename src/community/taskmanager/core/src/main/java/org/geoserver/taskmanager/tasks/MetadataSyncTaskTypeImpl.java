@@ -9,27 +9,24 @@ import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.StoreType;
 import it.geosolutions.geoserver.rest.decoder.RESTLayer;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
-import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
-import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
-import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
-import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageDimensionInfo;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
@@ -37,12 +34,15 @@ import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.schedule.TaskResult;
 import org.geoserver.taskmanager.schedule.TaskType;
-import org.geotools.referencing.CRS;
+import org.geoserver.taskmanager.util.CatalogUtil;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MetadataSyncTaskTypeImpl implements TaskType {
+
+    private static final Logger LOGGER = Logging.getLogger(MetadataSyncTaskTypeImpl.class);
 
     public static final String NAME = "MetadataSync";
 
@@ -53,11 +53,11 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
     protected final Map<String, ParameterInfo> paramInfo =
             new LinkedHashMap<String, ParameterInfo>();
 
-    @Autowired protected GeoServerDataDirectory geoServerDataDirectory;
-
     @Autowired protected Catalog catalog;
 
     @Autowired protected ExtTypes extTypes;
+
+    @Autowired protected CatalogUtil catalogUtil;
 
     @PostConstruct
     public void initParamInfo() {
@@ -109,10 +109,56 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
             throw new TaskException("Couldn't determine store name for " + layer.getName());
         }
         // sync resource
-        GSResourceEncoder re = syncMetadata(resource);
+        GSResourceEncoder re = CatalogUtil.syncMetadata(resource);
         if (!restManager.getPublisher().configureResource(ws, storeType, storeName, re)) {
             throw new TaskException(
                     "Failed to configure resource " + ws + ":" + resource.getName());
+        }
+
+        // sync styles
+        final Set<String> createWorkspaces = new HashSet<String>();
+        final Set<StyleInfo> styles = new HashSet<StyleInfo>(layer.getStyles());
+        styles.add(layer.getDefaultStyle());
+        for (StyleInfo si : styles) {
+            if (si != null) {
+                String wsStyle = CatalogUtil.wsName(si.getWorkspace());
+                if (!restManager.getReader().existsStyle(wsStyle, si.getName())) {
+                    if (wsStyle != null && !restManager.getReader().existsWorkspace(wsStyle)) {
+                        createWorkspaces.add(wsStyle);
+                    }
+                }
+            }
+        }
+        for (String newWs : createWorkspaces) { // workspace doesn't exist yet, publish
+            LOGGER.log(
+                    Level.INFO,
+                    "Workspace doesn't exist: " + newWs + " on " + extGS.getName() + ", creating.");
+            try {
+                if (!restManager
+                        .getPublisher()
+                        .createWorkspace(
+                                newWs, new URI(catalog.getNamespaceByPrefix(newWs).getURI()))) {
+                    throw new TaskException("Failed to create workspace " + newWs);
+                }
+            } catch (URISyntaxException e) {
+                throw new TaskException("Failed to create workspace " + newWs, e);
+            }
+        }
+
+        for (StyleInfo si : styles) {
+            LOGGER.log(Level.INFO, "Synchronizing style : " + si.getName());
+            String wsName = CatalogUtil.wsName(si.getWorkspace());
+            if (!(restManager.getStyleManager().existsStyle(wsName, si.getName())
+                    ? restManager
+                            .getStyleManager()
+                            .updateStyleZippedInWorkspace(
+                                    wsName, catalogUtil.createStyleZipFile(si), si.getName())
+                    : restManager
+                            .getStyleManager()
+                            .publishStyleZippedInWorkspace(
+                                    wsName, catalogUtil.createStyleZipFile(si), si.getName()))) {
+                throw new TaskException("Failed to create style " + si.getName());
+            }
         }
 
         // sync layer
@@ -160,90 +206,5 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
     @Override
     public String getName() {
         return NAME;
-    }
-
-    protected static GSResourceEncoder syncMetadata(ResourceInfo resource) {
-        return syncMetadata(resource, resource.getName());
-    }
-
-    protected static GSResourceEncoder syncMetadata(ResourceInfo resource, String name) {
-        final GSResourceEncoder re;
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
-            final GSCoverageEncoder coverageEncoder = new GSCoverageEncoder();
-            for (String format : coverage.getSupportedFormats()) {
-                coverageEncoder.addSupportedFormats(format);
-            }
-            for (String srs : coverage.getRequestSRS()) {
-                coverageEncoder.setRequestSRS(srs); // wrong: should be add
-            }
-            for (String srs : coverage.getResponseSRS()) {
-                coverageEncoder.setResponseSRS(srs); // wrong: should be add
-            }
-            coverageEncoder.setNativeCoverageName(coverage.getNativeCoverageName());
-            coverageEncoder.setNativeFormat(coverage.getNativeFormat());
-            re = coverageEncoder;
-        } else {
-            re = new GSFeatureTypeEncoder();
-            if (resource.getNativeCRS() != null) {
-                re.setNativeCRS(CRS.toSRS(resource.getNativeCRS()));
-            }
-            re.setNativeName(resource.getNativeName());
-        }
-        re.setName(name);
-        re.setTitle(resource.getTitle());
-        re.setAbstract(resource.getAbstract());
-        re.setDescription(resource.getAbstract());
-        re.setSRS(resource.getSRS());
-        for (KeywordInfo ki : resource.getKeywords()) {
-            re.addKeyword(ki.getValue(), ki.getLanguage(), ki.getVocabulary());
-        }
-        for (MetadataLinkInfo mdli : resource.getMetadataLinks()) {
-            re.addMetadataLinkInfo(mdli.getType(), mdli.getMetadataType(), mdli.getContent());
-        }
-        for (Map.Entry<String, Serializable> entry : resource.getMetadata().entrySet()) {
-            if (entry.getValue() != null) {
-                re.setMetadataString(entry.getKey(), entry.getValue().toString());
-            }
-        }
-        re.setProjectionPolicy(
-                resource.getProjectionPolicy() == null
-                        ? ProjectionPolicy.NONE
-                        : ProjectionPolicy.valueOf(resource.getProjectionPolicy().toString()));
-        if (resource.getNativeBoundingBox() != null) {
-            re.setNativeBoundingBox(
-                    resource.getNativeBoundingBox().getMinX(),
-                    resource.getNativeBoundingBox().getMinY(),
-                    resource.getNativeBoundingBox().getMaxX(),
-                    resource.getNativeBoundingBox().getMaxY(),
-                    resource.getSRS());
-        }
-        if (resource.getLatLonBoundingBox() != null) {
-            re.setLatLonBoundingBox(
-                    resource.getLatLonBoundingBox().getMinX(),
-                    resource.getLatLonBoundingBox().getMinY(),
-                    resource.getLatLonBoundingBox().getMaxX(),
-                    resource.getLatLonBoundingBox().getMaxY(),
-                    resource.getSRS());
-        }
-
-        // dimensions, must happen after setName or strange things happen (gs-man bug)
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
-            for (CoverageDimensionInfo di : coverage.getDimensions()) {
-                ((GSCoverageEncoder) re)
-                        .addCoverageDimensionInfo(
-                                di.getName(),
-                                di.getDescription(),
-                                Double.toString(di.getRange().getMinimum()),
-                                Double.toString(di.getRange().getMaximum()),
-                                di.getUnit(),
-                                di.getDimensionType() == null
-                                        ? null
-                                        : di.getDimensionType().identifier());
-            }
-        }
-
-        return re;
     }
 }

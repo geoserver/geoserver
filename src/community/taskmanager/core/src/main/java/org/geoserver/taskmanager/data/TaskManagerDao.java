@@ -213,4 +213,10 @@ public interface TaskManagerDao {
     List<Batch> getViewableBatches();
 
     void loadLatestBatchRuns(Configuration config);
+
+    Batch init(Batch b);
+
+    Configuration init(Configuration c);
+
+    Batch initHistory(Batch b);
 }

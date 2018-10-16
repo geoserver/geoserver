@@ -110,6 +110,8 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
 
     private IModel<Configuration> configurationModel;
 
+    private List<Batch> list;
+
     public BatchesModel() {}
 
     public BatchesModel(IModel<Configuration> configurationModel) {
@@ -129,25 +131,32 @@ public class BatchesModel extends GeoServerDataProvider<Batch> {
                 STATUS);
     }
 
+    public void reset() {
+        list = null;
+    }
+
     @Override
     protected List<Batch> getItems() {
-        List<Batch> list;
-
-        if (configurationModel == null) {
-            list = TaskManagerBeans.get().getDao().getViewableBatches();
-        } else {
-            if (configurationModel.getObject().getId() != null) {
-                TaskManagerBeans.get().getDao().loadLatestBatchRuns(configurationModel.getObject());
+        if (list == null) {
+            if (configurationModel == null) {
+                list = TaskManagerBeans.get().getDao().getViewableBatches();
+            } else {
+                if (configurationModel.getObject().getId() != null) {
+                    TaskManagerBeans.get()
+                            .getDao()
+                            .loadLatestBatchRuns(configurationModel.getObject());
+                }
+                list = new ArrayList<>(configurationModel.getObject().getBatches().values());
             }
-            list = new ArrayList<>(configurationModel.getObject().getBatches().values());
-        }
 
-        list.removeIf(
-                b ->
-                        !TaskManagerBeans.get()
-                                .getSecUtil()
-                                .isReadable(
-                                        SecurityContextHolder.getContext().getAuthentication(), b));
+            list.removeIf(
+                    b ->
+                            !TaskManagerBeans.get()
+                                    .getSecUtil()
+                                    .isReadable(
+                                            SecurityContextHolder.getContext().getAuthentication(),
+                                            b));
+        }
 
         return list;
     }

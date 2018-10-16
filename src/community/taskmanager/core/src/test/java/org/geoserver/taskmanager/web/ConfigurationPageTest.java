@@ -6,14 +6,18 @@ package org.geoserver.taskmanager.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
@@ -22,12 +26,14 @@ import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.impl.ConfigurationImpl;
 import org.geoserver.taskmanager.tasks.CopyTableTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.CreateViewTaskTypeImpl;
-import org.geoserver.taskmanager.tasks.DbRemotePublicationTaskTypeImpl;
+import org.geoserver.taskmanager.tasks.FileLocalPublicationTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.FileRemotePublicationTaskTypeImpl;
+import org.geoserver.taskmanager.tasks.MetadataSyncTaskTypeImpl;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
 import org.geoserver.taskmanager.web.panel.ButtonPanel;
+import org.geoserver.taskmanager.web.panel.FileUploadPanel;
 import org.geoserver.taskmanager.web.panel.NamePanel;
 import org.geoserver.taskmanager.web.panel.NewTaskPanel;
 import org.geoserver.taskmanager.web.panel.PanelListPanel;
@@ -37,16 +43,20 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
 public class ConfigurationPageTest extends AbstractBatchesPanelTest<ConfigurationPage> {
 
+    @Rule public TemporaryFolder tempDir = new TemporaryFolder();
+
     private TaskManagerDataUtil util;
     private TaskManagerTaskUtil tutil;
-    private Configuration config;
+    private IModel<Configuration> configModel;
     private Scheduler scheduler;
 
     protected boolean setupDataDirectory() throws Exception {
@@ -71,12 +81,13 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
     @Override
     protected Configuration getConfiguration() {
-        return config;
+        return configModel.getObject();
     }
 
     @Override
     protected ConfigurationPage newPage() {
-        return new ConfigurationPage(config = dao.reload(config));
+        configModel.setObject(dao.init(configModel.getObject()));
+        return new ConfigurationPage(configModel);
     }
 
     @Override
@@ -86,7 +97,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
     @Override
     protected Collection<Batch> getBatches() {
-        return config.getBatches().values();
+        return configModel.getObject().getBatches().values();
     }
 
     @Before
@@ -96,19 +107,20 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tutil = TaskManagerBeans.get().getTaskUtil();
         scheduler = GeoServerApplication.get().getBeanOfType(Scheduler.class);
         login();
-        config = createConfiguration();
+        configModel = new Model<Configuration>(createConfiguration());
     }
 
     @After
     public void after() {
         // clean-up
-        dao.delete(config);
+        dao.delete(configModel.getObject());
+        logout();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testTasksAndAttributes() {
-        ConfigurationPage page = new ConfigurationPage(config);
+        ConfigurationPage page = new ConfigurationPage(configModel);
 
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
@@ -137,12 +149,13 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertFeedback("dialog:dialog:content:form:userPanel:feedback", "required");
-        formTester.select("userPanel:type", 8);
+        formTester.select("userPanel:type", 9);
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
-        assertEquals(3, config.getTasks().size());
+        assertEquals(3, configModel.getObject().getTasks().size());
         assertEquals(
-                DbRemotePublicationTaskTypeImpl.NAME, config.getTasks().get("task3").getType());
+                MetadataSyncTaskTypeImpl.NAME,
+                configModel.getObject().getTasks().get("task3").getType());
         assertEquals(10, attributesPanel.getDataProvider().size());
 
         // edit task parameters
@@ -176,14 +189,16 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:textfield", "new_name_for_task");
         formTester.submit("submit");
 
-        assertNotNull(config.getTasks().get("new_name_for_task").getName());
-        assertEquals("new_name_for_task", config.getTasks().get("new_name_for_task").getName());
+        assertNotNull(configModel.getObject().getTasks().get("new_name_for_task").getName());
+        assertEquals(
+                "new_name_for_task",
+                configModel.getObject().getTasks().get("new_name_for_task").getName());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testCopyTask() {
-        ConfigurationPage page = new ConfigurationPage(config);
+        ConfigurationPage page = new ConfigurationPage(configModel);
 
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
@@ -205,8 +220,10 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
-        assertEquals(3, config.getTasks().size());
-        assertEquals(CopyTableTaskTypeImpl.NAME, config.getTasks().get("task3").getType());
+        assertEquals(3, configModel.getObject().getTasks().size());
+        assertEquals(
+                CopyTableTaskTypeImpl.NAME,
+                configModel.getObject().getTasks().get("task3").getType());
     }
 
     @SuppressWarnings("unchecked")
@@ -215,9 +232,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         Batch dummyBatch = dummyBatch1();
         dummyBatch.setEnabled(true);
         dummyBatch = dao.save(dummyBatch);
-        config = dao.reload(config);
 
-        ConfigurationPage page = new ConfigurationPage(config);
+        ConfigurationPage page = new ConfigurationPage(configModel);
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
 
@@ -250,12 +266,11 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.clickLink("configurationForm:cancel");
         tester.assertRenderedPage(ConfigurationsPage.class);
 
-        config = dao.reload(config);
-        assertEquals(2, config.getTasks().size());
-        assertEquals("my_configuration", config.getName());
+        assertEquals(2, configModel.getObject().getTasks().size());
+        assertEquals("my_configuration", configModel.getObject().getName());
 
         // apply
-        page = new ConfigurationPage(config);
+        page = new ConfigurationPage(configModel);
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
 
@@ -281,9 +296,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.clickLink("configurationForm:apply");
         tester.assertRenderedPage(ConfigurationPage.class);
 
-        config = dao.reload(config);
-        assertEquals("the_greatest_configuration", config.getName());
-        assertEquals(0, config.getTasks().size());
+        assertEquals("the_greatest_configuration", configModel.getObject().getName());
+        assertEquals(0, dao.init(configModel.getObject()).getTasks().size());
 
         // new batch has been scheduled
         assertNotNull(scheduler.getJobDetail(JobKey.jobKey(dummyBatch.getId().toString())));
@@ -292,24 +306,22 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("name", "foo_bar_configuration");
         tester.clickLink("configurationForm:save");
         tester.assertRenderedPage(ConfigurationsPage.class);
-        config = dao.reload(config);
-        assertEquals("foo_bar_configuration", config.getName());
+        assertEquals("foo_bar_configuration", dao.reload(configModel.getObject()).getName());
 
         dao.delete(dummyBatch);
     }
 
     @Test
     public void testTemplateNotValidated() {
-        config.setTemplate(true);
-        ConfigurationPage page = new ConfigurationPage(config);
+        configModel.getObject().setTemplate(true);
+        dao.save(configModel.getObject());
+        ConfigurationPage page = new ConfigurationPage(configModel);
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
 
-        // save with tasks results in validation errors
+        // save with tasks results in validation errors, not with template
         tester.clickLink("configurationForm:save");
         tester.assertRenderedPage(TemplatesPage.class);
-        config = dao.reload(config);
-        assertTrue(config.isTemplate());
     }
 
     @Test
@@ -321,7 +333,6 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         // save without name
         tester.clickLink("configurationForm:save");
         tester.assertRenderedPage(ConfigurationPage.class);
-        config = dao.reload(config);
         assertFeedback("topFeedback", "'Name' is required");
         assertFeedback("bottomFeedback", "'Name' is required");
 
@@ -337,10 +348,10 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
     public void testActionEditLayer() {
 
         Task task3 = tutil.initTask(FileRemotePublicationTaskTypeImpl.NAME, "task3");
-        util.addTaskToConfiguration(config, task3);
-        config = dao.save(config);
+        util.addTaskToConfiguration(configModel.getObject(), task3);
+        configModel.setObject(dao.save(configModel.getObject()));
 
-        ConfigurationPage page = new ConfigurationPage(config);
+        ConfigurationPage page = new ConfigurationPage(configModel);
         tester.startPage(page);
         tester.assertRenderedPage(ConfigurationPage.class);
 
@@ -369,6 +380,64 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.assertRenderedPage(ResourceConfigurationPage.class);
 
         tester.clickLink("publishedinfo:cancel");
+
+        tester.assertRenderedPage(ConfigurationPage.class);
+    }
+
+    @Test
+    public void testActionFileUpload() throws IOException {
+
+        Task task4 = tutil.initTask(FileLocalPublicationTaskTypeImpl.NAME, "task4");
+        util.addTaskToConfiguration(configModel.getObject(), task4);
+        configModel.setObject(dao.save(configModel.getObject()));
+
+        ConfigurationPage page = new ConfigurationPage(configModel);
+        tester.startPage(page);
+        tester.assertRenderedPage(ConfigurationPage.class);
+
+        tester.assertComponent(
+                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component",
+                PanelListPanel.class);
+        tester.assertComponent(
+                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel",
+                ButtonPanel.class);
+
+        tester.assertModelValue(
+                "configurationForm:attributesPanel:listContainer:items:9:itemProperties:0:component",
+                "fileService");
+        tester.assertModelValue(
+                "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button",
+                "Upload..");
+
+        FormTester formTester = tester.newFormTester("configurationForm");
+        formTester.submit(
+                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+        assertFeedback("topFeedback", "You cannot execute this action with this value.");
+
+        formTester.select(
+                "attributesPanel:listContainer:items:9:itemProperties:1:component:dropdown", 1);
+        formTester.submit(
+                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+        tester.assertNoErrorMessage();
+
+        tester.assertComponent("dialog:dialog:content:form:userPanel", FileUploadPanel.class);
+
+        FormTester dialogFormTester = tester.newFormTester("dialog:dialog:content:form");
+        dialogFormTester.submit("submit");
+        tester.assertErrorMessages("Field 'File folder' is required.", "Field 'File' is required.");
+
+        dialogFormTester.select("userPanel:folderSelection", 0);
+        tester.assertComponent(
+                "dialog:dialog:content:form:userPanel:fileInput", FileUploadField.class);
+        tester.assertComponent("dialog:dialog:content:form:userPanel:prepare", CheckBox.class);
+        tester.assertModelValue("dialog:dialog:content:form:userPanel:prepare", true);
+
+        dialogFormTester.setFile(
+                "userPanel:fileInput", new File(tempDir.newFile().getAbsolutePath()), "");
+
+        dialogFormTester.submit("submit");
+
+        tester.assertNoErrorMessage();
 
         tester.assertRenderedPage(ConfigurationPage.class);
     }

@@ -26,6 +26,16 @@ ul.links-above-table {
 	display: inline !important;
 }
 
+.important {
+	color: #a500a5;
+	font-weight: bold;	
+}
+
+.notvalidated a {
+	color: #8080a0;
+	font-style: italic;
+}
+
 h4 {
     margin-top: 1.25em;
 }

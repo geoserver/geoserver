@@ -99,6 +99,8 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, taskOtherStepTwo);
 
         batch = bjService.saveAndSchedule(batch);
+
+        config = dao.init(config);
     }
 
     @After

@@ -6,7 +6,7 @@ package org.geoserver.taskmanager.external.impl;
 
 import java.util.List;
 import org.geoserver.taskmanager.external.FileService;
-import org.geoserver.taskmanager.util.LookupServiceImpl;
+import org.geoserver.taskmanager.util.SecuredLookupServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 @Component
-public class LookupFileServiceImpl extends LookupServiceImpl<FileService> {
+public class LookupFileServiceImpl extends SecuredLookupServiceImpl<FileService> {
 
     @Autowired(required = false)
     public void setFileServices(List<FileService> fileServices) {

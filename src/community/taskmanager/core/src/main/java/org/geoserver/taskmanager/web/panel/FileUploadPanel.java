@@ -13,6 +13,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -39,6 +40,8 @@ public class FileUploadPanel extends Panel {
     private static final long serialVersionUID = -1821529746678003578L;
 
     private IModel<String> fileNameModel;
+
+    private IModel<Boolean> prepareModel = new Model<Boolean>(true);
 
     private final GeoServerDialog dialog;
 
@@ -144,6 +147,8 @@ public class FileUploadPanel extends Panel {
                             }
                         });
 
+        add(new CheckBox("prepare", prepareModel));
+
         if (fileService != null) {
             fileServiceChoice.setDefaultModelObject(fileService).setEnabled(false);
             updateFolders();
@@ -192,7 +197,7 @@ public class FileUploadPanel extends Panel {
                         fileService.delete(filePath);
                     }
                     try (InputStream is = upload.getInputStream()) {
-                        fileService.create(filePath, is);
+                        fileService.create(filePath, is, prepareModel.getObject());
                     }
 
                     fileNameModel.setObject(filePath);

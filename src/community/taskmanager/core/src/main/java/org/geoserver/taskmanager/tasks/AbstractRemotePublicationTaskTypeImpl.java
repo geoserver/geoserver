@@ -12,10 +12,7 @@ import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,10 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import javax.annotation.PostConstruct;
-import org.apache.wicket.util.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -37,11 +31,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
@@ -50,15 +39,13 @@ import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.schedule.TaskResult;
 import org.geoserver.taskmanager.schedule.TaskRunnable;
 import org.geoserver.taskmanager.schedule.TaskType;
-import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.Style;
+import org.geoserver.taskmanager.util.CatalogUtil;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType {
+
+    private static final Logger LOGGER = Logging.getLogger(DbRemotePublicationTaskTypeImpl.class);
 
     public static final String PARAM_EXT_GS = "external-geoserver";
 
@@ -67,9 +54,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
     protected final Map<String, ParameterInfo> paramInfo =
             new LinkedHashMap<String, ParameterInfo>();
 
-    private static final Logger LOGGER = Logging.getLogger(DbRemotePublicationTaskTypeImpl.class);
-
-    @Autowired protected GeoServerDataDirectory geoServerDataDirectory;
+    @Autowired protected CatalogUtil catalogUtil;
 
     @Autowired protected Catalog catalog;
 
@@ -120,7 +105,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
         styles.add(layer.getDefaultStyle());
         for (StyleInfo si : styles) {
             if (si != null) {
-                String wsStyle = wsName(si.getWorkspace());
+                String wsStyle = CatalogUtil.wsName(si.getWorkspace());
                 if (!restManager.getReader().existsStyle(wsStyle, si.getName())) {
                     createStyles.add(si);
                     if (wsStyle != null && !restManager.getReader().existsWorkspace(wsStyle)) {
@@ -137,6 +122,8 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                                 ? restManager.getReader().existsDatastore(ws, storeName)
                                 : restManager.getReader().existsCoveragestore(ws, storeName));
         final String tempName = "_temp_" + UUID.randomUUID().toString().replace('-', '_');
+        ctx.getBatchContext()
+                .put(layer.prefixedName(), resource.getNamespace().getPrefix() + ":" + tempName);
         final String actualStoreName = neverReuseStore() && createStore ? tempName : storeName;
 
         try {
@@ -183,8 +170,8 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
             // create resource (and layer)
 
-            final GSResourceEncoder re = MetadataSyncTaskTypeImpl.syncMetadata(resource, tempName);
-
+            final GSResourceEncoder re = CatalogUtil.syncMetadata(resource, tempName);
+            re.setAdvertised(false);
             postProcess(
                     re,
                     ctx,
@@ -235,8 +222,8 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 if (!restManager
                         .getStyleManager()
                         .publishStyleZippedInWorkspace(
-                                wsName(layer.getDefaultStyle().getWorkspace()),
-                                createStyleZipFile(si),
+                                CatalogUtil.wsName(si.getWorkspace()),
+                                catalogUtil.createStyleZipFile(si),
                                 si.getName())) {
                     throw new TaskException("Failed to create style " + si.getName());
                 }
@@ -246,7 +233,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             final GSLayerEncoder layerEncoder = new GSLayerEncoder();
             if (layer.getDefaultStyle() != null) {
                 layerEncoder.setDefaultStyle(
-                        wsName(layer.getDefaultStyle().getWorkspace()),
+                        CatalogUtil.wsName(layer.getDefaultStyle().getWorkspace()),
                         layer.getDefaultStyle().getName());
             }
             for (StyleInfo si : layer.getStyles()) {
@@ -266,13 +253,13 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             if (createStore) {
                 restManager
                         .getPublisher()
-                        .removeStore(ws, actualStoreName, storeType, true, Purge.ALL);
+                        .removeStore(ws, actualStoreName, storeType, true, Purge.NONE);
             }
             for (StyleInfo style : createStyles) {
                 restManager
                         .getPublisher()
                         .removeStyleInWorkspace(
-                                wsName(style.getWorkspace()), style.getName(), true);
+                                CatalogUtil.wsName(style.getWorkspace()), style.getName(), true);
             }
             for (String createdWs : createWorkspaces) {
                 restManager.getPublisher().removeWorkspace(createdWs, true);
@@ -308,7 +295,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                             : restManager.getReader().existsCoveragestore(ws, storeName)) {
                         if (!restManager
                                 .getPublisher()
-                                .removeStore(ws, storeName, storeType, true, Purge.ALL)) {
+                                .removeStore(ws, storeName, storeType, true, Purge.NONE)) {
                             throw new TaskException(
                                     "Failed to remove old store " + ws + ":" + storeName);
                         }
@@ -339,6 +326,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                                 ? new GSCoverageEncoder(false)
                                 : new GSFeatureTypeEncoder(false);
                 re.setName(resource.getName());
+                re.setAdvertised(true);
                 if (!restManager
                         .getPublisher()
                         .configureResource(ws, storeType, storeName, tempName, re)) {
@@ -348,18 +336,10 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                                     + ":"
                                     + tempName
                                     + " to "
-                                    + storeName);
+                                    + resource.getName());
                 }
 
-                // advertise the layer
-                final GSLayerEncoder layerEncoder = new GSLayerEncoder(false);
-                layerEncoder.setAdvertised(true);
-                if (!restManager
-                        .getPublisher()
-                        .configureLayer(ws, resource.getName(), layerEncoder)) {
-                    throw new TaskException(
-                            "Failed to advertise layer " + ws + ":" + layer.getName());
-                }
+                ctx.getBatchContext().delete(layer.prefixedName());
             }
 
             @Override
@@ -375,7 +355,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 if (createStore) {
                     if (!restManager
                             .getPublisher()
-                            .removeStore(ws, actualStoreName, storeType, true, Purge.ALL)) {
+                            .removeStore(ws, actualStoreName, storeType, true, Purge.NONE)) {
                         throw new TaskException(
                                 "Failed to remove store " + ws + ":" + actualStoreName);
                     }
@@ -385,7 +365,9 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                     if (!restManager
                             .getPublisher()
                             .removeStyleInWorkspace(
-                                    wsName(style.getWorkspace()), style.getName(), true)) {
+                                    CatalogUtil.wsName(style.getWorkspace()),
+                                    style.getName(),
+                                    true)) {
                         throw new TaskException(
                                 "Failed to remove style " + layer.getDefaultStyle().getName());
                     }
@@ -397,76 +379,6 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
                 }
             }
         };
-    }
-
-    private File createStyleZipFile(StyleInfo style) throws TaskException {
-        try {
-            Style parsedStyle = geoServerDataDirectory.parsedStyle(style);
-            Set<Resource> pictures = new HashSet<Resource>();
-            parsedStyle.accept(
-                    new AbstractStyleVisitor() {
-                        @Override
-                        public void visit(ExternalGraphic exgr) {
-                            if (exgr.getOnlineResource() == null) {
-                                return;
-                            }
-
-                            URI uri = exgr.getOnlineResource().getLinkage();
-                            if (uri == null) {
-                                return;
-                            }
-
-                            Resource resPicture = null;
-                            try {
-                                resPicture = uriToResource(uri);
-                                if (resPicture != null && resPicture.getType() != Type.UNDEFINED) {
-                                    pictures.add(resPicture);
-                                }
-                            } catch (IllegalArgumentException | MalformedURLException e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Error attemping to process SLD resource",
-                                        e);
-                            }
-                        }
-                    });
-
-            File zipFile = File.createTempFile("style", ".zip");
-            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile)); ) {
-                Resource resStyle = geoServerDataDirectory.style(style);
-                ZipEntry zipEntry = new ZipEntry(resStyle.name());
-                out.putNextEntry(zipEntry);
-                try (InputStream in = resStyle.in()) {
-                    IOUtils.copy(in, out);
-                }
-                out.closeEntry();
-                for (Resource resPicture : pictures) {
-                    zipEntry = new ZipEntry(resPicture.name());
-                    out.putNextEntry(zipEntry);
-                    try (InputStream in = resPicture.in()) {
-                        IOUtils.copy(in, out);
-                    }
-                    out.closeEntry();
-                }
-                return zipFile;
-            }
-        } catch (IOException e) {
-            throw new TaskException(e);
-        }
-    }
-
-    private static String wsName(WorkspaceInfo ws) {
-        return ws == null ? null : ws.getName();
-    }
-
-    private Resource uriToResource(URI uri) throws MalformedURLException {
-        if (uri.getScheme() != null && !uri.getScheme().equals("file")) {
-            return null;
-        } else if (uri.getScheme().equals("file") && uri.isAbsolute() && !uri.isOpaque()) {
-            return Files.asResource(new File(uri.toURL().getFile()));
-        } else {
-            return geoServerDataDirectory.get(uri.getSchemeSpecificPart());
-        }
     }
 
     @Override
@@ -496,7 +408,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             }
             if (!restManager
                     .getPublisher()
-                    .removeStore(ws, storeName, storeType, false, Purge.ALL)) {
+                    .removeStore(ws, storeName, storeType, false, Purge.NONE)) {
                 if (neverReuseStore()) {
                     throw new TaskException("Failed to remove store " + ws + ":" + storeName);
                 } // else store is still in use

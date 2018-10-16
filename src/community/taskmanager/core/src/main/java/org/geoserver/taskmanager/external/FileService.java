@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
-import org.geoserver.taskmanager.util.Named;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.wicket.util.string.Strings;
+import org.geoserver.taskmanager.util.Secured;
 
 /**
  * Persist and read files. All actions on this service are relative to the configured rootFolder.
@@ -17,7 +19,7 @@ import org.geoserver.taskmanager.util.Named;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
-public interface FileService extends Serializable, Named {
+public interface FileService extends Serializable, Secured {
 
     String PLACEHOLDER_VERSION = "###";
 
@@ -44,7 +46,19 @@ public interface FileService extends Serializable, Named {
      * @return a location string that can be used to configure a Geoserver store
      * @throws IOException
      */
-    void create(String filePath, InputStream content) throws IOException;
+    void create(String filePath, InputStream content, boolean doPrepare) throws IOException;
+
+    /**
+     * Create a file in the file service
+     *
+     * @param filePath the path of the file, relative to this service
+     * @param content the content of the file
+     * @return a location string that can be used to configure a Geoserver store
+     * @throws IOException
+     */
+    default void create(String filePath, InputStream content) throws IOException {
+        create(filePath, content, false);
+    }
 
     /**
      * Check if this file exists.
@@ -95,4 +109,16 @@ public interface FileService extends Serializable, Named {
      * @return the URI
      */
     URI getURI(String filePath);
+
+    static String versioned(String filePath) {
+        if (filePath.contains(PLACEHOLDER_VERSION)) {
+            return filePath;
+        }
+        String ext = FilenameUtils.getExtension(filePath);
+        if (Strings.isEmpty(ext)) {
+            return filePath + "." + PLACEHOLDER_VERSION;
+        } else {
+            return FilenameUtils.removeExtension(filePath) + "." + PLACEHOLDER_VERSION + "." + ext;
+        }
+    }
 }

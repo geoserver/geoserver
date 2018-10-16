@@ -21,6 +21,7 @@ import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.taskmanager.web.model.ConfigurationsModel;
 import org.geoserver.taskmanager.web.panel.DropDownPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -98,6 +99,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
 
         Configuration dummy2 = dao.save(dummyConfiguration2());
 
+        ((ConfigurationsModel) table.getDataProvider()).reset();
+
         assertEquals(configurations.size() + 1, table.getDataProvider().size());
         assertTrue(containsConfig(getConfigurationsFromTable(table), dummy2));
 
@@ -121,6 +124,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         tester.assertRenderedPage(ConfigurationPage.class);
 
         tester.assertModelValue("configurationForm:description", null);
+
+        logout();
     }
 
     @Test
@@ -142,6 +147,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         tester.assertModelValue("configurationForm:description", dummy1.getDescription());
 
         dao.delete(dummy1);
+
+        logout();
     }
 
     @Test
@@ -164,10 +171,14 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         tester.assertRenderedPage(ConfigurationPage.class);
 
         tester.assertModelValue("configurationForm:description", "template description");
+
+        logout();
     }
 
     @Test
     public void testDelete() throws Exception {
+        login();
+
         ConfigurationsPage page = new ConfigurationsPage();
         tester.startPage(page);
 
@@ -181,6 +192,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
 
         assertTrue(containsConfig(dao.getConfigurations(false), dummy1));
         assertTrue(containsConfig(dao.getConfigurations(false), dummy2));
+
+        ((ConfigurationsModel) table.getDataProvider()).reset();
 
         // sort descending on name
         tester.clickLink("configurationsPanel:listContainer:sortableLinks:1:header:link");
@@ -208,14 +221,20 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         assertFalse(containsConfig(dao.getConfigurations(false), dummy1));
         assertTrue(containsConfig(dao.getConfigurations(false), dummy2));
 
+        ((ConfigurationsModel) table.getDataProvider()).reset();
+
         assertFalse(containsConfig(getConfigurationsFromTable(table), dummy1));
         assertTrue(containsConfig(getConfigurationsFromTable(table), dummy2));
 
         dao.delete(dummy2);
+
+        logout();
     }
 
     @Test
     public void testCopy() throws Exception {
+        login();
+
         ConfigurationsPage page = new ConfigurationsPage();
 
         Configuration dummy1 = dao.save(dummyConfiguration1());
@@ -238,6 +257,8 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         tester.assertRenderedPage(ConfigurationPage.class);
 
         tester.assertModelValue("configurationForm:description", "z description");
+
+        logout();
     }
 
     protected List<Configuration> getConfigurationsFromTable(

@@ -107,6 +107,9 @@ public class CreateViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task1);
 
         batch = bjService.saveAndSchedule(batch);
+
+        config = dao.init(config);
+        task1 = config.getTasks().get("task1");
     }
 
     @After

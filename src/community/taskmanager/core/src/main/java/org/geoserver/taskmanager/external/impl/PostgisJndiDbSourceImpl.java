@@ -18,7 +18,7 @@ import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExternalGS;
-import org.geoserver.taskmanager.util.NamedImpl;
+import org.geoserver.taskmanager.util.SecuredImpl;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.data.postgis.PostgisNGJNDIDataStoreFactory;
 import org.geotools.factory.GeoTools;
@@ -28,7 +28,7 @@ import org.geotools.factory.GeoTools;
  *
  * @author Niels Charlier
  */
-public class PostgisJndiDbSourceImpl extends NamedImpl implements DbSource {
+public class PostgisJndiDbSourceImpl extends SecuredImpl implements DbSource {
 
     private String jndiName;
 

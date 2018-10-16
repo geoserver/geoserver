@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.schedule.TaskResult;
@@ -31,6 +32,8 @@ public class CopyFileTaskTypeImpl implements TaskType {
     public static final String PARAM_SOURCE_PATH = "sourcePath";
 
     public static final String PARAM_TARGET_PATH = "targetPath";
+
+    public static final String PARAM_AUTO_VERSIONED = "auto-versioned";
 
     protected final Map<String, ParameterInfo> paramInfo =
             new LinkedHashMap<String, ParameterInfo>();
@@ -54,10 +57,16 @@ public class CopyFileTaskTypeImpl implements TaskType {
         ParameterInfo targetService =
                 new ParameterInfo(PARAM_TARGET_SERVICE, extTypes.fileService, true);
         paramInfo.put(PARAM_TARGET_SERVICE, targetService);
+        ParameterInfo autoVersioned =
+                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
         paramInfo.put(
                 PARAM_TARGET_PATH,
                 new ParameterInfo(PARAM_TARGET_PATH, extTypes.file(false, false), true)
-                        .dependsOn(targetService));
+                        .dependsOn(targetService)
+                        .dependsOn(autoVersioned));
+        paramInfo.put(
+                PARAM_AUTO_VERSIONED,
+                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false));
     }
 
     @Override

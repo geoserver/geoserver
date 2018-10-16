@@ -19,7 +19,7 @@ import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExternalGS;
-import org.geoserver.taskmanager.util.NamedImpl;
+import org.geoserver.taskmanager.util.SecuredImpl;
 import org.h2.tools.RunScript;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -29,7 +29,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  *
  * @author Timothy De Bock
  */
-public class H2DbSourceImpl extends NamedImpl implements DbSource {
+public class H2DbSourceImpl extends SecuredImpl implements DbSource {
 
     private String path;
 

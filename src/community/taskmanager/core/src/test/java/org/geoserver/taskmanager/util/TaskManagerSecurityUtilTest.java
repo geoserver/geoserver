@@ -121,6 +121,8 @@ public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
         // catalog
         catalog.remove(catalog.getWorkspaceByName("cdf"));
         catalog.remove(catalog.getWorkspaceByName("cite"));
+
+        logout();
     }
 
     @Test

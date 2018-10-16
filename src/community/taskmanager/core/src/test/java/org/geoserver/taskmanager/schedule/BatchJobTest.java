@@ -98,6 +98,9 @@ public class BatchJobTest extends AbstractTaskManagerTest {
 
         batch = bjService.saveAndSchedule(batch);
 
+        config = dao.init(config);
+        task1 = config.getTasks().get("task1");
+
         // clear report service
         testReportService.clear();
         testReportService.setFilter(Filter.ALL);
@@ -210,7 +213,7 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         while (testTaskType.getStatus().get("my_batch:my_config/task3") == null) {}
 
         Thread.sleep(1000);
-        batch = util.init(batch);
+        batch = dao.initHistory(batch);
         BatchRun br = batch.getBatchRuns().get(batch.getBatchRuns().size() - 1);
         br.setInterruptMe(true);
         br = dao.save(br);
@@ -221,7 +224,6 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         assertEquals(0, testTaskType.getStatus().get("my_batch:my_config/task2").intValue());
         assertEquals(0, testTaskType.getStatus().get("my_batch:my_config/task3").intValue());
 
-        batch = dao.reload(batch);
         assertEquals(
                 Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(0)).getStatus());
         assertEquals(

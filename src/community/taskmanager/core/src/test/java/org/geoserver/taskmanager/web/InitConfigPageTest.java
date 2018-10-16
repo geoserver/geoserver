@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-// @Ignore
 public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
 
     private TaskManagerDao dao;
@@ -75,6 +74,7 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
     @After
     public void after() {
         dao.delete(config);
+        logout();
     }
 
     @SuppressWarnings("unchecked")

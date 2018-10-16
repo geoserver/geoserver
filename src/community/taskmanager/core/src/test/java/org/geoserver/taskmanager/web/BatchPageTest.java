@@ -56,6 +56,7 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
     @After
     public void after() {
         dao.delete(batch.getConfiguration());
+        logout();
     }
 
     public Batch createBatch() {

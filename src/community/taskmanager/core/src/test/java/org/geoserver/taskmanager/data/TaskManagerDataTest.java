@@ -77,7 +77,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
 
         // soft delete
         dao.remove(el);
-        batch = dao.reload(batch);
+        batch = dao.init(batch);
         assertTrue(batch.getElements().isEmpty());
         assertEquals(
                 Collections.singletonList(config.getTasks().get("task")),
@@ -91,7 +91,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
 
         // hard delete
         dao.delete(batch.getElements().get(0));
-        batch = dao.reload(batch);
+        batch = dao.init(batch);
         assertTrue(batch.getElements().isEmpty());
         el2 = util.addBatchElement(batch, task);
         assertFalse(el.getId().equals(el2.getId()));
@@ -99,19 +99,20 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
 
     @Test
     public void testCloneConfiguration() {
-        Task task = util.init(config.getTasks().get("task"));
+        Task task = config.getTasks().get("task");
         assertEquals(0, task.getBatchElements().size());
         BatchElement el = util.addBatchElement(batch, task);
         batch = dao.save(batch);
         el = batch.getElements().get(0);
-        task = util.init(task);
+        config = dao.init(config);
+        task = config.getTasks().get("task");
         assertEquals(1, task.getBatchElements().size());
         assertEquals(dao.reload(el), task.getBatchElements().get(0));
 
         Configuration config2 = dao.copyConfiguration("my_config");
         config2.setName("my_config2");
         config2 = dao.save(config2);
-        task = util.init(config2.getTasks().get("task"));
+        task = config2.getTasks().get("task");
         assertEquals(0, task.getBatchElements().size());
 
         dao.delete(config2);
@@ -122,7 +123,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         config2 = dao.copyConfiguration("my_config");
         config2.setName("my_config2");
         config2 = dao.save(config2);
-        task = util.init(config2.getTasks().get("task"));
+        task = config2.getTasks().get("task");
         assertEquals(1, task.getBatchElements().size());
         assertFalse(config2.getBatches().get("my_batch").isEnabled());
 

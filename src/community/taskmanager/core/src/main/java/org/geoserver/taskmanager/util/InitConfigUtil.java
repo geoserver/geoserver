@@ -14,6 +14,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Run.Status;
 import org.geoserver.taskmanager.data.Task;
+import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +22,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class InitConfigUtil {
 
-    @Autowired TaskManagerDataUtil dataUtil;
-
     private static final String INIT_BATCH = "@Initialize";
+
+    @Autowired private TaskManagerDao dao;
 
     public boolean isInitConfig(Configuration config) {
         if (config.isTemplate()) {
             return false;
         }
-        Batch batch = config.getBatches().get(INIT_BATCH);
+        Batch batch = getInitBatch(config);
         if (batch != null) {
             if (batch.getId() != null) {
-                batch = dataUtil.init(batch);
+                batch = dao.initHistory(batch);
                 for (BatchRun batchRun : batch.getBatchRuns()) {
                     if (batchRun.getStatus() == Status.COMMITTED) {
                         return false;
@@ -45,12 +46,14 @@ public class InitConfigUtil {
         }
     }
 
-    public static Configuration wrap(Configuration config) {
+    public Configuration wrap(Configuration config) {
         if (!(config instanceof ConfigurationWrapper)) {
-            return new ConfigurationWrapper(config);
-        } else {
-            return config;
+            Batch batch = getInitBatch(config);
+            if (batch != null) {
+                return new ConfigurationWrapper(config, batch);
+            }
         }
+        return config;
     }
 
     public static Configuration unwrap(Configuration config) {
@@ -65,14 +68,32 @@ public class InitConfigUtil {
         return config.getBatches().get(INIT_BATCH);
     }
 
+    public static boolean isInitBatch(Batch batch) {
+        return batch.getConfiguration() != null && batch.getName().equals(INIT_BATCH);
+    }
+
     private static class ConfigurationWrapper implements Configuration {
 
         private static final long serialVersionUID = 8073599284694547987L;
 
         private Configuration delegate;
 
-        public ConfigurationWrapper(Configuration delegate) {
+        private Map<String, Task> tasks = new HashMap<String, Task>();;
+
+        private Map<String, Batch> batches;
+
+        public ConfigurationWrapper(Configuration delegate, Batch initBatch) {
             this.delegate = delegate;
+
+            if (initBatch != null) {
+                for (BatchElement element : initBatch.getElements()) {
+                    tasks.put(element.getTask().getName(), element.getTask());
+                }
+
+                batches = Collections.singletonMap(initBatch.getName(), initBatch);
+            } else {
+                batches = Collections.emptyMap();
+            }
         }
 
         public Configuration getDelegate() {
@@ -151,23 +172,12 @@ public class InitConfigUtil {
 
         @Override
         public Map<String, Task> getTasks() {
-            Map<String, Task> tasks = new HashMap<String, Task>();
-            Batch batch = delegate.getBatches().get(INIT_BATCH);
-            if (batch != null) {
-                for (BatchElement element : batch.getElements()) {
-                    tasks.put(element.getTask().getName(), element.getTask());
-                }
-            }
-            return Collections.unmodifiableMap(tasks);
+            return tasks;
         }
 
         @Override
         public Map<String, Batch> getBatches() {
-            Batch batch = getInitBatch(delegate);
-            if (batch != null) {
-                return Collections.singletonMap(batch.getName(), batch);
-            }
-            return Collections.emptyMap();
+            return batches;
         }
     }
 }

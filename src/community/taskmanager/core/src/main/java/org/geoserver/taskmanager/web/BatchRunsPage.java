@@ -10,9 +10,11 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchRun;
@@ -38,6 +40,10 @@ public class BatchRunsPage extends GeoServerSecuredPage {
         setReturnPage(parentPage);
     }
 
+    public BatchRunsPage(Batch batch, Page parentPage) {
+        this(new Model<Batch>(batch), parentPage);
+    }
+
     @Override
     public void onInitialize() {
         super.onInitialize();
@@ -60,6 +66,10 @@ public class BatchRunsPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
+                        batchModel.setObject(
+                                TaskManagerBeans.get()
+                                        .getDao()
+                                        .initHistory(batchModel.getObject()));
                         ((MarkupContainer) runsPanel.get("listContainer").get("items")).removeAll();
                         target.add(runsPanel);
                     }
@@ -69,6 +79,7 @@ public class BatchRunsPage extends GeoServerSecuredPage {
         add(new Form<>("form").add(runsPanel = runPanel()));
         runsPanel.setOutputMarkupId(true);
         runsPanel.setSelectable(false);
+        runsPanel.getDataProvider().setSort(BatchRunsModel.START.getName(), SortOrder.DESCENDING);
 
         add(
                 new AjaxLink<Object>("close") {

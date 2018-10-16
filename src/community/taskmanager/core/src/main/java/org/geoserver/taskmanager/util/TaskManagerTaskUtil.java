@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.taskmanager.data.Attribute;
+import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Configuration;
@@ -217,6 +218,49 @@ public class TaskManagerTaskUtil {
         return parseParameters(taskTypes.get(task.getType()), getRawParameterValues(task));
     }
 
+    protected List<Task> orderTasksForCleanup(Configuration config) {
+        // let's try to figure out the ideal order to clean-up tasks,
+        // merging the orders of the different batches and turning them around
+        // this algorithm will work perfectly if there are no contradictions in there
+        // (for example B1 = T1,T2    and B2 = T2,T1)
+        // otherwise, the chosen order will depend on coincidence
+
+        // one other thing: tasks in the @initialize batch should have preference to
+        // be at the end, so we will make sure they are handled last using a pre-order
+        List<Task> preOrderedTasks = new ArrayList<Task>();
+        for (Task task : config.getTasks().values()) {
+            boolean isInitTask = false;
+            for (BatchElement el : task.getBatchElements()) {
+                isInitTask = isInitTask || InitConfigUtil.isInitBatch(el.getBatch());
+            }
+            if (isInitTask) {
+                preOrderedTasks.add(task);
+            } else {
+                preOrderedTasks.add(0, task);
+            }
+        }
+
+        // now the ordering algorithm as specified above
+        List<Task> orderedTasks = new ArrayList<Task>();
+        for (Task task : preOrderedTasks) {
+            int position = orderedTasks.size();
+            for (BatchElement el : task.getBatchElements()) {
+                if (el.getIndex() > 0) {
+                    Batch batch = el.getBatch();
+                    int indexTaskBefore =
+                            orderedTasks.indexOf(
+                                    batch.getElements().get(el.getIndex() - 1).getTask());
+                    if (indexTaskBefore >= 0 && indexTaskBefore < position) {
+                        position = indexTaskBefore;
+                    }
+                }
+            }
+            orderedTasks.add(position, task);
+        }
+
+        return orderedTasks;
+    }
+
     /**
      * Clean-up a configuration.
      *
@@ -227,30 +271,8 @@ public class TaskManagerTaskUtil {
     public boolean cleanup(Configuration config) {
         boolean success = true;
 
-        // let's try to figure out the ideal order to clean-up tasks,
-        // merging the orders of the different batches and turning them around
-        // this algorithm will work perfectly if there are no contradictions in there
-        // (for example B1 = T1,T2    and B2 = T2,T1)
-        // in that case, the chosen order will depend on coincidence
-        List<Task> orderedTasks = new ArrayList<Task>();
-        for (Task task : config.getTasks().values()) {
-            int position = orderedTasks.size();
-            task = dataUtil.init(task);
-            for (BatchElement el : task.getBatchElements()) {
-                if (el.getIndex() > 0) {
-                    int indexTaskBefore =
-                            orderedTasks.indexOf(
-                                    el.getBatch().getElements().get(el.getIndex() - 1).getTask());
-                    if (indexTaskBefore >= 0 && indexTaskBefore < position) {
-                        position = indexTaskBefore;
-                    }
-                }
-            }
-            orderedTasks.add(position, task);
-        }
-
         // now clean-up
-        for (Task task : orderedTasks) {
+        for (Task task : orderTasksForCleanup(config)) {
             if (canCleanup(task)) {
                 success = cleanup(task) && success;
             }
@@ -293,6 +315,25 @@ public class TaskManagerTaskUtil {
             task.getParameters().put(info.getName(), param);
         }
         return task;
+    }
+
+    /**
+     * Makes sure that task contains all of its type's attributes and adds missing ones if
+     * necessary.
+     *
+     * @param task the task
+     */
+    public void fixTask(Task task) {
+        TaskType taskType = taskTypes.get(task.getType());
+        for (ParameterInfo info : taskType.getParameterInfo().values()) {
+            if (!task.getParameters().containsKey(info.getName())) {
+                Parameter param = fac.createParameter();
+                param.setName(info.getName());
+                param.setValue("${" + info.getName() + "}");
+                param.setTask(task);
+                task.getParameters().put(info.getName(), param);
+            }
+        }
     }
 
     /**
@@ -537,9 +578,9 @@ public class TaskManagerTaskUtil {
     /**
      * Get attribute domain based on associated parameters.
      *
-     * @param type the type
-     * @param string
-     * @return the task
+     * @param attribute the attribute
+     * @param config the configuration
+     * @return the actions
      */
     public List<String> getActionsForAttribute(Attribute attribute, Configuration config) {
         List<Parameter> params = dataUtil.getAssociatedParameters(attribute, config);
@@ -586,5 +627,24 @@ public class TaskManagerTaskUtil {
             }
         }
         return values;
+    }
+
+    /**
+     * Determine if attribute is required.
+     *
+     * @param attribute the attribute
+     * @param config the configuration
+     * @return whether the attribute is required
+     */
+    public boolean isAttributeRequired(Attribute attribute, Configuration config) {
+        List<Parameter> params = dataUtil.getAssociatedParameters(attribute, config);
+        for (Parameter param : params) {
+            TaskType taskType = taskTypes.get(param.getTask().getType());
+            ParameterInfo info = taskType.getParameterInfo().get(param.getName());
+            if (info.isRequired()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

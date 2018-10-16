@@ -40,8 +40,4 @@ public abstract class AbstractWicketTaskManagerTest extends AbstractTaskManagerT
     public void login() {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
-
-    public void logout() {
-        login("anonymousUser", "", "ROLE_ANONYMOUS");
-    }
 }

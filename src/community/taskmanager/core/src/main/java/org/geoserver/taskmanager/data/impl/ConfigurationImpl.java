@@ -53,7 +53,7 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Column private String workspace;
 
     @OneToMany(
-        fetch = FetchType.EAGER,
+        fetch = FetchType.LAZY,
         targetEntity = AttributeImpl.class,
         mappedBy = "configuration",
         cascade = CascadeType.ALL,
@@ -64,10 +64,11 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     private Map<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
 
     @OneToMany(
-        fetch = FetchType.EAGER,
+        fetch = FetchType.LAZY,
         targetEntity = TaskImpl.class,
         mappedBy = "configuration",
-        cascade = CascadeType.ALL
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @OrderBy("id")
     @MapKey(name = "name")
@@ -75,7 +76,7 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     private Map<String, Task> tasks = new LinkedHashMap<String, Task>();
 
     @OneToMany(
-        fetch = FetchType.EAGER,
+        fetch = FetchType.LAZY,
         targetEntity = BatchImpl.class,
         mappedBy = "configuration",
         cascade = CascadeType.ALL

@@ -6,6 +6,7 @@ User's Guide
 -  `Security <#security>`__
 -  `Graphical User Interface <#graphical-user-interface>`__
 -  `Task Types <#task-types>`__
+-  `Import Tool <#import-tool>`__
 -  `Examples <#examples>`__
 
 Installation
@@ -76,6 +77,13 @@ either via JNDI or directly via JDBC.
         <!-- optional --> <property name="schema" value="schema" /> 
         <property name="username" value="username" />
         <property name="password" value="password" /> 
+        <!-- optional, for security purposes -->
+        <property name="roles">
+          <list>
+           <value>ROLE1</value>
+           <value>ROLE2</value>
+          </list>
+        </property>
     </bean>
 
 .. code:: xml
@@ -90,7 +98,16 @@ either via JNDI or directly via JDBC.
             <entry key="mygs" value="java:/comp/env/jdbc/my-jndi-source-on-mygs" />
          </map>
         </property>
+        <!-- optional, for security purposes -->
+        <property name="roles">
+          <list>
+           <value>ROLE1</value>
+           <value>ROLE2</value>
+          </list>
+        </property>
     </bean>
+
+Roles can be specified for `security<#security>` purposes.
 
 There is also support for Informix, but it only works as a source
 database (not for publishing).
@@ -116,8 +133,8 @@ configuration file.
     <bean class="org.geoserver.taskmanager.external.impl.ExternalGSImpl"> 
         <property name="name" value="mygs"/> 
         <property name="url" value="http://my.geoserver/geoserver" /> 
-            <property name="username" value="admin" />
-            <property name="password" value="geoserver" />
+        <property name="username" value="admin" />
+        <property name="password" value="geoserver" />
     </bean>
 
 File Services
@@ -137,7 +154,15 @@ hard drive.
     <bean class="org.geoserver.taskmanager.fileservice.impl.FileServiceImpl">
         <property name="rootFolder" value="/tmp"/>
         <property name="name" value="Temporary Directory"/>
+        <property name="roles">
+          <list>
+           <value>ROLE1</value>
+           <value>ROLE2</value>
+          </list>
+        </property>
     </bean>
+
+Roles can be specified for `security<#security>` purposes.
 
 S3 File Service
 ^^^^^^^^^^^^^^^
@@ -148,7 +173,7 @@ compatible server.
 They do not need to be configured via the application context, but are
 taken from the properties file provided via the property
 ``s3.properties.location`` (see `S3
-DataStore <https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__.
+DataStore <https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__).
 
 A service will be created for each service and each bucket. We must add
 one line per alias to the ``s3.properties`` file:
@@ -157,6 +182,22 @@ one line per alias to the ``s3.properties`` file:
 
 The above example will create five s3 file services: alias-comma,
 alias-separated, alias-list, alias-of and alias-buckets.
+
+Roles can optionally be specified for `security<#security>` purposes as follows:
+
+``alias.s3.rootfolder.bucket=comma,separated,list,of,roles``
+
+Prepare script
+^^^^^^^^^^^^^^^
+
+The task manager GUI allows immediate upload of files 
+to file services for local publication. 
+It may be handy to perform some preprocessing tasks
+on the uploaded data before publication (such as GDAL commands). 
+You may do this by creating a file in the taskmanager configuration 
+directory named `prepare.sh`. If the user ticks the prepare checkbox 
+in the upload dialog, this script will be run with the uploaded file 
+as its first parameter.
 
 Security
 --------
@@ -175,6 +216,12 @@ workspace.
 
 -  If the user has administrative permissions on the workspace, they may
    edit the configuration/batch.
+
+Each Database or File Service may be associated with a list of roles. 
+If you do so, only users with those roles will have access to the database 
+or file service in question.  If you want to disable security restrictions, 
+do not include the ``roles`` property at all (because an empty list will result 
+in no access.)
 
 Graphical User Interface
 ------------------------
@@ -319,7 +366,9 @@ Task Types
 -  ``CopyFileTask`` Copy a file from one file service to another.
    Commit/rollback is supported by a versioning system, where the
    version of the file is inserted into the file name. The location of
-   the version number is specified in the path as ``###``. On commit,
+   the version number is specified in the path as ``###`` (or set 
+   auto-versioned to ``true`` to add the placeholder automatically 
+   before the extension dot). On commit,
    the older version is removed. On rollback, the newer version is
    removed. The publication tasks will automatically publish the latest
    version.
@@ -333,6 +382,8 @@ Task Types
    and a target database. All information is taken from the source layer
    except for the target database which may be different. Supports
    commit/rollback through creating a temporary (unadvertised) layer.
+   This task also supports the version place holder or auto-versioning, 
+   in order to combine with the ``CopyFileTask``.
 
 -  ``LocalFilePublicationTask`` Publish a file layer locally (taster or
    shapefile). The user can specify a file service, a file (which can be
@@ -351,6 +402,14 @@ Task Types
    can specify a target geoserver, a local and a remote layer. Does not
    support commit/rollback.
 
+-  ``ConfigureCachedLayer`` Configure caching for a layer on a remote
+   geoserver with internal GWC, synchronise the settings with the local 
+   geoserver. This task may turn caching on or off depending on local
+   configuration.
+
+-  ``ClearCachedLayer`` Clear (truncate) all tiles of a cached layer on 
+   a remote geoserver with internal GWC.
+
 Import Tool
 -----------
 
@@ -360,11 +419,16 @@ values. Contrary to the rest of the configuration, this function is only
 exposed via a REST service and not via the GUI. The import tool will
 generate a new configuration for each line in the CSV file, except for
 the first. The first line must specify the attribute names which should
-all match attributes that exist in the template. The CSV file must
-specify a valid attribute value for each required attribute.
+all match attributes that exist in the template, plus ``name`` (required), 
+``description``` (optional) and ``workspace`` (optional) for the configuration
+metadata. The CSV file mustspecify a valid attribute value for each
+required attribute.
 
 To invoke the import tool, ``POST`` your CSV file to
 ``http://{geoserver-host}/geoserver/taskmanager-import/{template}``
+
+Optionally, you may specify the query parameter `validate=false` 
+which will skip validation (at your own risk).
 
 Examples
 --------

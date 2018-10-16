@@ -14,7 +14,7 @@ import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExternalGS;
-import org.geoserver.taskmanager.util.NamedImpl;
+import org.geoserver.taskmanager.util.SecuredImpl;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -24,7 +24,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  *
  * @author Niels Charlier
  */
-public class PostgisDbSourceImpl extends NamedImpl implements DbSource {
+public class PostgisDbSourceImpl extends SecuredImpl implements DbSource {
 
     private String host;
 

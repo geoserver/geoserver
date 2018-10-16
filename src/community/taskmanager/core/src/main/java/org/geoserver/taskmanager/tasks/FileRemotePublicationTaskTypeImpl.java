@@ -25,6 +25,7 @@ import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.schedule.BatchContext;
 import org.geoserver.taskmanager.schedule.ParameterInfo;
+import org.geoserver.taskmanager.schedule.ParameterType;
 import org.geoserver.taskmanager.schedule.TaskContext;
 import org.geoserver.taskmanager.schedule.TaskException;
 import org.geoserver.taskmanager.schedule.TaskRunnable;
@@ -39,16 +40,22 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
     public static final String PARAM_FILE_SERVICE = "fileService";
 
+    public static final String PARAM_AUTO_VERSIONED = "auto-versioned";
+
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
         ParameterInfo fileService =
                 new ParameterInfo(PARAM_FILE_SERVICE, extTypes.fileService, false);
+        ParameterInfo autoVersioned =
+                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
         paramInfo.put(PARAM_FILE_SERVICE, fileService);
+        paramInfo.put(PARAM_AUTO_VERSIONED, autoVersioned);
         paramInfo.put(
                 PARAM_FILE,
                 new ParameterInfo(PARAM_FILE, extTypes.file(true, false), false)
-                        .dependsOn(fileService));
+                        .dependsOn(fileService)
+                        .dependsOn(autoVersioned));
     }
 
     @Override

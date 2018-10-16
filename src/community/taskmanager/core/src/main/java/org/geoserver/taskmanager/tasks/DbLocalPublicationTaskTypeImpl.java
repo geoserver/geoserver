@@ -64,7 +64,7 @@ public class DbLocalPublicationTaskTypeImpl implements TaskType {
         paramInfo.put(PARAM_DB_NAME, dbInfo);
         paramInfo.put(
                 PARAM_TABLE_NAME,
-                new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, false).dependsOn(dbInfo));
+                new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, true).dependsOn(dbInfo));
         paramInfo.put(PARAM_LAYER, new ParameterInfo(PARAM_LAYER, extTypes.name, true));
     }
 

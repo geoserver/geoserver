@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
@@ -45,7 +46,10 @@ public class ImportTool {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{template}", method = RequestMethod.POST)
-    public void doImportWithTemplate(@PathVariable String template, @RequestBody String csvFile)
+    public void doImportWithTemplate(
+            @PathVariable String template,
+            @RequestBody String csvFile,
+            @RequestParam(defaultValue = "true") boolean validate)
             throws IOException {
 
         if (!SecurityContextHolder.getContext()
@@ -73,6 +77,8 @@ public class ImportTool {
                     if (config == null) {
                         config = dao.copyConfiguration(template);
                         config.setName(configName);
+                    } else {
+                        config = dao.init(config);
                     }
                     config.setTemplate(false);
                     if (record.containsKey("description")) {
@@ -87,22 +93,33 @@ public class ImportTool {
                                 config, entry.getKey(), entry.getValue());
                     }
 
-                    List<ValidationError> errors = taskUtil.validate(config);
-                    if (!errors.isEmpty()) {
-                        for (ValidationError error : errors) {
-                            LOGGER.warning(
-                                    "Failed to import configuration "
-                                            + config.getName()
-                                            + ", validation error: "
-                                            + error.toString());
+                    if (validate) {
+                        List<ValidationError> errors = taskUtil.validate(config);
+                        if (!errors.isEmpty()) {
+                            for (ValidationError error : errors) {
+                                LOGGER.severe(
+                                        "Failed to import configuration "
+                                                + config.getName()
+                                                + ", validation error: "
+                                                + error.toString());
+                            }
+                        } else {
+                            config.setValidated(true);
+                            try {
+                                bjService.saveAndSchedule(config);
+                            } catch (Exception e) {
+                                LOGGER.log(
+                                        Level.SEVERE,
+                                        "Failed to import configuration " + config.getName(),
+                                        e);
+                            }
                         }
                     } else {
-                        config.setValidated(true);
                         try {
                             bjService.saveAndSchedule(config);
                         } catch (Exception e) {
                             LOGGER.log(
-                                    Level.WARNING,
+                                    Level.SEVERE,
                                     "Failed to import configuration " + config.getName(),
                                     e);
                         }

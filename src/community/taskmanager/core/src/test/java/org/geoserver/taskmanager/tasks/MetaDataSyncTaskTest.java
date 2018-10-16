@@ -6,13 +6,22 @@ package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.decoder.RESTCoverage;
-import java.net.MalformedURLException;
+import it.geosolutions.geoserver.rest.decoder.RESTLayer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
@@ -24,6 +33,7 @@ import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
+import org.geoserver.util.IOUtils;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -42,6 +52,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
+    private static final String STYLE = "grass";
+    private static final String SECOND_STYLE = "second_grass";
     private static final String ATT_LAYER = "layer";
     static final String ATT_EXT_GS = "geoserver";
 
@@ -59,6 +71,8 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
     @Autowired private Scheduler scheduler;
 
+    @Autowired private GeoServerDataDirectory dd;
+
     private Configuration config;
 
     private Batch batchCreate;
@@ -67,6 +81,17 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
     @Override
     public boolean setupDataDirectory() throws Exception {
+        DATA_DIRECTORY.addStyle(STYLE, getClass().getResource(STYLE + ".sld"));
+        DATA_DIRECTORY.addStyle(SECOND_STYLE, getClass().getResource(SECOND_STYLE + ".sld"));
+        try (InputStream is = getClass().getResource("grass_fill.png").openStream()) {
+            try (OutputStream os =
+                    new FileOutputStream(
+                            new File(
+                                    DATA_DIRECTORY.getDataDirectoryRoot(),
+                                    "styles/grass_fill.png"))) {
+                IOUtils.copy(is, os);
+            }
+        }
         DATA_DIRECTORY.addWcs11Coverages();
         return true;
     }
@@ -111,6 +136,10 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
 
         batchCreate = bjService.saveAndSchedule(batchCreate);
         batchSync = bjService.saveAndSchedule(batchSync);
+
+        config = dao.init(config);
+        task1 = config.getTasks().get("task1");
+        task2 = config.getTasks().get("task2");
     }
 
     @After
@@ -127,12 +156,17 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void test() throws SchedulerException, SQLException, MalformedURLException {
+    public void test() throws SchedulerException, SQLException, IOException {
         // set some metadata
         CoverageInfo ci = geoServer.getCatalog().getCoverageByName("DEM");
         ci.setTitle("original title");
         ci.setAbstract("original abstract");
         geoServer.getCatalog().save(ci);
+        // set a style
+        LayerInfo li = geoServer.getCatalog().getLayerByName("DEM");
+        StyleInfo si = geoServer.getCatalog().getStyleByName(STYLE);
+        li.setDefaultStyle(si);
+        geoServer.getCatalog().save(li);
 
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
@@ -160,12 +194,23 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
                 ci.getDimensions().get(0).getName(),
                 cov.getEncodedDimensionsInfoList().get(0).getName());
 
+        RESTLayer layer = restManager.getReader().getLayer("wcs", "DEM");
+        assertEquals(STYLE, layer.getDefaultStyle());
+        assertNull(layer.getStyles());
+
         // metadata sync
         ci.setTitle("new title");
         ci.setAbstract("new abstract");
         ci.getDimensions().get(0).setName("CUSTOM_DIMENSION");
         ci.getMetadata().put("something", "anything");
         geoServer.getCatalog().save(ci);
+        li.getStyles().add(geoServer.getCatalog().getStyleByName(SECOND_STYLE));
+        geoServer.getCatalog().save(li);
+        try (OutputStream out = dd.style(si).out()) {
+            try (InputStream in = getClass().getResource("third_grass.sld").openStream()) {
+                IOUtils.copy(in, out);
+            }
+        }
 
         trigger =
                 TriggerBuilder.newTrigger().forJob(batchSync.getId().toString()).startNow().build();
@@ -181,6 +226,14 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
                 cov.getEncodedDimensionsInfoList().get(0).getName());
         assertEquals("something", cov.getMetadataList().get(0).getKey());
         assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
+
+        layer = restManager.getReader().getLayer("wcs", "DEM");
+        assertEquals(STYLE, layer.getDefaultStyle());
+        assertEquals(1, layer.getStyles().size());
+        assertEquals(SECOND_STYLE, layer.getStyles().get(0).getName());
+
+        String style = restManager.getStyleManager().getSLD(STYLE);
+        assertTrue(style.indexOf("CHANGED VERSION") > 0);
 
         // clean-up
 

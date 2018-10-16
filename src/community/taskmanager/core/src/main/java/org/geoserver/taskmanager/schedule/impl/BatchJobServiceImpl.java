@@ -151,6 +151,7 @@ public class BatchJobServiceImpl
     @Override
     @Transactional("tmTransactionManager")
     public Configuration remove(Configuration config) {
+        config = dao.reload(config);
         for (Batch batch : config.getBatches().values()) {
             try {
                 scheduler.deleteJob(JobKey.jobKey(batch.getId().toString()));
@@ -163,6 +164,7 @@ public class BatchJobServiceImpl
     }
 
     @Override
+    @Transactional("tmTransactionManager")
     public void reloadFromData() {
         LOGGER.info("Reloading scheduler from data.");
 
@@ -203,21 +205,32 @@ public class BatchJobServiceImpl
         this.init = init;
     }
 
+    @Transactional("tmTransactionManager")
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (init) {
-            reloadFromData();
-        } else {
-            LOGGER.info("Skipping initialization as specified in configuration.");
-        }
-        try {
-            scheduler.start();
-        } catch (SchedulerException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        // call only once at start-up, so not for child contexts.
+        if (event.getApplicationContext().getParent() == null) {
+            if (init) {
+                reloadFromData();
+            } else {
+                LOGGER.info("Skipping initialization as specified in configuration.");
+            }
+            try {
+                scheduler.start();
+            } catch (SchedulerException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 
     @Override
+    @Transactional("tmTransactionManager")
     public String scheduleNow(Batch batch) {
+        batch = dao.reload(batch);
+        if (batch.getElements().isEmpty()) {
+            LOGGER.log(Level.WARNING, "Ignoring manual empty batch run: " + batch.getFullName());
+            return null;
+        }
+
         Trigger trigger =
                 TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
         try {
@@ -230,7 +243,7 @@ public class BatchJobServiceImpl
     }
 
     @Override
-    @Transactional(transactionManager = "tmTransactionManager")
+    @Transactional("tmTransactionManager")
     public void interrupt(BatchRun batchRun) {
         batchRun = dao.reload(batchRun);
         if (!batchRun.getStatus().isClosed()) {

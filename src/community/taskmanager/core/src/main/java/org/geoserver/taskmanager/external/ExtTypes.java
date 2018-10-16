@@ -221,6 +221,10 @@ public class ExtTypes {
                             "file parameter must be dependent on file service.");
                 }
                 FileService fileService = fileServices.get(dependsOnRawValues.get(0));
+                if (dependsOnRawValues.size() >= 2
+                        && "true".equalsIgnoreCase(dependsOnRawValues.get(1))) {
+                    value = FileService.versioned(value);
+                }
                 FileReference ref = fileService.getVersioned(value);
                 if (mustExist) {
                     try {

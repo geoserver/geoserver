@@ -23,7 +23,7 @@ public interface Task extends SoftRemove, Serializable, Identifiable {
 
     Map<String, Parameter> getParameters();
 
-    List<? extends BatchElement> getBatchElements();
+    List<BatchElement> getBatchElements();
 
     Configuration getConfiguration();
 

@@ -1,7 +1,7 @@
 {
   "name" : "EmbeddedBroker",
   "defaultVirtualHost" : "default",
-  "modelVersion" : "1.0",
+  "modelVersion" : "6.0",
   "storeVersion" : 1,
   "authenticationproviders" : [ {
     "name" : "anonymous",
@@ -10,11 +10,29 @@
   "ports" : [ {
     "name" : "AMQP",
     "port" : "${qpid.amqp_port}",
-    "authenticationProvider" : "anonymous"
-  } ],
-  "virtualhosts" : [ {
-    "name" : "default",
-    "storePath" : "${qpid.work_dir}/derbystore/default",
-    "storeType" : "DERBY"
-  } ]
+    "authenticationProvider" : "anonymous",
+    "virtualhostaliases": [
+        {
+          "name": "nameAlias",
+          "type": "nameAlias"
+        },
+        {
+          "name": "defaultAlias",
+          "type": "defaultAlias"
+        },
+        {
+          "name": "hostnameAlias",
+          "type": "hostnameAlias"
+        }
+      ]
+    }
+  ],
+  "virtualhostnodes": [
+    {
+      "name": "default",
+      "type": "JSON",
+      "defaultVirtualHostNode": "true",
+      "virtualHostInitialConfiguration": "${qpid.initial_config_virtualhost_config}"
+    }
+  ]
 }

@@ -47,10 +47,10 @@ public class TilingSchemesTest extends WFS3TestSupport {
     @Test
     public void testTilingSchemeDescriptionGoogleMapsCompatible() throws Exception {
         DocumentContext jsonDoc = getAsJSONPath("wfs3/tilingSchemes/GoogleMapsCompatible", 200);
-        checkGoogleMapsCompatible(
+        checkTilingSchemeData(
                 jsonDoc,
                 "http://www.opengis.net/def/crs/EPSG/0/3857",
-                "-20037508.340000 -20037508.340000",
+                new Double[] {-20037508.34, -20037508.34},
                 "http://www.opengis.net/def/wkss/OGC/1.0/GoogleMapsCompatible",
                 559082263.9508929d,
                 0.001d,
@@ -64,10 +64,10 @@ public class TilingSchemesTest extends WFS3TestSupport {
         DocumentContext jsonDoc =
                 getAsJSONPath(
                         "wfs3/collections/" + roadSegments + "/tiles/GoogleMapsCompatible", 200);
-        checkGoogleMapsCompatible(
+        checkTilingSchemeData(
                 jsonDoc,
                 "http://www.opengis.net/def/crs/EPSG/0/3857",
-                "-20037508.340000 -20037508.340000",
+                new Double[] {-20037508.34d, -20037508.34d},
                 "http://www.opengis.net/def/wkss/OGC/1.0/GoogleMapsCompatible",
                 559082263.9508929d,
                 0.001d,
@@ -75,17 +75,24 @@ public class TilingSchemesTest extends WFS3TestSupport {
                 "tileMatrix[30].matrixWidth");
     }
 
-    public void checkGoogleMapsCompatible(
+    public void checkTilingSchemeData(
             DocumentContext jsonDoc,
             String s,
-            String s2,
+            Double[] bboxLowerCorner,
             String s3,
             double v,
             double v2,
             int i,
             String s4) {
         assertEquals(s, jsonDoc.read("boundingBox.crs", String.class));
-        assertEquals(s2, jsonDoc.read("boundingBox.lowerCorner", String.class));
+        assertEquals(
+                bboxLowerCorner[0],
+                jsonDoc.read("boundingBox.lowerCorner[0]", Double.class),
+                0.001d);
+        assertEquals(
+                bboxLowerCorner[1],
+                jsonDoc.read("boundingBox.lowerCorner[1]", Double.class),
+                0.001d);
         assertEquals(s3, jsonDoc.read("wellKnownScaleSet", String.class));
         assertEquals(v, jsonDoc.read("tileMatrix[0].scaleDenominator", Double.class), v2);
         assertEquals(new Integer(i), jsonDoc.read(s4, Integer.class));
@@ -94,18 +101,17 @@ public class TilingSchemesTest extends WFS3TestSupport {
     @Test
     public void testTilingSchemeDescriptionGlobalCRS84Geometric() throws Exception {
         DocumentContext jsonDoc = getAsJSONPath("wfs3/tilingSchemes/GlobalCRS84Geometric", 200);
-        checkGoogleMapsCompatible(
+        checkTilingSchemeData(
                 jsonDoc,
                 "http://www.opengis.net/def/crs/EPSG/0/4326",
-                "-180.000000 -90.000000",
+                new Double[] {-180d, -90d},
                 "http://www.opengis.net/def/wkss/OGC/1.0/GlobalCRS84Geometric",
                 2.795411320143589E8d,
                 0.000000000000001E8d,
                 4194304,
                 "tileMatrix[21].matrixWidth");
-        assertEquals(
-                "90.000000 -180.000000",
-                jsonDoc.read("tileMatrix[21].topLeftCorner", String.class));
+        assertEquals(90d, jsonDoc.read("tileMatrix[21].topLeftCorner[0]", Double.class), 0.001d);
+        assertEquals(-180d, jsonDoc.read("tileMatrix[21].topLeftCorner[1]", Double.class), 0.001d);
     }
 
     @Test

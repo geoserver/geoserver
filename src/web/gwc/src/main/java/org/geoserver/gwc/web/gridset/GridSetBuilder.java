@@ -14,6 +14,7 @@ import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.SRS;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 class GridSetBuilder {
@@ -73,8 +74,16 @@ class GridSetBuilder {
         final double pixelSize = GridSetFactory.DEFAULT_PIXEL_SIZE_METER;
         final int tileWidth = info.getTileWidth();
         final int tileHeight = info.getTileHeight();
-        final boolean yCoordinateFirst = false;
-
+        // if CRS axis order is NORTH_EAST (y,x) set to true, else false
+        boolean yCoordinateFirst = false;
+        try {
+            CoordinateReferenceSystem crsNoForceOrder = CRS.decode("urn:ogc:def:crs:" + epsgCode);
+            yCoordinateFirst = CRS.getAxisOrder(crsNoForceOrder) == CRS.AxisOrder.NORTH_EAST;
+        } catch (FactoryException e) {
+            throw new IllegalStateException(
+                    "EPSG code didn't resolve to a EPSG:XXX identifier: " + epsgCode);
+        }
+        // create GridSet
         GridSet gridSet =
                 GridSetFactory.createGridSet(
                         name,

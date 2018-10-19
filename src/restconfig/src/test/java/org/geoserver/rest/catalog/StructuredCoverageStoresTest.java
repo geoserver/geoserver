@@ -8,6 +8,9 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -21,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -39,6 +43,7 @@ import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.util.URLs;
 import org.junit.AfterClass;
@@ -53,6 +58,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     private static final String WATER_VIEW = "waterView";
     protected static QName WATTEMP =
             new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
+    protected static QName S2_OVR = new QName(MockData.WCS_PREFIX, "s2_ovr", MockData.WCS_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
     private static final String RGB_IR_VIEW = "RgbIrView";
 
@@ -108,7 +114,6 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         }
 
         // setup a view on watertemp
-
         final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("watertemp");
 
         final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
@@ -127,6 +132,17 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 coverageView.createCoverageInfo(WATER_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
+
+        // setup the hetero_s2_ovr mosaic
+        getDataDirectory().getRoot("s2_ovr").delete();
+        getTestData()
+                .addRasterLayer(
+                        S2_OVR,
+                        "hetero_s2_ovr.zip",
+                        null,
+                        null,
+                        StructuredCoverageStoresTest.class,
+                        getCatalog());
     }
 
     @Before
@@ -801,5 +817,54 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                         RestBaseController.ROOT_PATH
                                 + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
         assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void testDeletePurgeNoneFilter() throws Exception {
+        List<String> filesAfter = removeWithPurge("&purge=none");
+
+        // list the files, they must still contain g3.tif
+        assertThat(filesAfter, allOf(hasItem("g3.tif"), hasItem("g3.tif.ovr")));
+    }
+
+    @Test
+    public void testDeletePurgeAll() throws Exception {
+        List<String> filesAfter = removeWithPurge("&purge=all");
+
+        // list the files, g3 must be gone
+        assertThat(filesAfter, not(hasItem(containsString("g3.tif"))));
+    }
+
+    private List<String> removeWithPurge(String purgeSpec) throws Exception {
+        Document dom =
+                getAsDOM(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
+        assertXpathEvaluatesTo("4", "count(//gf:s2_ovr)", dom);
+        // print(dom);
+
+        MockHttpServletResponse response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages"
+                                + "/s2_ovr/index/granules?filter=location LIKE 'g3%25'"
+                                + purgeSpec);
+        assertEquals(200, response.getStatus());
+
+        // check it's gone from the index
+        dom =
+                getAsDOM(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
+        // print(dom);
+        assertXpathEvaluatesTo("3", "count(//gf:s2_ovr)", dom);
+        assertXpathExists("//gf:s2_ovr[gf:location = 'g1.tif']", dom);
+        assertXpathExists("//gf:s2_ovr[gf:location = 'g2.tif']", dom);
+        assertXpathExists("//gf:s2_ovr[gf:location = 'g4.tif']", dom);
+
+        Resource mosaicContents = getDataDirectory().getRoot("s2_ovr");
+        List<String> files =
+                mosaicContents.list().stream().map(r -> r.name()).collect(Collectors.toList());
+        return files;
     }
 }

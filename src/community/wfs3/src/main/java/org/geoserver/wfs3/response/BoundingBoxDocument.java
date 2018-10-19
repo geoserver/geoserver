@@ -5,17 +5,18 @@
 package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.util.List;
 
 public class BoundingBoxDocument {
 
     private String crs;
-    private String lowerCorner;
-    private String upperCorner;
+    private List<Double> lowerCorner;
+    private List<Double> upperCorner;
     private String type = "BoundingBox";
 
     public BoundingBoxDocument() {}
 
-    public BoundingBoxDocument(String crs, String lowerCorner, String upperCorner) {
+    public BoundingBoxDocument(String crs, List<Double> lowerCorner, List<Double> upperCorner) {
         super();
         this.crs = crs;
         this.lowerCorner = lowerCorner;
@@ -32,20 +33,20 @@ public class BoundingBoxDocument {
     }
 
     @JacksonXmlProperty(localName = "lowerCorner")
-    public String getLowerCorner() {
+    public List<Double> getLowerCorner() {
         return lowerCorner;
     }
 
-    public void setLowerCorner(String lowerCorner) {
+    public void setLowerCorner(List<Double> lowerCorner) {
         this.lowerCorner = lowerCorner;
     }
 
     @JacksonXmlProperty(localName = "upperCorner")
-    public String getUpperCorner() {
+    public List<Double> getUpperCorner() {
         return upperCorner;
     }
 
-    public void setUpperCorner(String upperCorner) {
+    public void setUpperCorner(List<Double> upperCorner) {
         this.upperCorner = upperCorner;
     }
 

@@ -5,16 +5,17 @@
 package org.geoserver.wfs3.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.util.List;
 
 public class TileMatrixDocument {
 
     private Long matrixHeight;
     private Long matrixWidth;
     private Integer tileHeight;
-    private Integer tileWidht;
+    private Integer tileWidth;
     private String identifier;
     private Double scaleDenominator;
-    private String topLeftCorner;
+    private List<Double> topLeftCorner;
     private String type = "TileMatrix";
 
     public TileMatrixDocument() {}
@@ -46,13 +47,13 @@ public class TileMatrixDocument {
         this.tileHeight = tileHeight;
     }
 
-    @JacksonXmlProperty(localName = "tileWidht")
-    public Integer getTileWidht() {
-        return tileWidht;
+    @JacksonXmlProperty(localName = "tileWidth")
+    public Integer getTileWidth() {
+        return tileWidth;
     }
 
-    public void setTileWeidht(Integer tileWidht) {
-        this.tileWidht = tileWidht;
+    public void setTileWidth(Integer tileWidth) {
+        this.tileWidth = tileWidth;
     }
 
     @JacksonXmlProperty(localName = "identifier")
@@ -74,11 +75,11 @@ public class TileMatrixDocument {
     }
 
     @JacksonXmlProperty(localName = "topLeftCorner")
-    public String getTopLeftCorner() {
+    public List<Double> getTopLeftCorner() {
         return topLeftCorner;
     }
 
-    public void setTopLeftCorner(String topLeftCorner) {
+    public void setTopLeftCorner(List<Double> topLeftCorner) {
         this.topLeftCorner = topLeftCorner;
     }
 

@@ -44,6 +44,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/exception"
+  "/collections/{collectionId}/tiles":
+    get:
+      tags:
+      - Tiles
+      summary: retrieve all available tiling schemes for the collection
+      operationId: getCollectionTilingSchemes
+      parameters:
+      - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: A list of tiling schemes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tilingSchemes"
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/exception"
   "/collections/{collectionId}/tiles/{tilingSchemeId}":
     get:
       tags:

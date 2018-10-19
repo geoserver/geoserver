@@ -153,6 +153,21 @@ public class WFS3Filter implements GeoServerFilter {
                 matchers.add(
                         path -> {
                             Matcher matcher =
+                                    Pattern.compile("/collections/([^/]+)/tiles/?").matcher(path);
+                            boolean matches = matcher.matches();
+                            if (matches) {
+                                request = "tilingSchemes";
+                                String layerName = matcher.group(1);
+                                if (layerName != null) {
+                                    layerName = urlDecode(layerName);
+                                }
+                                setLayerName(layerName);
+                            }
+                            return matches;
+                        });
+                matchers.add(
+                        path -> {
+                            Matcher matcher =
                                     Pattern.compile("/collections/([^/]+)/?").matcher(path);
                             boolean matches = matcher.matches();
                             if (matches) {

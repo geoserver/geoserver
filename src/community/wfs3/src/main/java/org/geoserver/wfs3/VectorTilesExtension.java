@@ -29,6 +29,7 @@ public class VectorTilesExtension implements WFS3Extension {
     static final String TILING_SCHEME_PATH = "/tilingSchemes/{tilingSchemeId}";
     static final String TILES_PATH =
             "/collections/{collectionId}/tiles/{tilingSchemeId}/{zoomLevel}/{row}/{column}";
+    static final String COLLECTION_TILES_SCHEMES_PATH = "/collections/{collectionId}/tiles";
 
     static {
         try (InputStream is = VectorTilesExtension.class.getResourceAsStream("tiling.yml")) {
@@ -53,6 +54,9 @@ public class VectorTilesExtension implements WFS3Extension {
                 TILING_SCHEME_PATH,
                 tileAPITemplate.getPaths().get("/tilingSchemes/{tilingSchemeId}"));
         paths.addPathItem(TILES_PATH, tileAPITemplate.getPaths().get(TILES_PATH));
+        paths.addPathItem(
+                COLLECTION_TILES_SCHEMES_PATH,
+                tileAPITemplate.getPaths().get(COLLECTION_TILES_SCHEMES_PATH));
 
         // and add all schemas and parameters
         Components apiComponents = api.getComponents();
@@ -105,6 +109,24 @@ public class VectorTilesExtension implements WFS3Extension {
                                 collectionId
                                         + " as Mapbox vector tiles. The link is a URI template "
                                         + "where {tilingSchemeId} is one of the schemes listed in the 'tilingSchemes' resource, and {level}/{row}/{col} the tile based on the tiling scheme.",
+                                "items"));
+
+        String tilingSchemesURL =
+                ResponseUtils.buildURL(
+                        baseUrl,
+                        "wfs3/collections/" + collectionId + "/tiles",
+                        Collections.emptyMap(),
+                        URLMangler.URLType.SERVICE);
+        collection
+                .getLinks()
+                .add(
+                        new Link(
+                                tilingSchemesURL,
+                                "tilingSchemes",
+                                "application/json",
+                                collectionId
+                                        + " associated tiling schemes. The link is a URI template \"\n"
+                                        + "                                        + \"where {tilingSchemeId} is one of the schemes listed in the 'tilingSchemes' resource",
                                 "items"));
     }
 

@@ -19,10 +19,6 @@
   <version>${gs.version}</version>
   <name>Web process status sharing with Hazelcast</name>
 
-  <properties>
-    <hazelcast.version>3.11-BETA-1</hazelcast.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>

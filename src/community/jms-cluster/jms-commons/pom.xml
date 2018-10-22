@@ -59,6 +59,11 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>

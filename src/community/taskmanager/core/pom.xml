@@ -83,7 +83,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
         </dependency>
-        <!-- test dependencies -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+	<!-- test dependencies -->
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-main</artifactId>

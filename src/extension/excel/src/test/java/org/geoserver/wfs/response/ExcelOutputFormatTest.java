@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -96,23 +97,23 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
 
         // ... a string cell
         Cell cell = sheet.getRow(1).getCell(1);
-        assertEquals(Cell.CELL_TYPE_STRING, cell.getCellType());
+        assertEquals(CellType.STRING, cell.getCellType());
         assertEquals(sf.getAttribute(0), cell.getRichStringCellValue().toString());
         // ... a geom cell
         cell = sheet.getRow(1).getCell(4);
-        assertEquals(Cell.CELL_TYPE_STRING, cell.getCellType());
+        assertEquals(CellType.STRING, cell.getCellType());
         assertEquals(sf.getAttribute(3).toString(), cell.getRichStringCellValue().toString());
         // ... a number cell
         cell = sheet.getRow(1).getCell(6);
-        assertEquals(Cell.CELL_TYPE_NUMERIC, cell.getCellType());
+        assertEquals(CellType.NUMERIC, cell.getCellType());
         assertEquals(((Number) sf.getAttribute(5)).doubleValue(), cell.getNumericCellValue());
         // ... a date cell (they are mapped as numeric in xms?)
         cell = sheet.getRow(1).getCell(10);
-        assertEquals(Cell.CELL_TYPE_NUMERIC, cell.getCellType());
+        assertEquals(CellType.NUMERIC, cell.getCellType());
         assertEquals(sf.getAttribute(9), cell.getDateCellValue());
         // ... a boolean cell (they are mapped as numeric in xms?)
         cell = sheet.getRow(1).getCell(12);
-        assertEquals(Cell.CELL_TYPE_BOOLEAN, cell.getCellType());
+        assertEquals(CellType.BOOLEAN, cell.getCellType());
         assertEquals(sf.getAttribute(11), cell.getBooleanCellValue());
         // ... an empty cell (original value is null -> no cell)
         cell = sheet.getRow(1).getCell(3);

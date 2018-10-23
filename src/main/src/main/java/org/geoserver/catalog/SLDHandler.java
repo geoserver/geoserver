@@ -281,10 +281,8 @@ public class SLDHandler extends StyleHandler {
         }
 
         if (version != null && VERSION_11.compareTo(version) == 0) {
-            System.out.println("Validating SLD as SE 1.1.0 for version \"" + version + "\"");
             return validate11(input, entityResolver);
         } else {
-            System.out.println("Validating SLD as SLD 1.0.0 for version \"" + version + "\"");
             return validate10(input, entityResolver);
         }
     }

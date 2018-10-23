@@ -1961,7 +1961,7 @@
   <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1-SNAPSHOT</imageio-ext.version>
+  <imageio-ext.version>1.2.0</imageio-ext.version>
   <jaiext.version>1.1-SNAPSHOT</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>

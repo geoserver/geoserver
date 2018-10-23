@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import com.sun.org.apache.xml.internal.utils.XMLChar;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -17,7 +16,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
 import javax.media.jai.PlanarImage;
+
+import org.apache.xml.utils.XMLChar;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wms.FeatureInfoRequestParameters;

@@ -7,7 +7,8 @@ package org.geoserver.security.password;
 
 import org.geoserver.security.GeoServerUserGroupService;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password encoder that encodes passwords to empty strings. This encoder cannot validate a
@@ -29,13 +30,13 @@ public class GeoServerEmptyPasswordEncoder extends AbstractGeoserverPasswordEnco
         return new PasswordEncoder() {
 
             @Override
-            public boolean isPasswordValid(String encPass, String rawPass, Object salt)
+            public boolean matches(CharSequence encPass, String rawPass)
                     throws DataAccessException {
                 return false;
             }
 
             @Override
-            public String encodePassword(String rawPass, Object salt) throws DataAccessException {
+            public String encode(CharSequence rawPass) throws DataAccessException {
                 return "";
             }
         };
@@ -60,5 +61,15 @@ public class GeoServerEmptyPasswordEncoder extends AbstractGeoserverPasswordEnco
     @Override
     public PasswordEncodingType getEncodingType() {
         return PasswordEncodingType.EMPTY;
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

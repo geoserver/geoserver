@@ -13,7 +13,8 @@ import java.util.logging.Logger;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,7 +70,6 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
         throw new UnsupportedOperationException("No password decoder for: " + encPass);
     }
 
-    @Override
     public String encodePassword(String rawPass, Object salt) throws UnsupportedOperationException {
         for (GeoServerPasswordEncoder enc : encoders) {
             try {
@@ -81,7 +81,6 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public boolean isPasswordValid(String encPass, String rawPass, Object salt)
             throws UnsupportedOperationException {
         GeoServerPasswordEncoder enc = lookupEncoderForEncodedPassword(encPass);
@@ -102,5 +101,15 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         GeoServerPasswordEncoder enc = lookupEncoderForEncodedPassword(encPass);
         return enc.decodeToCharArray(encPass);
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return encodePassword(rawPassword.toString(), null);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

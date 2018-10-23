@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * General Geoserver password encoding interface
@@ -58,16 +58,30 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder, BeanNameAware
     /**
      * Encodes a raw password from a char array.
      *
-     * @see #encodePassword(String, Object)
+     * @see #encodePassword(char[], Object)
      */
     String encodePassword(char[] password, Object salt);
+
+    /**
+     * Encodes a raw password from a String.
+     *
+     * @see #encodePassword(String, Object)
+     */
+    String encodePassword(String password, Object salt);
+
+    /**
+     * Validates a specified "raw" password (as char array) against an encoded password.
+     *
+     * @see {@link #isPasswordValid(String, char[], Object)}
+     */
+    boolean isPasswordValid(String encPass, char[] rawPass, Object salt);
 
     /**
      * Validates a specified "raw" password (as char array) against an encoded password.
      *
      * @see {@link #isPasswordValid(String, String, Object)}
      */
-    boolean isPasswordValid(String encPass, char[] rawPass, Object salt);
+    boolean isPasswordValid(String encPass, String rawPass, Object salt);
 
     /**
      * @return a prefix which is stored with the password. This prefix must be unique within all

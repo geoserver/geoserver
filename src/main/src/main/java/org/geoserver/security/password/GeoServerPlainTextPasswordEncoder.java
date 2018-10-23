@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.password;
 
-import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password encoder which encodes nothing
@@ -17,22 +17,22 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        return new PlaintextPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
     protected CharArrayPasswordEncoder createCharEncoder() {
         return new CharArrayPasswordEncoder() {
-            PlaintextPasswordEncoder encoder = new PlaintextPasswordEncoder();
 
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return encoder.isPasswordValid(encPass, new String(rawPass), salt);
+                return encPass.equals(decodeToCharArray(rawPass.toString()));
             }
 
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
-                return encoder.encodePassword(new String(rawPass), salt);
+                return PasswordEncoderFactories.createDelegatingPasswordEncoder()
+                        .encode(rawPass.toString());
             }
         };
     }
@@ -49,5 +49,15 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
     @Override
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         return decode(encPass).toCharArray();
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

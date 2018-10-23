@@ -5,9 +5,7 @@
  */
 package org.geoserver.security.password;
 
-import static org.geoserver.security.SecurityUtils.scramble;
-import static org.geoserver.security.SecurityUtils.toBytes;
-import static org.geoserver.security.SecurityUtils.toChars;
+import static org.geoserver.security.SecurityUtils.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,9 +15,9 @@ import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.KeyStoreProviderImpl;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.springsecurity3.authentication.encoding.PBEPasswordEncoder;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password Encoder using symmetric encryption
@@ -92,7 +90,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
             }
             stringEncrypter.setAlgorithm(getAlgorithm());
 
-            PBEPasswordEncoder encoder = new PBEPasswordEncoder();
+            GSPBEPasswordEncoder encoder = new GSPBEPasswordEncoder();
             encoder.setPbeStringEncryptor(stringEncrypter);
 
             return encoder;
@@ -190,5 +188,15 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
         } finally {
             scramble(bytes);
         }
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

@@ -5,10 +5,6 @@
  */
 package org.geoserver.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import javax.servlet.Servlet;
 import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleFilterConfig;
@@ -20,6 +16,11 @@ import org.junit.experimental.categories.Category;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.servlet.Servlet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Category(SystemTest.class)
 public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
@@ -36,6 +37,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         secMgr.saveFilter(config);
 
         MockHttpServletRequest request = createRequest("/foo");
+        request.setMethod("GET");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         Servlet servlet = EasyMock.createNiceMock(Servlet.class);
@@ -52,6 +54,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
     public void testFilterChainWithDisabled() throws Exception {
 
         MockHttpServletRequest request = createRequest("/foo");
+        request.setMethod("GET");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();

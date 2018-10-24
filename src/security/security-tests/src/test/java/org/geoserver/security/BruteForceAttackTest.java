@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
     public void testLoginDelay() throws Exception {
         // successful login, no wait (cannot actually test it)
         setRequestAuth("admin", "geoserver");
-        // assertEquals(200, getAsServletResponse(HELLO_GET_REQUEST).getStatus());
+        assertEquals(200, getAsServletResponse(HELLO_GET_REQUEST).getStatus());
         // failing login, at least one second wait
         setRequestAuth("admin", "foobar");
         long start = System.currentTimeMillis();
@@ -125,7 +126,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
                                 // execute request timing how long it took
                                 MockHttpServletRequest request = createRequest(HELLO_GET_REQUEST);
-                                request.setMethod("GET");
+                                request.setMethod(RequestMethod.GET.toString());
                                 request.setContent(new byte[] {});
                                 String userName = userNameGenerator.apply(idx);
                                 String token = userName + ":foobar";
@@ -158,7 +159,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
         // now, either the threads all serialized and waited (extremely unlikely, but
         // not impossible) or at least one got bumped immediately with a concurrent login message
-        assertTrue(awaitTime < NTHREADS * 1000 || concurrentLoginsPrevented.get() > 0);
+        assertTrue(awaitTime > NTHREADS * 1000 || concurrentLoginsPrevented.get() > 0);
     }
 
     // "Too many failed logins waiting on delay already";

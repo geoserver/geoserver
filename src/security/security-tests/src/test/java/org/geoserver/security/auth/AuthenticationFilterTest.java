@@ -158,6 +158,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // check wrong password
         request = createRequest("/foo/bar");
+        request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 

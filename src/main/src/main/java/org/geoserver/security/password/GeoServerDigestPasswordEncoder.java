@@ -33,6 +33,7 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
     protected PasswordEncoder createStringEncoder() {
         PasswordEncoder encoder = new GSPasswordEncoder();
         ((GSPasswordEncoder) encoder).setPasswordEncryptor(new StrongPasswordEncryptor());
+        ((GSPasswordEncoder) encoder).setPrefix(getPrefix());
         return encoder;
     }
 
@@ -67,6 +68,6 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
 
     @Override
     public String encode(CharSequence rawPassword) {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
+        return createCharEncoder().encodePassword(decodeToCharArray(rawPassword.toString()), null);
     }
 }

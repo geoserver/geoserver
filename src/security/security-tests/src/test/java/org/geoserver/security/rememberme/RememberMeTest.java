@@ -139,7 +139,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         assertNull(request.getAttribute("auth"));
 
         request = createRequest("/web/");
-        request.setMethod("POST");
+        request.setMethod("GET");
         request.setCookies(cookie);
         response = dispatch(request);
         assertTrue(request.getAttribute("auth") instanceof RememberMeAuthenticationToken);

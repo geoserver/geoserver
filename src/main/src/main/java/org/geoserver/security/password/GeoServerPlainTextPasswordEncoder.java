@@ -5,12 +5,9 @@
  */
 package org.geoserver.security.password;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Arrays;
 import java.util.Objects;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password encoder which encodes nothing

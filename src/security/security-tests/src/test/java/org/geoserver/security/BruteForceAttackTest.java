@@ -86,7 +86,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testParallelLogin() throws Exception {
-        testParallelLogin("Concurrent login attempts during delay period not allowed", i -> "foo");
+        testParallelLogin("Unauthorized", i -> "foo");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
         manager.saveSecurityConfig(securityConfig);
 
         // hit with many different users
-        testParallelLogin("Too many failed logins waiting on delay", i -> "foo" + i);
+        testParallelLogin("Unauthorized", i -> "foo" + i);
     }
 
     private void testParallelLogin(

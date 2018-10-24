@@ -112,6 +112,5 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
         return this.isPasswordValid(encodedPassword, rawPassword.toString(), null);
-        //return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

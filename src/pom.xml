@@ -1532,7 +1532,7 @@
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
      <excludedGroups>${test.excludedGroups}</excludedGroups>
-     <argLine>${argLine}</argLine>
+     <argLine>${argLine} -XX:+IgnoreUnrecognizedVMOptions --illegal-access=debug</argLine>
     </configuration>
    </plugin>
 

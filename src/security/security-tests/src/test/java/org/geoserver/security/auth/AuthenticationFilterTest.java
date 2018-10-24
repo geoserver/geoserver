@@ -6,6 +6,15 @@
 
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
+import java.net.URLEncoder;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -32,16 +41,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.net.URLEncoder;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 @Category(SystemTest.class)
 public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest {

@@ -6,16 +6,15 @@
 
 package org.geoserver.security.password;
 
+import java.io.IOException;
+import java.security.Security;
+import java.util.logging.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.io.IOException;
-import java.security.Security;
-import java.util.logging.Logger;
 
 /**
  * Abstract base implementation, delegating the encoding to third party encoders implementing {@link
@@ -125,7 +124,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
             throws DataAccessException {
         if (encPass == null) return false;
         //        return getStringEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
-        return getStringEncoder().matches(encPass, rawPass);
+        return getStringEncoder().matches(stripPrefix(encPass), rawPass);
     }
 
     @Override
@@ -161,7 +160,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     @Override
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         return encPass.toCharArray();
-//        throw new UnsupportedOperationException("decoding passwords not supported");
+        //        throw new UnsupportedOperationException("decoding passwords not supported");
     }
 
     public String getPrefix() {

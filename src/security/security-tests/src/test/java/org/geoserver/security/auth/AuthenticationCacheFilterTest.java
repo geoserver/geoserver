@@ -5,6 +5,13 @@
  */
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
+import java.security.Principal;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -27,14 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import static org.junit.Assert.*;
 
 @Category(SystemTest.class)
 public class AuthenticationCacheFilterTest extends AbstractAuthenticationProviderTest {

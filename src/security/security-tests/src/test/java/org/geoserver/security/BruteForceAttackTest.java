@@ -4,6 +4,17 @@
  */
 package org.geoserver.security;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import javax.servlet.Filter;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.BruteForcePreventionConfig;
@@ -14,18 +25,6 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.Filter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.*;
 
 public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 

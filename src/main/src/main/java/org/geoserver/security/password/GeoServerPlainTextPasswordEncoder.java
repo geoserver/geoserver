@@ -5,8 +5,12 @@
  */
 package org.geoserver.security.password;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Password encoder which encodes nothing
@@ -17,7 +21,19 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new PasswordEncoder() {
+
+            @Override
+            public boolean matches(CharSequence encPass, String rawPass)
+                    throws DataAccessException {
+                return Objects.equals(encPass.toString(), encode(rawPass));
+            }
+
+            @Override
+            public String encode(CharSequence rawPass) throws DataAccessException {
+                return rawPass.toString();
+            }
+        };
     }
 
     @Override
@@ -26,13 +42,12 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
 
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return encPass.equals(decodeToCharArray(rawPass.toString()));
+                return Objects.equals(encPass, encodePassword(rawPass, salt));
             }
 
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
-                return PasswordEncoderFactories.createDelegatingPasswordEncoder()
-                        .encode(rawPass.toString());
+                return new String(rawPass);
             }
         };
     }
@@ -53,7 +68,7 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
 
     @Override
     public String encode(CharSequence rawPassword) {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
+        return doEncodePassword(rawPassword.toString());
     }
 
     @Override

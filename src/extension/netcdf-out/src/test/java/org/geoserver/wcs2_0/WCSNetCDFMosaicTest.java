@@ -49,12 +49,16 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.io.netcdf.NetCDFReader;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.feature.NameImpl;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
 import org.springframework.mock.web.MockHttpServletResponse;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -69,6 +73,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     private static final double DELTA = 1E-6;
+    private static final double DELTA2 = 1E-4;
     private static final double PACKED_FILL_VALUE = -32768d;
     private static final String ORIGINAL_UNIT = "km";
     private static final String CANONICAL_UNIT = "m";
@@ -91,6 +96,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             new QName(CiteTestData.WCS_URI, "visibilityNaNPacked", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE =
             new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
+
+    public static QName BANDWITHCRS =
+            new QName(CiteTestData.WCS_URI, "Band1", CiteTestData.WCS_PREFIX);
 
     private static final String STANDARD_NAME = "visibility_in_air";
     private static final Section NETCDF_SECTION;
@@ -173,6 +181,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         testData.addRasterLayer(
                 VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
+
+        testData.addRasterLayer(
+                BANDWITHCRS, "utm_esri_pe_string.nc", null, null, this.getClass(), getCatalog());
 
         testData.addRasterLayer(
                 TEMPERATURE_SURFACE,
@@ -546,6 +557,51 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         // Check the fix on dataPacking NaN management
         assertNotEquals(readData.getShort(0), -32768, 1E-6);
         dataset.close();
+    }
+
+    @Test
+    public void testRequestNetCDFCrs() throws Exception {
+
+        // http response from the request inside the string
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__Band1&format=application/x-netcdf"
+                                + "&subsettingcrs=http://www.opengis.net/def/crs/EPSG/0/4326"
+                                + "&subset=Long(-118,-116)&subset=Lat(56,58)");
+        // Original data was UTM 32611
+        assertNotNull(response);
+        byte[] netcdfOut = getBinary(response);
+        File file = File.createTempFile("netcdf", "outcrs.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+        // Retrieve the GeoTransform attribute from the output NetCDF
+        NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath());
+        String geoTransform = dataset.findGlobalAttribute("GeoTransform").getStringValue();
+        dataset.close();
+        assertNotNull(geoTransform);
+
+        String[] coefficients = geoTransform.split(" ");
+        double m00 = Double.parseDouble(coefficients[1]);
+        double m01 = Double.parseDouble(coefficients[2]);
+        double m02 = Double.parseDouble(coefficients[0]);
+        double m10 = Double.parseDouble(coefficients[4]);
+        double m11 = Double.parseDouble(coefficients[5]);
+        double m12 = Double.parseDouble(coefficients[3]);
+
+        NetCDFReader reader = new NetCDFReader(file, null);
+        MathTransform transform = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+        AffineTransform2D affineTransform = (AffineTransform2D) transform;
+
+        reader.dispose();
+
+        // Check the GeoTransform coefficients are valid
+        assertEquals(m02, affineTransform.getTranslateX(), DELTA2);
+        assertEquals(m12, affineTransform.getTranslateY(), DELTA2);
+        assertEquals(m00, affineTransform.getScaleX(), DELTA2);
+        assertEquals(m11, affineTransform.getScaleY(), DELTA2);
+        assertEquals(m01, affineTransform.getShearX(), DELTA2);
+        assertEquals(m10, affineTransform.getShearY(), DELTA2);
     }
 
     private void addViewToCatalog() throws Exception {

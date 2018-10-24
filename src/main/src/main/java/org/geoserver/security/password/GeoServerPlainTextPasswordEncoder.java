@@ -70,9 +70,4 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
     public String encode(CharSequence rawPassword) {
         return doEncodePassword(rawPassword.toString());
     }
-
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return rawPassword.equals(decodeToCharArray(encodedPassword));
-    }
 }

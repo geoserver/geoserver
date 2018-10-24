@@ -124,7 +124,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
             throws DataAccessException {
         if (encPass == null) return false;
         //        return getStringEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
-        return getStringEncoder().matches(stripPrefix(encPass), rawPass);
+        return getStringEncoder().matches(rawPass, stripPrefix(encPass));
     }
 
     @Override
@@ -155,6 +155,11 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
 
     public String decode(String encPass) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("decoding passwords not supported");
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return this.isPasswordValid(encodedPassword, rawPassword.toString(), null);
     }
 
     @Override

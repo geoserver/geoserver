@@ -64,7 +64,11 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     GeoServerPasswordEncoder lookupEncoderForEncodedPassword(String encPass)
             throws UnsupportedOperationException {
         for (GeoServerPasswordEncoder enc : encoders) {
-            if (enc.isResponsibleForEncoding(encPass)) return enc;
+            if (enc.isResponsibleForEncoding(encPass)) {
+                return enc;
+            } else {
+                System.out.println("HERE");
+            }
         }
         throw new UnsupportedOperationException("No password decoder for: " + encPass);
     }
@@ -109,6 +113,7 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return rawPassword.equals(decodeToCharArray(encodedPassword));
+        return this.isPasswordValid(rawPassword.toString(), encodedPassword, null);
+        //return rawPassword.equals(decodeToCharArray(encodedPassword));
     }
 }

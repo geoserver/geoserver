@@ -116,9 +116,4 @@ public class GSPBEPasswordEncoder extends AbstractGeoserverPasswordEncoder
         }
         return null;
     }
-
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return this.isPasswordValid(rawPassword.toString(), encodedPassword, null);
-    }
 }

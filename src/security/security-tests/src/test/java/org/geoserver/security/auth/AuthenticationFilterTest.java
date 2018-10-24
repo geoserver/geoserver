@@ -189,6 +189,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addHeader(
                 "Authorization",
                 "Basic " + new String(Base64.encodeBytes(("unknwon:" + testPassword).getBytes())));
+        request.setMethod("GET");
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
@@ -206,6 +207,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // check root user
         request = createRequest("/foo/bar");
+        request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
@@ -242,6 +244,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // check root user with wrong password
         request = createRequest("/foo/bar");
+        request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
@@ -270,6 +273,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getSecurityManager().getAuthenticationCache().removeAll();
         updateUser("ug1", testUserName, false);
         request = createRequest("/foo/bar");
+        request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
@@ -299,6 +303,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         // Test anonymous
         insertAnonymousFilter();
         request = createRequest("/foo/bar");
+        request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);

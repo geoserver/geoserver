@@ -13,7 +13,7 @@
     </bean>
     <bean id="ogr2ogrConfigurator" class="org.geoserver.wfs.response.Ogr2OgrConfigurator">
         <constructor-arg>
-            <ref local="ogr2ogrOutputFormat" />
+            <ref bean="ogr2ogrOutputFormat" />
         </constructor-arg>
         <constructor-arg ref="ogrWrapperFactory" />
     </bean>

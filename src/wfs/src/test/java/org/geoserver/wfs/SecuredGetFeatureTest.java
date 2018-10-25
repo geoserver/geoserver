@@ -90,6 +90,7 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
                 createRequest(
                         "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
                                 + getLayerId(SystemTestData.BUILDINGS));
+        request.setMethod("GET");
         request.addHeader(
                 "Authorization",
                 "Basic " + new String(Base64.encodeBase64("cite:wrongpassword".getBytes())));

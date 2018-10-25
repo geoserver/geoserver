@@ -15,15 +15,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Wrapper class for jasypt PBEPasswordEncoder enabling the class to return the Spring 5.1 version
  * of PasswordEncoder
  *
+ * <p>Used by {@link GeoServerPBEPasswordEncoder}
+ *
  * @author vickdw Created on 10/23/18
  */
-public class GSPBEPasswordEncoder extends AbstractGeoserverPasswordEncoder
+public class JasyptPBEPasswordEncoderWrapper extends AbstractGeoserverPasswordEncoder
         implements PasswordEncoder {
     private TextEncryptor textEncryptor = null;
     private PBEStringEncryptor pbeStringEncryptor = null;
     private Boolean useTextEncryptor = null;
 
-    public GSPBEPasswordEncoder() {}
+    public JasyptPBEPasswordEncoderWrapper() {}
 
     /** Creates the encoder instance used when source is a string. */
     @Override

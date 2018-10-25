@@ -11,8 +11,15 @@ import org.jasypt.util.password.PasswordEncryptor;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/** @author vickdw Created on 10/23/18 */
-public class GSPasswordEncoder extends AbstractGeoserverPasswordEncoder implements PasswordEncoder {
+/**
+ * Wrapper class for jasyptPasswordEncoder, for compatibility with the Spring 5.1 API
+ *
+ * <p>Used by {@link GeoServerDigestPasswordEncoder}
+ *
+ * @author vickdw Created on 10/23/18
+ */
+public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncoder
+        implements PasswordEncoder {
 
     // The password encryptor or string digester to be internally used
     private PasswordEncryptor passwordEncryptor = null;
@@ -20,7 +27,7 @@ public class GSPasswordEncoder extends AbstractGeoserverPasswordEncoder implemen
     private Boolean useEncryptor = null;
 
     /** Creates a new instance of <tt>PasswordEncoder</tt> */
-    public GSPasswordEncoder() {
+    public JasyptPasswordEncoderWrapper() {
         super();
     }
 

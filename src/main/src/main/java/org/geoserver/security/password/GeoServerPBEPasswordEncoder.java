@@ -89,7 +89,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
             }
             stringEncrypter.setAlgorithm(getAlgorithm());
 
-            GSPBEPasswordEncoder encoder = new GSPBEPasswordEncoder();
+            JasyptPBEPasswordEncoderWrapper encoder = new JasyptPBEPasswordEncoderWrapper();
             encoder.setPbeStringEncryptor(stringEncrypter);
 
             return encoder;

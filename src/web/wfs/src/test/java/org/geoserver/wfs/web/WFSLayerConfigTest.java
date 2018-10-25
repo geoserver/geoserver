@@ -39,4 +39,50 @@ public final class WFSLayerConfigTest extends GeoServerWicketTestSupport {
         ft.submit();
         tester.assertModelValue("form:panel:encodeMeasures", false);
     }
+
+    @Test
+    public void testForceDecimalCheckbox() {
+        // get a test layer and instantiate the model
+        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
+        Model<LayerInfo> model = new Model<>(layer);
+        FormTestPage page =
+                new FormTestPage((ComponentBuilder) id -> new WFSLayerConfig(id, model));
+        // let's start the page and check that the components are correctly instantiated
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.assertComponent("form", Form.class);
+        // check that the checkbox is available
+        tester.assertComponent(
+                "form:panel:forcedDecimalBorder:forcedDecimalBorder_body:forcedDecimal",
+                CheckBox.class);
+        // unselect the checkbox, no measures should be selected
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("panel:forcedDecimalBorder:forcedDecimalBorder_body:forcedDecimal", true);
+        ft.submit();
+        tester.assertModelValue(
+                "form:panel:forcedDecimalBorder:forcedDecimalBorder_body:forcedDecimal", true);
+    }
+
+    @Test
+    public void testPadWithZerosCheckbox() {
+        // get a test layer and instantiate the model
+        final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
+        Model<LayerInfo> model = new Model<>(layer);
+        FormTestPage page =
+                new FormTestPage((ComponentBuilder) id -> new WFSLayerConfig(id, model));
+        // let's start the page and check that the components are correctly instantiated
+        tester.startPage(page);
+        tester.assertRenderedPage(FormTestPage.class);
+        tester.assertComponent("form", Form.class);
+        // check that the checkbox is available
+        tester.assertComponent(
+                "form:panel:padWithZerosBorder:padWithZerosBorder_body:padWithZeros",
+                CheckBox.class);
+        // unselect the checkbox, no measures should be selected
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("panel:padWithZerosBorder:padWithZerosBorder_body:padWithZeros", true);
+        ft.submit();
+        tester.assertModelValue(
+                "form:panel:padWithZerosBorder:padWithZerosBorder_body:padWithZeros", true);
+    }
 }

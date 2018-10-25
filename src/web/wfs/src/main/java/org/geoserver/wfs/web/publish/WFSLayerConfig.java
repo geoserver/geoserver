@@ -49,6 +49,20 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         Border mdb = new FormComponentFeedbackBorder("maxDecimalsBorder");
         mdb.add(maxDecimals);
         add(mdb);
+        CheckBox padWithZeros =
+                new CheckBox(
+                        "padWithZeros", new PropertyModel<Boolean>(model, "resource.padWithZeros"));
+        Border pwzb = new FormComponentFeedbackBorder("padWithZerosBorder");
+        pwzb.add(padWithZeros);
+        add(pwzb);
+
+        CheckBox forcedDecimal =
+                new CheckBox(
+                        "forcedDecimal",
+                        new PropertyModel<Boolean>(model, "resource.forcedDecimal"));
+        Border fdb = new FormComponentFeedbackBorder("forcedDecimalBorder");
+        fdb.add(forcedDecimal);
+        add(fdb);
         CheckBox skipNumberMatched =
                 new CheckBox(
                         "skipNumberMatched",

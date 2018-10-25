@@ -45,13 +45,22 @@ public class GML3FeatureTransformer extends FeatureTransformer {
         }
 
         protected GeometryTranslator createGeometryTranslator(
-                ContentHandler handler, int numDecimals) {
-            return new GML3GeometryTranslator(handler, numDecimals);
+                ContentHandler handler,
+                int numDecimals,
+                boolean padWithZeros,
+                boolean forceDecimalEncoding) {
+            return new GML3GeometryTranslator(
+                    handler, numDecimals, padWithZeros, forceDecimalEncoding);
         }
 
         protected GeometryTranslator createGeometryTranslator(
-                ContentHandler handler, int numDecimals, boolean useDummyZ) {
-            return new GML3GeometryTranslator(handler, numDecimals, useDummyZ);
+                ContentHandler handler,
+                int numDecimals,
+                boolean padWithZeros,
+                boolean forceDecimalEncoding,
+                boolean useDummyZ) {
+            return new GML3GeometryTranslator(
+                    handler, numDecimals, padWithZeros, forceDecimalEncoding, useDummyZ);
         }
 
         protected Attributes encodeFeatureId(SimpleFeature f) {

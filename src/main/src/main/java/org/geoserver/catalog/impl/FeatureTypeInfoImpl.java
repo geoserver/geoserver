@@ -34,6 +34,8 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
 
     protected int maxFeatures;
     protected int numDecimals;
+    protected boolean padWithZeros;
+    protected boolean forcedDecimal;
 
     protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
     protected List<String> responseSRS = new ArrayList<String>();
@@ -252,5 +254,25 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     @Override
     public void setEncodeMeasures(boolean encodeMeasures) {
         this.encodeMeasures = encodeMeasures;
+    }
+
+    @Override
+    public boolean getPadWithZeros() {
+        return padWithZeros;
+    }
+
+    @Override
+    public void setPadWithZeros(boolean padWithZeros) {
+        this.padWithZeros = padWithZeros;
+    }
+
+    @Override
+    public boolean getForcedDecimal() {
+        return forcedDecimal;
+    }
+
+    @Override
+    public void setForcedDecimal(boolean forcedDecimal) {
+        this.forcedDecimal = forcedDecimal;
     }
 }

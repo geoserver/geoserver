@@ -334,4 +334,24 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setEncodeMeasures(boolean encodeMeasures) {
         delegate.setEncodeMeasures(encodeMeasures);
     }
+
+    @Override
+    public boolean getPadWithZeros() {
+        return delegate.getPadWithZeros();
+    }
+
+    @Override
+    public void setPadWithZeros(boolean padWithZeros) {
+        delegate.setPadWithZeros(padWithZeros);
+    }
+
+    @Override
+    public boolean getForcedDecimal() {
+        return delegate.getForcedDecimal();
+    }
+
+    @Override
+    public void setForcedDecimal(boolean forcedDecimal) {
+        delegate.setForcedDecimal(forcedDecimal);
+    }
 }

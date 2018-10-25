@@ -64,6 +64,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
 import org.geotools.wfs.v1_1.WFS;
 import org.geotools.wfs.v1_1.WFSConfiguration;
 import org.geotools.xml.Encoder;
@@ -302,7 +303,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                     cfg = new WFSConfiguration();
                     elementName = WFS.GetFeature;
                 } else {
-                    cfg = new org.geotools.wfs.v1_0.WFSConfiguration();
+                    cfg = new WFSConfiguration_1_0();
                     elementName = org.geotools.wfs.v1_0.WFS.GetFeature;
                 }
                 FileOutputStream fos = null;

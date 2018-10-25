@@ -76,7 +76,7 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
             assertEquals(
                     "sf_archsites", ftInfo.getFeatureSource(null, null).getName().getLocalPart());
         } catch (IOException e) {
-            String expectedMessage = "Schema 'sf_archsites' does not exist.";
+            String expectedMessage = "Unknown type sf_archsites";
             assertEquals("Exception message must be correct", expectedMessage, e.getMessage());
         }
     }

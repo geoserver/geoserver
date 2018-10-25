@@ -100,7 +100,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
                         featureTypes);
         Configuration configuration =
                 new ApplicationSchemaConfiguration(
-                        xsd, new org.geotools.wfs.v1_0.WFSConfiguration());
+                        xsd, new org.geotools.wfs.v1_0.WFSConfiguration_1_0());
 
         Encoder encoder = new Encoder(configuration);
         // encoder.setEncoding(wfs.getCharSet());

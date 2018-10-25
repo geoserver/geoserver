@@ -7,12 +7,10 @@ package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -20,13 +18,14 @@ import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.wfs.v1_0.WFSConfiguration;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
 import org.geotools.xml.Parser;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.mock.web.MockHttpServletResponse;
+import net.opengis.wfs.FeatureCollectionType;
 
 public class RasterAsPointCollectionTest extends WPSTestSupport {
 
@@ -100,7 +99,7 @@ public class RasterAsPointCollectionTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
 
-        Parser p = new Parser(new WFSConfiguration());
+        Parser p = new Parser(new WFSConfiguration_1_0());
         FeatureCollectionType fct =
                 (FeatureCollectionType)
                         p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));

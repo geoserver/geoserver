@@ -214,7 +214,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                 measurementsProperties);
         substituteParameters(
                 "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
-        //add extra features
+        // add extra features
         addMeasurementFeatures(measurementsProperties);
         // create measurements feature type
         addFeatureType(
@@ -251,11 +251,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         substituteParameters(
                 "/test-data/stations/base/stations.properties", parameters, stationsProperties);
         substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
+        substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/base/stations.xsd", parameters, stationsSchema);
-        substituteParameters(
-                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
-        //extra features to add:
+                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
+        // extra features to add:
         addStationFeatures(stationsProperties);
         // create station feature type
         addFeatureType(
@@ -306,11 +305,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         substituteParameters(
                 "/test-data/stations/base/stations.properties", parameters, stationsProperties);
         substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
+        substituteParameters("/test-data/stations/base/stations.xsd", parameters, stationsSchema);
         substituteParameters(
-                "/test-data/stations/base/stations.xsd", parameters, stationsSchema);
-        substituteParameters(
-                "/test-data/stations/schemas/measurements.xsd", parameters, measurementsSchema);
-        //extra features to add:
+                "/test-data/stations/base/measurements.xsd", parameters, measurementsSchema);
+        // extra features to add:
         addStationFeatures(stationsProperties);
         // create station feature type
         addFeatureType(

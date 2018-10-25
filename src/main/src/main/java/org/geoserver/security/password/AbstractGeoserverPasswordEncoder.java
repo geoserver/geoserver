@@ -92,7 +92,6 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
 
     @Override
     public String encodePassword(String rawPass, Object salt) throws DataAccessException {
-        //        return doEncodePassword(getStringEncoder().encodePassword(rawPass, salt));
         return doEncodePassword(getStringEncoder().encode(rawPass));
     }
 
@@ -123,7 +122,6 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     public boolean isPasswordValid(String encPass, String rawPass, Object salt)
             throws DataAccessException {
         if (encPass == null) return false;
-        //        return getStringEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
         return getStringEncoder().matches(rawPass, stripPrefix(encPass));
     }
 
@@ -165,7 +163,6 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     @Override
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         return encPass.toCharArray();
-        //        throw new UnsupportedOperationException("decoding passwords not supported");
     }
 
     public String getPrefix() {
@@ -193,7 +190,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     }
 
     /** Interface for password encoding when source password is specified as char array. */
-    protected static interface CharArrayPasswordEncoder {
+    protected interface CharArrayPasswordEncoder {
 
         String encodePassword(char[] rawPass, Object salt);
 

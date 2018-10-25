@@ -188,11 +188,6 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
                 File outputFile = getOutputFile(xmppClient, (String) value);
-                if (outputFile.renameTo(new File(outputFile.getParentFile(), fileName))) {
-                    outputFile = new File(outputFile.getParentFile(), fileName);
-                    outputFile.setLastModified(System.nanoTime());
-                }
-
                 value =
                         new ResourceRawData(
                                 Files.asResource(outputFile),
@@ -211,8 +206,6 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                                         defaultStyle,
                                         targetWorkspace,
                                         metadata);
-
-                        xmppClient.getGeoServer().getCatalog().save(layer);
                     } catch (Exception e) {
                         LOGGER.log(
                                 Level.WARNING,
@@ -294,7 +287,16 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 }
 
                 // 2. check if the file has stored on the GeoServer Data Dir
-                final File uploadedFile =
+                File uploadedFile = new File(value);
+                if (uploadedFile != null
+                        &&
+                        /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
+                        && uploadedFile.canRead()
+                        && uploadedFile.isFile()) {
+                    return uploadedFile;
+                }
+
+                uploadedFile =
                         xmppClient.getGeoServer().getCatalog().getResourceLoader().find(value);
                 if (uploadedFile != null
                         &&

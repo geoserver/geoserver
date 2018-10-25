@@ -25,7 +25,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.importer.FileData;
@@ -350,10 +349,6 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                         if (resource != null) {
                             // Recompute the bounds - Importer sometime fails to do that
                             calculateBounds(resource, getGeoServer().getCatalog());
-
-                            if (resource instanceof CoverageInfo) {
-                                ((CoverageInfoImpl) resource).setNativeCoverageName(name);
-                            }
 
                             // WARNING: The Importer Configures Just The First Layer
                             if (resource instanceof CoverageInfo) {

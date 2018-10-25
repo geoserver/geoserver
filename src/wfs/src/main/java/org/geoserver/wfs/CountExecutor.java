@@ -36,12 +36,16 @@ class CountExecutor {
     }
 
     public int getCount() throws IOException {
-        if (providedCount != COUNT_UNSET) {
+        if (isCountSet()) {
             return providedCount;
         } else {
             // make sure we get a count by getting a feature colleciton
             // FeatureSource.getCount(...) can return -1
             return source.getFeatures(query).size();
         }
+    }
+
+    public boolean isCountSet() {
+        return providedCount != COUNT_UNSET;
     }
 }

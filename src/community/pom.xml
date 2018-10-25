@@ -91,7 +91,7 @@
           <descriptor>release/ext-taskmanager-s3.xml</descriptor>
           <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
           <descriptor>release/ext-wfs3.xml</descriptor>
-          <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+          <!-- <descriptor>release/ext-monitor-hibernate.xml</descriptor> -->
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
@@ -260,7 +260,7 @@
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
         <module>wfs3</module>
-        <module>monitor-hibernate</module>
+        <!-- <module>monitor-hibernate</module> -->
         <module>qos</module>
       </modules>
     </profile>

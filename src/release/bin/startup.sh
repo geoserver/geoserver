@@ -72,30 +72,8 @@ fi
 cd "$GEOSERVER_HOME"
 
 if [ -z $MARLIN_JAR]; then
-  # Java version detection from
-  # https://stackoverflow.com/questions/7334754/correct-way-to-check-java-version-from-bash-script
-  IFS=$'\n'
-  # remove \r for Cygwin
-  lines=$("$java_cmd" -Xms32M -Xmx32M -version 2>&1 | tr '\r' '\n')
-  if [ -z $java_cmd ]; then
-    result=no_java
-  else
-    for line in $lines; do
-      if [ (-z $result) && ($line = *"version \""*) ]; then
-        ver=$(echo $line | sed -e 's/.*version "\(.*\)"\(.*\)/\1/; 1q')
-        if [ $ver = "1."* ]; then
-          result=$(echo $ver | sed -e 's/1\.\([0-9]*\)\(.*\)/\1/; 1q')
-        else
-          result=$(echo $ver | sed -e 's/\([0-9]*\)\(.*\)/\1/; 1q')
-        fi
-      fi
-    done
-  fi
-
-  if [ result -eq 8 ]; then
     export MARLIN_JAR=`find \`pwd\`/webapps -name "marlin*.jar" | head -1`
     export MARLIN_ENABLER="-Xbootclasspath/a:$MARLIN_JAR -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
-  fi
 fi
 
 echo "GEOSERVER DATA DIR is $GEOSERVER_DATA_DIR"

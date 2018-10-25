@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -1293,16 +1292,18 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         quota.setQuotaStore("H2");
         gwc.saveDiskQuotaConfig(quota, null);
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        File jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
-        assertNull("jdbc config should not be there", jdbcConfigFile);
-        File h2DefaultStore = dd.findFile("gwc/diskquota_page_store_h2");
-        assertNotNull("jdbc store should be there", h2DefaultStore);
+        String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
+        assertNull(
+                "jdbc config (" + jdbcConfigPath + ") should not be there",
+                dd.findFile(jdbcConfigPath));
+        String h2StorePath = "gwc/diskquota_page_store_h2";
+        assertNotNull("jdbc store (" + h2StorePath + ") should be there", dd.findFile(h2StorePath));
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
 
         // disable again and clean up
         quota.setEnabled(false);
         gwc.saveDiskQuotaConfig(quota, null);
-        FileUtils.deleteDirectory(h2DefaultStore);
+        FileUtils.deleteDirectory(dd.findFile("gwc/diskquota_page_store_h2"));
 
         // now enable it in JDBC mode, with H2 local storage
         quota.setEnabled(true);
@@ -1319,15 +1320,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         pool.setMaxOpenPreparedStatements(50);
         jdbc.setConnectionPool(pool);
         gwc.saveDiskQuotaConfig(quota, jdbc);
-        jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
-        assertNotNull("jdbc config should be there", jdbcConfigFile);
-        assertNull("jdbc store should be there", dd.findDataFile("gwc/diskquota_page_store_h2"));
+        assertNotNull(
+                "jdbc config (" + jdbcConfigPath + ") should be there",
+                dd.findFile(jdbcConfigPath));
+        assertNull(
+                "jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
         File newQuotaStore = new File("./target/quota-h2.data.db");
         assertTrue(newQuotaStore.exists());
 
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(jdbcConfigFile);
+        File jdbcConfigFile = dd.findFile(jdbcConfigPath);
+        try (FileInputStream fis = new FileInputStream(jdbcConfigFile)) {
             Document dom = dom(fis);
             // print(dom);
             String storedPassword =
@@ -1335,8 +1337,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                             .evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
-        } finally {
-            IOUtils.closeQuietly(fis);
         }
     }
 

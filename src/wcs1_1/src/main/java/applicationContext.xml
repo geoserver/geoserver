@@ -79,8 +79,8 @@
   <bean id="wcs111ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
     <constructor-arg index="0">
       <list>
-        <ref local="wcsService-1.1.0" />
-        <ref local="wcsService-1.1.1" />
+        <ref bean="wcsService-1.1.0" />
+        <ref bean="wcsService-1.1.1" />
       </list>
     </constructor-arg>
   </bean>

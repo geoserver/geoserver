@@ -60,16 +60,11 @@ public class GenericUnWrapperTest {
         Connection connection = new TestConnection();
         Connection wrapper = new WrapperConnection(connection);
 
-        UnWrapper uw = DataSourceFinder.getUnWrapper(wrapper);
-        if (uw != null) {
-            assertTrue("picked up by jdbc4 extractor", uw instanceof SpringUnWrapper);
-        }
-
         GenericUnWrapper.CONNECTION_METHODS.put(
                 WrapperConnection.class,
                 WrapperConnection.class.getMethod("getUnderlyingConnection", null));
 
-        uw = DataSourceFinder.getUnWrapper(wrapper);
+        UnWrapper uw = DataSourceFinder.getUnWrapper(wrapper);
         assertNotNull("registed and canUnwrap", uw);
         if (uw instanceof GenericUnWrapper) {
             assertSame("Generic unwrapper is working", connection, uw.unwrap(wrapper));

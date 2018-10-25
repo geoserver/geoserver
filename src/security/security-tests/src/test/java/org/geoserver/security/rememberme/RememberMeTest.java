@@ -10,10 +10,18 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.security.*;
+import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerSecurityProvider;
+import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -124,10 +132,12 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         Cookie cookie = (Cookie) response.getCookies()[0];
 
         request = createRequest("/web/");
+        request.setMethod("POST");
         response = dispatch(request);
         assertNull(request.getAttribute("auth"));
 
         request = createRequest("/web/");
+        request.setMethod("GET");
         request.setCookies(cookie);
         response = dispatch(request);
         assertTrue(request.getAttribute("auth") instanceof RememberMeAuthenticationToken);

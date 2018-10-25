@@ -36,6 +36,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         secMgr.saveFilter(config);
 
         MockHttpServletRequest request = createRequest("/foo");
+        request.setMethod("GET");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         Servlet servlet = EasyMock.createNiceMock(Servlet.class);
@@ -52,6 +53,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
     public void testFilterChainWithDisabled() throws Exception {
 
         MockHttpServletRequest request = createRequest("/foo");
+        request.setMethod("GET");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();

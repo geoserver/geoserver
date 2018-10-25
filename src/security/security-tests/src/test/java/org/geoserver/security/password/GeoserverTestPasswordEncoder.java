@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.password;
 
-import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class GeoserverTestPasswordEncoder extends AbstractGeoserverPasswordEncoder {
 
@@ -17,7 +17,7 @@ public class GeoserverTestPasswordEncoder extends AbstractGeoserverPasswordEncod
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        return new PlaintextPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
@@ -39,5 +39,10 @@ public class GeoserverTestPasswordEncoder extends AbstractGeoserverPasswordEncod
     @Override
     public PasswordEncodingType getEncodingType() {
         return PasswordEncodingType.PLAIN;
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(rawPassword);
     }
 }

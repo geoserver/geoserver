@@ -9,8 +9,8 @@ import static org.geoserver.security.SecurityUtils.toBytes;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jasypt.digest.StandardByteDigester;
-import org.jasypt.springsecurity3.authentication.encoding.PasswordEncoder;
 import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password encoder which uses digest encoding This encoder cannot be used for authentication
@@ -30,8 +30,10 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        PasswordEncoder encoder = new PasswordEncoder();
-        encoder.setPasswordEncryptor(new StrongPasswordEncryptor());
+        PasswordEncoder encoder = new JasyptPasswordEncoderWrapper();
+        ((JasyptPasswordEncoderWrapper) encoder)
+                .setPasswordEncryptor(new StrongPasswordEncryptor());
+        ((JasyptPasswordEncoderWrapper) encoder).setPrefix(getPrefix());
         return encoder;
     }
 
@@ -62,5 +64,10 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
     @Override
     public PasswordEncodingType getEncodingType() {
         return PasswordEncodingType.DIGEST;
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return createCharEncoder().encodePassword(decodeToCharArray(rawPassword.toString()), null);
     }
 }

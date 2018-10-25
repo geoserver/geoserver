@@ -1956,7 +1956,7 @@
   <spring.version>4.3.18.RELEASE</spring.version>
   <spring.security.version>4.2.7.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
-  <jetty.version>9.2.13.v20150730</jetty.version>
+  <jetty.version>9.4.12.v20180830</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
   <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>

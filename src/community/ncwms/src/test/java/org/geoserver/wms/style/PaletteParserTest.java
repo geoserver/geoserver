@@ -16,7 +16,7 @@ import javax.xml.transform.TransformerException;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
-import org.geotools.styling.SLDTransformer;
+import org.geotools.xml.styling.SLDTransformer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Before;

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.StyleHandler;
 import org.geotools.styling.ResourceLocator;
-import org.geotools.styling.SLDTransformer;
+import org.geotools.xml.styling.SLDTransformer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;

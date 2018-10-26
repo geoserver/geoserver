@@ -29,7 +29,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.SLDTransformer;
+import org.geotools.xml.styling.SLDTransformer;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;

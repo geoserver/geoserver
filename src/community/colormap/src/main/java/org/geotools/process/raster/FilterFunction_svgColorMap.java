@@ -26,7 +26,7 @@ import org.geotools.renderer.lite.gridcoverage2d.GradientColorMapGenerator;
 import org.geotools.renderer.lite.gridcoverage2d.SLDColorMapBuilder;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.SLDTransformer;
+import org.geotools.xml.styling.SLDTransformer;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.FilterFactory;

@@ -12,9 +12,9 @@ import java.util.List;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 import org.opengis.filter.expression.Function;
 

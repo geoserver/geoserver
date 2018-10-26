@@ -23,9 +23,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 
 public class StylesTest extends GeoServerSystemTestSupport {

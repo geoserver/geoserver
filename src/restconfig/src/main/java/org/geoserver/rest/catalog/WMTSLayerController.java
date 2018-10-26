@@ -35,11 +35,7 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
-<<<<<<< HEAD
-import org.geotools.data.ows.Layer;
-=======
 import org.geotools.ows.wms.Layer;
->>>>>>> jdk11_restructure_gt-wms
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.util.logging.Logging;

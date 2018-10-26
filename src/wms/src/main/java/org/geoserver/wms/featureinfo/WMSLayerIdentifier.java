@@ -29,7 +29,7 @@ import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geotools.wfs.v1_0.WFSConfiguration;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
 import org.geotools.xml.Parser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -98,7 +98,7 @@ public class WMSLayerIdentifier implements LayerIdentifier {
                         bbox, width, height, x, y, "application/vnd.ogc.gml", maxFeatures);
         List<FeatureCollection> results = new ArrayList<FeatureCollection>();
         try {
-            Parser parser = new Parser(new WFSConfiguration());
+            Parser parser = new Parser(new WFSConfiguration_1_0());
             parser.setStrict(false);
             parser.setEntityResolver(resolverProvider.getEntityResolver());
             Object result = parser.parse(is);

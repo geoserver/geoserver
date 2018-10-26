@@ -46,7 +46,7 @@ public class GetGmlObject {
     public Object run(GetGmlObjectType request) throws WFSException {
 
         // get the gml object id
-        GmlObjectId id = request.getGmlObjectId();
+        GmlObjectId id = (GmlObjectId) request.getGmlObjectId();
 
         // set up the hints
         Hints hints = new Hints();

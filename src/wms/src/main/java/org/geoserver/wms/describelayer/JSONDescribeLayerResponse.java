@@ -23,7 +23,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.geoserver.wms.WMS;
-import org.geotools.data.ows.LayerDescription;
+import org.geotools.ows.wms.LayerDescription;
 import org.geotools.util.logging.Logging;
 
 /**

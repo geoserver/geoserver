@@ -29,7 +29,7 @@ import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.RasterLayer;
 import org.geotools.map.StyleLayer;
-import org.geotools.map.WMSLayer;
+import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Style;

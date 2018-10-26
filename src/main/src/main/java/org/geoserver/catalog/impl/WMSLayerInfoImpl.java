@@ -10,7 +10,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geotools.data.ows.Layer;
+import org.geotools.ows.wms.Layer;
 import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")

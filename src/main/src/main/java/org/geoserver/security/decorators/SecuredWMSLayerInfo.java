@@ -11,7 +11,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.ows.Layer;
+import org.geotools.ows.wms.Layer;
 import org.opengis.util.ProgressListener;
 
 /**

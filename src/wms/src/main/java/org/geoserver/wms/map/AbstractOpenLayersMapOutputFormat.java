@@ -9,13 +9,6 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
@@ -24,7 +17,10 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.*;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.GridReaderLayer;
+import org.geotools.map.Layer;
+import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.ows.wmts.map.WMTSMapLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -37,6 +33,14 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** @see RawMapResponse */
 public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputFormat {

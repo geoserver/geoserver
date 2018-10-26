@@ -5,34 +5,15 @@
  */
 package org.geoserver.wms.capabilities;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.wms.xml.Dimension;
-import org.geotools.data.wms.xml.Extent;
+import org.geotools.ows.wms.xml.Dimension;
+import org.geotools.ows.wms.xml.Extent;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
@@ -41,6 +22,13 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Helper class avoiding to duplicate the time/elevation management code between WMS 1.1 and 1.3

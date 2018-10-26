@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.WebMapServer;
 import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")

@@ -6,7 +6,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.WebMapServer;
 import org.opengis.util.ProgressListener;
 
 /**

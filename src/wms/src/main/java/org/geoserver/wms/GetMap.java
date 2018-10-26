@@ -5,28 +5,7 @@
  */
 package org.geoserver.wms;
 
-import java.awt.image.RenderedImage;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.media.jai.RenderedImageList;
-import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -37,16 +16,16 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
-import org.geotools.data.ows.Layer;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Filters;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
-import org.geotools.map.WMSLayer;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wms.map.WMSLayer;
+import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.map.WMTSMapLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
@@ -67,6 +46,15 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import javax.media.jai.RenderedImageList;
+import java.awt.image.RenderedImage;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * WMS GetMap operation default implementation.

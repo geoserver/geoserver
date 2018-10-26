@@ -17,7 +17,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geotools.data.ows.Layer;
+import org.geotools.ows.wms.Layer;
 import org.geotools.feature.NameImpl;
 
 /**

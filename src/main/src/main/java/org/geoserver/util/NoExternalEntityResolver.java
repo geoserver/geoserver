@@ -5,6 +5,8 @@
  */
 package org.geoserver.util;
 
+import org.geotools.util.PreventLocalEntityResolver;
+
 /**
  * EntityResolver implementation to prevent usage of external entity references. to access local
  * files. When parsing an XML entity, the empty InputSource returned by this resolver provokes
@@ -13,6 +15,6 @@ package org.geoserver.util;
  * @author Davide Savazzi - geo-solutions.it
  * @deprecated Use {@link org.geotools.xml.PreventLocalEntityResolver} instead
  */
-public class NoExternalEntityResolver extends org.geotools.xml.PreventLocalEntityResolver {
+public class NoExternalEntityResolver extends PreventLocalEntityResolver {
     private static final long serialVersionUID = -8737951974063414228L;
 }

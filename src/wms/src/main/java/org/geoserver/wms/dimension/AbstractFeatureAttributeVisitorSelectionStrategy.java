@@ -14,10 +14,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureCalc;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 /**

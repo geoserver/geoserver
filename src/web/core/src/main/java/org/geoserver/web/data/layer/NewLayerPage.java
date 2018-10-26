@@ -51,8 +51,8 @@ import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wmts.WebMapTileServer;
-import org.geotools.decorate.Wrapper;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.util.decorate.Wrapper;
 
 /**
  * A page listing the resources contained in a store, and whose links will bring the user to a new

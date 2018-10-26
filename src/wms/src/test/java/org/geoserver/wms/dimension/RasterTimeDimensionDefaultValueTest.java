@@ -38,7 +38,7 @@ import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.io.DefaultFileFilter;
+import org.geotools.util.DefaultFileFilter;
 import org.geotools.util.Range;
 import org.geotools.util.URLs;
 import org.junit.Before;

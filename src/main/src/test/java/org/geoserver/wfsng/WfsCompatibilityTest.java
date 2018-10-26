@@ -18,7 +18,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.decorate.Wrapper;
+import org.geotools.util.decorate.Wrapper;
 import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.Feature;

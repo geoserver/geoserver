@@ -11,8 +11,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.view.DefaultView;
-import org.geotools.factory.Hints;
 import org.geotools.feature.SchemaException;
+import org.geotools.util.factory.Hints;
 import org.opengis.filter.Filter;
 import org.opengis.util.ProgressListener;
 

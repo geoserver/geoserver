@@ -6,9 +6,9 @@
 package org.geoserver.notification;
 
 import org.geoserver.notification.common.Notification;
-import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
+import org.geotools.util.factory.Hints;
 
 public class NotificationPropertyAccessorFactory implements PropertyAccessorFactory {
 

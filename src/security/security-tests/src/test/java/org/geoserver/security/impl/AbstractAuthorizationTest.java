@@ -23,7 +23,7 @@ import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.filter.Filter;

@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
-import org.geotools.util.NullProgressListener;
+import org.geotools.data.util.NullProgressListener;
+import org.geotools.data.util.SubProgressListener;
 import org.geotools.util.SimpleInternationalString;
-import org.geotools.util.SubProgressListener;
 import org.opengis.util.ProgressListener;
 
 /**

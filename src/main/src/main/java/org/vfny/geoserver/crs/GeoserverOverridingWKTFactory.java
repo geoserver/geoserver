@@ -12,9 +12,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
 import org.geotools.util.URLs;
+import org.geotools.util.factory.Hints;
 
 /**
  * Same as the {@link GeoserverCustomWKTFactory}, but this one reads a different file and actually

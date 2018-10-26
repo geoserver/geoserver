@@ -9,11 +9,11 @@ package org.geoserver.test;
 import static org.junit.Assert.*;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;

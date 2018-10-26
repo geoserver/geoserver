@@ -38,7 +38,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.solr.SolrAttribute;
 import org.geotools.data.solr.SolrDataStore;
 import org.geotools.data.solr.SolrLayerConfiguration;
-import org.geotools.util.NullProgressListener;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;

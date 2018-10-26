@@ -11,7 +11,7 @@ import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**

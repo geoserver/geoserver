@@ -13,7 +13,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geotools.xml.PreventLocalEntityResolver;
+import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;

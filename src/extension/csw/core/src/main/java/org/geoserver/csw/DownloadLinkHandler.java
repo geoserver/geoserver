@@ -29,12 +29,12 @@ import org.geotools.data.CloseableIterator;
 import org.geotools.data.FileGroupProvider.FileGroup;
 import org.geotools.data.FileResourceInfo;
 import org.geotools.data.ResourceInfo;
-import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 /** Class delegated to setup direct download links for a {@link CatalogInfo} instance. */

@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -93,7 +93,6 @@ import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.data.wmts.model.WMTSCapabilities;
-import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.NameImpl;
@@ -109,6 +108,7 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.Utilities;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.Schemas;

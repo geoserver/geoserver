@@ -17,4 +17,4 @@ package org.geoserver.catalog;
  *
  * @deprecated use org.geotools.decorate.Wrapper
  */
-public interface Wrapper extends org.geotools.decorate.Wrapper {}
+public interface Wrapper extends org.geotools.util.decorate.Wrapper {}

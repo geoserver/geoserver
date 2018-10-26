@@ -8,8 +8,8 @@ import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import java.util.Optional;
 import org.gdal.gdal.gdal;
 import org.geoserver.platform.ModuleStatus;
-import org.geotools.factory.GeoTools;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
 
 /** Status page checking availability and binary details */
 public class GDALStatus implements ModuleStatus {

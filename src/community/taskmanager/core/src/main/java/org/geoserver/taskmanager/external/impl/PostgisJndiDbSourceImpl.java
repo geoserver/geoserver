@@ -21,7 +21,7 @@ import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.util.SecuredImpl;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.data.postgis.PostgisNGJNDIDataStoreFactory;
-import org.geotools.factory.GeoTools;
+import org.geotools.util.factory.GeoTools;
 
 /**
  * DbSource for Jndi.

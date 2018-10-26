@@ -7,7 +7,7 @@ package org.geoserver.wps.executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.wps.ProcessDismissedException;
-import org.geotools.util.DelegateProgressListener;
+import org.geotools.data.util.DelegateProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;

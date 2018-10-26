@@ -25,6 +25,7 @@ import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.*;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.*;
+import org.geotools.ows.wmts.map.WMTSMapLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.renderer.crs.ProjectionHandler;

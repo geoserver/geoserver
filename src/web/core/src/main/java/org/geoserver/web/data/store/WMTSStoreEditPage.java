@@ -10,7 +10,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
-import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 
 @SuppressWarnings("serial")
 public class WMTSStoreEditPage extends AbstractWMTSStorePage {

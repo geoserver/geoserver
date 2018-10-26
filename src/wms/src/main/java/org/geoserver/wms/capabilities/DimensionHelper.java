@@ -33,7 +33,7 @@ import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.wms.xml.Dimension;
 import org.geotools.data.wms.xml.Extent;
-import org.geotools.data.wmts.model.WMTSLayer;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;

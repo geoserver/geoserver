@@ -13,7 +13,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
-import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 import org.opengis.util.ProgressListener;
 
 /**

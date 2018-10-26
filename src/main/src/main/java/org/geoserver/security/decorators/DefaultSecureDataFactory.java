@@ -23,7 +23,7 @@ import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 

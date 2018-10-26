@@ -50,7 +50,7 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.util.decorate.Wrapper;
 

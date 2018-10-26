@@ -5,6 +5,12 @@
  */
 package org.geoserver.wms.capabilities;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
@@ -22,13 +28,6 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Helper class avoiding to duplicate the time/elevation management code between WMS 1.1 and 1.3

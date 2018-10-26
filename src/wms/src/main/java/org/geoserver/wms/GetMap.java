@@ -5,6 +5,14 @@
  */
 package org.geoserver.wms;
 
+import java.awt.image.RenderedImage;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.media.jai.RenderedImageList;
 import org.geoserver.catalog.*;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -46,15 +54,6 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import javax.media.jai.RenderedImageList;
-import java.awt.image.RenderedImage;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * WMS GetMap operation default implementation.

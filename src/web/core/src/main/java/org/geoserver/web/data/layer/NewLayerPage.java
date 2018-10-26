@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -39,9 +41,6 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.util.decorate.Wrapper;
-
-import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  * A page listing the resources contained in a store, and whose links will bring the user to a new

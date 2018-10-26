@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.util.*;
 import org.geoserver.catalog.*;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.feature.NameImpl;
@@ -14,8 +15,6 @@ import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
-
-import java.util.*;
 
 /**
  * Provides a list of resources for a specific data store

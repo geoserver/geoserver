@@ -5,6 +5,23 @@
  */
 package org.geoserver.catalog;
 
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.measure.Unit;
+import javax.measure.UnitConverter;
+import javax.measure.quantity.Length;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,24 +101,6 @@ import org.vfny.geoserver.util.DataStoreUtils;
 import org.xml.sax.EntityResolver;
 import si.uom.NonSI;
 import si.uom.SI;
-
-import javax.measure.Unit;
-import javax.measure.UnitConverter;
-import javax.measure.quantity.Length;
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Provides access to resources such as datastores, coverage readers, and feature types.

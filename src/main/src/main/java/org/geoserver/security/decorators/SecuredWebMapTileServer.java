@@ -11,14 +11,14 @@ import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.ows.GetCapabilitiesRequest;
 import org.geotools.data.ows.GetCapabilitiesResponse;
-import org.geotools.ows.wmts.WebMapTileServer;
-import org.geotools.ows.wmts.model.WMTSCapabilities;
-import org.geotools.ows.wmts.request.GetTileRequest;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.request.GetFeatureInfoRequest;
 import org.geotools.ows.wms.response.GetFeatureInfoResponse;
+import org.geotools.ows.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.model.WMTSCapabilities;
+import org.geotools.ows.wmts.request.GetTileRequest;
 import org.geotools.tile.Tile;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

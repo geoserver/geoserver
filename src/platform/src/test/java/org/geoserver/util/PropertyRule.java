@@ -36,6 +36,10 @@ public class PropertyRule extends org.junit.rules.ExternalResource {
         props.setProperty(name, value);
     }
 
+    public void clearValue() {
+        props.remove(name);
+    }
+
     public String getName() {
         return name;
     }

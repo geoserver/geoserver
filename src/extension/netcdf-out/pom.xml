@@ -44,6 +44,14 @@
     <artifactId>gs-web-core</artifactId>
   </dependency>
   <dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+  </dependency>
+  <dependency>
     <groupId>org.geoserver</groupId>
     <artifactId>gs-main</artifactId>
     <classifier>tests</classifier>

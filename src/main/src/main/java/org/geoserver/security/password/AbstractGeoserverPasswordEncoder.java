@@ -14,7 +14,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Abstract base implementation, delegating the encoding to third party encoders implementing {@link
@@ -92,7 +92,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
 
     @Override
     public String encodePassword(String rawPass, Object salt) throws DataAccessException {
-        return doEncodePassword(getStringEncoder().encodePassword(rawPass, salt));
+        return doEncodePassword(getStringEncoder().encode(rawPass));
     }
 
     @Override
@@ -122,7 +122,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     public boolean isPasswordValid(String encPass, String rawPass, Object salt)
             throws DataAccessException {
         if (encPass == null) return false;
-        return getStringEncoder().isPasswordValid(stripPrefix(encPass), rawPass, salt);
+        return getStringEncoder().matches(rawPass, stripPrefix(encPass));
     }
 
     @Override
@@ -156,8 +156,13 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     }
 
     @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return this.isPasswordValid(encodedPassword, rawPassword.toString(), null);
+    }
+
+    @Override
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("decoding passwords not supported");
+        return encPass.toCharArray();
     }
 
     public String getPrefix() {
@@ -185,7 +190,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     }
 
     /** Interface for password encoding when source password is specified as char array. */
-    protected static interface CharArrayPasswordEncoder {
+    protected interface CharArrayPasswordEncoder {
 
         String encodePassword(char[] rawPass, Object salt);
 

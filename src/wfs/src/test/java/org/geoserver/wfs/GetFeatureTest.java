@@ -459,6 +459,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
         String request = "wfs?request=GetFeature&typename=" + layer + "&version=1.0.0&service=wfs";
         Document doc = getAsDOM(request);
+        print(doc);
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
         assertTrue(featureMembers.getLength() > 0);
 

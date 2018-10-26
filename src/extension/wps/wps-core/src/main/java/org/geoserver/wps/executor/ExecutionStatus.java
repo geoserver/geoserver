@@ -27,7 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class ExecutionStatus implements Serializable {
+public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus> {
 
     static final Logger LOGGER = Logging.getLogger(ExecutionStatus.class);
 
@@ -425,5 +425,10 @@ public class ExecutionStatus implements Serializable {
             if (other.userName != null) return false;
         } else if (!userName.equals(other.userName)) return false;
         return true;
+    }
+
+    @Override
+    public int compareTo(ExecutionStatus o) {
+        return executionId.compareTo(o.executionId);
     }
 }

@@ -58,8 +58,11 @@ public class DefaultProcessManager
                             TimeUnit.MILLISECONDS,
                             new LinkedBlockingQueue<Runnable>());
         } else {
-            asynchService.setCorePoolSize(maxAsynchronousProcesses);
+            // JDK 11 checks the relation between core and max pool size on each set,
+            // need to lower core pool size before changing max
+            asynchService.setCorePoolSize(1);
             asynchService.setMaximumPoolSize(maxAsynchronousProcesses);
+            asynchService.setCorePoolSize(maxAsynchronousProcesses);
         }
     }
 
@@ -76,8 +79,11 @@ public class DefaultProcessManager
                             TimeUnit.MILLISECONDS,
                             new LinkedBlockingQueue<Runnable>());
         } else {
-            synchService.setCorePoolSize(maxSynchronousProcesses);
+            // JDK 11 checks the relation between core and max pool size on each set,
+            // need to lower core pool size before changing max
+            synchService.setCorePoolSize(1);
             synchService.setMaximumPoolSize(maxSynchronousProcesses);
+            synchService.setCorePoolSize(maxSynchronousProcesses);
         }
     }
 

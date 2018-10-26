@@ -214,7 +214,7 @@ public abstract class XStreamCatalogListConverter
 
         @Override
         protected XStream createXStreamInstance() {
-            return new XStream(new JettisonMappedXmlDriver());
+            return new SecureXStream(new JettisonMappedXmlDriver());
         }
 
         @Override

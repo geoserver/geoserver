@@ -618,7 +618,7 @@
    <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-    <version>4.11</version>
+    <version>4.12</version>
     <scope>test</scope>
    </dependency>
    <dependency>
@@ -644,12 +644,12 @@
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymock</artifactId>
-    <version>3.1</version>
+    <version>3.6</version>
    </dependency>
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymockclassextension</artifactId>
-    <version>2.5.2</version>
+    <version>3.2</version>
    </dependency>
    <dependency>
     <groupId>cglib</groupId>
@@ -746,7 +746,7 @@
    <dependency>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-lang3</artifactId>
-    <version>3.7</version>
+    <version>3.8.1</version>
    </dependency>
    <dependency>
     <groupId>commons-validator</groupId>
@@ -1108,9 +1108,14 @@
    </dependency>
 
    <dependency>
-   <groupId>javax.mail</groupId>
+     <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
      <version>1.4</version>
+   </dependency>
+   <dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>javax.activation-api</artifactId>
+    <version>1.2.0</version>
    </dependency>
    <dependency>
      <groupId>javax.activation</groupId>
@@ -1182,7 +1187,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>25.1-jre</version>
+      <version>27.0-jre</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -1325,6 +1330,42 @@
        </exclusion>
      </exclusions>
    </dependency>
+  <dependency>
+    <groupId>org.apache.directory.server</groupId>
+    <artifactId>apacheds-all</artifactId>
+    <version>1.5.7</version>
+  </dependency>
+  <dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.4.0-b180830.0359</version>
+  </dependency>
+  <dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>2.4.0-b180830.0438</version>
+  </dependency>
+  <dependency>
+    <groupId>javax.annotation</groupId>
+    <artifactId>javax.annotation-api</artifactId>
+    <version>1.3.1</version>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+    <version>${hazelcast.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+    <version>${hazelcast.version}</version>
+    <classifier>tests</classifier>
+  </dependency>
+  <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast-spring</artifactId>
+    <version>${hazelcast.version}</version>
+  </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1491,6 +1532,7 @@
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
      <excludedGroups>${test.excludedGroups}</excludedGroups>
+     <argLine>${argLine} -XX:+IgnoreUnrecognizedVMOptions --illegal-access=debug</argLine>
     </configuration>
    </plugin>
 
@@ -1911,16 +1953,16 @@
   <gt.version>21-SNAPSHOT</gt.version>
   <gwc.version>1.15-SNAPSHOT</gwc.version>
   <jts.version>1.16.0</jts.version>
-  <spring.version>4.3.18.RELEASE</spring.version>
-  <spring.security.version>4.2.7.RELEASE</spring.security.version>
+  <spring.version>5.1.1.RELEASE</spring.version>
+  <spring.security.version>5.1.1.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
-  <jetty.version>9.2.13.v20150730</jetty.version>
+  <jetty.version>9.4.12.v20180830</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
-  <poi.version>3.17</poi.version>
+  <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.27</imageio-ext.version>
-  <jaiext.version>1.1.2</jaiext.version>
+  <imageio-ext.version>1.2.0</imageio-ext.version>
+  <jaiext.version>1.1-SNAPSHOT</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
@@ -1952,13 +1994,14 @@
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.9.5</jackson2.version>
+  <jackson2.version>2.9.7</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
-  <marlin.version>0.7.5-Unsafe</marlin.version>
+  <marlin.version>0.9.3</marlin.version>
   <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
   <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
   <jacoco.version>0.8.1</jacoco.version>
+  <hazelcast.version>3.11-BETA-1</hazelcast.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>

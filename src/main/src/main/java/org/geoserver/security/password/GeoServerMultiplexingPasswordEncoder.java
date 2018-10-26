@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geotools.util.logging.Logging;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -64,12 +64,13 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     GeoServerPasswordEncoder lookupEncoderForEncodedPassword(String encPass)
             throws UnsupportedOperationException {
         for (GeoServerPasswordEncoder enc : encoders) {
-            if (enc.isResponsibleForEncoding(encPass)) return enc;
+            if (enc.isResponsibleForEncoding(encPass)) {
+                return enc;
+            }
         }
         throw new UnsupportedOperationException("No password decoder for: " + encPass);
     }
 
-    @Override
     public String encodePassword(String rawPass, Object salt) throws UnsupportedOperationException {
         for (GeoServerPasswordEncoder enc : encoders) {
             try {
@@ -81,7 +82,6 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public boolean isPasswordValid(String encPass, String rawPass, Object salt)
             throws UnsupportedOperationException {
         GeoServerPasswordEncoder enc = lookupEncoderForEncodedPassword(encPass);
@@ -102,5 +102,15 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         GeoServerPasswordEncoder enc = lookupEncoderForEncodedPassword(encPass);
         return enc.decodeToCharArray(encPass);
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return encodePassword(rawPassword.toString(), null);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return this.isPasswordValid(encodedPassword, rawPassword.toString(), null);
     }
 }

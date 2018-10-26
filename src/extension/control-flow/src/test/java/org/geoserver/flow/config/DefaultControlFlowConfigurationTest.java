@@ -39,7 +39,7 @@ public class DefaultControlFlowConfigurationTest {
 
     @Test
     public void testParsing() throws Exception {
-        Properties p = new Properties();
+        Properties p = new PropertyFileWatcher.LinkedProperties();
         p.put("timeout", "10");
         p.put("ows.global", "100");
         p.put("ows.wms.getmap", "8");
@@ -64,60 +64,62 @@ public class DefaultControlFlowConfigurationTest {
 
         assertEquals(10, controllers.size());
 
+        System.out.println(controllers);
+
         assertTrue(controllers.get(0) instanceof RateFlowController);
         RateFlowController rfc = (RateFlowController) controllers.get(0);
-        assertEquals("wps.execute", rfc.getMatcher().toString());
-        assertEquals(50, rfc.getMaxRequests());
-        assertEquals(Intervals.d.getDuration(), rfc.getTimeInterval());
-        assertEquals(60000, rfc.getDelay());
-
-        assertTrue(controllers.get(1) instanceof RateFlowController);
-        rfc = (RateFlowController) controllers.get(1);
         assertEquals("wms.getmap", rfc.getMatcher().toString());
         assertEquals(100, rfc.getMaxRequests());
         assertEquals(Intervals.m.getDuration(), rfc.getTimeInterval());
         assertEquals(3000, rfc.getDelay());
 
-        assertTrue(controllers.get(2) instanceof RateFlowController);
-        rfc = (RateFlowController) controllers.get(2);
+        assertTrue(controllers.get(1) instanceof RateFlowController);
+        rfc = (RateFlowController) controllers.get(1);
         assertEquals("wms", rfc.getMatcher().toString());
         assertEquals(300, rfc.getMaxRequests());
         assertEquals(Intervals.m.getDuration(), rfc.getTimeInterval());
         assertEquals(3000, rfc.getDelay());
 
-        assertTrue(controllers.get(3) instanceof RateFlowController);
-        rfc = (RateFlowController) controllers.get(3);
+        assertTrue(controllers.get(2) instanceof RateFlowController);
+        rfc = (RateFlowController) controllers.get(2);
         assertEquals("Any OGC request", rfc.getMatcher().toString());
         assertEquals(20, rfc.getMaxRequests());
         assertEquals(Intervals.s.getDuration(), rfc.getTimeInterval());
         assertEquals(0, rfc.getDelay());
 
-        assertTrue(controllers.get(4) instanceof UserConcurrentFlowController);
-        UserConcurrentFlowController uc = (UserConcurrentFlowController) controllers.get(4);
+        assertTrue(controllers.get(3) instanceof UserConcurrentFlowController);
+        UserConcurrentFlowController uc = (UserConcurrentFlowController) controllers.get(3);
         assertEquals(6, uc.getPriority());
 
-        assertTrue(controllers.get(5) instanceof BasicOWSController);
-        BasicOWSController oc = (BasicOWSController) controllers.get(5);
+        assertTrue(controllers.get(4) instanceof BasicOWSController);
+        BasicOWSController oc = (BasicOWSController) controllers.get(4);
         assertEquals(8, oc.getPriority());
         assertEquals("wms.getmap", oc.getMatcher().toString());
 
-        assertTrue(controllers.get(6) instanceof IpFlowController);
-        IpFlowController ipFc = (IpFlowController) controllers.get(6);
+        assertTrue(controllers.get(5) instanceof IpFlowController);
+        IpFlowController ipFc = (IpFlowController) controllers.get(5);
         assertEquals(12, ipFc.getPriority());
 
-        assertTrue(controllers.get(7) instanceof SingleIpFlowController);
-        SingleIpFlowController ipSc = (SingleIpFlowController) controllers.get(7);
+        assertTrue(controllers.get(6) instanceof SingleIpFlowController);
+        SingleIpFlowController ipSc = (SingleIpFlowController) controllers.get(6);
         assertEquals(14, ipSc.getPriority());
         IpRequestMatcher ipMatcher = (IpRequestMatcher) ipSc.getMatcher();
         assertEquals("192.168.1.8", ipMatcher.getIp());
 
-        assertTrue(controllers.get(8) instanceof SingleIpFlowController);
-        ipMatcher = (IpRequestMatcher) ((SingleIpFlowController) controllers.get(8)).getMatcher();
+        assertTrue(controllers.get(7) instanceof SingleIpFlowController);
+        ipMatcher = (IpRequestMatcher) ((SingleIpFlowController) controllers.get(7)).getMatcher();
         assertEquals("192.168.1.10", ipMatcher.getIp());
 
-        assertTrue(controllers.get(9) instanceof GlobalFlowController);
-        GlobalFlowController gc = (GlobalFlowController) controllers.get(9);
+        assertTrue(controllers.get(8) instanceof GlobalFlowController);
+        GlobalFlowController gc = (GlobalFlowController) controllers.get(8);
         assertEquals(100, gc.getPriority());
+
+        assertTrue(controllers.get(9) instanceof RateFlowController);
+        rfc = (RateFlowController) controllers.get(9);
+        assertEquals("wps.execute", rfc.getMatcher().toString());
+        assertEquals(50, rfc.getMaxRequests());
+        assertEquals(Intervals.d.getDuration(), rfc.getTimeInterval());
+        assertEquals(60000, rfc.getDelay());
 
         // store the properties into a temp folder and relaod
         assertTrue(configurator.getFileLocations().isEmpty());

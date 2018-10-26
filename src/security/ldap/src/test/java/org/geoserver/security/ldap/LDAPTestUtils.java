@@ -75,7 +75,7 @@ public class LDAPTestUtils {
                             port,
                             allowAnonymousAccess);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to start embedded server");
+            throw new RuntimeException("Failed to start embedded server", e);
         }
     }
 
@@ -134,6 +134,7 @@ public class LDAPTestUtils {
             }
             return false;
         } catch (Exception ee) {
+            ee.printStackTrace();
             return false;
         }
     }

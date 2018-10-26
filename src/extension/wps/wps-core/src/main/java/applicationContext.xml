@@ -176,7 +176,7 @@
     <bean id="wpsExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
       <constructor-arg index="0">
         <list>
-          <ref local="wpsService-1.0.0" />
+          <ref bean="wpsService-1.0.0" />
         </list>
       </constructor-arg>
     </bean>

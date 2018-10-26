@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -291,7 +292,9 @@ public class WPSOgrTest extends WPSTestSupport {
     }
 
     private static XStream buildXStream() {
-        XStream xstream = new XStream();
+        XStream xstream = new SecureXStream();
+        xstream.allowTypeHierarchy(OgrConfiguration.class);
+        xstream.allowTypeHierarchy(OgrFormat.class);
         xstream.alias("OgrConfiguration", OgrConfiguration.class);
         xstream.alias("Format", OgrFormat.class);
         xstream.addImplicitCollection(OgrFormat.class, "options", "option", String.class);

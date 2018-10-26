@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
@@ -85,7 +86,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testParallelLogin() throws Exception {
-        testParallelLogin("Concurrent login attempts during delay period not allowed", i -> "foo");
+        testParallelLogin("Unauthorized", i -> "foo");
     }
 
     @Test
@@ -99,7 +100,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
         manager.saveSecurityConfig(securityConfig);
 
         // hit with many different users
-        testParallelLogin("Too many failed logins waiting on delay", i -> "foo" + i);
+        testParallelLogin("Unauthorized", i -> "foo" + i);
     }
 
     private void testParallelLogin(
@@ -124,7 +125,7 @@ public class BruteForceAttackTest extends GeoServerSystemTestSupport {
 
                                 // execute request timing how long it took
                                 MockHttpServletRequest request = createRequest(HELLO_GET_REQUEST);
-                                request.setMethod("GET");
+                                request.setMethod(RequestMethod.GET.toString());
                                 request.setContent(new byte[] {});
                                 String userName = userNameGenerator.apply(idx);
                                 String token = userName + ":foobar";

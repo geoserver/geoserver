@@ -8,14 +8,19 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import org.easymock.classextension.EasyMock;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
+import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class GeoServerPropertyOverrideConfigurerTest {
 
     @Test
     public void testPropertyOverrider() {
+        // on easymock 3.6 + jdk11 this test does not work, waiting for 3.7. to be released
+        Assume.assumeFalse(SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_9));
 
         // corner cases
         testPropertyOverride("", "", "");

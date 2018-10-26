@@ -66,7 +66,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     private GeoServerResourceLoader loader;
 
     public MonitorConfig() {
-        props = new Properties();
+        props = new PropertyFileWatcher.LinkedProperties();
         props.put("storage", "memory");
         props.put("mode", "history");
         props.put("maxBodySize", "1024");

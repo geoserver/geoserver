@@ -658,8 +658,8 @@ public class XStreamPersister {
      */
     public void save(Object obj, OutputStream out) throws IOException {
         // unwrap dynamic proxies
-        obj = unwrapProxies(obj);
-        xs.toXML(obj, new OutputStreamWriter(out, "UTF-8"));
+        Object unwrapped = unwrapProxies(obj);
+        xs.toXML(unwrapped, new OutputStreamWriter(out, "UTF-8"));
     }
 
     /**

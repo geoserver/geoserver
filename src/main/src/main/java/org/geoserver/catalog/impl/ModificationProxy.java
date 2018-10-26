@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -601,6 +602,12 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         }
 
         protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
+            if (proxyObject instanceof Proxy) {
+                InvocationHandler h = handler(proxyObject);
+                if (h != null && h instanceof ModificationProxy) {
+                    return proxyObject;
+                }
+            }
             return ModificationProxy.create(proxyObject, proxyInterface);
         }
 

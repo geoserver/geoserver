@@ -148,14 +148,16 @@ public class KMLWFSTest extends WFSTestSupport {
         // print(doc);
 
         XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Folder)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "-92.99707024070754,4.523788746085423",
+        KMLTest.assertPointCoordinate(
+                doc,
                 "//kml:Placemark/kml:MultiGeometry/kml:Point[1]/kml:coordinates",
-                doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "-92.99661950641159,4.524241081543828",
+                -92.99707024070754,
+                4.523788746085423);
+        KMLTest.assertPointCoordinate(
+                doc,
                 "//kml:Placemark/kml:MultiGeometry/kml:Point[2]/kml:coordinates",
-                doc);
+                -92.99661950641159,
+                4.524241081543828);
     }
 
     @Test

@@ -98,7 +98,7 @@
   
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject">
-        <ref local="roleFilter"/>
+        <ref bean="roleFilter"/>
     </property>
     <property name="targetMethod">
         <value>initializeFromConfig</value>

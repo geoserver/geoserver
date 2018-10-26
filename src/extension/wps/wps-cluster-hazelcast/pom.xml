@@ -19,10 +19,6 @@
   <version>${gs.version}</version>
   <name>Web process status sharing with Hazelcast</name>
 
-  <properties>
-    <hazelcast.version>3.3.1</hazelcast.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
@@ -32,7 +28,6 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-      <version>${hazelcast.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
@@ -53,7 +48,6 @@
       <artifactId>hazelcast</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <version>${hazelcast.version}</version>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>

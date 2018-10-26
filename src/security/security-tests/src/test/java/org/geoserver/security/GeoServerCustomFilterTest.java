@@ -27,6 +27,7 @@ import org.geoserver.test.SystemTest;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
@@ -61,6 +62,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
     @Test
     public void testInactive() throws Exception {
         HttpServletRequest request = createRequest("/foo");
+        ((MockHttpServletRequest) request).setMethod("GET");
         MockHttpServletResponse response = dispatch(request);
         assertNull(response.getHeader("foo"));
     }
@@ -93,6 +95,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         setupFilterEntry(Pos.FIRST, null, false);
 
         HttpServletRequest request = createRequest("/foo");
+        ((MockHttpServletRequest) request).setMethod("GET");
         MockHttpServletResponse response = dispatch(request);
         assertEquals("bar", response.getHeader("foo"));
     }
@@ -112,6 +115,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         setupFilterEntry(Pos.BEFORE, GeoServerSecurityFilterChain.ANONYMOUS_FILTER, false);
 
         HttpServletRequest request = createRequest("/foo");
+        ((MockHttpServletRequest) request).setMethod("GET");
         MockHttpServletResponse response = dispatch(request);
         assertEquals("bar", response.getHeader("foo"));
     }
@@ -121,6 +125,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         setupFilterEntry(Pos.AFTER, GeoServerSecurityFilterChain.BASIC_AUTH_FILTER, true);
 
         HttpServletRequest request = createRequest("/foo");
+        ((MockHttpServletRequest) request).setMethod("GET");
         MockHttpServletResponse response = dispatch(request);
         assertEquals("bar", response.getHeader("foo"));
     }

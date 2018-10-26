@@ -167,12 +167,12 @@ public class OwsUtils {
      */
     public static void put(Object object, String property, Object key, Object value) {
         Object o = get(object, property);
-        if (!(o instanceof Map)) {
-            throw new IllegalArgumentException("Property " + property + " is not a map");
-        }
-
         if (o == null) {
             throw new NullPointerException("Property " + property + " is null");
+        }
+
+        if (!(o instanceof Map)) {
+            throw new IllegalArgumentException("Property " + property + " is not a map");
         }
 
         ((Map) o).put(key, value);

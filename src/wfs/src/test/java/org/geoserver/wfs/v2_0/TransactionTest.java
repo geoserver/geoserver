@@ -1019,7 +1019,7 @@ public class TransactionTest extends WFS20TestSupport {
 
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
-
+        System.out.println(resp.getContentAsString());
         Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:TransactionResponse").getLength());

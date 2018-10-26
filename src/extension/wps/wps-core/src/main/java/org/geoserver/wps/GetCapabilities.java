@@ -93,11 +93,11 @@ public class GetCapabilities {
         }
 
         si.setServiceType(Ows11Util.code("WPS"));
-        si.getServiceTypeVersion().add("1.0.0");
+        si.setServiceTypeVersion("1.0.0");
         si.setFees(wps.getFees());
 
         if (wps.getAccessConstraints() != null) {
-            si.getAccessConstraints().add(wps.getAccessConstraints());
+            si.setAccessConstraints(wps.getAccessConstraints());
         }
 
         // ServiceProvider

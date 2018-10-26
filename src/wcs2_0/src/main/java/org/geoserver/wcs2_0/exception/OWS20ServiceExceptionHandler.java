@@ -200,7 +200,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             sb.append(new String(trace.toByteArray()));
         }
 
-        e.setExceptionText(sb.toString());
+        e.getExceptionText().add(sb.toString());
 
         ExceptionReportType report = Ows20Factory.eINSTANCE.createExceptionReportType();
 

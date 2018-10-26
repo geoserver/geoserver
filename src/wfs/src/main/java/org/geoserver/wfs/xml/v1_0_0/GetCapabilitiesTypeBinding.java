@@ -77,7 +77,10 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
 
         WFSBindingUtils.service(getCapabilities, node);
 
-        getCapabilities.getAcceptVersions().getVersion().add(node.getAttributeValue("version"));
+        getCapabilities
+                .getAcceptVersions()
+                .getVersion()
+                .add((String) node.getAttributeValue("version"));
 
         return getCapabilities;
     }

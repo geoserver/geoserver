@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.google.common.io.ByteStreams;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -14,8 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
@@ -27,7 +24,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.geotools.wfs.v1_0.WFSConfiguration;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Encoder;
 import org.geotools.xml.Parser;
@@ -38,6 +35,9 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
+import com.google.common.io.ByteStreams;
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 
 /** Allows reading and writing a WFS feature collection */
 public class WFSPPIO extends XMLPPIO {
@@ -222,7 +222,7 @@ public class WFSPPIO extends XMLPPIO {
 
         public WFS10() {
             super(
-                    new WFSConfiguration(),
+                    new WFSConfiguration_1_0(),
                     "text/xml; subtype=wfs-collection/1.0",
                     org.geoserver.wfs.xml.v1_0_0.WFS.FEATURECOLLECTION);
         }
@@ -235,7 +235,7 @@ public class WFSPPIO extends XMLPPIO {
 
         public WFS10Alternate() {
             super(
-                    new WFSConfiguration(),
+                    new WFSConfiguration_1_0(),
                     "application/wfs-collection-1.0",
                     org.geoserver.wfs.xml.v1_0_0.WFS.FEATURECOLLECTION);
         }

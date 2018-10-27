@@ -7,7 +7,9 @@ package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
+import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
@@ -17,7 +19,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.mock.web.MockHttpServletResponse;
-import net.opengis.wfs.FeatureCollectionType;
 
 public class ClipProcessTest extends WPSTestSupport {
 

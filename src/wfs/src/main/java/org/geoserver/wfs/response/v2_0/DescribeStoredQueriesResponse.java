@@ -12,7 +12,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geotools.wfs.v2_0.WFS;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 public class DescribeStoredQueriesResponse extends WFSResponse {
 

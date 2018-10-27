@@ -7,7 +7,7 @@ package org.geoserver.wfs.xml.v1_0_0;
 
 import javax.xml.namespace.QName;
 import net.opengis.wfs.WfsFactory;
-import org.geotools.xml.AbstractComplexEMFBinding;
+import org.geotools.xsd.AbstractComplexEMFBinding;
 
 /**
  * Binding object for the element http://www.opengis.net/wfs:GetCapabilities.

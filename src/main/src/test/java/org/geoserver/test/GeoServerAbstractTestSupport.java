@@ -67,7 +67,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;

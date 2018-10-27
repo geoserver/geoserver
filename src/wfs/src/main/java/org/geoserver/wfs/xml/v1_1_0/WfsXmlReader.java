@@ -14,8 +14,8 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 
 /**
  * Xml reader for wfs 1.1.0 xml requests.

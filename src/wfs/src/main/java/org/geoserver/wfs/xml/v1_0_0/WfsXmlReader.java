@@ -17,8 +17,8 @@ import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geotools.util.Version;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 
 /**
  * Xml reader for wfs 1.0.0 xml requests.

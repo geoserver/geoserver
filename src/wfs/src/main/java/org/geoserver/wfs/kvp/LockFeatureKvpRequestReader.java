@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.Query;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;

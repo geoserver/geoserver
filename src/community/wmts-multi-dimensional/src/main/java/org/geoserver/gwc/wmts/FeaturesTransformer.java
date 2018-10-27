@@ -11,7 +11,7 @@ import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gml3.GMLConfiguration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.locationtech.jts.geom.*;

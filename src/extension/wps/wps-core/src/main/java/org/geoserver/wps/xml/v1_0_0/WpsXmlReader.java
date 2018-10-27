@@ -17,7 +17,7 @@ import org.geoserver.wps.WPSException;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 
 /**
  * WPS XML parser

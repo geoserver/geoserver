@@ -12,7 +12,7 @@ import net.opengis.wfs20.DropStoredQueryType;
 import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.kvp.WFSKvpRequestReader;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 public class DropStoredQueryKvpRequestReader extends WFSKvpRequestReader {
 

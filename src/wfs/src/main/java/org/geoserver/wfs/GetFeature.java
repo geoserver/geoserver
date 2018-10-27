@@ -65,7 +65,7 @@ import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;

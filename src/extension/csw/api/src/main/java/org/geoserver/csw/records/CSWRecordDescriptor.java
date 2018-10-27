@@ -30,7 +30,7 @@ import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.xsd.ows.OWS;
-import org.geotools.xml.SchemaIndex;
+import org.geotools.xsd.SchemaIndex;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;

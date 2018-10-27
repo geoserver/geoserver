@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDTypeDefinition;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.complex.FeatureTypeRegistryConfiguration;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.complex.FeatureTypeRegistryConfiguration;
 import org.opengis.feature.type.Schema;
 
 /**

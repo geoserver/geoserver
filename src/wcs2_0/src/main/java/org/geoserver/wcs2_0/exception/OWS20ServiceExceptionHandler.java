@@ -25,7 +25,7 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.ows.v2_0.OWS;
 import org.geotools.ows.v2_0.OWSConfiguration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 /**
  * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in

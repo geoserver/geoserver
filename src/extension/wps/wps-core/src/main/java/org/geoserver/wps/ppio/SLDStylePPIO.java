@@ -15,9 +15,9 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 import org.xml.sax.ContentHandler;
 
 /**

@@ -53,7 +53,7 @@ import org.geotools.filter.capability.SpatialCapabiltiesImpl;
 import org.geotools.filter.capability.SpatialOperatorsImpl;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.capability.ArithmeticOperators;

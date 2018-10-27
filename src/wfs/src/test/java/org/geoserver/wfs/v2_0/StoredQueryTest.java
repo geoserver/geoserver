@@ -21,7 +21,7 @@ import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;

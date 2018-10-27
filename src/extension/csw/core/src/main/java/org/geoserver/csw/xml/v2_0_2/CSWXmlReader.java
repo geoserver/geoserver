@@ -17,7 +17,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 
 /**
  * CSW XML parser

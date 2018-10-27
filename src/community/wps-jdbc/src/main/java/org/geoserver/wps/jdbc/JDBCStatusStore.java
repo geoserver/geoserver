@@ -46,8 +46,8 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -448,7 +448,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     private ExecuteType buildRequest(HashMap<String, Object> attrs) {
         byte[] req = (byte[]) attrs.get(REQUEST);
-        org.geotools.xml.Parser parser = new Parser(new WPSConfiguration());
+        Parser parser = new Parser(new WPSConfiguration());
         ExecuteType request = null;
         try {
             request = (ExecuteType) parser.parse(new ByteArrayInputStream(req));

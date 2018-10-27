@@ -29,7 +29,7 @@ import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.Name;

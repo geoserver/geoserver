@@ -7,8 +7,8 @@ package org.geoserver.wfs.xml.filter.v1_1;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;

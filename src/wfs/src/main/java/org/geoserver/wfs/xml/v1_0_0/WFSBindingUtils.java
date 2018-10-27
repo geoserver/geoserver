@@ -8,7 +8,7 @@ package org.geoserver.wfs.xml.v1_0_0;
 import java.math.BigInteger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.geotools.xml.Node;
+import org.geotools.xsd.Node;
 
 /**
  * Utility class to be used by bindings.

@@ -18,7 +18,7 @@ import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

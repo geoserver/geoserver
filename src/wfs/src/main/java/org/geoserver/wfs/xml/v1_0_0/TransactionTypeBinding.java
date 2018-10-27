@@ -14,9 +14,9 @@ import net.opengis.wfs.NativeType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
-import org.geotools.xml.AbstractComplexEMFBinding;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.AbstractComplexEMFBinding;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:TransactionType.

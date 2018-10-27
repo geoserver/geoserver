@@ -17,7 +17,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

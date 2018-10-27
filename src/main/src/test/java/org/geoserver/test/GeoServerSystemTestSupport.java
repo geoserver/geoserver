@@ -119,7 +119,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.core.io.DefaultResourceLoader;

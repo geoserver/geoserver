@@ -8,7 +8,8 @@ package org.geoserver.wps.transmute;
 
 import java.io.InputStream;
 import org.geoserver.wps.WPSException;
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -41,7 +42,7 @@ public abstract class ComplexTransmuter implements Transmuter {
             throw new WPSException("NoApplicableCode", "Failed to initialize XMLConfiguration");
         }
 
-        org.geotools.xml.Parser parser = new org.geotools.xml.Parser(config);
+        Parser parser = new Parser(config);
 
         try {
             decoded = (Geometry) parser.parse(stream);

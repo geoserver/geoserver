@@ -38,7 +38,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.referencing.CRS;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.geotools.xml.transform.Translator;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;

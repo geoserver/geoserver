@@ -12,7 +12,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.gml2.GML;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 
 /**
  * XSD object for GeoServer WFS 1.0.

@@ -34,7 +34,7 @@ import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.geotools.xs.XS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

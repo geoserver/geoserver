@@ -24,9 +24,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.NamedLayer;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 import org.opengis.filter.spatial.BBOX;
 

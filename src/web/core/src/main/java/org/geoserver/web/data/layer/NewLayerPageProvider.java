@@ -5,28 +5,14 @@
  */
 package org.geoserver.web.data.layer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
+import java.util.*;
+import org.geoserver.catalog.*;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.wmts.WebMapTileServer;
-import org.geotools.data.wmts.model.WMTSCapabilities;
-import org.geotools.data.wmts.model.WMTSLayer;
 import org.geotools.feature.NameImpl;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.model.WMTSCapabilities;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
 

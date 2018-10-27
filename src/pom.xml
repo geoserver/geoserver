@@ -225,11 +225,6 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
-    <artifactId>gt-api</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
     <artifactId>gt-main</artifactId>
     <version>${gt.version}</version>
    </dependency>
@@ -1388,10 +1383,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-api</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-main</artifactId>
   </dependency>
   <dependency>
@@ -2080,7 +2071,7 @@
             </goals>
             <configuration>
               <includeGroupIds>org.geotools,org.geowebcache</includeGroupIds>
-              <includeArtifactIds>gt-api,gwc-core</includeArtifactIds>
+              <includeArtifactIds>gwc-core</includeArtifactIds>
             </configuration>
           </execution>
         </executions>
@@ -2108,9 +2099,6 @@
           <phase>package</phase>
           <configuration>
             <tasks>
-               <loadproperties prefix="gt">
-                  <zipentry zipfile="target/dependency/gt-api-${gt.version}.jar" name="META-INF/MANIFEST.MF"/>
-               </loadproperties>
                <loadproperties prefix="gwc">
                   <zipentry zipfile="target/dependency/gwc-core-${gwc.version}.jar" name="META-INF/MANIFEST.MF"/>
                </loadproperties>

@@ -7,7 +7,7 @@ package org.geoserver.ows.xml.v1_0;
 
 import net.opengis.ows10.Ows10Factory;
 import org.geotools.xlink.XLINKConfiguration;
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
 import org.picocontainer.MutablePicoContainer;
 
 /**

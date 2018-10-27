@@ -7,9 +7,9 @@ package org.geoserver.gwc.wms;
 
 import java.util.List;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geowebcache.io.ImageDecoderContainer;
-import org.geowebcache.io.ImageDecoderImpl;
-import org.geowebcache.io.ImageIOInitializer;
+import org.geowebcache.io.codec.ImageDecoderContainer;
+import org.geowebcache.io.codec.ImageDecoderImpl;
+import org.geowebcache.io.codec.ImageIOInitializer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;

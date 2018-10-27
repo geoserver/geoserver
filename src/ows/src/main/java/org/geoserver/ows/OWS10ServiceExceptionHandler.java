@@ -20,7 +20,7 @@ import net.opengis.ows10.Ows10Factory;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
 import org.geoserver.platform.ServiceException;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 /**
  * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in

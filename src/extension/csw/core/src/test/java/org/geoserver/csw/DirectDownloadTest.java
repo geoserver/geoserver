@@ -34,7 +34,7 @@ import org.geotools.data.CloseableIterator;
 import org.geotools.data.FileGroupProvider.FileGroup;
 import org.geotools.data.FileResourceInfo;
 import org.geotools.filter.v1_1.OGC;
-import org.geotools.ows.OWS;
+import org.geotools.xsd.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

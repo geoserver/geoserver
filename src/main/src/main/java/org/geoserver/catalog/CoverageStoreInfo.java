@@ -7,7 +7,7 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.util.ProgressListener;
 

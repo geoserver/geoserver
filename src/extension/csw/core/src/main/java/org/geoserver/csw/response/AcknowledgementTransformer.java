@@ -17,7 +17,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
-import org.geotools.ows.OWS;
+import org.geotools.xsd.ows.OWS;
 import org.geotools.util.Converters;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.transform.Translator;

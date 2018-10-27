@@ -18,9 +18,9 @@ import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
-import org.geotools.data.SampleDataAccess;
-import org.geotools.data.SampleDataAccessData;
-import org.geotools.data.SampleDataAccessFactory;
+import org.geotools.appschema.resolver.data.SampleDataAccess;
+import org.geotools.appschema.resolver.data.SampleDataAccessData;
+import org.geotools.appschema.resolver.data.SampleDataAccessFactory;
 import org.locationtech.jts.geom.Envelope;
 
 /**

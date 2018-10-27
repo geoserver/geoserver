@@ -21,7 +21,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml2.GML;
-import org.geotools.xml.Schemas;
+import org.geotools.xsd.Schemas;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;

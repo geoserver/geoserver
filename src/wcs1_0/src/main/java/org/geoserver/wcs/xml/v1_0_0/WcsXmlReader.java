@@ -13,7 +13,7 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.Version;
 import org.geotools.wcs.WCS;
 import org.geotools.wcs.WCSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**

@@ -26,8 +26,8 @@ import org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader;
 import org.geotools.process.raster.DynamicColorMapTest;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
+import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Test;
 
 public class DynamicGetLegendGraphicsCallbackTest extends GeoServerSystemTestSupport {

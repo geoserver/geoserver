@@ -22,7 +22,7 @@ import org.geoserver.config.JAIEXTInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.image.ImageWorker;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 

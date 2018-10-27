@@ -6,9 +6,9 @@
 package org.geoserver.wps.property;
 
 import org.geoserver.wps.executor.ExecutionStatus;
-import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
+import org.geotools.util.factory.Hints;
 
 /** Property accessor for GeoServer ExecutionStatus beans */
 public class ExecutionStatusAccessorFactory implements PropertyAccessorFactory {

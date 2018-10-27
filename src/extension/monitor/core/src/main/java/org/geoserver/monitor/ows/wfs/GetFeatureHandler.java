@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.ows.util.OwsUtils;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GetFeatureHandler extends WFSRequestObjectHandler {

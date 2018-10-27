@@ -6,7 +6,7 @@
 package org.geoserver.wfs.xml;
 
 import org.geotools.wfs.WFSConfiguration;
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
 
 /**
  * XML configuration for a geoserver application schema.

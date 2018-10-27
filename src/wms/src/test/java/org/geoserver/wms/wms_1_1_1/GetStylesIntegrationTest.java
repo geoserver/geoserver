@@ -19,9 +19,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 
 public class GetStylesIntegrationTest extends WMSTestSupport {

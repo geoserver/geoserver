@@ -14,7 +14,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.WebMapServer;
 import org.opengis.util.ProgressListener;
 
 /**

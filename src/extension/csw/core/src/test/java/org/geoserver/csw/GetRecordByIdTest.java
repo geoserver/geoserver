@@ -20,7 +20,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
-import org.geotools.xml.PreventLocalEntityResolver;
+import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

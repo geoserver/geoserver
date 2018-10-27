@@ -6,7 +6,7 @@
 package org.geoserver.util;
 
 import org.geoserver.config.GeoServer;
-import org.geotools.xml.PreventLocalEntityResolver;
+import org.geotools.util.PreventLocalEntityResolver;
 import org.xml.sax.EntityResolver;
 
 /**

@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.platform.resource.Files;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 

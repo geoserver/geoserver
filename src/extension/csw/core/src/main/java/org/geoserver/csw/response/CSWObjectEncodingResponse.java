@@ -11,7 +11,7 @@ import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.xlink.XLINK;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 /**
  * A response designed to encode a specific object into XML

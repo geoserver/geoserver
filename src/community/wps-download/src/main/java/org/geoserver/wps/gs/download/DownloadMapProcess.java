@@ -55,16 +55,16 @@ import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wms.response.GetMapResponse;
+import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wms.response.GetMapResponse;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
@@ -388,7 +388,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             throws IOException, ServiceException, FactoryException {
         // using a WMS client so that it respects the GetMap URL from the capabilities
         WebMapServer server = getServer(layer, cache);
-        org.geotools.data.wms.request.GetMapRequest getMap = server.createGetMapRequest();
+        org.geotools.ows.wms.request.GetMapRequest getMap = server.createGetMapRequest();
         String requestFormat = getCascadingFormat(server);
 
         // going low level to apply all the properties we have verbatim

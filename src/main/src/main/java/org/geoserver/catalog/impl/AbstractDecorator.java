@@ -19,7 +19,7 @@ import org.geoserver.catalog.Wrapper;
  *
  * @deprecated use org.geotools.decorate.AbstractDecorator
  */
-public abstract class AbstractDecorator<D> extends org.geotools.decorate.AbstractDecorator<D>
+public abstract class AbstractDecorator<D> extends org.geotools.util.decorate.AbstractDecorator<D>
         implements Wrapper {
 
     public AbstractDecorator(D delegate) {

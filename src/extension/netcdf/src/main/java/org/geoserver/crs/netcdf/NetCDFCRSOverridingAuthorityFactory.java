@@ -12,8 +12,8 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
-import org.geotools.factory.Hints;
 import org.geotools.util.URLs;
+import org.geotools.util.factory.Hints;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 
 /**

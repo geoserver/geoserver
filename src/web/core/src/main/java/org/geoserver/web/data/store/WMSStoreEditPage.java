@@ -11,7 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.WebMapServer;
 
 public class WMSStoreEditPage extends AbstractWMSStorePage {
 

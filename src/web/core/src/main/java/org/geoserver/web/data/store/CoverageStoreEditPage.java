@@ -19,7 +19,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.factory.GeoTools;
+import org.geotools.util.factory.GeoTools;
 import org.opengis.coverage.grid.GridCoverageReader;
 
 /**

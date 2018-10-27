@@ -33,7 +33,7 @@
        
        You also need to uncomment gwcWMSConfig in the gwcTLDispatcher bean!
        -->
-  <!--bean id="gwcWMSConfig" class="org.geowebcache.config.GetCapabilitiesConfiguration">
+  <!--bean id="gwcWMSConfig" class="org.geowebcache.config.wms.GetCapabilitiesConfiguration">
   	<constructor-arg ref="gwcGridSetBroker">
     </constructor-arg>
     <constructor-arg value="http://demo.mapserver.org/cgi-bin/mapserv?map=/osgeo/mapserver/msautotest/world/world.map&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities">

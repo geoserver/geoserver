@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.xml;
 
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
 
 public class ApplicationSchemaConfiguration2 extends Configuration {
 

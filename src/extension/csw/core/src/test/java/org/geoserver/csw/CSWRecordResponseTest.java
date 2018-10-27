@@ -41,7 +41,7 @@ import org.geotools.csw.DCT;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.ows.OWS;
+import org.geotools.xsd.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.junit.Before;
 import org.junit.Test;

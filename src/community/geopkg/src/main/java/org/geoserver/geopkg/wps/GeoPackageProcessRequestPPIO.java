@@ -12,8 +12,8 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geotools.geopkg.wps.GeoPackageProcessRequest;
 import org.geotools.geopkg.wps.xml.GPKGConfiguration;
 import org.geotools.ows.ServiceException;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 
 public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
 

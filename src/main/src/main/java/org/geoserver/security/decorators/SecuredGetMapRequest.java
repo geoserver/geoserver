@@ -17,14 +17,14 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.HTTPResponse;
-import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.Response;
-import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.StyleImpl;
+import org.geotools.ows.wms.request.GetMapRequest;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 

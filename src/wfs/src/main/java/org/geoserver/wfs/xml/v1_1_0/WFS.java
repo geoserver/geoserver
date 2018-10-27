@@ -11,7 +11,7 @@ import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.gml3.GML;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 
 /**
  * XSD object for GeoServer WFS 1.1.

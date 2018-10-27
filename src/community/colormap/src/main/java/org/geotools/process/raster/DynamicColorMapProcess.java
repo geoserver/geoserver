@@ -6,7 +6,6 @@
 package org.geotools.process.raster;
 
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.factory.GeoTools;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -15,6 +14,7 @@ import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerHelper;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.util.factory.GeoTools;
 
 /**
  * Render a GridCoverage based on a dynamic colormap

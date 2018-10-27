@@ -6,9 +6,9 @@
 package org.geoserver.catalog.impl;
 
 import org.geoserver.catalog.Info;
-import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
+import org.geotools.util.factory.Hints;
 
 /** Property accessor for GeoServer {@link Info} configuration objects. */
 public class CatalogPropertyAccessorFactory implements PropertyAccessorFactory {

@@ -12,7 +12,7 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Test;
 
 public class WFSXmlTest extends WFSTestSupport {

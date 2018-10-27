@@ -19,9 +19,9 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.platform.ExtensionPriority;
-import org.geotools.factory.GeoTools;
-import org.geotools.factory.Hints;
 import org.geotools.image.io.ImageIOExt;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 
 /**
  * Initializes Coverage Access settings from configuration.

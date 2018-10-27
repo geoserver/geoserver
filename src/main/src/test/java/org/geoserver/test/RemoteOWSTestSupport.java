@@ -15,11 +15,11 @@ import java.util.logging.Logger;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.data.ows.Layer;
 import org.geotools.data.wfs.WFSDataStoreFactory;
-import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.WebMapServer;
 import org.opengis.filter.FilterFactory;
 
 /**

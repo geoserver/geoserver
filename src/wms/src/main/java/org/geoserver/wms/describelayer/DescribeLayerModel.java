@@ -18,7 +18,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geotools.data.ows.LayerDescription;
+import org.geotools.ows.wms.LayerDescription;
 import org.geotools.util.logging.Logging;
 
 /**

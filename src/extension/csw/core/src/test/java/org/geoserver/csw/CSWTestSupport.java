@@ -26,7 +26,7 @@ import org.geotools.csw.CSWConfiguration;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
 import org.geotools.filter.v1_1.OGC;
-import org.geotools.ows.OWS;
+import org.geotools.xsd.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;

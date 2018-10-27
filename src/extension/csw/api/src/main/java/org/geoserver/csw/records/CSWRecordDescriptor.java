@@ -29,7 +29,7 @@ import org.geotools.filter.SortByImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.v1_0.OGC;
-import org.geotools.ows.OWS;
+import org.geotools.xsd.ows.OWS;
 import org.geotools.xml.SchemaIndex;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.AttributeDescriptor;

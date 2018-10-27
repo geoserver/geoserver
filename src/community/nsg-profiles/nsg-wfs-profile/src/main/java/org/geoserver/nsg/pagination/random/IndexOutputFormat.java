@@ -37,7 +37,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

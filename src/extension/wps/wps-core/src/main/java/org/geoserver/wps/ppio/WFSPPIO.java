@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.ppio;
 
+import com.google.common.io.ByteStreams;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.FeatureCollectionType;
+import net.opengis.wfs.WfsFactory;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
@@ -35,9 +38,6 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.ContentHandler;
-import com.google.common.io.ByteStreams;
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
 
 /** Allows reading and writing a WFS feature collection */
 public class WFSPPIO extends XMLPPIO {

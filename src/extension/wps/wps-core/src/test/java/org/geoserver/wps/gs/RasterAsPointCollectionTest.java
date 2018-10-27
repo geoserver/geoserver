@@ -7,10 +7,12 @@ package org.geoserver.wps.gs;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -25,7 +27,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.mock.web.MockHttpServletResponse;
-import net.opengis.wfs.FeatureCollectionType;
 
 public class RasterAsPointCollectionTest extends WPSTestSupport {
 

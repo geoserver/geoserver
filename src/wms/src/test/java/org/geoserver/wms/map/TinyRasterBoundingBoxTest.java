@@ -23,7 +23,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.styling.Style;
 import org.junit.After;
 import org.junit.Before;

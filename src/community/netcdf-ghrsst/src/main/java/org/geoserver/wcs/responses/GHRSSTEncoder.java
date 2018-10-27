@@ -39,7 +39,7 @@ import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

@@ -23,7 +23,7 @@ import org.geoserver.wps.ppio.CoveragePPIO.PNGPPIO;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

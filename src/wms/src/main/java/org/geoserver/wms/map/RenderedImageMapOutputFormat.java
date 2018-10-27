@@ -87,7 +87,7 @@ import org.geotools.renderer.lite.RenderingTransformationHelper;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
-import org.geotools.resources.image.ColorUtilities;
+import org.geotools.image.util.ColorUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;

@@ -30,7 +30,7 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.locationtech.jts.geom.Geometry;

@@ -82,7 +82,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
-import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;

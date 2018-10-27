@@ -8,7 +8,7 @@ package org.geoserver.wps.resource;
 import java.awt.image.RenderedImage;
 import javax.media.jai.PlanarImage;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.opengis.coverage.grid.GridCoverage;
 
 public class CoverageResource implements WPSResource {

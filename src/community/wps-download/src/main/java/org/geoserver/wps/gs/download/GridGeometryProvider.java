@@ -26,7 +26,7 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;

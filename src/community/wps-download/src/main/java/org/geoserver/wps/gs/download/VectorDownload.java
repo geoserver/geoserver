@@ -24,7 +24,7 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.process.ProcessException;
 import org.geotools.process.vector.ClipProcess;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;

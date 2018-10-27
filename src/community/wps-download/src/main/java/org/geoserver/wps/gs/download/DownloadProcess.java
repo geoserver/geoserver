@@ -29,7 +29,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;

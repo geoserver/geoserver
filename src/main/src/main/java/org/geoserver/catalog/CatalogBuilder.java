@@ -46,7 +46,7 @@ import org.geotools.ows.wms.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;

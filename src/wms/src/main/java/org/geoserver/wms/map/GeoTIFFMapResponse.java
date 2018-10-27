@@ -26,7 +26,7 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
-import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**

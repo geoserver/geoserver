@@ -44,7 +44,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.URLs;

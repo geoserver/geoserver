@@ -14,7 +14,7 @@ import javax.media.jai.RenderedImageList;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 
 public class RasterCleaner extends AbstractDispatcherCallback {
     static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<List<RenderedImage>>();

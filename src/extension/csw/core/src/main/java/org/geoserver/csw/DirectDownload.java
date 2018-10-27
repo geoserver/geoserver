@@ -27,7 +27,7 @@ import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.feature.NameImpl;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;

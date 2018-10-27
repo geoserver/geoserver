@@ -32,7 +32,7 @@ import org.geotools.image.ImageWorker;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.metadata.i18n.Vocabulary;
 import org.geotools.metadata.i18n.VocabularyKeys;
-import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;

@@ -61,7 +61,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.PreventLocalEntityResolver;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

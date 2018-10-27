@@ -10,9 +10,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.filter.v1_0.OGCConfiguration;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 import org.opengis.filter.Filter;
 import org.xml.sax.ContentHandler;
 

@@ -10,7 +10,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.ViewParamsKvpParser;
 import org.geoserver.wfs.xml.v1_0_0.WFSBindingUtils;
-import org.geotools.xml.Node;
+import org.geotools.xsd.Node;
 
 /** Static methods for accessing the ViewParams KVP parser. */
 public class SqlViewParamsExtractor {

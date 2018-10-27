@@ -11,7 +11,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 /**
  * Parses a kvp of the form "acceptFormats=format1,format2,...,formatN" into an instance of OWS

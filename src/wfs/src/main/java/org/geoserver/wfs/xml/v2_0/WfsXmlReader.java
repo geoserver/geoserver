@@ -18,7 +18,7 @@ import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.wfs.v2_0.WFS;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 
 /**
  * Xml reader for wfs 2.0 xml requests.

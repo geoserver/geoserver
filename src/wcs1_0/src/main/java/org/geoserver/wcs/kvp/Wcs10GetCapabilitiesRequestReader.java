@@ -13,7 +13,7 @@ import net.opengis.wcs10.Wcs10Factory;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 /**
  * Parses a GetCapabilities request for WCS into the correspondent model object

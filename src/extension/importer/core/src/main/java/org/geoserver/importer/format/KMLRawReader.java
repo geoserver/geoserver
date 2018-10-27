@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 import org.geotools.kml.v22.KML;
 import org.geotools.kml.v22.KMLConfiguration;
-import org.geotools.xml.PullParser;
+import org.geotools.xsd.PullParser;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class KMLRawReader implements Iterable<Object>, Iterator<Object> {

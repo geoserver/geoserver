@@ -15,13 +15,13 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.xml.impl.AttributeHandler;
-import org.geotools.xml.impl.DocumentHandler;
-import org.geotools.xml.impl.ElementHandler;
-import org.geotools.xml.impl.ElementHandlerImpl;
-import org.geotools.xml.impl.Handler;
-import org.geotools.xml.impl.HandlerFactory;
-import org.geotools.xml.impl.ParserHandler;
+import org.geotools.xsd.impl.AttributeHandler;
+import org.geotools.xsd.impl.DocumentHandler;
+import org.geotools.xsd.impl.ElementHandler;
+import org.geotools.xsd.impl.ElementHandlerImpl;
+import org.geotools.xsd.impl.Handler;
+import org.geotools.xsd.impl.HandlerFactory;
+import org.geotools.xsd.impl.ParserHandler;
 
 /**
  * Special handler factory which creates handlers for elements which are defined as wfs feature

@@ -80,7 +80,7 @@ import org.geotools.util.Utilities;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.DocumentFactory;
-import org.geotools.xml.Schemas;
+import org.geotools.xsd.Schemas;
 import org.geotools.xml.XMLHandlerHints;
 import org.geotools.xml.handlers.DocumentHandler;
 import org.opengis.coverage.grid.GridCoverage;

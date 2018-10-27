@@ -18,8 +18,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.EMFUtils;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.EMFUtils;
+import org.geotools.xsd.Encoder;
 
 public abstract class WFSResponse extends org.geoserver.wfs.response.WFSResponse {
 

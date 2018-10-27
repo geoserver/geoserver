@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.geoserver.wps.ppio.CDataPPIO;
-import org.geotools.xml.EncoderDelegate;
+import org.geotools.xsd.EncoderDelegate;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;

@@ -21,8 +21,8 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Encoder;
 
 /**
  * WFS output format for a GetFeature operation in which the resultType is "hits".

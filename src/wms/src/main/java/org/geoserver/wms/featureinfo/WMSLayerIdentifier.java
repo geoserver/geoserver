@@ -30,7 +30,7 @@ import org.geotools.ows.wms.map.WMSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

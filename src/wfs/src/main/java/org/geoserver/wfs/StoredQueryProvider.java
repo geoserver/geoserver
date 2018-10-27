@@ -21,8 +21,8 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 
 /**
  * Extension point for WFS stored queries.

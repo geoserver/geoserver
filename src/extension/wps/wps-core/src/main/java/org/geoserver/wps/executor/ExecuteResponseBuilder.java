@@ -62,7 +62,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;

@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ServiceException;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 /**
  * Web Feature Service Key Value Pair Request reader.

@@ -6,7 +6,7 @@
 package org.geoserver.wfs.kvp;
 
 import org.geoserver.config.GeoServer;
-import org.geotools.xml.Configuration;
+import org.geotools.xsd.Configuration;
 
 /**
  * Parses a {@code FILTER} parameter assuming the filters sent are encoded as per the OGC Filter

@@ -23,7 +23,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
 import org.geotools.filter.SortByImpl;
-import org.geotools.xml.SchemaIndex;
+import org.geotools.xsd.SchemaIndex;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;

@@ -12,8 +12,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.test.XMLTestSupport;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.test.XMLTestSupport;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

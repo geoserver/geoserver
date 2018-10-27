@@ -52,7 +52,7 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.util.URLs;
 import org.geotools.wcs.v2_0.WCSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.After;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;

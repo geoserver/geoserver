@@ -12,8 +12,8 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Encoder;
 
 /**
  * A response designed to encode a specific object into XML

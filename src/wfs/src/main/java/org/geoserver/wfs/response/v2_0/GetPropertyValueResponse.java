@@ -21,7 +21,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.NameImpl;
 import org.geotools.wfs.v2_0.WFS;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 

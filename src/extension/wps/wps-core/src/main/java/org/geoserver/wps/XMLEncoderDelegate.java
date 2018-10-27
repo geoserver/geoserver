@@ -6,7 +6,7 @@
 package org.geoserver.wps;
 
 import org.geoserver.wps.ppio.XMLPPIO;
-import org.geotools.xml.EncoderDelegate;
+import org.geotools.xsd.EncoderDelegate;
 import org.xml.sax.ContentHandler;
 
 /**

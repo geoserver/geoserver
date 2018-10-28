@@ -52,6 +52,10 @@
    <artifactId>gt-xsd-core</artifactId>
   </dependency>
   <dependency>
+   <groupId>com.google.guava</groupId>
+   <artifactId>guava</artifactId>
+  </dependency>
+  <dependency>
    <groupId>org.geotools.xsd</groupId>
    <artifactId>gt-xsd-core</artifactId>
    <classifier>tests</classifier>

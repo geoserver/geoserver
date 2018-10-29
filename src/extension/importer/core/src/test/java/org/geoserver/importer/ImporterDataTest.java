@@ -65,7 +65,7 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleAttributeExtractor;
+import org.geotools.renderer.style.StyleAttributeExtractor;
 import org.junit.Assume;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;

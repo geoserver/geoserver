@@ -186,8 +186,10 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         // add the message
         StringBuffer sb = new StringBuffer();
         OwsUtils.dumpExceptionMessages(exception, sb, true);
-        sb.append("\n");
-        sb.append(exception.getExceptionText()); // check this
+        if (exception.getExceptionText() != null && !exception.getExceptionText().isEmpty()) {
+            sb.append("\n");
+            sb.append(exception.getExceptionText()); // check this
+        }
         //        e.getExceptionText().add(sb.toString());
         //        e.getExceptionText().addAll(exception.getExceptionText());
 

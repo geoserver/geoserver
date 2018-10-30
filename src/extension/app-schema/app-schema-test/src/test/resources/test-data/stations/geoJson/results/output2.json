@@ -1,0 +1,107 @@
+{
+  "crs": {
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    },
+    "type": "name"
+  },
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "type": "Point"
+      },
+      "id": "st.1",
+      "properties": {
+        "contact": [
+          {
+            "phone": [
+              "95482156",
+              {
+                "timeZone": "CET"
+              }
+            ]
+          },
+          {
+            "mail": "st1@stations.org"
+          }
+        ],
+        "measurements": [
+          {
+            "value": [
+              27.5,
+              {
+                "name": "temperature"
+              },
+              {
+                "unit": "c"
+              }
+            ]
+          },
+          {
+            "value": [
+              45,
+              {
+                "name": "wind"
+              },
+              {
+                "unit": "km/h"
+              }
+            ]
+          }
+        ],
+        "name": [
+          "station1",
+          {
+            "code": "st1"
+          }
+        ]
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -2,
+          -3
+        ],
+        "type": "Point"
+      },
+      "id": "st.2",
+      "properties": {
+        "contact": [
+          {
+            "mail": "st2@stations.org"
+          }
+        ],
+        "measurements": [
+          {
+            "value": [
+              12.5,
+              {
+                "name": "pressure"
+              },
+              {
+                "unit": "atm"
+              }
+            ]
+          }
+        ],
+        "name": [
+          "station2",
+          {
+            "code": "st2"
+          }
+        ]
+      },
+      "type": "Feature"
+    }
+  ],
+  "numberReturned": 2,
+  "timeStamp": "2018-10-29T22:44:53.176Z",
+  "totalFeatures": "unknown",
+  "type": "FeatureCollection"
+}

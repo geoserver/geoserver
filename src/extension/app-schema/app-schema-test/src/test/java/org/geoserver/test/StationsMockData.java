@@ -95,6 +95,26 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         return xpathEngine;
     }
 
+    /** Return a map containing the standard placeholders with the corresponding GML31 values. */
+    public static Map<String, String> getGml31StandardParamaters() {
+        Map<String, String> gml31Parameters = new HashMap<>();
+        gml31Parameters.put("GML_PREFIX", "gml31");
+        gml31Parameters.put("GML_PREFIX_UPPER", "GML31");
+        gml31Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml");
+        gml31Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
+        return gml31Parameters;
+    }
+
+    /** Return a map containing the standard placeholders with the corresponding GML32 values. */
+    public static Map<String, String> getGml32StandardParamaters() {
+        Map<String, String> gml32Parameters = new HashMap<>();
+        gml32Parameters.put("GML_PREFIX", "gml32");
+        gml32Parameters.put("GML_PREFIX_UPPER", "GML32");
+        gml32Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml/3.2");
+        gml32Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.2.1/gml.xsd");
+        return gml32Parameters;
+    }
+
     @Override
     public void addContent() {
         // add GML 3.1 namespaces

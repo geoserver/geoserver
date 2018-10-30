@@ -489,11 +489,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
-    public void testGetFeatureJSON() throws Exception {
-        testJsonRequest("gsml:MappedFeature", "/test-data/MappedFeature.json");
-    }
-
-    @Test
     public void testGetFeatureValid() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         String newline = System.getProperty("line.separator");
@@ -1637,11 +1632,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 id, "(//om:Observation)[4]/om:result/gsml:MappedFeature/@gml:id", doc);
     }
 
-    @Test
-    public void testAnyTypeAndAnyElementJSON() throws Exception {
-        testJsonRequest("om:Observation", "/test-data/Observation.json");
-    }
-
     /** Making sure attributes that are encoded as xlink:href can still be queried in filters. */
     @Test
     public void testFilteringXlinkHref() {
@@ -1941,12 +1931,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(encodeFeatureMember);
         getGeoServer().save(wfs);
-    }
-
-    @Test
-    public void testEncodeFeatureMembersJSON() throws Exception {
-        testJsonRequest(
-                "gsml:MappedFeature,gsml:GeologicUnit", "/test-data/MultipleCollections.json");
     }
 
     @Test

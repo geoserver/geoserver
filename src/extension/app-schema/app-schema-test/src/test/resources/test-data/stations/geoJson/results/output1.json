@@ -1,0 +1,121 @@
+{
+  "crs": {
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    },
+    "type": "name"
+  },
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "type": "Point"
+      },
+      "id": "st.1",
+      "properties": {
+        "contact": [
+          {
+            "phone": [
+              "95482156",
+              {
+                "timeZone": "CET"
+              }
+            ]
+          },
+          {
+            "mail": "st1@stations.org"
+          }
+        ],
+        "measurements": [
+          {
+            "href": "http://www.stations.org/ms.1"
+          },
+          {
+            "href": "http://www.stations.org/ms.2"
+          }
+        ],
+        "name": [
+          "station1",
+          {
+            "code": "st1"
+          }
+        ]
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -2,
+          -3
+        ],
+        "type": "Point"
+      },
+      "id": "st.2",
+      "properties": {
+        "contact": [
+          {
+            "phone": [
+              {
+                "timeZone": ""
+              }
+            ]
+          },
+          {
+            "mail": "st2@stations.org"
+          }
+        ],
+        "measurements": [
+          {
+            "href": "http://www.stations.org/ms.3"
+          }
+        ],
+        "name": [
+          "station2",
+          {
+            "code": "st2"
+          }
+        ]
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -5,
+          -1
+        ],
+        "type": "Point"
+      },
+      "id": "st.3",
+      "properties": {
+        "contact": [
+          {
+            "phone": [
+              {
+                "timeZone": "GTM"
+              }
+            ]
+          },
+          {
+            "mail": "st3@stations.org"
+          }
+        ],
+        "name": [
+          "station3",
+          {
+            "code": "st3"
+          }
+        ]
+      },
+      "type": "Feature"
+    }
+  ],
+  "numberReturned": 3,
+  "timeStamp": "2018-10-29T22:24:26.475Z",
+  "totalFeatures": "unknown",
+  "type": "FeatureCollection"
+}

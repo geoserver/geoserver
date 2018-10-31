@@ -9,14 +9,36 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.SortedSet;
+import org.apache.directory.server.annotations.CreateLdapServer;
+import org.apache.directory.server.annotations.CreateTransport;
+import org.apache.directory.server.core.annotations.ApplyLdifFiles;
+import org.apache.directory.server.core.annotations.CreateDS;
+import org.apache.directory.server.core.annotations.CreatePartition;
+import org.apache.directory.server.core.integ.FrameworkRunner;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** @author Niels Charlier */
+@RunWith(FrameworkRunner.class)
+@CreateLdapServer(
+    transports = {
+        @CreateTransport(
+            protocol = "LDAP",
+            address = "localhost",
+            port = LDAPTestUtils.LDAP_SERVER_PORT
+        )
+    },
+    allowAnonymousAccess = true
+)
+@CreateDS(
+    name = "myDS",
+    partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
+)
+@ApplyLdifFiles({"data4.ldif"})
 public class LDAPUserGroupServiceTest extends LDAPBaseTest {
     GeoServerUserGroupService service;
 
@@ -34,9 +56,6 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
         ((LDAPUserGroupServiceConfig) config)
                 .setPopulatedAttributes("sn, givenName, telephoneNumber, mail");
         service = new LDAPUserGroupService(config);
-
-        Assume.assumeTrue(
-                LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath, "data4.ldif"));
     }
 
     @Test

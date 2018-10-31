@@ -8,6 +8,12 @@ package org.geoserver.web.security.ldap;
 import static org.junit.Assert.assertNull;
 
 import java.io.Serializable;
+import org.apache.directory.server.annotations.CreateLdapServer;
+import org.apache.directory.server.annotations.CreateTransport;
+import org.apache.directory.server.core.annotations.ApplyLdifFiles;
+import org.apache.directory.server.core.annotations.CreateDS;
+import org.apache.directory.server.core.annotations.CreatePartition;
+import org.apache.directory.server.core.integ.CreateLdapServerRule;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -20,13 +26,28 @@ import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.junit.After;
-import org.junit.Assume;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /**
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  * @author Niels Charlier
  */
+@CreateLdapServer(
+    transports = {
+        @CreateTransport(
+            protocol = "LDAP",
+            address = "localhost",
+            port = LDAPTestUtils.LDAP_SERVER_PORT
+        )
+    },
+    allowAnonymousAccess = true
+)
+@CreateDS(
+    name = "myDS",
+    partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
+)
+@ApplyLdifFiles({"data.ldif"})
 public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSupport {
 
     private static final String GROUPS_BASE = "ou=Groups";
@@ -51,10 +72,10 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
     private static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
     private static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
 
+    @ClassRule public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
+
     @After
-    public void tearDown() throws Exception {
-        LDAPTestUtils.shutdownEmbeddedServer();
-    }
+    public void tearDown() throws Exception {}
 
     protected void setupPanel(boolean needsAuthentication, boolean setRequiredFields) {
         config = new LDAPUserGroupServiceConfig();
@@ -109,7 +130,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
     @Test
     public void testDataLoadedFromConfigurationWithoutAuthentication() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
         setupPanel(false, true);
         checkBaseConfig();
 
@@ -120,7 +141,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
     @Test
     public void testRequiredFields() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
         setupPanel(false, false);
 
         tester.newFormTester("form").submit();
@@ -136,7 +157,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
     @Test
     public void testDataLoadedFromConfigurationWithAuthentication() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
         setupPanel(true, true);
         checkBaseConfig();
 
@@ -146,7 +167,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
     @Test
     public void testAuthenticationDisabled() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
         setupPanel(false, true);
         tester.assertInvisible("form:panel:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "on");
@@ -156,12 +177,12 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
     @Test
     public void testAuthenticationEnabled() throws Exception {
-        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
         setupPanel(true, true);
         tester.assertVisible("form:panel:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "");
         tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch", "click");
-        tester.assertInvisible("form:panel:authenticationPanelContainer:authenticationPanel");
+        tester.assertInvisible("form:panel:authenticationPanel");
     }
 
     private void checkBaseConfig() {

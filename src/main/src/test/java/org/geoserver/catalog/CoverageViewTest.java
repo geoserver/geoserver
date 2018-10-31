@@ -47,6 +47,7 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.resources.image.ImageUtilities;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

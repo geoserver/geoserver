@@ -5,16 +5,20 @@
  */
 package org.geoserver.catalog;
 
-import static org.geotools.gml2.GML.coverage;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import it.geosolutions.jaiext.JAIExt;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
@@ -39,6 +43,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -57,9 +62,12 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private static final String RGB_IR_VIEW = "RgbIrView";
     private static final String S2_REDUCED_VIEW = "s2reduced_view";
+    private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
+    protected static QName BANDS_FLAGS =
+            new QName(MockData.SF_URI, "bands-flags", MockData.SF_PREFIX);
 
     @Before
     public void cleanupCatalog() {
@@ -84,6 +92,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         testData.setUpRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class);
         testData.setUpRasterLayer(S2REDUCED, "s2reduced.zip", null, null, TestData.class);
         testData.setUpRasterLayer(IR_RGB, "ir-rgb.zip", null, null, TestData.class);
+        testData.setUpRasterLayer(BANDS_FLAGS, "bands-flags.zip", null, null, TestData.class);
 
         UTM32N = CRS.decode("EPSG:32632", true);
     }
@@ -94,6 +103,11 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         // setup the coverage view
         final Catalog cat = getCatalog();
+        configureIROnCatalog(cat);
+        configureBandsFlagsOnCatalog(cat);
+    }
+
+    private void configureIROnCatalog(Catalog cat) throws Exception {
         final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("ir-rgb");
         final CoverageView coverageView = buildRgbIRView();
         final CatalogBuilder builder = new CatalogBuilder(cat);
@@ -106,6 +120,18 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         coverageInfo.getDimensions().get(1).setName("Green");
         coverageInfo.getDimensions().get(2).setName("Blue");
         coverageInfo.getDimensions().get(3).setName("Infrared");
+        cat.add(coverageInfo);
+    }
+
+    private void configureBandsFlagsOnCatalog(Catalog cat) throws Exception {
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("bands-flags");
+        final CoverageView coverageView = buildBandsFlagsView();
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        final CoverageInfo coverageInfo =
+                coverageView.createCoverageInfo(BANDS_FLAGS_VIEW, storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
 
@@ -140,6 +166,45 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         // compatibility
         coverageView.setEnvelopeCompositionType(null);
         coverageView.setSelectedResolution(null);
+        return coverageView;
+    }
+
+    private CoverageView buildBandsFlagsView() {
+        String[] sources =
+                new String[] {
+                    "SWIR",
+                    "VNIR",
+                    "QUALITY_CLASSES",
+                    "QUALITY_CLOUD",
+                    "QUALITY_CLOUDSHADOW",
+                    "QUALITY_HAZE",
+                    "QUALITY_SNOW"
+                };
+
+        List<CoverageBand> bands = new ArrayList<>();
+        for (String source : sources) {
+            if (source.startsWith("QUALITY_")) {
+                CoverageBand band =
+                        new CoverageBand(
+                                Arrays.asList(new InputCoverageBand(source, "0")),
+                                source,
+                                0,
+                                CompositionType.BAND_SELECT);
+                bands.add(band);
+            } else {
+                for (int i = 0; i < 3; i++) {
+                    CoverageBand band =
+                            new CoverageBand(
+                                    Arrays.asList(new InputCoverageBand(source, "" + i)),
+                                    source + "_" + i,
+                                    i,
+                                    CompositionType.BAND_SELECT);
+                    bands.add(band);
+                }
+            }
+        }
+
+        final CoverageView coverageView = new CoverageView(BANDS_FLAGS_VIEW, bands);
         return coverageView;
     }
 
@@ -193,9 +258,19 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                 resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
         assertEquals(coverage.getNumSampleDimensions(), 1);
 
-        ((GridCoverage2D) coverage).dispose(true);
+        disposeCoverage(coverage);
         final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, null);
         reader.dispose();
+    }
+
+    private void disposeCoverage(GridCoverage coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        if (coverage instanceof GridCoverage2D) {
+            ((GridCoverage2D) coverage).dispose(true);
+        }
+        if (ri instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+        }
     }
 
     /** */
@@ -265,7 +340,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(solidCoverage);
             assertBandNames(solidCoverage, "Red", "Green", "Blue");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
 
         // dynamic tx due to footprint
@@ -275,7 +350,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Red", "Green", "Blue", "ALPHA_BAND");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
     }
 
@@ -294,7 +369,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(solidCoverage);
             assertBandNames(solidCoverage, "Infrared");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
 
         // get IR, dynamic tx due to footprint
@@ -304,7 +379,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Infrared", "ALPHA_BAND");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
     }
 
@@ -323,7 +398,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(solidCoverage);
             assertBandNames(solidCoverage, "Infrared", "Green", "Blue");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
 
         // get IR, dynamic tx due to footprint
@@ -333,7 +408,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Infrared", "Green", "Blue", "ALPHA_BAND");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
     }
 
@@ -352,7 +427,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(solidCoverage);
             assertBandNames(solidCoverage, "Red");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
 
         // get IR, dynamic tx due to footprint
@@ -362,7 +437,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             // System.out.println(txCoverage);
             assertBandNames(txCoverage, "Red", "ALPHA_BAND");
         } finally {
-            ((GridCoverage2D) solidCoverage).dispose(true);
+            disposeCoverage(solidCoverage);
         }
     }
 
@@ -750,5 +825,18 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         MinVisitor visitor = new MinVisitor("location");
         granules.accepts(visitor, null);
         assertEquals("20170410T103021026Z_fullres_CC2.1989_T32TMT_B01.tif", visitor.getMin());
+    }
+
+    @Test
+    public void testBandsFlagsView() throws Exception {
+        // creation in the setup would have failed before the fix for
+        // [GEOT-6168] CoverageView setup fails if one of the source bands has an indexed color
+        // model
+
+        CoverageInfo info = getCatalog().getCoverageByName(BANDS_FLAGS_VIEW);
+        GridCoverageReader reader = info.getGridCoverageReader(null, null);
+        GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+        assertEquals(11, coverage.getRenderedImage().getSampleModel().getNumBands());
+        coverage.dispose(true);
     }
 }

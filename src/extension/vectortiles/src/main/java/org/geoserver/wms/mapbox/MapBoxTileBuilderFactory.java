@@ -33,4 +33,32 @@ public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
     public MapBoxTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea) {
         return new MapBoxTileBuilder(screenSize, mapArea);
     }
+
+    /**
+     * For Mapbox tiles, since they are rendered in screen/tile space, oversampling produces more
+     * consistent results when zooming. See this question here:
+     *
+     * <p>https://github.com/mapbox/vector-tiles/issues/45
+     *
+     * @return
+     */
+    @Override
+    public boolean shouldOversampleScale() {
+        return true;
+    }
+
+    /**
+     * Use 16x oversampling to match actual Mapbox tile extent, which is 4096 for 900913 tiles
+     *
+     * @return
+     */
+    @Override
+    public int getOversampleX() {
+        return 16;
+    }
+
+    @Override
+    public int getOversampleY() {
+        return 16;
+    }
 }

@@ -57,6 +57,11 @@ public class MapBoxTileBuilderFactory implements VectorTileBuilderFactory {
         return 16;
     }
 
+    /**
+     * Use 16x oversampling to match actual Mapbox tile extent, which is 4096 for 900913 tiles
+     *
+     * @return
+     */
     @Override
     public int getOversampleY() {
         return 16;

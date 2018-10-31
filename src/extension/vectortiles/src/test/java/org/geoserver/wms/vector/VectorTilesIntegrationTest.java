@@ -80,10 +80,9 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
         byte[] responseBytes = response.getContentAsByteArray();
         VectorTileDecoder decoder = new VectorTileDecoder();
         List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
-        // MapBox encoder skips too small geometries
-        assertEquals(3, featuresList.size());
+        assertEquals(5, featuresList.size());
         assertEquals(
-                2,
+                3,
                 featuresList
                         .stream()
                         .filter(f -> "Route 5".equals(f.getAttributes().get("NAME")))
@@ -94,6 +93,7 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
                         .stream()
                         .filter(f -> "Main Street".equals(f.getAttributes().get("NAME")))
                         .count());
+        assertEquals("Extent should be 12288", 12288, featuresList.get(0).getExtent());
     }
 
     @Test

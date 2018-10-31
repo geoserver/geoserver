@@ -94,12 +94,16 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         checkArgument(mapContent.getMapWidth() > 0);
         checkArgument(mapContent.getMapHeight() > 0);
 
-        // mapContent.setMapWidth(5 * mapContent.getMapWidth());
-        // mapContent.setMapHeight(5 * mapContent.getMapHeight());
-
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
-        final Rectangle paintArea =
-                new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
+        int mapWidth = mapContent.getMapWidth();
+        int mapHeight = mapContent.getMapHeight();
+        Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
+        if (this.tileBuilderFactory.shouldOversampleScale()) {
+            paintArea =
+                    new Rectangle(
+                            this.tileBuilderFactory.getOversampleX() * mapWidth,
+                            this.tileBuilderFactory.getOversampleY() * mapHeight);
+        }
 
         VectorTileBuilder vectorTileBuilder;
         vectorTileBuilder = this.tileBuilderFactory.newBuilder(paintArea, renderingArea);

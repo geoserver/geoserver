@@ -19,12 +19,10 @@ package org.geoserver.test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.util.IOUtils;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
@@ -419,20 +417,5 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
         Name name = new NameImpl("http://www.stations_gml31.org/1.0", "Station_gml31");
         FeatureSource featureSource = appSchemaDataAccess.getMappingByName(name).getSource();
         return !(featureSource instanceof JDBCFeatureStore);
-    }
-
-    /**
-     * Helper method that reads a resource from the class path converting it to text.
-     *
-     * @param resourcePath non relative path to the class path resource
-     * @return the content of the resource as text
-     */
-    private String readResource(String resourcePath) {
-        try (InputStream input =
-                NormalizedMultiValuesTest.class.getResourceAsStream(resourcePath)) {
-            return IOUtils.toString(input);
-        } catch (Exception exception) {
-            throw new RuntimeException(String.format("Error reading resource '%s'.", resourcePath));
-        }
     }
 }

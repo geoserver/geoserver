@@ -291,7 +291,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
 
     /**
      * Helper method that will add the desired App-Schema defined feature type customizing it for
-     * the desired GML version.
+     * the desired GML version. If the provided GML prefix is NULL or empty it will be ignored.
      */
     protected void addAppSchemaFeatureType(
             String namespacePrefix,
@@ -343,6 +343,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         }
         String extension = name.substring(index);
         name = name.substring(0, index);
+        if (gmlPrefix == null || gmlPrefix.isEmpty()) {
+            // no gml prefix to add
+            return new File(gmlDirectory, name + extension);
+        }
         return new File(gmlDirectory, name + "_" + gmlPrefix + extension);
     }
 
@@ -354,6 +358,10 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         if (testRootDirectory == null) {
             // init the test directory
             testRootDirectory = createTestRootDirectory();
+        }
+        if (gmlPrefix == null || gmlPrefix.isEmpty()) {
+            // no GML prefix, let's just use the root directory
+            return testRootDirectory;
         }
         return new File(testRootDirectory, gmlPrefix);
     }

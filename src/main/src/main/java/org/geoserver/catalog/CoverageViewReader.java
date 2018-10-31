@@ -9,12 +9,12 @@ import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import it.geosolutions.jaiext.JAIExt;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -51,12 +51,14 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.ImageWorker;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.BoundingBox;
@@ -430,6 +432,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             }
 
             coverage = retainBands(bandIndices, coverage, localHints);
+            coverage = prepareForBandMerge(coverage);
             coverages.add(coverage);
             if (resolutionChooser.visit(coverage)) {
                 transformationChoice = index;
@@ -478,6 +481,36 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         return result;
+    }
+
+    /**
+     * The BandMerge operation takes indexed images and expands them, however in the context of
+     * coverage view band merging we don't normally want that, e.g., raster mask bands are
+     * represented as indexed but we really want to keep them in their binary, single band form. To
+     * do so, the IndexColorModel is replaced by a ComponentColorModel
+     *
+     * @param coverage
+     * @return
+     */
+    private GridCoverage2D prepareForBandMerge(GridCoverage2D coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        SampleModel sampleModel = ri.getSampleModel();
+        if (sampleModel.getNumBands() == 1 && ri.getColorModel() instanceof IndexColorModel) {
+            ImageWorker worker = new ImageWorker(ri);
+            worker.removeIndexColorModel();
+            RenderedImage formatted = worker.getRenderedImage();
+
+            return new GridCoverageFactory()
+                    .create(
+                            coverage.getName(),
+                            formatted,
+                            coverage.getGridGeometry(),
+                            coverage.getSampleDimensions(),
+                            new GridCoverage[] {coverage},
+                            coverage.getProperties());
+        }
+
+        return coverage;
     }
 
     private void addAlphaColorModelHint(Hints localHints, int currentBandCount) {

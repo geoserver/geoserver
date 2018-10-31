@@ -26,6 +26,7 @@ import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.util.Range;
 import org.geotools.util.Utilities;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -267,6 +268,22 @@ public class WCSDimensionsHelper {
     }
 
     /**
+     * Formats a dimension item into a string
+     *
+     * @param time
+     */
+    public String format(Object o) {
+        if (o instanceof Range) {
+            Range range = (Range) o;
+            return format(range.getMinValue()) + "/" + format(range.getMaxValue());
+        } else if (o instanceof Date) {
+            return format((Date) o);
+        } else {
+            return String.valueOf(o);
+        }
+    }
+
+    /**
      * Formats a Date into ISO86011
      *
      * @param time
@@ -369,5 +386,33 @@ public class WCSDimensionsHelper {
                 && (key.equals(ResourceInfo.TIME)
                         || key.equals(ResourceInfo.ELEVATION)
                         || key.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX));
+    }
+
+    /**
+     * Builds a dimension helper from the CoverageInfo
+     *
+     * @param encodedId The encoded coverage id
+     * @param ci The CoverageInfo
+     * @param reader
+     * @return A WCSDimensionsHelper, or null if there are no extra dimensions to handle
+     * @throws Exception
+     */
+    public static WCSDimensionsHelper getWCSDimensionsHelper(
+            String encodedId, CoverageInfo ci, GridCoverage2DReader reader) throws Exception {
+        WCSDimensionsHelper dimensionsHelper = null;
+        MetadataMap metadata = ci.getMetadata();
+        Map<String, DimensionInfo> dimensionsMap =
+                WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
+
+        // Setup a dimension helper in case we found some dimensions for that coverage
+        if (!dimensionsMap.isEmpty()) {
+            dimensionsHelper = new WCSDimensionsHelper(dimensionsMap, reader, encodedId);
+        }
+        return dimensionsHelper;
+    }
+
+    /** Returns the raw dimension accessor */
+    public ReaderDimensionsAccessor getDimensionAccessor() {
+        return accessor;
     }
 }

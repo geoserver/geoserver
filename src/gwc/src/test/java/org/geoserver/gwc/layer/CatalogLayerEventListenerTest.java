@@ -9,8 +9,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertSame;
 import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;

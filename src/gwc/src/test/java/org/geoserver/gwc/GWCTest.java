@@ -749,7 +749,7 @@ public class GWCTest {
         mediator.truncateByLayerAndStyle(layerName, styleName);
 
         int expected = tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
-        verify(tileBreeder, times(expected)).dispatchTasks(any(GWCTask[].class));
+        verify(tileBreeder, times(expected)).dispatchTasks(any());
     }
 
     @Test

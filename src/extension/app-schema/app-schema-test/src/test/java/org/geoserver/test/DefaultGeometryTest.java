@@ -106,22 +106,22 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                     "gml31",
                     "Station",
                     "stations",
-                    "defaultGeometryMappings/stations.xml",
+                    "defaultGeometry/stations1.xml",
                     gml31Parameters);
             addStationFeatureType(
                     STATIONS_PREFIX_GML31,
                     "gml31",
                     "StationWithMeasurements",
                     "stations",
-                    "defaultGeometryMappings/stationsWithMeasurements.xml",
+                    "defaultGeometry/stations2.xml",
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml31Parameters);
             addMeasurementFeatureType(
                     MEASUREMENTS_PREFIX_GML31,
                     "gml31",
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml31Parameters);
             // add GML 3.2 feature types
             Map<String, String> gml32Parameters = new HashMap<>();
@@ -133,22 +133,22 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                     "gml32",
                     "Station",
                     "stations",
-                    "defaultGeometryMappings/stations.xml",
+                    "defaultGeometry/stations1.xml",
                     gml32Parameters);
             addStationFeatureType(
                     STATIONS_PREFIX_GML32,
                     "gml32",
                     "StationWithMeasurements",
                     "stations",
-                    "defaultGeometryMappings/stationsWithMeasurements.xml",
+                    "defaultGeometry/stations2.xml",
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml32Parameters);
             addMeasurementFeatureType(
                     MEASUREMENTS_PREFIX_GML32,
                     "gml32",
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml32Parameters);
         }
 
@@ -173,13 +173,11 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             substituteParameters(
                     "/test-data/stations/" + mappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/data/stationsDefaultGeometry.properties",
+                    "/test-data/stations/defaultGeometry/stations.properties",
                     parameters,
                     stationsProperties);
             substituteParameters(
-                    "/test-data/stations/schemas/stationsDefaultGeometry.xsd",
-                    parameters,
-                    stationsSchema);
+                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             // create station feature type
             addFeatureType(
                     namespacePrefix,
@@ -220,15 +218,13 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             substituteParameters(
                     "/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/data/stationsDefaultGeometry.properties",
+                    "/test-data/stations/defaultGeometry/stations.properties",
                     parameters,
                     stationsProperties);
             substituteParameters(
-                    "/test-data/stations/schemas/stationsDefaultGeometry.xsd",
-                    parameters,
-                    stationsSchema);
+                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             substituteParameters(
-                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    "/test-data/stations/defaultGeometry/measurements.xsd",
                     parameters,
                     measurementsSchema);
             // create station feature type
@@ -262,11 +258,11 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             substituteParameters(
                     "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
             substituteParameters(
-                    "/test-data/stations/data/measurementsDefaultGeometry.properties",
+                    "/test-data/stations/defaultGeometry/measurements.properties",
                     parameters,
                     measurementsProperties);
             substituteParameters(
-                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    "/test-data/stations/defaultGeometry/measurements.xsd",
                     parameters,
                     measurementsSchema);
             // create measurements feature type

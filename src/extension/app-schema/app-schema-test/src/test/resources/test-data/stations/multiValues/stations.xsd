@@ -1,0 +1,49 @@
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:gml="${GML_NAMESPACE}"
+           xmlns:st="http://www.stations_${GML_PREFIX}.org/1.0"
+           xmlns:ms="http://www.measurements_${GML_PREFIX}.org/1.0"
+           targetNamespace="http://www.stations_${GML_PREFIX}.org/1.0"
+           attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+  <xs:import namespace="${GML_NAMESPACE}" schemaLocation="${GML_LOCATION}"/>
+  <xs:import namespace="http://www.measurements_${GML_PREFIX}.org/1.0" schemaLocation="measurements_${GML_PREFIX}.xsd"/>
+
+  <xs:complexType name="ContactPropertyType">
+    <xs:sequence>
+      <xs:element ref="st:Contact"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContactType">
+    <xs:sequence>
+      <xs:element name="phone" type="xs:string"/>
+      <xs:element name="mail" minOccurs="0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StationType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="contact" type="st:ContactPropertyType"/>
+          <xs:element name="location" type="gml:GeometryPropertyType"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="tag" type="st:TagType"/>
+          <xs:element name="measurements" type="ms:MeasurementPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="TagType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="code" type="xs:integer"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:element name="Station_${GML_PREFIX}" type="st:StationType" substitutionGroup="gml:AbstractFeature"/>
+  <xs:element name="Contact" type="st:ContactType"/>
+
+</xs:schema>

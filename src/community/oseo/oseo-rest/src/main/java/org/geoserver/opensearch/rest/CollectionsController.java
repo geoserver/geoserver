@@ -479,13 +479,6 @@ public class CollectionsController extends AbstractOpenSearchController {
                         "Invalid layer configuration, browse bands must be either "
                                 + "one (gray) or three (RGB)",
                         HttpStatus.BAD_REQUEST);
-            } else if (layer.getBands().length > 0
-                    && layer.getBrowseBands().length > 0
-                    && !containedFully(layer.getBrowseBands(), layer.getBands())) {
-                throw new RestException(
-                        "Invalid layer configuration, browse bands contains entries "
-                                + "that are not part of the bands declaration",
-                        HttpStatus.BAD_REQUEST);
             }
         }
         // right now the mosaic can only be in 4326 because the granule table is in that CRS

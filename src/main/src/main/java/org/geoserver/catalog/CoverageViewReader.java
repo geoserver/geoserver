@@ -432,7 +432,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
             }
 
             coverage = retainBands(bandIndices, coverage, localHints);
-            coverage = prepareForBandMerge(coverage);
+            if (mergedBands.size() > 1) {
+                coverage = prepareForBandMerge(coverage);
+            }
             coverages.add(coverage);
             if (resolutionChooser.visit(coverage)) {
                 transformationChoice = index;

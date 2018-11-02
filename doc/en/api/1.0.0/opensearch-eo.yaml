@@ -383,20 +383,16 @@ paths:
                 "layer": "test123",
                 "separateBands": true,
                 "bands": [
-                  1,
-                  2,
-                  3,
-                  4,
-                  5,
-                  6,
-                  7,
-                  8
-                ],
-                "browseBands": [
-                  4,
-                  3,
-                  2
-                ],
+                      "B02",
+                      "B03",
+                      "B04",
+                      "B08"
+                  ],
+                  "browseBands": [
+                      "B08",
+                      "B03",
+                      "B02"
+                  ],
                 "heterogeneousCRS": true,
                 "mosaicCRS": "EPSG:4326"
               }        

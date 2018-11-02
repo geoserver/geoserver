@@ -249,6 +249,12 @@ Sets publishing information about data providers.
 WFS Settings
 ^^^^^^^^^^^^
 
+Sets the WFS specific publishing parameters.
+
+  .. figure:: img/wfs_settings.png
+
+     WFS Settings
+
 * **Per-Request Feature Limit**—Sets the maximum number of features for a layer a WFS GetFeature operation should generate (regardless of the actual number of query hits)
 * **Maximum number of decimals**—Sets the maximum number of decimals in GML output.
 
@@ -262,7 +268,7 @@ WFS Settings
 
      The list will be used only for the capabilities document generation, but will not be used to limit the actual target SRS usage in GetFeature requests.
 
-* **Encode coordinates measures**-Checking this setting will cause coordinate measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.  
+* **Encode coordinates measures**—Checking this setting will cause coordinates measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.  
 
 WCS Settings
 ^^^^^^^^^^^^

@@ -1,0 +1,17 @@
+{
+	"workspace": "gs",
+	"layer": "test123",
+	"separateBands": true,
+	"bands": [
+		"VNIR",
+		"QUALITY",
+		"CLOUDSHADOW",
+		"HAZE",
+		"SNOW"
+	],
+	"browseBands": [
+		"VNIR[0]", "VNIR[1]", "SNOW"
+	],
+	"heterogeneousCRS": true,
+	"mosaicCRS": "EPSG:4326"
+}

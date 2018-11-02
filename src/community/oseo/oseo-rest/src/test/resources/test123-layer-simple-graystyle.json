@@ -2,6 +2,6 @@
 	"workspace": "gs",
 	"layer": "test123",
 	"separateBands": false,
-	"browseBands": ["RED_BAND"],
+	"browseBands": ["test123[0]"],
 	"heterogeneousCRS": true
 }

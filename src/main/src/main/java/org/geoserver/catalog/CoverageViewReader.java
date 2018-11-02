@@ -8,6 +8,8 @@ package org.geoserver.catalog;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import it.geosolutions.jaiext.JAIExt;
+import it.geosolutions.jaiext.lookup.LookupTable;
+import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -17,7 +19,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,6 @@ import java.util.logging.Logger;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
-import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.CoverageView.CoverageBand;
@@ -52,6 +52,9 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.ImageWorker;
+import org.geotools.metadata.i18n.ErrorKeys;
+import org.geotools.metadata.i18n.Errors;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
@@ -81,6 +84,26 @@ import org.opengis.referencing.operation.TransformException;
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class CoverageViewReader implements GridCoverage2DReader {
+
+    static final byte[][] IDENTITY_BYTE;
+    static final short[][] IDENTITY_SHORT;
+
+    static {
+        final byte[][] data = new byte[1][256];
+        for (int i = 0; i < 256; i++) {
+            data[0][i] = (byte) (0xFF & i);
+        }
+
+        IDENTITY_BYTE = data;
+    }
+
+    static {
+        final short[][] data = new short[1][65535];
+        for (int i = 0; i < 65535; i++) {
+            data[0][i] = (short) (0xFFFF & i);
+        }
+        IDENTITY_SHORT = data;
+    }
 
     private static final int HETEROGENEOUS_RASTER_GUTTER = 10;
 
@@ -497,33 +520,44 @@ public class CoverageViewReader implements GridCoverage2DReader {
         RenderedImage ri = coverage.getRenderedImage();
         SampleModel sampleModel = ri.getSampleModel();
         if (sampleModel.getNumBands() == 1 && ri.getColorModel() instanceof IndexColorModel) {
-            // format with same data type as input
-            final ParameterBlock paramBlk = new ParameterBlock().addSource(ri);
+            LookupTable lut = null;
             int dataType = sampleModel.getDataType();
-            paramBlk.add(dataType);
-            // force the desired color model
-            ComponentColorModel targetColorModel =
+            switch (dataType) {
+                case DataBuffer.TYPE_BYTE:
+                    lut = LookupTableFactory.create(IDENTITY_BYTE);
+                    break;
+
+                case DataBuffer.TYPE_USHORT:
+                    lut =
+                            LookupTableFactory.create(
+                                    IDENTITY_SHORT, dataType == DataBuffer.TYPE_SHORT);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(
+                            Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "datatype", dataType));
+            }
+
+            // prepare color model and sample model
+            final ComponentColorModel destinationColorModel =
                     new ComponentColorModel(
                             ColorSpace.getInstance(ColorSpace.CS_GRAY),
                             false,
                             false,
                             Transparency.OPAQUE,
                             dataType);
+            final SampleModel destinationSampleModel =
+                    destinationColorModel.createCompatibleSampleModel(
+                            sampleModel.getWidth(), sampleModel.getHeight());
             ImageLayout layout = new ImageLayout(ri);
-            layout.setColorModel(targetColorModel);
+            layout.setColorModel(destinationColorModel);
+            layout.setSampleModel(destinationSampleModel);
 
-            // that might not be enough, the source sample model might not be compatible
-            // e.g., MultiPixelPackedSampleModel is not compatible with ComponentColorModel
-            if (!targetColorModel.isCompatibleSampleModel(sampleModel)) {
-                SampleModel targetSampleModel =
-                        targetColorModel.createCompatibleSampleModel(
-                                sampleModel.getWidth(), sampleModel.getHeight());
-                layout.setSampleModel(targetSampleModel);
-            }
-
-            Hints localHints = new Hints(hints);
-            localHints.put(JAI.KEY_IMAGE_LAYOUT, layout);
-            RenderedOp formatted = JAI.create("Format", paramBlk, localHints);
+            // perform the lookup
+            ImageWorker iw = new ImageWorker(ri);
+            iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+            iw.lookup(lut);
+            RenderedImage formatted = iw.getRenderedImage();
 
             return new GridCoverageFactory()
                     .create(

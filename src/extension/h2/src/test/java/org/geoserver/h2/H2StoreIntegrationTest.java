@@ -7,11 +7,15 @@ package org.geoserver.h2;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -24,7 +28,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataAccessFactory;
 import org.geotools.data.Query;
+import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.feature.NameImpl;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,9 +38,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.vfny.geoserver.util.DataStoreUtils;
 
-/** Contains tests that invoke REST resources that will use H2 data store. */
-public final class RestTest extends GeoServerSystemTestSupport {
+public final class H2StoreIntegrationTest extends GeoServerSystemTestSupport {
 
     private static final String WORKSPACE_NAME = "h2-tests";
     private static final String WORKSPACE_URI = "http://h2-tests.org";
@@ -136,7 +142,8 @@ public final class RestTest extends GeoServerSystemTestSupport {
      */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
-        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
+        InputStream input =
+                H2StoreIntegrationTest.class.getResourceAsStream("/test-database.data.db");
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             // copy the input stream to the output stream
@@ -152,7 +159,8 @@ public final class RestTest extends GeoServerSystemTestSupport {
     private static byte[] readSqLiteDatabaseDir() throws Exception {
         // copy database file to database directory
         File outputFile = new File(DATABASE_DIR, "test-database.data.db");
-        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
+        InputStream input =
+                H2StoreIntegrationTest.class.getResourceAsStream("/test-database.data.db");
         IOUtils.copy(input, new FileOutputStream(outputFile));
         // zip the database directory
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -163,5 +171,18 @@ public final class RestTest extends GeoServerSystemTestSupport {
         zip.close();
         // just return the output stream content
         return output.toByteArray();
+    }
+
+    @Test
+    public void testDataStoreFactoryInitialized() {
+        HashMap params = new HashMap();
+        params.put(H2DataStoreFactory.DBTYPE.key, "h2");
+        params.put(H2DataStoreFactory.DATABASE.key, "test");
+
+        DataAccessFactory f = DataStoreUtils.aquireFactory(params);
+        assertNotNull(f);
+        assertTrue(f instanceof H2DataStoreFactory);
+
+        assertEquals(testData.getDataDirectoryRoot(), ((H2DataStoreFactory) f).getBaseDirectory());
     }
 }

@@ -1,11 +1,15 @@
 package org.geoserver.netcdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Properties;
 import javax.xml.namespace.QName;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -15,7 +19,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.imageio.netcdf.NetCDFUnitFormat;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
@@ -34,6 +40,18 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
         CoverageInfo ci = getCatalog().getCoverageByName("sf:analyzed_sst");
         ci.setNativeCoverageName("analyzed_sst");
         getCatalog().save(ci);
+
+        String netcdfProjectionsDefinition = "netcdf.projections.properties";
+        File projectionFileDir = new File(testData.getDataDirectoryRoot(), "user_projections");
+        if (!projectionFileDir.mkdir()) {
+            FileUtils.deleteDirectory(projectionFileDir);
+            assertTrue(
+                    "Unable to create projection dir: " + projectionFileDir,
+                    projectionFileDir.mkdir());
+        }
+        testData.copyTo(
+                getClass().getResourceAsStream(netcdfProjectionsDefinition),
+                "user_projections/" + netcdfProjectionsDefinition);
     }
 
     @Test
@@ -119,5 +137,13 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
         CoverageInfo coverage = cb.buildCoverage();
 
         return coverage.getDimensions().get(0);
+    }
+
+    @Test
+    public void testCRSOverridingFactory() throws Exception {
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:971801");
+        assertNotNull(crs);
+        Integer epsgCode = CRS.lookupEpsgCode(crs, false);
+        assertEquals(971801, epsgCode.intValue());
     }
 }

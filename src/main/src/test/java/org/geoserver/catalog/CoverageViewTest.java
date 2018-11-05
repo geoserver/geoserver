@@ -23,7 +23,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
-import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;a
 import org.geoserver.catalog.CoverageView.SelectedResolution;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;

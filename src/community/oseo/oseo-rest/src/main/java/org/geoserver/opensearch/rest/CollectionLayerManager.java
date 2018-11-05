@@ -4,6 +4,24 @@
  */
 package org.geoserver.opensearch.rest;
 
+import java.awt.image.SampleModel;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.stream.FileImageInputStream;
+import javax.media.jai.ImageLayout;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -58,26 +76,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.http.HttpStatus;
-
-import java.awt.image.SampleModel;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageReader;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.FileImageInputStream;
-import javax.media.jai.ImageLayout;
 
 /**
  * Helper class with the responsibility of setting up and tearing down mosaics, coverage views,
@@ -566,8 +564,9 @@ class CollectionLayerManager {
                 cs.blue().channelName("" + getBandIndex(browseBands.get(2), coverageBands));
             } else {
                 throw new RestException(
-                        "Browse bands should select either 1 or 3 bands, but instead they created " + 
-                                + browseBands.size() + " raster bands",
+                        "Browse bands should select either 1 or 3 bands, but instead they created "
+                                + +browseBands.size()
+                                + " raster bands",
                         HttpStatus.PRECONDITION_FAILED);
             }
             Style style = rsb.buildStyle();

@@ -43,7 +43,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;

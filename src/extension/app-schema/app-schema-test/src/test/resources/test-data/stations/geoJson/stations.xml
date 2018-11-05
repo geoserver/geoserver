@@ -22,21 +22,15 @@
                 </Parameter>
             </parameters>
         </DataStore>
-        <DataStore>
-            <id>measurements_${GML_PREFIX}</id>
-            <parameters>
-                <Parameter>
-                    <name>directory</name>
-                    <value>file:./</value>
-                </Parameter>
-            </parameters>
-        </DataStore>
     </sourceDataStores>
     <targetTypes>
         <FeatureType>
             <schemaUri>stations_${GML_PREFIX}.xsd</schemaUri>
         </FeatureType>
     </targetTypes>
+    <includedTypes>
+        <Include>measurements_${GML_PREFIX}.xml</Include>
+    </includedTypes>
     <typeMappings>
         <FeatureTypeMapping>
             <sourceDataStore>stations_${GML_PREFIX}</sourceDataStore>
@@ -93,39 +87,6 @@
                         <name>xlink:href</name>
                         <value>strConcat('http://www.stations.org/', ID)</value>
                     </ClientProperty>
-                </AttributeMapping>
-            </attributeMappings>
-        </FeatureTypeMapping>
-        <FeatureTypeMapping>
-            <sourceDataStore>measurements_${GML_PREFIX}</sourceDataStore>
-            <sourceType>measurements_${GML_PREFIX}</sourceType>
-            <targetElement>st_${GML_PREFIX}:Measurement_${GML_PREFIX}</targetElement>
-            <attributeMappings>
-                <AttributeMapping>
-                    <targetAttribute>st_${GML_PREFIX}:Measurement_${GML_PREFIX}</targetAttribute>
-                    <idExpression>
-                        <OCQL>ID</OCQL>
-                    </idExpression>
-                </AttributeMapping>
-                <AttributeMapping>
-                    <targetAttribute>st_${GML_PREFIX}:value</targetAttribute>
-                    <sourceExpression>
-                        <OCQL>VALUE</OCQL>
-                    </sourceExpression>
-                    <ClientProperty>
-                        <name>name</name>
-                        <value>NAME</value>
-                    </ClientProperty>
-                    <ClientProperty>
-                        <name>unit</name>
-                        <value>UNIT</value>
-                    </ClientProperty>
-                </AttributeMapping>
-                <AttributeMapping>
-                    <targetAttribute>FEATURE_LINK[1]</targetAttribute>
-                    <sourceExpression>
-                        <OCQL>STATION</OCQL>
-                    </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>
         </FeatureTypeMapping>

@@ -619,7 +619,7 @@ class CollectionLayerManager {
         CoverageStoreInfo mosaicStore = cb.buildCoverageStore(layer.getLayer());
         mosaicStore.setType(new ImageMosaicFormat().getName());
         mosaicStore.setDescription("Image mosaic wrapping OpenSearch collection: " + collection);
-        mosaicStore.setURL("file:/" + relativePath);
+        mosaicStore.setURL("file:" + relativePath);
         catalog.add(mosaicStore);
         cb.setStore(mosaicStore);
 

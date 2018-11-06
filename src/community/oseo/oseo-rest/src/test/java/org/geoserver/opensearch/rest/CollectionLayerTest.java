@@ -110,7 +110,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
         // setup the base granule location
         File file = new File("./src/test/resources");
-        resourceBase = file.getCanonicalFile().getAbsolutePath();
+        resourceBase = file.getCanonicalFile().getAbsolutePath().replace("\\", "/");
     }
 
     protected String getTestStringData(String location) throws IOException {

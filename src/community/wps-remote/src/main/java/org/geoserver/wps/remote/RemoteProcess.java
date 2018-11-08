@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
+import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
@@ -183,7 +184,7 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
 
     @Override
     public void progress(final String pId, final Double progress) {
-        if (pId.equals(pid)) {
+        if (pId != null && pId.equals(pid)) {
             listener.progress(progress.floatValue());
         }
 
@@ -194,7 +195,7 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
 
     @Override
     public void complete(String pId, Object outputs) {
-        if (pId.equals(pid)) {
+        if (pId != null && pId.equals(pid)) {
             listener.complete();
 
             try {
@@ -239,5 +240,12 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
             }
         }
         doneSignal.countDown();
+    }
+
+    @Override
+    public void setTask(String pId, String logMessage) {
+        if (pId != null && pId.equals(pid)) {
+            listener.setTask(new SimpleInternationalString(logMessage));
+        }
     }
 }

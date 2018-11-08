@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -47,9 +48,14 @@ public class XMPPLogMessage implements XMPPMessage {
                 LOGGER.fine(
                         "Could not correctly parse the Log level; using the default one 'INFO'.");
             }
-            LOGGER.log(
-                    logLevel,
-                    "[" + pID + "]" + URLDecoder.decode(signalArgs.get("message"), "UTF-8"));
+            String logMessage =
+                    "[" + pID + "]" + URLDecoder.decode(signalArgs.get("message"), "UTF-8");
+            LOGGER.log(logLevel, logMessage);
+
+            // NOTIFY LISTENERS
+            for (RemoteProcessClientListener listener : xmppClient.getRemoteClientListeners()) {
+                listener.setTask(pID, logMessage);
+            }
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,

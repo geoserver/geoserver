@@ -48,4 +48,13 @@ public interface RemoteProcessClientListener {
      * @param metadata
      */
     public void exceptionOccurred(final String pId, Exception cause, Map<String, Object> metadata);
+
+    /**
+     * Expose a log message to the {@link RemoteProcess} progress listener associated to the remote
+     * service with the unique @param pId
+     *
+     * @param pId
+     * @param logMessage
+     */
+    public void setTask(final String pId, final String logMessage);
 }

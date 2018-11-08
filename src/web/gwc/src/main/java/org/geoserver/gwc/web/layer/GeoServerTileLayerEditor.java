@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.apache.wicket.AttributeModifier;
@@ -303,6 +304,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         final List<String> formats;
         formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
+        mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList =
                 new ListView<String>("cacheFormats", formats) {
@@ -558,5 +560,12 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
+    }
+
+    /** Merges the elements of existingFormats missing from formats into formats */
+    private void mergeExisting(List<String> formats, Collection<String> existingFormats) {
+        for (String x : existingFormats) {
+            if (!formats.contains(x)) formats.add(x);
+        }
     }
 }

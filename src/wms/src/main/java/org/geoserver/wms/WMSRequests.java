@@ -16,12 +16,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.map.Layer;
 import org.geotools.map.MapLayer;
 import org.geotools.styling.Style;
@@ -309,6 +311,7 @@ public class WMSRequests {
                     }
                 }
             }
+            index = getRawLayerIndex(req, index);
 
             if (req.getRawKvp().get("filter") != null) {
                 // split out the filter we need
@@ -432,6 +435,30 @@ public class WMSRequests {
         }
 
         return params;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int getRawLayerIndex(GetMapRequest req, int layerIndex) {
+        List<String> names = KvpUtils.readFlat(req.getRawKvp().get("layers"));
+        if (names.size() != req.getLayers().size()) {
+            // Finds the index in the raw layers KVP parameter that corresponds
+            // to the layer index after layer groups are expanded.
+            List<?> layers =
+                    new LayerParser(WMS.get())
+                            .parseLayers(names, req.getRemoteOwsURL(), req.getRemoteOwsType());
+            int numLayers = 0;
+            for (int index = 0; index < layers.size(); index++) {
+                if (layers.get(index) instanceof LayerGroupInfo) {
+                    numLayers += ((LayerGroupInfo) layers.get(index)).layers().size();
+                } else {
+                    numLayers++;
+                }
+                if (numLayers > layerIndex) {
+                    return index;
+                }
+            }
+        }
+        return layerIndex;
     }
 
     /**
@@ -570,5 +597,23 @@ public class WMSRequests {
                 .append(",")
                 .append(box.getMaxY())
                 .toString();
+    }
+
+    /** Helper to access protected method to avoid duplicating the layer parsing code. */
+    private static class LayerParser extends GetMapKvpRequestReader {
+
+        public LayerParser(WMS wms) {
+            super(wms);
+        }
+
+        @Override
+        protected List<?> parseLayers(
+                List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
+            try {
+                return super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
+            } catch (Exception e) {
+                throw new RuntimeException("Error parsing layers list", e);
+            }
+        }
     }
 }

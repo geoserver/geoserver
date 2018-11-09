@@ -353,7 +353,7 @@
         </activation>
         <modules>
           <module>geofence</module>
-	  <module>geofence-server</module>
+          <module>geofence-server</module>
         </modules>
     </profile>
 
@@ -398,6 +398,8 @@
         <module>ysld</module>
         <module>mongodb</module>
         <module>sldService</module>
+        <module>geofence</module>
+        <module>geofence-server</module>
       </modules>
     </profile>
 

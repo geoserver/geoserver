@@ -627,6 +627,12 @@ public class XMPPClient extends RemoteProcessClient {
              */
             pendingRequests.add(
                     new RemoteRequestDescriptor(serviceName, input, metadata, pid, baseURL));
+
+            // NOTIFY LISTENERS
+            for (RemoteProcessClientListener listener : getRemoteClientListeners()) {
+                listener.progress(pid, 0.0);
+                listener.setTask(pid, "Blocked: no resources available for execution!");
+            }
         }
 
         return pid;
@@ -944,6 +950,8 @@ public class XMPPClient extends RemoteProcessClient {
                 boolean isRequestValid = false;
                 for (RemoteProcessClientListener process : getRemoteClientListeners()) {
                     if (process.getPID().equals(pid)) {
+                        process.progress(pid, 0.0);
+                        process.setTask(pid, "Blocked: no resources available for execution!");
                         isRequestValid = true;
                         break;
                     }

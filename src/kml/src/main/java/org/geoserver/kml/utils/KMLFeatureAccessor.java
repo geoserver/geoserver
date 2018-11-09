@@ -140,6 +140,7 @@ public class KMLFeatureAccessor {
         // now, if a definition query has been established for this layer,
         // be sure to respect it by combining it with the bounding box one.
         q = DataUtilities.mixQueries(q, layer.getQuery(), "KMLEncoder");
+        q.setSortBy(layer.getQuery().getSortBy());
 
         // check the regionating strategy
         RegionatingStrategy regionatingStrategy = null;

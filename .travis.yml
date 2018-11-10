@@ -19,6 +19,10 @@ before_script:
 script:
   - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install -Dfmt.action=check --builder smart && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
   - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
+before-caching:
+  - rm -rf $HOME/.m2/repository/org/geotools
+  - rm -rf $HOME/.m2/repository/org/geowebcache
+  - rm -rf $HOME/.m2/repository/org/geoserver
 notifications:
   email:
     on_success: never

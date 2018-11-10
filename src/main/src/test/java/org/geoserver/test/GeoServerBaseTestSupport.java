@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.TestData;
 import org.geotools.feature.NameImpl;
-import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.junit.*;
@@ -119,7 +118,6 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
                 || !"http".equals(Hints.getSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING))) {
             System.setProperty("org.geotools.referencing.forceXY", "true");
             Hints.putSystemDefault(Hints.FORCE_AXIS_ORDER_HONORING, "http");
-            CRS.reset("all");
         }
     }
 

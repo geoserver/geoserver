@@ -81,6 +81,8 @@ public class SystemTestData extends CiteTestData {
     /** Multiband tiff */
     public static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
 
+    public static final String TEMP_BASE = System.getProperty("GS_TEST_TEMP_BASE", "./target");
+
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
 
     /** Keys for overriding default layer properties */
@@ -121,7 +123,7 @@ public class SystemTestData extends CiteTestData {
 
     public SystemTestData() throws IOException {
         // setup the root
-        data = IOUtils.createRandomDirectory("./target", "default", "data");
+        data = IOUtils.createRandomDirectory(TEMP_BASE, "default", "data");
         data.delete();
         data.mkdir();
     }

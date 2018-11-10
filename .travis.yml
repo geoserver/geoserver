@@ -1,3 +1,4 @@
+sudo: true
 dist: trusty
 cache:
   directories:
@@ -16,7 +17,12 @@ before_script:
   - wget -P $M2_HOME/lib/ext http://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
   - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -U -T2 -fae -Prelease clean install -Dfmt.action=check --builder smart && mvn -f src/community/pom.xml -B -U -T2 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
+  - sudo mkdir /mnt/ramdisk
+  - sudo mount -t tmpfs -o size=512m tmpfs /mnt/ramdisk
+  - export TMPDIR=/mnt/ramdisk
+  - export TMP=$TMPDIR
+  - export TEMP=$TMPDIR
+  - mvn -f src/pom.xml -B -U -T2 -fae -Prelease clean install -Dfmt.action=check -Dgs.test.temp.base=/mnt/ramdisk --builder smart && mvn -f src/community/pom.xml -B -U -T2 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
   - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
 before-caching:
   - rm -rf $HOME/.m2/repository/org/geotools

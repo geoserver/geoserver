@@ -22,8 +22,10 @@ script:
   - export TMPDIR=/mnt/ramdisk
   - export TMP=$TMPDIR
   - export TEMP=$TMPDIR
+  - vmstat 1 > /tmp/vmstat.log &
   - mvn -f src/pom.xml -B -U -T2 -fae -Prelease clean install -Dfmt.action=check -Dgs.test.temp.base=/mnt/ramdisk --builder smart && mvn -f src/community/pom.xml -B -U -T2 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
   - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
+  - cat /tmp/vmstat.log
 before-caching:
   - rm -rf $HOME/.m2/repository/org/geotools
   - rm -rf $HOME/.m2/repository/org/geowebcache

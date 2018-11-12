@@ -43,6 +43,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                     "Station_gml31",
                     "/test-data/stations/geoJson/stations.xml",
                     getGml31StandardParamaters(),
+                    "/test-data/stations/geoJson/measurements.xml",
                     "/test-data/stations/geoJson/stations.xsd",
                     "/test-data/stations/geoJson/stations.properties",
                     "/test-data/stations/geoJson/measurements.properties");
@@ -52,7 +53,8 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                     "gml32",
                     "Station_gml32",
                     "/test-data/stations/geoJson/stations.xml",
-                    getGml31StandardParamaters(),
+                    getGml32StandardParamaters(),
+                    "/test-data/stations/geoJson/measurements.xml",
                     "/test-data/stations/geoJson/stations.xsd",
                     "/test-data/stations/geoJson/stations.properties",
                     "/test-data/stations/geoJson/measurements.properties");
@@ -76,7 +78,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         JSON response =
                 getAsJSON(
                         "wfs?request=GetFeature&version=2.0"
-                                + "&typenames=st_gml31:Station_gml31&outputFormat=application/json");
+                                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
     }

@@ -462,27 +462,8 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         }
     }
 
-    /**
-     * Builds the feature type exposed to client for OGC links
-     *
-     * @return
-     * @throws IOException
-     */
-    protected SimpleFeatureType buildOgcLinksType() throws IOException {
-        String ns = getOpenSearchAccess().getCollectionSource().getName().getNamespaceURI();
-        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.setName("ogc_links");
-        tb.setNamespaceURI(ns);
-        tb.add("offering", String.class);
-        tb.add("method", String.class);
-        tb.add("code", String.class);
-        tb.add("type", String.class);
-        tb.add("href", String.class);
-        return tb.buildFeatureType();
-    }
-
     protected ListFeatureCollection beansToLinksCollection(OgcLinks links) throws IOException {
-        SimpleFeatureType schema = buildOgcLinksType();
+        SimpleFeatureType schema = getOpenSearchAccess().getOGCLinksSchema();
         ListFeatureCollection linksCollection = new ListFeatureCollection(schema);
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         for (OgcLink link : links.links) {

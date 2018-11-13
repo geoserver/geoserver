@@ -202,7 +202,7 @@
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-core</artifactId>
-  </dependency> 
+  </dependency>
 <!-- 
   <dependency>
    <groupId>org.springframework.security</groupId>
@@ -211,6 +211,18 @@
    <scope>test</scope>
   </dependency>  
 -->
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-core</artifactId>
+   <version>${spring.version}</version>
+   <exclusions>
+    <exclusion>
+    <!-- This dependency will conflict with commons-logging's LogFactory class -->
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-jcl</artifactId>
+    </exclusion>
+   </exclusions>
+  </dependency>
   <dependency>
    <groupId>org.springframework.security</groupId>
    <artifactId>spring-security-web</artifactId>

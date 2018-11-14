@@ -142,9 +142,15 @@ In this case the following approach should is recommended:
 * Create at least one product in the collection in the REST API, using the
   ZIP file POST upload and providing a full ``granules.json`` content with all
   the granules of said product
-* Post a layer publishing description file to ``/oseo/collection/<COLLECTION>/layer``
+* Post a layer publishing description file to ``/oseo/collection/{COLLECTION}/layers``
   to have the module setup a set of mosaic configuration files, store, layer with
   eventual coverage view and style
+
+A collection can have multiple layers:
+
+* Getting the ``/oseo/collection/{COLLECTION}/layers`` resource returns a list of the available ones
+* ``/oseo/collection/{COLLECTION}/layers/{layer}`` returns the specific configuration (PUT can be used to modify it, and DELETE to remove it).
+* Creation of a layer configuration can be done either by post-ing to ``/oseo/collection/{COLLECTION}/layers`` or by put-int to ``/oseo/collection/{COLLECTION}/layers/{layer}``.
 
 The layer configuration specification will have different contents depending on
 the collection structure:

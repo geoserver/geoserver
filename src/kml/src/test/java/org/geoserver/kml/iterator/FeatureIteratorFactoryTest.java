@@ -2,12 +2,13 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import java.util.Iterator;
 import junit.framework.AssertionFailedError;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
@@ -18,7 +19,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.junit.Test;
 
-public class FeatureSequenceFactoryTest {
+public class FeatureIteratorFactoryTest {
 
     @Test
     public void testNoScanOnEmptyStyle() {
@@ -46,8 +47,8 @@ public class FeatureSequenceFactoryTest {
         replay(context);
 
         // check no features have been read
-        FeatureSequenceFactory sf = new FeatureSequenceFactory(context, layer);
-        Sequence<Feature> sequence = sf.newSequence();
+        FeatureIteratorFactory sf = new FeatureIteratorFactory(context, layer);
+        Iterator<Feature> sequence = sf.newIterator();
         assertNull(sequence.next());
     }
 }

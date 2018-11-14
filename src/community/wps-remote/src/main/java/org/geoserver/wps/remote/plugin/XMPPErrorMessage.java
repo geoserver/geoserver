@@ -54,6 +54,7 @@ public class XMPPErrorMessage implements XMPPMessage {
         for (RemoteProcessClientListener listener : xmppClient.getRemoteClientListeners()) {
             listener.setTask(pID, cause.getLocalizedMessage());
             listener.exceptionOccurred(pID, cause, metadata);
+            listener.progress(pID, listener.getProgress(pID));
         }
     }
 }

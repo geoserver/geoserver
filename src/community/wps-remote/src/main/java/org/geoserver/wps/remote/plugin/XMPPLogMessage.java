@@ -55,6 +55,7 @@ public class XMPPLogMessage implements XMPPMessage {
             // NOTIFY LISTENERS
             for (RemoteProcessClientListener listener : xmppClient.getRemoteClientListeners()) {
                 listener.setTask(pID, logMessage);
+                listener.progress(pID, listener.getProgress(pID));
             }
         } catch (Exception e) {
             LOGGER.log(

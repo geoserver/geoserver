@@ -130,7 +130,8 @@ public class XMPPClient extends RemoteProcessClient {
     protected List<String> serviceChannels;
 
     /*
-     * protected Map<String, List<String>> occupantsList = Collections .synchronizedMap(new HashMap<String, List<String>>());
+     * protected Map<String, List<String>> occupantsList = Collections
+     * .synchronizedMap(new HashMap<String, List<String>>());
      */
 
     protected List<Name> registeredServices = Collections.synchronizedList(new ArrayList<Name>());
@@ -528,8 +529,9 @@ public class XMPPClient extends RemoteProcessClient {
                         // if (url != null) {
                         this.certificateFile = loader.createFile(xmppServerEmbeddedCertFile.trim());
                         loader.copyFromClassPath(
-                                xmppServerEmbeddedCertFile.trim(), this.certificateFile /*,
-                                    RemoteProcessFactoryConfigurationWatcher.class*/);
+                                xmppServerEmbeddedCertFile.trim(), this.certificateFile /*
+														 * , RemoteProcessFactoryConfigurationWatcher.class
+														 */);
                         // }
                         this.certificateFile = loader.find(xmppServerEmbeddedCertFile.trim());
                         this.certificatePassword = xmppServerEmbeddedCertPwd.trim();
@@ -627,12 +629,6 @@ public class XMPPClient extends RemoteProcessClient {
              */
             pendingRequests.add(
                     new RemoteRequestDescriptor(serviceName, input, metadata, pid, baseURL));
-
-            // NOTIFY LISTENERS
-            for (RemoteProcessClientListener listener : getRemoteClientListeners()) {
-                listener.progress(pid, 0.0);
-                listener.setTask(pid, "Blocked: no resources available for execution!");
-            }
         }
 
         return pid;
@@ -710,8 +706,8 @@ public class XMPPClient extends RemoteProcessClient {
                     new MultiUserChat(connection, managementChannel + "@" + bus + "." + domain);
             try {
                 mucManagementChannel.join(getJID(username), managementChannelPassword); /*
-                                                                                     * , history, connection. getPacketReplyTimeout());
-                                                                                     */
+													 * , history, connection. getPacketReplyTimeout());
+													 */
             } catch (Exception e) {
                 mucManagementChannel.join(username, managementChannelPassword);
             }
@@ -721,8 +717,8 @@ public class XMPPClient extends RemoteProcessClient {
                         new MultiUserChat(connection, channel + "@" + bus + "." + domain);
                 try {
                     serviceChannel.join(getJID(username), managementChannelPassword); /*
-                                                                                       * , history, connection. getPacketReplyTimeout());
-                                                                                       */
+														 * , history, connection. getPacketReplyTimeout());
+														 */
                 } catch (Exception e) {
                     serviceChannel.join(username, managementChannelPassword);
                 }
@@ -744,7 +740,8 @@ public class XMPPClient extends RemoteProcessClient {
      * @param username
      */
     private String getJID(String username) {
-        // final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
+        // final String id = md5Java(username + "@" + this.domain + "/" +
+        // System.nanoTime());
         return username + "@" + this.domain;
     }
 
@@ -944,15 +941,14 @@ public class XMPPClient extends RemoteProcessClient {
     protected void checkPendingRequests() throws Exception {
         synchronized (pendingRequests) {
             for (RemoteRequestDescriptor request : pendingRequests) {
-
                 // Check if the request is still valid
                 final String pid = request.getPid();
                 boolean isRequestValid = false;
+                RemoteProcessClientListener blockedProcess = null;
                 for (RemoteProcessClientListener process : getRemoteClientListeners()) {
                     if (process.getPID().equals(pid)) {
-                        process.progress(pid, 0.0);
-                        process.setTask(pid, "Blocked: no resources available for execution!");
                         isRequestValid = true;
+                        blockedProcess = process;
                         break;
                     }
                 }
@@ -1004,6 +1000,9 @@ public class XMPPClient extends RemoteProcessClient {
                     // Remove the request from the queue
                     pendingRequests.remove(request);
                     continue;
+                } else {
+                    blockedProcess.setTask(pid, "Blocked: no resources available for execution!");
+                    blockedProcess.progress(pid, blockedProcess.getProgress(pid));
                 }
             }
         }
@@ -1569,8 +1568,10 @@ class XMPPPacketListener implements PacketListener {
                         /** Manage the channel occupants list */
                         final String channel = p.getFrom().substring(0, p.getFrom().indexOf("@"));
                         /*
-                         * if (xmppClient.occupantsList.get(channel) == null) { xmppClient.occupantsList.put(channel, new ArrayList<String>()); } if
-                         * (xmppClient.occupantsList.get(channel) != null) { if (!xmppClient.occupantsList.get(channel).contains(p. getFrom()))
+                         * if (xmppClient.occupantsList.get(channel) == null) {
+                         * xmppClient.occupantsList.put(channel, new ArrayList<String>()); } if
+                         * (xmppClient.occupantsList.get(channel) != null) { if
+                         * (!xmppClient.occupantsList.get(channel).contains(p. getFrom()))
                          * xmppClient.occupantsList.get(channel).add(p.getFrom() ); }
                          */
 

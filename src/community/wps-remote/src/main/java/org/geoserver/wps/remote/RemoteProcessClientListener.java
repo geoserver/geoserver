@@ -31,6 +31,15 @@ public interface RemoteProcessClientListener {
     public void progress(final String pId, final Double progress);
 
     /**
+     * Gets the progress of the {@link RemoteProcess} associated to the remote service with the
+     * unique @param pId
+     *
+     * @param pId
+     * @return progress
+     */
+    double getProgress(String pId);
+
+    /**
      * Completes of the {@link RemoteProcess} associated to the remote service with the
      * unique @param pId
      *

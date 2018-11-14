@@ -24,8 +24,8 @@ import org.geoserver.kml.KMLEncoder;
 import org.geoserver.kml.KMLMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.SequenceList;
-import org.geoserver.kml.sequence.WFSFeatureSequenceFactory;
+import org.geoserver.kml.iterator.IteratorList;
+import org.geoserver.kml.iterator.WFSFeatureIteratorFactory;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -197,7 +197,7 @@ public class KMLPPIO extends CDataPPIO {
             // create the streaming features
             context.setCurrentFeatureCollection(fc);
             List<Feature> features =
-                    new SequenceList<Feature>(new WFSFeatureSequenceFactory(context));
+                    new IteratorList<Feature>(new WFSFeatureIteratorFactory(context));
             context.addFeatures(folder, features);
         }
 

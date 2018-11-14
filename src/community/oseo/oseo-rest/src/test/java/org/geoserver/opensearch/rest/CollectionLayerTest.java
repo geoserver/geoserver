@@ -15,6 +15,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -120,7 +121,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     @Test
     public void testCreateCollectionSimpleLayer() throws Exception {
         // setup the granules
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-rgb.json",
                 "/test123-layer-simple.json",
                 "gs",
@@ -129,7 +130,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         // check the configuration elements are there too
         LayerInfo layer =
                 validateBasicLayerStructure(
-                        "gs", "gs:test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
+                        "gs", "test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
         // ... its style is the default one
         assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
 
@@ -142,7 +143,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     @Test
     public void testCreateCollectionSimpleLayerTestWorkspace() throws Exception {
         // setup the granules
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-rgb.json",
                 "/test123-layer-simple-testws.json",
                 "test",
@@ -151,9 +152,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         // check the configuration elements are there too
         LayerInfo layer =
                 validateBasicLayerStructure(
-                        "test",
-                        "test:test123",
-                        new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
+                        "test", "test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
         // ... its style is the default one
         assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
 
@@ -167,14 +166,14 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     @Test
     public void testCreateCollectionSimpleLayerWithCustomStyle() throws Exception {
         // setup the granules
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-rgb.json",
                 "/test123-layer-simple-graystyle.json",
                 "gs",
                 Boolean.FALSE);
         LayerInfo layer =
                 validateBasicLayerStructure(
-                        "gs", "gs:test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
+                        "gs", "test123", new String[] {"RED_BAND", "GREEN_BAND", "BLUE_BAND"});
 
         // ... its style is a gray one based on the RED band
         assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
@@ -207,11 +206,11 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         // check the configuration elements are there too
         Catalog catalog = getCatalog();
         // ... the store
-        CoverageStoreInfo store = catalog.getCoverageStoreByName(workspace, "test123");
+        CoverageStoreInfo store = catalog.getCoverageStoreByName(workspace, layerName);
         assertNotNull(store);
         assertThat(store.getFormat(), instanceOf(ImageMosaicFormat.class));
         // ... the layer
-        LayerInfo layer = catalog.getLayerByName(layerName);
+        LayerInfo layer = catalog.getLayerByName(workspace + ":" + layerName);
         assertNotNull(layer);
         final CoverageInfo coverageInfo = (CoverageInfo) layer.getResource();
         assertThat(coverageInfo.getStore(), equalTo(store));
@@ -235,7 +234,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     @Test
     public void testCreateCollectionMultiband() throws Exception {
         // setup the granules
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-multiband.json",
                 "/test123-layer-multiband.json",
                 "gs",
@@ -244,7 +243,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         // check the configuration elements are there too
         LayerInfo layer =
                 validateBasicLayerStructure(
-                        "gs", "gs:test123", new String[] {"B02", "B03", "B04", "B08"});
+                        "gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
 
         // ... its style is a RGB one based on the B2, B3, B4
         assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
@@ -282,7 +281,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Test
     public void testBandsFlagsAll() throws Exception {
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-bands-flags.json",
                 "/test123-layer-bands-flags-all.json",
                 "gs",
@@ -292,7 +291,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         LayerInfo layer =
                 validateBasicLayerStructure(
                         "gs",
-                        "gs:test123",
+                        "test123",
                         new String[] {
                             "VNIR_0", "VNIR_1", "VNIR_2", "QUALITY", "CLOUDSHADOW", "HAZE", "SNOW"
                         });
@@ -313,7 +312,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Test
     public void testBandsFlagsMix() throws Exception {
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-bands-flags.json",
                 "/test123-layer-bands-flags-browseMix.json",
                 "gs",
@@ -323,7 +322,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         LayerInfo layer =
                 validateBasicLayerStructure(
                         "gs",
-                        "gs:test123",
+                        "test123",
                         new String[] {
                             "VNIR_0", "VNIR_1", "VNIR_2", "QUALITY", "CLOUDSHADOW", "HAZE", "SNOW"
                         });
@@ -344,7 +343,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
 
     @Test
     public void testBandsFlagsGrayFlag() throws Exception {
-        setupLayer(
+        setupDefaultLayer(
                 "/test123-product-granules-bands-flags.json",
                 "/test123-layer-bands-flags-grayFlag.json",
                 "gs",
@@ -354,7 +353,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         LayerInfo layer =
                 validateBasicLayerStructure(
                         "gs",
-                        "gs:test123",
+                        "test123",
                         new String[] {
                             "VNIR_0", "VNIR_1", "VNIR_2", "QUALITY", "CLOUDSHADOW", "HAZE", "SNOW"
                         });
@@ -374,7 +373,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         ImageAssert.assertEquals(expected, image, 1000);
     }
 
-    private void setupLayer(
+    private void setupDefaultLayer(
             String granuleLocations,
             String layerDefinition,
             String workspace,
@@ -407,5 +406,198 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertEquals("test123", json.read("$.layer"));
         assertEquals(expectSeparateBands, json.read("$.separateBands"));
         assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+    }
+
+    @Test
+    public void testGetCollectionDefaultLayer() throws Exception {
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/SENTINEL2/layer", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("sentinel2", json.read("$.layer"));
+        assertEquals(Integer.valueOf(12), json.read("$.bands.length()"));
+        assertEquals(Boolean.TRUE, json.read("$.separateBands"));
+        assertEquals("B01", json.read("$.bands[0]"));
+        assertEquals(Integer.valueOf(3), json.read("$.browseBands.length()"));
+        assertEquals("B04", json.read("$.browseBands[0]"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+        assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
+    }
+
+    @Test
+    public void testGetCollectionLayers() throws Exception {
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/LANDSAT8/layers", 200);
+        assertEquals(Integer.valueOf(2), json.read("$.layers.length()"));
+        assertEquals(
+                Arrays.asList(
+                        "http://localhost:8080/geoserver/rest/oseo/collections/LANDSAT8/layers/landsat8-SINGLE"),
+                json.read("$.layers[?(@.name == 'landsat8-SINGLE')].href"));
+        assertEquals(
+                Arrays.asList(
+                        "http://localhost:8080/geoserver/rest/oseo/collections/LANDSAT8/layers/landsat8-SEPARATE"),
+                json.read("$.layers[?(@.name == 'landsat8-SEPARATE')].href"));
+    }
+
+    @Test
+    public void testGetCollectionLayerByName() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("/rest/oseo/collections/LANDSAT8/layers/landsat8-SINGLE", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("landsat8-SINGLE", json.read("$.layer"));
+        assertEquals(Boolean.FALSE, json.read("$.separateBands"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+        assertEquals("EPSG:4326", json.read("$.mosaicCRS"));
+    }
+
+    @Test
+    public void testDeleteCollectionLayer() throws Exception {
+        // create something to delete
+        setupDefaultLayer(
+                "/test123-product-granules-rgb.json",
+                "/test123-layer-simple.json",
+                "gs",
+                Boolean.FALSE);
+
+        // check the GeoServer layer is there
+        assertNotNull(getCatalog().getLayerByName("test123"));
+
+        // remove
+        MockHttpServletResponse response =
+                deleteAsServletResponse("rest/oseo/collections/TEST123/layer");
+        assertEquals(200, response.getStatus());
+
+        // no more there on REST API and on catalog
+        response = getAsServletResponse("rest/oseo/collections/TEST123/layer");
+        assertEquals(404, response.getStatus());
+        assertNull(getCatalog().getLayerByName("test123"));
+    }
+
+    @Test
+    public void testAddSecondLayerByPut() throws Exception {
+        // add the first layer and granules
+        setupDefaultLayer(
+                "/test123-product-granules-bands-flags.json",
+                "/test123-layer-bands-flags-grayFlag.json",
+                "gs",
+                Boolean.TRUE);
+
+        // confirm on layer on the list
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+        assertEquals(Integer.valueOf(1), json.read("$.layers.length()"));
+
+        // now add another layer
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "rest/oseo/collections/TEST123/layers/test123-secondary",
+                        getTestData("/test123-layer-bands-flags-browseMix-secondary.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+
+        // confirm there are two layers on list now
+        json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+        assertEquals(Integer.valueOf(2), json.read("$.layers.length()"));
+        checkTest123SecondaryLayer();
+        return;
+    }
+
+    private void checkTest123SecondaryLayer() throws Exception {
+        DocumentContext json; // check it has been created from REST
+        json = getAsJSONPath("rest/oseo/collections/TEST123/layers/test123-secondary", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("test123-secondary", json.read("$.layer"));
+        assertEquals(Boolean.TRUE, json.read("$.separateBands"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+
+        // check the configuration elements are there too
+        LayerInfo layer =
+                validateBasicLayerStructure(
+                        "gs",
+                        "test123-secondary",
+                        new String[] {
+                            "VNIR_0", "VNIR_1", "VNIR_2", "QUALITY", "CLOUDSHADOW", "HAZE", "SNOW"
+                        });
+        // ... its style has been generated
+        assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123-secondary"));
+        // ... and it uses only a gray band, the snow flag
+        ChannelSelection cs = getChannelSelection(layer);
+        assertEquals("1", cs.getRGBChannels()[0].getChannelName().evaluate(null, String.class));
+        assertEquals("2", cs.getRGBChannels()[1].getChannelName().evaluate(null, String.class));
+        assertEquals("7", cs.getRGBChannels()[2].getChannelName().evaluate(null, String.class));
+        assertNull(cs.getGrayChannel());
+
+        // the image is almost black, but not fully
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers=gs:test123-secondary&format=image/png&width=200",
+                        "image/png");
+        File expected = new File("src/test/resources/test123-vnir-snow.png");
+        ImageAssert.assertEquals(expected, image, 1000);
+    }
+
+    @Test
+    public void testAddSecondLayerByPost() throws Exception {
+        // add the first layer and granules
+        setupDefaultLayer(
+                "/test123-product-granules-bands-flags.json",
+                "/test123-layer-bands-flags-grayFlag.json",
+                "gs",
+                Boolean.TRUE);
+
+        // confirm on layer on the list
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+        assertEquals(Integer.valueOf(1), json.read("$.layers.length()"));
+
+        // now add another layer
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        "rest/oseo/collections/TEST123/layers",
+                        getTestData("/test123-layer-bands-flags-browseMix-secondary.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+
+        // confirm there are two layers on list now
+        json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+        assertEquals(Integer.valueOf(2), json.read("$.layers.length()"));
+
+        // check it has been created from REST
+        checkTest123SecondaryLayer();
+    }
+
+    @Test
+    public void testRemoveLayer() throws Exception {
+        // add two layers
+        testAddSecondLayerByPost();
+
+        getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+
+        // now go and remove the first, which was the default one
+        MockHttpServletResponse response =
+                deleteAsServletResponse("rest/oseo/collections/TEST123/layers/test123");
+        assertEquals(200, response.getStatus());
+
+        // check it got removed from list
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
+        assertEquals(Integer.valueOf(1), json.read("$.layers.length()"));
+        assertEquals(
+                Arrays.asList(
+                        "http://localhost:8080/geoserver/rest/oseo/collections/TEST123/layers/test123-secondary"),
+                json.read("$.layers[?(@.name == 'test123-secondary')].href"));
+
+        // check it's a 404 on direct request
+        response = getAsServletResponse("rest/oseo/collections/TEST123/layers/test123");
+        assertEquals(404, response.getStatus());
+
+        // check the other layer is now the default
+        json = getAsJSONPath("rest/oseo/collections/TEST123/layer", 200);
+        assertEquals("gs", json.read("$.workspace"));
+        assertEquals("test123-secondary", json.read("$.layer"));
+        assertEquals(Boolean.TRUE, json.read("$.separateBands"));
+        assertEquals(Boolean.TRUE, json.read("$.heterogeneousCRS"));
+
+        // the image is almost black, but not fully
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers=gs:test123-secondary&format=image/png&width=200",
+                        "image/png");
+        File expected = new File("src/test/resources/test123-vnir-snow.png");
+        ImageAssert.assertEquals(expected, image, 1000);
     }
 }

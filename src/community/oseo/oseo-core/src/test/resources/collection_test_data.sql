@@ -3346,5 +3346,11 @@ INSERT INTO public.collection_ogclink
 VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');
 -- collection publishing metadata
 INSERT into public.collection_layer
-("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS")
-VALUES(17, 'gs', 'sentinel2', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', true, 'EPSG:4326');
+("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+VALUES(17, 'gs', 'sentinel2', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12', 'B04,B03,B02', true, 'EPSG:4326', true);
+INSERT into public.collection_layer
+("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+VALUES(31, 'gs', 'landsat8-SINGLE', false, null, null, true, 'EPSG:4326', true);
+INSERT into public.collection_layer
+("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
+VALUES(31, 'gs', 'landsat8-SEPARATE', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09', 'B04,B03,B02', true, 'EPSG:4326', false);

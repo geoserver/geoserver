@@ -11,12 +11,18 @@ env:
   global:
     - MAVEN_OPTS=-Xmx512m
 before_script:
-  - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.5.0/apache-maven-3.5.0-bin.tar.gz
-  - tar zxf apache-maven-3.5.0-bin.tar.gz
-  - export M2_HOME=$PWD/apache-maven-3.5.0
+  - wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.0/apache-maven-3.6.0-bin.tar.gz
+  - tar zxf apache-maven-3.6.0-bin.tar.gz
+  - export M2_HOME=$PWD/apache-maven-3.6.0
+  - wget -P $M2_HOME/lib/ext http://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
   - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -U -T4 -fae -Prelease clean install -Dfmt.action=check && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check
+  - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install -Dfmt.action=check --builder smart && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
+  - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
+before-caching:
+  - rm -rf $HOME/.m2/repository/org/geotools
+  - rm -rf $HOME/.m2/repository/org/geowebcache
+  - rm -rf $HOME/.m2/repository/org/geoserver
 notifications:
   email:
     on_success: never

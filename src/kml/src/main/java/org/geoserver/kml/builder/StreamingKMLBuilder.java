@@ -11,9 +11,9 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
-import org.geoserver.kml.sequence.SequenceFactory;
-import org.geoserver.kml.sequence.SequenceList;
+import org.geoserver.kml.iterator.IteratorFactory;
+import org.geoserver.kml.iterator.IteratorList;
+import org.geoserver.kml.iterator.PlainFolderIteratorFactory;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -49,8 +49,8 @@ public class StreamingKMLBuilder {
 
         // create a generator that will generate a folder and feature dumps/ground overlays for each
         // layer
-        SequenceFactory<Feature> generatorFactory = new PlainFolderSequenceFactory(context);
-        SequenceList<Feature> folders = new SequenceList<Feature>(generatorFactory);
+        IteratorFactory<Feature> generatorFactory = new PlainFolderIteratorFactory(context);
+        IteratorList<Feature> folders = new IteratorList<Feature>(generatorFactory);
         context.addFeatures(document, folders);
 
         return kml;

@@ -3,10 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import java.util.Iterator;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
@@ -15,12 +16,12 @@ import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
- * Creates a sequence of Placemark objects mapping the vector contents of a layer. This one is
+ * Creates an iterator of Placemark objects mapping the vector contents of a layer. This one is
  * geared towards WFS, as such it ignores styles
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
+public class WFSFeatureIteratorFactory implements IteratorFactory<Feature> {
 
     private SimpleFeatureCollection features;
 
@@ -28,7 +29,7 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
 
     private KmlEncodingContext context;
 
-    public WFSFeatureSequenceFactory(KmlEncodingContext context) {
+    public WFSFeatureIteratorFactory(KmlEncodingContext context) {
         this.context = context;
         this.features = context.getCurrentFeatureCollection();
 
@@ -37,11 +38,11 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
     }
 
     @Override
-    public Sequence<Feature> newSequence() {
+    public Iterator<Feature> newIterator() {
         return new FeatureGenerator(context.openIterator(features));
     }
 
-    public class FeatureGenerator implements Sequence<Feature> {
+    public class FeatureGenerator implements Iterator<Feature> {
 
         private FeatureIterator fi;
 
@@ -56,7 +57,7 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
                 return null;
             }
 
-            while (fi.hasNext()) {
+            while (hasNext()) {
                 boolean featureRetrieved = false;
                 try {
                     // grab the next feature, with a sentinel to tell us whether there was an
@@ -88,10 +89,15 @@ public class WFSFeatureSequenceFactory implements SequenceFactory<Feature> {
             }
 
             // did we reach the end just now?
-            if (!fi.hasNext()) {
+            if (!hasNext()) {
                 context.closeIterator(fi);
             }
             return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return fi.hasNext();
         }
     }
 }

@@ -1,0 +1,17 @@
+<wfs:GetFeature
+        service="WFS" version="2.0.0"
+        xmlns:fes="http://www.opengis.net/fes/2.0"
+        xmlns:wfs="http://www.opengis.net/wfs/2.0">
+    <wfs:Query typeNames="st:Station">
+        <fes:Filter>
+            <fes:And>
+                <fes:PropertyIsEqualTo>
+                    <fes:ValueReference>
+                        st:Station/st:meta/st:institutes/st:Institute/st:name
+                    </fes:ValueReference>
+                    <fes:Literal>ins1</fes:Literal>
+                </fes:PropertyIsEqualTo>
+            </fes:And>
+        </fes:Filter>
+    </wfs:Query>
+</wfs:GetFeature>

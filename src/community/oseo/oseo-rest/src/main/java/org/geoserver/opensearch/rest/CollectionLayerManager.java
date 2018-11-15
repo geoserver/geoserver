@@ -86,6 +86,7 @@ import org.springframework.http.HttpStatus;
 class CollectionLayerManager {
     static final Logger LOGGER = Logging.getLogger(CollectionLayerManager.class);
     private static final String TIME_START = "timeStart";
+    private static final String TIME_START_END = "timeStart;timeEnd";
     static final Hints EXCLUDE_MOSAIC_HINTS = new Hints(Utils.EXCLUDE_MOSAIC, true);
     public static final Pattern BAND_SPEC_PATTERN = Pattern.compile("([^\\[]+)(\\[(\\d+)\\])?");
 
@@ -244,7 +245,11 @@ class CollectionLayerManager {
             mosaicConfig.put("TypeNames", "false"); // disable typename scanning
             mosaicConfig.put("Caching", "false");
             mosaicConfig.put("LocationAttribute", "location");
-            mosaicConfig.put("TimeAttribute", TIME_START);
+            if (layerConfiguration.isTimeRanges()) {
+                mosaicConfig.put("TimeAttribute", TIME_START_END);
+            } else {
+                mosaicConfig.put("TimeAttribute", TIME_START);
+            }
             mosaicConfig.put("CanBeEmpty", "true");
             if (spi != null) {
                 mosaicConfig.put("SuggestedSPI", spi.getClass().getName());
@@ -276,7 +281,7 @@ class CollectionLayerManager {
                     imageLayout.getColorModel(null));
         }
 
-        // this is ridicolous, but for the moment, multi-crs mosaics won't work if there
+        // this is ridiculous, but for the moment, multi-crs mosaics won't work if there
         // is no indexer.properties around, even if no collection is actually done
         buildIndexer(collection, layerConfiguration, mosaicDirectory);
 
@@ -499,7 +504,11 @@ class CollectionLayerManager {
         indexer.put("Name", layerConfiguration.getLayer());
         indexer.put("TypeName", collection);
         indexer.put("AbsolutePath", "true");
-        indexer.put("TimeAttribute", TIME_START);
+        if (layerConfiguration.isTimeRanges()) {
+            indexer.put("TimeAttribute", TIME_START_END);
+        } else {
+            indexer.put("TimeAttribute", TIME_START);
+        }
         // TODO: should we setup also a end time and prepare a interval based time setup?
 
         // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous

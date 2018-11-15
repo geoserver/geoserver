@@ -155,7 +155,7 @@ A collection can have multiple layers:
 The layer configuration specification will have different contents depending on
 the collection structure:
 
-* Single CRS, non band split, RGB or RGBA files:
+* Single CRS, non band split, RGB or RGBA files, time configured as an "instant" (only ``timeStart`` used):
 
   .. code-block:: json
 
@@ -163,10 +163,11 @@ the collection structure:
     	"workspace": "gs",
     	"layer": "test123",
     	"separateBands": false,
-    	"heterogeneousCRS": false
+    	"heterogeneousCRS": false,
+    	"timeRanges": false
     }
 
-* Single CRS, multiband in single file, with a gray browse style:
+* Single CRS, multiband in single file, with a gray browse style, product time configured as a range between ``timeStart`` and ``timeEnd``:
 
   .. code-block:: json
 
@@ -175,10 +176,11 @@ the collection structure:
     	"layer": "test123",
     	"separateBands": false,
     	"browseBands": ["test123[0]"],
-    	"heterogeneousCRS": false
+    	"heterogeneousCRS": false,
+    	"timeRanges": true
     }
 
-* Heterogeneous CRS, multi-band split across files, with a RGB browse style:
+* Heterogeneous CRS, multi-band split across files, with a RGB browse style ("timeRanges" not specified, implying it's handled as an instant):
 
   .. code-block:: json
 

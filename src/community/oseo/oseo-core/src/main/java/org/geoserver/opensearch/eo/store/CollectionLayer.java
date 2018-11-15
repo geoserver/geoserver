@@ -32,27 +32,10 @@ public class CollectionLayer {
 
     boolean defaultLayer;
 
+    boolean timeRanges;
+
     public CollectionLayer() {
         super();
-        // TODO Auto-generated constructor stub
-    }
-
-    public CollectionLayer(
-            String workspace,
-            String layer,
-            boolean separateBands,
-            String[] bands,
-            String[] browseBands,
-            boolean heterogeneousCRS,
-            String targetCRS) {
-        super();
-        this.workspace = workspace;
-        this.layer = layer;
-        this.separateBands = separateBands;
-        this.bands = bands;
-        this.browseBands = browseBands;
-        this.heterogeneousCRS = heterogeneousCRS;
-        this.mosaicCRS = targetCRS;
     }
 
     public String getWorkspace() {
@@ -174,5 +157,13 @@ public class CollectionLayer {
      */
     public void setDefaultLayer(boolean defaultLayer) {
         this.defaultLayer = defaultLayer;
+    }
+
+    public boolean isTimeRanges() {
+        return timeRanges;
+    }
+
+    public void setTimeRanges(boolean timeRanges) {
+        this.timeRanges = timeRanges;
     }
 }

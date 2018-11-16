@@ -22,6 +22,7 @@ import org.opengis.filter.sort.SortOrder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Retrieves the list of available executions from the ProcessStore accordingly to the request
@@ -74,8 +75,16 @@ public class Executions {
         // Check whether the user is authenticated or not and, in the second case, if it is an
         // Administrator or not
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final String principal =
-                auth != null && auth.getPrincipal() != null ? auth.getPrincipal().toString() : null;
+        final Object principal =
+                auth != null && auth.getPrincipal() != null ? auth.getPrincipal() : null;
+        String username = null;
+        if (principal != null) {
+            if (principal instanceof UserDetails) {
+                username = ((UserDetails) principal).getUsername();
+            } else {
+                username = principal.toString();
+            }
+        }
         boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
         if (!isAdmin) {
             // Anonymous users cannot access the list of executions at all
@@ -86,7 +95,7 @@ public class Executions {
             // Non-admins are not allowed to fetch executions from other users
             else if (request.owner != null
                     && !request.owner.isEmpty()
-                    && !principal.equalsIgnoreCase(request.owner)) {
+                    && !username.equalsIgnoreCase(request.owner)) {
                 throw new WPSException(
                         Executions.NO_SUCH_PARAMETER_CODE, "Invalid parameter 'owner' specified.");
             }
@@ -102,7 +111,7 @@ public class Executions {
             builder.appendUserNameFilter(request.owner);
         } else if (!isAdmin) {
             // not an admin? The list should be filtered to your own processes
-            builder.appendUserNameFilter(principal);
+            builder.appendUserNameFilter(username);
         } // Otherwise you are an admin asking for all the processes
 
         // Filter by the Process Name (Identifier)

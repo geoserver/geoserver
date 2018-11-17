@@ -878,4 +878,19 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals(4, json.getJSONArray("features").size());
         assertEquals(15, json.getInt("totalFeatures"));
     }
+
+    /** gml:id should not be present on GML 3.1 geometry XML tag */
+    @Test
+    public void testNoGmlIdOnGeometry() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&typeName=cite:NamedPlaces&version=1.1.0&service=wfs&featureId=NamedPlaces.1107531895891");
+
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo(
+                "0",
+                "count(//wfs:FeatureCollection/gml:featureMembers/cite:NamedPlaces/cite:the_geom"
+                        + "/gml:MultiSurface/gml:surfaceMember/gml:Polygon[@gml:id])",
+                doc);
+    }
 }

@@ -2403,12 +2403,30 @@
     return replacements;
   }
   
+  function getVersion(style) {
+    var styleHeader = style.match(/<.*StyledLayerDescriptor[^]+?>/);
+    if (styleHeader != null && styleHeader[0] != null) {
+        var version = styleHeader[0].match(/version="(.*)"/);
+        if (version != null && version[1] != null) {
+            return version[1];
+        } else {
+            return null;
+        }
+    }
+  }
+  
   function getSLD10Hints(cm) {
     var style = cm.getValue();
     var basePrefixes = {
       "http://www.opengis.net/sld": "sld",
       "http://www.opengis.net/ogc": "ogc",
       "http://www.opengis.net/gml": "gml"
+    }
+
+    // can only autocomplete version 1.0, disable completion for any other version
+    var version = getVersion(style);
+    if (version != null && version != "1.0.0") {
+      return null;
     }
   
     var replacements = getPrefixReplacements(style, basePrefixes);

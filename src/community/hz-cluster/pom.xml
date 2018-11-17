@@ -27,17 +27,15 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-      <version>${hazelcast.version}</version>
     </dependency>
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-spring</artifactId>
-      <version>${hazelcast.version}</version>
     </dependency>
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-wm</artifactId>
-      <version>${hazelcast.version}</version>
+      <version>3.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.yammer.metrics</groupId>
@@ -48,11 +46,7 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.hazelcast</groupId>
-      <artifactId>hazelcast-cloud</artifactId>
-      <version>${hazelcast.version}</version>
-    </dependency>
+ 
 
     <dependency>
       <groupId>junit</groupId>
@@ -106,7 +100,6 @@
   </dependencies>
 
   <properties>
-    <hazelcast.version>3.3.1</hazelcast.version>
     <metrics.version>2.1.5</metrics.version>
   </properties>
 </project>

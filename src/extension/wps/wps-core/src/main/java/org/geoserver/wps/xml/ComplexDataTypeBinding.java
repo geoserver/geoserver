@@ -10,8 +10,8 @@ import java.util.List;
 import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.Wps10Factory;
 import org.geoserver.wps.XMLEncoderDelegate;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDataTypeBinding {
 

@@ -121,10 +121,8 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
      - request the capabilities document in a certain format
 
 
-A example GetCapabilities request is:
+A example GetCapabilities request is: ::
 
-.. code-block:: xml
- 
    http://localhost:8080/geoserver/wms?
    service=wms&
    version=1.1.1&
@@ -246,9 +244,7 @@ The standard parameters for the GetMap operation are:
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation.  
 These are documented in the :ref:`wms_vendor_parameters` section.
 
-Example WMS request for ``topp:states`` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is:
-
-.. code-block:: xml
+Example WMS request for ``topp:states`` layer to be output as a PNG map image in SRS EPGS:4326 and using default styling is: ::
 
    http://localhost:8080/geoserver/wms?
    request=GetMap
@@ -425,9 +421,7 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
      - No
      - Feature properties to be returned
 
-An example request for feature information from the ``topp:states`` layer in HTML format is:
-
-.. code-block:: xml
+An example request for feature information from the ``topp:states`` layer in HTML format is: ::
 
    http://localhost:8080/geoserver/wms?
    request=GetFeatureInfo
@@ -447,9 +441,7 @@ An example request for feature information from the ``topp:states`` layer in HTM
    &y=145
    &exceptions=application%2Fvnd.ogc.se_xml
 
-An example request for feature information in GeoJSON format is:
-
-.. code-block:: xml
+An example request for feature information in GeoJSON format is: ::
 
    http://localhost:8080/geoserver/wms?
    &INFO_FORMAT=application/json
@@ -579,9 +571,7 @@ The supported formats are:
      - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.  Note that this format is disabled by default (See :ref:`wms_global_variables`).
      
 
-An example request in XML (default) format on a layer is:
-
-.. code-block:: xml
+An example request in XML (default) format on a layer is: :
 
    http://localhost:8080/geoserver/topp/wms?service=WMS
    &version=1.1.1
@@ -598,9 +588,7 @@ An example request in XML (default) format on a layer is:
       </LayerDescription>
    </WMS_DescribeLayerResponse>
 
-An example request for feature description in JSON format on a layer group is:
-
-.. code-block:: xml
+An example request for feature description in JSON format on a layer group is: ::
 
    http://localhost:8080/geoserver/wms?service=WMS
    &version=1.1.1
@@ -609,33 +597,31 @@ An example request for feature description in JSON format on a layer group is:
    &outputFormat=application/json
    
 
-The result will be:
+The result will be: ::
 
-.. code-block:: xml
-
-   {
-   version: "1.1.1",
-   layerDescriptions: [
-   {
-      layerName: "sf:roads",
-      owsURL: "http://localhost:8080/geoserver/wfs/WfsDispatcher?",
-      owsType: "WFS",
-      typeName: "sf:roads"
-   },
-   {
-      layerName: "topp:tasmania_roads",
-      owsURL: "http://localhost:8080/geoserver/wfs/WfsDispatcher?",
-      owsType: "WFS",
-      typeName: "topp:tasmania_roads"
-   },
-   {
-      layerName: "nurc:mosaic",
-      owsURL: "http://localhost:8080/geoserver/wcs?",
-      owsType: "WCS",
-      typeName: "nurc:mosaic"
-   }
-   ]
-   }
+  {
+    version: "1.1.1",
+    layerDescriptions: [
+      {
+          layerName: "sf:roads",
+          owsURL: "http://localhost:8080/geoserver/wfs/WfsDispatcher?",
+          owsType: "WFS",
+          typeName: "sf:roads"
+      },
+      {
+          layerName: "topp:tasmania_roads",
+          owsURL: "http://localhost:8080/geoserver/wfs/WfsDispatcher?",
+          owsType: "WFS",
+          typeName: "topp:tasmania_roads"
+      },
+      {
+          layerName: "nurc:mosaic",
+          owsURL: "http://localhost:8080/geoserver/wcs?",
+          owsType: "WCS",
+          typeName: "nurc:mosaic"
+      }
+    ]
+   
 
 
 .. _wms_getlegendgraphic:

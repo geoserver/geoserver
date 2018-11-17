@@ -9,22 +9,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
-import org.junit.Before;
+import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -32,7 +26,7 @@ import org.w3c.dom.Document;
  * Tests that namespaces are correctly handled by WFS and app-schema when features belonging to
  * different namespaces are chained together.
  */
-public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
+public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
 
     private static final String TEST_STORED_QUERY_ID = "NamespacesTestStoredQuery";
 
@@ -62,64 +56,11 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
                     + "  </wfs:QueryExpressionText>\n"
                     + "</wfs:StoredQueryDescription>";
 
-    private static final Map<String, String> GML31_PARAMETERS =
-            Collections.unmodifiableMap(
-                    Stream.of(
-                                    new SimpleEntry<>("GML_PREFIX", "gml31"),
-                                    new SimpleEntry<>(
-                                            "GML_NAMESPACE", "http://www.opengis.net/gml"),
-                                    new SimpleEntry<>(
-                                            "GML_LOCATION",
-                                            "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"))
-                            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
-
-    private static final Map<String, String> GML32_PARAMETERS =
-            Collections.unmodifiableMap(
-                    Stream.of(
-                                    new SimpleEntry<>("GML_PREFIX", "gml32"),
-                                    new SimpleEntry<>(
-                                            "GML_NAMESPACE", "http://www.opengis.net/gml/3.2"),
-                                    new SimpleEntry<>(
-                                            "GML_LOCATION",
-                                            "http://schemas.opengis.net/gml/3.2.1/gml.xsd"))
-                            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
-
-    // xpath engines used to check WFS responses
-    private XpathEngine WFS11_XPATH_ENGINE;
-    private XpathEngine WFS20_XPATH_ENGINE;
-
-    @Before
-    public void beforeTest() {
-        // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs",
-                        "gml",
-                        "http://www.opengis.net/gml");
-        // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs/2.0",
-                        "gml",
-                        "http://www.opengis.net/gml/3.2");
-    }
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         // inject a test namespace to check on responses
         addTestNamespaceToCatalog();
-    }
-
-    /** * GetFeature tests ** */
-    @Override
-    protected StationsMockData createTestData() {
-        // instantiate our custom complex types
-        return new StationsMockData();
     }
 
     @Test
@@ -330,21 +271,6 @@ public final class NamespacesWfsTest extends AbstractAppSchemaTestSupport {
                 1,
                 "/wfs:ValueCollection/wfs:member/"
                         + "st_gml32:measurements/ms_gml32:Measurement_gml32[ms_gml32:name='wind']");
-    }
-
-    /**
-     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to
-     * the expected number,
-     */
-    private void checkCount(
-            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
-        try {
-            // evaluate the xpath and compare the number of nodes found
-            assertThat(
-                    xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
-        } catch (Exception exception) {
-            throw new RuntimeException("Error evaluating xpath.", exception);
-        }
     }
 
     /**

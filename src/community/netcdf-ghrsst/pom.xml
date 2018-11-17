@@ -20,7 +20,7 @@
   <name>NetCDF GHRSST encoder</name>
 
   <properties>
-    <netcdf.version>4.6.6</netcdf.version>
+    <netcdf.version>4.6.11</netcdf.version>
   </properties>
 
   <dependencies>

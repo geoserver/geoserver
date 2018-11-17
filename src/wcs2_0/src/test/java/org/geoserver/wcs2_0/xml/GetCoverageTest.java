@@ -6,6 +6,7 @@ package org.geoserver.wcs2_0.xml;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode.InvalidSubsetting;
 import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.Raster;
@@ -60,6 +61,9 @@ import org.w3c.dom.Document;
 public class GetCoverageTest extends WCSTestSupport {
 
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+
+    protected static QName WATTEMP_DILATED =
+            new QName(MockData.SF_URI, "watertemp_dilated", MockData.SF_PREFIX);
 
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
@@ -117,6 +121,14 @@ public class GetCoverageTest extends WCSTestSupport {
 
         sortByElevation(TIMERANGES);
         sortByElevation(CUSTOMDIMS);
+
+        testData.addRasterLayer(
+                WATTEMP_DILATED,
+                "/watertemp_dilated.zip",
+                null,
+                null,
+                this.getClass(),
+                getCatalog());
     }
 
     // force sorting on elevation to get predictable results
@@ -365,7 +377,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setInputLimit(1);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
-        System.out.println(new String(this.getBinary(response)));
+        // System.out.println(new String(this.getBinary(response)));
         assertEquals("application/xml", response.getContentType());
         // reset imits
         setInputLimit(-1);
@@ -757,7 +769,7 @@ public class GetCoverageTest extends WCSTestSupport {
     public void testCoverageTimeSlicingTimeSecond() throws Exception {
         setupRasterDimension(
                 getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        System.out.println(getDataDirectory().root());
+        // System.out.println(getDataDirectory().root());
         final File xml =
                 new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request = FileUtils.readFileToString(xml);
@@ -826,15 +838,8 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageTimeElevationSlicingAgainstLowestOldestGranule() throws Exception {
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES),
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
         final File xml =
                 new File(
                         "./src/test/resources/trimming/requestGetCoverageTimeElevationCustomSlicingXML.xml");
@@ -851,15 +856,8 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testCoverageTimeElevationSlicingAgainstHighestNewestGranuleLatestWavelength()
             throws Exception {
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES),
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
         final File xml =
                 new File(
                         "./src/test/resources/trimming/requestGetCoverageTimeElevationCustomSlicingXML.xml");
@@ -875,15 +873,8 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageMultipleCustomSubsets() throws Exception {
-        setupRasterDimension(
-                getLayerId(CUSTOMDIMS), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(CUSTOMDIMS), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(CUSTOMDIMS),
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+        setupTimeRangesTimeElevationCustom(
+                CUSTOMDIMS, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
         setupRasterDimension(
                 getLayerId(CUSTOMDIMS),
                 ResourceInfo.CUSTOM_DIMENSION_PREFIX + "CUSTOM",
@@ -906,15 +897,8 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageTimeElevationSlicingAgainstHighestNewestGranule() throws Exception {
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES),
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
         final File xml =
                 new File(
                         "./src/test/resources/trimming/requestGetCoverageTimeElevationSlicingXML.xml");
@@ -928,23 +912,27 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageElevationSlicingDefaultTime() throws Exception {
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(TIMERANGES),
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
         final File xml =
                 new File("./src/test/resources/trimming/requestGetCoverageElevationSlicingXML.xml");
         String request = FileUtils.readFileToString(xml);
         request = request.replace("${coverageId}", "sf__timeranges");
         request = request.replace("${slicePoint}", "140");
 
-        // timeranges is really just an expanded watertemp
+        // check we get a proper exception
         checkWaterTempValue(request, 14.52999974018894136);
+    }
+
+    private void setupTimeRangesTimeElevationCustom(
+            QName timeranges, String time, String elevation, String customDimensionName) {
+        setupRasterDimension(getLayerId(timeranges), time, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(timeranges), elevation, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(timeranges),
+                ResourceInfo.CUSTOM_DIMENSION_PREFIX + customDimensionName,
+                DimensionPresentation.LIST,
+                null);
     }
 
     private void checkWaterTempValue(String request, double expectedValue)
@@ -1147,5 +1135,116 @@ public class GetCoverageTest extends WCSTestSupport {
         } finally {
             scheduleForCleaning(coverage);
         }
+    }
+
+    @Test
+    public void testInvalidElevationTrimmingOutsideRange() throws Exception {
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageDimensionTrimmingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${dimension}", "elevation");
+        request = request.replace("${trimLow}", "-500");
+        request = request.replace("${trimHigh}", "-400");
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested elevation subset does not intersect the declared range 20.0/150.0",
+                errorMessage);
+    }
+
+    @Test
+    public void testInvalidElevationTrimmingInsideRange() throws Exception {
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageDimensionTrimmingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${dimension}", "elevation");
+        request = request.replace("${trimLow}", "99.5"); //
+        request = request.replace("${trimHigh}", "99.7");
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested elevation subset does not intersect available values [[20.0, 99.0], [100.0, 150.0]]",
+                errorMessage);
+    }
+
+    @Test
+    public void testInvalidTimeTrimmingOutsideRange() throws Exception {
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageDimensionTrimmingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${dimension}", "time");
+        request = request.replace("${trimLow}", "1990-11-01T00:00:00.000Z");
+        request = request.replace("${trimHigh}", "1991-11-01T00:00:00.000Z");
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested time subset does not intersect the declared range 2008-10-31T00:00:00.000Z/2008-11-07T00:00:00.000Z",
+                errorMessage);
+    }
+
+    @Test
+    public void testInvalidTimeTrimmingInsideRange() throws Exception {
+        setupRasterDimension(
+                getLayerId(WATTEMP_DILATED), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(WATTEMP_DILATED),
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.LIST,
+                null);
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageDimensionTrimmingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp_dilated");
+        request = request.replace("${dimension}", "time");
+        request = request.replace("${trimLow}", "2008-11-01T11:00:00.000Z");
+        request = request.replace("${trimHigh}", "2008-11-01T12:01:00.000Z");
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested time subset does not intersect available values [2008-10-31T00:00:00.000Z, 2008-11-03T00:00:00.000Z]",
+                errorMessage);
+    }
+
+    @Test
+    public void testInvalidCustomDimensionSlicing() throws Exception {
+        setupTimeRangesTimeElevationCustom(
+                TIMERANGES, ResourceInfo.TIME, ResourceInfo.ELEVATION, "WAVELENGTH");
+        final File xml =
+                new File(
+                        "./src/test/resources/trimming/requestGetCoverageTimeElevationCustomSlicingXML.xml");
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePointElevation}", "20");
+        request = request.replace("${slicePointTime}", "2008-10-31T00:00:00.000Z");
+        request = request.replace("${Custom}", "WAVELENGTH");
+        request = request.replace("${slicePointCustom}", "-300");
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested WAVELENGTH subset does not intersect the available values [12/24, 25/80]",
+                errorMessage);
     }
 }

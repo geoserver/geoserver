@@ -20,6 +20,7 @@ import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.beans.DummyAction;
 import org.geoserver.taskmanager.beans.DummyTaskTypeImpl;
 import org.geoserver.taskmanager.beans.TestTaskTypeImpl;
+import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Parameter;
 import org.geoserver.taskmanager.data.Task;
@@ -83,6 +84,7 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
 
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
+        task2 = config.getTasks().get("task2");
     }
 
     @After
@@ -183,6 +185,18 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
     }
 
     @Test
+    public void testFixTask() {
+        Task t = taskUtil.initTask("Dummy", "newDummyTask");
+        t.getParameters().remove(DummyTaskTypeImpl.PARAM2);
+        assertEquals(1, t.getParameters().size());
+        assertEquals("${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
+        taskUtil.fixTask(t);
+        assertEquals(2, t.getParameters().size());
+        assertEquals("${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
+        assertEquals("${param2}", t.getParameters().get(DummyTaskTypeImpl.PARAM2).getValue());
+    }
+
+    @Test
     public void testCopyTask() {
         Task t = taskUtil.copyTask(task1, "copiedTask");
         assertEquals("copiedTask", t.getName());
@@ -220,6 +234,48 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         assertFalse(taskUtil.canCleanup(config));
 
         // (cleanup itself is suffiently tested in other tests
+    }
+
+    @Test
+    public void testOrderTasksForCleanup() {
+        Task task3 = fac.createTask();
+        task3.setName("task3");
+        task3.setType(TestTaskTypeImpl.NAME);
+        util.addTaskToConfiguration(config, task3);
+        Task task4 = fac.createTask();
+        task4.setName("task4");
+        task4.setType(TestTaskTypeImpl.NAME);
+        util.addTaskToConfiguration(config, task4);
+        Batch init = fac.createBatch();
+        init.setName("@Initialize");
+        util.addBatchToConfiguration(config, init);
+        util.addBatchElement(init, task3);
+
+        config = dao.save(config);
+        task1 = config.getTasks().get("task1");
+        task2 = config.getTasks().get("task2");
+        task3 = config.getTasks().get("task3");
+        task4 = config.getTasks().get("task4");
+
+        Batch batch1 = fac.createBatch();
+        batch1.setName("batch1");
+        util.addBatchToConfiguration(config, batch1);
+        util.addBatchElement(batch1, task1);
+        util.addBatchElement(batch1, task4);
+        Batch batch2 = fac.createBatch();
+        batch2.setName("batch2");
+        util.addBatchToConfiguration(config, batch2);
+        util.addBatchElement(batch2, task2);
+        util.addBatchElement(batch2, task1);
+
+        config = dao.save(config);
+
+        List<Task> orderedTasks = taskUtil.orderTasksForCleanup(config);
+        assertEquals(4, orderedTasks.size());
+        assertEquals("task4", orderedTasks.get(0).getName());
+        assertEquals("task1", orderedTasks.get(1).getName());
+        assertEquals("task2", orderedTasks.get(2).getName());
+        assertEquals("task3", orderedTasks.get(3).getName());
     }
 
     @Test

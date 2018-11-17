@@ -95,7 +95,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        print(dom);
+        // print(dom);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        print(dom);
+        // print(dom);
     }
 
     @Test
@@ -122,6 +122,6 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
 
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        print(dom);
+        // print(dom);
     }
 }

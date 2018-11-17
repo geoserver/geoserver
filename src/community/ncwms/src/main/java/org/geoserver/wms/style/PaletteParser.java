@@ -11,11 +11,11 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.geotools.brewer.styling.builder.FeatureTypeStyleBuilder;
+import org.geotools.brewer.styling.builder.StyledLayerDescriptorBuilder;
+import org.geotools.brewer.styling.filter.expression.FunctionBuilder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.expression.FunctionBuilder;
 import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.builder.FeatureTypeStyleBuilder;
-import org.geotools.styling.builder.StyledLayerDescriptorBuilder;
 import org.opengis.filter.FilterFactory;
 
 /**

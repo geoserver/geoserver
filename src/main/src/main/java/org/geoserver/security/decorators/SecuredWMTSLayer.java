@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.wms.xml.Dimension;
-import org.geotools.data.wms.xml.Extent;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.StyleImpl;
+import org.geotools.ows.wms.xml.Dimension;
+import org.geotools.ows.wms.xml.Extent;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**

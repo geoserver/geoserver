@@ -30,7 +30,7 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import org.geotools.image.ImageWorker;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -88,8 +88,8 @@ final class TurboJpegImageWorker extends ImageWorker {
 
         // go to component color model if needed
         ColorModel cm = image.getColorModel();
+        forceComponentColorModel(false, true, true);
         final boolean hasAlpha = cm.hasAlpha();
-        forceComponentColorModel();
         cm = image.getColorModel();
 
         // rescale to 8 bit

@@ -37,13 +37,13 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.factory.GeoTools;
+import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimensionType;
 import si.uom.NonSI;
 import si.uom.SI;
-import tec.uom.se.format.SimpleUnitFormat;
 
 @SuppressWarnings("serial")
 public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel {
@@ -181,7 +181,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 List<String> unitNames = new ArrayList<String>();
                 // adding radiance as it's the most common, but it's not part of the standard units
                 unitNames.add("W.m-2.Sr-1");
-                UnitFormat format = SimpleUnitFormat.getInstance();
+                UnitFormat format = GeoToolsUnitFormat.getInstance();
                 for (Unit<?> unit : units) {
                     unitNames.add(format.format(unit));
                 }

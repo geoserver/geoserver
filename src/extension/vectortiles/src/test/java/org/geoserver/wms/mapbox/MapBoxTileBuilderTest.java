@@ -131,4 +131,56 @@ public class MapBoxTileBuilderTest {
         assertTrue(lineFeature.getGeometry() instanceof LineString);
         assertEquals(line, lineFeature.getGeometry()); // line should not be clipped
     }
+
+    @Test
+    public void testFeatureIdsWithDigitsAtTheEnd() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        Map<String, Object> lineProps1 = ImmutableMap.<String, Object>of("name", "line1");
+        Map<String, Object> lineProps2 = ImmutableMap.<String, Object>of("name", "line2");
+
+        tileBuilder.addFeature(
+                "Lines", "Lines.1", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
+        tileBuilder.addFeature(
+                "Lines", "Lines.27", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
+
+        RawMap map = tileBuilder.build(mock(WMSMapContent.class));
+
+        ListMultimap<String, Feature> features = decode(map);
+
+        assertEquals(2, features.size());
+        assertEquals(1, features.get("Lines").get(0).getId());
+        assertEquals(27, features.get("Lines").get(1).getId());
+    }
+
+    @Test
+    public void testFeatureIdsWithoutDigits() throws Exception {
+        MapBoxTileBuilder tileBuilder = tileBuilder(256, 256);
+
+        Map<String, Object> lineProps1 = ImmutableMap.<String, Object>of("name", "line1");
+        Map<String, Object> lineProps2 = ImmutableMap.<String, Object>of("name", "line2");
+
+        tileBuilder.addFeature(
+                "Lines", "an_id", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
+        tileBuilder.addFeature(
+                "Lines", "another_id", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
+
+        RawMap map = tileBuilder.build(mock(WMSMapContent.class));
+
+        ListMultimap<String, Feature> features = decode(map);
+
+        assertEquals(2, features.size());
+        // According to the Mapbox VectorTile Spec 0 is the default value
+        // https://github.com/mapbox/vector-tile-spec/blob/master/2.1/vector_tile.proto
+        // which we use when the fid cannot be parsed
+        assertEquals(0, features.get("Lines").get(0).getId());
+        assertEquals(0, features.get("Lines").get(1).getId());
+    }
+
+    private MapBoxTileBuilder tileBuilder(int width, int height) {
+        MapBoxTileBuilderFactory builderFact = new MapBoxTileBuilderFactory();
+        Rectangle screenSize = new Rectangle(width, height);
+        ReferencedEnvelope mapArea = new ReferencedEnvelope();
+        return builderFact.newBuilder(screenSize, mapArea);
+    }
 }

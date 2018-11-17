@@ -37,19 +37,20 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.util.ImageUtilities;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -1206,9 +1207,9 @@ public class CatalogBuilder {
             String uName = name.toUpperCase();
             if (uom != null) {
                 label.append("(".intern());
-                parseUOM(label, uom);
+                formatUOM(label, uom);
                 label.append(")".intern());
-                dim.setUnit(uom.toString());
+                dim.setUnit(GeoToolsUnitFormat.getInstance().format(uom));
             } else if (uName.startsWith("RED")
                     || uName.startsWith("GREEN")
                     || uName.startsWith("BLUE")) {
@@ -1515,13 +1516,9 @@ public class CatalogBuilder {
         }
     }
 
-    void parseUOM(StringBuilder label, Unit uom) {
-        String uomString = uom.toString();
-        uomString = uomString.replaceAll("\u00B2", "^2");
-        uomString = uomString.replaceAll("\u00B3", "^3");
-        uomString = uomString.replaceAll("\u212B", "A");
-        uomString = uomString.replaceAll("�", "");
-        label.append(uomString);
+    void formatUOM(StringBuilder label, Unit uom) {
+        String formatted = GeoToolsUnitFormat.getInstance().format(uom);
+        label.append(formatted);
     }
 
     /**

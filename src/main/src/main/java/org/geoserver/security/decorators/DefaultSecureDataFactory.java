@@ -22,10 +22,10 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wmts.WebMapTileServer;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 
 /**
  * The default secured wrapper factory, used as a fallback when no other, more specific factory can

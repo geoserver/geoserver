@@ -22,6 +22,11 @@
         <property name="db" value="testtargetdb"/>
         <property name="createDBSqlResource" value="classpath:h2/dbtarget/create-target.sql"/>
         <property name="createDataSqlResource" value=""/>
+        <property name="roles">
+        	<list>
+        		<value>ROLE_SOMEONE</value>
+        	</list>
+        </property>
     </bean>
     
     <!--postgres setup -->
@@ -38,6 +43,11 @@
         <property name="db" value="testtargetdb"/>
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
+        <property name="roles">
+        	<list>
+        		<value>ROLE_SOMEONE</value>
+        	</list>
+        </property>
     </bean> --> 
     
     <!-- for local db pub tests, jndi -->
@@ -49,7 +59,12 @@
             <map>
                 <entry key="mygs" value="mytargetjndi" />
             </map>
-        </property>        
+        </property>     
+        <property name="roles">
+        	<list>
+        		<value>ROLE_SOMEONE_ELSE</value>
+        	</list>
+        </property> 
     </bean> 
     <!-- for remote db pub tests, postgres -->
     <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
@@ -58,6 +73,12 @@
         <property name="db" value="testtargetdb" />
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
+         <property name="roles">
+        	<list>
+        		<value>ROLE_SOMEONE</value>
+        		<value>ROLE_SOMEONE_ELSE</value>
+        	</list>
+        </property>      
     </bean>    
 
     <!-- external geoserver for testing -->

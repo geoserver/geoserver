@@ -9,9 +9,9 @@ import javax.xml.namespace.QName;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
-import org.geotools.xml.AbstractComplexBinding;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.AbstractComplexBinding;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:GetCapabilitiesType.
@@ -77,7 +77,10 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
 
         WFSBindingUtils.service(getCapabilities, node);
 
-        getCapabilities.getAcceptVersions().getVersion().add(node.getAttributeValue("version"));
+        getCapabilities
+                .getAcceptVersions()
+                .getVersion()
+                .add((String) node.getAttributeValue("version"));
 
         return getCapabilities;
     }

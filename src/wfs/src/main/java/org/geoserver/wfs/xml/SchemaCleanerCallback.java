@@ -10,7 +10,7 @@ import java.util.List;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
-import org.geotools.xml.Schemas;
+import org.geotools.xsd.Schemas;
 
 /**
  * Cleans up the temporarily created schemas when the request ends

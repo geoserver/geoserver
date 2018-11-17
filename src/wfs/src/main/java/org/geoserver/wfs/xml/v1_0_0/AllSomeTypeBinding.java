@@ -8,8 +8,8 @@ package org.geoserver.wfs.xml.v1_0_0;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.AllSomeType;
 import net.opengis.wfs.WfsFactory;
-import org.geotools.xml.AbstractSimpleBinding;
-import org.geotools.xml.InstanceComponent;
+import org.geotools.xsd.AbstractSimpleBinding;
+import org.geotools.xsd.InstanceComponent;
 
 /**
  * Binding object for the type http://www.opengis.net/wfs:AllSomeType.

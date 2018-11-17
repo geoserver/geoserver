@@ -8,6 +8,7 @@ package org.geoserver.gwc;
 import static java.lang.String.format;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.greaterThan;
@@ -39,10 +40,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -186,6 +187,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 "BasicPolygonsNoCrs.properties",
                 this.getClass(),
                 catalog);
+
+        // clean up the recorded http requests
+        HttpRequestRecorderCallback.reset();
     }
 
     protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {
@@ -1069,6 +1073,38 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testDirectWMSIntegrationCustomHost() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+
+        String requestURL = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        MockHttpServletRequest request = createRequest(requestURL);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        final String THE_HOST = "foobar";
+        request.setRemoteHost(THE_HOST);
+        MockHttpServletResponse response = dispatch(request, null);
+
+        // check everything went as expected
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        assertEquals(layerName, response.getHeader("geowebcache-layer"));
+        assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
+        assertEquals("-180.0,-90.0,0.0,90.0", response.getHeader("geowebcache-tile-bounds"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-gridset"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-crs"));
+
+        // check we have the two requests recorded, and the
+        ArrayList<HttpServletRequest> requests = HttpRequestRecorderCallback.getRequests();
+        assertEquals(2, requests.size());
+        assertThat(requests.get(1), instanceOf(FakeHttpServletRequest.class));
+        FakeHttpServletRequest fake = (FakeHttpServletRequest) requests.get(1);
+        assertEquals(THE_HOST, fake.getRemoteHost());
+    }
+
+    @Test
     public void testReloadConfiguration() throws Exception {
         String path = "/gwc/rest/reload";
         String content = "reload_configuration=1";
@@ -1256,16 +1292,18 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         quota.setQuotaStore("H2");
         gwc.saveDiskQuotaConfig(quota, null);
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        File jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
-        assertNull("jdbc config should not be there", jdbcConfigFile);
-        File h2DefaultStore = dd.findFile("gwc/diskquota_page_store_h2");
-        assertNotNull("jdbc store should be there", h2DefaultStore);
+        String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
+        assertNull(
+                "jdbc config (" + jdbcConfigPath + ") should not be there",
+                dd.findFile(jdbcConfigPath));
+        String h2StorePath = "gwc/diskquota_page_store_h2";
+        assertNotNull("jdbc store (" + h2StorePath + ") should be there", dd.findFile(h2StorePath));
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
 
         // disable again and clean up
         quota.setEnabled(false);
         gwc.saveDiskQuotaConfig(quota, null);
-        FileUtils.deleteDirectory(h2DefaultStore);
+        FileUtils.deleteDirectory(dd.findFile("gwc/diskquota_page_store_h2"));
 
         // now enable it in JDBC mode, with H2 local storage
         quota.setEnabled(true);
@@ -1282,15 +1320,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         pool.setMaxOpenPreparedStatements(50);
         jdbc.setConnectionPool(pool);
         gwc.saveDiskQuotaConfig(quota, jdbc);
-        jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
-        assertNotNull("jdbc config should be there", jdbcConfigFile);
-        assertNull("jdbc store should be there", dd.findDataFile("gwc/diskquota_page_store_h2"));
+        assertNotNull(
+                "jdbc config (" + jdbcConfigPath + ") should be there",
+                dd.findFile(jdbcConfigPath));
+        assertNull(
+                "jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
         File newQuotaStore = new File("./target/quota-h2.data.db");
         assertTrue(newQuotaStore.exists());
 
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(jdbcConfigFile);
+        File jdbcConfigFile = dd.findFile(jdbcConfigPath);
+        try (FileInputStream fis = new FileInputStream(jdbcConfigFile)) {
             Document dom = dom(fis);
             // print(dom);
             String storedPassword =
@@ -1298,8 +1337,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                             .evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
-        } finally {
-            IOUtils.closeQuietly(fis);
         }
     }
 
@@ -1316,7 +1353,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
-        System.out.println(response.getContentAsString());
+        // System.out.println(response.getContentAsString());
         assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
         assertEquals(
                 "inline;filename=wms-getcapabilities.xml",

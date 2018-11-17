@@ -6,7 +6,7 @@ package org.geoserver.taskmanager.external.impl;
 
 import java.util.List;
 import org.geoserver.taskmanager.external.DbSource;
-import org.geoserver.taskmanager.util.LookupServiceImpl;
+import org.geoserver.taskmanager.util.SecuredLookupServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  * @author Niels Charlier
  */
 @Service
-public class LookupDbSourceServiceImpl extends LookupServiceImpl<DbSource> {
+public class LookupDbSourceServiceImpl extends SecuredLookupServiceImpl<DbSource> {
 
     @Autowired(required = false)
     public void setDbSources(List<DbSource> dbSources) {

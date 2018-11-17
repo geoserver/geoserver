@@ -29,8 +29,8 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.factory.GeoTools;
 import org.opengis.coverage.grid.GridGeometry;
 
 /**

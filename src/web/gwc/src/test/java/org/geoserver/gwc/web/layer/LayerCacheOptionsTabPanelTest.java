@@ -9,17 +9,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.gwc.GWC;
@@ -33,6 +39,7 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,13 +50,15 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
     private GeoServerTileLayerInfoModel tileLayerModel;
 
     @Before
-    public void setUpInternal() throws Exception {
+    public void setUpInternal() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
         assertTrue(CatalogConfiguration.isLayerExposable(layerInfo));
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);
         layerModel = new Model<LayerInfo>(layerInfo);
         tileLayerModel = new GeoServerTileLayerInfoModel(tileLayer.getInfo(), false);
+        // clean up fake format added during tests
+        tileLayer.getInfo().getMimeFormats().remove("foo/bar");
     }
 
     @Test
@@ -305,5 +314,36 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
         form.submit();
         // Check no exception has been thrown
         tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testExtraFormat() {
+        tileLayerModel.getObject().getMimeFormats().add("foo/bar");
+
+        tester.startPage(
+                new FormTestPage(
+                        new ComponentBuilder() {
+                            private static final long serialVersionUID = -6705646666953650890L;
+
+                            public Component buildComponent(final String id) {
+                                return new LayerCacheOptionsTabPanel(
+                                        id, layerModel, tileLayerModel);
+                            }
+                        }));
+
+        // print(tester.getLastRenderedPage(), true, true);
+
+        ListView component =
+                (ListView)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:tileLayerEditor:container:configs:cacheFormatsGroup:cacheFormats");
+        Set<String> formatsInUI = new HashSet<>();
+        component.visitChildren(
+                ListItem.class,
+                (IVisitor<ListItem, Void>)
+                        (object, visit) -> {
+                            formatsInUI.add(object.getDefaultModelObjectAsString());
+                        });
+        assertThat(formatsInUI, Matchers.hasItem("foo/bar"));
     }
 }

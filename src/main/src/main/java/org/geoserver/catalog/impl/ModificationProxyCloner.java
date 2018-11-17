@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,6 +92,11 @@ class ModificationProxyCloner {
                 || source instanceof BigInteger
                 || source instanceof BigDecimal) {
             return (T) source;
+        }
+
+        // to avoid reflective access warnings
+        if (source instanceof TimeZone) {
+            return (T) ((TimeZone) source).clone();
         }
 
         // is it cloneable?

@@ -4,9 +4,15 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
 
 public class CollectionLayer {
 
@@ -24,27 +30,12 @@ public class CollectionLayer {
 
     String mosaicCRS;
 
+    boolean defaultLayer;
+
+    boolean timeRanges;
+
     public CollectionLayer() {
         super();
-        // TODO Auto-generated constructor stub
-    }
-
-    public CollectionLayer(
-            String workspace,
-            String layer,
-            boolean separateBands,
-            String[] bands,
-            String[] browseBands,
-            boolean heterogeneousCRS,
-            String targetCRS) {
-        super();
-        this.workspace = workspace;
-        this.layer = layer;
-        this.separateBands = separateBands;
-        this.bands = bands;
-        this.browseBands = browseBands;
-        this.heterogeneousCRS = heterogeneousCRS;
-        this.mosaicCRS = targetCRS;
     }
 
     public String getWorkspace() {
@@ -109,28 +100,36 @@ public class CollectionLayer {
     }
 
     /**
-     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYER} property of a
+     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYERS} property of a
      * Collection feature.
      *
      * @param feature
      * @return The layer, or null if the property was not found
      */
-    public static CollectionLayer buildCollectionLayerFromFeature(Feature feature) {
+    public static List<CollectionLayer> buildCollectionLayersFromFeature(Feature feature)
+            throws IOException {
         // map to a single bean
-        CollectionLayer layer = null;
-        Property p = feature.getProperty(OpenSearchAccess.LAYER);
-        if (p != null && p instanceof Feature) {
-            Feature lf = (Feature) p;
-            layer = new CollectionLayer();
-            layer.setWorkspace((String) getAttribute(lf, "workspace"));
-            layer.setLayer((String) getAttribute(lf, "layer"));
-            layer.setSeparateBands(Boolean.TRUE.equals(getAttribute(lf, "separateBands")));
-            layer.setBands((String[]) getAttribute(lf, "bands"));
-            layer.setBrowseBands((String[]) getAttribute(lf, "browseBands"));
-            layer.setHeterogeneousCRS(Boolean.TRUE.equals(getAttribute(lf, "heterogeneousCRS")));
-            layer.setMosaicCRS((String) getAttribute(lf, "mosaicCRS"));
+        List<CollectionLayer> result = new ArrayList<>();
+        Collection<Property> layers = feature.getProperties(OpenSearchAccess.LAYERS);
+        if (layers != null) {
+            for (Property p : layers) {
+                SimpleFeature lf = (SimpleFeature) p;
+                CollectionLayer layer = new CollectionLayer();
+                layer.setWorkspace((String) getAttribute(lf, "workspace"));
+                layer.setLayer((String) getAttribute(lf, "layer"));
+                layer.setSeparateBands(Boolean.TRUE.equals(getAttribute(lf, "separateBands")));
+                layer.setBands((String[]) getAttribute(lf, "bands"));
+                layer.setBrowseBands((String[]) getAttribute(lf, "browseBands"));
+                layer.setHeterogeneousCRS(
+                        Boolean.TRUE.equals(getAttribute(lf, "heterogeneousCRS")));
+                layer.setMosaicCRS((String) getAttribute(lf, "mosaicCRS"));
+                layer.setDefaultLayer(
+                        Optional.ofNullable((Boolean) getAttribute(lf, "defaultLayer"))
+                                .orElse(false));
+                result.add(layer);
+            }
         }
-        return layer;
+        return result;
     }
 
     private static Object getAttribute(Feature sf, String name) {
@@ -140,5 +139,31 @@ public class CollectionLayer {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Returns the default layer property
+     *
+     * @return True is this is the default layer for the collection, false otherwise
+     */
+    public boolean isDefaultLayer() {
+        return defaultLayer;
+    }
+
+    /**
+     * Sets the default layer property (only one should be the default)
+     *
+     * @param defaultLayer
+     */
+    public void setDefaultLayer(boolean defaultLayer) {
+        this.defaultLayer = defaultLayer;
+    }
+
+    public boolean isTimeRanges() {
+        return timeRanges;
+    }
+
+    public void setTimeRanges(boolean timeRanges) {
+        this.timeRanges = timeRanges;
     }
 }

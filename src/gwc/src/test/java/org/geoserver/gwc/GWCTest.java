@@ -28,7 +28,17 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -86,7 +96,15 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.config.*;
+import org.geowebcache.config.BlobStoreInfo;
+import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.config.ConfigurationPersistenceException;
+import org.geowebcache.config.DefaultGridsets;
+import org.geowebcache.config.FileBlobStoreInfo;
+import org.geowebcache.config.TileLayerConfiguration;
+import org.geowebcache.config.XMLConfiguration;
+import org.geowebcache.config.XMLGridSet;
+import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.diskquota.QuotaStore;
@@ -731,7 +749,7 @@ public class GWCTest {
         mediator.truncateByLayerAndStyle(layerName, styleName);
 
         int expected = tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
-        verify(tileBreeder, times(expected)).dispatchTasks(any(GWCTask[].class));
+        verify(tileBreeder, times(expected)).dispatchTasks(any());
     }
 
     @Test
@@ -1367,7 +1385,12 @@ public class GWCTest {
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> defaultFormats =
                 ImmutableSet.of(
-                        "image/png", "image/png8", "image/jpeg", "image/gif", "image/vnd.jpeg-png");
+                        "image/png",
+                        "image/png8",
+                        "image/jpeg",
+                        "image/gif",
+                        "image/vnd.jpeg-png",
+                        "image/vnd.jpeg-png8");
 
         SetView<String> formatsWithUtfGrid =
                 union(defaultFormats, Collections.singleton("application/json;type=utfgrid"));
@@ -1398,7 +1421,12 @@ public class GWCTest {
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> defaultFormats =
                 ImmutableSet.of(
-                        "image/png", "image/png8", "image/jpeg", "image/gif", "image/vnd.jpeg-png");
+                        "image/png",
+                        "image/png8",
+                        "image/jpeg",
+                        "image/gif",
+                        "image/vnd.jpeg-png",
+                        "image/vnd.jpeg-png8");
 
         // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> expectedVector =

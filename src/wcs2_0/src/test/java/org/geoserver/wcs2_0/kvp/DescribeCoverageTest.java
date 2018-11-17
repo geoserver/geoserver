@@ -131,7 +131,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public void testAxisOrderUtm() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__pk50095");
         assertNotNull(dom);
-        print(dom, System.out);
+        // print(dom, System.out);
 
         checkValidationErrors(dom, WCS20_SCHEMA);
         assertXpathEvaluatesTo(
@@ -163,7 +163,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__rain");
         assertNotNull(dom);
-        print(dom, System.out);
+        // print(dom, System.out);
 
         checkValidationErrors(dom, WCS20_SCHEMA);
         assertXpathEvaluatesTo(
@@ -364,7 +364,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public void gridCellCenterEnforce() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__BlueMarble");
         assertNotNull(dom);
-        print(dom, System.out);
+        // print(dom, System.out);
 
         checkValidationErrors(dom, WCS20_SCHEMA);
         assertXpathEvaluatesTo(

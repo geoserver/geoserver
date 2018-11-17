@@ -114,7 +114,7 @@ Configure Apache HTTPD to forward an Header with authentication credentials
 
 This can be done with an HTTPD configuration that looks like the following:
 
-   .. code-block:: xml
+   .. code-block:: apacheconf
 	
 		<Location  /geoserver>
 			Session On

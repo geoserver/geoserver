@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Andrea Aime - GeoSolutions
  */
 public class GZIPResponseStream extends ServletOutputStream {
+    protected final ServletOutputStream delegateStream;
     protected GZIPOutputStream gzipstream = null;
 
     protected boolean closed = false;
@@ -22,7 +23,8 @@ public class GZIPResponseStream extends ServletOutputStream {
     public GZIPResponseStream(HttpServletResponse response) throws IOException {
         super();
         closed = false;
-        gzipstream = new GZIPOutputStream(response.getOutputStream(), 4096, true);
+        delegateStream = response.getOutputStream();
+        gzipstream = new GZIPOutputStream(delegateStream, 4096, true);
     }
 
     public void close() throws IOException {

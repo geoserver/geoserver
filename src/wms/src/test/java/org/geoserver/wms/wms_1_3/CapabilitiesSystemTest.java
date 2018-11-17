@@ -32,7 +32,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
-import org.geotools.xml.XML;
+import org.geotools.xsd.XML;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -238,7 +238,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     @Test
     public void testRequestMandatoryServiceParameter() throws Exception {
         Document dom = getAsDOM("ows?request=GetCapabilities&version=1.3.0");
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo(
                 "InvalidParameterValue", "/ows:ExceptionReport/ows:Exception/@exceptionCode", dom);
     }
@@ -288,7 +288,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
                 getAsDOM(
                         "ows?service=WMS&request=GetCapabilities&version=1.3.0&updateSequence="
                                 + updateSeq);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1.3.0", "/ogc:ServiceExceptionReport/@version", dom);
         assertXpathEvaluatesTo(
                 "CurrentUpdateSequence",

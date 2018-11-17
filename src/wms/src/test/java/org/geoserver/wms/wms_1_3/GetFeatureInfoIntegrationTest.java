@@ -567,7 +567,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + layer
                         + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
-        print(dom);
+        // print(dom);
         // we also have the charset which may be platf. dep.
         XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
         XMLAssert.assertXpathEvaluatesTo(
@@ -620,7 +620,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + layer
                         + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
-        print(dom);
+        // print(dom);
 
         XMLAssert.assertXpathEvaluatesTo(
                 "26.0",
@@ -824,7 +824,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         Document invalidResult1 = getAsDOM(invalidRequest1);
         Document invalidResult2 = getAsDOM(invalidRequest2);
-        print(invalidResult1);
+        // print(invalidResult1);
         XMLAssert.assertXpathEvaluatesTo(
                 "1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult1);
         XMLAssert.assertXpathEvaluatesTo(
@@ -898,7 +898,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         String request =
                 url + "&VERSION=1.1.1&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
         String result = getAsString(request);
-        System.out.println(result);
+        // System.out.println(result);
         assertTrue(result.indexOf("polygonProperty =") > 0);
 
         request =
@@ -957,7 +957,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=300&height=400&i=150&j=100"
                         + "&crs=EPSG:4326&bbox=2,302,10,308";
         Document dom = getAsDOM(request);
-        print(dom);
+        // print(dom);
         XMLAssert.assertXpathEvaluatesTo(
                 "-0.095",
                 "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",

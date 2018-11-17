@@ -18,11 +18,11 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.gml3.simple.GML3FeatureCollectionEncoderDelegate;
-import org.geotools.xml.AbstractComplexEMFBinding;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Node;
+import org.geotools.xsd.AbstractComplexEMFBinding;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Node;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**

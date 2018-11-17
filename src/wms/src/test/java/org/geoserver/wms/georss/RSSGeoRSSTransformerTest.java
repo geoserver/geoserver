@@ -6,6 +6,7 @@
 package org.geoserver.wms.georss;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -24,8 +25,9 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.georss.GeoRSSTransformerBase.GeometryEncoding;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.GeoTools;
 import org.geotools.map.FeatureLayer;
+import org.geotools.util.factory.GeoTools;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -90,13 +92,9 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         assertEquals(n, items.getLength());
         for (int i = 0; i < items.getLength(); i++) {
             Element item = (Element) items.item(i);
-            assertEquals(
-                    "http://dummp.com",
-                    item.getElementsByTagName("link")
-                            .item(0)
-                            .getChildNodes()
-                            .item(0)
-                            .getNodeValue());
+            assertThat(
+                    item.getElementsByTagName("link").item(0).getTextContent(),
+                    Matchers.containsString("http://dummp.com"));
         }
     }
 

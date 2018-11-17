@@ -6,7 +6,7 @@
 				found here http://www.atomenabled.org/developers/syndication/atom-format-spec.php.
 			</xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:annotation>
 		<xs:documentation>
 			An Atom document may have two root elements, feed and entry, as defined in section 2.

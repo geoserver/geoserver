@@ -12,7 +12,7 @@ import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;
 import org.geoserver.taskmanager.external.ExternalGS;
-import org.geoserver.taskmanager.util.NamedImpl;
+import org.geoserver.taskmanager.util.SecuredImpl;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
@@ -21,7 +21,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  *
  * @author Timothy De Bock
  */
-public class GenericDbSourceImpl extends NamedImpl implements DbSource {
+public class GenericDbSourceImpl extends SecuredImpl implements DbSource {
 
     private String connectionUrl;
 

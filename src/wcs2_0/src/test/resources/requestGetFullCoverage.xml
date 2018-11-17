@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
-    xmlns:gml="http://www.opengis.net/gml/3.2"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0"
     xsi:schemaLocation="http://www.opengis.net/wcs/2.0 ../../wcsAll.xsd"
     service="WCS" version="2.0.0">
   <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>

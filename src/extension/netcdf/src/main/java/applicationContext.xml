@@ -17,5 +17,9 @@
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.NetCDFRasterEditPanel" />
   </bean>
+  
+  <bean id="netcdfUnitConfigurator" class="org.geoserver.netcdf.NetCDFUnitsConfigurator">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
  
 </beans>

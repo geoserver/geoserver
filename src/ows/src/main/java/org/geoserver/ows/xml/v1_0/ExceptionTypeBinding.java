@@ -8,7 +8,7 @@ package org.geoserver.ows.xml.v1_0;
 import javax.xml.namespace.QName;
 import net.opengis.ows10.ExceptionType;
 import net.opengis.ows10.Ows10Factory;
-import org.geotools.xml.AbstractComplexEMFBinding;
+import org.geotools.xsd.AbstractComplexEMFBinding;
 
 /**
  * Binding object for the type http://www.opengis.net/ows:ExceptionType.

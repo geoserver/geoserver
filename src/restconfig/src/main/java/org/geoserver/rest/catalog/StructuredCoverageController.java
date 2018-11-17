@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geotools.coverage.grid.io.GranuleRemovalPolicy;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
@@ -39,6 +41,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -147,16 +150,10 @@ public class StructuredCoverageController extends AbstractCatalogController {
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @RequestParam(name = "filter", required = false) String filter,
-            @RequestParam(name = "offset", required = false) Integer offset,
-            @RequestParam(name = "limit", required = false) Integer limit)
+            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge)
             throws IOException {
-
-        GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
-        Query q = toQuery(filter, offset, limit);
-
-        LOGGER.log(Level.SEVERE, "Still need to parse the filters");
-
-        store.removeGranules(q.getFilter());
+        Query q = toQuery(filter, 0, 1);
+        granulesDeleteInternal(workspaceName, storeName, coverageName, purge, q.getFilter());
     }
 
     /*
@@ -221,14 +218,44 @@ public class StructuredCoverageController extends AbstractCatalogController {
             @PathVariable(name = "workspaceName") String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
-            @PathVariable String granuleId)
+            @PathVariable String granuleId,
+            @RequestParam(name = "purge", required = false, defaultValue = "none") String purge)
             throws IOException {
 
-        // gsConfigForma allows for weird calls gsconfig does, like granules/granule.id/.json
-        GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
+        // gsConfig allows for weird calls, like granules/granule.id/.json
         Filter filter = getGranuleIdFilter(granuleId);
 
-        store.removeGranules(filter);
+        granulesDeleteInternal(workspaceName, storeName, coverageName, purge, filter);
+    }
+
+    private void granulesDeleteInternal(
+            String workspaceName,
+            String storeName,
+            String coverageName,
+            String purge,
+            Filter filter)
+            throws IOException {
+        GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
+        if (purge != null) {
+            GranuleRemovalPolicy policy = mapRemovalPolicy(purge);
+            Hints hints = new Hints(Hints.GRANULE_REMOVAL_POLICY, policy);
+            store.removeGranules(filter, hints);
+        } else {
+            store.removeGranules(filter);
+        }
+    }
+
+    private GranuleRemovalPolicy mapRemovalPolicy(String key) {
+        try {
+            return GranuleRemovalPolicy.valueOf(key.toUpperCase());
+        } catch (Exception e) {
+            throw new RestException(
+                    "Invalid purge value "
+                            + key
+                            + ", allowed values are "
+                            + Arrays.toString(GranuleRemovalPolicy.values()),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

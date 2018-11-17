@@ -25,12 +25,10 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcconfig/index
    mbtiles/index
    geopkg/index
-   rest/index
    pgraster/pgraster
    wps-download/index
    jms-cluster/index
    solr/index
-   rest-upload/index
    geomesa/index
    gwc-distributed/index
    gdal/index
@@ -52,3 +50,5 @@ officially part of the GeoServer releases. They are however built along with the
    monitor-hibernate/index
    taskmanager/index
    qose-module/index
+
+   

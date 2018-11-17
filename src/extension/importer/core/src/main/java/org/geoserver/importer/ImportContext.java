@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -339,6 +340,19 @@ public class ImportContext implements Serializable {
             File locking = new File(directory.getFile(), ".locking");
             if (locking.exists()) {
                 locking.delete();
+                File cleanerMark = new File(directory.getFile(), ".clean-me");
+                if (!cleanerMark.exists()) {
+                    try {
+                        cleanerMark.createNewFile();
+                    } catch (IOException e) {
+                        LOGGER.log(
+                                Level.WARNING,
+                                "It was not possible to set the directory '"
+                                        + directory
+                                        + "' eligible for cleaning!",
+                                e);
+                    }
+                }
             }
         }
     }

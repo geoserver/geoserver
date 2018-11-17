@@ -421,3 +421,208 @@ Multivalued properties from denormalised sources (the same source feature ID app
 
 .. warning:: Denormalised sources must grouped so that features with duplicate IDs are provided without any intervening features. This can be achieved by ensuring that denormalised source features are sorted by ID. Failure to observe this restriction will result in data corruption. This restriction is however not necessary when using :ref:`app-schema.joining` because then ordering will happen automatically.
 
+Attributes with cardinality 1..N
+--------------------------------
+
+Consider the following two tables, the first table contains information related to meteorological stations:
+
+======== ========== 
+ID       NAME                    
+======== ==========
+st.1     Station 1  
+st.2     Station 2  
+======== ========== 
+
+The second table contains tags that are associated with meteorological stations:
+
+======== =========== ============ =====
+ID       STATION_ID  TAG          CODE
+======== =========== ============ =====
+tg.1     st.1        temperature  X1Y
+tg.2     st.1        wind         X2Y
+tg.2     st.2        pressure     X3Y
+======== =========== ============ =====
+
+A station can have multiple tags, establishing a one to many relationship between stations and tags, the GML representation of the first station should look like this::
+
+  (...)
+  <st:Station gml:id="st.1">
+    <st:name>Station 1</st:name>
+    <st:tag st:code="X1Y">temperature</st:tag>
+    <st:tag st:code="X2Y">wind</st:tag>
+  </st:Station_gml32>
+  (...)
+
+Mappings with a one to many relationship are supported with a custom syntax in JDBC based data stores and Apache Solr data store. 
+
+SQL based data stores
+`````````````````````
+
+When using JDBC based data stores attributes with a 1..N relationship can be mapped like this::
+
+  (...)
+  <AttributeMapping>
+    <targetAttribute>st:tag</targetAttribute>
+    <jdbcMultipleValue>
+      <sourceColumn>ID</sourceColumn>
+      <targetTable>TAGS</targetTable>
+      <targetColumn>STATION_ID</targetColumn>
+      <targetValue>TAG</targetValue>
+    </jdbcMultipleValue>
+    <ClientProperty>
+      <name>st:code</name>
+      <value>CODE</value>
+    </ClientProperty>
+  </AttributeMapping>
+  (...)
+
+The ``targetValue`` refers to the value of the ``<st:tag>`` element, the client property is mapped with the usual syntax. Behind the scenes App-Schema will take care of associating the ``st:code`` attribute value with the correct tag. 
+
+Apache Solr
+```````````
+
+When using Apache Solr data stores, 1..N relationships can be handled with ``multiValued`` fields and mapped like this::
+
+  (...)
+  <AttributeMapping>
+    <targetAttribute>st:tag</targetAttribute>
+    <solrMultipleValue>TAG</solrMultipleValue>
+    <ClientProperty>
+      <name>st:code</name>
+      <value>CODE</value>
+    </ClientProperty>
+  </AttributeMapping>
+  (...)
+
+External Apache Solr Index
+--------------------------
+
+Is possible to use an external Apache Solr index to speed up text based searches. Consider the following WFS ``GetFeatureRequest``::
+
+  <wfs:GetFeature service="WFS" version="2.0.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2.1" xmlns:wfs="http://www.opengis.net/wfs/2.0">
+    <wfs:Query typeNames="st:Station">
+      <fes:Filter>
+        <fes:PropertyIsLike escapeChar="!" singleChar="." wildCard="*">
+          <fes:ValueReference>st:Station/st:measurement/st:Measurement/st:description</fes:ValueReference>
+          <fes:Literal>*high*</fes:Literal>
+        </fes:PropertyIsLike>
+      </fes:Filter>
+    </wfs:Query>
+  </wfs:GetFeature>
+
+This request will return all the stations that have at least one measurement that contains the text ``high`` in its description. This type of text based queries are (usually) quite expensive to execute in relational data bases.
+
+Apache Solr is a well known open source project that aims to solve those type of performance issues, it allow us to index several fields and efficiently query those fields. Although Apache Solr allow us to index several types of fields, e.g. numbers or even latitudes \ longitudes, where it really shines is when dealing with text fields and text based queries.  
+
+The goal of external indexes is to allow App-Schema to take advantage of Apache Solr text searches performance and at the same time to take advantage of relational databases relational capabilities. In practice, this means that the full data will be stored in the relational database and we will only need to index in Apache Solr the fields we need to improve our text based queries.
+
+Using the stations use case as an example, our data will be stored in a relational database, e.g. PostgreSQL, and we will index the possible descriptions measurements values in an Apache Solr index.
+
+
+Our mapping file will look like this::
+
+  <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
+    <namespaces>
+      <Namespace>
+        <prefix>gml</prefix>
+        <uri>http://www.opengis.net/gml/3.2</uri>
+      </Namespace>
+      <Namespace>
+        <prefix>st</prefix>
+        <uri>http://www.stations.org/1.0</uri>
+      </Namespace>
+    </namespaces>
+    <sourceDataStores>
+      <SolrDataStore>
+        <id>stations_solr</id>
+        <url>http://localhost:8983/solr/stations_index</url>
+        <index name="stations_index"/>
+      </SolrDataStore>
+      <DataStore>
+        <id>stations_db</id>
+        <parameters>
+          <Parameter>
+            <name>dbtype</name>
+            <value>postgisng</value>
+          </Parameter>
+        </parameters>
+      </DataStore>
+    </sourceDataStores>
+    <targetTypes>
+      <FeatureType>
+        <schemaUri>./stations.xsd</schemaUri>
+      </FeatureType>
+    </targetTypes>
+    <typeMappings>
+      <FeatureTypeMapping>
+        <sourceDataStore>stations_db</sourceDataStore>
+        <sourceType>stations</sourceType>
+        <targetElement>st:Station</targetElement>
+        <!-- configure the index data store for this feature type -->
+        <indexDataStore>stations_solr</indexDataStore>
+        <indexType>stations_index</indexType>
+        <attributeMappings>
+          <AttributeMapping>
+            <targetAttribute>st:Station</targetAttribute>
+            <idExpression>
+              <OCQL>id</OCQL>
+            </idExpression>
+            <!-- the Solr index field that matches this feature type table primary key -->
+            <indexField>id</indexField>
+          </AttributeMapping>
+          <AttributeMapping>
+            <targetAttribute>st:name</targetAttribute>
+            <sourceExpression>
+              <OCQL>name</OCQL>
+            </sourceExpression>
+          </AttributeMapping>
+          <AttributeMapping>
+            <targetAttribute>st:measurement</targetAttribute>
+            <sourceExpression>
+              <OCQL>id</OCQL>
+              <linkElement>st:Measurement</linkElement>
+              <linkField>FEATURE_LINK[1]</linkField>
+            </sourceExpression>
+            <isMultiple>true</isMultiple>
+          </AttributeMapping>
+        </attributeMappings>
+      </FeatureTypeMapping>
+      <FeatureTypeMapping>
+        <sourceDataStore>stations_db</sourceDataStore>
+        <sourceType>measurements</sourceType>
+        <targetElement>st:Measurement</targetElement>
+        <attributeMappings>
+          <AttributeMapping>
+            <targetAttribute>st:Measurement</targetAttribute>
+            <idExpression>
+              <OCQL>id</OCQL>
+            </idExpression>
+          </AttributeMapping>
+          <AttributeMapping>
+            <targetAttribute>st:description</targetAttribute>
+            <sourceExpression>
+              <OCQL>description</OCQL>
+            </sourceExpression>
+            <!-- the Solr index field that indexes the description possible values -->
+            <indexField>description_txt</indexField>
+          </AttributeMapping>
+          <AttributeMapping>
+            <targetAttribute>FEATURE_LINK[1]</targetAttribute>
+            <sourceExpression>
+              <OCQL>station_id</OCQL>
+            </sourceExpression>
+          </AttributeMapping>
+        </attributeMappings>
+      </FeatureTypeMapping>
+    </typeMappings>
+  </as:AppSchemaDataAccess> 
+
+To be able to use an external Apache Solr index, we need at least to:
+
+* **declare the Solr data store and the index**: this is done in the root feature type mapping, e.g. *st:Station*.
+
+* **map the Solr index field that matches the database primary key**: this is done id mapping of the root feature type, e.g.``<indexField>id</indexField>``.
+
+* **map each attribute that is indexed in Apache Solr**: this is done using the *indexField* element, e.g ``<indexField>description_txt</indexField>``.
+
+Is worth mentioning that if an external Solr index was defined, App-Schema will always query the external Solr index first and then query the relational database.

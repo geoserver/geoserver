@@ -13,7 +13,7 @@ The use case for this tutorial will be to serve through app-schema the informati
 
 First of all let's insert some test data in a MongoDB data store:
 
-.. code-block:: json 
+.. code-block:: javascript
 
     db.stations.insert({
         "id": "1",

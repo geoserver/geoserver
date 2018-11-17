@@ -104,31 +104,37 @@ We only specified the line layer, so all of the boilerplate arround was generate
 #. Additional properties cane be used fine-tune appearance. Use **line-color** to specify the colour and width of the line.
 
    .. code-block:: json
-      :emphasize-lines: 2
-   
-      "paint": {
-        "line-color": "blue"
+      :emphasize-lines: 3
+
+      {
+        "paint": {
+          "line-color": "blue"
+        }
       }
 
 #. **line-width** lets us make the line wider
 
    .. code-block:: json
-      :emphasize-lines: 3
-   
-      "paint": {
-        "line-color": "blue",
-        "line-width": 2
+      :emphasize-lines: 4
+
+      {
+        "paint": {
+          "line-color": "blue",
+          "line-width": 2
+        }
       }
 
 #. **line-dasharray** applies a dot dash pattern.
 
    .. code-block:: json
-      :emphasize-lines: 4
+      :emphasize-lines: 5
       
-      "paint": {
-        "line-color": "blue",
-        "line-width": 2,
-        "line-dasharray": [5, 2]
+      {
+        "paint": {
+          "line-color": "blue",
+          "line-width": 2,
+          "line-dasharray": [5, 2]
+        }
       }
 
 #. Check the :guilabel:`Map` tab to preview the result.

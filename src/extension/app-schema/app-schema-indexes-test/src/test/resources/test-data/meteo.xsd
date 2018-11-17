@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<schema version="1.0"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:st="http://www.stations.org/1.0"
+  targetNamespace="http://www.stations.org/1.0"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd" />
+
+  <element name="Parameter" type="st:ParameterType" substitutionGroup="gml:AbstractGML" />
+
+  <element name="Observation" type="st:ObservationType" substitutionGroup="gml:AbstractFeature" />
+
+  <element name="Station" type="st:StationType" substitutionGroup="gml:AbstractFeature" />
+
+  <complexType name="ParameterType">
+    <complexContent>
+      <extension base="gml:AbstractGMLType">
+        <sequence>
+          <element name="parameter" minOccurs="1" maxOccurs="1"
+            type="string" />
+          <element name="unit" minOccurs="1" maxOccurs="1" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="ObservationType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="timestamp" minOccurs="1" maxOccurs="1"
+            type="dateTime" />
+          <element name="value" minOccurs="1" maxOccurs="1"
+            type="double" />
+            <element name="description" minOccurs="0" maxOccurs="1"
+            type="string" />
+          <element name="parameter" minOccurs="1" maxOccurs="1"
+            type="st:ParameterPropertyType" />
+          <element name="samplingStation" minOccurs="0" maxOccurs="1"
+            type="st:StationPropertyType" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="StationType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="stationCode" minOccurs="1" maxOccurs="1"
+            type="string" />
+          <element name="stationName" minOccurs="1" maxOccurs="1"
+            type="string" />
+          <element name="observation" minOccurs="0" maxOccurs="unbounded"
+            type="st:ObservationPropertyType" />
+          <element name="position" type="gml:GeometryPropertyType"
+            minOccurs="0" maxOccurs="1" />
+            <element name="comments" minOccurs="0" maxOccurs="1"
+            type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="ParameterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="st:Parameter" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+
+  <complexType name="ObservationPropertyType">
+    <sequence minOccurs="0">
+      <element ref="st:Observation" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+
+  <complexType name="StationPropertyType">
+    <sequence minOccurs="0">
+      <element ref="st:Station" />
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup" />
+  </complexType>
+
+</schema>

@@ -25,7 +25,7 @@ import org.geotools.csw.CSW;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.BeansException;

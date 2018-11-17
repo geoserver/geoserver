@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.process.RawData;
-import org.geotools.xml.EncoderDelegate;
+import org.geotools.xsd.EncoderDelegate;
 import org.xml.sax.ContentHandler;
 
 /**

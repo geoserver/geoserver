@@ -20,7 +20,7 @@ import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.Wcs20Factory;
 import org.geotools.wcs.v2_0.WCS;
 import org.geotools.wcs.v2_0.WCSConfiguration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 /** A simple helper class to build WCS 1.1.1 and WCS 2.0 requests. */
 public class WCS2GetCoverageRequestBuilder {

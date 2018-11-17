@@ -11,7 +11,9 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.PropertyRule;
 import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -19,6 +21,14 @@ import org.junit.Test;
  * GEOWEBCACHE_CONFIG_DIR_PROPERTY and GEOWEBCACHE_CACHE_DIR_PROPERTY.
  */
 public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
+
+    @Rule
+    public PropertyRule configProp =
+            PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY);
+
+    @Rule
+    public PropertyRule cacheProp =
+            PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY);
 
     private static final File rootTempDirectory;
 
@@ -55,17 +65,15 @@ public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
             String configDirPath, String cacheDirPath, String expectedConfigFirPath) {
         // set or clear the gwc configuration directory property
         if (configDirPath == null) {
-            System.clearProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY);
+            configProp.clearValue();
         } else {
-            System.setProperty(
-                    GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY, configDirPath);
+            configProp.setValue(configDirPath);
         }
         // set or clear the gwc cache directory property
         if (cacheDirPath == null) {
-            System.clearProperty(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY);
+            cacheProp.clearValue();
         } else {
-            System.setProperty(
-                    GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY, cacheDirPath);
+            cacheProp.setValue(cacheDirPath);
         }
         // rebuild the spring beans
         applicationContext.refresh();

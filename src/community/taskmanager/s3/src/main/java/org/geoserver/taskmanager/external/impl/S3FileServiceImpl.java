@@ -13,6 +13,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.external.FileService;
 import org.geotools.util.logging.Logging;
@@ -57,6 +60,10 @@ public class S3FileServiceImpl implements FileService {
 
     private String rootFolder;
 
+    private String prepareScript;
+
+    private List<String> roles;
+
     private static String S3_NAME_PREFIX = "s3-";
 
     public static String name(String prefix, String bucket) {
@@ -80,6 +87,14 @@ public class S3FileServiceImpl implements FileService {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public String getPrepareScript() {
+        return prepareScript;
+    }
+
+    public void setPrepareScript(String prepareScript) {
+        this.prepareScript = prepareScript;
     }
 
     public String getUser() {
@@ -138,7 +153,7 @@ public class S3FileServiceImpl implements FileService {
     }
 
     @Override
-    public void create(String filePath, InputStream content) throws IOException {
+    public void create(String filePath, InputStream content, boolean doPrepare) throws IOException {
         // Check parameters
         if (content == null) {
             throw new IllegalArgumentException("Content of a file can not be null.");
@@ -150,14 +165,28 @@ public class S3FileServiceImpl implements FileService {
         if (checkFileExists(filePath)) {
             throw new IllegalArgumentException("The file already exists");
         }
-        File scratchFile =
-                File.createTempFile("prefix", String.valueOf(System.currentTimeMillis()));
+        File scratchFile = File.createTempFile("s3fs", "." + FilenameUtils.getExtension(filePath));
         try {
             if (!getS3Client().doesBucketExist(rootFolder)) {
                 getS3Client().createBucket(rootFolder);
             }
 
             FileUtils.copyInputStreamToFile(content, scratchFile);
+
+            if (doPrepare && prepareScript != null) {
+                Process p =
+                        Runtime.getRuntime()
+                                .exec(prepareScript + " " + scratchFile.getAbsolutePath());
+                LOGGER.info(new String(IOUtils.toByteArray(p.getInputStream())));
+                LOGGER.warning(new String(IOUtils.toByteArray(p.getErrorStream())));
+                try {
+                    int e = p.waitFor();
+                    if (e != 0) {
+                        throw new IOException("Preparation script ended with exit code " + e);
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentEncoding(ENCODING);
@@ -201,7 +230,21 @@ public class S3FileServiceImpl implements FileService {
         }
         GetObjectRequest objectRequest = new GetObjectRequest(rootFolder, filePath);
         try {
-            return getS3Client().getObject(objectRequest).getObjectContent();
+            final S3Object object = getS3Client().getObject(objectRequest);
+            final InputStream stream = object.getObjectContent();
+            return new InputStream() {
+
+                @Override
+                public int read() throws IOException {
+                    return stream.read();
+                }
+
+                @Override
+                public void close() throws IOException {
+                    stream.close();
+                    object.close();
+                }
+            };
         } catch (AmazonClientException e) {
             throw new IOException(e);
         }
@@ -300,5 +343,13 @@ public class S3FileServiceImpl implements FileService {
         s3.setEndpoint(endpoint);
 
         return s3;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

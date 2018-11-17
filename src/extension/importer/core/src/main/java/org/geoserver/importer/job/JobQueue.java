@@ -94,7 +94,7 @@ public class JobQueue {
 
                         final Importer importer = GeoServerExtensions.bean(Importer.class);
                         for (File f : importer.getUploadRoot().listFiles()) {
-                            if (f.isDirectory() && !(new File(f, ".locking")).exists()) {
+                            if (f.isDirectory() && new File(f, ".clean-me").exists()) {
                                 try {
                                     IOUtils.delete(f);
                                 } catch (IOException e) {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs.responses;
 
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
@@ -19,15 +20,16 @@ import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMappin
 import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMapping.DimensionValuesArray;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCoordinateReferenceSystemType;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCoordinateReferenceSystemType.NetCDFCoordinate;
 import org.geotools.coverage.io.netcdf.crs.NetCDFProjection;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
+import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
@@ -90,9 +92,18 @@ class NetCDFCRSWriter {
     public NetCDFCRSWriter(NetcdfFileWriter writer, GridCoverage2D sampleGranule) {
         this.writer = writer;
         this.sampleGranule = sampleGranule;
-        GridGeometry gridGeometry = sampleGranule.getGridGeometry();
-        transform = gridGeometry.getGridToCRS();
         crs = sampleGranule.getCoordinateReferenceSystem();
+        RenderedImage image = sampleGranule.getRenderedImage();
+
+        // Depending on the operations involved in granule's creation
+        // there might be some translates/crops (=> GridRange not starting from 0,0).
+        // Let recreate the transformation to actual size and envelope.
+        GridToEnvelopeMapper geMapper =
+                new GridToEnvelopeMapper(
+                        new GridEnvelope2D(
+                                new Rectangle(0, 0, image.getWidth(), image.getHeight())),
+                        sampleGranule.getEnvelope());
+        transform = geMapper.createTransform();
         netcdfCrsType = NetCDFCoordinateReferenceSystemType.parseCRS(crs);
     }
 

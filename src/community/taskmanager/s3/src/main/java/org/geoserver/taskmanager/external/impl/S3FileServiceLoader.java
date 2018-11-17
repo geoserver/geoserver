@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.taskmanager.external.FileService;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +55,19 @@ public class S3FileServiceLoader {
                         properties.getProperty(prefix + ".s3.password"),
                         prefix,
                         rootfolder);
+        String prepareScript = properties.getProperty(prefix + ".s3.prepareScript");
+        if (!Strings.isEmpty(prepareScript)) {
+            fileService.setPrepareScript(prepareScript.trim());
+        }
+        String roles = properties.getProperty(prefix + "." + rootfolder + ".s3.roles");
+        if (!Strings.isEmpty(roles)) {
+            List<String> rolesList = new ArrayList<String>();
+            for (String role : roles.split(",")) {
+                rolesList.add(role.trim());
+            }
+            fileService.setRoles(rolesList);
+        }
         fileServices.add(fileService);
-
         lookupFileService.setFileServices(fileServices);
     }
 

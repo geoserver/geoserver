@@ -183,7 +183,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
                 coverage,
                 new CoverageAccessLimits(CatalogMode.HIDE, filter, null, null));
 
-        System.out.println(coverage.boundingBox());
+        // System.out.println(coverage.boundingBox());
     }
 
     @Test

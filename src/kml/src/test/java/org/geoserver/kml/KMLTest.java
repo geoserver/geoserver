@@ -7,12 +7,15 @@ package org.geoserver.kml;
 
 import static junit.framework.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -346,12 +350,37 @@ public class KMLTest extends WMSTestSupport {
                                     + "&styles=&height=1024&width=1024&bbox= -96.0000,0.0000,-90.0000,84.0000&srs=EPSG:4326");
 
             // coordinates are reprojected and we get the height at 200
-            assertXpathEvaluatesTo(
-                    "-92.99954926766114,4.52401492058674,200.0",
+            assertPointCoordinate(
+                    doc,
                     "//kml:Placemark/kml:Point/kml:coordinates",
-                    doc);
+                    -92.99954926766114,
+                    4.52401492058674,
+                    200.0);
         } finally {
             assertTrue(templateFile.delete());
+        }
+    }
+
+    /**
+     * Checks that a point's coordinate in the kml doc matches the expected value
+     *
+     * @param doc The KML doc
+     * @param path The xpath leading to the coordinate
+     * @param expected The expected ordinate values
+     * @throws XpathException
+     */
+    public static void assertPointCoordinate(Document doc, String path, double... expected)
+            throws XpathException {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String coordinates = xpath.evaluate(path, doc);
+        assertThat(coordinates, not(isEmptyString()));
+        double[] ordinates =
+                Arrays.stream(coordinates.split("\\s*,\\s*"))
+                        .mapToDouble(Double::parseDouble)
+                        .toArray();
+        assertEquals(expected.length, ordinates.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], ordinates[i], 1e-6);
         }
     }
 

@@ -29,7 +29,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         final File xml = new File("./src/test/resources/getcapabilities/getCapWrongCase.xml");
         final String request = FileUtils.readFileToString(xml);
         Document dom = postAsDOM("wcs", request);
-        print(dom);
+        // print(dom);
 
         //        checkValidationErrors(dom, WCS20_SCHEMA);
 

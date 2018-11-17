@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -26,16 +27,17 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.importer.SpatialFile;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.remote.plugin.XMPPClient;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
@@ -287,34 +289,24 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                 " - [Remote Process Client - importLayer] Importer Context from Spatial File:"
                         + file.getAbsolutePath());
 
+        WorkspaceInfo ws = getGeoServer().getCatalog().getDefaultWorkspace();
+        if (targetWorkspace != null) {
+            LOGGER.fine(
+                    " - [Remote Process Client - importLayer] Looking for Workspace in the catalog:"
+                            + targetWorkspace);
+
+            ws = getGeoServer().getCatalog().getWorkspaceByName(targetWorkspace);
+        }
+
+        final FileData spatialData = FileData.createFromFile(file);
         ImportContext context =
                 (store != null
-                        ? importer.createContext(new SpatialFile(file), store)
-                        : importer.createContext(new SpatialFile(file)));
+                        ? importer.createContext(spatialData, ws, store)
+                        : importer.createContext(spatialData, ws));
 
+        LayerInfo layer = null;
         if (context.getTasks() != null && context.getTasks().size() > 0) {
-            WorkspaceInfo ws = null;
             ImportTask task = context.getTasks().get(0);
-
-            if (targetWorkspace != null) {
-                LOGGER.fine(
-                        " - [Remote Process Client - importLayer] Looking for Workspace in the catalog:"
-                                + targetWorkspace);
-
-                ws = importer.getCatalog().getWorkspaceByName(targetWorkspace);
-                if (ws != null) {
-
-                    LOGGER.fine(" - [Remote Process Client - importLayer] Workspace found:" + ws);
-
-                    context.setTargetWorkspace(ws);
-                } else {
-                    LOGGER.fine(
-                            " - [Remote Process Client - importLayer] Workspace *NOT* found - using the Default one:"
-                                    + importer.getCatalog().getDefaultWorkspace());
-
-                    context.setTargetWorkspace(importer.getCatalog().getDefaultWorkspace());
-                }
-            }
 
             if (defaultStyle != null) {
                 StyleInfo style = importer.getCatalog().getStyleByName(defaultStyle);
@@ -339,16 +331,6 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
             if (metadata != null) {
                 task.getLayer().getMetadata().put("owc_properties", metadata);
             }
-            // AF: Importer ISSUE -> The target workspace is not honored
-            /*if (task.getLayer().getResource() != null) {
-                if (ws != null) {
-                    task.getLayer().getResource().getStore().setWorkspace(ws);
-                }
-
-                if (task.getLayer().getResource() instanceof CoverageInfo) {
-                    ((CoverageInfoImpl) task.getLayer().getResource()).setNativeCoverageName(name);
-                }
-            }*/
 
             importer.run(context);
 
@@ -357,94 +339,102 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                     if (context.getTasks() != null && context.getTasks().size() > 0) {
                         // ImportTask task = context.getTasks().get(0);
                         // assertEquals(ImportTask.State.READY, task.getState());
-
                         // assertEquals("the layer name", task.getLayer().getResource().getName());
-
                         task = context.getTasks().get(0);
-
-                        // WARNING: The Importer Configures Just The First Layer
-                        if (task.getLayer().getResource() instanceof CoverageInfo) {
-                            CoverageInfo ci = ((CoverageInfo) task.getLayer().getResource());
-
-                            GridCoverageReader reader = null;
-                            try {
-                                reader = ci.getGridCoverageReader(null, null);
-
-                                String[] cvNames = reader.getGridCoverageNames();
-
-                                if (cvNames != null && cvNames.length > 0) {
-                                    final String nativeCoverageName = cvNames[0];
-
-                                    ci.setNativeCoverageName(nativeCoverageName);
-
-                                    // if(type.equals("application/x-netcdf")) Set Dimensions
-                                    if (reader instanceof StructuredGridCoverage2DReader) {
-                                        StructuredGridCoverage2DReader structuredReader =
-                                                ((StructuredGridCoverage2DReader) reader);
-
-                                        // Getting dimension descriptors
-                                        final List<DimensionDescriptor> dimensionDescriptors =
-                                                structuredReader.getDimensionDescriptors(
-                                                        nativeCoverageName);
-                                        DimensionDescriptor timeDimension = null;
-                                        DimensionDescriptor elevationDimension = null;
-                                        final List<DimensionDescriptor> customDimensions =
-                                                new ArrayList<DimensionDescriptor>();
-
-                                        // Collect dimension Descriptor info
-                                        for (DimensionDescriptor dimensionDescriptor :
-                                                dimensionDescriptors) {
-                                            if (dimensionDescriptor
-                                                    .getName()
-                                                    .equalsIgnoreCase(ResourceInfo.TIME)) {
-                                                timeDimension = dimensionDescriptor;
-                                            } else if (dimensionDescriptor
-                                                    .getName()
-                                                    .equalsIgnoreCase(ResourceInfo.ELEVATION)) {
-                                                elevationDimension = dimensionDescriptor;
-                                            } else {
-                                                customDimensions.add(dimensionDescriptor);
-                                            }
-                                        }
-
-                                        final boolean defaultTimeNeeded = timeDimension != null;
-                                        final boolean defaultElevationNeeded =
-                                                elevationDimension != null;
-
-                                        // Create Default Time Dimension If Needed
-                                        if (defaultTimeNeeded) {
-                                            DimensionInfo di = new DimensionInfoImpl();
-                                            di.setEnabled(true);
-                                            di.setPresentation(DimensionPresentation.LIST);
-                                            di.setAttribute(timeDimension.getStartAttribute());
-                                            ci.getMetadata().put(ResourceInfo.TIME, di);
-                                        }
-
-                                        // Create Default Elevation Dimension If Needed
-                                        if (defaultElevationNeeded) {
-                                            DimensionInfo di = new DimensionInfoImpl();
-                                            di.setEnabled(true);
-                                            di.setPresentation(DimensionPresentation.LIST);
-                                            di.setUnits("EPSG:5030");
-                                            di.setUnitSymbol("m");
-                                            di.setAttribute(elevationDimension.getStartAttribute());
-                                            ci.getMetadata().put(ResourceInfo.ELEVATION, di);
-                                        }
-                                    }
-                                }
-                            } finally {
-                                // WARNING: Disposing The Reader Causes The Catalog To Fail
-                                /*if (reader != null) {
-                                    reader.dispose();
-                                }*/
-                            }
+                        ResourceInfo resource = null;
+                        if (task != null) {
+                            resource = task.getLayer().getResource();
                         }
 
-                        LOGGER.fine(
-                                " - [Remote Process Client - importLayer] The Importer has finished correctly for Spatial File:"
-                                        + file.getAbsolutePath());
+                        if (resource != null) {
+                            // Recompute the bounds - Importer sometime fails to do that
+                            calculateBounds(resource, getGeoServer().getCatalog());
 
-                        return task.getLayer();
+                            // WARNING: The Importer Configures Just The First Layer
+                            if (resource instanceof CoverageInfo) {
+                                CoverageInfo ci = ((CoverageInfo) resource);
+
+                                GridCoverageReader reader = null;
+                                try {
+                                    reader = ci.getGridCoverageReader(null, null);
+
+                                    String[] cvNames = reader.getGridCoverageNames();
+
+                                    if (cvNames != null && cvNames.length > 0) {
+                                        final String nativeCoverageName = cvNames[0];
+
+                                        ci.setNativeCoverageName(nativeCoverageName);
+
+                                        // if(type.equals("application/x-netcdf")) Set Dimensions
+                                        if (reader instanceof StructuredGridCoverage2DReader) {
+                                            StructuredGridCoverage2DReader structuredReader =
+                                                    ((StructuredGridCoverage2DReader) reader);
+
+                                            // Getting dimension descriptors
+                                            final List<DimensionDescriptor> dimensionDescriptors =
+                                                    structuredReader.getDimensionDescriptors(
+                                                            nativeCoverageName);
+                                            DimensionDescriptor timeDimension = null;
+                                            DimensionDescriptor elevationDimension = null;
+                                            final List<DimensionDescriptor> customDimensions =
+                                                    new ArrayList<DimensionDescriptor>();
+
+                                            // Collect dimension Descriptor info
+                                            for (DimensionDescriptor dimensionDescriptor :
+                                                    dimensionDescriptors) {
+                                                if (dimensionDescriptor
+                                                        .getName()
+                                                        .equalsIgnoreCase(ResourceInfo.TIME)) {
+                                                    timeDimension = dimensionDescriptor;
+                                                } else if (dimensionDescriptor
+                                                        .getName()
+                                                        .equalsIgnoreCase(ResourceInfo.ELEVATION)) {
+                                                    elevationDimension = dimensionDescriptor;
+                                                } else {
+                                                    customDimensions.add(dimensionDescriptor);
+                                                }
+                                            }
+
+                                            final boolean defaultTimeNeeded = timeDimension != null;
+                                            final boolean defaultElevationNeeded =
+                                                    elevationDimension != null;
+
+                                            // Create Default Time Dimension If Needed
+                                            if (defaultTimeNeeded) {
+                                                DimensionInfo di = new DimensionInfoImpl();
+                                                di.setEnabled(true);
+                                                di.setPresentation(DimensionPresentation.LIST);
+                                                di.setAttribute(timeDimension.getStartAttribute());
+                                                ci.getMetadata().put(ResourceInfo.TIME, di);
+                                            }
+
+                                            // Create Default Elevation Dimension If Needed
+                                            if (defaultElevationNeeded) {
+                                                DimensionInfo di = new DimensionInfoImpl();
+                                                di.setEnabled(true);
+                                                di.setPresentation(DimensionPresentation.LIST);
+                                                di.setUnits("EPSG:5030");
+                                                di.setUnitSymbol("m");
+                                                di.setAttribute(
+                                                        elevationDimension.getStartAttribute());
+                                                ci.getMetadata().put(ResourceInfo.ELEVATION, di);
+                                            }
+                                        }
+                                    }
+                                } finally {
+                                    // WARNING: Disposing The Reader Causes The Catalog To Fail
+                                    /*if (reader != null) {
+                                        reader.dispose();
+                                    }*/
+                                }
+                            }
+
+                            LOGGER.fine(
+                                    " - [Remote Process Client - importLayer] The Importer has finished correctly for Spatial File:"
+                                            + file.getAbsolutePath());
+                        }
+
+                        layer = task.getLayer();
                     } else {
                         break;
                     }
@@ -458,6 +448,43 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                 " - [Remote Process Client - importLayer] The Importer has finished *BUT* did not returned any layer for Spatial File:"
                         + file.getAbsolutePath());
 
-        return null;
+        return layer;
+    }
+
+    /**
+     * (Re)calculates the bounds for a FeatureTypeInfo. Bounds will be calculated if:
+     * <li>The native bounds of the resource are null or empty
+     * <li>The resource has a metadata entry "recalculate-bounds"="true"<br>
+     *     <br>
+     *     Otherwise, this method has no effect.<br>
+     *     <br>
+     *     If the metadata entry "recalculate-bounds"="true" exists, it will be removed after bounds
+     *     are calculated.<br>
+     *     <br>
+     *     This is currently used by csv / kml uploads that have a geometry that may be the result
+     *     of a transform, and by JDBC imports which wait to calculate bounds until after the layers
+     *     that will be imported have been chosen.
+     *
+     * @param resourceInfo The resource to calculate the bounds for
+     * @param catalog
+     */
+    protected void calculateBounds(ResourceInfo resourceInfo, Catalog catalog) throws IOException {
+        if (resourceInfo.getNativeBoundingBox() == null
+                || resourceInfo.getNativeBoundingBox().isEmpty()
+                || Boolean.TRUE.equals(resourceInfo.getMetadata().get("recalculate-bounds"))
+                || "true".equals(resourceInfo.getMetadata().get("recalculate-bounds"))) {
+            // force computation
+            CatalogBuilder cb = new CatalogBuilder(catalog);
+            ReferencedEnvelope nativeBounds = cb.getNativeBounds(resourceInfo);
+            resourceInfo.setNativeBoundingBox(nativeBounds);
+            resourceInfo.setLatLonBoundingBox(
+                    cb.getLatLonBounds(nativeBounds, resourceInfo.getCRS()));
+            // catalog.save(resourceInfo);
+
+            // Do not re-calculate on subsequent imports
+            if (resourceInfo.getMetadata().get("recalculate-bounds") != null) {
+                resourceInfo.getMetadata().remove("recalculate-bounds");
+            }
+        }
     }
 }

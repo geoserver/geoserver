@@ -147,7 +147,7 @@
     class="org.geoserver.wcs2_0.exception.OWS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
     <constructor-arg index="0">
       <list>
-        <ref local="wcsService-2.0" />
+        <ref bean="wcsService-2.0" />
       </list>
     </constructor-arg>
   </bean>

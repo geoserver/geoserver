@@ -428,12 +428,12 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
     }
 
     /**
-     * Package visibility to allow test cases to set a shorter delay for testing.
+     * To allow test cases to set a shorter delay for testing.
      *
      * @param delay
      * @param unit
      */
-    void schedule(long delay, TimeUnit unit) {
+    public void schedule(long delay, TimeUnit unit) {
         this.delay = delay;
         this.unit = unit;
         if (monitor != null) {

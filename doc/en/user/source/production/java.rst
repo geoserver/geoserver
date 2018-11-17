@@ -32,7 +32,9 @@ The `Java Advanced Imaging API <http://www.oracle.com/technetwork/java/javase/te
 
 The `Java Image I/O Technology <http://docs.oracle.com/javase/6/docs/technotes/guides/imageio/index.html>`__ (ImageIO) is used for  raster reading and writing. ImageIO affects both WMS and WCS for reading raster data, and is very useful (even if there is no raster data involved) for WMS output as encoding is required when writing PNG/GIF/JPEG images.
 
-By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**.
+By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**. 
+
+However, native JAI does not support the concept of "NoData" pixels. In case you have those in input better avoid installing native JAI, and instead go and enable JAI-EXT.
 
 Native JAI and ImageIO extensions are available for:
 

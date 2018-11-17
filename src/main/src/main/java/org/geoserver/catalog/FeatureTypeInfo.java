@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import org.geoserver.config.GeoServerInfo;
 import org.geotools.data.FeatureSource;
-import org.geotools.factory.Hints;
 import org.geotools.measure.Measure;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -78,6 +78,35 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * this feature type.
      */
     void setNumDecimals(int numDecimals);
+
+    /**
+     * If numbers float should be formatted right-padding them with zeros.
+     *
+     * @return
+     */
+    boolean getPadWithZeros();
+
+    /**
+     * Sets wether float numbers should be formatted right-padding them with zeros.
+     *
+     * @param padWithZeros
+     */
+    void setPadWithZeros(boolean padWithZeros);
+
+    /**
+     * True if numbers should always be formatted as decimal (no scientific notation allowed).
+     *
+     * @return
+     */
+    boolean getForcedDecimal();
+
+    /**
+     * Set to true if numbers should always be formatted as decimal (no scientific notation
+     * allowed).
+     *
+     * @param forcedDecimal
+     */
+    void setForcedDecimal(boolean forcedDecimal);
 
     /**
      * Tolerance used to linearize this feature type, as an absolute value expressed in the

@@ -18,7 +18,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataAccess;
 import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.decorate.Wrapper;
+import org.geotools.util.decorate.Wrapper;
 import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -76,7 +76,7 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
             assertEquals(
                     "sf_archsites", ftInfo.getFeatureSource(null, null).getName().getLocalPart());
         } catch (IOException e) {
-            String expectedMessage = "Schema 'sf_archsites' does not exist.";
+            String expectedMessage = "Unknown type sf_archsites";
             assertEquals("Exception message must be correct", expectedMessage, e.getMessage());
         }
     }

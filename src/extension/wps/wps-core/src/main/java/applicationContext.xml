@@ -83,6 +83,7 @@
               <value>Dismiss</value>
               <value>GetExecutionStatus</value>
               <value>GetExecutionResult</value>
+              <value>GetExecutions</value>
             </list>
         </constructor-arg>
     </bean>
@@ -101,9 +102,9 @@
     <bean id="executeKvpRequestReader" class="org.geoserver.wps.kvp.ExecuteKvpRequestReader"/>
     <bean id="statusKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionStatusKvpRequestReader"/>
     <bean id="resultKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionResultKvpRequestReader"/>
-    <bean id="dismisssKvpRequestReader" class="org.geoserver.wps.kvp.DismissKvpRequestReader"/>
+    <bean id="dismissKvpRequestReader" class="org.geoserver.wps.kvp.DismissKvpRequestReader"/>
+    <bean id="wpsGetExecutionsKvpRequestReader" class="org.geoserver.wps.kvp.GetExecutionsKvpRequestReader"/>
     
-
     <!-- XML Configuration -->
     <bean id="wpsXmlConfiguration-1.0.0"
         class="org.geoserver.wps.xml.WPSConfiguration" >
@@ -169,12 +170,13 @@
     <bean id="wpsStoredResourceResponse" class="org.geoserver.wps.response.StoredResourceResponse">
       <constructor-arg index="0" ref="wpsResourceManager"/>
     </bean>
+    <bean id="wpsExecutionsResponse" class="org.geoserver.wps.response.GetExecutionsResponse" scope="prototype"/>
     
     <!-- Exception handler, we need to output ows 1.1 exceptions -->
     <bean id="wpsExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
       <constructor-arg index="0">
         <list>
-          <ref local="wpsService-1.0.0" />
+          <ref bean="wpsService-1.0.0" />
         </list>
       </constructor-arg>
     </bean>
@@ -319,6 +321,5 @@
     <bean id="rasterSizeEstimators" class="org.geoserver.wps.validator.RasterSizeEstimator"/>
     <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>
     <bean id="geometrySizeEstimator" class="org.geoserver.wps.validator.GeometrySizeEstimator"/>
-    
     <bean id="processStartupFilter" class="org.geoserver.wps.executor.ProcessStartupFilter"/>
 </beans>

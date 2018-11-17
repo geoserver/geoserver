@@ -48,7 +48,7 @@ public class OwsUtilsTest extends TestCase {
         try {
             OwsUtils.put(baz, "map", "k", "v");
             fail("null map should cause exception");
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {
         }
 
         baz.map = new HashMap();

@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -110,6 +112,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                 getSession().getAuthentication(), configurationModel.getObject())) {
             throw new RestartResponseException(UnauthorizedPage.class);
         }
+        for (Task task : configurationModel.getObject().getTasks().values()) {
+            TaskManagerBeans.get().getTaskUtil().fixTask(task);
+        }
         initMode =
                 TaskManagerBeans.get()
                         .getInitConfigUtil()
@@ -118,7 +123,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         this.configurationModel =
                 new Model<Configuration>(
                         initMode
-                                ? InitConfigUtil.wrap(configurationModel.getObject())
+                                ? TaskManagerBeans.get()
+                                        .getInitConfigUtil()
+                                        .wrap(configurationModel.getObject())
                                 : configurationModel.getObject());
         oldTasks = new HashMap<>(configurationModel.getObject().getTasks());
         oldBatches = new HashMap<>(configurationModel.getObject().getBatches());
@@ -141,6 +148,14 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
         add(new WebMarkupContainer("init").setVisible(initMode));
 
+        add(
+                new WebMarkupContainer("notvalidated")
+                        .setVisible(
+                                !initMode
+                                        && configurationModel.getObject().getId() != null
+                                        && !configurationModel.getObject().isTemplate()
+                                        && !configurationModel.getObject().isValidated()));
+
         Form<Configuration> form = new Form<Configuration>("configurationForm", configurationModel);
         add(form);
 
@@ -162,7 +177,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                     }
                 });
 
-        List<String> workspaces = new ArrayList<String>();
+        SortedSet<String> workspaces = new TreeSet<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
             if (wi.getName().equals(configurationModel.getObject().getWorkspace())
                     || TaskManagerBeans.get()
@@ -184,7 +199,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                 new DropDownChoice<String>(
                         "workspace",
                         new PropertyModel<String>(configurationModel, "workspace"),
-                        workspaces) {
+                        new ArrayList<String>(workspaces)) {
                     private static final long serialVersionUID = -6665795544099616226L;
 
                     @Override
@@ -425,7 +440,11 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                     AjaxRequestTarget target, Component contents) {
                                 Set<String> attNames = new HashSet<String>();
                                 for (Task task : tasksPanel.getSelection()) {
-                                    BatchElement element = taskInUse(task);
+                                    BatchElement element =
+                                            TaskManagerBeans.get()
+                                                    .getDataUtil()
+                                                    .taskInUse(
+                                                            task, configurationModel.getObject());
                                     if (element == null) {
                                         if (shouldCleanupModel.getObject()) {
                                             // clean-up
@@ -502,26 +521,6 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         });
             }
         };
-    }
-
-    private BatchElement taskInUse(Task task) {
-        if (task.getId() != null) {
-            task = TaskManagerBeans.get().getDataUtil().init(task);
-            for (BatchElement element : task.getBatchElements()) {
-                if (element.getBatch().isActive()) {
-                    return element;
-                }
-            }
-        } else {
-            for (Batch batch : configurationModel.getObject().getBatches().values()) {
-                for (BatchElement element : batch.getElements()) {
-                    if (element.getTask().equals(task)) {
-                        return element;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     protected GeoServerTablePanel<Task> tasksPanel() {
@@ -761,8 +760,12 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                         (IModel<String>) property.getModel(itemModel),
                                         new PropertyModel<List<String>>(
                                                 domains, itemModel.getObject().getName()),
-                                        configurationModel.getObject().isTemplate());
-
+                                        configurationModel.getObject().isTemplate()
+                                                || !TaskManagerBeans.get()
+                                                        .getTaskUtil()
+                                                        .isAttributeRequired(
+                                                                itemModel.getObject(),
+                                                                configurationModel.getObject()));
                         ddp.getDropDownChoice()
                                 .add(
                                         new AjaxFormSubmitBehavior("change") {
@@ -879,7 +882,9 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                             batchesPanel.getRemovedBatches()));
                     configurationModel.setObject(
                             initMode
-                                    ? InitConfigUtil.wrap(originalConfigurationModel.getObject())
+                                    ? TaskManagerBeans.get()
+                                            .getInitConfigUtil()
+                                            .wrap(originalConfigurationModel.getObject())
                                     : originalConfigurationModel.getObject());
                     removedTasks.clear();
                     batchesPanel.getRemovedBatches().clear();

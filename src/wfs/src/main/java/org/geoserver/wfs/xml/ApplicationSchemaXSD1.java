@@ -20,7 +20,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.gml3.GML;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class ApplicationSchemaXSD1 extends XSD {

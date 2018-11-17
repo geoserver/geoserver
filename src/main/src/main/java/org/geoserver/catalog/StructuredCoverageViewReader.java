@@ -25,10 +25,10 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -195,8 +195,12 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public int removeGranules(Filter filter) {
+            return removeGranules(filter, new Hints());
+        }
+
+        @Override
+        public int removeGranules(Filter filter, Hints hints) {
             // unmap the feature identifiers
             Filter unmapped =
                     GranuleStoreViewFilterVisitor.unmapIdentifiers(filter, coverageView.getName());
@@ -211,7 +215,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
                     // TODO: We may revisit the #removed granules computation to take into
                     // account cases where we remove different number of records across different
                     // input coverages
-                    removed = granuleStore.removeGranules(unmapped);
+                    removed = granuleStore.removeGranules(unmapped, hints);
                 } catch (UnsupportedOperationException e) {
                     LOGGER.log(Level.FINER, e.getMessage(), e);
                 } catch (IOException e) {

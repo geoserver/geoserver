@@ -22,6 +22,7 @@ import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
+import org.geoserver.taskmanager.web.model.BatchesModel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
@@ -110,6 +111,8 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         tester.clickLink(prefix() + "batchesPanel:addNew");
 
         tester.assertRenderedPage(BatchPage.class);
+
+        logout();
     }
 
     @Test
@@ -130,10 +133,14 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         tester.assertModelValue("batchForm:name", dummy1.getName());
 
         dao.delete(dummy1);
+
+        logout();
     }
 
     @Test
     public void testDelete() throws Exception {
+
+        login();
 
         Batch dummy1 = dao.save(dummyBatch1());
         Batch dummy2 = dao.save(dummyBatch2());
@@ -186,10 +193,14 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         assertFalse(containsBatch(getBatches(), dummy1));
         assertTrue(containsBatch(getBatches(), dummy2));
 
+        ((BatchesModel) table.getDataProvider()).reset();
+
         assertFalse(containsBatch(getBatchesFromTable(table), dummy1));
         assertTrue(containsBatch(getBatchesFromTable(table), dummy2));
 
         dao.delete(dummy2);
+
+        logout();
     }
 
     protected List<Batch> getBatchesFromTable(GeoServerTablePanel<Batch> table) {

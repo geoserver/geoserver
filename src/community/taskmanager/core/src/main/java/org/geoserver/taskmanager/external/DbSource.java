@@ -9,14 +9,14 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.geoserver.taskmanager.util.Named;
+import org.geoserver.taskmanager.util.Secured;
 
 /**
  * A database configuration used by tasks.
  *
  * @author Niels Charlier
  */
-public interface DbSource extends Named {
+public interface DbSource extends Secured {
 
     /**
      * Get a data source for this database.

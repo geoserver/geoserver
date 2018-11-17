@@ -25,7 +25,7 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.ows.v2_0.OWS;
 import org.geotools.ows.v2_0.OWSConfiguration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 
 /**
  * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in
@@ -186,8 +186,10 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         // add the message
         StringBuffer sb = new StringBuffer();
         OwsUtils.dumpExceptionMessages(exception, sb, true);
-        sb.append("\n");
-        sb.append(exception.getExceptionText()); // check this
+        if (exception.getExceptionText() != null && !exception.getExceptionText().isEmpty()) {
+            sb.append("\n");
+            sb.append(exception.getExceptionText()); // check this
+        }
         //        e.getExceptionText().add(sb.toString());
         //        e.getExceptionText().addAll(exception.getExceptionText());
 
@@ -200,7 +202,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             sb.append(new String(trace.toByteArray()));
         }
 
-        e.setExceptionText(sb.toString());
+        e.getExceptionText().add(sb.toString());
 
         ExceptionReportType report = Ows20Factory.eINSTANCE.createExceptionReportType();
 

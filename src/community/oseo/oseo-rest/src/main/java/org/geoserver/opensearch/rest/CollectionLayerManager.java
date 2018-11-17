@@ -4,15 +4,20 @@
  */
 package org.geoserver.opensearch.rest;
 
+import java.awt.image.SampleModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.FileImageInputStream;
@@ -43,6 +48,8 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.RestException;
+import org.geotools.brewer.styling.builder.ChannelSelectionBuilder;
+import org.geotools.brewer.styling.builder.RasterSymbolizerBuilder;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -50,7 +57,6 @@ import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.Utils;
@@ -59,9 +65,8 @@ import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
-import org.geotools.styling.builder.ChannelSelectionBuilder;
-import org.geotools.styling.builder.RasterSymbolizerBuilder;
 import org.geotools.util.Version;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -81,7 +86,9 @@ import org.springframework.http.HttpStatus;
 class CollectionLayerManager {
     static final Logger LOGGER = Logging.getLogger(CollectionLayerManager.class);
     private static final String TIME_START = "timeStart";
+    private static final String TIME_START_END = "timeStart;timeEnd";
     static final Hints EXCLUDE_MOSAIC_HINTS = new Hints(Utils.EXCLUDE_MOSAIC, true);
+    public static final Pattern BAND_SPEC_PATTERN = Pattern.compile("([^\\[]+)(\\[(\\d+)\\])?");
 
     Catalog catalog;
 
@@ -238,7 +245,11 @@ class CollectionLayerManager {
             mosaicConfig.put("TypeNames", "false"); // disable typename scanning
             mosaicConfig.put("Caching", "false");
             mosaicConfig.put("LocationAttribute", "location");
-            mosaicConfig.put("TimeAttribute", TIME_START);
+            if (layerConfiguration.isTimeRanges()) {
+                mosaicConfig.put("TimeAttribute", TIME_START_END);
+            } else {
+                mosaicConfig.put("TimeAttribute", TIME_START);
+            }
             mosaicConfig.put("CanBeEmpty", "true");
             if (spi != null) {
                 mosaicConfig.put("SuggestedSPI", spi.getClass().getName());
@@ -270,7 +281,7 @@ class CollectionLayerManager {
                     imageLayout.getColorModel(null));
         }
 
-        // this is ridicolous, but for the moment, multi-crs mosaics won't work if there
+        // this is ridiculous, but for the moment, multi-crs mosaics won't work if there
         // is no indexer.properties around, even if no collection is actually done
         buildIndexer(collection, layerConfiguration, mosaicDirectory);
 
@@ -283,7 +294,8 @@ class CollectionLayerManager {
                 createMosaicStore(cb, collection, layerConfiguration, relativePath);
 
         // and finally the layer, with a coverage view associated to it
-        List<CoverageBand> coverageBands = buildCoverageBands(layerConfiguration);
+        List<CoverageBand> coverageBands =
+                buildCoverageBands(mosaicStoreInfo, layerConfiguration.getBands());
         final String coverageName = layerConfiguration.getLayer();
         final CoverageView coverageView = new CoverageView(coverageName, coverageBands);
         CoverageInfo coverageInfo =
@@ -295,7 +307,7 @@ class CollectionLayerManager {
         catalog.add(layerInfo);
 
         // configure the style if needed
-        createStyle(layerConfiguration, layerInfo);
+        createStyle(layerConfiguration, layerInfo, mosaicStoreInfo);
     }
 
     private double[][] getResolutionLevelsInCRS(
@@ -344,18 +356,64 @@ class CollectionLayerManager {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private List<CoverageBand> buildCoverageBands(CollectionLayer collectionLayer) {
+    private List<CoverageBand> buildCoverageBands(CoverageStoreInfo mosaicStoreInfo, String[] bands)
+            throws IOException {
+        // get the coverage names for validation purposes
+        Set<String> coverageNames = new LinkedHashSet<>();
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) mosaicStoreInfo.getGridCoverageReader(null, null);
+        coverageNames.addAll(Arrays.asList(reader.getGridCoverageNames()));
+
+        // go through all the band selection specs
         List<CoverageBand> result = new ArrayList<>();
-        String[] bands = collectionLayer.getBands();
+        int j = 0;
         for (int i = 0; i < bands.length; i++) {
             String band = bands[i];
-            CoverageBand cb =
-                    new CoverageBand(
-                            Collections.singletonList(new InputCoverageBand(band, "0")),
-                            band,
-                            i,
-                            CompositionType.BAND_SELECT);
-            result.add(cb);
+
+            // the band name could be a straight coverage name, or refer to specific band indexes
+            Matcher matcher = BAND_SPEC_PATTERN.matcher(band);
+            if (!matcher.matches()) {
+                throw new RestException(
+                        "Invalid band name specification, should be a band name as "
+                                + "a string without square brackets, or bandName[idx], but was "
+                                + band,
+                        HttpStatus.BAD_REQUEST);
+            }
+            String coverageName = matcher.group(1);
+            if (!coverageNames.contains(coverageName)) {
+                throw new RestException(
+                        "Could not find coverage named "
+                                + coverageName
+                                + ", the available ones are "
+                                + coverageNames,
+                        HttpStatus.BAD_REQUEST);
+            }
+            SampleModel sm = reader.getImageLayout(coverageName).getSampleModel(null);
+
+            String bandIndexSpec = matcher.group(3);
+            if (bandIndexSpec == null) {
+                // getting all the bands in the coverage, how many do we have?
+                for (int b = 0; b < sm.getNumBands(); b++) {
+                    CoverageBand cb =
+                            new CoverageBand(
+                                    Collections.singletonList(
+                                            new InputCoverageBand(coverageName, String.valueOf(b))),
+                                    coverageName + ((sm.getNumBands() == 1) ? "" : "_" + b),
+                                    j++,
+                                    CompositionType.BAND_SELECT);
+                    result.add(cb);
+                }
+            } else {
+                CoverageBand cb =
+                        new CoverageBand(
+                                Collections.singletonList(
+                                        new InputCoverageBand(
+                                                coverageName, String.valueOf(bandIndexSpec))),
+                                coverageName + "_" + bandIndexSpec,
+                                j++,
+                                CompositionType.BAND_SELECT);
+                result.add(cb);
+            }
         }
         return result;
     }
@@ -422,10 +480,11 @@ class CollectionLayerManager {
         createDataStoreProperties(collection, mosaic);
 
         CatalogBuilder cb = new CatalogBuilder(catalog);
-        createMosaicStore(cb, collection, layerConfiguration, relativePath);
+        CoverageStoreInfo mosaicStore =
+                createMosaicStore(cb, collection, layerConfiguration, relativePath);
 
         // and then the layer
-        CoverageInfo coverageInfo = cb.buildCoverage(collection);
+        CoverageInfo coverageInfo = cb.buildCoverage(layerConfiguration.getLayer());
         coverageInfo.setName(layerConfiguration.getLayer());
         timeEnableResource(coverageInfo);
         catalog.add(coverageInfo);
@@ -433,7 +492,7 @@ class CollectionLayerManager {
         catalog.add(layerInfo);
 
         // configure the style if needed
-        createStyle(layerConfiguration, layerInfo);
+        createStyle(layerConfiguration, layerInfo, mosaicStore);
     }
 
     private void buildIndexer(
@@ -442,10 +501,14 @@ class CollectionLayerManager {
         // prepare the mosaic configuration
         Properties indexer = new Properties();
         indexer.put("UseExistingSchema", "true");
-        indexer.put("Name", collection);
+        indexer.put("Name", layerConfiguration.getLayer());
         indexer.put("TypeName", collection);
         indexer.put("AbsolutePath", "true");
-        indexer.put("TimeAttribute", TIME_START);
+        if (layerConfiguration.isTimeRanges()) {
+            indexer.put("TimeAttribute", TIME_START_END);
+        } else {
+            indexer.put("TimeAttribute", TIME_START);
+        }
         // TODO: should we setup also a end time and prepare a interval based time setup?
 
         // TODO: the index is now always in 4326, so the mosaic has to be heterogeneous
@@ -479,25 +542,41 @@ class CollectionLayerManager {
         resource.getMetadata().put(ResourceInfo.TIME, dimension);
     }
 
-    private void createStyle(CollectionLayer layerConfiguration, LayerInfo layerInfo)
+    private void createStyle(
+            CollectionLayer layerConfiguration,
+            LayerInfo layerInfo,
+            CoverageStoreInfo mosaicStoreInfo)
             throws IOException {
         CoverageInfo ci = (CoverageInfo) layerInfo.getResource();
-        String[] bands = layerConfiguration.getBands();
-        String[] defaultBands =
-                ci.getDimensions().stream().map(d -> d.getName()).toArray(i -> new String[i]);
-        final String[] browseBands = layerConfiguration.getBrowseBands();
-        if (browseBands != null
-                && browseBands.length > 0
-                && !Arrays.equals(defaultBands, browseBands)) {
+        // get the band making up the layer, if not found, use the native ones
+        String[] bandSpecs = layerConfiguration.getBands();
+        if (bandSpecs == null) {
+            bandSpecs = mosaicStoreInfo.getGridCoverageReader(null, null).getGridCoverageNames();
+        }
+        final String[] browseBandSpecs = layerConfiguration.getBrowseBands();
+        if (browseBandSpecs != null
+                && browseBandSpecs.length > 0
+                && !Arrays.equals(bandSpecs, browseBandSpecs)) {
+
             RasterSymbolizerBuilder rsb = new RasterSymbolizerBuilder();
-            if (browseBands.length == 1) {
+
+            List<CoverageBand> coverageBands = buildCoverageBands(mosaicStoreInfo, bandSpecs);
+            List<CoverageBand> browseBands = buildCoverageBands(mosaicStoreInfo, browseBandSpecs);
+
+            if (browseBands.size() == 1) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.gray().channelName("" + getBandIndex(browseBands[0], bands, defaultBands));
-            } else if (browseBands.length == 3) {
+                cs.gray().channelName("" + getBandIndex(browseBands.get(0), coverageBands));
+            } else if (browseBands.size() == 3) {
                 ChannelSelectionBuilder cs = rsb.channelSelection();
-                cs.red().channelName("" + getBandIndex(browseBands[0], bands, defaultBands));
-                cs.green().channelName("" + getBandIndex(browseBands[1], bands, defaultBands));
-                cs.blue().channelName("" + getBandIndex(browseBands[2], bands, defaultBands));
+                cs.red().channelName("" + getBandIndex(browseBands.get(0), coverageBands));
+                cs.green().channelName("" + getBandIndex(browseBands.get(1), coverageBands));
+                cs.blue().channelName("" + getBandIndex(browseBands.get(2), coverageBands));
+            } else {
+                throw new RestException(
+                        "Browse bands should select either 1 or 3 bands, but instead they created "
+                                + +browseBands.size()
+                                + " raster bands",
+                        HttpStatus.PRECONDITION_FAILED);
             }
             Style style = rsb.buildStyle();
             StyleInfo si = catalog.getFactory().createStyle();
@@ -516,23 +595,15 @@ class CollectionLayerManager {
         }
     }
 
-    private int getBandIndex(String band, String[] bands, String[] defaultBands) {
-        // using all native bands in a non split-multiband case
-        String[] lookup = bands;
-        if (bands == null || bands.length == 0) {
-            lookup = defaultBands;
-        }
+    private int getBandIndex(CoverageBand band, List<CoverageBand> bands) {
         // lookup the band order in the split multiband case
-        for (int i = 0; i < lookup.length; i++) {
-            if (band.equals(lookup[i])) {
+        for (int i = 0; i < bands.size(); i++) {
+            if (band.equals(bands.get(i))) {
                 return i + 1;
             }
         }
         throw new IllegalArgumentException(
-                "Could not find browse band "
-                        + band
-                        + " among the layer bands "
-                        + Arrays.toString(lookup));
+                "Could not find browse band " + band + " among the layer bands " + bands);
     }
 
     private void createDataStoreProperties(String collection, Resource mosaic) throws IOException {
@@ -557,7 +628,7 @@ class CollectionLayerManager {
         CoverageStoreInfo mosaicStore = cb.buildCoverageStore(layer.getLayer());
         mosaicStore.setType(new ImageMosaicFormat().getName());
         mosaicStore.setDescription("Image mosaic wrapping OpenSearch collection: " + collection);
-        mosaicStore.setURL("file:/" + relativePath);
+        mosaicStore.setURL("file:" + relativePath);
         catalog.add(mosaicStore);
         cb.setStore(mosaicStore);
 

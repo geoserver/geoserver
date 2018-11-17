@@ -173,7 +173,7 @@ This operation is useful to understand which domains are available in our layer 
        by layer basis.
 
 .. figure:: images/expandLimitConfig.png
-:align: center
+   :align: center
 
    *Configuration domain expansion limits.*
 

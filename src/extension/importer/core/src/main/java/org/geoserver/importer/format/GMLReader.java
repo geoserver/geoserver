@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.util.NoSuchElementException;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.PullParser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.PullParser;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 

@@ -31,8 +31,8 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Encoder;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
@@ -100,7 +100,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat {
                         featureTypes);
         Configuration configuration =
                 new ApplicationSchemaConfiguration(
-                        xsd, new org.geotools.wfs.v1_0.WFSConfiguration());
+                        xsd, new org.geotools.wfs.v1_0.WFSConfiguration_1_0());
 
         Encoder encoder = new Encoder(configuration);
         // encoder.setEncoding(wfs.getCharSet());

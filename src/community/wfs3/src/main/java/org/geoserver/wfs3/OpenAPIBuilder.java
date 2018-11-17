@@ -1,3 +1,7 @@
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs3;
 
 import io.swagger.v3.core.util.Yaml;
@@ -35,6 +39,7 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 
+/** Builds the OpenAPI document that will be returned to the clients */
 public class OpenAPIBuilder {
 
     static final String OPENAPI_SPECIFICATION;
@@ -47,7 +52,16 @@ public class OpenAPIBuilder {
         }
     }
 
-    public OpenAPI build(BaseRequest request, WFSInfo wfs) {
+    /**
+     * Build the document based on request, current WFS configuration, and list of available
+     * extensions
+     *
+     * @param request The incoming request
+     * @param wfs The WFS configuration
+     * @param extensions The list of WFS 3 extensions
+     * @return
+     */
+    public OpenAPI build(BaseRequest request, WFSInfo wfs, List<WFS3Extension> extensions) {
         OpenAPI api = readTemplate();
 
         // build "info"
@@ -118,6 +132,11 @@ public class OpenAPIBuilder {
         limit.getSchema().setMaximum(limitMax);
         // for the moment we don't have a setting for the default, keep it same as max
         limit.getSchema().setDefault(limitMax);
+
+        // handle the extensions
+        for (WFS3Extension extension : extensions) {
+            extension.extendAPI(api);
+        }
 
         return api;
     }

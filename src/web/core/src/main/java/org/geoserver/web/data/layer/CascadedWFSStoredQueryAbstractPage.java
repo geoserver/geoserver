@@ -42,7 +42,7 @@ import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingBlockValu
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingExpressionValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
-import org.geotools.decorate.Wrapper;
+import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 
 /**

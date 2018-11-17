@@ -8,7 +8,7 @@ Manual Install
 
 To download and install the required extensions by hand:
 
-#. Download the geoserver-2.10-SNAPSHOT-backup-restore-plugin.zip from:
+#. Download the geoserver-2.15-SNAPSHOT-backup-restore-plugin.zip from:
 
    * `Community Builds <https://build.geoserver.org/geoserver/master/community-latest/>`_ (GeoServer WebSite)
    

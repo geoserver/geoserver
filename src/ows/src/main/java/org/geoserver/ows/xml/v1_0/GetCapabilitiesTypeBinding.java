@@ -11,10 +11,10 @@ import net.opengis.ows10.AcceptVersionsType;
 import net.opengis.ows10.GetCapabilitiesType;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.ows10.SectionsType;
-import org.geotools.xml.AbstractComplexEMFBinding;
-import org.geotools.xml.Binding;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
+import org.geotools.xsd.AbstractComplexEMFBinding;
+import org.geotools.xsd.Binding;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 /**
  * Binding object for the type http://www.opengis.net/ows:GetCapabilitiesType.

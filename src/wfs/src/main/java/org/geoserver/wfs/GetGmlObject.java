@@ -12,7 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geotools.data.DataAccess;
 import org.geotools.data.GmlObjectStore;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
@@ -46,7 +46,7 @@ public class GetGmlObject {
     public Object run(GetGmlObjectType request) throws WFSException {
 
         // get the gml object id
-        GmlObjectId id = request.getGmlObjectId();
+        GmlObjectId id = (GmlObjectId) request.getGmlObjectId();
 
         // set up the hints
         Hints hints = new Hints();

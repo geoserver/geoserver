@@ -9,7 +9,7 @@ import java.util.Collection;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 /**
  * Parses the "sections" GetCapabilities kvp argument

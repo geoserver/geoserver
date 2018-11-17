@@ -116,7 +116,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadeCapabilitiesClientNoGetFeatureInfo() throws Exception {
         Document dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0&service=wms");
-        print(dom);
+        // print(dom);
 
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wms", "http://www.opengis.net/wms");

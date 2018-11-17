@@ -51,4 +51,9 @@
         <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
         <cpe>cpe:/a:widgets_project:widgets</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-app-schema-resolver.jar]]></notes>
+        <gav regex="true">^org\.geotools:gt-app-schema-resolver:.*$</gav>
+        <cve>CVE-2018-13661</cve>
+    </suppress>
 </suppressions>

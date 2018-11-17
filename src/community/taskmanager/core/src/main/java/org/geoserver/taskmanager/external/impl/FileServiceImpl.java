@@ -22,11 +22,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.external.FileService;
+import org.geoserver.taskmanager.util.SecuredImpl;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.context.ServletContextAware;
 
@@ -36,7 +38,7 @@ import org.springframework.web.context.ServletContextAware;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
-public class FileServiceImpl implements FileService, ServletContextAware {
+public class FileServiceImpl extends SecuredImpl implements FileService, ServletContextAware {
 
     private static final long serialVersionUID = -1948411877746516243L;
 
@@ -46,26 +48,25 @@ public class FileServiceImpl implements FileService, ServletContextAware {
 
     private Path rootFolder;
 
-    private String name;
-
     private String description;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+    private String prepareScript;
 
     @Override
     public String getDescription() {
-        return "Local File System: " + (description == null ? description : name);
+        return "Local File System: " + (description == null ? description : getName());
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPrepareScript() {
+        return prepareScript;
+    }
+
+    public void setPrepareScript(String prepareScript) {
+        this.prepareScript = prepareScript;
     }
 
     public void setRootFolder(String rootFolder) {
@@ -83,7 +84,7 @@ public class FileServiceImpl implements FileService, ServletContextAware {
     }
 
     @Override
-    public void create(String filePath, InputStream content) throws IOException {
+    public void create(String filePath, InputStream content, boolean doPrepare) throws IOException {
         // Check parameters
         if (content == null) {
             throw new IllegalArgumentException("Content of a file can not be null.");
@@ -97,6 +98,20 @@ public class FileServiceImpl implements FileService, ServletContextAware {
 
         File targetFile = new File(getAbsolutePath(filePath).toUri());
         FileUtils.copyInputStreamToFile(content, targetFile);
+
+        if (doPrepare && prepareScript != null) {
+            Process p =
+                    Runtime.getRuntime().exec(prepareScript + " " + targetFile.getAbsolutePath());
+            LOGGER.info(new String(IOUtils.toByteArray(p.getInputStream())));
+            LOGGER.warning(new String(IOUtils.toByteArray(p.getErrorStream())));
+            try {
+                int e = p.waitFor();
+                if (e != 0) {
+                    throw new IOException("Preparation script ended with exit code " + e);
+                }
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     @Override

@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -80,6 +82,10 @@ public class BatchPage extends GeoServerSecuredPage {
         setReturnPage(parentPage);
     }
 
+    public BatchPage(Batch batch, Page parentPage) {
+        this(new Model<Batch>(batch), parentPage);
+    }
+
     @Override
     public void onInitialize() {
         super.onInitialize();
@@ -90,6 +96,7 @@ public class BatchPage extends GeoServerSecuredPage {
                 new WebMarkupContainer("notvalidated")
                         .setVisible(
                                 batchModel.getObject().getConfiguration() != null
+                                        && !batchModel.getObject().getConfiguration().isTemplate()
                                         && !batchModel
                                                 .getObject()
                                                 .getConfiguration()
@@ -114,7 +121,7 @@ public class BatchPage extends GeoServerSecuredPage {
                     }
                 });
 
-        List<String> workspaces = new ArrayList<String>();
+        SortedSet<String> workspaces = new TreeSet<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
             if (wi.getName().equals(batchModel.getObject().getWorkspace())
                     || TaskManagerBeans.get()
@@ -136,7 +143,7 @@ public class BatchPage extends GeoServerSecuredPage {
                 new DropDownChoice<String>(
                         "workspace",
                         new PropertyModel<String>(batchModel, "workspace"),
-                        workspaces) {
+                        new ArrayList<String>(workspaces)) {
 
                     private static final long serialVersionUID = -9058423608027219299L;
 

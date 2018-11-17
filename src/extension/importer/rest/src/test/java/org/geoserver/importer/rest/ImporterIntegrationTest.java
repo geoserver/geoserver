@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Properties;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -32,7 +32,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
@@ -54,6 +56,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assume;
@@ -1007,6 +1010,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
 
         assertFalse(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+        assertTrue(new File(context.getUploadDirectory().getFile(), ".clean-me").exists());
     }
 
     @Test
@@ -1064,5 +1068,54 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         assertTrue(context.getState() == ImportContext.State.COMPLETE);
 
         assertTrue(new File(context.getUploadDirectory().getFile(), ".locking").exists());
+    }
+
+    // GEOS-8869 - Importer Converter can override normal layer converter
+    @Test
+    public void testLayerRest() throws Exception {
+        Catalog catalog = getCatalog();
+        getTestData().addVectorLayer(MockData.BASIC_POLYGONS, catalog);
+
+        // Normal layer converter can handle styles, but the importer one ignores them,
+        // so we can use this to determine which one is getting used.
+        StyleInfo generic = catalog.getStyleByName("generic");
+        StyleInfo polygon = catalog.getStyleByName("polygon");
+
+        NameImpl basicPolygonsName =
+                new NameImpl(
+                        MockData.BASIC_POLYGONS.getPrefix(),
+                        MockData.BASIC_POLYGONS.getLocalPart());
+        LayerInfo basicPolygons = catalog.getLayerByName(basicPolygonsName);
+
+        // initialize to a known default style
+        basicPolygons.setDefaultStyle(generic);
+        catalog.save(basicPolygons);
+
+        assertEquals(
+                generic.getId(),
+                catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getId());
+
+        // Do a JSON PUT to change the default style
+        String contextDefinition =
+                "{\"layer\": {\n"
+                        + "  \"name\": \"BasicPolygons\",\n"
+                        + "  \"defaultStyle\":   {\n"
+                        + "    \"name\": \"polygon\"\n"
+                        + "  },\n"
+                        + "}}";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "/rest/layers/" + basicPolygonsName.toString(),
+                        contextDefinition,
+                        "application/json");
+
+        assertEquals(200, response.getStatus());
+        assertEquals(
+                polygon.getName(),
+                catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getName());
+        assertEquals(
+                polygon.getId(),
+                catalog.getLayerByName(basicPolygonsName).getDefaultStyle().getId());
     }
 }

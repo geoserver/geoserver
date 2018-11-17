@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 import org.opengis.filter.Filter;
 
 /**

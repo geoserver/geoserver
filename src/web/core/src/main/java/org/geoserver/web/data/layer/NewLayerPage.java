@@ -20,19 +20,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSLayerInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -49,10 +37,10 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wmts.WebMapTileServer;
-import org.geotools.decorate.Wrapper;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wmts.WebMapTileServer;
+import org.geotools.util.decorate.Wrapper;
 
 /**
  * A page listing the resources contained in a store, and whose links will bring the user to a new

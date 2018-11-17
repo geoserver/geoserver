@@ -73,8 +73,8 @@ cd "$GEOSERVER_HOME"
 
 if [ -z $MARLIN_JAR]; then
     export MARLIN_JAR=`find \`pwd\`/webapps -name "marlin*.jar" | head -1`
+    export MARLIN_ENABLER="-Xbootclasspath/a:$MARLIN_JAR -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
 fi
-export MARLIN_ENABLER="-Xbootclasspath/a:$MARLIN_JAR -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
 
 echo "GEOSERVER DATA DIR is $GEOSERVER_DATA_DIR"
 #added headless to true by default, if this messes anyone up let the list

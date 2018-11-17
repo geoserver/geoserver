@@ -270,8 +270,42 @@ An example of optional CoverageNameCollectorSPI could be::
     
 This defines a regex-based name collector which extracts the coverage name from the prefix of the file name, so that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature* granules on a ``temperature`` coverage and pressure* granules on a ``pressure`` coverage.
     
-Other properties files
-~~~~~~~~~~~~~~~~~~~~~~
+
+Property collectors
+~~~~~~~~~~~~~~~~~~~
+  
+The following table enumerates the available property collectors  
+  
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+   :stub-columns: 1
+  
+   * - Collector SPI name
+     - Description
+   * - ByteFileNameExtractorSPI
+       DoubleFileNameExtractorSPI
+       FloatFileNameExtractorSPI
+       IntegerFileNameExtractorSPI
+       LongFileNameExtractorSPI
+       ShortFileNameExtractorSPI
+     - Extracts an number from the file name using a regular expression specified in a sidecar file, casting it to the desired type based on the SPI name (e..g, DoubleFileNameExtractorSPI extracts double precision floating points, IntegerFileNameExtractorSPI extracts 32 bit integers)
+   * - TimestampFileNameExtractorSPI
+     - Extracts a timestamp from the filename using a regular expression specified in a sidecar file
+   * - StringFileNameExtractorSPI
+     - Extracts a string from the filename using a regular expression specified in a sidecar file
+   * - CurrentDateExtractorSPI
+     - Returns the current date and time (useful to track ingestion times in a mosaic)
+   * - FSDateExtractorSPI
+     - Returns the creation date of the file being harvested
+   * - DateExtractorSPI
+     - Returns the date found in tiff file header "DateTime" (code 306)
+   * - ResolutionExtractorSPI
+       ResolutionXExtractorSPI
+       ResolutionYExtractorSPI
+     - Returns the native resolution of the raster being harvested. ResolutionExtractorSPI and ResolutionXExtractorSPI return the x resolution of the raster, ResolutionYExtractorSPI returns the resolution on the Y axis instead
+   * - CRSExtractorSPI
+     - Returns the code of the the raster coordinate reference system, as a string, e.g. "EPSG:4326" 
 
 The ``PropertyCollectors`` parameter in the example above indicates two additional ``.properties`` files used to populate the ``ingestion`` and ``elevation`` attributes:
 

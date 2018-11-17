@@ -55,15 +55,22 @@ public class OSEORestTestSupport extends OSEOTestSupport {
     public void cleanupTestCollectionPublishing() throws IOException {
         Catalog catalog = getCatalog();
         CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
-        CoverageStoreInfo store = catalog.getStoreByName("gs", "test123", CoverageStoreInfo.class);
+        removePublishing(catalog, visitor, "gs", "test123");
+        removePublishing(catalog, visitor, "gs", "test123-secondary");
+    }
+
+    private void removePublishing(
+            Catalog catalog, CascadeDeleteVisitor visitor, String workspace, String resourceName) {
+        CoverageStoreInfo store =
+                catalog.getStoreByName(workspace, resourceName, CoverageStoreInfo.class);
         if (store != null) {
             visitor.visit(store);
         }
-        StyleInfo style = catalog.getStyleByName("gs", "test123");
+        StyleInfo style = catalog.getStyleByName(workspace, resourceName);
         if (style != null) {
             visitor.visit(style);
         }
-        Resource data = catalog.getResourceLoader().get("data/gs/test123");
+        Resource data = catalog.getResourceLoader().get("data/" + workspace + "/" + resourceName);
         if (data != null && Resources.exists(data)) {
             data.delete();
         }

@@ -400,7 +400,20 @@ public abstract class AbstractJDBCResourceStoreTest {
             assertEquals(1, listener.getNotify().events().size());
         }
 
+        listener.reset();
+        Resource fileE = store.get("DirC/FileE");
+        TestResourceListener listener2 = new TestResourceListener();
+        fileE.addListener(listener2);
+
+        fileD.renameTo(fileE);
+
+        assertNotNull(listener.getNotify());
+        assertEquals(Kind.ENTRY_DELETE, listener.getNotify().getKind());
+        assertNotNull(listener2.getNotify());
+        assertEquals(Kind.ENTRY_CREATE, listener2.getNotify().getKind());
+
         fileD.removeListener(listener);
+        fileE.removeListener(listener2);
     }
 
     @Test
@@ -430,7 +443,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         assertTrue(timeStamp > before);
         Event e = listener.getNotify().events().get(0);
         assertEquals(Kind.ENTRY_MODIFY, e.getKind());
-        assertEquals("DirC/FileD", e.getPath());
+        assertEquals("FileD", e.getPath());
 
         listener.reset();
         store.get("DirC").removeListener(listener);

@@ -101,7 +101,7 @@ public class GeofencePersisterSerializationTest {
 
         String xml = new String(baos.toByteArray(), "UTF-8");
 
-        System.err.println(xml);
+        // System.err.println(xml);
         assertTrue(xml.contains("pippo"));
         assertTrue(xml.contains("clown"));
         assertTrue(xml.contains("HIDDEN"));
@@ -125,7 +125,7 @@ public class GeofencePersisterSerializationTest {
 
         xml = new String(baos.toByteArray(), "UTF-8");
 
-        System.err.println(xml);
+        // System.err.println(xml);
         assertTrue(xml.contains("topolino"));
         assertTrue(xml.contains("minnie"));
     }

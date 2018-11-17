@@ -34,7 +34,6 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransform;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geotools.data.FeatureReader;
-import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -43,9 +42,10 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
-import org.geotools.wfs.v1_0.WFSConfiguration;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.PullParser;
+import org.geotools.util.factory.Hints;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.PullParser;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -93,7 +93,7 @@ public class GMLFileFormat extends VectorFormat {
 
     enum GMLVersion {
         // use the wfs configurations, as they contain the gml ones
-        GML2(new WFSConfiguration()),
+        GML2(new WFSConfiguration_1_0()),
         GML3(new org.geotools.wfs.v1_1.WFSConfiguration()),
         GML32(new org.geotools.wfs.v2_0.WFSConfiguration());
 

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import org.geoserver.platform.FileWatcher;
@@ -57,7 +58,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
      * Subclass of Properties that maintains order by actually storing keys in an underlying
      * LinkedHashMap.
      */
-    public class LinkedProperties extends Properties {
+    public static class LinkedProperties extends Properties {
 
         private static final long serialVersionUID = 1L;
 
@@ -148,6 +149,19 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         @Override
         public synchronized String toString() {
             return linkMap.toString();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            LinkedProperties that = (LinkedProperties) o;
+            return Objects.equals(linkMap, that.linkMap);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), linkMap);
         }
     }
 }

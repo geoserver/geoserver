@@ -21,13 +21,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Summarizes the execution state of a certain process. Note: the class implements equals and
- * hashcode, but skips the exception in them, as commmon Java exceptions do not sport a usable
+ * hashcode, but skips the exception in them, as common Java exceptions do not sport a usable
  * equals/hashcode implementation, and the exceptions might be cloned to due network/database
  * serialization.
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class ExecutionStatus implements Serializable {
+public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus> {
 
     static final Logger LOGGER = Logging.getLogger(ExecutionStatus.class);
 
@@ -113,6 +113,15 @@ public class ExecutionStatus implements Serializable {
     /** A heartbeat field, used when clustering nodes */
     Date lastUpdated;
 
+    /** Date and time by wich the processing job will be no longer accessible */
+    Date expirationDate = null;
+
+    /** Date and time by wich the processing job will be finished */
+    Date estimatedCompletion = null;
+
+    /** Date and time for the next suggested status polling */
+    Date nextPoll = null;
+
     /** What is the process currently working on */
     String task;
 
@@ -160,6 +169,9 @@ public class ExecutionStatus implements Serializable {
         this.userName = other.userName;
         this.nodeId = other.nodeId;
         this.lastUpdated = other.lastUpdated;
+        this.expirationDate = other.expirationDate;
+        this.estimatedCompletion = other.estimatedCompletion;
+        this.nextPoll = other.nextPoll;
     }
 
     public void setException(Throwable exception) {
@@ -280,6 +292,36 @@ public class ExecutionStatus implements Serializable {
         this.lastUpdated = lastUpdated;
     }
 
+    /** @return the expirationDate */
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    /** @param expirationDate the expirationDate to set */
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    /** @return the estimatedCompletion */
+    public Date getEstimatedCompletion() {
+        return estimatedCompletion;
+    }
+
+    /** @param estimatedCompletion the estimatedCompletion to set */
+    public void setEstimatedCompletion(Date estimatedCompletion) {
+        this.estimatedCompletion = estimatedCompletion;
+    }
+
+    /** @return the nextPoll */
+    public Date getNextPoll() {
+        return nextPoll;
+    }
+
+    /** @param nextPoll the nextPoll to set */
+    public void setNextPoll(Date nextPoll) {
+        this.nextPoll = nextPoll;
+    }
+
     @Override
     public String toString() {
         return "ExecutionStatus [processName="
@@ -300,6 +342,12 @@ public class ExecutionStatus implements Serializable {
                 + completionTime
                 + ", lastUpdated="
                 + lastUpdated
+                + ", expirationDate="
+                + expirationDate
+                + ", estimatedCompletion="
+                + estimatedCompletion
+                + ", nextPoll="
+                + nextPoll
                 + ", task="
                 + task
                 + ", exception="
@@ -318,6 +366,11 @@ public class ExecutionStatus implements Serializable {
         result = prime * result + ((creationTime == null) ? 0 : creationTime.hashCode());
         result = prime * result + ((executionId == null) ? 0 : executionId.hashCode());
         result = prime * result + ((lastUpdated == null) ? 0 : lastUpdated.hashCode());
+        result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
+        result =
+                prime * result
+                        + ((estimatedCompletion == null) ? 0 : estimatedCompletion.hashCode());
+        result = prime * result + ((nextPoll == null) ? 0 : nextPoll.hashCode());
         result = prime * result + ((nodeId == null) ? 0 : nodeId.hashCode());
         result = prime * result + ((phase == null) ? 0 : phase.hashCode());
         result = prime * result + ((processName == null) ? 0 : processName.hashCode());
@@ -348,6 +401,15 @@ public class ExecutionStatus implements Serializable {
         if (lastUpdated == null) {
             if (other.lastUpdated != null) return false;
         } else if (!lastUpdated.equals(other.lastUpdated)) return false;
+        if (expirationDate == null) {
+            if (other.expirationDate != null) return false;
+        } else if (!expirationDate.equals(other.expirationDate)) return false;
+        if (estimatedCompletion == null) {
+            if (other.estimatedCompletion != null) return false;
+        } else if (!estimatedCompletion.equals(other.estimatedCompletion)) return false;
+        if (nextPoll == null) {
+            if (other.nextPoll != null) return false;
+        } else if (!nextPoll.equals(other.nextPoll)) return false;
         if (nodeId == null) {
             if (other.nodeId != null) return false;
         } else if (!nodeId.equals(other.nodeId)) return false;
@@ -363,5 +425,10 @@ public class ExecutionStatus implements Serializable {
             if (other.userName != null) return false;
         } else if (!userName.equals(other.userName)) return false;
         return true;
+    }
+
+    @Override
+    public int compareTo(ExecutionStatus o) {
+        return executionId.compareTo(o.executionId);
     }
 }

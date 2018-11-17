@@ -6,7 +6,6 @@ package org.geoserver.rest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +75,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                     }
                 }
             }
-            return new ArrayList<>();
+            return MEDIA_TYPE_ALL_LIST;
         }
     }
 

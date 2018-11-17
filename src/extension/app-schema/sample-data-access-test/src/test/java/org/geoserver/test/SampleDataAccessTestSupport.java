@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import org.geotools.data.SampleDataAccess;
+import org.geotools.appschema.resolver.data.SampleDataAccess;
 
 /**
  * Abstract base class for test cases that test integration of {@link SampleDataAccess} with

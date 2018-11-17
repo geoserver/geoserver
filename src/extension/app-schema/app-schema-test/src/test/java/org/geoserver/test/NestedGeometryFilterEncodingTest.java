@@ -11,16 +11,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.appschema.jdbc.NestedFilterToSQL;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
 import org.geotools.data.jdbc.FilterToSQLException;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
-import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.NestedFilterToSQL;
-import org.geotools.util.NullProgressListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
@@ -96,15 +96,15 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
                     GML32_PREFIX,
                     "StationWithMeasurements",
                     "stations",
-                    "defaultGeometryMappings/stationsWithMeasurements.xml",
+                    "defaultGeometry/stations2.xml",
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml32Parameters);
             addMeasurementFeatureType(
                     MEASUREMENTS_PREFIX_GML32,
                     GML32_PREFIX,
                     "measurements",
-                    "defaultGeometryMappings/measurements.xml",
+                    "defaultGeometry/measurements.xml",
                     gml32Parameters);
         }
 
@@ -139,15 +139,13 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             substituteParameters(
                     "/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/data/stationsDefaultGeometry.properties",
+                    "/test-data/stations/defaultGeometry/stations.properties",
                     parameters,
                     stationsProperties);
             substituteParameters(
-                    "/test-data/stations/schemas/stationsDefaultGeometry.xsd",
-                    parameters,
-                    stationsSchema);
+                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             substituteParameters(
-                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    "/test-data/stations/defaultGeometry/measurements.xsd",
                     parameters,
                     measurementsSchema);
             // create station feature type
@@ -181,11 +179,11 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             substituteParameters(
                     "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
             substituteParameters(
-                    "/test-data/stations/data/measurementsDefaultGeometry.properties",
+                    "/test-data/stations/defaultGeometry/measurements.properties",
                     parameters,
                     measurementsProperties);
             substituteParameters(
-                    "/test-data/stations/schemas/measurementsDefaultGeometry.xsd",
+                    "/test-data/stations/defaultGeometry/measurements.xsd",
                     parameters,
                     measurementsSchema);
             // create measurements feature type
@@ -375,7 +373,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
         checkPostPreFilterSplitting(beyond);
         checkFilterEncoding(beyond);
-        checkFeatures(beyond, "2");
+        checkFeatures(beyond, "1", "2");
     }
 
     @Test
@@ -395,7 +393,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
         checkFilterEncoding(dwithin);
 
-        checkFeatures(dwithin, "1", "3");
+        checkFeatures(dwithin, "3");
     }
 
     @Test

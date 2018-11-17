@@ -5,7 +5,7 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import org.geotools.data.ows.Layer;
+import org.geotools.ows.wms.Layer;
 import org.opengis.util.ProgressListener;
 
 public interface WMTSLayerInfo extends ResourceInfo {

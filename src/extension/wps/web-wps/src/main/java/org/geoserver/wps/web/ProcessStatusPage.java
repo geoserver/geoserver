@@ -4,8 +4,12 @@
  */
 package org.geoserver.wps.web;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -46,6 +50,15 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                             IModel<ExecutionStatus> itemModel,
                             Property<ExecutionStatus> property) {
                         // have the base class create a label for us
+                        Object value = property.getPropertyValue(itemModel.getObject());
+                        if (value instanceof Date) {
+                            SimpleDateFormat gmtFrmt =
+                                    new SimpleDateFormat(
+                                            "E, d MMM yyyy HH:mm:ss.SSS 'GMT'",
+                                            Session.get().getLocale());
+                            gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                            return new Label(id, gmtFrmt.format((Date) value));
+                        }
                         return null;
                     }
 

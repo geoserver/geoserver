@@ -9,12 +9,13 @@ import it.geosolutions.jaiext.colorindexer.CachingColorIndexer;
 import it.geosolutions.jaiext.colorindexer.ColorIndexer;
 import it.geosolutions.jaiext.colorindexer.LRUColorIndexer;
 import it.geosolutions.jaiext.colorindexer.Quantizer;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.function.Function;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -127,15 +128,16 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      * the palette format has been requested, applying a bitmask or translucent palette inverter
      * according to the user request and the image structure
      *
-     * @param image
-     * @param mapContent
-     * @param palettedFormatName
+     * @param image The image to be eventually paletted
+     * @param mapContent The {@link org.geotools.map.MapContent}
+     * @param palettedFormatCheck The function checking if the format requested demands paletted
+     *     output
      * @param supportsTranslucency If false the code will always apply the bitmask transformer
      */
     protected RenderedImage applyPalette(
             RenderedImage image,
             WMSMapContent mapContent,
-            String palettedFormatName,
+            Function<String, Boolean> palettedFormatCheck,
             boolean supportsTranslucency) {
         // check to see if we have to see a translucent or bitmask quantizer
         GetMapRequest request = mapContent.getRequest();
@@ -156,7 +158,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
             // user provided palette?
             if (icm != null) {
                 image = forceIndexed8Bitmask(image, PaletteManager.getInverseColorMapOp(icm));
-            } else if (palettedFormatName.equalsIgnoreCase(format)) {
+            } else if (palettedFormatCheck.apply(format)) {
                 // or format that needs palette to be applied?
                 image = forceIndexed8Bitmask(image, null);
             }
@@ -173,7 +175,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 // user provided palette?
                 if (mapContent.getPalette() != null) {
                     indexer = new CachingColorIndexer(new LRUColorIndexer(icm, 1024));
-                } else if (palettedFormatName.equalsIgnoreCase(format)) {
+                } else if (palettedFormatCheck.apply(format)) {
                     // build the palette and grab the optimized color indexer
                     indexer = new Quantizer(256).subsample().buildColorIndexer(image);
                 }
@@ -186,6 +188,28 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
         }
 
         return image;
+    }
+
+    /**
+     * Applies a transformation to 8 bits + palette in case the user requested a specific palette or
+     * the palette format has been requested, applying a bitmask or translucent palette inverter
+     * according to the user request and the image structure
+     *
+     * @param image The image to be eventually paletted
+     * @param mapContent The {@link org.geotools.map.MapContent}
+     * @param palettedFormatName The format name used to require paletted output
+     * @param supportsTranslucency If false the code will always apply the bitmask transformer
+     */
+    protected RenderedImage applyPalette(
+            RenderedImage image,
+            WMSMapContent mapContent,
+            String palettedFormatName,
+            boolean supportsTranslucency) {
+        return applyPalette(
+                image,
+                mapContent,
+                format -> (palettedFormatName.equalsIgnoreCase(format)),
+                supportsTranslucency);
     }
 
     /** @param originalImage */

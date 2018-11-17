@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.Lists;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +46,29 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
         assertTrue(extTypes.dbName.validate("myjndidb", null));
         assertTrue(extTypes.dbName.parse("myjndidb", null) instanceof DbSource);
         assertNull(extTypes.dbName.parse("doesntexist", null));
+    }
+
+    @Test
+    public void testDbNameWithLogin() {
+        login("someone", "pw", "ROLE_SOMEONE");
+        List<String> domain = extTypes.dbName.getDomain(null);
+        assertEquals(3, domain.size());
+        assertEquals("mypostgresdb", domain.get(0));
+        assertEquals("testsourcedb", domain.get(1));
+        assertEquals("testtargetdb", domain.get(2));
+        assertFalse(extTypes.dbName.validate("myjndidb", null));
+        assertNull(extTypes.dbName.parse("myjndidb", null));
+
+        login("someone_else", "pw", "ROLE_SOMEONE_ELSE");
+        domain = extTypes.dbName.getDomain(null);
+        assertEquals(3, domain.size());
+        assertEquals("myjndidb", domain.get(0));
+        assertEquals("mypostgresdb", domain.get(1));
+        assertEquals("testsourcedb", domain.get(2));
+        assertFalse(extTypes.dbName.validate("testtargetdb", null));
+        assertNull(extTypes.dbName.parse("testtargetdb", null));
+
+        logout();
     }
 
     @Test
@@ -147,5 +171,14 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
                 extTypes.file(false, false)
                                 .parse("doesntexist", Collections.singletonList("data-directory"))
                         instanceof FileReference);
+
+        assertEquals(
+                "temp.1",
+                ((FileReference)
+                                extTypes.file(false, false)
+                                        .parse(
+                                                "temp",
+                                                Lists.newArrayList("data-directory", "true")))
+                        .getNextVersion());
     }
 }

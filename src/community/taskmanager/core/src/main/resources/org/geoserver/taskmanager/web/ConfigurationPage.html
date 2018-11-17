@@ -10,8 +10,11 @@
 <body>
 	<wicket:extend>
 		<div wicket:id="dialog"></div>
+		
+		<div wicket:id="init" class="important"><wicket:message key="init"></wicket:message></div>
 
-		<div wicket:id="init"><wicket:message key="init"></wicket:message></div>
+		<div wicket:id="notvalidated" class="important">
+		<wicket:message key="notvalidated"></wicket:message></div>
 
 		<form wicket:id="configurationForm">	  		  	  
 		  	 <fieldset>		
@@ -37,7 +40,7 @@
 					 <ul class="links-above-table">
 						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
 						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
-					</ul>
+					 </ul>
 					
 					 <div wicket:id="tasksPanel"></div>
 					 

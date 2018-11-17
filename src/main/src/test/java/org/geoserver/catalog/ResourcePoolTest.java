@@ -49,6 +49,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
@@ -56,19 +57,16 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
-import org.geotools.factory.GeoTools;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
-import org.geotools.resources.coverage.CoverageUtilities;
-import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
@@ -76,6 +74,8 @@ import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.locationtech.jts.geom.Point;
@@ -513,6 +513,30 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(clonedCs);
 
         assertEquals(source2, clonedCs);
+    }
+
+    @Test
+    public void testAddFilePathWithSpaces() throws Exception {
+        // Other tests mess with or reset the resourcePool, so lets make it is initialised properly
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class)
+                .get(0)
+                .initialize(getGeoServer());
+
+        ResourcePool rp = getCatalog().getResourcePool();
+
+        CoverageStoreInfo info = getCatalog().getFactory().createCoverageStore();
+        info.setName("spaces");
+        info.setType("ImagePyramid");
+        info.setEnabled(true);
+        info.setURL(
+                "file://./src/test/resources/data_dir/nested_layer_groups/data/pyramid with space");
+        try {
+            rp.getGridCoverageReader(info, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unable to add an imagepyramid with a space in it's name");
+        }
+        rp.dispose();
     }
 
     @Test

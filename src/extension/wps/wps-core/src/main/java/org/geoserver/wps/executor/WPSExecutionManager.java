@@ -7,6 +7,8 @@ package org.geoserver.wps.executor;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -35,9 +37,9 @@ import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.data.Parameter;
+import org.geotools.data.util.SubProgressListener;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
@@ -157,6 +159,30 @@ public class WPSExecutionManager
         status.setRequest(request.getRequest());
         long maxExecutionTime = getMaxExecutionTime(synchronous);
         long maxTotalTime = getMaxTotalTime(synchronous);
+
+        // Estimate heuristically expiration dates, next status poll and estimated completion
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+
+        // Returns the resource expiration timeout (in seconds)
+        int resourceExpirationTimeout = wps.getResourceExpirationTimeout();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, resourceExpirationTimeout);
+        status.setExpirationDate(calendar.getTime());
+
+        // By default we estimate the completion as:
+        // "time elapsed / percentage completed"
+        // Therefore at this stage we cannot still have an idea about such estimation.
+        // We'll need to wait for the next poll / call to the ProcessListener
+        status.setEstimatedCompletion(null);
+
+        // By default, at the beginning, we'd suggest to make the next poll at least
+        // half of the maximum execution time (if > 0).
+        // Otherwise we will suggest a fixed number of 10 seconds for the next poll.
+        int nextPollTimeDelta = maxExecutionTime > 0 ? (int) maxExecutionTime / 2 : 10;
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, nextPollTimeDelta);
+        status.setNextPoll(new Date());
         Executor executor =
                 new Executor(
                         request,

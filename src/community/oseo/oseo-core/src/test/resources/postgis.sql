@@ -62,14 +62,16 @@ CREATE INDEX "idx_collection_eoAcquisitionStation" ON collection ("eoAcquisition
 
 -- the layer publishing information, if any
 create table collection_layer (
-  "cid" int primary key references collection("id") on delete cascade,
+  "lid" serial primary key,
+  "cid" int references collection("id") on delete cascade,
   "workspace" varchar,
   "layer" varchar,
   "separateBands" boolean,
   "bands" varchar,
   "browseBands" varchar,
   "heterogeneousCRS" boolean,
-  "mosaicCRS" varchar
+  "mosaicCRS" varchar,
+  "defaultLayer" boolean
 );
 
 -- the iso metadata storage (large text, not used for search, thus separate table)
@@ -229,3 +231,6 @@ create table granule (
   "location" varchar not null,
   "the_geom" geometry(Polygon, 4326) not null
 );
+
+-- manually generated indexes
+CREATE INDEX "idx_granule_the_geom" ON granule USING GIST("the_geom");

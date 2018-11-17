@@ -32,7 +32,7 @@ import org.geoserver.wfs.CreateStoredQuery;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -314,7 +314,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         p.validate(in);
 
         for (Exception e : (List<Exception>) p.getValidationErrors()) {
-            System.out.println(e.getLocalizedMessage());
+            // System.out.println(e.getLocalizedMessage());
         }
         assertTrue(p.getValidationErrors().isEmpty());
     }

@@ -8,11 +8,11 @@ package org.geoserver.security.ldap;
 import java.io.File;
 import org.apache.directory.server.core.DefaultDirectoryService;
 import org.apache.directory.server.core.DirectoryService;
-import org.apache.directory.server.core.entry.ServerEntry;
 import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
-import org.apache.directory.shared.ldap.name.LdapDN;
+import org.apache.directory.shared.ldap.entry.ServerEntry;
+import org.apache.directory.shared.ldap.name.DN;
 
 /**
  * Helper class for embedded Apache Directory Server.
@@ -55,7 +55,7 @@ public class EmbeddedLdapServer {
 
         // Inject the apache root entry if it does not already exist
         if (!directoryService.getAdminSession().exists(partition.getSuffixDn())) {
-            ServerEntry entry = directoryService.newEntry(new LdapDN(defaultPartitionSuffix));
+            ServerEntry entry = directoryService.newEntry(new DN(defaultPartitionSuffix));
             entry.add("objectClass", "top", "domain", "extensibleObject");
             entry.add("dc", defaultPartitionName);
             directoryService.getAdminSession().add(entry);

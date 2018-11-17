@@ -338,7 +338,7 @@ public class JDBCResourceStore implements ResourceStore {
                                 eventsDelete));
                 resourceNotificationDispatcher.changed(
                         new ResourceNotification(
-                                path(),
+                                dest.path(),
                                 eventsRename.get(0).getKind(),
                                 System.currentTimeMillis(),
                                 eventsRename));

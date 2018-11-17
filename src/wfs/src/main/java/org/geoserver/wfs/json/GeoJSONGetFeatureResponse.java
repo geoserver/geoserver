@@ -169,6 +169,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
         int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
         jsonWriter.setNumberOfDecimals(numDecimals);
+        jsonWriter.setEncodeMeasures(
+                encodeMeasures(featureCollection.getFeature(), gs.getCatalog()));
         return jsonWriter;
     }
 

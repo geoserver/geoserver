@@ -26,9 +26,7 @@ import org.geoserver.taskmanager.schedule.TaskType;
 import org.geoserver.taskmanager.util.SqlUtil;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public abstract class AbstractCreateViewTaskTypeImpl implements TaskType {
 
     public static final String PARAM_DB_NAME = "database";

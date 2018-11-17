@@ -29,7 +29,7 @@ import org.geoserver.test.GeoServerTestApplicationContext;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.XSD;
+import org.geotools.xsd.XSD;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockServletContext;

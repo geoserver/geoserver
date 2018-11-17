@@ -10,7 +10,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geotools.xml.InstanceComponent;
+import org.geotools.xsd.InstanceComponent;
 
 /**
  * Overrides the base class parsing code so that prefix can be resolved to URI's using the GeoServer

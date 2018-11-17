@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -116,5 +118,25 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
             wfs.setCiteCompliant(citeCompliant);
             getGeoServer().save(wfs);
         }
+    }
+
+    /**
+     * Helper method that activates or deactivates geometries measures encoding for the feature type
+     * matching the provided name.
+     */
+    protected static void setMeasuresEncoding(
+            Catalog catalog, String featureTypeName, boolean encodeMeasures) {
+        // get the feature type from the catalog
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
+        if (featureTypeInfo == null) {
+            // ouch, feature type not found
+            throw new RuntimeException(
+                    String.format(
+                            "No feature type matching the provided name '%s' found.",
+                            featureTypeName));
+        }
+        // set encode measures and save
+        featureTypeInfo.setEncodeMeasures(encodeMeasures);
+        catalog.save(featureTypeInfo);
     }
 }

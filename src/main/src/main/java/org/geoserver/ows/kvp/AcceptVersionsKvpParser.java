@@ -9,7 +9,7 @@ import java.util.Collection;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 /**
  * Parses a kvp of the form "acceptVersions=version1,version2,...,versionN" into an instance of OWS

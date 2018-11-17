@@ -6,17 +6,15 @@ package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.util.zip.GZIPOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.mock.web.DelegatingServletOutputStream;
 import org.springframework.mock.web.MockFilterChain;
@@ -51,21 +49,9 @@ public class GZipFilterTest {
                                 (AlternativesResponseStream) response.getOutputStream();
                         GZIPResponseStream gzipStream =
                                 (GZIPResponseStream) alternatives.getStream();
-                        GZIPOutputStream os = gzipStream.gzipstream;
-
-                        try {
-                            Field f = FilterOutputStream.class.getDeclaredField("out");
-                            f.setAccessible(true);
-                            OutputStream wrapped = (OutputStream) f.get(os);
-                            // System.out.println(wrapped);
-                            // we are not memory bound
-                            assertTrue(wrapped instanceof DelegatingServletOutputStream);
-                        } catch (Exception e) {
-                            // it can happen
-                            System.out.println(
-                                    "Failed to retrieve original stream wrapped by the GZIPOutputStream");
-                            e.printStackTrace();
-                        }
+                        assertThat(
+                                gzipStream.delegateStream,
+                                CoreMatchers.instanceOf(DelegatingServletOutputStream.class));
                     }
                 };
         filter.doFilter(request, response, chain);

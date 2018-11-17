@@ -20,8 +20,8 @@ import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.wfs.v1_0.WFSConfiguration;
-import org.geotools.xml.Parser;
+import org.geotools.wfs.v1_0.WFSConfiguration_1_0;
+import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -100,7 +100,7 @@ public class RasterAsPointCollectionTest extends WPSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
 
-        Parser p = new Parser(new WFSConfiguration());
+        Parser p = new Parser(new WFSConfiguration_1_0());
         FeatureCollectionType fct =
                 (FeatureCollectionType)
                         p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));

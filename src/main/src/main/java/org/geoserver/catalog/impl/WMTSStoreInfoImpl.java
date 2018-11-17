@@ -9,7 +9,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WMTSStoreInfo;
-import org.geotools.data.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.WebMapTileServer;
 import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")

@@ -129,10 +129,10 @@ New versions of tilecache added the support for merging multiple layers in a sin
 If the ``outputFilename`` parameter is defined in the main body then that name will be used by the MapPrintServlet when sending the pdf to the client.  It will be the name of the file that the client downloads.  If the 'outputFilename' parameter is defined in a layout then that value will override the default name.  In both cases the .pdf is optional; if not present the server will append .pdf to the name.  In all cases the json request can override the filename defined in the configuration file by posting a 'outputFilename' attribute in the posted JSON. If the outputFilename has ${date}, ${time} or ${dateTime} in it, it will be replaced with the current date using the related DateFormat.get*Instance().format() method.  If a pattern is provided it will be passed to SimpleDataFormat for processing.  A few examples follow:
 
 * outputFilename: ``host-${yyyyMMdd}.pdf``   # results in host-20111213.pdf
-* outputFilename: ``host-${date}``           # results in host-Dec_13_2011.pdf (actual output depends on local of server)
-* outputFilename: ``host-${dateTime}``       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on local of server)
-* outputFilename: ``host-${time}.pdf``       # results in host-1:11:14_PM.pdf (actual output depends on local of server)
-* outputFilename: ``host-${yyMMdd-hhmmss}``# results in host-111213-011154.pdf (actual output depends on local of server)
+* outputFilename: ``host-${date}``           # results in host-Dec_13_2011.pdf (actual output depends on locale of server)
+* outputFilename: ``host-${dateTime}``       # results in host-Dec_13_2011_1:10:50_PM.pdf (actual output depends on locale of server)
+* outputFilename: ``host-${time}.pdf``       # results in host-1:11:14_PM.pdf (actual output depends on locale of server)
+* outputFilename: ``host-${yyMMdd-hhmmss}``  # results in host-111213-011154.pdf (actual output depends on locale of server)
 
 ``disableScaleLocking`` allows you to bypass the choosing of scale from the available factors, and simply use the suggested value produced inside MapBlock.java.
 
@@ -433,8 +433,8 @@ Allowed only within a **mainPage**.
 .. code-block:: yaml
 
           - !map
-            width: ?
-            height: ?
+            width: {WIDTH}
+            height: {HEIGHT}
   ?         name: map
   ?         spacingAfter: 0
   ?         align: left

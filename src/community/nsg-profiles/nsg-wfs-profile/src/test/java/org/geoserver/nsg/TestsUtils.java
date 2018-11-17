@@ -14,11 +14,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.nsg.versioning.TimeVersioning;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.FeatureSource;
-import org.geotools.factory.Hints;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.Converters;
-import org.geotools.util.NullProgressListener;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.util.ProgressListener;
 

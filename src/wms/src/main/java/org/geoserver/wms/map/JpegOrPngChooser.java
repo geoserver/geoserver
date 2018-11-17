@@ -10,7 +10,7 @@ import java.awt.image.RenderedImage;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ExtremaDescriptor;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.resources.image.ImageUtilities;
+import org.geotools.image.util.ImageUtilities;
 
 /**
  * A support object attaching itself to the WebMapContent and deciding which format should be used

@@ -50,4 +50,9 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     protected String getThumbnailTable() {
         return "collection_thumb";
     }
+
+    @Override
+    protected void featuresModified() {
+        openSearchAccess.clearFeatureSourceCaches();
+    }
 }

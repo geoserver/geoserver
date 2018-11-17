@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.map;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 import java.io.InputStream;
 import org.geoserver.wms.WMSMapContent;

@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.easymock.EasyMock;
@@ -46,9 +47,18 @@ public class ModuleStatusTest {
         assertEquals("test interfact mock", "test", status.getName());
         assertEquals("found module status", 2, list.size());
 
+        boolean foundDefault = false;
+        boolean foundTest = false;
         for (ModuleStatus s : list) {
-            System.out.println(s.getName());
+            if ("default".equals(s.getName())) {
+                foundDefault = true;
+            }
+            if ("test".equals(s.getName())) {
+                foundTest = true;
+            }
         }
+        assertTrue(foundDefault);
+        assertTrue(foundTest);
         EasyMock.verify(status);
     }
 

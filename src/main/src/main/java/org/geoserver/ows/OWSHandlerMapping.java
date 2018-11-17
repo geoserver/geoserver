@@ -92,7 +92,10 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                                 last = last.substring(j);
                             } else {
                                 LOGGER.fine(
-                                        "Could not a layer group named " + wsName + ":" + first);
+                                        "Could not find a layer group named "
+                                                + wsName
+                                                + ":"
+                                                + first);
                             }
                         }
                     }
@@ -101,7 +104,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                 } else if (catalog.getLayerGroupByName((WorkspaceInfo) null, first) != null) {
                     h = super.lookupHandler(last, request);
                 } else {
-                    LOGGER.fine("Could not a layer group named " + first);
+                    LOGGER.fine("Could not find a layer group named " + first);
                 }
             }
         }

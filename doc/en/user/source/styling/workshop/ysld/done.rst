@@ -472,9 +472,7 @@ Answer for :ref:`Challenge Layer Group <ysld.point.q3>`:
 
    .. image:: ../style/img/point_challenge_1.png
 
-   This is opportunity to revisit label halo settings from :doc:`polygon`:
-   
-   .. code-block:: css
+   This is opportunity to revisit label halo settings from :doc:`polygon`: ::
 
       symbolizers:
       - point:

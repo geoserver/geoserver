@@ -1,0 +1,180 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.5602519,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0601588
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5602519,
+              81.0801388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "$resources/bands_flags/QL_VNIR_ORTHO.tif",
+        "band" : "VNIR"
+      },
+      "id": "GRANULE.1"
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.5602519,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0601588
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5602519,
+              81.0801388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "$resources/bands_flags/QL_QUALITY_CLASSES_ORTHO.tif",
+        "band" : "QUALITY"
+      },
+      "id": "GRANULE.2"
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.5602519,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0601588
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5602519,
+              81.0801388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "$resources/bands_flags/QL_QUALITY_CLOUDSHADOW_ORTHO.tif",
+        "band" : "CLOUDSHADOW"
+      },
+      "id": "GRANULE.3"
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.5602519,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0601588
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5602519,
+              81.0801388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "$resources/bands_flags/QL_QUALITY_HAZE_ORTHO.tif",
+        "band" : "HAZE"
+      },
+      "id": "GRANULE.4"
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -1.5602519,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5402719,
+              81.0601588
+            ],
+            [
+              -1.5402719,
+              81.0801388
+            ],
+            [
+              -1.5602519,
+              81.0801388
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "location": "$resources/bands_flags/QL_QUALITY_SNOW_ORTHO.tif",
+        "band" : "SNOW"
+      },
+      "id": "GRANULE.5"
+    }
+  ]
+}

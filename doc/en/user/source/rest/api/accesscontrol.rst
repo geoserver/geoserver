@@ -134,9 +134,7 @@ Formats for GET,POST and PUT:
    </rules> 
 
 
-**JSON**
-
-.. code-block:: json
+**JSON** ::
 
    {
    "*.*.r": "*",

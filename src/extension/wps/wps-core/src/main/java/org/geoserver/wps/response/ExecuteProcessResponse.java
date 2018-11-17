@@ -36,7 +36,7 @@ import org.geotools.data.Parameter;
 import org.geotools.ows.v1_1.OWS;
 import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessFactory;
-import org.geotools.xml.Encoder;
+import org.geotools.xsd.Encoder;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 

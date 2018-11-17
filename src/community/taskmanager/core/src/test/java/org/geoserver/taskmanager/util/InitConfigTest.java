@@ -87,7 +87,7 @@ public class InitConfigTest extends AbstractTaskManagerTest {
         assertEquals(config.getBatches().get("@Initialize"), InitConfigUtil.getInitBatch(config));
         assertTrue(initUtil.isInitConfig(config));
 
-        Configuration initConfig = InitConfigUtil.wrap(config);
+        Configuration initConfig = initUtil.wrap(config);
         assertNotEquals(config, initConfig);
         assertEquals(config, InitConfigUtil.unwrap(initConfig));
 

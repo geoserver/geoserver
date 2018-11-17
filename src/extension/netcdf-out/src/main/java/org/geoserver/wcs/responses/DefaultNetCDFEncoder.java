@@ -29,9 +29,9 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.util.CoverageUtilities;
+import org.geotools.imageio.netcdf.NetCDFUnitFormat;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
-import org.geotools.resources.coverage.CoverageUtilities;
-import tec.uom.se.format.SimpleUnitFormat;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -155,19 +155,8 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                 writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.UNITS, unit));
             }
             if (inputUoM != null && hasDefinedUoM) {
-                // Replace some chars from the UOM to make sure it can be properly parsed
-                // by the JSR Unit class. We can refactor this replacement by using bytes check
-                // instead of specific replace calls.
-                String unitString =
-                        variableUoM
-                                .replace(" ", "*")
-                                .replace("-", "^-")
-                                .replace(".", "*")
-                                .replace("m2", "m^2")
-                                .replace("m3", "m^3")
-                                .replace("s2", "s^2");
                 try {
-                    Unit outputUoM = SimpleUnitFormat.getInstance().parse(unitString);
+                    Unit outputUoM = NetCDFUnitFormat.parse(variableUoM);
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)) {
                             if (LOGGER.isLoggable(Level.WARNING)) {
@@ -186,14 +175,14 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
                         LOGGER.severe(
                                 "Unable to create a converter for the specified unit: "
-                                        + unitString
+                                        + variableUoM
                                         + "\nNo unit conversion will be performed");
                     }
                 } catch (IllegalArgumentException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
                         LOGGER.severe(
                                 "Unable to parse the specified unit: "
-                                        + unitString
+                                        + variableUoM
                                         + "\nNo unit conversion will be performed");
                     }
                 }

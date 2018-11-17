@@ -8,8 +8,8 @@ package org.geoserver.wps.executor;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.wps.WPSException;
-import org.geotools.util.NullProgressListener;
-import org.geotools.util.SubProgressListener;
+import org.geotools.data.util.NullProgressListener;
+import org.geotools.data.util.SubProgressListener;
 import org.opengis.util.ProgressListener;
 
 /**

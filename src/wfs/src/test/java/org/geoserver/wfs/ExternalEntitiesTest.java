@@ -13,7 +13,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geotools.xml.PreventLocalEntityResolver;
+import org.geotools.util.PreventLocalEntityResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -184,7 +184,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             getGeoServer().save(cfg);
 
             output = string(post("wfs", WFS_2_0_0_REQUEST));
-            System.out.println(output);
+            // System.out.println(output);
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
             Assert.assertTrue(output.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
 

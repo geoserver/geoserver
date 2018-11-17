@@ -33,6 +33,7 @@
                 <module>app-schema-postgis-test</module>
                 <module>app-schema-mongo-test</module>
                 <module>app-schema-solr-test</module>
+                <module>app-schema-indexes-test</module>
             </modules>
             <dependencies>
                 <dependency>

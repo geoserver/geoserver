@@ -11,12 +11,15 @@ import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -40,7 +43,10 @@ import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
@@ -50,6 +56,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.response.DimensionBean;
 import org.geoserver.wcs2_0.response.GranuleStackImpl;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
+import org.geoserver.wcs2_0.response.WCSDimensionsHelper;
 import org.geoserver.wcs2_0.response.WCSDimensionsSubsetHelper;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
@@ -67,8 +74,8 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Mosaic;
 import org.geotools.coverage.processing.operation.Mosaic.GridGeometryPolicy;
-import org.geotools.factory.GeoTools;
-import org.geotools.factory.Hints;
+import org.geotools.coverage.util.CoverageUtilities;
+import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -83,9 +90,12 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
-import org.geotools.resources.coverage.CoverageUtilities;
-import org.geotools.util.DefaultProgressListener;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
+import org.geotools.util.Range;
 import org.geotools.util.Utilities;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.GridCoverage;
@@ -405,8 +415,11 @@ public class GetCoverage {
                         preAppliedScale);
         GridSampleDimension[] sampleDimensions = collectDimensions(coverages);
         if (coverages == null || coverages.isEmpty()) {
-            throw new IllegalStateException(
-                    "Unable to read a coverage for the current request" + coverageType.toString());
+            throwFailedReadException(
+                    coverageType.getCoverageId(),
+                    reader,
+                    helper.getGridCoverageRequest(),
+                    helper.getCoverageInfo());
         }
 
         //
@@ -525,6 +538,171 @@ public class GetCoverage {
                             coverage, coverage, sampleDimensions, null, true);
         }
         return coverage;
+    }
+
+    private void throwFailedReadException(
+            String coverageId,
+            GridCoverage2DReader reader,
+            GridCoverageRequest request,
+            CoverageInfo coverageInfo)
+            throws Exception {
+        // how did we get here? space filtering should have been checked already, but maybe
+        // it was due to another dimension filter
+        WCSDimensionsHelper helper =
+                WCSDimensionsHelper.getWCSDimensionsHelper(coverageId, coverageInfo, reader);
+
+        // no dimensions, go for the easy case
+        if (helper != null) {
+            ReaderDimensionsAccessor accessor = helper.getDimensionAccessor();
+
+            // do we have a time in the request and a domain to compare with?
+            DateRange requestedTimeSubset = request.getTemporalSubset();
+            DimensionInfo timeDimension = helper.getTimeDimension();
+            if (requestedTimeSubset != null && timeDimension != null && timeDimension.isEnabled()) {
+                checkTimeDomainIntersection(helper, accessor, requestedTimeSubset, timeDimension);
+            }
+
+            // do we have an elevation?
+            NumberRange<?> requestedElevationRange = request.getElevationSubset();
+            DimensionInfo elevationDimension = helper.getElevationDimension();
+            if (requestedElevationRange != null
+                    && elevationDimension != null
+                    && elevationDimension.isEnabled()) {
+                checkElevationDomainIntersection(
+                        helper, accessor, requestedElevationRange, elevationDimension);
+            }
+
+            // custom dimension checks
+            if (request.getDimensionsSubset() != null && !request.getDimensionsSubset().isEmpty()) {
+                checkCustomDomainIntersection(reader, request, accessor);
+            }
+        }
+
+        // nothing? go generic
+        throw new WCS20Exception(
+                "Unable to read a coverage for the current request (could be due to filtering or subsetting): "
+                        + request,
+                WCS20ExceptionCode.NoApplicableCode,
+                null);
+    }
+
+    private void checkCustomDomainIntersection(
+            GridCoverage2DReader reader,
+            GridCoverageRequest request,
+            ReaderDimensionsAccessor accessor)
+            throws IOException {
+        Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
+
+        for (ParameterDescriptor<List> dynamicParameter : dynamicParameters) {
+            String name = dynamicParameter.getName().getCode();
+            List<Object> requestedValues = request.getDimensionsSubset().get(name);
+            if (requestedValues != null && !requestedValues.isEmpty()) {
+                List<String> actualValues = accessor.getDomain(name);
+                if (Collections.disjoint(actualValues, requestedValues)) {
+                    throw new WCS20Exception(
+                            "Requested "
+                                    + name
+                                    + " subset does not intersect the available values "
+                                    + actualValues,
+                            WCS20ExceptionCode.InvalidSubsetting,
+                            "subset");
+                }
+            }
+        }
+    }
+
+    private void checkElevationDomainIntersection(
+            WCSDimensionsHelper helper,
+            ReaderDimensionsAccessor accessor,
+            NumberRange<?> requestedElevationRange,
+            DimensionInfo elevationDimension)
+            throws IOException {
+        NumberRange actualElevationSubset =
+                new NumberRange(
+                        Double.class, accessor.getMinElevation(), accessor.getMaxElevation());
+        if (!requestedElevationRange.intersects(actualElevationSubset)) {
+            throw new WCS20Exception(
+                    "Requested elevation subset does not intersect the declared range "
+                            + helper.getBeginElevation()
+                            + "/"
+                            + helper.getEndElevation(),
+                    WCS20ExceptionCode.InvalidSubsetting,
+                    "subset");
+        }
+        // deeper check, did we skip value interpolation and provided users with an actual
+        // list of values?
+        DimensionPresentation presentation = elevationDimension.getPresentation();
+        if (requestedElevationRange.getMinimum() < requestedElevationRange.getMaximum()
+                && (presentation == DimensionPresentation.LIST
+                        || presentation == DimensionPresentation.CONTINUOUS_INTERVAL)) {
+            TreeSet<Object> elevationDomain = accessor.getElevationDomain();
+            boolean intersectionFound = false;
+            for (Object o : elevationDomain) {
+                if (o instanceof Number) {
+                    intersectionFound |= requestedElevationRange.contains((Comparable<?>) o);
+                } else if (o instanceof NumberRange) {
+                    intersectionFound |= requestedElevationRange.intersects((Range<?>) o);
+                }
+                if (intersectionFound) {
+                    break;
+                }
+            }
+
+            if (!intersectionFound) {
+                throw new WCS20Exception(
+                        "Requested elevation subset does not intersect available values "
+                                + elevationDomain,
+                        WCS20ExceptionCode.InvalidSubsetting,
+                        "subset");
+            }
+        }
+    }
+
+    private void checkTimeDomainIntersection(
+            WCSDimensionsHelper helper,
+            ReaderDimensionsAccessor accessor,
+            DateRange requestedTimeSubset,
+            DimensionInfo timeDimension)
+            throws IOException {
+        DateRange actualTimeSubset = new DateRange(accessor.getMinTime(), accessor.getMaxTime());
+        if (!requestedTimeSubset.intersects(actualTimeSubset)) {
+            throw new WCS20Exception(
+                    "Requested time subset does not intersect the declared range "
+                            + helper.getBeginTime()
+                            + "/"
+                            + helper.getEndTime(),
+                    WCS20ExceptionCode.InvalidSubsetting,
+                    "subset");
+        }
+        // deeper check, did we skip value interpolation and provided users with an actual
+        // list of values?
+        DimensionPresentation presentation = timeDimension.getPresentation();
+        if (!requestedTimeSubset.getMinValue().equals(requestedTimeSubset.getMaxValue())
+                && (presentation == DimensionPresentation.LIST
+                        || presentation == DimensionPresentation.CONTINUOUS_INTERVAL)) {
+            TreeSet<Object> timeDomain = accessor.getTimeDomain();
+            boolean intersectionFound = false;
+            for (Object o : timeDomain) {
+                if (o instanceof Date) {
+                    intersectionFound |= requestedTimeSubset.contains((Date) o);
+                } else if (o instanceof DateRange) {
+                    intersectionFound |= requestedTimeSubset.intersects((Range<?>) o);
+                }
+                if (intersectionFound) {
+                    break;
+                }
+            }
+
+            if (!intersectionFound) {
+                List<String> formattedDomain =
+                        timeDomain.stream().map(o -> helper.format(o)).collect(Collectors.toList());
+                throw new WCS20Exception(
+                        "Requested time subset does not intersect available values "
+                                + formattedDomain,
+                        WCS20ExceptionCode.InvalidSubsetting,
+                        "subset");
+            }
+        }
     }
 
     private ScalingType extractScaling(Map<String, ExtensionItemType> extensions) {

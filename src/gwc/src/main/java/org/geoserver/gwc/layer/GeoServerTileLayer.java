@@ -18,13 +18,30 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
@@ -53,9 +70,19 @@ import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
-import org.geowebcache.grid.*;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
+import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.OutsideCoverageException;
+import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
-import org.geowebcache.layer.*;
+import org.geowebcache.layer.ExpirationRule;
+import org.geowebcache.layer.LayerListenerList;
+import org.geowebcache.layer.MetaTile;
+import org.geowebcache.layer.ProxyLayer;
+import org.geowebcache.layer.TileLayer;
+import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
@@ -78,6 +105,8 @@ import org.vfny.geoserver.util.ResponseUtils;
 public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayer.class);
+    public static final int ENV_TX_POINTS =
+            Integer.parseInt(System.getProperty("GWC_ENVELOPE_TX_POINTS", "5"));
 
     private final GeoServerTileLayerInfo info;
 
@@ -958,7 +987,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         Envelope transformedBounds;
         // try reprojecting directly
         try {
-            transformedBounds = nativeBounds.transform(targetCrs, true, 10000);
+            transformedBounds = nativeBounds.transform(targetCrs, true, ENV_TX_POINTS);
         } catch (Exception e) {
             // no luck, try the expensive way
             final Geometry targetAov = GWC.getAreaOfValidityAsGeometry(targetCrs, gridSetBroker);
@@ -984,13 +1013,13 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                         new ReferencedEnvelope(targetAov.getEnvelopeInternal(), targetCrs);
                 // transform target AOV in target CRS to native CRS
                 ReferencedEnvelope targetAovInNativeCrs =
-                        targetAovBounds.transform(nativeCrs, true, 10000);
+                        targetAovBounds.transform(nativeCrs, true, ENV_TX_POINTS);
                 // get the intersection between the target aov in native crs and native layer bounds
                 Envelope intersection = targetAovInNativeCrs.intersection(nativeBounds);
                 ReferencedEnvelope clipped = new ReferencedEnvelope(intersection, nativeCrs);
 
                 // transform covered area in native crs to target crs
-                transformedBounds = clipped.transform(targetCrs, true, 10000);
+                transformedBounds = clipped.transform(targetCrs, true, ENV_TX_POINTS);
             } catch (Exception e1) {
                 throw propagate(e1);
             }

@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
-import org.geotools.resources.Classes;
+import org.geotools.util.Classes;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 import org.opengis.feature.IllegalAttributeException;

@@ -119,7 +119,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
             // it is a validation exception right?
             assertTrue(e.getCause() instanceof SAXParseException);
             SAXParseException cause = (SAXParseException) e.getCause();
-            assertTrue(cause.getMessage().contains("ows:foo"));
+            System.out.println(cause.getMessage());
+            // JDK8 and JDK11 return slightly different message
+            assertTrue(cause.getMessage().matches(".*ows.?:foo.*"));
         }
     }
 

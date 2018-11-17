@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.util.ProgressListener;
 
 public class PagedUniqueProcessTest extends WPSTestSupport {
 
@@ -164,7 +163,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
                             }
                         })
                 .when(features)
-                .accepts(Mockito.any(UniqueVisitor.class), Mockito.any(ProgressListener.class));
+                .accepts(Mockito.any(UniqueVisitor.class), Mockito.any());
         process.execute(features, FIELD_NAME, 0, 2);
         // checks that hasLimits is always true
         // both for size calculation query and for page extraction query

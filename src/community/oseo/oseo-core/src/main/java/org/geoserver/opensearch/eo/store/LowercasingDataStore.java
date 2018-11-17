@@ -14,12 +14,19 @@ import org.geotools.data.DataStore;
  */
 class LowercasingDataStore extends RetypingDataStore {
 
+    DataStore wrapped;
+
     public LowercasingDataStore(DataStore wrapped) throws IOException {
         super(wrapped);
+        this.wrapped = wrapped;
     }
 
     @Override
     protected String transformFeatureTypeName(String originalName) {
         return originalName.toLowerCase();
+    }
+
+    public boolean wraps(DataStore ds) {
+        return wrapped == ds;
     }
 }

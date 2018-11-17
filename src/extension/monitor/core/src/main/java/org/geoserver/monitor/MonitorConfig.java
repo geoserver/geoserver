@@ -22,10 +22,10 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
-import org.geotools.factory.Hints;
 import org.geotools.referencing.CRS;
 import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -66,7 +66,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     private GeoServerResourceLoader loader;
 
     public MonitorConfig() {
-        props = new Properties();
+        props = new PropertyFileWatcher.LinkedProperties();
         props.put("storage", "memory");
         props.put("mode", "history");
         props.put("maxBodySize", "1024");

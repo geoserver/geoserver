@@ -5,11 +5,14 @@
 package org.geoserver.platform.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.junit.Test;
@@ -99,5 +102,39 @@ public class SimpleResourceNotificationDispatcherTest
         }
 
         assertTrue(set.isEmpty());
+    }
+
+    @Test
+    public void testPropagation() throws IOException {
+        SimpleResourceNotificationDispatcher dispatch = new SimpleResourceNotificationDispatcher();
+
+        AtomicReference<ResourceNotification> dirEvent = new AtomicReference<>();
+
+        dispatch.addListener(
+                "DirB",
+                new ResourceListener() {
+
+                    @Override
+                    public void changed(ResourceNotification notify) {
+                        dirEvent.set(notify);
+                    }
+                });
+
+        dispatch.changed(
+                new ResourceNotification(
+                        "DirB/DirNew/FileNew",
+                        Kind.ENTRY_CREATE,
+                        System.currentTimeMillis(),
+                        SimpleResourceNotificationDispatcher.createEvents(
+                                store.get("DirB/DirNew/FileNew"), Kind.ENTRY_CREATE)));
+
+        assertNotNull(dirEvent.get());
+        assertEquals(Kind.ENTRY_MODIFY, dirEvent.get().getKind());
+        assertEquals("DirB", dirEvent.get().getPath());
+        assertEquals(2, dirEvent.get().events().size());
+        assertEquals(Kind.ENTRY_CREATE, dirEvent.get().events().get(0).getKind());
+        assertEquals("DirNew/FileNew", dirEvent.get().events().get(0).getPath());
+        assertEquals(Kind.ENTRY_CREATE, dirEvent.get().events().get(1).getKind());
+        assertEquals("DirNew", dirEvent.get().events().get(1).getPath());
     }
 }

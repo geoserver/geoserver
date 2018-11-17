@@ -19,6 +19,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs3.BaseRequest;
 import org.geoserver.wfs3.DefaultWebFeatureService30;
 import org.geoserver.wfs3.NCNameResourceCodec;
+import org.geoserver.wfs3.WFS3Extension;
 import org.opengis.filter.Filter;
 
 /**
@@ -32,16 +33,22 @@ public class CollectionsDocument extends AbstractDocument {
     private final BaseRequest request;
     private final FeatureTypeInfo featureType;
     private final GeoServer geoServer;
+    private final List<WFS3Extension> extensions;
 
-    public CollectionsDocument(BaseRequest request, GeoServer geoServer) {
-        this(request, geoServer, null);
+    public CollectionsDocument(
+            BaseRequest request, GeoServer geoServer, List<WFS3Extension> extensions) {
+        this(request, geoServer, null, extensions);
     }
 
     public CollectionsDocument(
-            BaseRequest request, GeoServer geoServer, FeatureTypeInfo featureType) {
+            BaseRequest request,
+            GeoServer geoServer,
+            FeatureTypeInfo featureType,
+            List<WFS3Extension> extensions) {
         this.geoServer = geoServer;
         this.request = request;
         this.featureType = featureType;
+        this.extensions = extensions;
 
         // build the links
         List<String> formats =
@@ -78,8 +85,9 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         // single collection case
         if (featureType != null) {
-            return Collections.singleton(new CollectionDocument(geoServer, request, featureType))
-                    .iterator();
+            CollectionDocument document = new CollectionDocument(geoServer, request, featureType);
+            decorateWithExtensions(document);
+            return Collections.singleton(document).iterator();
         }
 
         // full scan case
@@ -104,6 +112,7 @@ public class CollectionsDocument extends AbstractDocument {
                         FeatureTypeInfo featureType = featureTypes.next();
                         CollectionDocument collection =
                                 new CollectionDocument(geoServer, request, featureType);
+                        decorateWithExtensions(collection);
 
                         next = collection;
                         return true;
@@ -122,5 +131,13 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+    }
+
+    private void decorateWithExtensions(CollectionDocument collection) {
+        if (extensions != null) {
+            for (WFS3Extension extension : extensions) {
+                extension.extendCollection(collection, request);
+            }
+        }
     }
 }

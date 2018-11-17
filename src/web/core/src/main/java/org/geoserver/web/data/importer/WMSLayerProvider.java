@@ -17,8 +17,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.data.importer.LayerResource.LayerStatus;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geotools.data.ows.Layer;
 import org.geotools.feature.NameImpl;
+import org.geotools.ows.wms.Layer;
 
 /**
  * Provides a list of resources for a specific data store

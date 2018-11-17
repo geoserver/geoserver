@@ -6,7 +6,10 @@
 package org.geoserver.web.demo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -39,7 +42,9 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         String tx =
                 tester.getComponentFromLastRenderedPage("form:targetGeom")
                         .getDefaultModelObjectAsString();
-        assertEquals("736446.0261038465 4987329.504699742", tx);
+        String[] ordinateStrings = tx.split("\\s+");
+        assertEquals(736446.0261038465, Double.parseDouble(ordinateStrings[0]), 1e-6);
+        assertEquals(4987329.504699742, Double.parseDouble(ordinateStrings[1]), 1e-6);
     }
 
     @Test
@@ -77,9 +82,14 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         String tx =
                 tester.getComponentFromLastRenderedPage("form:targetGeom")
                         .getDefaultModelObjectAsString();
-        assertEquals(
-                "LINESTRING (736446.0261038465 4987329.504699742, 815261.4271666661 4990738.261612577)",
-                tx);
+        Matcher matcher =
+                Pattern.compile("LINESTRING \\(([\\d\\.]+) ([\\d\\.]+), ([\\d\\.]+) ([\\d\\.]+)\\)")
+                        .matcher(tx);
+        assertTrue(tx, matcher.matches());
+        assertEquals(736446.0261038465, Double.parseDouble(matcher.group(1)), 1e-6);
+        assertEquals(4987329.504699742, Double.parseDouble(matcher.group(2)), 1e-6);
+        assertEquals(815261.4271666661, Double.parseDouble(matcher.group(3)), 1e-6);
+        assertEquals(4990738.261612577, Double.parseDouble(matcher.group(4)), 1e-6);
     }
 
     @Test

@@ -12,15 +12,15 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.appschema.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.appschema.jdbc.NestedFilterToSQL;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
 import org.geotools.data.jdbc.FilterToSQLException;
-import org.geotools.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.NestedFilterToSQL;
-import org.geotools.util.NullProgressListener;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;

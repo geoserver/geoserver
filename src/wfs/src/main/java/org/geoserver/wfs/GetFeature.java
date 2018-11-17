@@ -23,8 +23,6 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.XlinkPropertyNameType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.LazyLoader;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -48,7 +46,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
@@ -67,7 +64,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GML;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.xml.Encoder;
+import org.geotools.util.factory.Hints;
+import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -115,6 +113,8 @@ import org.opengis.filter.temporal.TContains;
 import org.opengis.filter.temporal.TEquals;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.LazyLoader;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -764,6 +764,9 @@ public class GetFeature {
                 // optimization: if count < max features then total count == count
                 // can't use this optimization for v2
                 totalCount = BigInteger.valueOf(count);
+            } else if (isPreComputed(totalCountExecutors)) {
+                long total = getTotalCount(totalCountExecutors);
+                totalCount = BigInteger.valueOf(total);
             } else {
                 // ok, in this case we're forced to run the queries to discover the actual total
                 // count
@@ -777,18 +780,7 @@ public class GetFeature {
 
                             @Override
                             public Object loadObject() throws Exception {
-                                long totalCount = 0;
-                                for (CountExecutor q : totalCountExecutors) {
-                                    int result = q.getCount();
-                                    // if the count is unknown for one, we don't know the total,
-                                    // period
-                                    if (result == -1) {
-                                        totalCount = -1;
-                                        break;
-                                    } else {
-                                        totalCount += result;
-                                    }
-                                }
+                                long totalCount = getTotalCount(totalCountExecutors);
                                 return BigInteger.valueOf(totalCount);
                             }
                         });
@@ -813,6 +805,32 @@ public class GetFeature {
                 results,
                 lockId,
                 getFeatureById);
+    }
+
+    /** Returns true if all count executors are given a static count value */
+    private boolean isPreComputed(List<CountExecutor> totalCountExecutors) {
+        for (CountExecutor q : totalCountExecutors) {
+            if (!q.isCountSet()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private long getTotalCount(List<CountExecutor> totalCountExecutors) throws IOException {
+        long totalCount = 0;
+        for (CountExecutor q : totalCountExecutors) {
+            int result = q.getCount();
+            // if the count is unknown for one, we don't know the total,
+            // period
+            if (result == -1) {
+                totalCount = -1;
+                break;
+            } else {
+                totalCount += result;
+            }
+        }
+        return totalCount;
     }
 
     private Filter toFeatureIdFilter(List<FeatureId> lockedFeatures) {

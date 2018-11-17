@@ -5,7 +5,7 @@
 package org.geoserver.wps;
 
 import org.geoserver.wps.executor.MaxExecutionTimeListener;
-import org.geotools.util.DelegateProgressListener;
+import org.geotools.data.util.DelegateProgressListener;
 import org.opengis.util.ProgressListener;
 
 /**

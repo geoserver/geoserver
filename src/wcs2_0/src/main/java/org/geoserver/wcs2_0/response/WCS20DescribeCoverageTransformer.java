@@ -8,15 +8,12 @@ package org.geoserver.wcs2_0.response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import net.opengis.wcs20.DescribeCoverageType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
@@ -204,17 +201,9 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
             try {
                 // see if we have to handle time, elevation and additional dimensions
-                WCSDimensionsHelper dimensionsHelper = null;
-                MetadataMap metadata = ci.getMetadata();
-                Map<String, DimensionInfo> dimensionsMap =
-                        WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
-
-                // Setup a dimension helper in case we found some dimensions for that coverage
-                if (!dimensionsMap.isEmpty()) {
-                    dimensionsHelper =
-                            new WCSDimensionsHelper(
-                                    dimensionsMap, RequestUtils.getCoverageReader(ci), encodedId);
-                }
+                WCSDimensionsHelper dimensionsHelper =
+                        WCSDimensionsHelper.getWCSDimensionsHelper(
+                                encodedId, ci, RequestUtils.getCoverageReader(ci));
 
                 GridCoverage2DReader reader =
                         (GridCoverage2DReader) ci.getGridCoverageReader(null, null);

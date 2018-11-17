@@ -20,6 +20,10 @@
         <include>validation-api*.jar</include>
         <include>woodstox*.jar</include>
         <include>stax2-api*.jar</include>
+        <include>gs-vectortiles*.jar</include>
+        <include>java-vector-tile*.jar</include>
+        <include>gson*.jar</include>
+        <include>protobuf-javanano*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

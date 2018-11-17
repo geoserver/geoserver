@@ -12,7 +12,7 @@
         <include>gs-vectortiles*.jar</include>
         <include>java-vector-tile*.jar</include>
         <include>gson*.jar</include>
-        <include>protobuf-javanano*.jar</include>
+        <include>protobuf-java*.jar</include>
       </includes>      
     </fileSet>
   </fileSets>

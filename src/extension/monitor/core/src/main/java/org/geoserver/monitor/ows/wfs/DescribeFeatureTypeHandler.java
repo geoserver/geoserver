@@ -10,7 +10,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.monitor.MonitorConfig;
-import org.geotools.xml.EMFUtils;
+import org.geotools.xsd.EMFUtils;
 
 public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
 

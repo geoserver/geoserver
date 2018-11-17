@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,9 +57,9 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
 import org.geotools.xml.transform.TransformerBase;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 import org.junit.Assert;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
@@ -481,7 +482,15 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      */
     protected void checkImage(
             MockHttpServletResponse response, String mimeType, int width, int height) {
-        assertEquals(mimeType, response.getContentType());
+        try {
+            if (response.getContentType().contains("text")) {
+                assertEquals(response.getContentAsString(), mimeType, response.getContentType());
+            } else {
+                assertEquals(mimeType, response.getContentType());
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         try {
             BufferedImage image = ImageIO.read(getBinaryInputStream(response));
             assertNotNull(image);

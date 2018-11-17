@@ -37,20 +37,34 @@ import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.CollectionsDocument;
 import org.geoserver.wfs3.response.ConformanceDocument;
 import org.geoserver.wfs3.response.LandingPageDocument;
+import org.geoserver.wfs3.response.TilingSchemeDescriptionDocument;
+import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.config.DefaultGridsets;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /** WFS 3.0 implementation */
-public class DefaultWebFeatureService30 implements WebFeatureService30 {
+public class DefaultWebFeatureService30 implements WebFeatureService30, ApplicationContextAware {
 
     private static final Logger LOGGER = Logging.getLogger(DefaultWebFeatureService30.class);
     private FilterFactory2 filterFactory;
     private final GeoServer geoServer;
     private WebFeatureService20 wfs20;
+    private final DefaultGridsets gridSets;
+    private List<WFS3Extension> extensions;
 
     public DefaultWebFeatureService30(GeoServer geoServer, WebFeatureService20 wfs20) {
+        this(geoServer, wfs20, new DefaultGridsets(true, true));
+    }
+
+    public DefaultWebFeatureService30(
+            GeoServer geoServer, WebFeatureService20 wfs20, DefaultGridsets gridSets) {
         this.geoServer = geoServer;
         this.wfs20 = wfs20;
+        this.gridSets = gridSets;
     }
 
     public FilterFactory2 getFilterFactory() {
@@ -69,7 +83,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public CollectionsDocument collections(CollectionsRequest request) {
-        return new CollectionsDocument(request, geoServer);
+        return new CollectionsDocument(request, geoServer, extensions);
     }
 
     @Override
@@ -86,8 +100,10 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
                     "typeName");
         } else {
             CollectionsDocument collections =
-                    new CollectionsDocument(request, geoServer, featureType);
-            return collections.getCollections().next();
+                    new CollectionsDocument(request, geoServer, featureType, extensions);
+            CollectionDocument collection = collections.getCollections().next();
+
+            return collection;
         }
     }
 
@@ -160,10 +176,36 @@ public class DefaultWebFeatureService30 implements WebFeatureService30 {
 
     @Override
     public OpenAPI api(APIRequest request) {
-        return new OpenAPIBuilder().build(request, getService());
+        return new OpenAPIBuilder().build(request, getService(), extensions);
     }
 
     public WFSInfo getServiceInfo() {
         return geoServer.getService(WFSInfo.class);
+    }
+
+    @Override
+    public TilingSchemesDocument tilingSchemes(TilingSchemesRequest request) {
+        return new TilingSchemesDocument(geoServer, gridSets);
+    }
+
+    @Override
+    public FeatureCollectionResponse getTile(org.geoserver.wfs3.GetFeatureType request) {
+
+        WFS3GetFeature gf = new WFS3GetFeature(getServiceInfo(), getCatalog());
+        gf.setFilterFactory(filterFactory);
+        gf.setStoredQueryProvider(getStoredQueryProvider());
+        FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
+
+        return response;
+    }
+
+    @Override
+    public TilingSchemeDescriptionDocument describeTilingScheme(
+            TilingSchemeDescriptionRequest request) {
+        return new TilingSchemeDescriptionDocument(geoServer, request.getGridSet());
+    }
+
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        extensions = GeoServerExtensions.extensions(WFS3Extension.class, context);
     }
 }

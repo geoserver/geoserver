@@ -157,8 +157,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             pipeline =
                     builder.preprocess()
                             .transform(transformToScreenCoordinates)
-                            .simplify(transformToScreenCoordinates)
                             .clip(clipToMapBounds, transformToScreenCoordinates)
+                            .simplify(transformToScreenCoordinates)
                             .collapseCollections()
                             .build();
         } catch (FactoryException e) {

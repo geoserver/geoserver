@@ -99,7 +99,7 @@ extlinks = {
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/api/#/1.0.0/%s','')
+    'api': ('http://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/%s','')
 }
 
 # Options for HTML output

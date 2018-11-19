@@ -250,6 +250,9 @@ public class KMLTest extends WMSTestSupport {
 
         // print(doc);
         assertXpathEvaluatesTo("5", "count(//kml:Placemark)", doc);
+
+        // FID is mapped to the Placemark id attribute in the KML document
+        // verify that the features in the KML are sorted by ascending FID
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark[1]/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[2]/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[3]/@id", doc);
@@ -271,6 +274,9 @@ public class KMLTest extends WMSTestSupport {
 
         // print(doc);
         assertXpathEvaluatesTo("5", "count(//kml:Placemark)", doc);
+
+        // FID is mapped to the Placemark id attribute in the KML document
+        // verify that the features in the KML are sorted by descending FID
         assertXpathEvaluatesTo("RoadSegments.1107532045091", "//kml:Placemark[1]/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045090", "//kml:Placemark[2]/@id", doc);
         assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[3]/@id", doc);

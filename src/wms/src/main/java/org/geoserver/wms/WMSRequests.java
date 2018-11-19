@@ -437,28 +437,43 @@ public class WMSRequests {
         return params;
     }
 
+    /**
+     * Layer groups are expanded into their component layers very early in the WMS GetMap request
+     * handling process. This method is intended to reverse that process and find the index in the
+     * raw layers KVP parameter that corresponds to a layer index after layer groups are expanded.
+     *
+     * @param req the WMS GetMap request
+     * @param layerIndex the layer index in the expanded layers list
+     * @return the layer index in the raw layers list
+     * @throws IllegalArgumentException if unable to determine the raw layer index
+     */
     @SuppressWarnings("unchecked")
     private static int getRawLayerIndex(GetMapRequest req, int layerIndex) {
         List<String> names = KvpUtils.readFlat(req.getRawKvp().get("layers"));
-        if (names.size() != req.getLayers().size()) {
-            // Finds the index in the raw layers KVP parameter that corresponds
-            // to the layer index after layer groups are expanded.
-            List<?> layers =
-                    new LayerParser(WMS.get())
-                            .parseLayers(names, req.getRemoteOwsURL(), req.getRemoteOwsType());
-            int numLayers = 0;
-            for (int index = 0; index < layers.size(); index++) {
-                if (layers.get(index) instanceof LayerGroupInfo) {
-                    numLayers += ((LayerGroupInfo) layers.get(index)).layers().size();
-                } else {
-                    numLayers++;
-                }
-                if (numLayers > layerIndex) {
-                    return index;
-                }
+        if (names.size() == 1) {
+            // single layer or layer group
+            return 0;
+        } else if (names.size() == req.getLayers().size()) {
+            // multiple layers without any layer groups
+            return layerIndex;
+        }
+        // layer group and one or more additional layers and/or layer groups
+        List<?> layers =
+                new LayerParser(WMS.get())
+                        .parseLayers(names, req.getRemoteOwsURL(), req.getRemoteOwsType());
+        int numLayers = 0;
+        for (int index = 0; index < layers.size(); index++) {
+            if (layers.get(index) instanceof LayerGroupInfo) {
+                numLayers += ((LayerGroupInfo) layers.get(index)).layers().size();
+            } else {
+                numLayers++;
+            }
+            if (numLayers > layerIndex) {
+                return index;
             }
         }
-        return layerIndex;
+        throw new IllegalArgumentException(
+                "Unable to determine raw index for " + layerIndex + " in " + names);
     }
 
     /**

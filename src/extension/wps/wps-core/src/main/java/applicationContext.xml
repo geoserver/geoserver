@@ -322,4 +322,6 @@
     <bean id="rawDataSizeEstimator" class="org.geoserver.wps.validator.RawDataSizeEstimator"/>
     <bean id="geometrySizeEstimator" class="org.geoserver.wps.validator.GeometrySizeEstimator"/>
     <bean id="processStartupFilter" class="org.geoserver.wps.executor.ProcessStartupFilter"/>
+    
+    <bean id="wpsResourceVoter" class="org.geoserver.wps.WPSResourceVoter"/>
 </beans>

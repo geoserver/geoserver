@@ -829,4 +829,6 @@
   
   <bean id="wmsNearestMatchWarningAppender" class="org.geoserver.wms.NearestMatchWarningAppender"/>
   
+  <bean id="wmsResourceVoter" class="org.geoserver.wms.WMSResourceVoter"/>
+  
 </beans>

@@ -54,4 +54,6 @@
     
     <!-- disposes of all coverages created during GetCoverage calls -->
     <bean id="coverageCleaner" class="org.geoserver.wcs.CoverageCleanerCallback"/>
+    
+    <bean id="wcsResourceVoter" class="org.geoserver.wcs.WCSResourceVoter"/>
 </beans>

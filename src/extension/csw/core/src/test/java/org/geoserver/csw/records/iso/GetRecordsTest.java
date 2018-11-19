@@ -1,4 +1,4 @@
-/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 -2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +8,10 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -304,5 +307,58 @@ public class GetRecordsTest extends MDTestSupport {
         assertXpathExists(
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Seven']",
                 d);
+    }
+
+    /** Tests CSW service disabled on layer-resource */
+    @Test
+    public void testLayerDisabledServiceRecords() throws Exception {
+        disableCWSOnLinesLayer();
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+        Document doc = getAsDOM(request);
+
+        assertXpathEvaluatesTo(
+                "0",
+                "count(/csw:GetRecordsResponse/csw:SearchResults/gmd:MD_Metadata/"
+                        + "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/"
+                        + "gmd:onLine/gmd:CI_OnlineResource/gmd:name/gco:CharacterString[.='Lines'])",
+                doc);
+        enableCWSOnLinesLayer();
+    }
+
+    /** Tests CSW service enabled on layer-resource */
+    @Test
+    public void testLayerEnabledServiceRecords() throws Exception {
+        enableCWSOnLinesLayer();
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+        Document doc = getAsDOM(request);
+
+        assertXpathEvaluatesTo(
+                "2",
+                "count(/csw:GetRecordsResponse/csw:SearchResults/gmd:MD_Metadata/"
+                        + "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/"
+                        + "gmd:onLine/gmd:CI_OnlineResource/gmd:name/gco:CharacterString[.='Lines'])",
+                doc);
+    }
+
+    private void enableCWSOnLinesLayer() {
+        LayerInfo linfo = getCatalog().getLayerByName("Lines");
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(false);
+        ri.setDisabledServices(new ArrayList<>());
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
+    }
+
+    private void disableCWSOnLinesLayer() {
+        LayerInfo linfo = getCatalog().getLayerByName("Lines");
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(true);
+        ri.setDisabledServices(new ArrayList<>(Arrays.asList("CSW")));
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
     }
 }

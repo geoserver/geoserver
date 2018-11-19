@@ -308,4 +308,24 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public void setNativeCoverageName(String nativeCoverageName) {
         delegate.setNativeCoverageName(nativeCoverageName);
     }
+
+    @Override
+    public boolean isServiceConfiguration() {
+        return delegate.isServiceConfiguration();
+    }
+
+    @Override
+    public void setServiceConfiguration(boolean serviceConfiguration) {
+        delegate.setServiceConfiguration(serviceConfiguration);
+    }
+
+    @Override
+    public List<String> getDisabledServices() {
+        return delegate.getDisabledServices();
+    }
+
+    @Override
+    public void setDisabledServices(List<String> disabledServices) {
+        delegate.setDisabledServices(disabledServices);
+    }
 }

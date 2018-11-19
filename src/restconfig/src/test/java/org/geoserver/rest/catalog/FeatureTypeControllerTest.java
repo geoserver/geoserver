@@ -6,6 +6,7 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,8 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,6 +26,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataAccess;
@@ -721,5 +725,37 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         assertTrue(
                 "Expected \"" + message + "\" to contain \"" + contains + "\"",
                 message.contains(contains));
+    }
+
+    /** Tests services disabled on layer-resource */
+    @Test
+    public void testEnabledServicesOnLayer() throws Exception {
+        disableServicesOnBuildings();
+        Document dom =
+                getAsDOM(
+                        ROOT_PATH + "/workspaces/cite/datastores/cite/featuretypes/Buildings.xml",
+                        200);
+        assertXpathEvaluatesTo("true", "//serviceConfiguration", dom);
+        assertXpathExists("//disabledServices/string[.='WFS']", dom);
+        assertXpathExists("//disabledServices/string[.='CSW']", dom);
+        enableServicesOnBuildings();
+    }
+
+    private void disableServicesOnBuildings() {
+        LayerInfo linfo = getCatalog().getLayerByName("Buildings");
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(true);
+        ri.setDisabledServices(new ArrayList<>(Arrays.asList("WFS", "CSW")));
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
+    }
+
+    private void enableServicesOnBuildings() {
+        LayerInfo linfo = getCatalog().getLayerByName("Buildings");
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(false);
+        ri.setDisabledServices(new ArrayList<>());
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
     }
 }

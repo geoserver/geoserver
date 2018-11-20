@@ -26,7 +26,6 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.factory.GeoTools;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
@@ -79,27 +78,18 @@ public class RulesBuilder {
         this.includeStrokeForPoints = includeStrokeForPoints;
     }
 
-    /**
-     * Generate a List of rules using quantile classification Sets up only filter not symbolizer
-     *
-     * @param features
-     * @param property
-     * @param classNumber
-     */
-    public List<Rule> quantileClassification(
+    private List<Rule> getRules(
             FeatureCollection features,
             String property,
             Class<?> propertyType,
             int classNumber,
             boolean open,
-            boolean normalize) {
-
-        FeatureType fType;
-        Classifier groups = null;
+            boolean normalize,
+            String functionName) {
         try {
             final Function classify =
-                    ff.function("Quantile", ff.property(property), ff.literal(classNumber));
-            groups = (Classifier) classify.evaluate(features);
+                    ff.function(functionName, ff.property(property), ff.literal(classNumber));
+            Classifier groups = (Classifier) classify.evaluate(features);
             if (groups instanceof RangedClassifier)
                 if (open)
                     return openRangedRules(
@@ -114,10 +104,24 @@ public class RulesBuilder {
             if (LOGGER.isLoggable(Level.INFO))
                 LOGGER.log(
                         Level.INFO,
-                        "Failed to build Quantile Classification" + e.getLocalizedMessage(),
+                        "Failed to build "
+                                + functionName
+                                + " Classification"
+                                + e.getLocalizedMessage(),
                         e);
         }
         return null;
+    }
+
+    /** Generate a List of rules using quantile classification Sets up only filter not symbolizer */
+    public List<Rule> quantileClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
+        return getRules(features, property, propertyType, classNumber, open, normalize, "Quantile");
     }
 
     /**
@@ -132,34 +136,11 @@ public class RulesBuilder {
             FeatureCollection features,
             String property,
             Class<?> propertyType,
-            int classNumber,
+            int intervals,
             boolean open,
             boolean normalize) {
-        Classifier groups = null;
-        try {
-
-            final Function classify =
-                    ff.function("EqualInterval", ff.property(property), ff.literal(classNumber));
-            groups = (Classifier) classify.evaluate(features);
-            // System.out.println(groups.getSize());
-            if (groups instanceof RangedClassifier)
-                if (open)
-                    return openRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
-                else
-                    return closedRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
-            else if (groups instanceof ExplicitClassifier)
-                return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
-
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build EqualInterval Classification" + e.getLocalizedMessage(),
-                        e);
-        }
-        return null;
+        return getRules(
+                features, property, propertyType, intervals, open, normalize, "EqualInterval");
     }
 
     /**
@@ -176,35 +157,55 @@ public class RulesBuilder {
             int intervals,
             boolean normalize)
             throws IllegalArgumentException {
-        Classifier groups = null;
-        int classNumber = features.size();
-        try {
-            final Function classify =
-                    ff.function("UniqueInterval", ff.property(property), ff.literal(classNumber));
-            groups = (Classifier) classify.evaluate(features);
-
-            if (groups instanceof RangedClassifier)
-                return this.closedRangedRules(
-                        (RangedClassifier) groups, property, propertyType, normalize);
-            else if (groups instanceof ExplicitClassifier) {
-                ExplicitClassifier explicitGroups = (ExplicitClassifier) groups;
-                if (intervals > 0 && explicitGroups.getSize() > intervals) {
-                    throw new IllegalArgumentException("Intervals: " + explicitGroups.getSize());
-                }
-                return this.explicitRules(explicitGroups, property, propertyType);
-            }
-
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build UniqueInterval Classification" + e.getLocalizedMessage(),
-                        e);
-            if (e instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) e;
-            }
+        List<Rule> rules =
+                getRules(
+                        features,
+                        property,
+                        propertyType,
+                        features.size(),
+                        false,
+                        normalize,
+                        "UniqueInterval");
+        if (intervals > 0 && rules.size() > intervals) {
+            throw new IllegalArgumentException("Intervals: " + rules.size());
         }
-        return null;
+        return rules;
+    }
+
+    /**
+     * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not
+     * symbolizer
+     *
+     * @param features
+     * @param property
+     * @param classNumber
+     */
+    public List<Rule> jenksClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
+        return getRules(features, property, propertyType, classNumber, open, normalize, "Jenks");
+    }
+
+    /**
+     * Generate a List of rules using Equal Area classification. Sets up only filter not symbolizer.
+     *
+     * @param features
+     * @param property
+     * @param classNumber
+     */
+    public List<Rule> equalAreaClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int classNumber,
+            boolean open,
+            boolean normalize) {
+        return getRules(
+                features, property, propertyType, classNumber, open, normalize, "EqualArea");
     }
 
     /**
@@ -462,7 +463,7 @@ public class RulesBuilder {
                                             : ff.greater(att, ff.literal(groups.getMin(i))),
                                     ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
                     r.setTitle(
-                            " > "
+                            " >= "
                                     + ff.literal(groups.getMin(i))
                                     + " AND <= "
                                     + ff.literal(groups.getMax(i)));
@@ -522,47 +523,6 @@ public class RulesBuilder {
             if (LOGGER.isLoggable(Level.INFO))
                 LOGGER.log(
                         Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(), e);
-        }
-        return null;
-    }
-
-    /**
-     * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not
-     * symbolizer
-     *
-     * @param features
-     * @param property
-     * @param classNumber
-     */
-    public List<Rule> jenksClassification(
-            FeatureCollection features,
-            String property,
-            Class<?> propertyType,
-            int classNumber,
-            boolean open,
-            boolean normalize) {
-        Classifier groups = null;
-        try {
-            final Function classify =
-                    ff.function("Jenks", ff.property(property), ff.literal(classNumber));
-            groups = (Classifier) classify.evaluate(features);
-            // System.out.println(groups.getSize());
-            if (groups instanceof RangedClassifier)
-                if (open)
-                    return openRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
-                else
-                    return closedRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
-            else if (groups instanceof ExplicitClassifier)
-                return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
-
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build Jenks classification" + e.getLocalizedMessage(),
-                        e);
         }
         return null;
     }

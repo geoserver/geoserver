@@ -1,13 +1,68 @@
+function completeAfterKeyup(cm, pred) {
+    if(cm.getOption("mode") && cm.getOption("mode").startsWith("text/sld")) {
+      var cur = cm.getCursor();
+      if (!pred || pred()) setTimeout(function() {
+        if (!cm.state.completionActive)
+          cm.showHint({completeSingle: false});
+      }, 100);
+    }
+    return CodeMirror.Pass;
+}
+
+function completeIfValidPos(cm) {
+    return completeAfterKeyup(cm, function() {
+      var cur = cm.getCursor();
+      var beforeCur = trimStart(cm.getRange(CodeMirror.Pos(cur.line, 0), cur));
+      var afterCur = cm.getRange(cur, CodeMirror.Pos(cur.line, null));
+
+      if (isEmpty(beforeCur) && isEmpty(afterCur)) return true;
+
+      if ((isStartOpenTag(beforeCur) || isStartCloseTag(beforeCur)) && isEndTag(afterCur)) return true;
+
+      return false
+    });
+}
+
+function trimStart(str) {
+  var startIndex = str.lastIndexOf('<');
+  if (startIndex < 0) return "";
+
+  return str.substring(startIndex);
+}
+function isStartOpenTag(str) {
+   return /^<[^>]*$/.test(str);
+}
+function isStartCloseTag(str) {
+  return /^<\/[^>\s]*$/.test(str);
+}
+function isEndTag(str) {
+  return /^\s*>?\s*$/.test(str);
+}
+function isEmpty(str) {
+  return str.trim() == "";
+}
+
 var textarea = document.getElementById('$componentId');
 var editor = CodeMirror.fromTextArea(textarea, { 
     mode: '$mode',
     theme: 'default',
     lineWrapping: true,
     lineNumbers: true,
-    extraKeys: {"Ctrl-Space": "autocomplete"}
+    extraKeys: {
+        "Ctrl-Space": "autocomplete"
+    }
 });
 editor.getWrapperElement().style.fontSize = "12px"; 
 editor.refresh();
+CodeMirror.on(window, 'keyup', function(event) {
+  var blacklist = [
+      27 // Esc
+  ];
+  if (!blacklist.includes(event.keyCode)) {
+    completeIfValidPos(document.gsEditors.editor);
+  }
+});
+
 if(!document.gsEditors) {
     document.gsEditors = {};
 }

@@ -99,7 +99,7 @@ public class SLDHandler extends StyleHandler {
 
     @Override
     public String getCodeMirrorEditMode() {
-        return "xml";
+        return "text/sld10";
     }
 
     @Override

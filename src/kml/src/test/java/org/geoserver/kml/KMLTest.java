@@ -181,6 +181,54 @@ public class KMLTest extends WMSTestSupport {
     }
 
     @Test
+    public void testVectorWithSortByAscending() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                                + "&sortBy=FID A");
+
+        // print(doc);
+        assertXpathEvaluatesTo("5", "count(//kml:Placemark)", doc);
+
+        // FID is mapped to the Placemark id attribute in the KML document
+        // verify that the features in the KML are sorted by ascending FID
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark[1]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[2]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[3]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045090", "//kml:Placemark[4]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045091", "//kml:Placemark[5]/@id", doc);
+    }
+
+    @Test
+    public void testVectorWithSortByDescending() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                                + "&sortBy=FID D");
+
+        // print(doc);
+        assertXpathEvaluatesTo("5", "count(//kml:Placemark)", doc);
+
+        // FID is mapped to the Placemark id attribute in the KML document
+        // verify that the features in the KML are sorted by descending FID
+        assertXpathEvaluatesTo("RoadSegments.1107532045091", "//kml:Placemark[1]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045090", "//kml:Placemark[2]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[3]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045089", "//kml:Placemark[4]/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark[5]/@id", doc);
+    }
+
+    @Test
     public void testBasicVector() throws Exception {
         Document doc =
                 getAsDOM(

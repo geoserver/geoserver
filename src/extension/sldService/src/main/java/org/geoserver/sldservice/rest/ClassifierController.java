@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -95,12 +95,6 @@ public class ClassifierController extends BaseSLDServiceController {
         super(catalog);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.geoserver.rest.RestBaseController#configurePersister(org.geoserver.config.util.XStreamPersister,
-     * org.geoserver.rest.converters.XStreamMessageConverter)
-     */
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xstream = persister.getXStream();
@@ -109,26 +103,6 @@ public class ClassifierController extends BaseSLDServiceController {
         xstream.allowTypes(new Class[] {RulesList.class, JSONObject.class});
     }
 
-    /**
-     * final String layerName = (String) attributes.get("layer"); final String property =
-     * form.getFirstValue("attribute"); final String method = form.getFirstValue("method",
-     * "equalInterval"); final String intervals = form.getFirstValue("intervals", "2"); final String
-     * intervalsForUnique = form.getFirstValue("intervals", "-1"); final String open =
-     * form.getFirstValue("open", "false"); final String colorRamp = form.getFirstValue("ramp",
-     * "red"); final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse")); final
-     * boolean normalize = Boolean.parseBoolean(form.getFirstValue("normalize"));
-     *
-     * @param layerName
-     * @param property
-     * @param method
-     * @param intervals
-     * @param intervalsForUnique
-     * @param open
-     * @param colorRamp
-     * @param reverse
-     * @param normalize
-     * @return
-     */
     @GetMapping(
         path = "/{layerName}/classify",
         produces = {
@@ -469,6 +443,19 @@ public class ClassifierController extends BaseSLDServiceController {
                                                 Integer.parseInt(intervals),
                                                 Boolean.parseBoolean(open),
                                                 normalize);
+                            } else if ("equalArea".equals(method)) {
+                                rules =
+                                        builder.equalAreaClassification(
+                                                ftCollection,
+                                                property,
+                                                propertyType,
+                                                Integer.parseInt(intervals),
+                                                Boolean.parseBoolean(open),
+                                                normalize);
+                            } else {
+                                throw new RestException(
+                                        "Unknown classification method " + method,
+                                        HttpStatus.BAD_REQUEST);
                             }
                         } else {
                             RangedClassifier groups =
@@ -719,8 +706,8 @@ public class ClassifierController extends BaseSLDServiceController {
         }
 
         /**
-         * @see com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io.
-         *     HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
+         * @see
+         *     com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io.HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
          */
         public Object unmarshal(HierarchicalStreamReader arg0, UnmarshallingContext arg1) {
             // TODO Auto-generated method stub

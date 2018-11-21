@@ -16,7 +16,7 @@ import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
 import org.junit.Test;
 
-public class ColorRampTest extends SLDServiceBaseTest {
+public class ColorRampTest {
 
     protected static int minColorInt = 49;
 
@@ -111,10 +111,5 @@ public class ColorRampTest extends SLDServiceBaseTest {
                 "Incorrect value for 1st reverse color",
                 new Color(255, 0, 0),
                 reverseColors.get(0));
-    }
-
-    @Override
-    protected String getServiceUrl() {
-        return null;
     }
 }

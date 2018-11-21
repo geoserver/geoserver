@@ -56,6 +56,14 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
+        <!-- This library is used by json-lib to write XML -->
+        <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.geoserver</groupId>

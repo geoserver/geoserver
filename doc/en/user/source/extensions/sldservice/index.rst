@@ -90,8 +90,8 @@ Get attributes for the states layer, in JSON format
        }
     }
     
-Classify Vector Data
---------------------
+Classify Raster and Vector Data
+-------------------------------
 ``/classify[.<format>]``
 
 .. list-table::
@@ -103,16 +103,19 @@ Classify Vector Data
      - Formats
      - Default Format
    * - GET
-     - Create a set of SLD Rules for the given layer (of vector type)
+     - Create a set of SLD Rules for the given layer
      - 200
      - HTML, XML, JSON
      - HTML
 
 The service can be used to create a set of SLD rules for the given vector
-layer, specyfing the **attribute** used for classification, the  **classification 
+layer, specifying the **attribute** used for classification, the  **classification 
 type** (equalInterval, uniqueInterval, quantile, jenks, equalArea) and one of the
 **predefined color ranges** (red, blue, gray, jet, random, custom), together
 with some other optional parameters.
+
+The same can be applied on a raster layer too, in order to classify its contents. Data from the first
+band is used by default, but a different one can be selected.
 
 Using the **CUSTOM** ColorMap, startColor and endColor (and optionally midColor)
 have to be specified.
@@ -132,8 +135,8 @@ The parameters usable to customize the ColorMap are:
      - 2
    * - attribute (mandatory)
      - Classification attribute
-     - one of the layer attribute names
-     - 
+     - For vector layers, one of the layer attribute names, for raster layers, a band number
+     - No default for vectors, "1" for rasters
    * - method
      - Classification method
      - equalInterval, uniqueInterval, quantile, jenks, equalArea
@@ -150,10 +153,10 @@ The parameters usable to customize the ColorMap are:
      - normalize (cast) attribute to double type (needed by some stores to handle integer types correctly)
      - true, false
      - false
-   * - ramp (mandatory)
+   * - ramp
      - color ranges to use
      - red, blue, gray, jet, random, custom
-     - 
+     - red
    * - startColor
      - starting color for the custom ramp
      - 
@@ -456,6 +459,9 @@ color ramp and 3 **open** intervals.
     
 Classify Raster Data
 --------------------
+
+This resource is deprecated, as the classify endpoint can now handle also raster data
+
 ``/rasterize[.<format>]``
 
 .. list-table::

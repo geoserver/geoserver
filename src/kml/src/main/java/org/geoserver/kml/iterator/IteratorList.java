@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import java.util.AbstractList;
 import java.util.Iterator;
@@ -15,22 +15,19 @@ import java.util.NoSuchElementException;
  * @author Andrea Aime - GeoSolutions
  * @param <T>
  */
-public class SequenceList<T> extends AbstractList<T> {
+public class IteratorList<T> extends AbstractList<T> {
 
     public class GeneratorIterator implements Iterator<T> {
 
-        private Sequence<T> generator;
+        private Iterator<T> generator;
 
-        private T item;
-
-        public GeneratorIterator(Sequence<T> generator) {
+        public GeneratorIterator(Iterator<T> generator) {
             this.generator = generator;
-            this.item = generator.next();
         }
 
         @Override
         public boolean hasNext() {
-            return item != null;
+            return generator.hasNext();
         }
 
         @Override
@@ -39,9 +36,7 @@ public class SequenceList<T> extends AbstractList<T> {
                 throw new NoSuchElementException();
             }
 
-            T next = this.item;
-            this.item = generator.next();
-            return next;
+            return generator.next();
         }
 
         @Override
@@ -50,15 +45,15 @@ public class SequenceList<T> extends AbstractList<T> {
         }
     }
 
-    SequenceFactory<T> generatorFactory;
+    IteratorFactory<T> generatorFactory;
 
-    public SequenceList(SequenceFactory<T> generatorFactory) {
+    public IteratorList(IteratorFactory<T> generatorFactory) {
         this.generatorFactory = generatorFactory;
     }
 
     @Override
     public Iterator iterator() {
-        return new GeneratorIterator(generatorFactory.newSequence());
+        return new GeneratorIterator(generatorFactory.newIterator());
     }
 
     @Override

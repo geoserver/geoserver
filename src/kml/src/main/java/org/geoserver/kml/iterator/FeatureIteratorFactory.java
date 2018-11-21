@@ -3,11 +3,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import java.util.EmptyStackException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.geoserver.kml.KmlEncodingContext;
@@ -27,11 +28,11 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * Creates a sequence of Placemark objects mapping the vector contents of a layer
+ * Creates a iterator of Placemark objects mapping the vector contents of a layer
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class FeatureSequenceFactory implements SequenceFactory<Feature> {
+public class FeatureIteratorFactory implements IteratorFactory<Feature> {
 
     static final String OUTPUT_MODE = "kmlOutputMode";
 
@@ -47,7 +48,7 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     private boolean hasActiveRules;
 
-    public FeatureSequenceFactory(KmlEncodingContext context, FeatureLayer layer) {
+    public FeatureIteratorFactory(KmlEncodingContext context, FeatureLayer layer) {
         this.context = context;
         this.features = context.getCurrentFeatureCollection();
         WMSMapContent mapContent = context.getMapContent();
@@ -88,11 +89,11 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
     }
 
     @Override
-    public Sequence<Feature> newSequence() {
+    public Iterator<Feature> newIterator() {
         return new FeatureGenerator(hasActiveRules ? context.openIterator(features) : null);
     }
 
-    public class FeatureGenerator implements Sequence<Feature> {
+    public class FeatureGenerator implements Iterator<Feature> {
 
         private FeatureIterator fi;
 
@@ -157,6 +158,11 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                 context.closeIterator(fi);
             }
             return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return fi.hasNext();
         }
 
         private List<Symbolizer> getSymbolizers(Style style, SimpleFeature sf) {

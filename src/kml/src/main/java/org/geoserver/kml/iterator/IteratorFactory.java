@@ -3,15 +3,17 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
+
+import java.util.Iterator;
 
 /**
- * Builds a new Sequence
+ * Builds a new Iterator
  *
  * @author Andrea Aime - GeoSolutions
  * @param <T>
  */
-public interface SequenceFactory<T> {
+public interface IteratorFactory<T> {
 
-    Sequence<T> newSequence();
+    Iterator<T> newIterator();
 }

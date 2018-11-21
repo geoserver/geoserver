@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.CompositeList;
+import org.geoserver.kml.iterator.CompositeList;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;

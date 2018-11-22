@@ -46,6 +46,7 @@
     <xs:complexContent>
       <xs:extension base="gml:AbstractFeatureType">
         <xs:sequence>
+          <xs:element name="id" minOccurs="1" maxOccurs="1" type="xs:string"/>
           <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string"/>
           <xs:element name="contact" minOccurs="0" maxOccurs="1" type="st:ContactType"/>
           <xs:element name="measurement" minOccurs="0" maxOccurs="unbounded" type="st:MeasurementPropertyType"/>

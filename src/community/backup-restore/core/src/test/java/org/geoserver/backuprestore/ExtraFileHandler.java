@@ -4,14 +4,14 @@
  */
 package org.geoserver.backuprestore;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.geoserver.backuprestore.tasklet.GenericTaskletHandler;
 import org.geoserver.backuprestore.tasklet.GenericTaskletUtils;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -41,16 +41,16 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
             ChunkContext chunkContext,
             JobExecution jobExecution,
             BackupRestoreItem context) {
-        File inputDirectory;
-        File outputDirectory;
+        Resource inputDirectory;
+        Resource outputDirectory;
         if (GenericTaskletUtils.isBackup(context)) {
             // we are doing a backup
-            inputDirectory = dataDirectory.root();
+            inputDirectory = dataDirectory.getRoot();
             outputDirectory = GenericTaskletUtils.getOutputDirectory(jobExecution);
         } else {
             // we are doing a restore
             inputDirectory = GenericTaskletUtils.getInputDirectory(jobExecution);
-            outputDirectory = dataDirectory.root();
+            outputDirectory = dataDirectory.getRoot();
         }
         copyFile(inputDirectory, EXTRA_FILE_NAME, outputDirectory, EXTRA_FILE_NAME);
         return RepeatStatus.FINISHED;
@@ -58,26 +58,25 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
 
     /** Helper method for copying a file from a directory to another. */
     private void copyFile(
-            File inputDirectory,
+            Resource inputDirectory,
             String inputFileName,
-            File outputDirectory,
+            Resource outputDirectory,
             String outputFileName) {
-        File inputFile = new File(inputDirectory, inputFileName);
-        if (!inputFile.exists()) {
+        Resource inputFile = inputDirectory.get(inputFileName);
+        if (!Resources.exists(inputFile)) {
             // nothing to copy
             return;
         }
-        if (outputDirectory.exists() && outputDirectory.isDirectory()) {
-            File outputFile = new File(outputDirectory, outputFileName);
-            try (InputStream input = new FileInputStream(inputFile);
+        if (Resources.exists(outputDirectory) && outputDirectory.getType() == Type.DIRECTORY) {
+            Resource outputFile = outputDirectory.get(outputFileName);
+            try (InputStream input = inputFile.in();
                     // copy the file to is destination
-                    OutputStream output = new FileOutputStream(outputFile)) {
+                    OutputStream output = outputFile.out()) {
                 IOUtils.copy(input, output);
             } catch (Exception exception) {
                 throw new RuntimeException(
                         String.format(
-                                "Error copying file '%s' to file '%s'.",
-                                inputFile, outputFile.getAbsolutePath()),
+                                "Error copying file '%s' to file '%s'.", inputFile, outputFile),
                         exception);
             }
         }

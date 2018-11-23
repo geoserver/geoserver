@@ -14,7 +14,6 @@ import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -69,7 +68,6 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                 Resource archiveFile = bkp.getArchiveFile();
                 boolean overwrite = bkp.isOverwrite();
                 List<String> options = bkp.getOptions();
-                Filter filter = bkp.getFilter();
 
                 this.backupFacade.getBackupExecutions().remove(id);
 
@@ -78,7 +76,9 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                                 jobExecution, backupFacade.getTotalNumberOfBackupSteps());
                 this.backupExecution.setArchiveFile(archiveFile);
                 this.backupExecution.setOverwrite(overwrite);
-                this.backupExecution.setFilter(filter);
+                this.backupExecution.setWsFilter(bkp.getWsFilter());
+                this.backupExecution.setSiFilter(bkp.getSiFilter());
+                this.backupExecution.setLiFilter(bkp.getLiFilter());
                 this.backupExecution.getOptions().addAll(options);
 
                 this.backupFacade

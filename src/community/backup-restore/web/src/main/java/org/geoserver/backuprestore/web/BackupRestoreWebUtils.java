@@ -9,12 +9,15 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.ComponentTag;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.web.GeoServerApplication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /** @author afabiani */
 public class BackupRestoreWebUtils {
 
     static Backup backupFacade() {
-        return GeoServerApplication.get().getBeanOfType(Backup.class);
+        Backup backupFacade = GeoServerApplication.get().getBeanOfType(Backup.class);
+        backupFacade.setAuth(SecurityContextHolder.getContext().getAuthentication());
+        return backupFacade;
     }
 
     static boolean isDevMode() {

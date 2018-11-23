@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
@@ -88,7 +89,14 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
                     @Override
                     public boolean accept(Resource res) {
-                        if (!res.name().endsWith(".xml")) {
+                        if (res.getType() == Type.DIRECTORY
+                                        && !res.name().equalsIgnoreCase("temp")
+                                        && !res.name().equalsIgnoreCase("tmp")
+                                        && !res.name().equalsIgnoreCase("workspaces")
+                                || (res.getType() == Type.RESOURCE
+                                        && (res.name().endsWith(".properties")
+                                                || res.name().endsWith(".ini")
+                                                || res.name().endsWith(".conf")))) {
                             return true;
                         }
                         return false;
@@ -242,10 +250,20 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
                     Resource targetDir = BackupUtils.dir(baseDir, resource.name());
                     for (Resource res : resources) {
-                        if (res.getType() != Type.DIRECTORY) {
-                            Resources.copy(res.file(), targetDir);
-                        } else {
-                            Resources.copy(res, BackupUtils.dir(targetDir, res.name()));
+                        try {
+                            if (res.getType() != Type.DIRECTORY) {
+                                Resources.copy(res.file(), targetDir);
+                            } else {
+                                Resources.copy(res, BackupUtils.dir(targetDir, res.name()));
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Error occurred while trying to move a Resource!",
+                                    e);
+                            if (getCurrentJobExecution() != null) {
+                                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                            }
                         }
                     }
                 }
@@ -287,7 +305,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 }
             }
         } catch (Exception e) {
-            logValidationExceptions((T) null, e);
+            logValidationExceptions((T) item, e);
         }
     }
 

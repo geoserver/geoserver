@@ -4,6 +4,9 @@
  */
 package org.geoserver.backuprestore.web;
 
+import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.or;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +37,8 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -41,12 +46,13 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoServerUnlockablePage;
+import org.geoserver.web.data.store.StoreChoiceRenderer;
+import org.geoserver.web.data.store.StoreModel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspaceDetachableModel;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.factory.Hints;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
@@ -66,6 +72,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     WorkspaceDetachableModel workspace;
     DropDownChoice workspaceChoice;
     TextField workspaceNameTextField;
+
+    StoreModel<StoreInfo> store;
+    DropDownChoice<StoreInfo> storeChoice;
+
+    LayerModel<LayerInfo> layer;
+    DropDownChoice<LayerInfo> layerChoice;
 
     Component statusLabel;
 
@@ -118,6 +130,53 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         workspaceNameTextField.setRequired(!defaultWorkspace);
         workspaceNameContainer.add(workspaceNameTextField);
 
+        // store chooser
+        store = new StoreModel<StoreInfo>(null);
+        storeChoice =
+                new DropDownChoice<StoreInfo>(
+                        "store",
+                        store,
+                        new EnabledStoresModel(workspace),
+                        new StoreChoiceRenderer()) {
+                    protected String getNullValidKey() {
+                        return BackupRestoreDataPage.class.getSimpleName()
+                                + "."
+                                + super.getNullValidKey();
+                    };
+                };
+        storeChoice.setOutputMarkupId(true);
+        storeChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        updateTargetStore(target);
+                    }
+                });
+        storeChoice.setNullValid(true);
+        add(storeChoice);
+
+        // layer chooser
+        layer = new LayerModel<LayerInfo>(null);
+        layerChoice =
+                new DropDownChoice<LayerInfo>(
+                        "layer", layer, new EnabledLayersModel(store), new LayerChoiceRenderer()) {
+                    protected String getNullValidKey() {
+                        return BackupRestoreDataPage.class.getSimpleName()
+                                + "."
+                                + super.getNullValidKey();
+                    };
+                };
+        layerChoice.setOutputMarkupId(true);
+        layerChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        updateTargetLayer(target);
+                    }
+                });
+        layerChoice.setNullValid(true);
+        add(layerChoice);
+
         /** Backup Panel */
         Form backupForm = new Form("backupForm");
         add(backupForm);
@@ -140,13 +199,45 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     /** @param target */
     protected void updateTargetWorkspace(AjaxRequestTarget target) {
         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+        store.setObject(null /* ws != null
+                        ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws)
+                        : null*/);
 
-        // workspaceNameTextField.setVisible(ws == null);
-        // workspaceNameTextField.setRequired(ws == null);
+        workspaceNameTextField.setVisible(ws == null);
+        workspaceNameTextField.setRequired(ws == null);
 
-        /*if (target != null) {
+        if (target != null) {
+            target.add(storeChoice);
+            target.add(layerChoice);
             target.add(workspaceNameTextField.getParent());
-        }*/
+        }
+    }
+
+    /** @param target */
+    protected void updateTargetStore(AjaxRequestTarget target) {
+        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+        layer.setObject(null);
+
+        workspaceNameTextField.setVisible(ws == null);
+        workspaceNameTextField.setRequired(ws == null);
+
+        if (target != null) {
+            target.add(layerChoice);
+            target.add(workspaceNameTextField.getParent());
+        }
+    }
+
+    /** @param target */
+    protected void updateTargetLayer(AjaxRequestTarget target) {
+        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+
+        workspaceNameTextField.setVisible(ws == null);
+        workspaceNameTextField.setRequired(ws == null);
+
+        if (target != null) {
+            target.add(layerChoice);
+            target.add(workspaceNameTextField.getParent());
+        }
     }
 
     /** */
@@ -297,10 +388,30 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                     "Backup Archive File is Mandatory and should not be a Directory or URI.");
                         }
 
-                        Filter filter = null;
+                        Filter wsFilter = null;
+                        Filter siFilter = null;
+                        Filter liFilter = null;
                         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+                        StoreInfo si = (StoreInfo) store.getObject();
+                        LayerInfo li = (LayerInfo) layer.getObject();
                         if (ws != null) {
-                            filter = ECQL.toFilter("name = '" + ws.getName() + "'");
+                            wsFilter =
+                                    or(
+                                            equal("name", ws.getName()),
+                                            equal("workspace.name", ws.getName()),
+                                            equal("resource.store.workspace.name", ws.getName()));
+                        }
+                        if (si != null) {
+                            siFilter =
+                                    or(
+                                            equal("name", si.getName()),
+                                            equal("resource.store.name", si.getName()));
+                        }
+                        if (li != null) {
+                            liFilter =
+                                    or(
+                                            equal("name", li.getName()),
+                                            equal("resource.name", li.getResource().getName()));
                         }
 
                         Hints hints = new Hints(new HashMap(2));
@@ -329,7 +440,13 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
                         return backupFacade
-                                .runBackupAsync(archiveFile, backupOptOverwirte, filter, hints)
+                                .runBackupAsync(
+                                        archiveFile,
+                                        backupOptOverwirte,
+                                        wsFilter,
+                                        siFilter,
+                                        liFilter,
+                                        hints)
                                 .getId();
                     }
                 });
@@ -524,10 +641,30 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                     "Restore Archive File is Mandatory, must exists and should not be a Directory or URI.");
                         }
 
-                        Filter filter = null;
+                        Filter wsFilter = null;
+                        Filter siFilter = null;
+                        Filter liFilter = null;
                         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+                        StoreInfo si = (StoreInfo) store.getObject();
+                        LayerInfo li = (LayerInfo) layer.getObject();
                         if (ws != null) {
-                            filter = ECQL.toFilter("name = '" + ws.getName() + "'");
+                            wsFilter =
+                                    or(
+                                            equal("name", ws.getName()),
+                                            equal("workspace.name", ws.getName()),
+                                            equal("resource.store.workspace.name", ws.getName()));
+                        }
+                        if (si != null) {
+                            siFilter =
+                                    or(
+                                            equal("name", si.getName()),
+                                            equal("resource.store.name", si.getName()));
+                        }
+                        if (li != null) {
+                            liFilter =
+                                    or(
+                                            equal("name", li.getName()),
+                                            equal("resource.name", li.getResource().getName()));
                         }
 
                         Hints hints = new Hints(new HashMap(2));
@@ -564,7 +701,9 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
 
-                        return backupFacade.runRestoreAsync(archiveFile, filter, hints).getId();
+                        return backupFacade
+                                .runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, hints)
+                                .getId();
                     }
                 });
 

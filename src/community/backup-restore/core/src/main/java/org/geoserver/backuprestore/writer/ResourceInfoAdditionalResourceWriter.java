@@ -41,12 +41,9 @@ public class ResourceInfoAdditionalResourceWriter
         templates.add("content.ftl");
         templates.add("complex_content.ftl");
         templates.add("description.ftl");
-
         templates.add("height.ftl");
         templates.add("time.ftl");
-
         templates.add("shapezip.ftl");
-
         templates.add(
                 "schema.xsd"); // http://docs.geoserver.org/latest/en/user/services/wfs/schemamapping.html
     }

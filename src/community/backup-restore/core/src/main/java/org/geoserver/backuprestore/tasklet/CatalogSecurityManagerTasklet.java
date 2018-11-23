@@ -53,7 +53,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                                 .getJobParameters()
                                 .getString(Backup.PARAM_SKIP_SECURITY_SETTINGS));
 
-        this.skipSecuritySettings = skipSettings || skipSecurity;
+        this.skipSecuritySettings = skipSettings || skipSecurity || filterIsValid();
     }
 
     @Override

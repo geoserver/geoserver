@@ -74,6 +74,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
     /** @return the backupFacade */
     public Backup getBackupFacade() {
+        backupFacade.authenticate();
         return backupFacade;
     }
 

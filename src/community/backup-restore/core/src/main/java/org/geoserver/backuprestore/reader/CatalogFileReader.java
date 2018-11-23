@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -256,7 +257,6 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     @SuppressWarnings("unchecked")
                     T mappedFragment = (T) unmarshal(StaxUtils.getSource(fragmentReader));
                     item = mappedFragment;
-
                     try {
                         firePostRead(item, resource);
                     } catch (IOException e) {
@@ -284,15 +284,16 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
      * @return
      * @throws TransformerException
      * @throws XMLStreamException
+     * @throws UnsupportedEncodingException
      */
-    private Object unmarshal(Source source) throws TransformerException, XMLStreamException {
+    private Object unmarshal(Source source)
+            throws TransformerException, XMLStreamException, UnsupportedEncodingException {
         TransformerFactory tf =
                 new com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl();
         Transformer t = tf.newTransformer();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);
         t.transform(source, result);
-
         return this.getXp().fromXML(new ByteArrayInputStream(os.toByteArray()));
     }
 

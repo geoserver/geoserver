@@ -4,12 +4,16 @@
  */
 package org.geoserver.backuprestore.processor;
 
+import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -61,8 +65,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
     @Override
     public T process(T resource) throws Exception {
-
         if (resource != null) {
+
+            authenticate();
+
             if (isNew()) {
                 // Disabling additional validators
                 ((CatalogImpl) getCatalog()).setExtendedValidation(false);
@@ -81,11 +87,16 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             if (resource instanceof WorkspaceInfo) {
                 WorkspaceInfo ws = ((WorkspaceInfo) resource);
 
-                if (filteredResource(resource, ws, true)) {
+                if (filteredResource(ws, false) && ws != null) {
                     return null;
                 }
 
-                if (!validateWorkspace((WorkspaceInfo) resource, isNew())) {
+                if (filterIsValid() && getCatalog().getWorkspaceByName(ws.getName()) == null) {
+                    getCatalog().add(ws);
+                    getCatalog().save(getCatalog().getWorkspace(ws.getId()));
+                }
+
+                if (!filterIsValid() && !validateWorkspace((WorkspaceInfo) resource, isNew())) {
                     LOGGER.warning("Skipped invalid resource: " + resource);
                     logValidationExceptions(resource, null);
                     return null;
@@ -98,20 +109,34 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                 ((DataStoreInfo) resource).getWorkspace().getName())
                                 : null;
 
-                if (filteredResource(resource, ws, true)) {
+                if (ws == null && filterIsValid()) {
+                    DataStoreInfo source =
+                            backupFacade
+                                    .getCatalog()
+                                    .getDataStoreByName(((DataStoreInfo) resource).getName());
+                    if (source != null && source.getWorkspace() != null) {
+                        ws = getCatalog().getWorkspaceByName(source.getWorkspace().getName());
+                        if (ws == null) {
+                            return null;
+                        }
+                        ((DataStoreInfo) resource).setWorkspace(ws);
+                        getCatalog().add(((DataStoreInfo) resource));
+                        getCatalog()
+                                .save(
+                                        getCatalog()
+                                                .getDataStore(((DataStoreInfo) resource).getId()));
+                    }
+                }
+
+                if (filteredResource(resource, ws, true, StoreInfo.class)) {
                     return null;
                 }
 
-                if (!validateDataStore((DataStoreInfo) resource, isNew())) {
+                if (!filterIsValid() && !validateDataStore((DataStoreInfo) resource, isNew())) {
                     LOGGER.warning("Skipped invalid resource: " + resource);
                     logValidationExceptions(resource, null);
                     return null;
                 }
-
-                if (getCatalog().getDefaultDataStore(ws) == null) {
-                    getCatalog().setDefaultDataStore(ws, (DataStoreInfo) resource);
-                }
-
             } else if (resource instanceof CoverageStoreInfo) {
                 WorkspaceInfo ws =
                         ((CoverageStoreInfo) resource).getWorkspace() != null
@@ -122,11 +147,33 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                         .getName())
                                 : null;
 
-                if (filteredResource(resource, ws, true)) {
+                if (ws == null && filterIsValid()) {
+                    CoverageStoreInfo source =
+                            backupFacade
+                                    .getCatalog()
+                                    .getCoverageStoreByName(
+                                            ((CoverageStoreInfo) resource).getName());
+                    if (source != null && source.getWorkspace() != null) {
+                        ws = getCatalog().getWorkspaceByName(source.getWorkspace().getName());
+                        if (ws == null) {
+                            return null;
+                        }
+                        ((CoverageStoreInfo) resource).setWorkspace(ws);
+                        getCatalog().add(((CoverageStoreInfo) resource));
+                        getCatalog()
+                                .save(
+                                        getCatalog()
+                                                .getCoverageStore(
+                                                        ((CoverageStoreInfo) resource).getId()));
+                    }
+                }
+
+                if (filteredResource(resource, ws, true, StoreInfo.class)) {
                     return null;
                 }
 
-                if (!validateCoverageStore((CoverageStoreInfo) resource, isNew())) {
+                if (!filterIsValid()
+                        && !validateCoverageStore((CoverageStoreInfo) resource, isNew())) {
                     LOGGER.warning("Skipped invalid resource: " + resource);
                     logValidationExceptions(resource, null);
                     return null;
@@ -144,15 +191,44 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                         .getName())
                                 : null;
 
-                if (filteredResource(resource, ws, true)) {
+                if (((ResourceInfo) resource).getStore() == null && filterIsValid()) {
+                    Class clz = null;
+                    if (resource instanceof FeatureTypeInfo) {
+                        clz = FeatureTypeInfo.class;
+                    } else if (resource instanceof CoverageInfo) {
+                        clz = CoverageInfo.class;
+                    }
+                    ResourceInfo source =
+                            backupFacade
+                                    .getCatalog()
+                                    .getResourceByName(((ResourceInfo) resource).getName(), clz);
+                    if (source != null && source.getStore() != null) {
+                        StoreInfo ds =
+                                getCatalog().getStoreByName(source.getStore().getName(), clz);
+                        if (ds == null) {
+                            return null;
+                        }
+                        ((ResourceInfo) resource).setStore(ds);
+                        getCatalog().add(((ResourceInfo) resource));
+                        getCatalog()
+                                .save(
+                                        getCatalog()
+                                                .getResource(
+                                                        ((ResourceInfo) resource).getId(), clz));
+                    }
+                }
+
+                if (filteredResource(resource, ws, true, ResourceInfo.class)) {
                     return null;
                 }
 
-                if (!validateResource((ResourceInfo) resource, isNew())) {
+                /* if (!filterIsValid()
+                        && resource == null
+                        && !validateResource((ResourceInfo) resource, isNew())) {
                     LOGGER.warning("Skipped invalid resource: " + resource);
                     logValidationExceptions(resource, null);
                     return null;
-                }
+                } */
             } else if (resource instanceof LayerInfo) {
                 ValidationResult result = null;
                 try {
@@ -174,14 +250,20 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                             .getName())
                                     : null;
 
-                    if (filteredResource(resource, ws, true)) {
+                    if (((LayerInfo) resource).getResource() == null) {
                         return null;
                     }
 
-                    result = getCatalog().validate((LayerInfo) resource, isNew());
-                    if (!result.isValid()) {
-                        logValidationExceptions(resource, null);
+                    if (filteredResource(resource, ws, true, LayerInfo.class)) {
                         return null;
+                    }
+
+                    if (!filterIsValid() && resource != null) {
+                        result = this.getCatalog().validate((LayerInfo) resource, isNew());
+                        if (!result.isValid()) {
+                            logValidationExceptions(resource, null);
+                            return null;
+                        }
                     }
                 } catch (Exception e) {
                     LOGGER.warning(
@@ -202,14 +284,16 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                     ((StyleInfo) resource).getWorkspace().getName())
                                     : null;
 
-                    if (filteredResource(resource, ws, false)) {
+                    if (filteredResource(resource, ws, false, StyleInfo.class)) {
                         return null;
                     }
 
-                    result = this.getCatalog().validate((StyleInfo) resource, isNew());
-                    if (!result.isValid()) {
-                        logValidationExceptions(resource, null);
-                        return null;
+                    if (!filterIsValid() && resource != null) {
+                        result = this.getCatalog().validate((StyleInfo) resource, isNew());
+                        if (!result.isValid()) {
+                            logValidationExceptions(resource, null);
+                            return null;
+                        }
                     }
                 } catch (Exception e) {
                     logValidationExceptions(result, e);
@@ -227,18 +311,23 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                                                             .getName())
                                     : null;
 
-                    if (filteredResource(resource, ws, false)) {
+                    if (filteredResource(resource, ws, false, LayerGroupInfo.class)) {
                         return null;
                     }
 
-                    result = this.getCatalog().validate((LayerGroupInfo) resource, isNew());
-                    if (!result.isValid()) {
-                        logValidationExceptions(resource, null);
-                        return null;
+                    if (!filterIsValid() && resource != null) {
+                        result = this.getCatalog().validate((LayerGroupInfo) resource, isNew());
+                        if (!result.isValid()) {
+                            logValidationExceptions(resource, null);
+                            return null;
+                        }
                     }
                 } catch (Exception e) {
-                    logValidationExceptions(result, e);
-                    return null;
+                    LOGGER.log(
+                            Level.WARNING, "Error occurred while trying to Reload a Resource!", e);
+                    if (getCurrentJobExecution() != null) {
+                        getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                    }
                 }
             }
 

@@ -151,6 +151,5 @@ public class ResourceFilePanel extends Panel {
 
     protected void initFileChooser(GeoServerFileChooser fileChooser) {
         fileChooser.setFilter(new Model(new ExtensionFileFilter(FILE_EXTENSIONS)));
-        // fileChooser.setFilter(new Model((Serializable)FileFileFilter.FILE));
     }
 }

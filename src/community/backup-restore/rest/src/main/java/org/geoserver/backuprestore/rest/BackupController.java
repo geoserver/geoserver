@@ -209,7 +209,9 @@ public class BackupController extends AbstractBackupRestoreController {
                             .runBackupAsync(
                                     backup.getArchiveFile(),
                                     backup.isOverwrite(),
-                                    backup.getFilter(),
+                                    backup.getWsFilter(),
+                                    backup.getSiFilter(),
+                                    backup.getLiFilter(),
                                     asParams(backup.getOptions()));
 
             LOGGER.log(Level.INFO, "Backup file generated: " + backup.getArchiveFile());

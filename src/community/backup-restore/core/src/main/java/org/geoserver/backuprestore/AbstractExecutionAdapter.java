@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
@@ -40,7 +42,11 @@ public abstract class AbstractExecutionAdapter {
 
     private Resource archiveFile;
 
-    private Filter filter;
+    private String wsFilter;
+
+    private String siFilter;
+
+    private String liFilter;
 
     /**
      * Default Constructor
@@ -250,13 +256,45 @@ public abstract class AbstractExecutionAdapter {
         this.archiveFile = archiveFile;
     }
 
-    /** @return the filter */
-    public Filter getFilter() {
-        return filter;
+    /** @return the wsFilter */
+    public Filter getWsFilter() {
+        try {
+            return wsFilter != null ? ECQL.toFilter(wsFilter) : null;
+        } catch (CQLException e) {
+            return null;
+        }
     }
 
-    /** @param filter the filter to set */
-    public void setFilter(Filter filter) {
-        this.filter = filter;
+    /** @param wsFilter the wsFilter to set */
+    public void setWsFilter(String wsFilter) {
+        this.wsFilter = wsFilter;
+    }
+
+    /** @return the siFilter */
+    public Filter getSiFilter() {
+        try {
+            return siFilter != null ? ECQL.toFilter(siFilter) : null;
+        } catch (CQLException e) {
+            return null;
+        }
+    }
+
+    /** @param siFilter the siFilter to set */
+    public void setSiFilter(String siFilter) {
+        this.siFilter = siFilter;
+    }
+
+    /** @return the liFilter */
+    public Filter getLiFilter() {
+        try {
+            return liFilter != null ? ECQL.toFilter(liFilter) : null;
+        } catch (CQLException e) {
+            return null;
+        }
+    }
+
+    /** @param liFilter the liFilter to set */
+    public void setLiFilter(String liFilter) {
+        this.liFilter = liFilter;
     }
 }

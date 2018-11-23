@@ -23,37 +23,42 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class ClassifierTestSupport extends SLDServiceBaseTest {
+public class ClassifierTest extends SLDServiceBaseTest {
 
     private static final int DEFAULT_INTERVALS = 2;
+
+    static final QName CLASSIFICATION_POINTS =
+            new QName(SystemTestData.CITE_URI, "ClassificationPoints", SystemTestData.CITE_PREFIX);
+
+    static final QName CLASSIFICATION_POLYGONS =
+            new QName(
+                    SystemTestData.CITE_URI, "ClassificationPolygons", SystemTestData.CITE_PREFIX);
 
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
     private static final String sldPostfix =
             "</FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>";
 
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        Map<LayerProperty, Object> props = new HashMap<>();
+        testData.addVectorLayer(
+                CLASSIFICATION_POINTS,
+                props,
+                "ClassificationPoints.properties",
+                this.getClass(),
+                getCatalog());
 
-        QName CLASSIFICATION_POINTS =
-                new QName(
-                        SystemTestData.CITE_URI,
-                        "ClassificationPoints",
-                        SystemTestData.CITE_PREFIX);
-        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
-        getTestData()
-                .addVectorLayer(
-                        CLASSIFICATION_POINTS,
-                        props,
-                        "ClassificationPoints.properties",
-                        this.getClass(),
-                        getCatalog());
-        // getTestData().addVectorLayer(qName, props, catalog);
+        testData.addVectorLayer(
+                CLASSIFICATION_POLYGONS,
+                props,
+                "ClassificationPolygons.properties",
+                this.getClass(),
+                getCatalog());
     }
 
     @Test
@@ -263,8 +268,31 @@ public class ClassifierTestSupport extends SLDServiceBaseTest {
 
         assertTrue(rules[0].getTitle().contains("20.0"));
         assertTrue(rules[1].getTitle().contains("20.0"));
-        assertTrue(rules[1].getTitle().contains("61.0"));
         assertTrue(rules[2].getTitle().contains("61.0"));
+    }
+
+    @Test
+    public void testEqualArea() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=5&open=true&method=equalArea";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 4);
+
+        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" > 43.0 AND <= 61.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" > 61.0 AND <= 90.0", rules[2].getDescription().getTitle().toString());
+        assertEquals(" > 90.0", rules[3].getDescription().getTitle().toString());
     }
 
     @Test

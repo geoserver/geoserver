@@ -17,8 +17,8 @@ import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.SequenceList;
-import org.geoserver.kml.sequence.WFSFeatureSequenceFactory;
+import org.geoserver.kml.iterator.IteratorList;
+import org.geoserver.kml.iterator.WFSFeatureIteratorFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -105,7 +105,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
             // create the streaming features
             context.setCurrentFeatureCollection(fc);
             List<Feature> features =
-                    new SequenceList<Feature>(new WFSFeatureSequenceFactory(context));
+                    new IteratorList<Feature>(new WFSFeatureIteratorFactory(context));
             context.addFeatures(folder, features);
         }
 

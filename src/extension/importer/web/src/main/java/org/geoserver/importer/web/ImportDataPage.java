@@ -554,7 +554,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         //                "org.geotools.data.sqlserver.SQLServerDataStoreFactory"), //
         //        arcsde(new PackageResourceReference(GeoServerApplication.class,
         //                "img/icons/geosilk/database_vector.png"), ArcSDEPage.class,
-        //                "org.geotools.arcsde.ArcSDEDataStoreFactory");
+        //                "org.geotools.arcsde.data.ArcSDEDataStoreFactory");
 
         DataIcon icon;
 

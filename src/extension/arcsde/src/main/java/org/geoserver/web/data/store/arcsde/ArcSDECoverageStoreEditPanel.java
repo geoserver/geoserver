@@ -6,11 +6,11 @@
 package org.geoserver.web.data.store.arcsde;
 
 import static org.geoserver.web.data.store.arcsde.RasterTableSelectionPanel.TABLE_NAME;
-import static org.geotools.arcsde.ArcSDEDataStoreFactory.INSTANCE_PARAM;
-import static org.geotools.arcsde.ArcSDEDataStoreFactory.PASSWORD_PARAM;
-import static org.geotools.arcsde.ArcSDEDataStoreFactory.PORT_PARAM;
-import static org.geotools.arcsde.ArcSDEDataStoreFactory.SERVER_PARAM;
-import static org.geotools.arcsde.ArcSDEDataStoreFactory.USER_PARAM;
+import static org.geotools.arcsde.data.ArcSDEDataStoreFactory.INSTANCE_PARAM;
+import static org.geotools.arcsde.data.ArcSDEDataStoreFactory.PASSWORD_PARAM;
+import static org.geotools.arcsde.data.ArcSDEDataStoreFactory.PORT_PARAM;
+import static org.geotools.arcsde.data.ArcSDEDataStoreFactory.SERVER_PARAM;
+import static org.geotools.arcsde.data.ArcSDEDataStoreFactory.USER_PARAM;
 import static org.geotools.arcsde.session.ArcSDEConnectionConfig.INSTANCE_NAME_PARAM_NAME;
 import static org.geotools.arcsde.session.ArcSDEConnectionConfig.PASSWORD_PARAM_NAME;
 import static org.geotools.arcsde.session.ArcSDEConnectionConfig.PORT_NUMBER_PARAM_NAME;
@@ -48,7 +48,7 @@ import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.PasswordParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
-import org.geotools.arcsde.ArcSDEDataStoreFactory;
+import org.geotools.arcsde.data.ArcSDEDataStoreFactory;
 import org.geotools.arcsde.raster.gce.ArcSDERasterFormat;
 import org.geotools.arcsde.session.ArcSDEConnectionConfig;
 import org.geotools.data.DataAccessFactory.Param;

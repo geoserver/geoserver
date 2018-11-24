@@ -6,8 +6,7 @@ package org.geotools.renderer.lite;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,18 +118,7 @@ public class VectorMapRenderUtils {
 
     public static double getMapScale(
             WMSMapContent mapContent, final ReferencedEnvelope renderingArea) {
-        final double mapScale;
-        try {
-            mapScale =
-                    RendererUtilities.calculateScale(
-                            renderingArea,
-                            mapContent.getMapWidth(),
-                            mapContent.getMapHeight(),
-                            null);
-        } catch (TransformException | FactoryException e) {
-            throw Throwables.propagate(e);
-        }
-        return mapScale;
+        return RendererUtilities.calculateOGCScale(renderingArea, mapContent.getMapWidth(), null);
     }
 
     public static int getComputedBuffer(

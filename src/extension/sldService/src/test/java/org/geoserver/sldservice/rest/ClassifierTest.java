@@ -6,28 +6,53 @@
  */
 package org.geoserver.sldservice.rest;
 
+import static org.geoserver.sldservice.utils.classifier.RasterSymbolizerBuilder.DEFAULT_MAX_PIXELS;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import it.geosolutions.jaiext.JAIExt;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.util.ImageUtilities;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.FeatureTypeStyle;
@@ -35,13 +60,19 @@ import org.geotools.styling.NamedLayer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterDescriptor;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValue;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -74,6 +105,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
             "</FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>";
 
     private static final double EPS = 1e-6;
+    public static final String MULTIBAND_VIEW = "multiband_select";
 
     @BeforeClass
     public static void setupJaiExt() {
@@ -86,32 +118,82 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no need for built-in layers
+    }
+
+    @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         Map<LayerProperty, Object> props = new HashMap<>();
+        Catalog catalog = getCatalog();
         testData.addVectorLayer(
                 CLASSIFICATION_POINTS,
                 props,
                 "ClassificationPoints.properties",
                 this.getClass(),
-                getCatalog());
+                catalog);
 
         testData.addVectorLayer(
                 CLASSIFICATION_POLYGONS,
                 props,
                 "ClassificationPolygons.properties",
                 this.getClass(),
-                getCatalog());
+                catalog);
+
+        testData.addRasterLayer(MILANOGEO, "milanogeo.tif", "tif", null, this.getClass(), catalog);
 
         testData.addRasterLayer(
-                MILANOGEO, "milanogeo.tif", "tif", null, this.getClass(), getCatalog());
+                TAZBYTE, "tazbyte.tiff", "tif", null, SystemTestData.class, catalog);
 
-        testData.addRasterLayer(
-                TAZBYTE, "tazbyte.tiff", "tif", null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(DEM_FLOAT, "dem_float.tif", "tif", null, this.getClass(), catalog);
 
-        testData.addRasterLayer(
-                DEM_FLOAT, "dem_float.tif", "tif", null, this.getClass(), getCatalog());
+        testData.addRasterLayer(SRTM, "srtm.tif", "tif", null, this.getClass(), catalog);
 
-        testData.addRasterLayer(SRTM, "srtm.tif", "tif", null, this.getClass(), getCatalog());
+        // for coverage view band selection testing
+        testData.addDefaultRasterLayer(SystemTestData.MULTIBAND, catalog);
+
+        // setup the coverage view
+        final InputCoverageBand ib0 = new InputCoverageBand("multiband", "2");
+        final CoverageBand b0 =
+                new CoverageBand(
+                        Collections.singletonList(ib0),
+                        "multiband@2",
+                        0,
+                        CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib1 = new InputCoverageBand("multiband", "1");
+        final CoverageBand b1 =
+                new CoverageBand(
+                        Collections.singletonList(ib1),
+                        "multiband@1",
+                        1,
+                        CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib2 = new InputCoverageBand("multiband", "0");
+        final CoverageBand b2 =
+                new CoverageBand(
+                        Collections.singletonList(ib2),
+                        "multiband@0",
+                        2,
+                        CompositionType.BAND_SELECT);
+
+        final List<CoverageBand> coverageBands = new ArrayList<>();
+        coverageBands.add(b0);
+        coverageBands.add(b1);
+        coverageBands.add(b2);
+
+        CoverageView multiBandCoverageView = new CoverageView(MULTIBAND_VIEW, coverageBands);
+
+        CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName("multiband");
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+
+        // Reordered bands coverage
+        CoverageInfo coverageInfo =
+                multiBandCoverageView.createCoverageInfo(MULTIBAND_VIEW, storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        catalog.add(coverageInfo);
+        final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
+        catalog.add(layerInfoView);
     }
 
     @Test
@@ -342,10 +424,36 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 4);
 
+        // not enough polygons to make 5 rules, only 4
         assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
         assertEquals(" > 43.0 AND <= 61.0", rules[1].getDescription().getTitle().toString());
         assertEquals(" > 61.0 AND <= 90.0", rules[2].getDescription().getTitle().toString());
         assertEquals(" > 90.0", rules[3].getDescription().getTitle().toString());
+    }
+
+    @Test
+    public void testEqualAreaWithinBounds() throws Exception {
+        // restrict the area used for the classification
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=5&open=true&method=equalArea&bbox=20,20,150,150";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+        Document dom = getAsDOM(restPath, 200);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        print(dom, baos);
+        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
+
+        // also due to bbox restriction, not enough polygons to make 5 rules, only 3
+        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" > 43.0 AND <= 90.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" > 90.0", rules[2].getDescription().getTitle().toString());
     }
 
     @Test
@@ -613,6 +721,28 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testEqualIntervalDemBBOX() throws Exception {
+        // get a smaller subset, this should alter min and max accordingly
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=5&ramp=jet&fullSLD=true&bbox=10,10,15,15";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length);
+        assertEntry(entries[0], 392, null, "#000000", 0); // transparent entry
+        assertEntry(entries[1], 404.6, ">= 392 AND < 404.6", "#0000FF", 1);
+        assertEntry(entries[2], 417.2, ">= 404.6 AND < 417.2", "#FFFF00", 1);
+        assertEntry(entries[3], 429.8, ">= 417.2 AND < 429.8", "#FFAA00", 1);
+        assertEntry(entries[4], 442.4, ">= 429.8 AND < 442.4", "#FF5500", 1);
+        assertEntry(entries[5], 455, ">= 442.4 AND <= 455", "#FF0000", 1);
+    }
+
+    @Test
     public void testEqualIntervalContinousDem() throws Exception {
         final String restPath =
                 RestBaseController.ROOT_PATH
@@ -645,12 +775,15 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cm = rs.getColorMap();
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(6, entries.length);
+        // the expected values are from the pixel perfect quantile classification,
+        // the tolerance is added to allow the histogram based classification to
+        // pass the test, while ensuring it's not too far away
         assertEntry(entries[0], -2, null, "#000000", 0); // transparent entry
-        assertEntry(entries[1], 237, ">= -2 AND < 237", "#0000FF", 1);
-        assertEntry(entries[2], 441, ">= 237 AND < 441", "#FFFF00", 1);
-        assertEntry(entries[3], 640, ">= 441 AND < 640", "#FFAA00", 1);
-        assertEntry(entries[4], 894, ">= 640 AND < 894", "#FF5500", 1);
-        assertEntry(entries[5], 1796, ">= 894 AND <= 1796", "#FF0000", 1);
+        assertEntry(entries[1], 237, ">= -2 AND < 243.820312", "#0000FF", 1, 10);
+        assertEntry(entries[2], 441, ">= 243.820312 AND < 447.5", "#FFFF00", 1, 10);
+        assertEntry(entries[3], 640, ">= 447.5 AND < 644.15625", "#FFAA00", 1, 10);
+        assertEntry(entries[4], 894, ">= 644.15625 AND < 897", "#FF5500", 1, 10);
+        assertEntry(entries[5], 1796, ">= 897 AND <= 1796", "#FF0000", 1);
     }
 
     @Test
@@ -666,10 +799,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cm = rs.getColorMap();
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(5, entries.length);
+        // the expected values are from the pixel perfect quantile classification,
+        // the tolerance is added to allow the histogram based classification to
+        // pass the test, while ensuring it's not too far away
         assertEntry(entries[0], -2, "-2", "#0000FF", 1);
-        assertEntry(entries[1], 292, "292", "#FFFF00", 1);
-        assertEntry(entries[2], 536, "536", "#FFAA00", 1);
-        assertEntry(entries[3], 825, "825", "#FF5500", 1);
+        assertEntry(entries[1], 292, "292.984375", "#FFFF00", 1, 10);
+        assertEntry(entries[2], 536, "538.804688", "#FFAA00", 1, 10);
+        assertEntry(entries[3], 825, "826.765625", "#FF5500", 1, 10);
         assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
     }
 
@@ -686,10 +822,13 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMap cm = rs.getColorMap();
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(5, entries.length);
+        // the expected values are from the pixel perfect jenks classification,
+        // the tolerance is added to allow the histogram based classification to
+        // pass the test, while ensuring it's not too far away
         assertEntry(entries[0], -2, "-2", "#0000FF", 1);
-        assertEntry(entries[1], 336, "336", "#FFFF00", 1);
-        assertEntry(entries[2], 660, "660", "#FFAA00", 1);
-        assertEntry(entries[3], 1011, "1011", "#FF5500", 1);
+        assertEntry(entries[1], 336, "332.011905", "#FFFF00", 1, 10);
+        assertEntry(entries[2], 660, "654.707317", "#FFAA00", 1, 10);
+        assertEntry(entries[3], 1011, "1005.6", "#FF5500", 1, 10);
         assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
     }
 
@@ -728,6 +867,83 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEntry(entries[0], 1, "1", "#FF0000", 1);
         assertEntry(entries[1], 10, "10", "#00FF00", 1);
         assertEntry(entries[2], 20, "20", "#0000FF", 1);
+    }
+
+    @Test
+    public void testCoverageViewDefaultBand() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:multiband_select/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ChannelSelection channelSelection = rs.getChannelSelection();
+        assertNotNull(channelSelection);
+        SelectedChannelType gray = channelSelection.getGrayChannel();
+        assertNotNull(gray);
+        assertEquals("1", gray.getChannelName().evaluate(null, String.class));
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], 0, "0", "#0000FF", 1);
+        assertEntry(entries[1], 6, "6", "#FFFF00", 1);
+        assertEntry(entries[2], 51, "51", "#FFAA00", 1);
+        assertEntry(entries[3], 93, "93", "#FF5500", 1);
+        assertEntry(entries[4], 194, "194", "#FF0000", 1);
+    }
+
+    @Test
+    public void testMultibandSelection() throws Exception {
+        // same as the above, but going against the native TIFF file. Need to read band 3 to
+        // match the first band of the coverage view
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:multiband/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&continuous=true&attribute=3";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ChannelSelection channelSelection = rs.getChannelSelection();
+        assertNotNull(channelSelection);
+        SelectedChannelType gray = channelSelection.getGrayChannel();
+        assertNotNull(gray);
+        assertEquals("3", gray.getChannelName().evaluate(null, String.class));
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], 0, "0", "#0000FF", 1);
+        assertEntry(entries[1], 6, "6", "#FFFF00", 1);
+        assertEntry(entries[2], 51, "51", "#FFAA00", 1);
+        assertEntry(entries[3], 93, "93", "#FF5500", 1);
+        assertEntry(entries[4], 194, "194", "#FF0000", 1);
+    }
+
+    @Test
+    public void testCoverageViewSecondBand() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/wcs:multiband_select/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&continuous=true&attribute=2";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ChannelSelection channelSelection = rs.getChannelSelection();
+        assertNotNull(channelSelection);
+        SelectedChannelType gray = channelSelection.getGrayChannel();
+        assertNotNull(gray);
+        assertEquals("2", gray.getChannelName().evaluate(null, String.class));
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], 0, "0", "#0000FF", 1);
+        assertEntry(entries[1], 6, "6", "#FFFF00", 1);
+        assertEntry(entries[2], 48, "48", "#FFAA00", 1);
+        assertEntry(entries[3], 77, "77", "#FF5500", 1);
+        assertEntry(entries[4], 160, "160", "#FF0000", 1);
     }
 
     /**
@@ -769,5 +985,243 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         .map(o -> o.evaluate(null, Double.class))
                         .orElse((double) 1);
         assertEquals(opacity, actualOpacity, EPS);
+    }
+
+    private void assertEntry(
+            ColorMapEntry entry,
+            double value,
+            String label,
+            String color,
+            double opacity,
+            double valueTolerance) {
+        assertEquals(value, entry.getQuantity().evaluate(null, Double.class), valueTolerance);
+        assertEquals(label, entry.getLabel());
+        assertEquals(color, entry.getColor().evaluate(null, String.class));
+        double actualOpacity =
+                Optional.ofNullable(entry.getOpacity())
+                        .map(o -> o.evaluate(null, Double.class))
+                        .orElse((double) 1);
+        assertEquals(opacity, actualOpacity, EPS);
+    }
+
+    @Test
+    public void testReaderBandSelection() throws Exception {
+        // the backing reader supports native selection
+        CoverageInfo coverage = getCatalog().getCoverageByName(MULTIBAND_VIEW);
+        ImageReader reader = new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, null).invoke();
+
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+
+        // expect the bands selection and deferred loading
+        assertThat(
+                parameters.keySet(),
+                Matchers.containsInAnyOrder(
+                        AbstractGridFormat.BANDS, AbstractGridFormat.USE_JAI_IMAGEREAD));
+        int[] bands = (int[]) parameters.get(AbstractGridFormat.BANDS);
+        assertArrayEquals(new int[] {0}, bands);
+
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testJAIBandSelection() throws Exception {
+        // the backing reader does not support native selection
+        CoverageInfo coverage =
+                getCatalog().getCoverageByName(SystemTestData.MULTIBAND.getLocalPart());
+        ImageReader reader = new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, null).invoke();
+
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+
+        // expect only deferred loading
+        assertThat(parameters.keySet(), Matchers.contains(AbstractGridFormat.USE_JAI_IMAGEREAD));
+
+        // yet the image just has one band
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testSubsampling() throws Exception {
+        CoverageInfo coverage =
+                getCatalog().getCoverageByName(SystemTestData.MULTIBAND.getLocalPart());
+        // the image is 68*56=3808, force subsampling by giving a low limit
+        ImageReader reader = new ImageReader(coverage, 1, 1000, null).invoke();
+
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+
+        // expect deferred loading and restricted grid geometry
+        assertThat(
+                parameters.keySet(),
+                Matchers.containsInAnyOrder(
+                        AbstractGridFormat.USE_JAI_IMAGEREAD,
+                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        // reduced pixels
+        GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
+        assertEquals(35, gg.getGridRange2D().width);
+        assertEquals(29, gg.getGridRange2D().height);
+        // but full envelope
+        assertEquals(
+                coverage.getNativeBoundingBox(), ReferencedEnvelope.reference(gg.getEnvelope2D()));
+
+        // the image just has one band
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testBoundingBox() throws Exception {
+        CoverageInfo ci = getCatalog().getCoverageByName(SystemTestData.MULTIBAND.getLocalPart());
+        ReferencedEnvelope readEnvelope =
+                new ReferencedEnvelope(
+                        520000, 540000, 3600000, 3700000, CRS.decode("EPSG:32611", true));
+        ImageReader reader = new ImageReader(ci, 1, DEFAULT_MAX_PIXELS, readEnvelope).invoke();
+
+        // expect deferred loading and restricted grid geometry
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+        assertThat(
+                parameters.keySet(),
+                Matchers.containsInAnyOrder(
+                        AbstractGridFormat.USE_JAI_IMAGEREAD,
+                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
+        // check the grid geometry is restricted in space, but has the same scale factors as the
+        // original one (from a gdalinfo output)
+        AffineTransform2D at = (AffineTransform2D) gg.getGridToCRS2D();
+        double xPixelSize = 3530;
+        double yPixelSize = 3547;
+        assertEquals(at.getScaleX(), xPixelSize, 1);
+        assertEquals(at.getScaleY(), -yPixelSize, 1);
+        // read bounds are the requested ones, allow up to a pixel worth of difference
+        assertBoundsEquals2D(readEnvelope, gg.getEnvelope2D(), Math.max(xPixelSize, yPixelSize));
+
+        // if the reader does not do cropping, make sure it's done in post processing if needed
+        GridCoverage2D coverage = reader.getCoverage();
+        assertBoundsEquals2D(
+                coverage.getEnvelope2D(), readEnvelope, Math.max(xPixelSize, yPixelSize));
+
+        // the image just has one band
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testBoundingBoxPartiallyOutside() throws Exception {
+        CoverageInfo coverage =
+                getCatalog().getCoverageByName(SystemTestData.MULTIBAND.getLocalPart());
+        ReferencedEnvelope readEnvelope =
+                new ReferencedEnvelope(
+                        500000, 540000, 3000000, 3600000, CRS.decode("EPSG:32611", true));
+        ImageReader reader =
+                new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, readEnvelope).invoke();
+
+        // expect deferred loading and restricted grid geometry
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+        assertThat(
+                parameters.keySet(),
+                Matchers.containsInAnyOrder(
+                        AbstractGridFormat.USE_JAI_IMAGEREAD,
+                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
+        // check the grid geometry is restricted in space, but has the same scale factors as the
+        // original one (from a gdalinfo output)
+        AffineTransform2D at = (AffineTransform2D) gg.getGridToCRS2D();
+        double xPixelSize = 3530;
+        double yPixelSize = 3547;
+        assertEquals(at.getScaleX(), xPixelSize, 1);
+        assertEquals(at.getScaleY(), -yPixelSize, 1);
+        // read bounds are the requested ones intersected with the coverage envelope, allow up to a
+        // pixel worth of difference
+        ReferencedEnvelope expectedEnvelope =
+                readEnvelope.intersection(coverage.getNativeBoundingBox());
+        assertBoundsEquals2D(
+                expectedEnvelope, gg.getEnvelope2D(), Math.max(xPixelSize, yPixelSize));
+
+        // the image just has one band
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testBoundingBoxAndRescale() throws Exception {
+        CoverageInfo coverage =
+                getCatalog().getCoverageByName(SystemTestData.MULTIBAND.getLocalPart());
+        ReferencedEnvelope readEnvelope =
+                new ReferencedEnvelope(
+                        520000, 748000, 3600000, 3700000, CRS.decode("EPSG:32611", true));
+        ImageReader reader = new ImageReader(coverage, 1, 1000, readEnvelope).invoke();
+
+        // expect deferred loading and restricted grid geometry
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+        assertThat(
+                parameters.keySet(),
+                Matchers.containsInAnyOrder(
+                        AbstractGridFormat.USE_JAI_IMAGEREAD,
+                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
+        // check the grid geometry is restricted in space and also scaled down to match the max
+        // pixels
+        AffineTransform2D at = (AffineTransform2D) gg.getGridToCRS2D();
+        double xPixelSize = 4882;
+        double yPixelSize = 4898;
+        assertEquals(xPixelSize, at.getScaleX(), 1);
+        assertEquals(-yPixelSize, at.getScaleY(), 1);
+        // read bounds are the requested ones, allow up to a pixel worth of difference
+        assertBoundsEquals2D(readEnvelope, gg.getEnvelope2D(), Math.max(xPixelSize, yPixelSize));
+
+        // the image just has one band
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    private Map<GeneralParameterDescriptor, Object> getParametersMap(
+            ArrayList<GeneralParameterValue> readParameters) {
+        return readParameters
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                pv -> pv.getDescriptor(), pv -> ((ParameterValue) pv).getValue()));
+    }
+
+    private void assertBoundsEquals2D(Envelope env1, Envelope env2, double eps) {
+        double[] delta = new double[4];
+        delta[0] = env1.getMinimum(0) - env2.getMinimum(0);
+        delta[1] = env1.getMaximum(0) - env2.getMaximum(0);
+        delta[2] = env1.getMinimum(1) - env2.getMinimum(1);
+        delta[3] = env1.getMaximum(1) - env2.getMaximum(1);
+
+        for (int i = 0; i < delta.length; i++) {
+            /*
+             * As per Envelope2D#boundsEquals we use ! here to
+             * catch any NaN values
+             */
+            if (!(Math.abs(delta[i]) <= eps)) {
+                fail("Envelopes have not same 2D bounds: " + env1 + ", " + env2);
+            }
+        }
     }
 }

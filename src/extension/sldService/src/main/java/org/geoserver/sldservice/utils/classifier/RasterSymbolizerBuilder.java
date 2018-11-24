@@ -15,6 +15,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Optional;
 import javax.media.jai.Histogram;
+import javax.media.jai.ParameterBlockJAI;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.image.ImageWorker;
@@ -37,9 +38,42 @@ public class RasterSymbolizerBuilder {
     private static StyleFactory SF =
             CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 
-    public static final int USHORT_MAX_VALUE = 65535;
-    static final int MAX_UNIQUE_VALUES =
-            Integer.getInteger("org.geoserver.sldService.maxUniqueRange", USHORT_MAX_VALUE);
+    /** Number of histogram bins, if not specified via system variable */
+    private static final int NUM_HISTOGRAM_BINS =
+            Integer.getInteger("org.geoserver.sldService.histogramBins", 256);
+
+    /**
+     * Maximum number of values collected by the unique value classifier, if not specified via
+     * system variable
+     */
+    private static final int MAX_UNIQUE_VALUES =
+            Integer.getInteger("org.geoserver.sldService.maxUniqueRange", 1024);
+
+    /**
+     * Maximum number of pixels read, operations will use subsampling to stay below it. The default
+     * value is the pixels of a 2048*2048 image
+     */
+    public static final int DEFAULT_MAX_PIXELS =
+            Integer.getInteger("org.geoserver.sldService.maxPixels", 4194304);
+
+    private long maxPixels;
+
+    /**
+     * Builds the {@link RasterSymbolizerBuilder} with a given pixel reading threshold before
+     * starting to recur to subsampling
+     */
+    public RasterSymbolizerBuilder(int maxPixels) {
+        if (maxPixels <= 0) {
+            throw new IllegalArgumentException(
+                    "The maximum number of pixels to be read should be a positive number");
+        }
+        this.maxPixels = maxPixels;
+    }
+
+    /** Default constructor */
+    public RasterSymbolizerBuilder() {
+        this.maxPixels = DEFAULT_MAX_PIXELS;
+    }
 
     /**
      * Builds a {@link ColorMap} of type "values" from the unique values in the raster
@@ -53,20 +87,17 @@ public class RasterSymbolizerBuilder {
         // instead
         int low, high;
         int dataType = image.getSampleModel().getDataType();
-        ImageWorker iw = new ImageWorker(image);
+        ImageWorker iw = getImageWorker(image);
         switch (dataType) {
             case DataBuffer.TYPE_BYTE:
                 low = 0;
                 high = 255;
                 break;
+                // The histogram can be very expensive memory wise as it's backed by a
+                // AtomicDouble[],
+                // check how many
             case DataBuffer.TYPE_USHORT:
-                low = 0;
-                high = 65535;
-                break;
             case DataBuffer.TYPE_SHORT:
-                low = Short.MIN_VALUE;
-                high = Short.MAX_VALUE;
-                break;
             case DataBuffer.TYPE_INT:
                 low = (int) iw.getMinimums()[0];
                 high = (int) iw.getMaximums()[0];
@@ -117,6 +148,28 @@ public class RasterSymbolizerBuilder {
     }
 
     /**
+     * Builds a ImageWorker with subsampling factors suitable to respect the configured max pixels
+     *
+     * @param image
+     * @return
+     */
+    ImageWorker getImageWorker(RenderedImage image) {
+        ImageWorker iw = new ImageWorker(image);
+
+        // check if subsampling is needed
+        long pixels = image.getWidth() * (long) image.getHeight();
+        if (pixels > maxPixels) {
+            // try to get as many pixels as possible, don't jump from 1M to 250k. Prefer skipping
+            // rows rather than cols (for the not so uncommon striped raster to be classified)
+            int yPeriod = (int) Math.round(Math.sqrt(pixels / (double) maxPixels));
+            int xPeriod = (int) Math.ceil(pixels / (yPeriod * maxPixels));
+            iw.setXPeriod(xPeriod).setYPeriod(yPeriod);
+        }
+
+        return iw;
+    }
+
+    /**
      * Builds a {@link ColorMap} based on equal intervals between the min and max value found in the
      * raster
      *
@@ -127,7 +180,7 @@ public class RasterSymbolizerBuilder {
      */
     public ColorMap equalIntervalClassification(
             RenderedImage image, int intervals, boolean open, boolean continuous) {
-        ImageWorker iw = new ImageWorker(image);
+        ImageWorker iw = getImageWorker(image);
         double low = iw.getMinimums()[0];
         double high = iw.getMaximums()[0];
 
@@ -156,8 +209,7 @@ public class RasterSymbolizerBuilder {
                         image,
                         continuous ? intervals - 1 : intervals,
                         ClassificationMethod.QUANTILE,
-                        1,
-                        1);
+                        NUM_HISTOGRAM_BINS);
         return getColorMapFromBreaks(breaks, open, continuous);
     }
 
@@ -176,8 +228,7 @@ public class RasterSymbolizerBuilder {
                         image,
                         continuous ? intervals - 1 : intervals,
                         ClassificationMethod.NATURAL_BREAKS,
-                        1,
-                        1);
+                        NUM_HISTOGRAM_BINS);
         return getColorMapFromBreaks(breaks, open, continuous);
     }
 
@@ -258,24 +309,32 @@ public class RasterSymbolizerBuilder {
             RenderedImage image,
             Integer intervals,
             ClassificationMethod classificationMethod,
-            int xPeriod,
-            int yPeriod) {
+            int numHistogramBins) {
         // used to extract some properties from the image
-        ImageWorker iw = new ImageWorker(image);
+        ImageWorker iw = getImageWorker(image);
         Double noData =
                 Optional.ofNullable(iw.getNoData()).map(r -> r.getMin().doubleValue()).orElse(null);
 
         // setup the call to the operation and create it
-        ParameterBlock pb = new ParameterBlock();
+        ParameterBlock pb = new ParameterBlockJAI("ClassBreaks");
         pb.addSource(image);
         pb.set(intervals, 0);
         pb.set(classificationMethod, 1);
-        pb.set(null, 2); /* extrema, no need to precompute for the methods we're using*/
         pb.set(iw.getROI(), 3);
         pb.set(new Integer[] {0}, 4); /* band, it was pre-selected */
-        pb.set(xPeriod, 5); /* xPeriod */
-        pb.set(yPeriod, 6); /* yPeriod */
+        pb.set(iw.getXPeriod(), 5);
+        pb.set(iw.getYPeriod(), 6);
         pb.set(noData, 7);
+        if (numHistogramBins > 0) {
+            Double[][] extrema = new Double[2][1];
+            extrema[0][0] = iw.getMinimums()[0];
+            extrema[1][0] = iw.getMaximums()[0];
+            pb.set(extrema, 2);
+            pb.set(true, 8);
+            pb.set(numHistogramBins, 9);
+        } else {
+            pb.set(null, 2); /* extrema, no need to precompute for the methods we're using*/
+        }
         // direct calls as there are some issues with the JAI op registration, at least in Tomcat
         RenderedImage op = new ClassBreaksRIF().create(pb, null);
 

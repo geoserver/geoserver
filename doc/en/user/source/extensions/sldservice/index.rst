@@ -135,7 +135,7 @@ The parameters usable to customize the ColorMap are:
      - 2
    * - attribute (mandatory)
      - Classification attribute
-     - For vector layers, one of the layer attribute names, for raster layers, a band number
+     - For vector layers, one of the layer attribute names, for raster layers, a band number (starting from one, like in the raster symbolizer)
      - No default for vectors, "1" for rasters
    * - method
      - Classification method
@@ -200,6 +200,10 @@ The parameters usable to customize the ColorMap are:
    * - customClasses
      - allows specifying a set of custom classes (client driven style); no classes calculation will happen (method, intervals, etc. are ignored)
      - classes in the following format: <min>,<max>,<color>;...;<minN>,<maxN>,<colorN>)
+     - 
+   * - bbox
+     - allows to run the classification on a specific bounding box. Recommended when the overall dataset is too big, and the classification can be performed on a smaller dataset, or to enhance the visualization of a particular subset of data
+     - same syntax as WMS/WFS, expected axis order is east/north unless the spatial reference system is explicitly provided, ``minx,miny,max,maxy[,srsName]``
      - 
     
 Examples

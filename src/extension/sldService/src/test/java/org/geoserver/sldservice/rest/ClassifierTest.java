@@ -6,23 +6,41 @@
  */
 package org.geoserver.sldservice.rest;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import it.geosolutions.jaiext.JAIExt;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeSet;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.rest.RestBaseController;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.FilterFunction_parseDouble;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.styling.ColorMap;
+import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.NamedLayer;
 import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.Symbolizer;
+import org.geotools.xml.styling.SLDParser;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -38,10 +56,34 @@ public class ClassifierTest extends SLDServiceBaseTest {
             new QName(
                     SystemTestData.CITE_URI, "ClassificationPolygons", SystemTestData.CITE_PREFIX);
 
+    static final QName MILANOGEO =
+            new QName(SystemTestData.CITE_URI, "milanogeo", SystemTestData.CITE_PREFIX);
+
+    static final QName TAZBYTE =
+            new QName(SystemTestData.CITE_URI, "tazbyte", SystemTestData.CITE_PREFIX);
+
+    static final QName DEM_FLOAT =
+            new QName(SystemTestData.CITE_URI, "dem", SystemTestData.CITE_PREFIX);
+
+    static final QName SRTM =
+            new QName(SystemTestData.CITE_URI, "srtm", SystemTestData.CITE_PREFIX);
+
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
     private static final String sldPostfix =
             "</FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>";
+
+    private static final double EPS = 1e-6;
+
+    @BeforeClass
+    public static void setupJaiExt() {
+        JAIExt.initJAIEXT(true, true);
+    }
+
+    @AfterClass
+    public static void cleanupJaiExt() {
+        JAIExt.initJAIEXT(false, true);
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -59,6 +101,17 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 "ClassificationPolygons.properties",
                 this.getClass(),
                 getCatalog());
+
+        testData.addRasterLayer(
+                MILANOGEO, "milanogeo.tif", "tif", null, this.getClass(), getCatalog());
+
+        testData.addRasterLayer(
+                TAZBYTE, "tazbyte.tiff", "tif", null, SystemTestData.class, getCatalog());
+
+        testData.addRasterLayer(
+                DEM_FLOAT, "dem_float.tif", "tif", null, this.getClass(), getCatalog());
+
+        testData.addRasterLayer(SRTM, "srtm.tif", "tif", null, this.getClass(), getCatalog());
     }
 
     @Test
@@ -466,20 +519,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[2], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
     }
 
-    @Test
-    public void testClassifyForCoverageIsEmpty() throws Exception {
-
-        final String restPath =
-                RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
-        MockHttpServletResponse response = getAsServletResponse(restPath);
-        assertTrue(response.getStatus() == 200);
-        Document dom = getAsDOM(restPath, 200);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        print(dom, baos);
-        String resultXml = baos.toString().replace("\r", "").replace("\n", "");
-        assertTrue(resultXml.indexOf("<Rules/>") != -1);
-    }
-
     private Rule[] checkRules(String resultXml, int classes) {
         Rule[] rules = checkSLD(resultXml);
         assertEquals(classes, rules.length);
@@ -513,8 +552,222 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(color, symbolizer.getGraphic().getMarks()[0].getFill().getColor().toString());
     }
 
+    @Test
+    public void testRasterUniqueBinary() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:milanogeo/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=uniqueInterval&ramp=blue&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEquals(CQL.toExpression("0.0"), entries[0].getQuantity());
+        assertEquals(CQL.toExpression("'#000068'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("1.0"), entries[1].getQuantity());
+        assertEquals(CQL.toExpression("'#0000B2'"), entries[1].getColor());
+    }
+
+    @Test
+    public void testRasterUniqueByte() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=uniqueInterval&ramp=blue&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(167, entries.length);
+        assertEquals(CQL.toExpression("1.0"), entries[0].getQuantity());
+        assertEquals(CQL.toExpression("'#00001E'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("178.0"), entries[166].getQuantity());
+        // this color is too dark, believe there is a bug in the ramps
+        assertEquals(CQL.toExpression("'#000056'"), entries[166].getColor());
+    }
+
+    @Test
+    public void testEqualIntervalDem() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=5&ramp=jet&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length);
+        assertEntry(entries[0], -1, null, "#000000", 0); // transparent entry
+        assertEntry(entries[1], 249.2, ">= -1 AND < 249.2", "#0000FF", 1);
+        assertEntry(entries[2], 499.4, ">= 249.2 AND < 499.4", "#FFFF00", 1);
+        assertEntry(entries[3], 749.6, ">= 499.4 AND < 749.6", "#FFAA00", 1);
+        assertEntry(entries[4], 999.8, ">= 749.6 AND < 999.8", "#FF5500", 1);
+        assertEntry(entries[5], 1250, ">= 999.8 AND <= 1250", "#FF0000", 1);
+    }
+
+    @Test
+    public void testEqualIntervalContinousDem() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -1, "-1", "#0000FF", 1);
+        assertEntry(entries[1], 311.75, "311.75", "#FFFF00", 1);
+        assertEntry(entries[2], 624.5, "624.5", "#FFAA00", 1);
+        assertEntry(entries[3], 937.25, "937.25", "#FF5500", 1);
+        assertEntry(entries[4], 1250, "1250", "#FF0000", 1);
+    }
+
+    @Test
+    public void testQuantileIntervalsSrtm() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length);
+        assertEntry(entries[0], -2, null, "#000000", 0); // transparent entry
+        assertEntry(entries[1], 237, ">= -2 AND < 237", "#0000FF", 1);
+        assertEntry(entries[2], 441, ">= 237 AND < 441", "#FFFF00", 1);
+        assertEntry(entries[3], 640, ">= 441 AND < 640", "#FFAA00", 1);
+        assertEntry(entries[4], 894, ">= 640 AND < 894", "#FF5500", 1);
+        assertEntry(entries[5], 1796, ">= 894 AND <= 1796", "#FF0000", 1);
+    }
+
+    @Test
+    public void testQuantileContinuousSrtm() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -2, "-2", "#0000FF", 1);
+        assertEntry(entries[1], 292, "292", "#FFFF00", 1);
+        assertEntry(entries[2], 536, "536", "#FFAA00", 1);
+        assertEntry(entries[3], 825, "825", "#FF5500", 1);
+        assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
+    }
+
+    @Test
+    public void testJenksIntervalsSrtm() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=jenks&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -2, "-2", "#0000FF", 1);
+        assertEntry(entries[1], 336, "336", "#FFFF00", 1);
+        assertEntry(entries[2], 660, "660", "#FFAA00", 1);
+        assertEntry(entries[3], 1011, "1011", "#FF5500", 1);
+        assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
+    }
+
+    @Test
+    public void testRasterCustomClassesInterval() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "customClasses=1,10,#FF0000;10,20,#00FF00;20,30,#0000FF&fullSLD=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(4, entries.length);
+        assertEntry(entries[0], 1, null, "#000000", 0); // transparent entry
+        assertEntry(entries[1], 10, ">= 1 AND < 10", "#FF0000", 1);
+        assertEntry(entries[2], 20, ">= 10 AND < 20", "#00FF00", 1);
+        assertEntry(entries[3], 30, ">= 20 AND <= 30", "#0000FF", 1);
+    }
+
+    @Test
+    public void testRasterCustomClassesContinuous() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "customClasses=1,10,#FF0000;10,20,#00FF00;20,30,#0000FF&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(3, entries.length);
+        assertEntry(entries[0], 1, "1", "#FF0000", 1);
+        assertEntry(entries[1], 10, "10", "#00FF00", 1);
+        assertEntry(entries[2], 20, "20", "#0000FF", 1);
+    }
+
+    /**
+     * Parses the DOM, check there is just one feature type style and one rule, and a single
+     * symbolizer of type RasterSymbolizer, and returns it
+     */
+    private RasterSymbolizer getRasterSymbolizer(Document dom) {
+        List<Rule> rules = getRules(dom);
+        assertEquals(1, rules.size());
+        List<Symbolizer> symbolizers = rules.get(0).symbolizers();
+        assertEquals(1, symbolizers.size());
+        assertThat(symbolizers.get(0), instanceOf(RasterSymbolizer.class));
+        return (RasterSymbolizer) symbolizers.get(0);
+    }
+
+    /** Parses the DOM, check there is just one feature type style and returns all rules in it */
+    private List<Rule> getRules(Document dom) {
+        SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory());
+        StyledLayerDescriptor sld = parser.parseDescriptor(dom.getDocumentElement());
+        NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
+        Style style = layer.getStyles()[0];
+        List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
+        assertEquals(1, featureTypeStyles.size());
+        return featureTypeStyles.get(0).rules();
+    }
+
     @Override
     protected String getServiceUrl() {
         return "classify";
+    }
+
+    private void assertEntry(
+            ColorMapEntry entry, double value, String label, String color, double opacity) {
+        assertEquals(value, entry.getQuantity().evaluate(null, Double.class), EPS);
+        assertEquals(label, entry.getLabel());
+        assertEquals(color, entry.getColor().evaluate(null, String.class));
+        double actualOpacity =
+                Optional.ofNullable(entry.getOpacity())
+                        .map(o -> o.evaluate(null, Double.class))
+                        .orElse((double) 1);
+        assertEquals(opacity, actualOpacity, EPS);
     }
 }

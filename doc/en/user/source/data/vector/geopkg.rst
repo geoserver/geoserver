@@ -29,7 +29,7 @@ When the extension has been installed, :guilabel:`GeoPackage` will be an option 
      - **Description**
    * - :guilabel:`database`
      - URI specifying geopackage file.
-   * - :guilabel:user
+   * - :guilabel:`user`
      - User to access database.
    * - :guilabel:`passwd`
      - Password to access database.

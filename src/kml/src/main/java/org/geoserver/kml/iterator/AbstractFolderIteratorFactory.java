@@ -3,10 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
+import java.util.Iterator;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
@@ -19,35 +20,32 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 
 /**
- * Base class for sequences that create one folder per layer
+ * Base class for iterators that create one folder per layer
  *
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractFolderSequenceFactory implements SequenceFactory<Feature> {
+public abstract class AbstractFolderIteratorFactory implements IteratorFactory<Feature> {
 
     protected KmlEncodingContext context;
 
     protected List<KmlDecorator> decorators;
 
-    public AbstractFolderSequenceFactory(KmlEncodingContext context) {
+    public AbstractFolderIteratorFactory(KmlEncodingContext context) {
         this.context = context;
         this.decorators = context.getDecoratorsForClass(Folder.class);
     }
 
-    public abstract class AbstractFolderGenerator implements Sequence<Feature> {
-        protected int i = 0;
-
-        protected int size;
+    public abstract class AbstractFolderGenerator implements Iterator<Feature> {
+        Iterator layerIterator;
 
         public AbstractFolderGenerator() {
-            this.size = context.getMapContent().layers().size();
+            this.layerIterator = context.getMapContent().layers().iterator();
         }
 
         @Override
         public Feature next() {
-            while (i < size) {
-                List<Layer> layers = context.getMapContent().layers();
-                Layer layer = layers.get(i++);
+            while (hasNext()) {
+                Layer layer = (Layer) layerIterator.next();
                 context.setCurrentLayer(layer);
 
                 // setup the folder and let it be decorated
@@ -92,6 +90,11 @@ public abstract class AbstractFolderSequenceFactory implements SequenceFactory<F
                 return folder;
             }
             return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return layerIterator.hasNext();
         }
 
         /**

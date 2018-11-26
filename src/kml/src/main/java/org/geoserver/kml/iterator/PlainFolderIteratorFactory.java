@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -11,6 +11,7 @@ import de.micromata.opengis.kml.v_2_2_0.GroundOverlay;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
 import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
+import java.util.Iterator;
 import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
@@ -24,32 +25,32 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 /**
- * Creates a sequence of folders mapping the layers in the map content, using either kml dumps or
+ * Creates an iterator of folders mapping the layers in the map content, using either kml dumps or
  * ground overlays (the classic approach, that is)
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
+public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
 
-    public PlainFolderSequenceFactory(KmlEncodingContext context) {
+    public PlainFolderIteratorFactory(KmlEncodingContext context) {
         super(context);
     }
 
     @Override
-    public Sequence<Feature> newSequence() {
+    public Iterator<Feature> newIterator() {
         return new PlainFolderGenerator();
     }
 
     public class PlainFolderGenerator extends AbstractFolderGenerator {
 
         protected void encodeFolderContents(Layer layer, Folder folder) {
-            // now encode the contents (dynamic bit, it may use the Sequence construct)
+            // now encode the contents (dynamic bit, it may use the Iterator construct)
             if (layer instanceof FeatureLayer) {
                 // do we use a KML placemark dump, or a ground overlay?
                 if (useVectorOutput(context)) {
                     List<Feature> features =
-                            new SequenceList<Feature>(
-                                    new FeatureSequenceFactory(context, (FeatureLayer) layer));
+                            new IteratorList<Feature>(
+                                    new FeatureIteratorFactory(context, (FeatureLayer) layer));
                     context.addFeatures(folder, features);
                 } else {
                     addGroundOverlay(folder, layer);
@@ -80,7 +81,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
             FeatureLayer centroidsLayer =
                     new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
             List<Feature> features =
-                    new SequenceList<Feature>(new FeatureSequenceFactory(context, centroidsLayer));
+                    new IteratorList<Feature>(new FeatureIteratorFactory(context, centroidsLayer));
             context.addFeatures(folder, features);
         }
 

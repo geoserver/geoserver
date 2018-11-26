@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -33,6 +35,7 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.*;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -92,6 +95,63 @@ public class KMLTest extends WMSTestSupport {
                         3045967, 3108482, 1206627, 1285209, CRS.decode("EPSG:2876")));
         properties.put(LayerProperty.SRS, 2876);
         testData.addVectorLayer(BOULDER, properties, "boulder.properties", getClass(), catalog);
+
+        String points = MockData.POINTS.getLocalPart();
+        String lines = MockData.LINES.getLocalPart();
+        String polygons = MockData.POLYGONS.getLocalPart();
+
+        setNativeBox(catalog, points);
+        setNativeBox(catalog, lines);
+        setNativeBox(catalog, polygons);
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName("layerGroup");
+        lg.getLayers().add(catalog.getLayerByName(points));
+        lg.getStyles().add(catalog.getStyleByName("point"));
+        lg.getLayers().add(catalog.getLayerByName(lines));
+        lg.getStyles().add(catalog.getStyleByName("line"));
+        lg.getLayers().add(catalog.getLayerByName(polygons));
+        lg.getStyles().add(catalog.getStyleByName("polygon"));
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.calculateLayerGroupBounds(lg);
+        catalog.add(lg);
+    }
+
+    public void setNativeBox(Catalog catalog, String name) throws Exception {
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(name);
+        fti.setNativeBoundingBox(fti.getFeatureSource(null, null).getBounds());
+        fti.setLatLonBoundingBox(
+                new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
+        catalog.save(fti);
+    }
+
+    @Test
+    public void testLayerGroupWithPoints() throws Exception {
+
+        Catalog cat = getCatalog();
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
+
+        List<PublishedInfo> layers = lgi.getLayers();
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + lgi.getName()
+                                + "&styles="
+                                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
+        //         print(doc, System.out);
+
+        assertEquals(layers.size(), doc.getElementsByTagName("Folder").getLength());
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/kml/icon/point?0.0.0=",
+                "//kml:Folder[1]/kml:Placemark/kml:Style/kml:IconStyle/kml:Icon/kml:href",
+                doc);
+        assertXpathEvaluatesTo(
+                "http://icons.opengeo.org/markers/icon-line.1.png",
+                "//kml:Folder[2]/kml:Placemark/kml:Style/kml:IconStyle/kml:Icon/kml:href",
+                doc);
     }
 
     @Test
@@ -702,5 +762,60 @@ public class KMLTest extends WMSTestSupport {
 
         assertEquals(-105.2, p[0], 0.1);
         assertEquals(40.0, p[1], 0.1);
+    }
+
+    @Test
+    public void testPointLayerGroupVector() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&featureId=RoadSegments.1107532045088");
+
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
+        String expectedDescription =
+                String.format(
+                        "<h4>RoadSegments</h4>%n"
+                                + "\n"
+                                + "<ul class=\"textattributes\">\n"
+                                + "  \n"
+                                + "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n"
+                                + "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n"
+                                + "</ul>\n");
+        String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
+        assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);
+        // check look-at
+        assertXpathEvaluatesTo(
+                "-0.0020000000000095497", "//kml:Placemark/kml:LookAt/kml:longitude", doc);
+        assertXpathEvaluatesTo(
+                "5.000000003008154E-5", "//kml:Placemark/kml:LookAt/kml:latitude", doc);
+        // check style
+        assertXpathEvaluatesTo(
+                "00ffffff", "//kml:Placemark/kml:Style/kml:IconStyle/kml:color", doc);
+        assertXpathEvaluatesTo("0.4", "//kml:Placemark/kml:Style/kml:IconStyle/kml:scale", doc);
+        assertXpathEvaluatesTo(
+                "http://icons.opengeo.org/markers/icon-line.1.png",
+                "//kml:Placemark/kml:Style/kml:IconStyle/kml:Icon/kml:href",
+                doc);
+        assertXpathEvaluatesTo(
+                "00ffffff", "//kml:Placemark/kml:Style/kml:LabelStyle/kml:color", doc);
+        assertXpathEvaluatesTo(
+                "ff000000", "//kml:Placemark/kml:Style/kml:LineStyle/kml:color", doc);
+        assertXpathEvaluatesTo("4.0", "//kml:Placemark/kml:Style/kml:LineStyle/kml:width", doc);
+        // check geometry
+        assertXpathEvaluatesTo(
+                "-0.002000087662804264,4.997808429893395E-5",
+                "//kml:Placemark/kml:MultiGeometry/kml:Point/kml:coordinates",
+                doc);
+        assertXpathEvaluatesTo(
+                "-0.0042,-6.0E-4 -0.0032,-3.0E-4 -0.0026,-1.0E-4 -0.0014,2.0E-4 2.0E-4,7.0E-4",
+                "//kml:Placemark/kml:MultiGeometry/kml:LineString/kml:coordinates",
+                doc);
     }
 }

@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.sequence;
+package org.geoserver.kml.iterator;
 
 import java.util.AbstractList;
 import java.util.Iterator;

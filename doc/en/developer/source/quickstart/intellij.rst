@@ -76,7 +76,7 @@ Access GeoServer front page
 * The default ``admin`` password is ``geoserver``.
 
 Run GeoServer from Intellij on Windows
----------------------------
+--------------------------------------
 
 #. Add bash to your Windows environment path and restart Intellij.  
 #. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the security-tests project in the security module.  Right click on the security-tests project and click Rebuild.  

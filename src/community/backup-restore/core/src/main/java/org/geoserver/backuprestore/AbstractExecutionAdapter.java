@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
@@ -42,11 +40,11 @@ public abstract class AbstractExecutionAdapter {
 
     private Resource archiveFile;
 
-    private String wsFilter;
+    private Filter wsFilter;
 
-    private String siFilter;
+    private Filter siFilter;
 
-    private String liFilter;
+    private Filter liFilter;
 
     /**
      * Default Constructor
@@ -258,43 +256,31 @@ public abstract class AbstractExecutionAdapter {
 
     /** @return the wsFilter */
     public Filter getWsFilter() {
-        try {
-            return wsFilter != null ? ECQL.toFilter(wsFilter) : null;
-        } catch (CQLException e) {
-            return null;
-        }
+        return wsFilter;
     }
 
     /** @param wsFilter the wsFilter to set */
-    public void setWsFilter(String wsFilter) {
+    public void setWsFilter(Filter wsFilter) {
         this.wsFilter = wsFilter;
     }
 
     /** @return the siFilter */
     public Filter getSiFilter() {
-        try {
-            return siFilter != null ? ECQL.toFilter(siFilter) : null;
-        } catch (CQLException e) {
-            return null;
-        }
+        return siFilter;
     }
 
     /** @param siFilter the siFilter to set */
-    public void setSiFilter(String siFilter) {
+    public void setSiFilter(Filter siFilter) {
         this.siFilter = siFilter;
     }
 
     /** @return the liFilter */
     public Filter getLiFilter() {
-        try {
-            return liFilter != null ? ECQL.toFilter(liFilter) : null;
-        } catch (CQLException e) {
-            return null;
-        }
+        return liFilter;
     }
 
     /** @param liFilter the liFilter to set */
-    public void setLiFilter(String liFilter) {
+    public void setLiFilter(Filter liFilter) {
         this.liFilter = liFilter;
     }
 }

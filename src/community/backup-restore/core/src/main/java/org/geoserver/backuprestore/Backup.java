@@ -440,9 +440,9 @@ public class Backup extends JobExecutionListenerSupport
 
                     backupExecution.setArchiveFile(archiveFile);
                     backupExecution.setOverwrite(overwrite);
-                    backupExecution.setWsFilter(wsFilter != null ? ECQL.toCQL(wsFilter) : null);
-                    backupExecution.setSiFilter(siFilter != null ? ECQL.toCQL(siFilter) : null);
-                    backupExecution.setLiFilter(liFilter != null ? ECQL.toCQL(liFilter) : null);
+                    backupExecution.setWsFilter(wsFilter);
+                    backupExecution.setSiFilter(siFilter);
+                    backupExecution.setLiFilter(liFilter);
 
                     backupExecution.getOptions().add("OVERWRITE=" + overwrite);
                     for (Entry jobParam : jobParameters.toProperties().entrySet()) {
@@ -551,9 +551,9 @@ public class Backup extends JobExecutionListenerSupport
                             new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
                     restoreExecutions.put(restoreExecution.getId(), restoreExecution);
                     restoreExecution.setArchiveFile(archiveFile);
-                    restoreExecution.setWsFilter(wsFilter != null ? ECQL.toCQL(wsFilter) : null);
-                    restoreExecution.setSiFilter(siFilter != null ? ECQL.toCQL(siFilter) : null);
-                    restoreExecution.setLiFilter(liFilter != null ? ECQL.toCQL(liFilter) : null);
+                    restoreExecution.setWsFilter(wsFilter);
+                    restoreExecution.setSiFilter(siFilter);
+                    restoreExecution.setLiFilter(liFilter);
 
                     for (Entry jobParam : jobParameters.toProperties().entrySet()) {
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())

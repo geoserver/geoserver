@@ -77,6 +77,6 @@ Access GeoServer front page
 Run GeoServer from Intellij on Windows
 ---------------------------
 
-#. Add bash to your windows environment path and restart intellij.  
+#. Add bash to your Windows environment path and restart Intellij.  
 #. Rebuild the security-tests project in the security module.  Right click on the security-tests project and click Rebuild.  Otherwise,  there will be symbol errors such as "cannot find symbol AbstractUserGroupServiceTest".
-#. Using wcs1_1 as the working directory, run a mvn clean install.  Some of the generated code from this project does not get include in the build.  This causes errors like "cannot find symbol class ASTAxisId"
+#. Using wcs1_1 as the working directory, run a ``mvn clean install``.  Some of the generated code from this project does not get include in the build.  This causes errors like "cannot find symbol class ASTAxisId"

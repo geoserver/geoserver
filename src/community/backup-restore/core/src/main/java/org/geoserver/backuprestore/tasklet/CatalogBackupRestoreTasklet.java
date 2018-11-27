@@ -9,6 +9,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
@@ -21,6 +22,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -45,6 +48,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
@@ -144,6 +148,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     jobExecution.getJobParameters().getString(Backup.PARAM_OUTPUT_FILE_PATH);
             Resource targetBackupFolder = Resources.fromURL(outputFolderURL);
 
+            authenticate();
+
             if (!skipSettings) {
                 // Store GeoServer Global Info
                 doWrite(geoserver.getGlobal(), targetBackupFolder, "global.xml");
@@ -167,7 +173,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             Resource targetWorkspacesFolder = BackupUtils.dir(targetBackupFolder, "workspaces");
 
             // Store Default Workspace
-            if (filteredWorkspace(getCatalog().getDefaultWorkspace())) {
+            if (!filteredResource(getCatalog().getDefaultWorkspace(), true)) {
                 doWrite(
                         getCatalog().getDefaultNamespace(),
                         targetWorkspacesFolder,
@@ -177,7 +183,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             // Store Workspace Specific Settings and Services
             for (WorkspaceInfo ws : getCatalog().getWorkspaces()) {
-                if (filteredWorkspace(ws)) {
+                if (!filteredResource(ws, true)) {
                     if (geoserver.getSettings(ws) != null) {
                         doWrite(
                                 geoserver.getSettings(ws),
@@ -212,44 +218,51 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 }
             }
 
-            // Backup GeoServer Plugins
-            final GeoServerResourceLoader targetGeoServerResourceLoader =
-                    new GeoServerResourceLoader(targetBackupFolder.dir());
-            for (GeoServerPluginConfigurator pluginConfig :
-                    GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
-                // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);' after having
-                // replaced the config files.
-                pluginConfig.saveConfiguration(targetGeoServerResourceLoader);
-            }
+            if (!filterIsValid()) {
+                // Backup additional stuff only when performing a FULL backup
 
-            for (GeoServerPropertyConfigurer props :
-                    GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
-                // On restore invoke 'props.reload();' after having replaced the properties files.
-                Resource configFile = props.getConfigFile();
-
-                if (configFile != null && Resources.exists(configFile)) {
-                    Resource targetDir =
-                            Files.asResource(
-                                    targetGeoServerResourceLoader.findOrCreateDirectory(
-                                            Paths.convert(
-                                                    dd.getResourceLoader().getBaseDirectory(),
-                                                    configFile.parent().dir())));
-
-                    Resources.copy(configFile.file(), targetDir);
+                // Backup GeoServer Plugins
+                final GeoServerResourceLoader targetGeoServerResourceLoader =
+                        new GeoServerResourceLoader(targetBackupFolder.dir());
+                for (GeoServerPluginConfigurator pluginConfig :
+                        GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
+                    // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);' after
+                    // having
+                    // replaced the config files.
+                    pluginConfig.saveConfiguration(targetGeoServerResourceLoader);
                 }
-            }
 
-            // Backup other configuration bits, like images, palettes, user projections and so on...
-            backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
+                for (GeoServerPropertyConfigurer props :
+                        GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
+                    // On restore invoke 'props.reload();' after having replaced the properties
+                    // files.
+                    Resource configFile = props.getConfigFile();
 
-            // Backup GWC Configuration bits
-            if (!skipGWC) {
-                try {
-                    if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-                        backupGWCSettings(targetBackupFolder);
+                    if (configFile != null && Resources.exists(configFile)) {
+                        Resource targetDir =
+                                Files.asResource(
+                                        targetGeoServerResourceLoader.findOrCreateDirectory(
+                                                Paths.convert(
+                                                        dd.getResourceLoader().getBaseDirectory(),
+                                                        configFile.parent().dir())));
+
+                        Resources.copy(configFile.file(), targetDir);
                     }
-                } catch (NoSuchBeanDefinitionException e) {
-                    LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
+                }
+
+                // Backup other configuration bits, like images, palettes, user projections and so
+                // on...
+                backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
+
+                // Backup GWC Configuration bits
+                if (!skipGWC) {
+                    try {
+                        if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                            backupGWCSettings(targetBackupFolder);
+                        }
+                    } catch (NoSuchBeanDefinitionException e) {
+                        LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -259,14 +272,6 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                             "Exception occurred while storing GeoServer globals and services settings!",
                             e));
         }
-    }
-
-    /**
-     * @param ws
-     * @return
-     */
-    private boolean filteredWorkspace(WorkspaceInfo ws) {
-        return getFilter() == null || (getFilter() != null && getFilter().evaluate(ws));
     }
 
     /**
@@ -285,6 +290,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 jobExecution.getJobParameters().getString(Backup.PARAM_INPUT_FILE_PATH);
         Resource sourceRestoreFolder = Resources.fromURL(inputFolderURL);
         Resource sourceWorkspacesFolder = null;
+
+        authenticate();
 
         // Try first to load all the settings available into the source restore folder
         GeoServerInfo newGeoServerInfo = null;
@@ -306,7 +313,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             sourceWorkspacesFolder = BackupUtils.dir(sourceRestoreFolder, "workspaces");
 
             // Set Default Namespace and Workspace
-            if (Resources.exists(sourceWorkspacesFolder.get("default.xml"))) {
+            if (!filterIsValid() && Resources.exists(sourceWorkspacesFolder.get("default.xml"))) {
                 NamespaceInfo newDefaultNamespace =
                         (NamespaceInfo) doRead(sourceWorkspacesFolder, "defaultnamespace.xml");
                 WorkspaceInfo newDefaultWorkspace =
@@ -315,11 +322,21 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 getCatalog().setDefaultWorkspace(newDefaultWorkspace);
             }
         } catch (Exception e) {
-            logValidationExceptions(
-                    (ValidationResult) null,
-                    new UnexpectedJobExecutionException(
-                            "Exception occurred while storing GeoServer globals and services settings!",
-                            e));
+            if (filterIsValid()) {
+                logValidationExceptions(
+                        (ValidationResult) null,
+                        new UnexpectedJobExecutionException(
+                                "Exception occurred while storing GeoServer globals and services settings!",
+                                e));
+            } else {
+                LOGGER.log(
+                        Level.WARNING,
+                        "Error occurred while trying to Restore the Default Workspace!",
+                        e);
+                if (getCurrentJobExecution() != null) {
+                    getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                }
+            }
         }
 
         // RESTORE
@@ -393,13 +410,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoServerInfo newGeoServerInfo,
             LoggingInfo newLoggingInfo)
             throws IOException, Exception, IllegalArgumentException {
-        // TODO: add option 'cleanUpGeoServerDataDir'
-        // TODO: purge/preserve GEOSERVER_DATA_DIR
-        geoserver.getCatalog().getResourcePool().dispose();
-        geoserver.getCatalog().dispose();
-        geoserver.dispose();
 
-        if (!skipSettings) {
+        if (!skipSettings && !filterIsValid()) {
             // Restore GeoServer Global Info
             Files.delete(dd.get("global.xml").file());
             doWrite(newGeoServerInfo, dd.get(Paths.BASE), "global.xml");
@@ -417,69 +429,76 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // - Prepare folder
         Resource workspaces = dd.get("workspaces");
         if (purge) {
-            Files.delete(workspaces.dir());
+            if (!filterIsValid()) {
+                Files.delete(workspaces.dir());
+            }
             workspaces = BackupUtils.dir(dd.get(Paths.BASE), "workspaces");
         }
 
-        restoreWorkSpacesAndLayers(workspaces);
+        restoreWorkSpacesAndLayers(sourceRestoreFolder, workspaces);
 
-        // Restore GeoServer Settings
         // - GeoServer Catalog Alignment
-        geoserver.reload(getCatalog());
+        // Align missing Resources (in case of filtering) from the original catalog
+        syncTo(geoserver.getCatalog());
 
         // Restore Styles
         // - Prepare folder
         Resource styles = dd.get("styles");
 
         if (purge) {
-            Files.delete(styles.dir());
-            styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
+            if (!filterIsValid()) {
+                Files.delete(styles.dir());
+                styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
+                restoreGlobalStyles(sourceRestoreFolder, styles);
+            }
         }
-
-        restoreGlobalStyles(sourceRestoreFolder, styles);
 
         // Restore LayerGroups
         // - Prepare folder
         Resource layerGroups = dd.get("layergroups");
         // - TODO: if purge
         if (purge) {
-            Files.delete(layerGroups.dir());
-            layerGroups = BackupUtils.dir(dd.get(Paths.BASE), "layergroups");
+            if (!filterIsValid()) {
+                Files.delete(layerGroups.dir());
+                layerGroups = BackupUtils.dir(dd.get(Paths.BASE), "layergroups");
+                restoreGlobalLayerGroups(layerGroups);
+            }
         }
-
-        restoreGlobalLayerGroups(layerGroups);
 
         // Restore Workspace Specific Settings and Services
-        restoreLocalWorkspaceSettingsAndServices(
-                geoserver, sourceRestoreFolder, sourceWorkspacesFolder, dd);
+        if (purge && !filterIsValid()) {
+            restoreLocalWorkspaceSettingsAndServices(
+                    geoserver, sourceRestoreFolder, sourceWorkspacesFolder, dd);
 
-        // Restore GeoServer Plugins
-        final GeoServerResourceLoader sourceGeoServerResourceLoader =
-                new GeoServerResourceLoader(sourceRestoreFolder.dir());
-        for (GeoServerPluginConfigurator pluginConfig :
-                GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
-            // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);'. Replace
-            // 'properties' files first.
-            for (Resource configFile : pluginConfig.getFileLocations()) {
-                replaceConfigFile(sourceGeoServerResourceLoader, configFile);
+            // Restore GeoServer Plugins
+            final GeoServerResourceLoader sourceGeoServerResourceLoader =
+                    new GeoServerResourceLoader(sourceRestoreFolder.dir());
+            for (GeoServerPluginConfigurator pluginConfig :
+                    GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
+                // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);'. Replace
+                // 'properties' files first.
+                for (Resource configFile : pluginConfig.getFileLocations()) {
+                    replaceConfigFile(sourceGeoServerResourceLoader, configFile);
+                }
+
+                // - Invoke 'pluginConfig.loadConfiguration' from the GOSERVER_DATA_DIR
+                pluginConfig.loadConfiguration(dd.getResourceLoader());
             }
 
-            // - Invoke 'pluginConfig.loadConfiguration' from the GOSERVER_DATA_DIR
-            pluginConfig.loadConfiguration(dd.getResourceLoader());
+            for (GeoServerPropertyConfigurer props :
+                    GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
+                // On restore invoke 'props.reload();' after having replaced the properties files.
+                Resource configFile = props.getConfigFile();
+                replaceConfigFile(sourceGeoServerResourceLoader, configFile);
+
+                // - Invoke 'props.reload()' from the GOSERVER_DATA_DIR
+                props.reload();
+            }
+
+            // Restore other configuration bits, like images, palettes, user projections and so
+            // on...
+            backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
         }
-
-        for (GeoServerPropertyConfigurer props :
-                GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
-            // On restore invoke 'props.reload();' after having replaced the properties files.
-            Resource configFile = props.getConfigFile();
-            replaceConfigFile(sourceGeoServerResourceLoader, configFile);
-
-            // - Invoke 'props.reload()' from the GOSERVER_DATA_DIR
-            props.reload();
-        }
-
-        // Restore other configuration bits, like images, palettes, user projections and so on...
-        backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
 
         // Restore GWC Configuration bits
         if (!skipGWC) {
@@ -530,7 +549,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         BackupUtils.dir(td.get(Paths.BASE), "workspaces");
         Resource workspaces = td.get("workspaces");
 
-        restoreWorkSpacesAndLayers(workspaces);
+        restoreWorkSpacesAndLayers(sourceRestoreFolder, workspaces);
 
         // Restore Styles
         // - Prepare folder
@@ -608,7 +627,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoServerDataDirectory dd)
             throws Exception {
         for (WorkspaceInfo ws : geoserver.getCatalog().getWorkspaces()) {
-            if (filteredWorkspace(ws)) {
+            if (!filteredResource(ws, true)) {
                 Resource wsFolder = BackupUtils.dir(sourceWorkspacesFolder, ws.getName());
                 SettingsInfo wsSettings = null;
                 if (Resources.exists(wsFolder.get("settings.xml"))) {
@@ -629,6 +648,46 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                 dd.get(Paths.path("workspaces", ws.getName())),
                                 "settings.xml");
                     }
+
+                    NamespaceInfo wsNameSpace = null;
+                    if (Resources.exists(wsFolder.get("namespace.xml"))) {
+                        wsNameSpace = (NamespaceInfo) doRead(wsFolder, "namespace.xml");
+                    }
+
+                    if (wsNameSpace != null) {
+                        if (!isDryRun()) {
+                            geoserver.add(wsSettings);
+                            doWrite(
+                                    geoserver.getSettings(ws),
+                                    dd.get(Paths.path("workspaces", ws.getName())),
+                                    "namespace.xml");
+                        } else {
+                            doWrite(
+                                    wsSettings,
+                                    dd.get(Paths.path("workspaces", ws.getName())),
+                                    "namespace.xml");
+                        }
+                    }
+
+                    WorkspaceInfo wsInfo = null;
+                    if (Resources.exists(wsFolder.get("workspace.xml"))) {
+                        wsInfo = (WorkspaceInfo) doRead(wsFolder, "workspace.xml");
+                    }
+
+                    if (wsInfo != null) {
+                        if (!isDryRun()) {
+                            geoserver.add(wsSettings);
+                            doWrite(
+                                    geoserver.getSettings(ws),
+                                    dd.get(Paths.path("workspaces", ws.getName())),
+                                    "workspace.xml");
+                        } else {
+                            doWrite(
+                                    wsSettings,
+                                    dd.get(Paths.path("workspaces", ws.getName())),
+                                    "workspace.xml");
+                        }
+                    }
                 }
 
                 // Restore Workspace Local Services
@@ -640,6 +699,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                     @Override
                                     public boolean accept(Resource res) {
                                         if (!"settings.xml".equals(res.name())
+                                                && !"namespace.xml".equals(res.name())
+                                                && !"workspace.xml".equals(res.name())
                                                 && res.name().endsWith(".xml")) {
                                             return true;
                                         }
@@ -753,67 +814,147 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
      * @param workspaces
      * @throws Exception
      */
-    private void restoreWorkSpacesAndLayers(Resource workspaces) throws Exception {
+    private void restoreWorkSpacesAndLayers(Resource sourceRestoreFodler, Resource workspaces)
+            throws Exception {
         // - Restore Default Workspace
-        Files.delete(workspaces.get("default.xml").file());
-        doWrite(getCatalog().getDefaultWorkspace(), workspaces, "default.xml");
+        if (!filterIsValid() || !filteredResource(getCatalog().getDefaultWorkspace(), true)) {
+            Files.delete(workspaces.get("default.xml").file());
+            doWrite(getCatalog().getDefaultWorkspace(), workspaces, "default.xml");
+        }
 
         // - Restore Workspaces/Namespaces definitions and settings
         for (WorkspaceInfo ws : getCatalog().getWorkspaces()) {
-            if (filteredWorkspace(ws)) {
+            if (!filteredResource(ws, true)) {
                 // Restore Workspace and Namespace confifuration
                 // - Prepare Folder
-                Files.delete(workspaces.get(ws.getName()).dir());
                 Resource wsFolder = BackupUtils.dir(workspaces, ws.getName());
+                if (getFilters().length == 1 || getFilters()[1] == null) {
+                    Files.delete(workspaces.get(ws.getName()).dir());
 
-                doWrite(getCatalog().getNamespaceByPrefix(ws.getName()), wsFolder, "namespace.xml");
-                doWrite(ws, wsFolder, "workspace.xml");
+                    doWrite(
+                            getCatalog().getNamespaceByPrefix(ws.getName()),
+                            wsFolder,
+                            "namespace.xml");
+                    doWrite(ws, wsFolder, "workspace.xml");
+                }
 
                 // Restore DataStores/CoverageStores
                 for (DataStoreInfo ds :
                         getCatalog().getStoresByWorkspace(ws.getName(), DataStoreInfo.class)) {
-                    // - Prepare Folder
-                    Resource dsFolder = BackupUtils.dir(wsFolder, ds.getName());
-
-                    ds.setWorkspace(ws);
-
-                    doWrite(ds, dsFolder, "datastore.xml");
-
-                    // Restore Resources
-                    for (FeatureTypeInfo ft : getCatalog().getFeatureTypesByDataStore(ds)) {
+                    if (!filteredResource(ds, ws, true, StoreInfo.class)) {
                         // - Prepare Folder
-                        Files.delete(dsFolder.get(ft.getName()).dir());
-                        Resource ftFolder = BackupUtils.dir(dsFolder, ft.getName());
+                        Resource dsFolder = BackupUtils.dir(wsFolder, ds.getName());
 
-                        doWrite(ft, ftFolder, "featuretype.xml");
+                        if (getFilters().length == 3 && getFilters()[2] == null) {
+                            Files.delete(dsFolder.dir());
+                            ds.setWorkspace(ws);
+                            doWrite(ds, dsFolder, "datastore.xml");
+                        }
 
-                        // Restore Layers
-                        for (LayerInfo ly : getCatalog().getLayers(ft)) {
-                            doWrite(ly, ftFolder, "layer.xml");
+                        // Restore Resources
+                        for (FeatureTypeInfo ft : getCatalog().getFeatureTypesByDataStore(ds)) {
+                            if (!filteredResource(ft, ws, true, ResourceInfo.class)) {
+                                // - Prepare Folder
+                                Files.delete(dsFolder.get(ft.getName()).dir());
+                                Resource ftFolder = BackupUtils.dir(dsFolder, ft.getName());
+
+                                doWrite(ft, ftFolder, "featuretype.xml");
+
+                                // Restore Layers
+                                for (LayerInfo ly : getCatalog().getLayers(ft)) {
+                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                        doWrite(ly, ftFolder, "layer.xml");
+
+                                        Resource ftResource =
+                                                sourceRestoreFodler.get(
+                                                        Paths.path(
+                                                                "workspaces/"
+                                                                        + ws.getName()
+                                                                        + "/"
+                                                                        + ds.getName(),
+                                                                ft.getName()));
+                                        List<Resource> resources =
+                                                Resources.list(
+                                                        ftResource,
+                                                        new Filter<Resource>() {
+                                                            @Override
+                                                            public boolean accept(Resource res) {
+                                                                if (res.getType() == Type.RESOURCE
+                                                                        && !res.name()
+                                                                                .endsWith(".xml")) {
+                                                                    return true;
+                                                                }
+                                                                return false;
+                                                            }
+                                                        },
+                                                        true);
+
+                                        for (Resource resource : resources) {
+                                            Resources.copy(
+                                                    resource.in(), ftFolder, resource.name());
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
 
                 for (CoverageStoreInfo cs :
                         getCatalog().getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class)) {
-                    // - Prepare Folder
-                    Resource csFolder = BackupUtils.dir(wsFolder, cs.getName());
-
-                    cs.setWorkspace(ws);
-
-                    doWrite(cs, csFolder, "coveragestore.xml");
-
-                    // Restore Resources
-                    for (CoverageInfo ci : getCatalog().getCoveragesByCoverageStore(cs)) {
+                    if (!filteredResource(cs, ws, true, StoreInfo.class)) {
                         // - Prepare Folder
-                        Files.delete(csFolder.get(ci.getName()).dir());
-                        Resource ciFolder = BackupUtils.dir(csFolder, ci.getName());
+                        Resource csFolder = BackupUtils.dir(wsFolder, cs.getName());
 
-                        doWrite(ci, ciFolder, "coverage.xml");
+                        cs.setWorkspace(ws);
 
-                        // Restore Layers
-                        for (LayerInfo ly : getCatalog().getLayers(ci)) {
-                            doWrite(ly, ciFolder, "layer.xml");
+                        doWrite(cs, csFolder, "coveragestore.xml");
+
+                        // Restore Resources
+                        for (CoverageInfo ci : getCatalog().getCoveragesByCoverageStore(cs)) {
+                            if (!filteredResource(ci, ws, true, ResourceInfo.class)) {
+                                // - Prepare Folder
+                                Files.delete(csFolder.get(ci.getName()).dir());
+                                Resource ciFolder = BackupUtils.dir(csFolder, ci.getName());
+
+                                doWrite(ci, ciFolder, "coverage.xml");
+
+                                // Restore Layers
+                                for (LayerInfo ly : getCatalog().getLayers(ci)) {
+                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                        doWrite(ly, ciFolder, "layer.xml");
+
+                                        Resource ftResource =
+                                                sourceRestoreFodler.get(
+                                                        Paths.path(
+                                                                "workspaces/"
+                                                                        + ws.getName()
+                                                                        + "/"
+                                                                        + cs.getName(),
+                                                                ci.getName()));
+                                        List<Resource> resources =
+                                                Resources.list(
+                                                        ftResource,
+                                                        new Filter<Resource>() {
+                                                            @Override
+                                                            public boolean accept(Resource res) {
+                                                                if (res.getType() == Type.RESOURCE
+                                                                        && !res.name()
+                                                                                .endsWith(".xml")) {
+                                                                    return true;
+                                                                }
+                                                                return false;
+                                                            }
+                                                        },
+                                                        true);
+
+                                        for (Resource resource : resources) {
+                                            Resources.copy(
+                                                    resource.in(), ciFolder, resource.name());
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -844,7 +985,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             GWCConfig gwcConfig = testGWCCP.getConfig();
 
-            Assert.notNull(gwcConfig);
+            Assert.notNull(gwcConfig, "gwcConfig is NULL");
 
             // TODO: perform more tests and integrity checks on reloaded configuration
 
@@ -892,7 +1033,6 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
 
                     if (layerInfo != null) {
-
                         WorkspaceInfo ws =
                                 layerInfo.getResource() != null
                                                 && layerInfo.getResource().getStore() != null
@@ -907,23 +1047,30 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                                                 .getName())
                                         : null;
 
-                        if (!filteredResource(layerInfo, ws, true)) {
+                        if (!filteredResource(ws, true)) {
                             persistResource = true;
                         }
                     } else {
-                        LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
+                        try {
+                            LayerGroupInfo layerGroupInfo =
+                                    getCatalog().getLayerGroupByName(layerName);
+                            if (layerGroupInfo != null) {
+                                WorkspaceInfo ws =
+                                        layerGroupInfo.getWorkspace() != null
+                                                ? getCatalog()
+                                                        .getWorkspaceByName(
+                                                                layerGroupInfo
+                                                                        .getWorkspace()
+                                                                        .getName())
+                                                : null;
 
-                        if (layerGroupInfo != null) {
-
-                            WorkspaceInfo ws =
-                                    layerGroupInfo.getWorkspace() != null
-                                            ? getCatalog()
-                                                    .getWorkspaceByName(
-                                                            layerGroupInfo.getWorkspace().getName())
-                                            : null;
-
-                            if (!filteredResource(layerGroupInfo, ws, false)) {
-                                persistResource = true;
+                                if (!filteredResource(ws, false)) {
+                                    persistResource = true;
+                                }
+                            }
+                        } catch (NullPointerException e) {
+                            if (getCurrentJobExecution() != null) {
+                                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
                             }
                         }
                     }
@@ -1025,7 +1172,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                                                 .getName())
                                         : null;
 
-                        if (!filteredResource(layerInfo, ws, true)) {
+                        if (!filteredResource(layerInfo, ws, true, LayerInfo.class)) {
                             restoreGWCTileLayerInfo(
                                     gwcCatalog,
                                     layersByName,
@@ -1045,7 +1192,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                                             layerGroupInfo.getWorkspace().getName())
                                             : null;
 
-                            if (!filteredResource(layerGroupInfo, ws, false)) {
+                            if (!filteredResource(layerGroupInfo, ws, false, LayerInfo.class)) {
                                 restoreGWCTileLayerInfo(
                                         gwcCatalog,
                                         layersByName,
@@ -1059,7 +1206,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             }
 
         } catch (Exception e) {
-            logValidationExceptions(null, e);
+            if (getCurrentJobExecution() != null) {
+                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+            }
         }
     }
 

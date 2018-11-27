@@ -209,7 +209,9 @@ public class RestoreController extends AbstractBackupRestoreController {
                     getBackupFacade()
                             .runRestoreAsync(
                                     restore.getArchiveFile(),
-                                    restore.getFilter(),
+                                    restore.getWsFilter(),
+                                    restore.getSiFilter(),
+                                    restore.getLiFilter(),
                                     asParams(restore.getOptions()));
 
             LOGGER.log(Level.INFO, "Restore file: " + restore.getArchiveFile());

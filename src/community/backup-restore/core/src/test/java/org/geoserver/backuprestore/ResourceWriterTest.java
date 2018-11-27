@@ -30,10 +30,23 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.junit.Before;
 import org.junit.Test;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ResourceWriterTest extends BackupRestoreTestSupport {
+
+    protected static Backup backupFacade;
+
+    @Before
+    public void beforeTest() throws InterruptedException {
+        backupFacade = (Backup) applicationContext.getBean("backupFacade");
+        ensureCleanedQueues();
+
+        // Authenticate as Administrator
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
+
     @Test
     public void testResourceInfoAdditionalResourceWriter() throws IOException {
         Catalog cat = getCatalog();
@@ -100,12 +113,10 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
 
     @Test
     public void testStyleInfoAdditionalResourceWriter() throws IOException {
-        Catalog cat = getCatalog();
-
         GeoServerDataDirectory dd = backupFacade.getGeoServerDataDirectory();
         GeoServerDataDirectory td = new GeoServerDataDirectory(root);
 
-        StyleInfo style = cat.getStyleByName(StyleInfo.DEFAULT_POINT);
+        StyleInfo style = catalog.getStyleByName(StyleInfo.DEFAULT_POINT);
 
         StyleInfoAdditionalResourceWriter siarw = new StyleInfoAdditionalResourceWriter();
         siarw.writeAdditionalResources(backupFacade, td.get(Paths.BASE), style);

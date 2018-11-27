@@ -74,6 +74,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
     /** @return the backupFacade */
     public Backup getBackupFacade() {
+        backupFacade.authenticate();
         return backupFacade;
     }
 
@@ -217,8 +218,21 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
-                "filter",
-                new FilterConverter(xStream.getMapper(), xStream.getReflectionProvider()));
+                "wsFilter",
+                new FilterConverter(
+                        "wsFilter", xStream.getMapper(), xStream.getReflectionProvider()));
+
+        xStream.registerLocalConverter(
+                AbstractExecutionAdapter.class,
+                "siFilter",
+                new FilterConverter(
+                        "siFilter", xStream.getMapper(), xStream.getReflectionProvider()));
+
+        xStream.registerLocalConverter(
+                AbstractExecutionAdapter.class,
+                "liFilter",
+                new FilterConverter(
+                        "liFilter", xStream.getMapper(), xStream.getReflectionProvider()));
 
         ClassAliasingMapper stepExecutionsMapper = new ClassAliasingMapper(xStream.getMapper());
         stepExecutionsMapper.addClassAlias("step", StepExecution.class);
@@ -375,12 +389,16 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
     /** @author Alessio Fabiani, GeoSolutions S.A.S. */
     public static class FilterConverter extends ReflectionConverter {
 
+        private String fieldName;
+
         /**
          * @param mapper
          * @param reflectionProvider
          */
-        public FilterConverter(Mapper mapper, ReflectionProvider reflectionProvider) {
+        public FilterConverter(
+                String fieldName, Mapper mapper, ReflectionProvider reflectionProvider) {
             super(mapper, reflectionProvider);
+            this.fieldName = fieldName;
         }
 
         @SuppressWarnings("rawtypes")
@@ -402,7 +420,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
             Filter filter = null;
 
             String nodeName = reader.getNodeName();
-            if ("filter".equals(nodeName)) {
+            if (fieldName.equals(nodeName)) {
                 try {
                     filter = ECQL.toFilter(reader.getValue());
                 } catch (CQLException e) {

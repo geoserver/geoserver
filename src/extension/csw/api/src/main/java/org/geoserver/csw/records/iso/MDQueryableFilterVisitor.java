@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw.records.iso;
 
-import org.geotools.data.complex.filter.XPathUtil;
+import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.FilterFactory2;

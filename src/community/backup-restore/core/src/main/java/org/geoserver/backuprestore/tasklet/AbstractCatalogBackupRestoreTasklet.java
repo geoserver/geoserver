@@ -38,6 +38,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.AnyFilter;
 import org.geoserver.util.Filter;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -443,6 +444,32 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                     }
                 }
             }
+        }
+
+        if (filterIsValid()) {
+            Element filter = new Element("Filters");
+            if (getFilters().length > 0 && getFilters()[0] != null) {
+                Element wsFilter = new Element("Filter");
+                wsFilter.setAttribute("type", "WorkspaceInfo");
+                wsFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[0])));
+                filter.addContent(wsFilter);
+            }
+
+            if (getFilters().length > 1 && getFilters()[1] != null) {
+                Element siFilter = new Element("Filter");
+                siFilter.setAttribute("type", "StoreInfo");
+                siFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[1])));
+                filter.addContent(siFilter);
+            }
+
+            if (getFilters().length > 2 && getFilters()[2] != null) {
+                Element liFilter = new Element("Filter");
+                liFilter.setAttribute("type", "LayerInfo");
+                liFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[2])));
+                filter.addContent(liFilter);
+            }
+
+            root.addContent(filter);
         }
 
         doc.setRootElement(root);

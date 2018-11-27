@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.geoserver.backuprestore.tasklet.GenericTaskletHandler;
 import org.springframework.batch.core.JobExecution;
@@ -13,7 +14,9 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 /** Test generic handler that will run 3 times by returning continuable. */
-public final class ContinuableHandler implements GenericTaskletHandler {
+public final class ContinuableHandler implements GenericTaskletHandler, Serializable {
+
+    private static final long serialVersionUID = -1237780850044092748L;
 
     private static AtomicInteger INVOCATIONS = new AtomicInteger(0);
 

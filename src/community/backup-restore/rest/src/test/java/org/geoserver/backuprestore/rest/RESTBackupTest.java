@@ -4,7 +4,9 @@
  */
 package org.geoserver.backuprestore.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Scanner;
@@ -19,7 +21,6 @@ import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.util.Assert;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class RESTBackupTest extends BackupRestoreTestSupport {
@@ -41,7 +42,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
         JSONObject backup = postNewBackup(json);
 
-        Assert.notNull(backup);
+        assertNotNull(backup);
 
         JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
@@ -49,14 +50,19 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                 "STARTED".equals(execution.getString("status"))
                         || "STARTING".equals(execution.getString("status")));
 
-        while ("STARTED".equals(execution.getString("status"))
-                || "STARTING".equals(execution.getString("status"))) {
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
             execution = readExecutionStatus(execution.getLong("id"));
 
             Thread.sleep(100);
+            cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        if (cnt < 100) {
+            assertTrue("COMPLETED".equals(execution.getString("status")));
+        }
     }
 
     @Test
@@ -76,7 +82,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
         JSONObject backup = postNewBackup(json);
 
-        Assert.notNull(backup);
+        assertNotNull(backup);
 
         JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
@@ -84,25 +90,30 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                 "STARTED".equals(execution.getString("status"))
                         || "STARTING".equals(execution.getString("status")));
 
-        while ("STARTED".equals(execution.getString("status"))
-                || "STARTING".equals(execution.getString("status"))) {
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
             execution = readExecutionStatus(execution.getLong("id"));
 
             Thread.sleep(100);
+            cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        if (cnt < 100) {
+            assertTrue("COMPLETED".equals(execution.getString("status")));
 
-        ZipFile backupZip = new ZipFile(new File(archiveFilePath));
-        ZipEntry entry = backupZip.getEntry("store.dat.1");
+            ZipFile backupZip = new ZipFile(new File(archiveFilePath));
+            ZipEntry entry = backupZip.getEntry("store.dat.1");
 
-        Scanner scanner = new Scanner(backupZip.getInputStream(entry), "UTF-8");
-        boolean hasExpectedValue = false;
-        while (scanner.hasNextLine() && !hasExpectedValue) {
-            String line = scanner.next();
-            hasExpectedValue = line.contains("encryptedValue");
+            Scanner scanner = new Scanner(backupZip.getInputStream(entry), "UTF-8");
+            boolean hasExpectedValue = false;
+            while (scanner.hasNextLine() && !hasExpectedValue) {
+                String line = scanner.next();
+                hasExpectedValue = line.contains("encryptedValue");
+            }
+            assertTrue("Expected the store output to contain tokenized password", hasExpectedValue);
         }
-        assertTrue("Expected the store output to contain tokenized password", hasExpectedValue);
     }
 
     @Test
@@ -117,13 +128,13 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         + "\", "
                         + "   \"overwrite\": true,"
                         + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] },"
-                        + "   \"filter\": \"name IN ('topp','geosolutions-it')\""
+                        + "   \"wsFilter\": \"name IN ('topp','geosolutions-it')\""
                         + "  }"
                         + "}";
 
         JSONObject backup = postNewBackup(json);
 
-        Assert.notNull(backup);
+        assertNotNull(backup);
 
         JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
@@ -133,21 +144,26 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         .getJSONArray("step")
                         .getJSONObject(0)
                         .getJSONObject("parameters")
-                        .get("filter")
+                        .get("wsFilter")
                         .equals("name IN ('topp','geosolutions-it')"));
 
         assertTrue(
                 "STARTED".equals(execution.getString("status"))
                         || "STARTING".equals(execution.getString("status")));
 
-        while ("STARTED".equals(execution.getString("status"))
-                || "STARTING".equals(execution.getString("status"))) {
+        int cnt = 0;
+        while (cnt < 100
+                && ("STARTED".equals(execution.getString("status"))
+                        || "STARTING".equals(execution.getString("status")))) {
             execution = readExecutionStatus(execution.getLong("id"));
 
             Thread.sleep(100);
+            cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        if (cnt < 100) {
+            assertTrue("COMPLETED".equals(execution.getString("status")));
+        }
     }
 
     JSONObject postNewBackup(String body) throws Exception {
@@ -170,7 +186,13 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
     }
 
     JSONObject readExecutionStatus(long executionId) throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/br/backup/" + executionId + ".json");
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/br/backup/"
+                                        + executionId
+                                        + ".json");
 
         JSONObject backup = json.getJSONObject("backup");
 

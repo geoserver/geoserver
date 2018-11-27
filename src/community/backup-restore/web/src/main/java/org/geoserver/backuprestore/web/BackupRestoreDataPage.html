@@ -26,13 +26,15 @@
 
    <div>
     <fieldset>
-      <legend><span><wicket:message key="newBackupResource">Archive File</wicket:message></span></legend>
-	  <div wicket:id="newBackupRestorePanel">
-	    <div wicket:id="backupResource"></div>
-	  </div>
+      <legend><span><wicket:message key="backupResource">Archive File</wicket:message></span></legend>
+	  <div wicket:id="backupResource"></div>
 	  <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
       <select id="workspace" wicket:id="workspace"></select>
       <span wicket:id="workspaceNameContainer"><input type="text" class="text" wicket:id="workspaceName" style="width:10em;"></input></span>
+	  <label for="store"><wicket:message key="store">Store</wicket:message></label>
+      <select id="store" wicket:id="store"></select>
+      <label for="layer"><wicket:message key="layer">Layer</wicket:message></label>
+      <select id="layer" wicket:id="layer"></select>
 	</fieldset>
   </div>
   

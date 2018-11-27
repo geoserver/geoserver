@@ -179,7 +179,7 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
         try {
             doOpen();
         } catch (Exception e) {
-            throw new ItemStreamException("Failed to initialize the reader", e);
+            return;
         }
         if (!isSaveState()) {
             return;

@@ -23,11 +23,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -42,12 +44,20 @@ import org.geotools.data.FeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
+
+    protected static Catalog catalog;
+
+    protected static XpathEngine xp;
+
+    protected static Backup backupFacade;
 
     static File root;
 
@@ -68,13 +78,15 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                 }
             };
 
-    protected static Backup backupFacade;
-
     @Before
-    public void setupBackupField() throws InterruptedException {
-        backupFacade = (Backup) applicationContext.getBean("backupFacade");
+    public void beforeTest() throws InterruptedException {
+        // reset invocations counter of continuable handler
+        ContinuableHandler.resetInvocationsCount();
+        // reset invocation of generic listener
+        GenericListener.reset();
 
-        ensureCleanedQueues();
+        // Authenticate as Administrator
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
 
     @Override
@@ -84,7 +96,8 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected void onTearDown(SystemTestData testData) throws Exception {
-        super.onTearDown(testData);
+        /** Dispose Services */
+        this.testData = new SystemTestData();
 
         cleanCatalog();
     }
@@ -95,25 +108,64 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("ows", "http://www.opengis.net/ows");
+
+        namespaces.put("html", "http://www.w3.org/1999/xhtml");
+        namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");
-        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
-        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaces.put("gml", "http://www.opengis.net/gml");
+        namespaces.put("atom", "http://www.w3.org/2005/Atom");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.put("gs", "http://geoserver.org");
+        namespaces.put("wfs", "http://www.opengis.net/wfs");
+        namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
+        namespaces.put("gml", "http://www.opengis.net/gml");
+        namespaces.put("sf", "http://cite.opengeospatial.org/gmlsf");
+        namespaces.put("kml", "http://www.opengis.net/kml/2.2");
 
+        testData.registerNamespaces(namespaces);
         CiteTestData.registerNamespaces(namespaces);
-
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        xp = XMLUnit.newXpathEngine();
+
+        backupFacade = (Backup) applicationContext.getBean("backupFacade");
+
+        catalog = getCatalog();
+
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setName("global");
+        lg.getLayers().add(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
+        lg.getLayers().add(catalog.getLayerByName("sf:AggregateGeoFeature"));
+        lg.getStyles().add(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
+        lg.getStyles().add(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
+        lg.setBounds(new ReferencedEnvelope(-180, -90, 180, 90, CRS.decode("EPSG:4326")));
+        catalog.add(lg);
+
+        lg = catalog.getFactory().createLayerGroup();
+        lg.setName("local");
+        lg.setWorkspace(catalog.getWorkspaceByName("sf"));
+        lg.getLayers().add(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
+        lg.getLayers().add(catalog.getLayerByName("sf:AggregateGeoFeature"));
+        lg.getStyles().add(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
+        lg.getStyles().add(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
+        lg.setBounds(new ReferencedEnvelope(-180, -90, 180, 90, CRS.decode("EPSG:4326")));
+        catalog.add(lg);
+
+        // add two workspace specific styles
+        StyleInfo s = catalog.getFactory().createStyle();
+        s.setName("sf_style");
+        s.setWorkspace(catalog.getWorkspaceByName("sf"));
+        s.setFilename("sf.sld");
+        catalog.add(s);
+
+        s = catalog.getFactory().createStyle();
+        s.setName("cite_style");
+        s.setWorkspace(catalog.getWorkspaceByName("cite"));
+        s.setFilename("cite.sld");
+        catalog.add(s);
 
         setUpInternal(testData);
     }
 
     protected void setUpInternal(SystemTestData data) throws Exception {
-
         root = File.createTempFile("template", "tmp", new File("target"));
         root.delete();
         root.mkdir();
@@ -121,15 +173,14 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         // setup an H2 datastore for the purpose of doing joins
         // run all the tests against a store that can do native paging (h2) and one that
         // can't (property)
-        Catalog cat = getCatalog();
-        DataStoreInfo ds = cat.getFactory().createDataStore();
+        DataStoreInfo ds = catalog.getFactory().createDataStore();
         ds.setName("foo");
-        ds.setWorkspace(cat.getDefaultWorkspace());
+        ds.setWorkspace(catalog.getDefaultWorkspace());
 
         Map params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
-        cat.add(ds);
+        catalog.add(ds);
 
         FeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);
         FeatureSource fs2 = getFeatureSource(SystemTestData.LAKES);
@@ -152,7 +203,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         tb.remove("uriProperty");
         store.createSchema(tb.buildFeatureType());
 
-        CatalogBuilder cb = new CatalogBuilder(cat);
+        CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setStore(ds);
 
         FeatureStore fs = (FeatureStore) store.getFeatureSource("Forests");
@@ -168,7 +219,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                 "111",
                 "Bar Forest");
         FeatureTypeInfo ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         fs = (FeatureStore) store.getFeatureSource("Lakes");
         fs.addFeatures(fs2.getFeatures());
@@ -188,12 +239,12 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                 "110",
                 "Black Lake");
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         fs = (FeatureStore) store.getFeatureSource("PrimitiveGeoFeature");
         fs.addFeatures(fs3.getFeatures());
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         tb = new SimpleFeatureTypeBuilder();
         tb.setName("TimeFeature");
@@ -222,7 +273,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         fs = (FeatureStore) store.getFeatureSource("TimeFeature");
         fs.addFeatures(features);
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         // add three joinable types with same code, but different type names
         SimpleFeatureType ft1 =
@@ -232,7 +283,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         fs = (FeatureStore) store.getFeatureSource("t1");
         addFeature(fs, "POINT(1 1)", Integer.valueOf(1), "First");
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         SimpleFeatureType ft2 =
                 DataUtilities.createType(
@@ -241,7 +292,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         fs = (FeatureStore) store.getFeatureSource("t2");
         addFeature(fs, "POINT(2 2)", Integer.valueOf(1), "Second");
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
         SimpleFeatureType ft3 =
                 DataUtilities.createType(
@@ -250,18 +301,20 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         fs = (FeatureStore) store.getFeatureSource("t3");
         addFeature(fs, "POINT(3 3)", Integer.valueOf(1), "Third");
         ft = cb.buildFeatureType(fs);
-        cat.add(ft);
+        catalog.add(ft);
 
-        DataStoreInfo peDatastore = cat.getFactory().createDataStore();
+        DataStoreInfo peDatastore = catalog.getFactory().createDataStore();
         peDatastore.setName("foo_pe");
-        peDatastore.setWorkspace(cat.getDefaultWorkspace());
+        peDatastore.setWorkspace(catalog.getDefaultWorkspace());
 
         Map pedsParams = peDatastore.getConnectionParameters();
         pedsParams.put("dbtype", "h2");
         pedsParams.put(
                 "database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
         pedsParams.put("passwd", "foo");
-        cat.add(peDatastore);
+        catalog.add(peDatastore);
+
+        data.setUp();
     }
 
     void addFeature(FeatureStore store, String wkt, Object... atts) throws Exception {
@@ -317,38 +370,47 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
     public void cleanCatalog() {
         try {
-            for (StoreInfo s : getCatalog().getStores(StoreInfo.class)) {
+            for (StoreInfo s : catalog.getStores(StoreInfo.class)) {
                 removeStore(s.getWorkspace().getName(), s.getName());
             }
-            for (StyleInfo s : getCatalog().getStyles()) {
+            for (StyleInfo s : catalog.getStyles()) {
                 String styleName = s.getName();
                 if (!DEFAULT_STYLEs.contains(styleName)) {
                     removeStyle(null, styleName);
                 }
             }
 
+            int cnt = 0;
             do {
                 try {
                     root.delete();
                     FileUtils.forceDelete(root);
                 } catch (Exception e) {
-
+                    cnt++;
                 }
-            } while (root.exists());
+            } while (root.exists() && cnt < 30);
         } catch (Exception e) {
             LOGGER.log(
                     Level.WARNING,
                     "Please, ensure the temp folder have been correctly cleaned out!",
                     e);
         }
+
+        catalog.dispose();
     }
 
     /** @throws InterruptedException */
     protected void ensureCleanedQueues() throws InterruptedException {
+        int cnt = 0;
         while (!(backupFacade.getRestoreRunningExecutions().isEmpty()
                 && backupFacade.getBackupRunningExecutions().isEmpty())) {
+            if (cnt > 30) {
+                LOGGER.log(Level.SEVERE, "Could not cleanup Running Executions Queues!");
+                break;
+            }
             // Wait a bit
             Thread.sleep(10);
+            cnt++;
         }
     }
 }

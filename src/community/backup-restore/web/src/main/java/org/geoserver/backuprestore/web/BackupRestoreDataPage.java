@@ -624,6 +624,18 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                             equal("resource.name", li.getResource().getName()));
                         }
 
+                        if (wsFilter == null && backupRestoreFileResource.wsFilter != null) {
+                            wsFilter = backupRestoreFileResource.wsFilter;
+                        }
+
+                        if (siFilter == null && backupRestoreFileResource.siFilter != null) {
+                            siFilter = backupRestoreFileResource.siFilter;
+                        }
+
+                        if (liFilter == null && backupRestoreFileResource.liFilter != null) {
+                            liFilter = backupRestoreFileResource.liFilter;
+                        }
+
                         Hints hints = new Hints(new HashMap(2));
 
                         Boolean restoreOptDryRun =

@@ -49,6 +49,9 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
                 JobParameters jobParameters = backupExecution.getJobParameters();
                 Resource sourceFolder =
                         Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
+
+                dumpBackupIndex(sourceFolder);
+
                 BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
             } catch (IOException e) {
                 LOGGER.severe("Backup failed while creating final ");

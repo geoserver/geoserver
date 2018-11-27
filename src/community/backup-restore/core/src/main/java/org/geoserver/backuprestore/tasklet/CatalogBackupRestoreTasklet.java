@@ -220,44 +220,51 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 }
             }
 
-            // Backup GeoServer Plugins
-            final GeoServerResourceLoader targetGeoServerResourceLoader =
-                    new GeoServerResourceLoader(targetBackupFolder.dir());
-            for (GeoServerPluginConfigurator pluginConfig :
-                    GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
-                // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);' after having
-                // replaced the config files.
-                pluginConfig.saveConfiguration(targetGeoServerResourceLoader);
-            }
+            if (!filterIsValid()) {
+                // Backup additional stuff only when performing a FULL backup
 
-            for (GeoServerPropertyConfigurer props :
-                    GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
-                // On restore invoke 'props.reload();' after having replaced the properties files.
-                Resource configFile = props.getConfigFile();
-
-                if (configFile != null && Resources.exists(configFile)) {
-                    Resource targetDir =
-                            Files.asResource(
-                                    targetGeoServerResourceLoader.findOrCreateDirectory(
-                                            Paths.convert(
-                                                    dd.getResourceLoader().getBaseDirectory(),
-                                                    configFile.parent().dir())));
-
-                    Resources.copy(configFile.file(), targetDir);
+                // Backup GeoServer Plugins
+                final GeoServerResourceLoader targetGeoServerResourceLoader =
+                        new GeoServerResourceLoader(targetBackupFolder.dir());
+                for (GeoServerPluginConfigurator pluginConfig :
+                        GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
+                    // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);' after
+                    // having
+                    // replaced the config files.
+                    pluginConfig.saveConfiguration(targetGeoServerResourceLoader);
                 }
-            }
 
-            // Backup other configuration bits, like images, palettes, user projections and so on...
-            backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
+                for (GeoServerPropertyConfigurer props :
+                        GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
+                    // On restore invoke 'props.reload();' after having replaced the properties
+                    // files.
+                    Resource configFile = props.getConfigFile();
 
-            // Backup GWC Configuration bits
-            if (!skipGWC) {
-                try {
-                    if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
-                        backupGWCSettings(targetBackupFolder);
+                    if (configFile != null && Resources.exists(configFile)) {
+                        Resource targetDir =
+                                Files.asResource(
+                                        targetGeoServerResourceLoader.findOrCreateDirectory(
+                                                Paths.convert(
+                                                        dd.getResourceLoader().getBaseDirectory(),
+                                                        configFile.parent().dir())));
+
+                        Resources.copy(configFile.file(), targetDir);
                     }
-                } catch (NoSuchBeanDefinitionException e) {
-                    LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
+                }
+
+                // Backup other configuration bits, like images, palettes, user projections and so
+                // on...
+                backupRestoreAdditionalResources(resourceStore, targetBackupFolder);
+
+                // Backup GWC Configuration bits
+                if (!skipGWC) {
+                    try {
+                        if (GeoServerExtensions.bean("gwcGeoServervConfigPersister") != null) {
+                            backupGWCSettings(targetBackupFolder);
+                        }
+                    } catch (NoSuchBeanDefinitionException e) {
+                        LOGGER.log(Level.WARNING, "Skipped GWC GeoServer Config Persister: ", e);
+                    }
                 }
             }
         } catch (Exception e) {

@@ -13,7 +13,6 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -77,12 +76,9 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                                 jobExecution, backupFacade.getTotalNumberOfBackupSteps());
                 this.backupExecution.setArchiveFile(archiveFile);
                 this.backupExecution.setOverwrite(overwrite);
-                this.backupExecution.setWsFilter(
-                        bkp.getWsFilter() != null ? ECQL.toCQL(bkp.getWsFilter()) : null);
-                this.backupExecution.setSiFilter(
-                        bkp.getSiFilter() != null ? ECQL.toCQL(bkp.getSiFilter()) : null);
-                this.backupExecution.setLiFilter(
-                        bkp.getLiFilter() != null ? ECQL.toCQL(bkp.getLiFilter()) : null);
+                this.backupExecution.setWsFilter(bkp.getWsFilter());
+                this.backupExecution.setSiFilter(bkp.getSiFilter());
+                this.backupExecution.setLiFilter(bkp.getLiFilter());
                 this.backupExecution.getOptions().addAll(options);
 
                 this.backupFacade

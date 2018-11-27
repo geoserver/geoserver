@@ -16,7 +16,6 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.BatchStatus;
@@ -85,12 +84,9 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                                 jobExecution, backupFacade.getTotalNumberOfRestoreSteps());
                 this.restoreExecution.setArchiveFile(archiveFile);
                 this.restoreExecution.setRestoreCatalog(restoreCatalog);
-                this.restoreExecution.setWsFilter(
-                        rst.getWsFilter() != null ? ECQL.toCQL(rst.getWsFilter()) : null);
-                this.restoreExecution.setSiFilter(
-                        rst.getSiFilter() != null ? ECQL.toCQL(rst.getSiFilter()) : null);
-                this.restoreExecution.setLiFilter(
-                        rst.getLiFilter() != null ? ECQL.toCQL(rst.getLiFilter()) : null);
+                this.restoreExecution.setWsFilter(rst.getWsFilter());
+                this.restoreExecution.setSiFilter(rst.getSiFilter());
+                this.restoreExecution.setLiFilter(rst.getLiFilter());
 
                 this.restoreExecution.getOptions().addAll(options);
 

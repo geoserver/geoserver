@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.tasklet;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +20,14 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.backuprestore.utils.BackupUtils;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -30,6 +39,10 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.AnyFilter;
 import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInterruptedException;
@@ -157,6 +170,8 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     private boolean interruptOnCancel = false;
 
     private volatile boolean stopped = false;
+
+    public static final String BR_INDEX_XML = "br_index.xml";
 
     public AbstractCatalogBackupRestoreTasklet(
             Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
@@ -361,6 +376,80 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         }
 
         return item;
+    }
+
+    /**
+     * This method dumps the current Backup index: - List of Workspaces - List of Stores - List of
+     * Layers
+     *
+     * @param sourceFolder
+     * @throws IOException
+     */
+    protected void dumpBackupIndex(Resource sourceFolder) throws IOException {
+        Element root = new Element("Index");
+        Document doc = new Document();
+
+        for (WorkspaceInfo ws : getCatalog().getWorkspaces()) {
+            if (!filteredResource(ws, false)) {
+                Element workspace = new Element("Workspace");
+                workspace.addContent(new Element("Name").addContent(ws.getName()));
+                root.addContent(workspace);
+
+                for (DataStoreInfo ds :
+                        getCatalog().getStoresByWorkspace(ws.getName(), DataStoreInfo.class)) {
+                    if (!filteredResource(ds, ws, true, StoreInfo.class)) {
+                        Element store = new Element("Store");
+                        store.setAttribute("type", "DataStoreInfo");
+                        store.addContent(new Element("Name").addContent(ds.getName()));
+                        workspace.addContent(store);
+
+                        for (FeatureTypeInfo ft : getCatalog().getFeatureTypesByDataStore(ds)) {
+                            if (!filteredResource(ft, ws, true, ResourceInfo.class)) {
+                                for (LayerInfo ly : getCatalog().getLayers(ft)) {
+                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                        Element layer = new Element("Layer");
+                                        layer.setAttribute("type", "VECTOR");
+                                        layer.addContent(
+                                                new Element("Name").addContent(ly.getName()));
+                                        store.addContent(layer);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (CoverageStoreInfo cs :
+                        getCatalog().getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class)) {
+                    if (!filteredResource(cs, ws, true, StoreInfo.class)) {
+                        Element store = new Element("Store");
+                        store.setAttribute("type", "CoverageStoreInfo");
+                        store.addContent(new Element("Name").addContent(cs.getName()));
+                        workspace.addContent(store);
+
+                        for (CoverageInfo ci : getCatalog().getCoveragesByCoverageStore(cs)) {
+                            if (!filteredResource(ci, ws, true, ResourceInfo.class)) {
+                                for (LayerInfo ly : getCatalog().getLayers(ci)) {
+                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                        Element layer = new Element("Layer");
+                                        layer.setAttribute("type", "RASTER");
+                                        layer.addContent(
+                                                new Element("Name").addContent(ly.getName()));
+                                        store.addContent(layer);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        doc.setRootElement(root);
+
+        XMLOutputter outter = new XMLOutputter();
+        outter.setFormat(Format.getPrettyFormat());
+        outter.output(doc, new FileWriter(sourceFolder.get(BR_INDEX_XML).file()));
     }
 
     @SuppressWarnings({"unchecked"})

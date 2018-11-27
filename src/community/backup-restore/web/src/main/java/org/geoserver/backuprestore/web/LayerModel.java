@@ -9,24 +9,34 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.data.store.StoreModel;
 
 /** Detachable model for a specific layer. */
-@SuppressWarnings("serial")
 public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> {
 
+    private static final long serialVersionUID = 1619470274815042758L;
+
+    private ResourceFilePanel resourceFilePanel;
+    IModel workspace;
     IModel store;
     String name;
 
-    public LayerModel(T store) {
+    private LayerModel(T store) {
         super(store);
         setObject(store);
+    }
+
+    public LayerModel(ResourceFilePanel resourceFilePanel, T layer) {
+        this(layer);
+        this.resourceFilePanel = resourceFilePanel;
     }
 
     public void setObject(T object) {
         super.setObject(object);
         if (object != null) {
-            store = new StoreModel(object.getResource().getStore());
+            workspace =
+                    new WorkspaceModel(
+                            resourceFilePanel, object.getResource().getStore().getWorkspace());
+            store = new StoreModel(resourceFilePanel, object.getResource().getStore());
             name = object.getName();
         } else {
             name = null;
@@ -41,8 +51,24 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
         if (name == null) {
             return null;
         }
+
+        if (resourceFilePanel != null
+                && resourceFilePanel.getLayers() != null
+                && !resourceFilePanel.getLayers().isEmpty()
+                && store.getObject() != null
+                && resourceFilePanel
+                        .getLayers()
+                        .containsKey(((StoreInfo) store.getObject()).getName())) {
+            for (LayerInfo ly :
+                    resourceFilePanel.getLayers().get(((StoreInfo) store.getObject()).getName())) {
+                if (ly.getName().equals(name)) {
+                    return (T) ly;
+                }
+            }
+        }
+
         LayerInfo li = GeoServerApplication.get().getCatalog().getLayerByName(name);
-        if (li.getResource() != null && li.getResource().getStore() != null) {
+        if (li != null && li.getResource() != null && li.getResource().getStore() != null) {
             if (li.getResource()
                     .getStore()
                     .getName()
@@ -50,6 +76,17 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
                 return (T) li;
             }
         }
-        return null;
+        return getObject();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.wicket.model.LoadableDetachableModel#detach()
+     */
+    @Override
+    public void detach() {
+        super.detach();
+        if (store != null) {
+            store.detach();
+        }
     }
 }

@@ -28,7 +28,6 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.time.Duration;
@@ -46,11 +45,6 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoServerUnlockablePage;
-import org.geoserver.web.data.store.StoreChoiceRenderer;
-import org.geoserver.web.data.store.StoreModel;
-import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
-import org.geoserver.web.data.workspace.WorkspaceDetachableModel;
-import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -69,7 +63,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
     static Logger LOGGER = Logging.getLogger(BackupRestoreDataPage.class);
 
-    WorkspaceDetachableModel workspace;
+    WorkspaceModel workspace;
     DropDownChoice workspaceChoice;
     TextField workspaceNameTextField;
 
@@ -84,32 +78,30 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     BackupRestoreExecutionsTable backupRestoreExecutionsTable;
     BackupRestoreExecutionsTable restoreExecutionsTable;
 
-    WebMarkupContainer newBackupRestorePanel;
+    ResourceFilePanel backupRestoreFileResource;
 
     GeoServerDialog dialog;
 
     public BackupRestoreDataPage(PageParameters params) {
 
-        newBackupRestorePanel = new WebMarkupContainer("newBackupRestorePanel");
-        newBackupRestorePanel.setOutputMarkupId(true);
+        backupRestoreFileResource = new ResourceFilePanel("backupResource", this);
 
-        resetResourcePanel();
-
-        add(newBackupRestorePanel);
+        add(backupRestoreFileResource);
 
         Catalog catalog = GeoServerApplication.get().getCatalog();
 
         // workspace chooser
-        workspace = new WorkspaceDetachableModel(null);
+        workspace = new WorkspaceModel<WorkspaceInfo>(backupRestoreFileResource, null);
         workspaceChoice =
-                new DropDownChoice(
+                new DropDownChoice<WorkspaceInfo>(
                         "workspace",
                         workspace,
-                        new WorkspacesModel(),
+                        new BackupRestoreWorkspacesIndexModel(backupRestoreFileResource),
                         new WorkspaceChoiceRenderer());
         workspaceChoice.setOutputMarkupId(true);
         workspaceChoice.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         updateTargetWorkspace(target);
@@ -121,6 +113,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         WebMarkupContainer workspaceNameContainer =
                 new WebMarkupContainer("workspaceNameContainer");
         workspaceNameContainer.setOutputMarkupId(true);
+
         add(workspaceNameContainer);
 
         workspaceNameTextField = new TextField("workspaceName", new Model());
@@ -128,16 +121,18 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         boolean defaultWorkspace = catalog.getDefaultWorkspace() != null;
         workspaceNameTextField.setVisible(!defaultWorkspace);
         workspaceNameTextField.setRequired(!defaultWorkspace);
+
         workspaceNameContainer.add(workspaceNameTextField);
 
         // store chooser
-        store = new StoreModel<StoreInfo>(null);
+        store = new StoreModel<StoreInfo>(backupRestoreFileResource, null);
         storeChoice =
                 new DropDownChoice<StoreInfo>(
                         "store",
                         store,
-                        new EnabledStoresModel(workspace),
+                        new BackupRestoreStoresIndexModel(workspace, backupRestoreFileResource),
                         new StoreChoiceRenderer()) {
+
                     protected String getNullValidKey() {
                         return BackupRestoreDataPage.class.getSimpleName()
                                 + "."
@@ -147,6 +142,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         storeChoice.setOutputMarkupId(true);
         storeChoice.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         updateTargetStore(target);
@@ -156,10 +152,14 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         add(storeChoice);
 
         // layer chooser
-        layer = new LayerModel<LayerInfo>(null);
+        layer = new LayerModel<LayerInfo>(backupRestoreFileResource, null);
         layerChoice =
                 new DropDownChoice<LayerInfo>(
-                        "layer", layer, new EnabledLayersModel(store), new LayerChoiceRenderer()) {
+                        "layer",
+                        layer,
+                        new BackupRestoreLayersIndexModel(store, backupRestoreFileResource),
+                        new LayerChoiceRenderer()) {
+
                     protected String getNullValidKey() {
                         return BackupRestoreDataPage.class.getSimpleName()
                                 + "."
@@ -169,6 +169,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         layerChoice.setOutputMarkupId(true);
         layerChoice.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         updateTargetLayer(target);
@@ -199,9 +200,6 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     /** @param target */
     protected void updateTargetWorkspace(AjaxRequestTarget target) {
         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-        store.setObject(null /* ws != null
-                        ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws)
-                        : null*/);
 
         workspaceNameTextField.setVisible(ws == null);
         workspaceNameTextField.setRequired(ws == null);
@@ -216,7 +214,6 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     /** @param target */
     protected void updateTargetStore(AjaxRequestTarget target) {
         WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-        layer.setObject(null);
 
         workspaceNameTextField.setVisible(ws == null);
         workspaceNameTextField.setRequired(ws == null);
@@ -240,21 +237,11 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         }
     }
 
-    /** */
-    private void resetResourcePanel() {
-        if (newBackupRestorePanel.size() > 0) {
-            newBackupRestorePanel.remove("backupResource");
-        }
-
-        Panel p = new ResourceFilePanel("backupResource");
-        newBackupRestorePanel.add(p);
-    }
-
     /** @param form */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void populateBackupForm(Form form) {
         form.add(new CheckBox("backupOptOverwirte", new Model<Boolean>(false)));
-        form.add(new CheckBox("backupOptBestEffort", new Model<Boolean>(false)));
+        form.add(new CheckBox("backupOptBestEffort", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(
@@ -372,22 +359,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     }
 
                     private Long launchBackupExecution(Form<?> form) throws Exception {
-                        ResourceFilePanel panel =
-                                (ResourceFilePanel) newBackupRestorePanel.get("backupResource");
-                        Resource archiveFile = null;
-                        try {
-                            archiveFile = panel.getResource();
-                        } catch (NullPointerException e) {
-                            throw new Exception("Backup Archive File is Mandatory!");
-                        }
-
-                        if (archiveFile == null
-                                || archiveFile.getType() == Type.DIRECTORY
-                                || FilenameUtils.getExtension(archiveFile.name()).isEmpty()) {
-                            throw new Exception(
-                                    "Backup Archive File is Mandatory and should not be a Directory or URI.");
-                        }
-
+                        Resource archiveFile = getBackupRestoreArchiveResource(true);
                         Filter wsFilter = null;
                         Filter siFilter = null;
                         Filter liFilter = null;
@@ -624,22 +596,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     }
 
                     private Long launchRestoreExecution(Form<?> form) throws Exception {
-                        ResourceFilePanel panel =
-                                (ResourceFilePanel) newBackupRestorePanel.get("backupResource");
-                        Resource archiveFile = null;
-                        try {
-                            archiveFile = panel.getResource();
-                        } catch (NullPointerException e) {
-                            throw new Exception("Restore Archive File is Mandatory!");
-                        }
-
-                        if (archiveFile == null
-                                || !Resources.exists(archiveFile)
-                                || archiveFile.getType() == Type.DIRECTORY
-                                || FilenameUtils.getExtension(archiveFile.name()).isEmpty()) {
-                            throw new Exception(
-                                    "Restore Archive File is Mandatory, must exists and should not be a Directory or URI.");
-                        }
+                        Resource archiveFile = getBackupRestoreArchiveResource(false);
 
                         Filter wsFilter = null;
                         Filter siFilter = null;
@@ -756,6 +713,28 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         restoreExecutionsTable.setFilterable(false);
         restoreExecutionsTable.setSortable(false);
         form.add(restoreExecutionsTable);
+    }
+
+    /**
+     * @return
+     * @throws Exception
+     */
+    protected Resource getBackupRestoreArchiveResource(boolean isBackup) throws Exception {
+        Resource archiveFile = null;
+        try {
+            archiveFile = backupRestoreFileResource.getResource();
+        } catch (NullPointerException e) {
+            throw new Exception("Restore Archive File is Mandatory!");
+        }
+
+        if (archiveFile == null
+                || (!isBackup && !Resources.exists(archiveFile))
+                || archiveFile.getType() == Type.DIRECTORY
+                || FilenameUtils.getExtension(archiveFile.name()).isEmpty()) {
+            throw new Exception(
+                    "Archive File is Mandatory, must exists and should not be a Directory or URI.");
+        }
+        return archiveFile;
     }
 
     protected void resetButtons(Form<?> form, AjaxRequestTarget target, String buttonId) {

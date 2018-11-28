@@ -52,8 +52,14 @@
         <AttributeMapping>
           <targetAttribute>st:StationFeature</targetAttribute>
           <idExpression>
-            <OCQL>jsonSelect('id')</OCQL>
+            <OCQL>collectionId()</OCQL>
           </idExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:id</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('id')</OCQL>
+          </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
           <targetAttribute>st:name</targetAttribute>

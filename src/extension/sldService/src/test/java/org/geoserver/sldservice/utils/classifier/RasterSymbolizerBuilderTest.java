@@ -166,7 +166,7 @@ public class RasterSymbolizerBuilderTest {
         assertLiteralValue(499.4, entries[1]);
         assertLiteralValue(749.6, entries[2]);
         assertLiteralValue(999.8, entries[3]);
-        assertLiteralValue(1250, entries[4]);
+        assertLiteralValue(Double.MAX_VALUE, entries[4]);
     }
 
     @Test

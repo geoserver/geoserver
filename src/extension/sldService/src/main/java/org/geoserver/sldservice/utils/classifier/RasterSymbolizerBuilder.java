@@ -252,9 +252,7 @@ public class RasterSymbolizerBuilder {
                     ColorMapEntry entry = SF.createColorMapEntry();
                     double value = breaks[i].doubleValue();
                     if (i == breaks.length - 1) {
-                        long l = Double.doubleToLongBits(value);
-                        double incremented = Double.longBitsToDouble(l + 1);
-                        entry.setQuantity(FF.literal(incremented));
+                        entry.setQuantity(FF.literal(Double.MAX_VALUE));
                     } else {
                         entry.setQuantity(FF.literal(value));
                     }

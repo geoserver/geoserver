@@ -36,6 +36,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
 
 public class RulesBuilderTest {
+    private static final int MAX_COLOR_INT = 255;
+    private static final int MIN_COLOR_INT = 52;
     private RulesBuilder builder;
 
     protected SimpleFeatureCollection pointCollection, lineCollection, polygonCollection;
@@ -199,7 +201,7 @@ public class RulesBuilderTest {
             assertTrue(ruleOne.getSymbolizers()[0] instanceof PolygonSymbolizer);
             PolygonSymbolizer symbolizer = (PolygonSymbolizer) ruleOne.getSymbolizers()[0];
             assertEquals(
-                    new Color(0, 0, 49),
+                    new Color(0, 0, MIN_COLOR_INT),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
             assertNotNull(ruleOne.getFilter());
             assertEquals(numClasses, rules.size());
@@ -216,7 +218,7 @@ public class RulesBuilderTest {
             builder.polygonStyle(rules, new BlueColorRamp(), true);
             PolygonSymbolizer symbolizer = (PolygonSymbolizer) rules.get(0).getSymbolizers()[0];
             assertEquals(
-                    new Color(0, 0, 224),
+                    new Color(0, 0, MAX_COLOR_INT),
                     symbolizer.getFill().getColor().evaluate(null, Color.class));
             assertEquals(numClasses, rules.size());
         }
@@ -234,7 +236,7 @@ public class RulesBuilderTest {
             assertTrue(ruleOne.getSymbolizers()[0] instanceof LineSymbolizer);
             LineSymbolizer symbolizer = (LineSymbolizer) ruleOne.getSymbolizers()[0];
             assertEquals(
-                    new Color(0, 0, 49),
+                    new Color(0, 0, MIN_COLOR_INT),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));
             assertNotNull(ruleOne.getFilter());
             assertEquals(10, rules.size());
@@ -251,7 +253,7 @@ public class RulesBuilderTest {
             builder.lineStyle(rules, new BlueColorRamp(), true);
             LineSymbolizer symbolizer = (LineSymbolizer) rules.get(0).getSymbolizers()[0];
             assertEquals(
-                    new Color(0, 0, 224),
+                    new Color(0, 0, MAX_COLOR_INT),
                     symbolizer.getStroke().getColor().evaluate(null, Color.class));
         }
     }

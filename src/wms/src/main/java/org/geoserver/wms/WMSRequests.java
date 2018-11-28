@@ -6,11 +6,9 @@
 package org.geoserver.wms;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.URLMangler.URLType;
@@ -28,6 +27,7 @@ import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.map.Layer;
 import org.geotools.map.MapLayer;
 import org.geotools.styling.Style;
+import org.springframework.util.StringUtils;
 import org.vfny.geoserver.util.Requests;
 
 /**
@@ -232,6 +232,7 @@ public class WMSRequests {
     }
 
     /** Helper method for encoding GetMap request parameters. */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     static LinkedHashMap<String, String> getGetMapParams(
             GetMapRequest req,
             String layer,
@@ -298,6 +299,7 @@ public class WMSRequests {
 
         // filters, we grab them from the original raw kvp since re-encoding
         // them from objects is kind of silly
+        Map<String, String> kvpMap = req.getRawKvp();
         if (layer != null) {
             // only get filters for the layer
             int index = 0;
@@ -329,20 +331,19 @@ public class WMSRequests {
                 // semantics of feature id slightly different, replicate entire value
                 params.put("featureid", req.getRawKvp().get("featureid"));
             }
-            // Jira: #GEOS-6411: adding time and elevation support in case of a timeserie layer
-            if (req.getRawKvp().get("time") != null) {
-                // semantics of feature id slightly different, replicate entire value
-                params.put("time", req.getRawKvp().get("time"));
+            if (!StringUtils.isEmpty(kvpMap.get("interpolations"))) {
+                List<String> interpolations = KvpUtils.readFlat(kvpMap.get("interpolations"));
+                if (!interpolations.get(index).isEmpty()) {
+                    params.put("interpolations", interpolations.get(index));
+                }
             }
-            if (req.getRawKvp().get("elevation") != null) {
-                // semantics of feature id slightly different, replicate entire value
-                params.put("elevation", req.getRawKvp().get("elevation"));
+            if (!StringUtils.isEmpty(kvpMap.get("sortby"))) {
+                List<String> sortBy =
+                        KvpUtils.readFlat(kvpMap.get("sortby"), KvpUtils.OUTER_DELIMETER);
+                if (!sortBy.get(index).isEmpty()) {
+                    params.put("sortby", sortBy.get(index));
+                }
             }
-            req.getRawKvp()
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getKey().toLowerCase().startsWith("dim_"))
-                    .forEach(e -> params.put(e.getKey().toLowerCase(), e.getValue()));
 
         } else {
             // include all
@@ -353,7 +354,24 @@ public class WMSRequests {
             } else if (req.getRawKvp().get("featureid") != null) {
                 params.put("featureid", req.getRawKvp().get("featureid"));
             }
+            if (!StringUtils.isEmpty(kvpMap.get("interpolations"))) {
+                params.put("interpolations", kvpMap.get("interpolations"));
+            }
+            if (!StringUtils.isEmpty(kvpMap.get("sortby"))) {
+                params.put("sortby", kvpMap.get("sortby"));
+            }
         }
+        // Jira: #GEOS-6411: adding time and elevation support in case of a timeserie layer
+        if (kvpMap.get("time") != null) {
+            params.put("time", kvpMap.get("time"));
+        }
+        if (kvpMap.get("elevation") != null) {
+            params.put("elevation", kvpMap.get("elevation"));
+        }
+        kvpMap.entrySet()
+                .stream()
+                .filter(e -> e.getKey().toLowerCase().startsWith("dim_"))
+                .forEach(e -> params.put(e.getKey().toLowerCase(), e.getValue()));
 
         // image params
         params.put("height", String.valueOf(req.getHeight()));
@@ -381,22 +399,46 @@ public class WMSRequests {
             params.put("viewParams", encodeFormatOptions(req.getViewParams()));
         }
 
-        Map<String, String> kvpMap = req.getRawKvp();
         String propertyName = kvpMap.get("propertyName");
         if (propertyName != null && !propertyName.isEmpty()) {
             params.put("propertyName", propertyName);
+        }
+        if (!StringUtils.isEmpty(kvpMap.get("bgcolor"))) {
+            params.put("bgcolor", kvpMap.get("bgcolor"));
+        }
+        if (!req.getExceptions().equals(GetMapRequest.SE_XML)) {
+            params.put("exceptions", req.getExceptions());
+        }
+        if (req.getMaxFeatures() != null) {
+            params.put("maxfeatures", req.getMaxFeatures().toString());
+        }
+        if (req.getRemoteOwsType() != null) {
+            params.put("remote_ows_type", req.getRemoteOwsType());
+        }
+        if (req.getRemoteOwsURL() != null) {
+            String url = ResponseUtils.urlDecode(req.getRemoteOwsURL().toString());
+            params.put("remote_ows_url", url);
+        }
+        if (req.getScaleMethod() != null) {
+            params.put("scalemethod", req.getScaleMethod().toString());
+        }
+        if (req.getStartIndex() != null) {
+            params.put("startindex", req.getStartIndex().toString());
+        }
+        if (!req.getStyleFormat().equals(SLDHandler.FORMAT)) {
+            params.put("style_format", req.getStyleFormat());
+        }
+        if (req.getStyleVersion() != null) {
+            params.put("style_version", req.getStyleVersion());
+        }
+        if (Boolean.TRUE.equals(req.getValidateSchema())) {
+            params.put("validateschema", "true");
         }
 
         if (req.getSld() != null) {
             // the request encoder will url-encode the url, if it has already url encoded
             // chars, the will be encoded twice
-            try {
-                String sld = URLDecoder.decode(req.getSld().toExternalForm(), "UTF-8");
-                params.put("sld", sld);
-            } catch (UnsupportedEncodingException e) {
-                // this should really never happen
-                throw new RuntimeException(e);
-            }
+            params.put("sld", ResponseUtils.urlDecode(req.getSld().toString()));
         }
 
         if (req.getSldBody() != null) {

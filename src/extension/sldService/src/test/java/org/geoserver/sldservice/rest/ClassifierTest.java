@@ -809,6 +809,30 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
     }
 
+    /**
+     * Same as testQuantileContinuousSrtm, but with reversed colormap
+     * @throws Exception
+     */
+    @Test
+    public void testQuantileContinuousSrtmReverse() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&continuous=true&reverse=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -2, "-2", "#FF0000", 1);
+        assertEntry(entries[1], 292, "292.984375", "#FF5500", 1, 10);
+        assertEntry(entries[2], 536, "538.804688", "#FFAA00", 1, 10);
+        assertEntry(entries[3], 825, "826.765625", "#FFFF00", 1, 10);
+        assertEntry(entries[4], 1796, "1796", "#0000FF", 1);
+    }
+
     @Test
     public void testJenksIntervalsSrtm() throws Exception {
         final String restPath =

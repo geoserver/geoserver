@@ -50,19 +50,21 @@ import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.Query;
 import org.geotools.data.util.NullProgressListener;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.function.RangedClassifier;
-import org.geotools.image.ImageWorker;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
+import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
+import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Converters;
@@ -75,12 +77,12 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
-import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.spatial.BBOX;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.CacheControl;
@@ -99,8 +101,9 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
 public class ClassifierController extends BaseSLDServiceController {
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     private static final Logger LOGGER = Logging.getLogger(ClassifierController.class);
-    public static final int NO_BAND_SELECTED = -1;
+    private static final int FIRST_BAND = 1;
 
     @Autowired
     public ClassifierController(@Qualifier("catalog") Catalog catalog) {
@@ -158,11 +161,16 @@ public class ClassifierController extends BaseSLDServiceController {
             @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
             @RequestParam(value = "continuous", required = false, defaultValue = "false")
                     boolean continuous,
+            @RequestParam(value = "bbox", required = false) ReferencedEnvelope bbox,
             final HttpServletResponse response)
             throws Exception {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo == null) {
             throw new ResourceNotFoundException("No such layer: " + layerName);
+        }
+        // default to the layer own CRS if not provided as 5th parameter
+        if (bbox != null && bbox.getCoordinateReferenceSystem() == null) {
+            bbox = new ReferencedEnvelope(bbox, layerInfo.getResource().getCRS());
         }
         if (cachingTime > 0) {
             response.setHeader(
@@ -198,7 +206,8 @@ public class ClassifierController extends BaseSLDServiceController {
                                 stroke,
                                 pointSize,
                                 (FeatureTypeInfo) obj,
-                                ramp);
+                                ramp,
+                                bbox);
             } else if (obj instanceof CoverageInfo) {
                 rules =
                         getRasterRules(
@@ -212,7 +221,8 @@ public class ClassifierController extends BaseSLDServiceController {
                                 normalize,
                                 (CoverageInfo) obj,
                                 ramp,
-                                continuous);
+                                continuous,
+                                bbox);
             } else {
                 throw new RestException(
                         "The classifier can only work against vector or raster data, "
@@ -357,23 +367,22 @@ public class ClassifierController extends BaseSLDServiceController {
             Boolean normalize,
             CoverageInfo coverageInfo,
             ColorRamp ramp,
-            boolean continuous)
+            boolean continuous,
+            ReferencedEnvelope bbox)
             throws Exception {
-        RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+        int selectedBand = getRequestedBand(property); // one based band name
+        // read the image to be classified
+        ImageReader imageReader =
+                new ImageReader(
+                                coverageInfo,
+                                selectedBand,
+                                RasterSymbolizerBuilder.DEFAULT_MAX_PIXELS,
+                                bbox)
+                        .invoke();
+        boolean bandSelected = imageReader.isBandSelected();
+        RenderedImage image = imageReader.getImage();
 
-        // grab the raster, for the time being, read fully trying to force deferred loading where
-        // possible
-        GridCoverageReader reader = coverageInfo.getGridCoverageReader(null, null);
-        ParameterValue<Boolean> useImageRead = AbstractGridFormat.USE_JAI_IMAGEREAD.createValue();
-        useImageRead.setValue(true);
-        GridCoverage coverage = reader.read(new GeneralParameterValue[] {useImageRead});
-        RenderedImage image = coverage.getRenderedImage();
-        int selectedBand = getSelectedBand(property, image);
-        if (selectedBand != NO_BAND_SELECTED) {
-            ImageWorker iw = new ImageWorker(image);
-            iw.retainBands(selectedBand);
-            image = iw.getRenderedImage();
-        }
+        RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
         ColorMap colorMap;
         try {
             if (customClasses.isEmpty()) {
@@ -396,7 +405,7 @@ public class ClassifierController extends BaseSLDServiceController {
                 colorMap = builder.createCustomColorMap(classifier, open, continuous);
             }
         } finally {
-            cleanCoverage(coverage, image);
+            cleanImage(image);
         }
 
         // apply the color ramp
@@ -404,31 +413,38 @@ public class ClassifierController extends BaseSLDServiceController {
         builder.applyColorRamp(colorMap, ramp, skipFirstEntry, reverse);
 
         // wrap the colormap into a raster symbolizer and rule
-        Rule rule = SF.createRule();
         RasterSymbolizer rasterSymbolizer = SF.createRasterSymbolizer();
         rasterSymbolizer.setColorMap(colorMap);
+        if (bandSelected) {
+            SelectedChannelType grayChannel =
+                    SF.createSelectedChannelType(
+                            String.valueOf(selectedBand), (ContrastEnhancement) null);
+            ChannelSelection channelSelection =
+                    SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
+            rasterSymbolizer.setChannelSelection(channelSelection);
+        }
+
+        Rule rule = SF.createRule();
         rule.symbolizers().add(rasterSymbolizer);
         return Collections.singletonList(rule);
     }
 
-    private int getSelectedBand(String property, RenderedImage image) {
+    /**
+     * Returns the selected band
+     *
+     * @param property
+     * @return
+     */
+    private int getRequestedBand(String property) {
+        // if no selection is provided, the code picks the first band
         if (property == null) {
-            return NO_BAND_SELECTED;
+            return FIRST_BAND;
         }
         Integer selectedBand = Converters.convert(property, Integer.class);
         if (selectedBand == null) {
             throw new RestException(
                     "Invalid property value for raster layer, it should be a band number, but was "
                             + property,
-                    HttpStatus.BAD_REQUEST);
-        }
-        int numBands = image.getSampleModel().getNumBands();
-        if (selectedBand < 0 || selectedBand > numBands) {
-            throw new RestException(
-                    "Invalid property value for raster layer, must be a valid band number, between 0 and "
-                            + (numBands - 1)
-                            + ", but was "
-                            + selectedBand,
                     HttpStatus.BAD_REQUEST);
         }
         return selectedBand;
@@ -439,10 +455,7 @@ public class ClassifierController extends BaseSLDServiceController {
      *
      * @param coverage
      */
-    private void cleanCoverage(GridCoverage coverage, RenderedImage image) {
-        if (coverage instanceof GridCoverage2D) {
-            ((GridCoverage2D) coverage).dispose(true);
-        }
+    private void cleanImage(RenderedImage image) {
         if (image instanceof PlanarImage) {
             ImageUtilities.disposePlanarImageChain((PlanarImage) image);
         }
@@ -462,8 +475,9 @@ public class ClassifierController extends BaseSLDServiceController {
             Color strokeColor,
             int pointSize,
             FeatureTypeInfo obj,
-            ColorRamp ramp)
-            throws IOException {
+            ColorRamp ramp,
+            ReferencedEnvelope bbox)
+            throws IOException, TransformException, FactoryException {
         if (property == null || property.isEmpty()) {
             throw new IllegalArgumentException(
                     "Vector classification requires a classification property to be specified");
@@ -478,6 +492,12 @@ public class ClassifierController extends BaseSLDServiceController {
         FeatureCollection ftCollection = null;
         if (customClasses.isEmpty()) {
             Query query = new Query(ftType.getName().getLocalPart(), Filter.INCLUDE);
+            if (bbox != null) {
+                ReferencedEnvelope nativeBBOX =
+                        bbox.transform(ftType.getCoordinateReferenceSystem(), true);
+                BBOX filter = FF.bbox(FF.property(""), nativeBBOX);
+                query.setFilter(filter);
+            }
             query.setHints(getQueryHints(viewParams));
             ftCollection =
                     obj.getFeatureSource(new NullProgressListener(), null).getFeatures(query);

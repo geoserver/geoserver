@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.io.StringReader;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
@@ -22,8 +21,6 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xml.styling.SLDParser;
-import org.junit.After;
-import org.junit.Before;
 
 public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
 
@@ -32,19 +29,7 @@ public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         // do not setup other test data, not used, not needed
-    }
-
-    @Before
-    public void loadData() throws Exception {
-        getTestData().addWorkspace(getTestData().WCS_PREFIX, getTestData().WCS_URI, getCatalog());
         getTestData().addDefaultRasterLayer(getTestData().WORLD, getCatalog());
-    }
-
-    @After
-    public void restoreLayers() throws IOException {
-        revertLayer(SystemTestData.BASIC_POLYGONS);
-        removeWorkspace(getTestData().WCS_PREFIX);
-        removeLayer(getTestData().WCS_PREFIX, getTestData().WORLD.getLocalPart());
     }
 
     protected Rule[] checkSLD(String resultXml) {

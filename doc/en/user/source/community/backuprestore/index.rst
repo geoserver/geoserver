@@ -11,6 +11,5 @@ This section describes the GeoServer Backup and Restore plugin functionality and
    installation
    usagegui
    usagerest
-   configtemplate
    extensions
    usecases

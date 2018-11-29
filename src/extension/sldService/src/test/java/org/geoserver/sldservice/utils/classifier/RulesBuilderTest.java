@@ -263,19 +263,10 @@ public class RulesBuilderTest {
         List<Rule> rules =
                 builder.equalAreaClassification(
                         polygonCollection, "foo", Integer.class, 5, false, false);
-        // temporary invalid result due to GEOS-9023
-        assertEquals(3, rules.size());
-        assertEquals(CQL.toFilter("foo >= 4.0 AND foo <= 43.0"), rules.get(0).getFilter());
-        assertEquals(CQL.toFilter("foo > 43.0 AND foo <= 61.0"), rules.get(1).getFilter());
-        assertEquals(CQL.toFilter("foo > 61.0 AND foo <= 90.0"), rules.get(2).getFilter());
-
-        // this would be the right result, to be fixed for GEOS-9023
-        //        assertEquals(4, rules.size());
-        //        assertEquals(CQL.toFilter("foo >= 4.0 AND foo < 43.0"), rules.get(0).getFilter());
-        //        assertEquals(CQL.toFilter("foo >= 43.0 AND foo < 61.0"),
-        // rules.get(1).getFilter());
-        //        assertEquals(CQL.toFilter("foo >= 61.0 AND foo < 90.0"),
-        // rules.get(2).getFilter());
-        //        assertEquals(CQL.toFilter("foo = 90.0"), rules.get(3).getFilter());
+        assertEquals(4, rules.size());
+        assertEquals(CQL.toFilter("foo >= 4.0 AND foo < 43.0"), rules.get(0).getFilter());
+        assertEquals(CQL.toFilter("foo >= 43.0 AND foo < 61.0"), rules.get(1).getFilter());
+        assertEquals(CQL.toFilter("foo >= 61.0 AND foo < 90.0"), rules.get(2).getFilter());
+        assertEquals(CQL.toFilter("foo = 90.0"), rules.get(3).getFilter());
     }
 }

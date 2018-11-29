@@ -6,7 +6,7 @@
  */
 package org.geoserver.sldservice.utils.classifier;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -357,20 +357,9 @@ public class RulesBuilder {
         try {
             /* First class */
             r = SF.createRule();
-            /*if (groups.getMin(0).equals(groups.getMax(0))) {
-                f = ff.equals(att, ff.literal(groups.getMax(0)));
-                r.setFilter(f);
-                r.setTitle(ff.literal(groups.getMax(0)).toString());
-                list.add(r);
-            } else {
-                f = ff.lessOrEqual(att, ff.literal(groups.getMax(0)));
-                r.setFilter(f);
-                r.setTitle(" <= " + ff.literal(groups.getMax(0)));
-                list.add(r);
-            }*/
-            f = FF.lessOrEqual(att, FF.literal(groups.getMax(0)));
+            f = FF.less(att, FF.literal(groups.getMax(0)));
             r.setFilter(f);
-            r.setTitle(" <= " + FF.literal(groups.getMax(0)));
+            r.setTitle(" < " + FF.literal(groups.getMax(0)));
             list.add(r);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = SF.createRule();
@@ -382,12 +371,12 @@ public class RulesBuilder {
                 } else {
                     f =
                             FF.and(
-                                    FF.greater(att, FF.literal(groups.getMin(i))),
-                                    FF.lessOrEqual(att, FF.literal(groups.getMax(i))));
+                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    FF.less(att, FF.literal(groups.getMax(i))));
                     r.setTitle(
-                            " > "
+                            " >= "
                                     + FF.literal(groups.getMin(i))
-                                    + " AND <= "
+                                    + " AND < "
                                     + FF.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);
@@ -395,20 +384,9 @@ public class RulesBuilder {
             }
             /* Last class */
             r = SF.createRule();
-            /*if (groups.getMin(groups.getSize() - 1).equals(groups.getMax(groups.getSize() - 1))) {
-                f = ff.equals(att, ff.literal(groups.getMin(groups.getSize() - 1)));
-                r.setFilter(f);
-                r.setTitle(ff.literal(groups.getMin(groups.getSize() - 1)).toString());
-                list.add(r);
-            } else {
-                f = ff.greater(att, ff.literal(groups.getMin(groups.getSize() - 1)));
-                r.setFilter(f);
-                r.setTitle(" > " + ff.literal(groups.getMin(groups.getSize() - 1)));
-                list.add(r);
-            }*/
-            f = FF.greater(att, FF.literal(groups.getMin(groups.getSize() - 1)));
+            f = FF.greaterOrEqual(att, FF.literal(groups.getMin(groups.getSize() - 1)));
             r.setFilter(f);
-            r.setTitle(" > " + FF.literal(groups.getMin(groups.getSize() - 1)));
+            r.setTitle(" >= " + FF.literal(groups.getMin(groups.getSize() - 1)));
             list.add(r);
             return list;
         } catch (Exception e) {
@@ -449,7 +427,6 @@ public class RulesBuilder {
             r = SF.createRule();
             for (int i = 0; i < groups.getSize(); i++) {
                 r = SF.createRule();
-                if (i > 0 && groups.getMax(i).equals(groups.getMax(i - 1))) continue;
                 if (groups.getMin(i).equals(groups.getMax(i))) {
                     f = FF.equals(att, FF.literal(groups.getMin(i)));
                     r.setTitle(FF.literal(groups.getMin(i)).toString());
@@ -458,14 +435,16 @@ public class RulesBuilder {
                 } else {
                     f =
                             FF.and(
-                                    i == 0
-                                            ? FF.greaterOrEqual(att, FF.literal(groups.getMin(i)))
-                                            : FF.greater(att, FF.literal(groups.getMin(i))),
-                                    FF.lessOrEqual(att, FF.literal(groups.getMax(i))));
+                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    i == (groups.getSize() - 1)
+                                            ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
+                                            : FF.less(att, FF.literal(groups.getMax(i))));
+
                     r.setTitle(
                             " >= "
                                     + FF.literal(groups.getMin(i))
-                                    + " AND <= "
+                                    + " AND "
+                                    + (i == (groups.getSize() - 1) ? "<=" : "<")
                                     + FF.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);

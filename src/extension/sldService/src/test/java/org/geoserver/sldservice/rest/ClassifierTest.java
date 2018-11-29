@@ -69,6 +69,7 @@ import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
@@ -378,9 +379,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThanOrEqualTo.class);
+        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
         checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
-        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsGreaterThan.class);
+        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsGreaterThanOrEqualTo.class);
     }
 
     @Test
@@ -425,10 +426,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 4);
 
         // not enough polygons to make 5 rules, only 4
-        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
-        assertEquals(" > 43.0 AND <= 61.0", rules[1].getDescription().getTitle().toString());
-        assertEquals(" > 61.0 AND <= 90.0", rules[2].getDescription().getTitle().toString());
-        assertEquals(" > 90.0", rules[3].getDescription().getTitle().toString());
+        assertEquals(" < 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" >= 43.0 AND < 61.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" >= 61.0 AND < 90.0", rules[2].getDescription().getTitle().toString());
+        assertEquals(" >= 90.0", rules[3].getDescription().getTitle().toString());
     }
 
     @Test
@@ -451,9 +452,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
         // also due to bbox restriction, not enough polygons to make 5 rules, only 3
-        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
-        assertEquals(" > 43.0 AND <= 90.0", rules[1].getDescription().getTitle().toString());
-        assertEquals(" > 90.0", rules[2].getDescription().getTitle().toString());
+        assertEquals(" < 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" >= 43.0 AND < 90.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" >= 90.0", rules[2].getDescription().getTitle().toString());
     }
 
     @Test
@@ -598,9 +599,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThanOrEqualTo.class);
-        org.opengis.filter.PropertyIsLessThanOrEqualTo filter =
-                (org.opengis.filter.PropertyIsLessThanOrEqualTo) rules[0].getFilter();
+        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
+        PropertyIsLessThan filter = (PropertyIsLessThan) rules[0].getFilter();
         assertTrue(filter.getExpression1() instanceof FilterFunction_parseDouble);
     }
 

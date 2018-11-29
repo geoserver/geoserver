@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -32,9 +33,11 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.PreviewLayer.GMLOutputParams;
@@ -78,7 +81,8 @@ public class MapPreviewPage extends GeoServerBasePage {
                             IModel<PreviewLayer> itemModel,
                             Property<PreviewLayer> property) {
                         PreviewLayer layer = itemModel.getObject();
-
+                        boolean wmsVisible = hasServiceSupport(layer.getName(), "WMS");
+                        boolean wfsVisible = hasServiceSupport(layer.getName(), "WFS");
                         if (property == TYPE) {
                             Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
                             f.add(new Image("layerIcon", layer.getIcon()));
@@ -88,25 +92,35 @@ public class MapPreviewPage extends GeoServerBasePage {
                         } else if (property == TITLE) {
                             return new Label(id, property.getModel(itemModel));
                         } else if (property == COMMON) {
-                            // openlayers preview
                             Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
+                            // openlayers preview
                             final String olUrl =
                                     layer.getWmsLink() + "&format=application/openlayers";
-                            f.add(new ExternalLink("ol", olUrl, "OpenLayers"));
+                            ExternalLink olLink = new ExternalLink("ol", olUrl, "OpenLayers");
+                            olLink.setVisible(wmsVisible);
+                            f.add(olLink);
                             // kml preview
                             final String kmlUrl =
                                     layer.getBaseURL("wms") + "/kml?layers=" + layer.getName();
-                            f.add(new ExternalLink("kml", kmlUrl, "KML"));
+                            ExternalLink kmlLink = new ExternalLink("kml", kmlUrl, "KML");
+                            kmlLink.setVisible(wmsVisible);
+                            f.add(kmlLink);
                             // gml preview (we actually want it only for vector layers)
                             final String gmlUrl =
                                     layer.getGmlLink(gmlParamsCache) + getMaxFeatures();
                             Component gmlLink = new ExternalLink("gml", gmlUrl, "GML");
                             f.add(gmlLink);
-                            gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector);
+                            gmlLink.setVisible(
+                                    layer.getType() == PreviewLayerType.Vector
+                                            && hasServiceSupport(layer.getName(), "WFS"));
 
                             return f;
                         } else if (property == ALL) {
-                            return buildJSWMSSelect(id, wmsOutputFormats, wfsOutputFormats, layer);
+                            return buildJSWMSSelect(
+                                    id,
+                                    wmsVisible ? wmsOutputFormats : Collections.emptyList(),
+                                    wfsVisible ? wfsOutputFormats : Collections.emptyList(),
+                                    layer);
                         }
                         throw new IllegalArgumentException(
                                 "Don't know a property named " + property.getName());
@@ -207,6 +221,7 @@ public class MapPreviewPage extends GeoServerBasePage {
         Fragment f = new Fragment(id, "menuFragment", MapPreviewPage.this);
         WebMarkupContainer menu = new WebMarkupContainer("menu");
 
+        WebMarkupContainer wmsFormatsGroup = new WebMarkupContainer("wms");
         RepeatingView wmsFormats = new RepeatingView("wmsFormats");
         for (int i = 0; i < wmsOutputFormats.size(); i++) {
             String wmsOutputFormat = wmsOutputFormats.get(i);
@@ -218,7 +233,9 @@ public class MapPreviewPage extends GeoServerBasePage {
                             "value", new Model<String>(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
-        menu.add(wmsFormats);
+        wmsFormatsGroup.add(wmsFormats);
+        wmsFormatsGroup.setVisible(CollectionUtils.isNotEmpty(wmsOutputFormats));
+        menu.add(wmsFormatsGroup);
 
         // the vector ones, it depends, we might have to hide them
         boolean vector =
@@ -241,6 +258,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             }
         }
         wfsFormatsGroup.add(wfsFormats);
+        wfsFormatsGroup.setVisible(CollectionUtils.isNotEmpty(wfsOutputFormats));
         menu.add(wfsFormatsGroup);
 
         // build the wms request, redirect to it in a new window, reset the selection
@@ -272,6 +290,17 @@ public class MapPreviewPage extends GeoServerBasePage {
             LOGGER.log(Level.WARNING, e.getMessage());
             return format;
         }
+    }
+
+    /** Returns true if serviceName is available for resource, otherwise false */
+    protected boolean hasServiceSupport(String layerName, String serviceName) {
+        LayerInfo linfo = getGeoServer().getCatalog().getLayerByName(layerName);
+        if (linfo != null && linfo.getResource() != null && serviceName != null) {
+            List<String> disabledServices =
+                    DisabledServiceResourceFilter.disabledServices(linfo.getResource());
+            return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
+        }
+        return false;
     }
 
     /**

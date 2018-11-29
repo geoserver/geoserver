@@ -294,6 +294,8 @@
     <constructor-arg ref="geoServer"/>
   </bean>
   
-  <bean id="serviceResourceUtil" class="org.geoserver.catalog.ServiceResourceUtil"/>
+  <bean id="serviceResourceProvider" class="org.geoserver.catalog.ServiceResourceProvider">
+  	<constructor-arg ref="geoServer"/>
+  </bean>
   
 </beans>

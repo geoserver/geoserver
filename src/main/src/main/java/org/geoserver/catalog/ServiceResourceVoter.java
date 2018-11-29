@@ -17,8 +17,5 @@ public interface ServiceResourceVoter {
      * Returns true if the services is not considered suitable for the given layer. In case the
      * answer is unknown by this voter, false will be returned
      */
-    boolean hideService(ResourceInfo resource);
-
-    /** Returns service name for registered Resource voter */
-    String serviceName();
+    boolean hideService(String service, ResourceInfo resource);
 }

@@ -246,6 +246,4 @@
     <bean id="zipResponse" class="org.geoserver.csw.response.ZipOutputFormat" />
     
     <bean id="DirectDownloadXStreamInitializer" class="org.geoserver.csw.DirectDownloadSettingsXStreamInitializer" />
-    
-    <bean id="cswResourceVoter" class="org.geoserver.csw.CSWResourceVoter" />
  </beans>

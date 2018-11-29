@@ -20,13 +20,18 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.ServiceResourceUtil;
+import org.geoserver.catalog.ServiceResourceProvider;
 import org.geoserver.web.GeoServerApplication;
 
+/**
+ * Configuration Panel for Service enable/disable in a layer basis
+ *
+ * @author Fernando Miño - Geosolutions
+ */
 public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
     private static final long serialVersionUID = 1L;
 
-    private WebMarkupContainer panel1;
+    private WebMarkupContainer serviceSelectionContainer;
     private Palette<String> servicesMultiSelector;
 
     public ServiceLayerConfigurationPanel(String id, IModel<LayerInfo> layerModel) {
@@ -39,10 +44,9 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        ServiceLayerConfigurationPanel.this
-                                .getServicesMultiSelector()
-                                .setVisible(getModelObject());
-                        target.add(ServiceLayerConfigurationPanel.this.getPanel1());
+                        ServiceLayerConfigurationPanel.this.servicesMultiSelector.setVisible(
+                                getModelObject());
+                        target.add(ServiceLayerConfigurationPanel.this.serviceSelectionContainer);
                     }
                 };
         add(configEnabledCheck);
@@ -64,7 +68,6 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
 
                     @Override
                     public String getIdValue(String object, int index) {
-                        if (object == null) return null;
                         return object;
                     }
                 };
@@ -96,15 +99,15 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
         servicesMultiSelector.add(new DefaultTheme());
         servicesMultiSelector.setVisible(
                 layerModel.getObject().getResource().isServiceConfiguration());
-        panel1 = new WebMarkupContainer("panel1");
-        panel1.setOutputMarkupPlaceholderTag(true);
-        add(panel1);
-        panel1.add(servicesMultiSelector);
+        serviceSelectionContainer = new WebMarkupContainer("serviceSelectionContainer");
+        serviceSelectionContainer.setOutputMarkupPlaceholderTag(true);
+        add(serviceSelectionContainer);
+        serviceSelectionContainer.add(servicesMultiSelector);
     }
 
-    protected ServiceResourceUtil getServiceResourceUtil() {
-        return (ServiceResourceUtil)
-                GeoServerApplication.get().getBean(ServiceResourceUtil.BEAN_ID);
+    protected ServiceResourceProvider getServiceResourceUtil() {
+        return (ServiceResourceProvider)
+                GeoServerApplication.get().getBeanOfType(ServiceResourceProvider.class);
     }
 
     private LoadableDetachableModel<List<String>> servicesVotedModel(ResourceInfo resource) {
@@ -113,16 +116,8 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
 
             @Override
             protected List<String> load() {
-                return getServiceResourceUtil().getLayerVotedServices(resource);
+                return getServiceResourceUtil().getServicesForResource(resource);
             }
         };
-    }
-
-    public Palette<String> getServicesMultiSelector() {
-        return servicesMultiSelector;
-    }
-
-    public WebMarkupContainer getPanel1() {
-        return panel1;
     }
 }

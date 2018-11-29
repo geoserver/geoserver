@@ -10,8 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -40,13 +39,10 @@ public class WCSDisabledTest extends WCSTestSupport {
     @Test
     public void testDisableLayerServiceResponse() throws Exception {
         enableWCS();
-        String layerName = "wcs:BlueMarble";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
-        ri.setServiceConfiguration(true);
-        ri.setDisabledServices(new ArrayList<>(Arrays.asList("WCS")));
-        getCatalog().save(ri);
-        getCatalog().save(linfo);
+        CoverageInfo cinfo = getCatalog().getCoverageByName("wcs:BlueMarble");
+        cinfo.setServiceConfiguration(true);
+        cinfo.setDisabledServices(new ArrayList<>(Arrays.asList("WCS")));
+        getCatalog().save(cinfo);
 
         Document doc = getAsDOM("wcs?service=WCS&request=getCapabilities");
         assertXpathEvaluatesTo(
@@ -57,13 +53,10 @@ public class WCSDisabledTest extends WCSTestSupport {
     @Test
     public void testEnableLayerServiceResponse() throws Exception {
         enableWCS();
-        String layerName = "wcs:BlueMarble";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
-        ri.setServiceConfiguration(false);
-        ri.setDisabledServices(new ArrayList<>());
-        getCatalog().save(ri);
-        getCatalog().save(linfo);
+        CoverageInfo cinfo = getCatalog().getCoverageByName("wcs:BlueMarble");
+        cinfo.setServiceConfiguration(false);
+        cinfo.setDisabledServices(new ArrayList<>());
+        getCatalog().save(cinfo);
 
         Document doc = getAsDOM("wcs?service=WCS&request=getCapabilities");
         assertXpathEvaluatesTo(

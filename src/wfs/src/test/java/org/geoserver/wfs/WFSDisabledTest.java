@@ -10,8 +10,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
@@ -44,19 +45,21 @@ public class WFSDisabledTest extends WFSTestSupport {
     public void testLayerDisabledServiceResponse() throws Exception {
         enableWFS();
         String layerName = "cite:RoadSegments";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
-        ri.setServiceConfiguration(true);
-        ri.setDisabledServices(new ArrayList<>(Arrays.asList("WFS")));
-        getCatalog().save(ri);
-        getCatalog().save(linfo);
-
+        FeatureTypeInfo ftinfo = getCatalog().getFeatureTypeByName(layerName);
+        ftinfo.setServiceConfiguration(true);
+        ftinfo.setDisabledServices(new ArrayList<>(Arrays.asList("WFS")));
+        getCatalog().save(ftinfo);
+        // check GetFeature
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&typeName="
                                 + layerName
                                 + "&version=1.0.0&service=wfs");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
+        // check GetCapabilities
+        doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
+        XMLAssert.assertXpathNotExists(
+                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
     }
 
     /** Tests WFS service disabled on layer-resource, by environment variable */
@@ -71,6 +74,14 @@ public class WFSDisabledTest extends WFSTestSupport {
                                 + layerName
                                 + "&version=1.0.0&service=wfs");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
+        // GetCapabilities
+        doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
+        XMLAssert.assertXpathNotExists(
+                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
+    }
+
+    @After
+    public void clearEnviromentVariables() {
         enviromentVariables.clear("org.geoserver.service.disabled");
     }
 
@@ -79,19 +90,21 @@ public class WFSDisabledTest extends WFSTestSupport {
     public void testLayerEnabledServiceResponse() throws Exception {
         enableWFS();
         String layerName = "cite:RoadSegments";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
-        ri.setServiceConfiguration(false);
-        ri.setDisabledServices(new ArrayList<>());
-        getCatalog().save(ri);
-        getCatalog().save(linfo);
-
+        FeatureTypeInfo ftinfo = getCatalog().getFeatureTypeByName(layerName);
+        ftinfo.setServiceConfiguration(false);
+        ftinfo.setDisabledServices(new ArrayList<>());
+        getCatalog().save(ftinfo);
+        // GetFeature
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&typeName="
                                 + layerName
                                 + "&version=1.0.0&service=wfs");
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+        // GetCapabilities
+        doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
+        XMLAssert.assertXpathExists(
+                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
     }
 
     private void enableWFS() {

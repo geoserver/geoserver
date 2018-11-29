@@ -11,8 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -43,12 +42,10 @@ public class WMSDisabledTest extends WMSTestSupport {
     public void testLayerDisabledServiceResponse() throws Exception {
         enableWMS();
         String layerName = "cite:RoadSegments";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
-        ri.setServiceConfiguration(true);
-        ri.setDisabledServices(new ArrayList<>(Arrays.asList("WMS")));
-        getCatalog().save(ri);
-        getCatalog().save(linfo);
+        FeatureTypeInfo ftinfo = getCatalog().getFeatureTypeByName(layerName);
+        ftinfo.setServiceConfiguration(true);
+        ftinfo.setDisabledServices(new ArrayList<>(Arrays.asList("WMS")));
+        getCatalog().save(ftinfo);
         Document doc =
                 getAsDOM(
                         "wms?bbox="
@@ -68,12 +65,10 @@ public class WMSDisabledTest extends WMSTestSupport {
     public void testLayerEnabledServiceResponse() throws Exception {
         enableWMS();
         String layerName = "cite:RoadSegments";
-        LayerInfo linfo = getCatalog().getLayerByName(layerName);
-        ResourceInfo ri = linfo.getResource();
+        FeatureTypeInfo ri = getCatalog().getFeatureTypeByName(layerName);
         ri.setServiceConfiguration(false);
         ri.setDisabledServices(new ArrayList<>());
         getCatalog().save(ri);
-        getCatalog().save(linfo);
         BufferedImage image =
                 getAsImage(
                         "wms?bbox="

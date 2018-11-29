@@ -33,15 +33,6 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
         return Dispatcher.REQUEST.get();
     }
 
-    private List<String> defaultDisabledServices() {
-        List<String> list = null;
-        String globalEnv = GeoServerExtensions.getProperty("org.geoserver.service.disabled");
-        if (isNotBlank(globalEnv)) {
-            list = Arrays.asList(globalEnv.split(","));
-        }
-        return list == null ? Collections.emptyList() : list;
-    }
-
     @Override
     public boolean hideLayer(LayerInfo layer) {
         return hideResource(layer.getResource());
@@ -50,17 +41,7 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
     @Override
     public boolean hideResource(ResourceInfo resource) {
         if (isFilterSubject()) {
-            List<String> disabledServices = Collections.emptyList();
-            // if service configuration is enabled get layer's disable services list
-            if (resource.isServiceConfiguration()) {
-                disabledServices =
-                        CollectionUtils.isEmpty(resource.getDisabledServices())
-                                ? Collections.emptyList()
-                                : resource.getDisabledServices();
-            } else {
-                // service configuration disabled, get global env default disabled services list
-                disabledServices = defaultDisabledServices();
-            }
+            List<String> disabledServices = disabledServices(resource);
             // if any disabled service match with current service -> hide resource
             String service = request().getService();
             return disabledServices
@@ -68,5 +49,30 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
                     .anyMatch(s -> service.toLowerCase().equals(s.trim().toLowerCase()));
         }
         return false;
+    }
+
+    private static List<String> defaultDisabledServices() {
+        List<String> list = null;
+        String globalEnv = GeoServerExtensions.getProperty("org.geoserver.service.disabled");
+        if (isNotBlank(globalEnv)) {
+            list = Arrays.asList(globalEnv.split(","));
+        }
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    /** Returns a list of disabled Services for the given resource */
+    public static List<String> disabledServices(ResourceInfo resource) {
+        List<String> disabledServices;
+        // if service configuration is enabled get layer's disable services list
+        if (resource.isServiceConfiguration()) {
+            disabledServices =
+                    CollectionUtils.isEmpty(resource.getDisabledServices())
+                            ? Collections.emptyList()
+                            : resource.getDisabledServices();
+        } else {
+            // service configuration disabled, get global env default disabled services list
+            disabledServices = defaultDisabledServices();
+        }
+        return disabledServices;
     }
 }

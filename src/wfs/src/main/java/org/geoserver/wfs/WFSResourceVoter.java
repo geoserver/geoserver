@@ -11,15 +11,8 @@ import org.geoserver.catalog.ServiceResourceVoter;
 public class WFSResourceVoter implements ServiceResourceVoter {
 
     @Override
-    public boolean hideService(ResourceInfo resource) {
-        if (resource instanceof FeatureTypeInfo) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String serviceName() {
-        return "WFS";
+    public boolean hideService(String service, ResourceInfo resource) {
+        if (service == null || !service.equalsIgnoreCase("WFS")) return false;
+        return !(resource instanceof FeatureTypeInfo);
     }
 }

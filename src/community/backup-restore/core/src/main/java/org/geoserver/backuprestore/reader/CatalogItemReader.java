@@ -7,7 +7,6 @@ package org.geoserver.backuprestore.reader;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemReader;
@@ -26,9 +25,8 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
 
     CloseableIterator<T> catalogIterator;
 
-    public CatalogItemReader(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogItemReader(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     protected void initialize(StepExecution stepExecution) {}

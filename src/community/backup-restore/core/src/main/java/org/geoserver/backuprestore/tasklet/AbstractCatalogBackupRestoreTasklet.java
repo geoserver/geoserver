@@ -29,7 +29,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
@@ -174,9 +173,8 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
     public static final String BR_INDEX_XML = "br_index.xml";
 
-    public AbstractCatalogBackupRestoreTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public AbstractCatalogBackupRestoreTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override

@@ -744,7 +744,6 @@ public class Backup extends JobExecutionListenerSupport
 
     public XStreamPersister initXStreamPersister(XStreamPersister xp) {
         xp.setCatalog(catalog);
-        // xp.setReferenceByName(true);
 
         XStream xs = xp.getXStream();
 

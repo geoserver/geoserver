@@ -811,6 +811,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     /**
      * Same as testQuantileContinuousSrtm, but with reversed colormap
+     *
      * @throws Exception
      */
     @Test

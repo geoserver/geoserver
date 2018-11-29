@@ -23,7 +23,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
@@ -52,9 +51,8 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
      * @param clazz
      * @param backupFacade
      */
-    public CatalogItemProcessor(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public CatalogItemProcessor(Class<T> clazz, Backup backupFacade) {
+        super(backupFacade);
         this.clazz = clazz;
     }
 

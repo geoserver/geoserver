@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -20,9 +19,8 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
 
     private boolean dryRun;
 
-    public FinalizeRestoreTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public FinalizeRestoreTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override

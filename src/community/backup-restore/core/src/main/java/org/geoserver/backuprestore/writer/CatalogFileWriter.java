@@ -19,7 +19,6 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -65,9 +64,8 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
 
     private boolean append = false;
 
-    public CatalogFileWriter(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogFileWriter(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     protected String getItemName(XStreamPersister xp) {

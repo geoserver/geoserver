@@ -18,7 +18,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.core.io.Resource;
@@ -32,9 +31,8 @@ import org.springframework.core.io.Resource;
  */
 public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
-    public CatalogItemWriter(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogItemWriter(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     @Override

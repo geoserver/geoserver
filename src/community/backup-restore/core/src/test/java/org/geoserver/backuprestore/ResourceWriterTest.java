@@ -25,7 +25,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
@@ -134,10 +133,7 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
 
     @Test
     public void testSidecarFilesWriter() throws Exception {
-        final XStreamPersisterFactory xStreamPersisterFactory = new XStreamPersisterFactory();
-
-        CatalogBackupRestoreTasklet catalogTsklet =
-                new CatalogBackupRestoreTasklet(backupFacade, xStreamPersisterFactory);
+        CatalogBackupRestoreTasklet catalogTsklet = new CatalogBackupRestoreTasklet(backupFacade);
 
         File tmpDd = File.createTempFile("template", "tmp", new File("target"));
         tmpDd.delete();
@@ -176,10 +172,7 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
         Catalog cat = getCatalog();
         GeoServer geoserver = getGeoServer();
 
-        final XStreamPersisterFactory xStreamPersisterFactory = new XStreamPersisterFactory();
-
-        CatalogBackupRestoreTasklet catalogTsklet =
-                new CatalogBackupRestoreTasklet(backupFacade, xStreamPersisterFactory);
+        CatalogBackupRestoreTasklet catalogTsklet = new CatalogBackupRestoreTasklet(backupFacade);
 
         GeoServerDataDirectory td = new GeoServerDataDirectory(root);
 
@@ -197,7 +190,7 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
                 Resources.exists(
                         Files.asResource(new File(td.get(Paths.BASE).dir(), "logging.xml"))));
 
-        XStreamPersister xstream = xStreamPersisterFactory.createXMLPersister();
+        XStreamPersister xstream = catalogTsklet.getxStreamPersisterFactory().createXMLPersister();
         xstream.setCatalog(cat);
         xstream.setReferenceByName(true);
         xstream.setExcludeIds();

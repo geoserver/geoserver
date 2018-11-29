@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
@@ -74,9 +73,8 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
 
     private boolean opened = false;
 
-    public CatalogMultiResourceItemWriter(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogMultiResourceItemWriter(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     protected void initialize(StepExecution stepExecution) {

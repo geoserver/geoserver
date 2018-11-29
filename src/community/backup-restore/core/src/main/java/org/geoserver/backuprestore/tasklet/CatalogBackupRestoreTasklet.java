@@ -35,7 +35,6 @@ import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.config.GWCInitializer;
@@ -80,9 +79,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     // whether GWC should be skipped
     private boolean skipGWC = false;
 
-    public CatalogBackupRestoreTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public CatalogBackupRestoreTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override

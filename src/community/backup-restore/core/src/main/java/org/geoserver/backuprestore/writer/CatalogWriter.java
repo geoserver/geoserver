@@ -10,7 +10,6 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.springframework.batch.item.ExecutionContext;
@@ -35,9 +34,8 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
 
     protected Class clazz;
 
-    public CatalogWriter(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public CatalogWriter(Class<T> clazz, Backup backupFacade) {
+        super(backupFacade);
         this.clazz = clazz;
 
         this.setExecutionContextName(ClassUtils.getShortName(clazz));

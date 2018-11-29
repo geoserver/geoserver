@@ -46,6 +46,7 @@ import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
@@ -90,9 +91,10 @@ public abstract class BackupRestoreItem<T> {
 
     public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
-    public BackupRestoreItem(Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
+    public BackupRestoreItem(Backup backupFacade) {
         this.backupFacade = backupFacade;
-        this.xStreamPersisterFactory = xStreamPersisterFactory;
+        this.xStreamPersisterFactory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
+        ;
     }
 
     /** @return the xStreamPersisterFactory */

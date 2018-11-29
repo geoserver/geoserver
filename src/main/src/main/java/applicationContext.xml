@@ -229,7 +229,10 @@
   <bean id="owsDispatcherLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
     <constructor-arg value="ows"/>
   </bean>
-  
+
+  <!-- xstream persister factory -->
+  <bean id="xstreamPersisterFactory" class="org.geoserver.config.util.XStreamPersisterFactory"/>
+
   <!-- workspace local callback -->
   <bean id="workspaceLocal" class="org.geoserver.ows.LocalWorkspaceCallback">
      <constructor-arg ref="geoServer"/>  

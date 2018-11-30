@@ -172,7 +172,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
                     @Override
                     public void validate(Form<?> form) {
                         for (BlobStoreInfo otherBlobStore : GWC.get().getBlobStores()) {
-                            if (otherBlobStore != originalStore
+                            if (!otherBlobStore.equals(originalStore)
                                     && otherBlobStore.getName().equals(tfId.getConvertedInput())) {
                                 form.error(
                                         new ParamResourceModel("duplicateIdError", getPage())

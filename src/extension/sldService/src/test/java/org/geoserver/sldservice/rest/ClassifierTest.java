@@ -69,6 +69,7 @@ import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
@@ -214,8 +215,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix),
                         DEFAULT_INTERVALS);
-        checkRule(rules[0], "#680000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#B20000", org.opengis.filter.And.class);
+        checkRule(rules[0], "#8E0000", org.opengis.filter.And.class);
+        checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
 
         assertFalse(resultXml.indexOf("StyledLayerDescriptor") != -1);
     }
@@ -238,8 +239,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix),
                         DEFAULT_INTERVALS);
-        checkRule(rules[0], "#680000", org.opengis.filter.And.class);
-        checkRule(rules[1], "#B20000", org.opengis.filter.And.class);
+        checkRule(rules[0], "#8E0000", org.opengis.filter.And.class);
+        checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
         checkStroke(rules[0], "#FF0000", "5.0");
         checkStroke(rules[1], "#FF0000", "5.0");
     }
@@ -378,9 +379,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#550000", org.opengis.filter.PropertyIsLessThanOrEqualTo.class);
-        checkRule(rules[1], "#8C0000", org.opengis.filter.And.class);
-        checkRule(rules[2], "#C30000", org.opengis.filter.PropertyIsGreaterThan.class);
+        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
+        checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsGreaterThanOrEqualTo.class);
     }
 
     @Test
@@ -425,10 +426,10 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 4);
 
         // not enough polygons to make 5 rules, only 4
-        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
-        assertEquals(" > 43.0 AND <= 61.0", rules[1].getDescription().getTitle().toString());
-        assertEquals(" > 61.0 AND <= 90.0", rules[2].getDescription().getTitle().toString());
-        assertEquals(" > 90.0", rules[3].getDescription().getTitle().toString());
+        assertEquals(" < 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" >= 43.0 AND < 61.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" >= 61.0 AND < 90.0", rules[2].getDescription().getTitle().toString());
+        assertEquals(" >= 90.0", rules[3].getDescription().getTitle().toString());
     }
 
     @Test
@@ -451,9 +452,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
         // also due to bbox restriction, not enough polygons to make 5 rules, only 3
-        assertEquals(" <= 43.0", rules[0].getDescription().getTitle().toString());
-        assertEquals(" > 43.0 AND <= 90.0", rules[1].getDescription().getTitle().toString());
-        assertEquals(" > 90.0", rules[2].getDescription().getTitle().toString());
+        assertEquals(" < 43.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" >= 43.0 AND < 90.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" >= 90.0", rules[2].getDescription().getTitle().toString());
     }
 
     @Test
@@ -521,9 +522,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#550000", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#8C0000", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#C30000", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[1], "#B40000", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsEqualTo.class);
         TreeSet<String> orderedRules = new TreeSet<String>();
         orderedRules.add(rules[0].getTitle());
         orderedRules.add(rules[1].getTitle());
@@ -552,9 +553,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#000055", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#00008C", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#0000C3", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#000069", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[1], "#0000B4", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[2], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
     }
 
     @Test
@@ -575,9 +576,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#0000C3", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#00008C", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#000055", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[1], "#0000B4", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[2], "#000069", org.opengis.filter.PropertyIsEqualTo.class);
     }
 
     @Test
@@ -598,9 +599,8 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#550000", org.opengis.filter.PropertyIsLessThanOrEqualTo.class);
-        org.opengis.filter.PropertyIsLessThanOrEqualTo filter =
-                (org.opengis.filter.PropertyIsLessThanOrEqualTo) rules[0].getFilter();
+        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsLessThan.class);
+        PropertyIsLessThan filter = (PropertyIsLessThan) rules[0].getFilter();
         assertTrue(filter.getExpression1() instanceof FilterFunction_parseDouble);
     }
 
@@ -674,9 +674,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(2, entries.length);
         assertEquals(CQL.toExpression("0.0"), entries[0].getQuantity());
-        assertEquals(CQL.toExpression("'#000068'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("'#00008E'"), entries[0].getColor());
         assertEquals(CQL.toExpression("1.0"), entries[1].getQuantity());
-        assertEquals(CQL.toExpression("'#0000B2'"), entries[1].getColor());
+        assertEquals(CQL.toExpression("'#0000FF'"), entries[1].getColor());
     }
 
     @Test
@@ -693,10 +693,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(167, entries.length);
         assertEquals(CQL.toExpression("1.0"), entries[0].getQuantity());
-        assertEquals(CQL.toExpression("'#00001E'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("'#00001F'"), entries[0].getColor());
         assertEquals(CQL.toExpression("178.0"), entries[166].getQuantity());
-        // this color is too dark, believe there is a bug in the ramps
-        assertEquals(CQL.toExpression("'#000056'"), entries[166].getColor());
+        assertEquals(CQL.toExpression("'#0000FF'"), entries[166].getColor());
     }
 
     @Test
@@ -784,6 +783,29 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEntry(entries[3], 640, ">= 447.5 AND < 644.15625", "#FFAA00", 1, 10);
         assertEntry(entries[4], 894, ">= 644.15625 AND < 897", "#FF5500", 1, 10);
         assertEntry(entries[5], 1796, ">= 897 AND <= 1796", "#FF0000", 1);
+    }
+
+    @Test
+    public void testQuantileOpenIntervalsSrtm() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&open=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        // the expected values are from the pixel perfect quantile classification,
+        // the tolerance is added to allow the histogram based classification to
+        // pass the test, while ensuring it's not too far away
+        assertEntry(entries[0], 237, "< 243.820312", "#0000FF", 1, 10);
+        assertEntry(entries[1], 441, ">= 243.820312 AND < 447.5", "#FFFF00", 1, 10);
+        assertEntry(entries[2], 640, ">= 447.5 AND < 644.15625", "#FFAA00", 1, 10);
+        assertEntry(entries[3], 894, ">= 644.15625 AND < 897", "#FF5500", 1, 10);
+        assertEntry(entries[4], Double.MAX_VALUE, ">= 897", "#FF0000", 1);
     }
 
     @Test

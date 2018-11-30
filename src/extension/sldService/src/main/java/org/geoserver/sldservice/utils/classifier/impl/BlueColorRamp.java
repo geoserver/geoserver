@@ -6,44 +6,16 @@
  */
 package org.geoserver.sldservice.utils.classifier.impl;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.geoserver.sldservice.utils.classifier.ColorRamp;
+import java.awt.*;
 
 /**
  * Blue Color Ramp Implementation
  *
  * @author Alessio Fabiani, GeoSolutions SAS
  */
-public class BlueColorRamp implements ColorRamp {
+public class BlueColorRamp extends SingleColorRamp {
 
-    private int classNum = 0;
-
-    private List<Color> colors = new ArrayList<Color>();
-
-    public int getNumClasses() {
-        return classNum;
-    }
-
-    public void revert() {
-        Collections.reverse(colors);
-    }
-
-    public void setNumClasses(int numClass) {
-        classNum = numClass + 1; // +1 for transparent
-        createRamp();
-    }
-
-    public List<Color> getRamp() throws Exception {
-        if (colors == null) throw new Exception("Class num not setted, color ramp null");
-        return colors;
-    }
-
-    private void createRamp() {
-
-        double step = (225.0 / (double) classNum - 1);
-        for (int i = 1; i < classNum; i++) colors.add(new Color(0, 0, (int) (step * i + 30)));
+    protected Color getColorForIndex(double step, int idx) {
+        return new Color(0, 0, (int) (step * idx + 30));
     }
 }

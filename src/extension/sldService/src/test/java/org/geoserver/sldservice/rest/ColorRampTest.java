@@ -18,28 +18,30 @@ import org.junit.Test;
 
 public class ColorRampTest {
 
-    protected static int minColorInt = 49;
+    protected static final int MIN_COLOR_INT = 52;
 
-    protected static int maxColorInt = 224;
+    protected static final int MAX_COLOR_INT = 255;
 
     @Test
     public void blueColorRampTest() throws Exception {
         BlueColorRamp blueRamp = new BlueColorRamp();
         blueRamp.setNumClasses(10);
-        assertEquals(11, blueRamp.getNumClasses());
+        assertEquals(10, blueRamp.getNumClasses());
         List<Color> colors = blueRamp.getRamp();
         assertEquals("Incorrect size for color ramp", 10, colors.size());
-        assertEquals("Incorrect value for 1st color", new Color(0, 0, minColorInt), colors.get(0));
-        assertEquals("Incorrect value for last color", new Color(0, 0, maxColorInt), colors.get(9));
+        assertEquals(
+                "Incorrect value for 1st color", new Color(0, 0, MIN_COLOR_INT), colors.get(0));
+        assertEquals(
+                "Incorrect value for last color", new Color(0, 0, MAX_COLOR_INT), colors.get(9));
         blueRamp.revert();
         List<Color> reverseColors = blueRamp.getRamp();
         assertEquals(
                 "Incorrect value for last reverse color",
-                new Color(0, 0, minColorInt),
+                new Color(0, 0, MIN_COLOR_INT),
                 reverseColors.get(9));
         assertEquals(
                 "Incorrect value for 1st reverse color",
-                new Color(0, 0, maxColorInt),
+                new Color(0, 0, MAX_COLOR_INT),
                 reverseColors.get(0));
     }
 
@@ -47,20 +49,22 @@ public class ColorRampTest {
     public void redColorRampTest() throws Exception {
         RedColorRamp redRamp = new RedColorRamp();
         redRamp.setNumClasses(10);
-        assertEquals(11, redRamp.getNumClasses());
+        assertEquals(10, redRamp.getNumClasses());
         List<Color> colors = redRamp.getRamp();
         assertEquals("Incorrect size for color ramp", 10, colors.size());
-        assertEquals("Incorrect value for 1st color", new Color(minColorInt, 0, 0), colors.get(0));
-        assertEquals("Incorrect value for last color", new Color(maxColorInt, 0, 0), colors.get(9));
+        assertEquals(
+                "Incorrect value for 1st color", new Color(MIN_COLOR_INT, 0, 0), colors.get(0));
+        assertEquals(
+                "Incorrect value for last color", new Color(MAX_COLOR_INT, 0, 0), colors.get(9));
         redRamp.revert();
         List<Color> reverseColors = redRamp.getRamp();
         assertEquals(
                 "Incorrect value for last reverse color",
-                new Color(maxColorInt, 0, 0),
+                new Color(MAX_COLOR_INT, 0, 0),
                 reverseColors.get(0));
         assertEquals(
                 "Incorrect value for 1st reverse color",
-                new Color(minColorInt, 0, 0),
+                new Color(MIN_COLOR_INT, 0, 0),
                 reverseColors.get(9));
     }
 
@@ -68,26 +72,26 @@ public class ColorRampTest {
     public void grayColorRampTest() throws Exception {
         GrayColorRamp grayRamp = new GrayColorRamp();
         grayRamp.setNumClasses(10);
-        assertEquals(11, grayRamp.getNumClasses());
+        assertEquals(10, grayRamp.getNumClasses());
         List<Color> colors = grayRamp.getRamp();
         assertEquals("Incorrect size for color ramp", 10, colors.size());
         assertEquals(
                 "Incorrect value for 1st color",
-                new Color(minColorInt, minColorInt, minColorInt),
+                new Color(MIN_COLOR_INT, MIN_COLOR_INT, MIN_COLOR_INT),
                 colors.get(0));
         assertEquals(
                 "Incorrect value for last color",
-                new Color(maxColorInt, maxColorInt, maxColorInt),
+                new Color(MAX_COLOR_INT, MAX_COLOR_INT, MAX_COLOR_INT),
                 colors.get(9));
         grayRamp.revert();
         List<Color> reverseColors = grayRamp.getRamp();
         assertEquals(
                 "Incorrect value for last reverse color",
-                new Color(minColorInt, minColorInt, minColorInt),
+                new Color(MIN_COLOR_INT, MIN_COLOR_INT, MIN_COLOR_INT),
                 reverseColors.get(9));
         assertEquals(
                 "Incorrect value for 1st reverse color",
-                new Color(maxColorInt, maxColorInt, maxColorInt),
+                new Color(MAX_COLOR_INT, MAX_COLOR_INT, MAX_COLOR_INT),
                 reverseColors.get(0));
     }
 

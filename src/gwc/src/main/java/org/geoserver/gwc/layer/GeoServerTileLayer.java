@@ -993,14 +993,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             final Geometry targetAov = GWC.getAreaOfValidityAsGeometry(targetCrs, gridSetBroker);
             if (null == targetAov) {
                 String msg =
-                        "Can't compute tile layer bouds out of resource native bounds for CRS "
+                        "Can't compute tile layer bounds out of resource native bounds for CRS "
                                 + srs;
                 LOGGER.log(Level.WARNING, msg, e);
                 throw new IllegalArgumentException(msg, e);
             }
             LOGGER.log(
                     Level.FINE,
-                    "Can't compute tile layer bouds out of resource "
+                    "Can't compute tile layer bounds out of resource "
                             + "native bounds for CRS "
                             + srs,
                     e);

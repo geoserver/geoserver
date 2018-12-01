@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2018 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +38,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -864,33 +868,40 @@ public class ExecuteTest extends WPSTestSupport {
      */
     @Test
     public void testBoundsPost() throws Exception {
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>gs:Bounds</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>features</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n"
-                        + "            <wfs:Query typeName=\"cite:Streams\"/>\n"
-                        + "          </wfs:GetFeature>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput>\n"
-                        + "      <ows:Identifier>bounds</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>";
+        String request = streamsBoundsRequest();
 
         Document dom = postAsDOM(root(), request);
         print(dom);
+        checkStreamsProcessBounds(dom);
+    }
+
+    private void checkStreamsProcessBounds(Document dom) throws XpathException {
         assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
         assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
+    }
+
+    private String streamsBoundsRequest() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:Bounds</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>features</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n"
+                + "            <wfs:Query typeName=\"cite:Streams\"/>\n"
+                + "          </wfs:GetFeature>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput>\n"
+                + "      <ows:Identifier>bounds</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
     }
 
     /**
@@ -919,8 +930,7 @@ public class ExecuteTest extends WPSTestSupport {
         Document dom = postAsDOM(root(), request);
         // print(dom);
 
-        assertXpathEvaluatesTo("-4.0E-4 -0.0024", "/ows:BoundingBox/ows:LowerCorner", dom);
-        assertXpathEvaluatesTo("0.0036 0.0024", "/ows:BoundingBox/ows:UpperCorner", dom);
+        checkStreamsProcessBounds(dom);
     }
 
     /** Tests a process grabbing a remote layer */
@@ -2138,5 +2148,48 @@ public class ExecuteTest extends WPSTestSupport {
             zis.closeEntry();
         }
         zis.close();
+    }
+
+    /** Tests WPS service disabled on layer-resource */
+    @Test
+    public void testDisableLayerService() throws Exception {
+        disableWPSOnStreams();
+        String request = streamsBoundsRequest();
+
+        Document dom = postAsDOM(root(), request);
+        print(dom);
+        assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
+        enableWPSOnStreams();
+    }
+
+    /** Tests WPS service enabled on layer-resource */
+    @Test
+    public void testEnableLayerService() throws Exception {
+        enableWPSOnStreams();
+        String request = streamsBoundsRequest();
+
+        Document dom = postAsDOM(root(), request);
+        print(dom);
+        checkStreamsProcessBounds(dom);
+    }
+
+    private void disableWPSOnStreams() {
+        String layerName = "cite:Streams";
+        LayerInfo linfo = getCatalog().getLayerByName(layerName);
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(true);
+        ri.setDisabledServices(new ArrayList<>(Arrays.asList("WPS")));
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
+    }
+
+    private void enableWPSOnStreams() {
+        String layerName = "cite:Streams";
+        LayerInfo linfo = getCatalog().getLayerByName(layerName);
+        ResourceInfo ri = linfo.getResource();
+        ri.setServiceConfiguration(false);
+        ri.setDisabledServices(new ArrayList<>());
+        getCatalog().save(ri);
+        getCatalog().save(linfo);
     }
 }

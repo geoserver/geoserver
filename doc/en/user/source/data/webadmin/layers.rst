@@ -216,6 +216,24 @@ Cache parameters that apply to the HTTP response from client requests.
 
 * **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
 
+Services Settings
+^^^^^^^^^^^^^^^^^
+
+Sets services configuration on layer level.
+
+  .. figure:: img/service_enable_layer.png
+
+     Services Settings
+
+* **Selectively enable services for layer**—Activate/deactivate service enable/disable configuration for the layer.
+* **Enabled Services**—Selects enabled services list for this layer.
+* **Disabled Services**—Selects disabled services list for this layer.
+
+  .. note::
+
+     It is also possible to set by-default disabled services to all layers using the ``org.geoserver.service.disabled`` system/env/servlet context variable.  This variable accepts a comma separated list of services that should be disabled by default, in case the resource in question has no explicit configuration.
+
+
 WMS Settings
 ^^^^^^^^^^^^
 

@@ -702,8 +702,11 @@
     <!-- XStream persister initializer -->
     <bean id="wfsXStreamPersisterInitializer" class="org.geoserver.wfs.WFSXStreamPersisterInitializer" />
 
-	  <!-- dispatcher callback that will enforce configured MIME type for WFS GML responses -->
-		<bean id="wfsGMLMimeTypeEnforcer" class="org.geoserver.wfs.WFSGMLMimeTypeEnforcer">
-			<constructor-arg ref="geoServer"/>
-		</bean>
+  	<!-- dispatcher callback that will enforce configured MIME type for WFS GML responses -->
+	<bean id="wfsGMLMimeTypeEnforcer" class="org.geoserver.wfs.WFSGMLMimeTypeEnforcer">
+		<constructor-arg ref="geoServer"/>
+	</bean>
+	
+	<!-- Resource voter -->
+	<bean id="wfsResourceVoter" class="org.geoserver.wfs.WFSResourceVoter"/>
 </beans>

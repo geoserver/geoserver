@@ -73,6 +73,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected StoreInfo store;
 
+    protected boolean serviceConfiguration = false;
+
+    protected List<String> disabledServices = new ArrayList<>();
+
     protected transient Catalog catalog;
 
     protected ResourceInfoImpl() {}
@@ -361,6 +365,26 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     @Override
     public void setAdvertised(boolean advertised) {
         this.advertised = advertised;
+    }
+
+    @Override
+    public boolean isServiceConfiguration() {
+        return serviceConfiguration;
+    }
+
+    @Override
+    public void setServiceConfiguration(boolean serviceConfiguration) {
+        this.serviceConfiguration = serviceConfiguration;
+    }
+
+    @Override
+    public List<String> getDisabledServices() {
+        return disabledServices;
+    }
+
+    @Override
+    public void setDisabledServices(List<String> disabledServices) {
+        this.disabledServices = disabledServices;
     }
 
     public int hashCode() {

@@ -1,6 +1,6 @@
 This README helps you getting started with GeoServer development.
-It will guide you trough the process of checking out the source code, 
-compiling it and optionally import it into eclipse.
+It will guide you through the process of checking out the source code, 
+compiling it and optionally importing it into eclipse.
 
 == Linux ==
 
@@ -8,11 +8,6 @@ compiling it and optionally import it into eclipse.
 
 GeoServer needs a Java SDK, maven (version 3 is recommended) and git.
 While compiling GeoServer with OpenJDK 8 works, Oracle's JDK 8 is still the recommendation.
-Under Debian/Ubuntu simply run:
-
-sudo apt-get install sun-java7-jdk maven git
-or
-sudo aptitude install sun-java7-jdk maven git
 
 == Windows ==
 

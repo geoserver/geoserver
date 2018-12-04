@@ -322,10 +322,6 @@ public class SLDHandler extends StyleHandler {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
         }
 
-        if (!reader.ready()) {
-            return null;
-        }
-
         String version;
         try {
             // create stream parser

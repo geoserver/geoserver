@@ -1,0 +1,22 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://www.stations.org/1.0" version="1.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+           xmlns:st="http://www.stations.org/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:import namespace="http://www.opengis.net/gml/3.2"
+               schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <xs:complexType name="StationType">
+        <xs:complexContent>
+            <xs:extension base="gml:AbstractFeatureType">
+                <xs:sequence>
+                    <xs:element name="name" type="xs:string"/>
+                    <xs:element name="location" type="st:LocationType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="LocationType">
+        <xs:sequence>
+            <xs:element name="geometry" type="gml:GeometryPropertyType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="Station" substitutionGroup="gml:AbstractFeature" type="st:StationType"/>
+</xs:schema>

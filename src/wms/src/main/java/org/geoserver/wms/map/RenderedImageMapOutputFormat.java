@@ -8,6 +8,7 @@ package org.geoserver.wms.map;
 import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
+import it.geosolutions.jaiext.vectorbin.ROIGeometry;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -1440,7 +1441,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
         ImageWorker iw = new ImageWorker(image);
-        Object roiCandidate = image.getProperty("roi");
+        Object roiCandidate = image.getProperty("ROI");
         if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null
@@ -1486,7 +1487,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (roiCandidate instanceof ROI) {
             ROI imageROI = (ROI) roiCandidate;
             try {
-                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+                roi = imageROI.intersect(new ROIGeometry(mapRasterArea));
             } catch (IllegalArgumentException e) {
                 // in the unlikely event that the ROI does not intersect the target map
                 // area an exception will be thrown. Catching the exception instead of checking

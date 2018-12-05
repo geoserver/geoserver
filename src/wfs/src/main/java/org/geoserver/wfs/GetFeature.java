@@ -1209,6 +1209,21 @@ public class GetFeature {
         if (declaredCRS != null) {
             transformedFilter =
                     WFSReprojectionUtil.normalizeFilterCRS(filter, source.getSchema(), declaredCRS);
+        } else {
+            // this may happen with complex features, let's try to use the feature type info CRS
+            FeatureTypeInfo featureTypeInfo =
+                    catalog.getFeatureTypeByName(
+                            primaryTypeName.getPrefix(), primaryTypeName.getLocalPart());
+            if (featureTypeInfo != null && featureTypeInfo.getCRS() != null) {
+                // the feature type info has a CRS defined, so let's use it
+                transformedFilter =
+                        WFSReprojectionUtil.normalizeFilterCRS(
+                                filter,
+                                source.getSchema(),
+                                WFSReprojectionUtil.getDeclaredCrs(
+                                        featureTypeInfo.getCRS(), wfsVersion),
+                                featureTypeInfo.getCRS());
+            }
         }
 
         // replace gml:boundedBy with an expression

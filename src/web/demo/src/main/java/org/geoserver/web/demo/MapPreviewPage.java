@@ -300,7 +300,8 @@ public class MapPreviewPage extends GeoServerBasePage {
                     DisabledServiceResourceFilter.disabledServices(linfo.getResource());
             return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
         }
-        return false;
+        // layer group and backward compatibility
+        return true;
     }
 
     /**

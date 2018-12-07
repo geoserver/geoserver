@@ -54,6 +54,16 @@ public class GetRecords {
 
     private List<RecordDescriptor> recordDescriptors;
 
+    protected static class WrappedQuery {
+        Query query;
+        RecordDescriptor rd;
+
+        public WrappedQuery(Query query, RecordDescriptor rd) {
+            this.query = query;
+            this.rd = rd;
+        }
+    }
+
     public GetRecords(CSWInfo csw, CatalogStore store, List<RecordDescriptor> recordDescriptors) {
         this.csw = csw;
         this.store = store;
@@ -66,9 +76,9 @@ public class GetRecords {
 
         try {
             // build the queries
-            RecordDescriptor outputRd = getRecordDescriptor(request);
+            List<RecordDescriptor> outputRd = getRecordDescriptors(request);
             QueryType cswQuery = (QueryType) request.getQuery();
-            List<Query> queries = toGtQueries(outputRd, cswQuery, request);
+            List<WrappedQuery> queries = toGtQueries(outputRd, cswQuery, request);
             // see how many records we have to return
             int maxRecords;
             if (request.getMaxRecords() == null) {
@@ -97,7 +107,9 @@ public class GetRecords {
             int numberOfRecordsMatched = 0;
             int[] counts = new int[queries.size()];
             for (int i = 0; i < queries.size(); i++) {
-                counts[i] = store.getRecordsCount(queries.get(i), Transaction.AUTO_COMMIT);
+                counts[i] =
+                        store.getRecordsCount(
+                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
                 numberOfRecordsMatched += counts[i];
             }
 
@@ -125,29 +137,27 @@ public class GetRecords {
                     if (resultType != ResultType.HITS) {
                         List<FeatureCollection> results = new ArrayList<FeatureCollection>();
                         for (int i = 0; i < queries.size() && maxRecords > 0; i++) {
-                            Query q = queries.get(i);
+                            WrappedQuery q = queries.get(i);
                             if (offset > 0) {
                                 if (offset > counts[i]) {
                                     // skip the query altogheter
                                     offset -= counts[i];
                                     continue;
                                 } else {
-                                    q.setStartIndex(offset);
+                                    q.query.setStartIndex(offset);
                                     offset = 0;
                                 }
                             }
 
                             if (maxRecords > 0) {
-                                q.setMaxFeatures(maxRecords);
+                                q.query.setMaxFeatures(maxRecords);
                                 maxRecords -= counts[i];
                             } else {
                                 // skip the query, we already have enough results
                                 continue;
                             }
 
-                            results.add(
-                                    store.getRecords(
-                                            q, Transaction.AUTO_COMMIT, request.getOutputSchema()));
+                            results.add(store.getRecords(q.query, Transaction.AUTO_COMMIT, q.rd));
                         }
 
                         if (results.size() == 1) {
@@ -179,8 +189,9 @@ public class GetRecords {
         }
     }
 
-    private List<Query> toGtQueries(
-            RecordDescriptor outputRd, QueryType query, GetRecordsType request) throws IOException {
+    private List<WrappedQuery> toGtQueries(
+            List<RecordDescriptor> outputRds, QueryType query, GetRecordsType request)
+            throws IOException {
         // prepare to build the queries
         Filter filter = query.getConstraint() != null ? query.getConstraint().getFilter() : null;
         Set<Name> supportedTypes = getSupportedTypes();
@@ -192,40 +203,42 @@ public class GetRecords {
         }
 
         // build one query per type name, forgetting about paging for the time being
-        List<Query> result = new ArrayList<Query>();
-        for (QName qName : query.getTypeNames()) {
-            Name typeName = new NameImpl(qName);
-            if (!supportedTypes.contains(typeName)) {
-                throw new ServiceException(
-                        "Unsupported record type " + typeName,
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "typeNames");
+        List<WrappedQuery> result = new ArrayList<WrappedQuery>();
+        for (RecordDescriptor outputRd : outputRds) {
+            for (QName qName : query.getTypeNames()) {
+                Name typeName = new NameImpl(qName);
+                if (!supportedTypes.contains(typeName)) {
+                    throw new ServiceException(
+                            "Unsupported record type " + typeName,
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            "typeNames");
+                }
+
+                RecordDescriptor rd = getRecordDescriptor(typeName);
+
+                Query q = new Query(typeName.getLocalPart());
+                q.setFilter(filter);
+                q.setProperties(getPropertyNames(outputRd, query));
+                q.setSortBy(query.getSortBy());
+                try {
+                    q.setNamespace(new URI(typeName.getNamespaceURI()));
+                } catch (URISyntaxException e) {
+                }
+
+                // perform some necessary query adjustments
+                Query adapted = rd.adaptQuery(q);
+
+                // the specification demands that we throw an error if a spatial operator
+                // is used against a non spatial property
+                if (q.getFilter() != null) {
+                    rd.verifySpatialFilters(q.getFilter());
+                }
+
+                // smuggle base url
+                adapted.getHints().put(KEY_BASEURL, request.getBaseUrl());
+
+                result.add(new WrappedQuery(adapted, outputRd));
             }
-
-            RecordDescriptor rd = getRecordDescriptor(typeName);
-
-            Query q = new Query(typeName.getLocalPart());
-            q.setFilter(filter);
-            q.setProperties(getPropertyNames(outputRd, query));
-            q.setSortBy(query.getSortBy());
-            try {
-                q.setNamespace(new URI(typeName.getNamespaceURI()));
-            } catch (URISyntaxException e) {
-            }
-
-            // perform some necessary query adjustments
-            Query adapted = rd.adaptQuery(q);
-
-            // the specification demands that we throw an error if a spatial operator
-            // is used against a non spatial property
-            if (q.getFilter() != null) {
-                rd.verifySpatialFilters(q.getFilter());
-            }
-
-            // smuggle base url
-            adapted.getHints().put(KEY_BASEURL, request.getBaseUrl());
-
-            result.add(adapted);
         }
 
         return result;
@@ -306,22 +319,26 @@ public class GetRecords {
      *
      * @param request
      */
-    private RecordDescriptor getRecordDescriptor(GetRecordsType request) {
+    protected List<RecordDescriptor> getRecordDescriptors(GetRecordsType request) {
         String outputSchema = request.getOutputSchema();
         if (outputSchema == null) {
             outputSchema = CSW.NAMESPACE;
             request.setOutputFormat(CSW.NAMESPACE);
         }
 
+        List<RecordDescriptor> list = new ArrayList<RecordDescriptor>();
         for (RecordDescriptor rd : recordDescriptors) {
             if (outputSchema.equals(rd.getOutputSchema())) {
-                return rd;
+                list.add(rd);
             }
         }
 
-        throw new ServiceException(
-                "Cannot encode records in output schema " + outputSchema,
-                ServiceException.INVALID_PARAMETER_VALUE,
-                "outputSchema");
+        if (list.isEmpty()) {
+            throw new ServiceException(
+                    "Cannot encode records in output schema " + outputSchema,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "outputSchema");
+        }
+        return list;
     }
 }

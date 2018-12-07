@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.csw.GetRecords;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.csw.records.iso.FeatureCatalogueDescriptor;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.AbstractCatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
@@ -43,6 +44,7 @@ public class InternalCatalogStore extends AbstractCatalogStore {
     public InternalCatalogStore(Catalog catalog) {
         support(CSWRecordDescriptor.getInstance());
         support(MetaDataDescriptor.getInstance());
+        support(FeatureCatalogueDescriptor.getInstance());
 
         this.catalog = catalog;
     }
@@ -117,8 +119,8 @@ public class InternalCatalogStore extends AbstractCatalogStore {
             }
         }
 
-        if (q.getProperties() != null && q.getProperties().size() > 0) {
-            outputMapping = outputMapping.subMapping(q.getProperties(), rd);
+        if (q.getProperties() != null) {
+            outputMapping = outputMapping.subMapping(q.getProperties(), rdOutput);
         }
 
         return new CatalogStoreFeatureCollection(

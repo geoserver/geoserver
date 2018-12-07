@@ -41,6 +41,8 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
         namespaces.put("gmd", MetaDataDescriptor.NAMESPACE_GMD);
         namespaces.put("gco", MetaDataDescriptor.NAMESPACE_GCO);
+        namespaces.put("gmx", MetaDataDescriptor.NAMESPACE_GMX);
+        namespaces.put("gfc", MetaDataDescriptor.NAMESPACE_GFC);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     };

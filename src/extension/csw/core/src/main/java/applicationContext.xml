@@ -192,6 +192,7 @@
     <!-- The record descriptors -->
     <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
     <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>
+    <bean id="gfcRecordDescriptor" class="org.geoserver.csw.records.iso.FeatureCatalogueDescriptor"/>
     
     <!-- http url mapping -->
     <bean id="cswURLMapping" 

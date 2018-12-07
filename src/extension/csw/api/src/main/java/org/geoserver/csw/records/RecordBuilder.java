@@ -21,9 +21,9 @@ public interface RecordBuilder {
      * @param name name of property
      * @param values value(s) to be attached to property
      */
-    public void addElement(String name, String... values);
+    public void addElement(String name, Object... values);
 
-    public void addElement(String name, int splitIndex, String... values);
+    public void addElement(String name, int[] splitIndex, Object... values);
 
     /**
      * Adds a bounding box to the record. The envelope must be in WGS84

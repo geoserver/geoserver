@@ -74,6 +74,19 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                         MetaDataDescriptor.NAMESPACES.getPrefix(p.getName().getNamespaceURI());
 
                 AttributesImpl atts = new AttributesImpl();
+                if (p.isNillable()) {
+                    Property prop =
+                            ((ComplexAttribute) p)
+                                    .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                    boolean nil = prop == null || prop.getValue() == null;
+                    atts.addAttribute(
+                            "http://www.w3.org/2001/XMLSchema-instance",
+                            "nil",
+                            "xsi:nil",
+                            "",
+                            nil ? "true" : "false");
+                }
+
                 for (Property p2 : ((ComplexAttribute) p).getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
@@ -150,6 +163,14 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             String name = dn.getLocalPart();
             String prefix = MetaDataDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
             AttributesImpl attributes = new AttributesImpl();
+            if (p.isNillable()) {
+                attributes.addAttribute(
+                        "http://www.w3.org/2001/XMLSchema-instance",
+                        "nil",
+                        "nil",
+                        "",
+                        value == null ? "true" : "false");
+            }
             element(prefix + ":" + name, value, attributes);
         }
     }

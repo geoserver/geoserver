@@ -36,7 +36,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     protected Filter filter;
     protected Catalog catalog;
     protected CatalogStoreMapping mapping;
-    protected RecordDescriptor rd;
+    protected RecordDescriptor rdOutput;
     protected Map<String, String> interpolationProperties = new HashMap<String, String>();
 
     /**
@@ -57,7 +57,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
             Filter filter,
             Catalog catalog,
             CatalogStoreMapping mapping,
-            RecordDescriptor rd,
+            RecordDescriptor rdOutput,
             Map<String, String> interpolationProperties) {
         super(CSWRecordDescriptor.RECORD_TYPE);
         this.offset = offset;
@@ -67,13 +67,20 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         this.mapping = mapping;
         this.sortOrder = sortOrder;
         this.interpolationProperties = interpolationProperties;
-        this.rd = rd;
+        this.rdOutput = rdOutput;
     }
 
     @Override
     protected Iterator<Feature> openIterator() {
         return new CatalogStoreFeatureIterator(
-                offset, count, sortOrder, filter, catalog, mapping, rd, interpolationProperties);
+                offset,
+                count,
+                sortOrder,
+                filter,
+                catalog,
+                mapping,
+                rdOutput,
+                interpolationProperties);
     }
 
     @Override

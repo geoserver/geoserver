@@ -31,6 +31,7 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -349,16 +350,14 @@ public class PipelineBuilder {
 
         @Override
         protected Geometry _run(Geometry geom) throws Exception {
-            if (geom.getDimension() == 0) {
-                return geom;
+            switch (geom.getDimension()) {
+                case 2:
+                    return TopologyPreservingSimplifier.simplify(geom, this.distanceTolerance);
+                case 1:
+                    return DouglasPeuckerSimplifier.simplify(geom, this.distanceTolerance);
+                default:
+                    return geom;
             }
-            // DJB: Use this instead of org.locationtech.jts.simplify.DouglasPeuckerSimplifier
-            // because
-            // DPS does NOT do a good job with polygons.
-            TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geom);
-            simplifier.setDistanceTolerance(this.distanceTolerance);
-            Geometry simplified = simplifier.getResultGeometry();
-            return simplified;
         }
     }
 

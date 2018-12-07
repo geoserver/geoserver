@@ -39,7 +39,7 @@
           <descriptor>release/ext-authkey.xml</descriptor>
           <!-- <descriptor>release/ext-groovy.xml</descriptor> -->
           <!-- <descriptor>release/ext-javascript.xml</descriptor> -->
-          <descriptor>release/ext-spatialite.xml</descriptor>
+          <!-- <descriptor>release/ext-spatialite.xml</descriptor> -->
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
@@ -208,7 +208,7 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>spatialite</module>
+        <!-- <module>spatialite</module> -->
         <module>jdbcconfig</module>
         <!--module>script</module-->
         <module>wms-eo</module>

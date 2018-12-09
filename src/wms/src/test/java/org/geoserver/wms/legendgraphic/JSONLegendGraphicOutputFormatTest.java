@@ -6,31 +6,32 @@
 package org.geoserver.wms.legendgraphic;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.xml.transform.TransformerException;
-import net.sf.json.JSONArray;
+import javax.media.jai.PlanarImage;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
-import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -41,6 +42,7 @@ import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
+import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.ColorMapEntry;
@@ -50,9 +52,6 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
-import org.geotools.xml.styling.SLDTransformer;
-import org.junit.Before;
-import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
@@ -69,14 +68,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
-    static final String JSONFormat = "application/json";
 
-    @Before
-    public void setLegendProducer() throws Exception {
-        this.legendProducer = new JSONLegendGraphicBuilder();
-
-        service = new GetLegendGraphic(getWMS());
-    }
     /**
      * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
      * has more than one rule, and one of them is requested by the RULE parameter.
@@ -88,7 +80,6 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
         assertNotNull(multipleRulesStyle);
 
-        @SuppressWarnings("deprecation")
         Rule rule = multipleRulesStyle.getFeatureTypeStyles()[0].getRules()[0];
         LOGGER.info(
                 "testing single rule "
@@ -96,32 +87,26 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                         + " from style "
                         + multipleRulesStyle.getName());
 
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), multipleRulesStyle);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(multipleRulesStyle);
         req.setRule(rule.getName());
-        req.setLegendOptions(new HashMap<String, String>());
-        req.setFormat(JSONFormat);
+        req.setLegendOptions(new HashMap());
+        req.setFormat("application/json");
         final int HEIGHT_HINT = 30;
         req.setHeight(HEIGHT_HINT);
 
+        // use default values for the rest of parameters
+        this.legendProducer.buildLegendGraphic(req);
+
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
 
-        // System.out.println(result.toString(2));
-
-        // check there is only one rule in the legend
-
-        JSONArray rules = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertEquals(1, rules.size());
-        assertEquals(
-                rule.getDescription().getTitle().toString(),
-                rules.getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.TITLE));
+        System.out.println(result.toString(2));
     }
 
     /**
@@ -132,22 +117,43 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     public void testRainfall() throws Exception {
         // load a style with 3 rules
         Style multipleRulesStyle = getCatalog().getStyleByName("rainfall").getStyle();
-        // printStyle(multipleRulesStyle);
+
         assertNotNull(multipleRulesStyle);
 
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
-        SimpleFeatureCollection feature;
+
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        GetLegendGraphicRequest req = getRequest(feature.getSchema(), multipleRulesStyle);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(multipleRulesStyle);
+            req.setLegendOptions(new HashMap());
 
-        req.setLegendOptions(new HashMap<String, String>());
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
 
-        // use default values for the rest of parameters
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotNull(result);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // was the legend painted?
+            assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+
+            // was the legend painted?
+            assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**
@@ -159,42 +165,137 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         Style style = getCatalog().getStyleByName("rainfall").getStyle();
         assertNotNull(style);
 
-        GetLegendGraphicRequest req = getRequest(null, style);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setStrict(false);
+        req.setLayer(null);
+        req.setStyle(style);
 
-        JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        final int HEIGHT_HINT = 30;
+        req.setHeight(HEIGHT_HINT);
+
+        // use default values for the rest of parameters
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
-        assertNotNull(resp);
+        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
 
         // was the legend painted?
-        // System.out.println(resp.toString(2) );
-        assertEquals(1, resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND).size());
+        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
     }
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        int titleHeight = getTitleHeight(req);
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        Style style = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), style);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
 
-        JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
         // was the legend painted?
-        assertNotEmpty(resp);
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
-        legend.setStyle(style);
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(
+                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
 
-        resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(resp.toString(2));
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
         // was the legend painted?
-        assertNotEmpty(resp);
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        // with 2 layers we should have a legend at least 2 times taller (title + 2 layers)
+
+        assertEquals(2 * (height + titleHeight), image.getHeight());
+
+        // first title
+        assertPixel(image, 1, titleHeight / 2, new Color(0, 0, 0));
+
+        // first layer
+        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+        // second title
+        assertPixel(image, 1, 60 + titleHeight + titleHeight / 2, new Color(0, 0, 0));
+
+        // same colors for the second layer
+        assertPixel(image, 10, 70 + titleHeight * 2, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 90 + titleHeight * 2, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 110 + titleHeight * 2, new Color(224, 64, 0));
+    }
+
+    /** Tests that with forceTitles option off no title is rendered */
+    @org.junit.Test
+    public void testForceTitlesOff() throws Exception {
+        Catalog cat = getCatalog();
+
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        Map<String, String> options = new HashMap<String, String>();
+        options.put("forceTitles", "off");
+        req.setLegendOptions(options);
+
+        FeatureTypeInfo ftInfo =
+                cat.getFeatureTypeByName(
+                        MockData.ROAD_SEGMENTS.getNamespaceURI(),
+                        MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        req.setLayer(ftInfo.getFeatureType());
+
+        req.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        int height = image.getHeight();
+
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.getLegends().add(legend);
+
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotBlank("testForceTitlesOff", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        assertEquals(2 * height, image.getHeight());
+
+        // first layer
+        assertPixel(image, 10, 10, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50, new Color(224, 64, 0));
+
+        // same colors for the second layer
+        assertPixel(image, 10, 70, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 90, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 110, new Color(224, 64, 0));
     }
 
     /**
@@ -203,14 +304,15 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithDifferentStyles() throws Exception {
-        GetLegendGraphicRequest req = getRequest(null, null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        int titleHeight = getTitleHeight(req);
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-
         List<FeatureType> layers = new ArrayList<FeatureType>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
@@ -220,18 +322,24 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         Style style1 =
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
         styles.add(style1);
-        // printStyle(style1);
+
         Style style2 = getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
         styles.add(style2);
-        // printStyle(style2);
         req.setStyles(styles);
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertNotNull(result);
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        // System.out.println(legend.toString(2) );
-        assertEquals(2, legend.size());
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        // first layer
+        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+        // different color (style) for the second layer
+        assertPixel(image, 10, 70 + titleHeight * 2, new Color(64, 64, 192));
     }
 
     /**
@@ -240,8 +348,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndCoverage() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setFeatureType(JSONFormat);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        int titleHeight = getTitleHeight(req);
+
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -254,36 +364,44 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        layers.add(feature.getSchema());
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            layers.add(feature.getSchema());
 
-        req.setLayers(layers);
+            req.setLayers(layers);
 
-        List<Style> styles = new ArrayList<Style>();
-        Style style1 =
-                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        styles.add(style1);
+            List<Style> styles = new ArrayList<Style>();
+            Style style1 =
+                    getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            styles.add(style1);
 
-        Style style2 = getCatalog().getStyleByName("rainfall").getStyle();
-        styles.add(style2);
-        req.setStyles(styles);
+            Style style2 = getCatalog().getStyleByName("rainfall").getStyle();
+            styles.add(style2);
+            req.setStyles(styles);
 
-        JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotNull(resp);
-        // System.out.println(resp.toString(3));
-        // vector layer
-        assertEquals(
-                "RoadSegments",
-                resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.LAYER_NAME));
-        // coverage layer
-        assertEquals(
-                "GridCoverage",
-                resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(1)
-                        .get(JSONLegendGraphicBuilder.LAYER_NAME));
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // vector layer
+            assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+            assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+            assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+            // coverage layer
+            assertPixel(image, 10, 70 + titleHeight * 2, new Color(115, 38, 0));
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**
@@ -292,8 +410,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {
-        GetLegendGraphicRequest req = getRequest(null, null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setScale(1000);
+        int titleHeight = getTitleHeight(req);
+
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -331,6 +451,44 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         // vector layer
         assertEquals(
                 "RoadSegments", legends.getJSONObject(0).get(JSONLegendGraphicBuilder.LAYER_NAME));
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            layers.add(feature.getSchema());
+
+            req.setLayers(layers);
+
+            List<Style> styles = new ArrayList<Style>();
+            Style style1 =
+                    getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            styles.add(style1);
+
+            styles.add(readSLD("InvisibleRaster.sld"));
+
+            req.setStyles(styles);
+
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // vector layer
+            assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+            assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+            assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+            // no coverage
+            assertTrue(image.getHeight() < 70 + titleHeight * 2);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**
@@ -339,8 +497,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleVector() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setScale(1000);
+        int titleHeight = getTitleHeight(req);
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -360,20 +519,23 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setStyles(styles);
 
-        JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        this.legendProducer.buildLegendGraphic(req);
 
-        assertNotNull(resp);
-        System.out.println(resp.toString(3));
-        JSONArray legends = resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertEquals(1, legends.size());
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
         // vector layer
-        assertEquals(
-                "RoadSegments", legends.getJSONObject(0).get(JSONLegendGraphicBuilder.LAYER_NAME));
+        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+        // no second vector layer
+        assertTrue(image.getHeight() < 70 + titleHeight * 2);
     }
 
-    @Test
     public void testMixedGeometry() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("MIXEDGEOMETRY");
@@ -415,43 +577,30 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayers(layers);
 
         List<Style> styles = new ArrayList<Style>();
-        styles.add(readSLD("MixedGeometry.sld"));
         req.setStyles(styles);
 
-        JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        styles.add(readSLD("MixedGeometry.sld"));
 
-        assertNotNull(resp);
-        System.out.println(resp.toString(3));
-        JSONArray legends = resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertEquals(1, legends.size());
-        // vector layer
-        JSONObject legend = legends.getJSONObject(0);
-        assertEquals("MIXEDGEOMETRY", legend.get(JSONLegendGraphicBuilder.LAYER_NAME));
-        JSONArray rules = legend.getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertTrue(
-                rules.getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .containsKey(JSONLegendGraphicBuilder.LINE));
-        assertTrue(
-                rules.getJSONObject(1)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .containsKey(JSONLegendGraphicBuilder.POLYGON));
-        assertTrue(
-                rules.getJSONObject(2)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .containsKey(JSONLegendGraphicBuilder.POINT));
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testMixedGeometry", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // LineSymbolizer
+        assertPixel(image, 10, 10, new Color(0, 0, 0));
+
+        // PolygonSymbolizer
+        assertPixel(image, 10, 30, new Color(0, 0, 255));
+
+        // PointSymbolizer
+        assertPixel(image, 10, 50, new Color(255, 0, 0));
     }
 
-    /**
-     * Tests that symbols are not bigger than the requested icon size, also if an expression is used
-     * for the symbol Size.
-     */
+    /** Tests that symbols are not bigger than the requested icon size. */
     @org.junit.Test
-    public void testSymbolContainedInIconUsingExpression() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+    public void testSymbolContainedInIcon() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -460,44 +609,53 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("SymbolExpression.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        req.setFormat(JSONFormat);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        System.out.println(result.toString(2));
-        JSONArray rules =
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES);
-        Iterator<?> iterator = rules.iterator();
-        String[] expectedSizes = {"[id]", "40"};
-        int counter = 0;
-        while (iterator.hasNext()) {
-            JSONObject rule = (JSONObject) iterator.next();
-            assertNotNull(rule);
-            JSONObject symbolizer =
-                    rule.getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS).getJSONObject(0);
+        req.setStyle(readSLD("BigSymbol.sld"));
 
-            JSONObject pointSymb = symbolizer.getJSONObject(JSONLegendGraphicBuilder.POINT);
-            assertEquals(
-                    expectedSizes[counter++],
-                    pointSymb.get(JSONLegendGraphicBuilder.SIZE).toString());
-            assertEquals(
-                    "circle",
-                    pointSymb
-                            .getJSONArray(JSONLegendGraphicBuilder.GRAPHICS)
-                            .getJSONObject(0)
-                            .get(JSONLegendGraphicBuilder.MARK));
-        }
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // background at borders
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+
+        // symbol in the center
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+    }
+
+    /**
+     * Tests that symbols are not bigger than the requested icon size, also if an expression is used
+     * for the symbol Size.
+     */
+    @org.junit.Test
+    public void testSymbolContainedInIconUsingExpression() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("SymbolExpression.sld"));
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank(
+                "testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // background at borders
+        assertPixel(image, 1, 20, new Color(255, 255, 255));
+
+        // symbol in the center (second symbol, the first one is attribute dependent and would not
+        // be drawn normally)
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
     }
 
     /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testProportionalSymbolSize() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -507,41 +665,68 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbols.sld"));
-        req.setFormat(JSONFormat);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        // System.out.println(result.toString(2));
-        JSONArray rules =
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES);
-        Iterator<?> iterator = rules.iterator();
-        String[] expectedSizes = {"40", "20", "10", "1"};
-        int counter = 0;
-        while (iterator.hasNext()) {
-            JSONObject rule = (JSONObject) iterator.next();
-            assertNotNull(rule);
-            JSONObject symbolizer =
-                    rule.getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS).getJSONObject(0);
 
-            JSONObject pointSymb = symbolizer.getJSONObject(JSONLegendGraphicBuilder.POINT);
-            assertEquals(
-                    expectedSizes[counter++],
-                    pointSymb.get(JSONLegendGraphicBuilder.SIZE).toString());
-            assertEquals(
-                    "circle",
-                    pointSymb
-                            .getJSONArray(JSONLegendGraphicBuilder.GRAPHICS)
-                            .getJSONObject(0)
-                            .get(JSONLegendGraphicBuilder.MARK));
-        }
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+
+        // second symbol
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        assertPixel(image, 5, 25, new Color(255, 255, 255));
+        assertPixel(image, 7, 27, new Color(255, 0, 0));
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
+
+        // third symbol
+        assertPixel(image, 1, 41, new Color(255, 255, 255));
+        assertPixel(image, 5, 45, new Color(255, 255, 255));
+        assertPixel(image, 6, 46, new Color(255, 255, 255));
+        assertPixel(image, 10, 50, new Color(255, 0, 0));
+
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));
+        assertPixel(image, 6, 68, new Color(255, 255, 255));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+
+    /** Tests that symbols relative sizes are proportional. */
+    @org.junit.Test
+    public void testProportionalSymbolThickBorder() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbolsThickBorder.sld"));
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank(
+                "testProportionalSymbolSizeThickBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol, thick border
+        assertPixel(image, 1, 1, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 5, new Color(0, 0, 0)); // border
+        assertPixel(image, 10, 10, new Color(255, 0, 0)); // inside
+
+        // second symbol, small, no border
+        assertPixel(image, 1, 21, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 25, new Color(255, 255, 255)); // small, still outside
+        assertPixel(image, 10, 30, new Color(255, 0, 0)); // inside
     }
 
     /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testProportionalSymbolsLine() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -552,36 +737,25 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsLine.sld"));
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-        JSONArray rules =
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES);
-        Iterator<?> iterator = rules.iterator();
-        String[] expectedSizes = {"30", "15"};
-        int counter = 0;
-        while (iterator.hasNext()) {
-            JSONObject rule = (JSONObject) iterator.next();
-            assertNotNull(rule);
-            JSONObject symbolizer =
-                    rule.getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS).getJSONObject(0);
+        assertNotBlank("ProportionalSymbolsLine", image, LegendUtils.DEFAULT_BG_COLOR);
 
-            JSONObject pointSymb = symbolizer.getJSONObject(JSONLegendGraphicBuilder.LINE);
+        // biggest symbol, thick border
+        assertPixel(image, 1, 1, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 5, new Color(0, 0, 0)); // border
+        assertPixel(image, 7, 12, new Color(255, 0, 0)); // inside
 
-            assertEquals(
-                    expectedSizes[counter++],
-                    pointSymb
-                            .getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_STROKE)
-                            .getString(JSONLegendGraphicBuilder.SIZE));
-        }
+        // second symbol, small, no border
+        assertPixel(image, 1, 21, new Color(255, 255, 255)); // outside
+        assertPixel(image, 5, 25, new Color(255, 255, 255)); // small, still outside
+        assertPixel(image, 10, 30, new Color(255, 0, 0)); // inside
     }
 
     /** Tests that symbols relative sizes are proportional also if using uoms. */
     @org.junit.Test
     public void testProportionalSymbolSizeUOM() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -590,39 +764,33 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("ProportionalSymbolsUOM.sld");
-        // printStyle(style);
-        req.setStyle(style);
-        req.setFormat(JSONFormat);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        System.out.println(result.toString(2));
-        JSONArray rules =
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES);
-        Iterator<?> iterator = rules.iterator();
-        String[] expectedSizes = {"40", "20", "10", "1"};
-        int counter = 0;
-        while (iterator.hasNext()) {
-            JSONObject rule = (JSONObject) iterator.next();
-            assertNotNull(rule);
-            JSONObject symbolizer =
-                    rule.getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS).getJSONObject(0);
+        req.setStyle(readSLD("ProportionalSymbolsUOM.sld"));
 
-            JSONObject pointSymb = symbolizer.getJSONObject(JSONLegendGraphicBuilder.POINT);
-            assertEquals(
-                    expectedSizes[counter++],
-                    pointSymb.get(JSONLegendGraphicBuilder.SIZE).toString());
-            assertEquals("m", pointSymb.get(JSONLegendGraphicBuilder.UOM));
-            assertEquals(
-                    "circle",
-                    pointSymb
-                            .getJSONArray(JSONLegendGraphicBuilder.GRAPHICS)
-                            .getJSONObject(0)
-                            .get(JSONLegendGraphicBuilder.MARK));
-        }
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+
+        // second symbol
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        assertPixel(image, 5, 25, new Color(255, 255, 255));
+        assertPixel(image, 7, 27, new Color(255, 0, 0));
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
+
+        // third symbol
+        assertPixel(image, 1, 41, new Color(255, 255, 255));
+        assertPixel(image, 5, 45, new Color(255, 255, 255));
+        assertPixel(image, 6, 46, new Color(255, 255, 255));
+        assertPixel(image, 10, 50, new Color(255, 0, 0));
+
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));
+        assertPixel(image, 6, 68, new Color(255, 255, 255));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
     }
 
     /**
@@ -631,7 +799,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testProportionalSymbolSizePartialUOM() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.EMPTY_MAP));
 
@@ -642,48 +810,64 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("ProportionalSymbolsPartialUOM.sld");
-        printStyle(style);
-        req.setStyle(style);
-        req.setFormat(JSONFormat);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
+        req.setStyle(readSLD("ProportionalSymbolsPartialUOM.sld"));
 
-        System.out.println(result.toString(2));
-        JSONArray rules =
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-        String[] expectedSizes = {"40.0", "40.0"};
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
-        for (int i = 0; i < rules.size(); i++) {
-            JSONObject rule = rules.getJSONObject(i);
-            assertNotEmpty(rule);
+        // UOM symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
 
-            JSONObject symbolizer =
-                    rule.getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS).getJSONObject(0);
-
-            JSONObject pointSymb = symbolizer.getJSONObject(JSONLegendGraphicBuilder.POINT);
-            assertEquals(expectedSizes[i], pointSymb.get(JSONLegendGraphicBuilder.SIZE));
-
-            assertEquals(
-                    "circle",
-                    pointSymb
-                            .getJSONArray(JSONLegendGraphicBuilder.GRAPHICS)
-                            .getJSONObject(0)
-                            .get(JSONLegendGraphicBuilder.MARK));
-        }
+        // non UOM symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
     }
 
+    /** Tests that minSymbolSize legend option is respected. */
+    @org.junit.Test
+    public void testMinSymbolSize() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        Map<String, String> options = new HashMap<String, String>();
+        options.put("minSymbolSize", "10");
+        req.setLegendOptions(options);
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbols.sld"));
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));
+        assertPixel(image, 7, 67, new Color(255, 0, 0));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+
+    /** Tests that minSymbolSize legend option is respected. */
     @org.junit.Test
     public void testInternationalizedLabels() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         Map<String, String> options = new HashMap<String, String>();
         options.put("forceLabels", "on");
         req.setLegendOptions(options);
-        req.setFormat(JSONFormat);
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -691,40 +875,23 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("Internationalized.sld");
-        // printStyle(style);
-        req.setStyle(style);
+        req.setStyle(readSLD("Internationalized.sld"));
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertEquals(
-                "title",
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.TITLE));
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        int noLocalizedWidth = image.getWidth();
+
         req.setLocale(Locale.ITALIAN);
-        result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertEquals(
-                "titolomoltolungo",
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.TITLE));
-        req.setLocale(Locale.ENGLISH);
-        result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertEquals(
-                "anothertitle",
-                result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.TITLE));
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         // test that using localized labels we get a different label than when not using it
+        int itWidth = image.getWidth();
+        assertTrue(itWidth != noLocalizedWidth);
+
+        req.setLocale(Locale.ENGLISH);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        // test that using localized labels we get a different label than when not using it
+        int enWidth = image.getWidth();
+        assertTrue(enWidth != noLocalizedWidth);
+        assertTrue(enWidth != itWidth);
     }
 
     /**
@@ -736,7 +903,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         Style transformStyle = readSLD("RenderingTransformRasterVector.sld");
 
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo =
                 getCatalog()
                         .getCoverageByName(
@@ -745,17 +912,36 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        req.setLayer(feature.getSchema());
-        req.setStyle(transformStyle);
-        req.setLegendOptions(new HashMap<String, String>());
-        req.setFormat(JSONFormat);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // was the legend painted?
-        assertNotEmpty(result);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(transformStyle);
+            req.setLegendOptions(new HashMap());
 
-        // System.out.println(result.toString(2));
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // ImageIO.write(image, "PNG", new File("/tmp/rv.png"));
+
+            assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
+
+            assertPixel(image, 1, 1, new Color(255, 255, 255));
+            assertPixel(image, 10, 10, new Color(0, 0, 0));
+            assertPixel(image, 19, 19, new Color(255, 255, 255));
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**
@@ -766,7 +952,6 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     public void testColorMapWithCql() throws Exception {
 
         Style style = readSLD("ColorMapWithCql.sld");
-        // printStyle(style);
         assertNotNull(style.featureTypeStyles());
         assertEquals(1, style.featureTypeStyles().size());
         FeatureTypeStyle fts = style.featureTypeStyles().get(0);
@@ -795,42 +980,40 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         double opacity = LegendUtils.getOpacity(entries[2]);
         assertEquals(0.5, opacity, 0.0);
 
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        req.setLayer(feature.getSchema());
-        req.setStyle(style);
-        req.setLegendOptions(new HashMap<String, String>());
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            req.setLegendOptions(new HashMap());
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
 
-        // was the legend painted?
-        assertNotEmpty(result);
-        JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertEquals(1, lx.size());
-        // rule 1 is a mark
-        JSONObject rasterSymb =
-                lx.getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .getJSONObject(JSONLegendGraphicBuilder.RASTER);
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
 
-        JSONArray colorMap =
-                rasterSymb
-                        .getJSONObject(JSONLegendGraphicBuilder.COLORMAP)
-                        .getJSONArray(JSONLegendGraphicBuilder.ENTRIES);
-        assertEquals(
-                "[${strConcat('#FF','0000')}]",
-                colorMap.getJSONObject(0).get(JSONLegendGraphicBuilder.COLOR));
-        assertEquals("[${15+5}]", colorMap.getJSONObject(1).get(JSONLegendGraphicBuilder.QUANTITY));
-        assertEquals(
-                "[${0.25*2}]", colorMap.getJSONObject(2).get(JSONLegendGraphicBuilder.OPACITY));
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /**
@@ -842,7 +1025,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         Style transformStyle = readSLD("RenderingTransformVectorRaster.sld");
 
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -852,12 +1035,20 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(transformStyle);
-        // printStyle(transformStyle);
-        req.setLegendOptions(new HashMap<String, String>());
-        req.setFormat(JSONFormat);
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
+        req.setLegendOptions(new HashMap());
+
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        // ImageIO.write(image, "PNG", new File("/tmp/vr.png"));
+
+        assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        assertPixel(image, 10, 70, new Color(188, 188, 255));
+        assertPixel(image, 10, 80, new Color(68, 68, 255));
+        assertPixel(image, 10, 130, new Color(255, 152, 0));
     }
 
     /** Tests that a legend containing an ExternalGraphic icon is rendered properly. */
@@ -868,50 +1059,137 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         assertNotNull(externalGraphicStyle);
 
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
-        // printStyle(externalGraphicStyle);
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            LegendRequest legend = req.new LegendRequest();
+            legend.setStyle(externalGraphicStyle);
+
+            req.getLegends().add(legend);
+            req.setScale(1.0);
+
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+            // was our external graphic icon painted?
+            assertPixel(image, 10, HEIGHT_HINT + HEIGHT_HINT / 2, Color.YELLOW);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
+
+    /** Tests labelMargin legend option */
+    @org.junit.Test
+    public void testLabelMargin() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.POINTS.getNamespaceURI(), MockData.POINTS.getLocalPart());
+        req.setLayer(ftInfo.getFeatureType());
+        Style externalGraphicStyle = readSLD("ExternalGraphicDemo.sld");
         req.setStyle(externalGraphicStyle);
 
-        req.setScale(1.0);
+        final int HEIGHT_HINT = 20;
+        req.setHeight(HEIGHT_HINT);
 
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
-        // System.out.println(result.toString(2) );
-        JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertEquals(1, lx.size());
-        // rule 1 is a mark
-        JSONObject pointSymb =
-                lx.getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .getJSONObject(JSONLegendGraphicBuilder.POINT);
+        HashMap legendOptions = new HashMap();
+        legendOptions.put("labelMargin", "10");
+        req.setLegendOptions(legendOptions);
 
-        assertEquals("14.0", pointSymb.get(JSONLegendGraphicBuilder.SIZE));
-        assertEquals(
-                "circle",
-                pointSymb
-                        .getJSONArray(JSONLegendGraphicBuilder.GRAPHICS)
-                        .getJSONObject(0)
-                        .get(JSONLegendGraphicBuilder.MARK));
-        // rule 2 is a LegendGraphic
-        assertEquals(
-                "image/png",
-                lx.getJSONObject(0)
-                        .getJSONArray(JSONLegendGraphicBuilder.RULES)
-                        .getJSONObject(1)
-                        .getJSONObject(JSONLegendGraphicBuilder.LEGEND_GRAPHIC)
-                        .get(JSONLegendGraphicBuilder.EXTERNAL_GRAPHIC_TYPE));
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        assertEquals(HEIGHT_HINT * 2, image.getHeight());
+        for (int x = 21; x <= 29; x++) {
+            assertPixel(image, x, HEIGHT_HINT / 2, new Color(255, 255, 255));
+        }
+
+        legendOptions.put("labelMargin", "20");
+        req.setLegendOptions(legendOptions);
+
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        assertEquals(HEIGHT_HINT * 2, image.getHeight());
+        for (int x = 21; x <= 39; x++) {
+            assertPixel(image, x, HEIGHT_HINT / 2, new Color(255, 255, 255));
+        }
+    }
+
+    /** Tests labelMargin legend option */
+    @org.junit.Test
+    public void testAbsoluteMargins() throws Exception {
+        Style style = readSLD("ColorMapWithLongLabels.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer) rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
+
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            HashMap legendOptions = new HashMap();
+            legendOptions.put("dx", "0.5");
+            legendOptions.put("dy", "0");
+            req.setLegendOptions(legendOptions);
+
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            int absoluteWidth = image.getWidth();
+            legendOptions.put("absoluteMargins", "false");
+            image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            assertTrue(image.getWidth() > absoluteWidth);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if (coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if (ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
     /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testThickPolygonBorder() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setWidth(20);
         req.setHeight(20);
 
@@ -922,47 +1200,28 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("ThickBorder.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        req.setStyle(readSLD("ThickBorder.sld"));
 
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        // System.out.println(result.toString(2));
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        assertFalse(legend.isEmpty());
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-        JSONObject polySymb1 =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POLYGON);
-        assertNotNull(polySymb1);
-        assertEquals("#FF0000", polySymb1.get(JSONLegendGraphicBuilder.FILL));
-        assertEquals("#000000", polySymb1.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("4", polySymb1.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
+        assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
 
-        JSONObject polySymb2 =
-                rules.getJSONObject(1)
-                        .getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS)
-                        .getJSONObject(0)
-                        .getJSONObject(JSONLegendGraphicBuilder.POLYGON);
-        assertNotNull(polySymb2);
-        assertEquals("#00FF00", polySymb2.get(JSONLegendGraphicBuilder.FILL));
-        assertEquals("#000000", polySymb2.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("1", polySymb2.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
+        // thick symbol, there is padding, black thick border, and center
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 6, 6, new Color(0, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+
+        // second symbol, padding, border, green center
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        // assertPixel(image, 4, 25, new Color(0, 0, 0)); // unsafe, the border is thin here
+        assertPixel(image, 10, 30, new Color(0, 255, 0));
     }
 
+    /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
-    public void testSimplePoint() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
+    public void testThickPolygonAsymmetricSymbol() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(40);
         req.setHeight(20);
 
         FeatureTypeInfo ftInfo =
@@ -972,33 +1231,29 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("point.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
+        req.setStyle(readSLD("ThickBorder.sld"));
 
-        JSONObject pointSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
-        assertNotNull(pointSymb);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // thick symbol, there is padding, black thick border, and center
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 9, 6, new Color(0, 0, 0));
+        assertPixel(image, 20, 10, new Color(255, 0, 0));
+
+        // second symbol, padding, border, green center
+        assertPixel(image, 1, 23, new Color(255, 255, 255));
+        // assertPixel(image, 4, 25, new Color(0, 0, 0)); // unsafe, the border is thin here
+        assertPixel(image, 20, 30, new Color(0, 255, 0));
     }
 
+    /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
-    public void testElseFilter() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
+    public void testLargeCirclePlacement() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setWidth(48);
+        req.setHeight(25);
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -1007,73 +1262,35 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("PopulationElse.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
+        req.setStyle(readSLD("largeCircle.sld"));
 
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-        JSONObject pointSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
-        assertNotNull(pointSymb);
-        JSONObject rule = rules.getJSONObject(2);
-        assertEquals("true", rule.get(JSONLegendGraphicBuilder.ELSE_FILTER));
+        assertNotBlank("largeCircle", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // the border is visible both top middle and bottom middle. Different JDK
+        // build wildly different colors for the border unfortunately, so the test
+        // checks that pixels at top/middle bottom/middle are similar color (they used to be
+        // different, significantly)
+        Color colorTop = getPixelColor(image, 24, 0);
+        Color colorBottom = getPixelColor(image, 24, 24);
+        assertColorSimilar(colorTop, colorBottom, 20);
     }
 
-    @org.junit.Test
-    public void testFullPoint() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("full_point.sld");
-        req.setStyle(style);
-        printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject pointSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
-        assertNotNull(pointSymb);
-        assertEquals("[centroid([the_geom])]", pointSymb.get(JSONLegendGraphicBuilder.GEOMETRY));
-        assertEquals("6", pointSymb.get(JSONLegendGraphicBuilder.SIZE));
-        assertEquals("[(rotation*-1)]", pointSymb.get(JSONLegendGraphicBuilder.ROTATION));
-        assertEquals("0.4", pointSymb.get(JSONLegendGraphicBuilder.OPACITY));
+    private void assertColorSimilar(Color expected, Color actual, int componentTolerance) {
+        assertEquals(expected.getRed(), actual.getRed(), componentTolerance);
+        assertEquals(expected.getGreen(), actual.getGreen(), componentTolerance);
+        assertEquals(expected.getBlue(), actual.getBlue(), componentTolerance);
     }
 
+    /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testSimpleLine() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setWidth(20);
         req.setHeight(20);
+
+
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -1081,367 +1298,19 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("line.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
+        req.setStyle(readSLD("line.sld"));
 
-        JSONObject lineSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertNotNull(lineSymb);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-        assertEquals("#0000FF", lineSymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("2", lineSymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
+        assertNotBlank("line", image, LegendUtils.DEFAULT_BG_COLOR);
+
+        // line in the middle, but off the middle, it's white
+        Color colorCenter = getPixelColor(image, 10, 10);
+        assertColorSimilar(Color.BLUE, colorCenter, 20);
+        Color colorOutsideCenter = getPixelColor(image, 6, 6);
+        assertColorSimilar(Color.WHITE, colorOutsideCenter, 20);
     }
 
-    @org.junit.Test
-    public void testFullLine() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("full_line.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject lineSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertFalse(lineSymb.isNullObject());
-        JSONObject lineSymb1 =
-                symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertFalse(lineSymb1.isNullObject());
-        assertEquals("10", lineSymb.get(JSONLegendGraphicBuilder.PERPENDICULAR_OFFSET));
-        assertFalse(
-                lineSymb1.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_STROKE).isNullObject());
-        JSONObject lineSymb2 =
-                symbolizers.getJSONObject(2).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertFalse(lineSymb2.isNullObject());
-        assertFalse(lineSymb2.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL).isNullObject());
-        assertEquals("#0000FF", lineSymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("2", lineSymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
-    }
-
-    @org.junit.Test
-    public void testSimplePolygon() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("polygon.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject polySymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POLYGON);
-        assertNotNull(polySymb);
-        assertEquals("#0099CC", polySymb.get(JSONLegendGraphicBuilder.FILL));
-        assertEquals("#000000", polySymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("0.5", polySymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
-    }
-
-    @org.junit.Test
-    public void testFullPolygon() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("full_polygon.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-         System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject polySymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POLYGON);
-        assertNotNull(polySymb);
-        assertEquals("#0099CC", polySymb.get(JSONLegendGraphicBuilder.FILL));
-        assertEquals("#000000", polySymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("0.5", polySymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
-        JSONObject polySymb2 =
-                symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.POLYGON);
-        assertFalse(polySymb2.isNullObject() && polySymb2.isEmpty());
-        JSONObject stroke = polySymb2.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_STROKE);
-
-        assertFalse(stroke.isNullObject() && stroke.isEmpty());
-        JSONObject fill = polySymb2.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL);
-        assertFalse(fill.isNullObject() && fill.isEmpty());
-    }
-
-    @org.junit.Test
-    public void testSimpleText() throws Exception {
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("text.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
-        assertNotNull(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject polySymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertNotNull(polySymb);
-
-        assertEquals("#000000", polySymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("0.2", polySymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
-
-        JSONObject textSymb =
-                symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.TEXT);
-        assertFalse(textSymb.isNullObject());
-        assertEquals("[STATE_ABBR]", textSymb.getString(JSONLegendGraphicBuilder.LABEL));
-        JSONArray fonts = textSymb.getJSONArray(JSONLegendGraphicBuilder.FONTS);
-        assertEquals(2, fonts.size());
-        assertEquals(
-                "[STATE_FONT]",
-                fonts.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.FONT_FAMILY).get(0));
-        assertEquals(
-                "Lobster",
-                fonts.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.FONT_FAMILY).get(1));
-        assertEquals(
-                "Times New Roman",
-                fonts.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.FONT_FAMILY).get(2));
-        assertEquals("Normal", fonts.getJSONObject(0).get(JSONLegendGraphicBuilder.FONT_STYLE));
-        assertEquals("normal", fonts.getJSONObject(0).get(JSONLegendGraphicBuilder.FONT_WEIGHT));
-        assertEquals("14", fonts.getJSONObject(0).get(JSONLegendGraphicBuilder.FONT_SIZE));
-        assertEquals(
-                "Times New Roman",
-                fonts.getJSONObject(1).getJSONArray(JSONLegendGraphicBuilder.FONT_FAMILY).get(0));
-        assertEquals("Italic", fonts.getJSONObject(1).get(JSONLegendGraphicBuilder.FONT_STYLE));
-        assertEquals("normal", fonts.getJSONObject(1).get(JSONLegendGraphicBuilder.FONT_WEIGHT));
-        assertEquals("9", fonts.getJSONObject(1).get(JSONLegendGraphicBuilder.FONT_SIZE));
-        assertFalse(
-                textSymb.getJSONObject(JSONLegendGraphicBuilder.LABEL_PLACEMENT).isNullObject());
-        assertFalse(textSymb.getJSONObject(JSONLegendGraphicBuilder.HALO).isNullObject());
-        JSONObject vops = textSymb.getJSONObject(JSONLegendGraphicBuilder.VENDOR_OPTIONS);
-        assertNotEmpty(vops);
-        assertEquals("true", vops.get("followLine"));
-    }
-
-    @Test
-    public void testComplexText() throws Exception {
-
-        GetLegendGraphicRequest req = getRequest();
-        req.setWidth(20);
-        req.setHeight(20);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
-
-        req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("text_scaleSize.sld");
-        req.setStyle(style);
-        // printStyle(style);
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
-        assertNotEmpty(result);
-        // blue 2px wide line
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject polySymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.LINE);
-        assertNotNull(polySymb);
-
-        assertEquals("#000000", polySymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("0.2", polySymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
-
-        JSONObject textSymb =
-                symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.TEXT);
-
-        assertFalse(textSymb.isNullObject());
-
-        assertEquals("[STATE_ABBR]", textSymb.getString(JSONLegendGraphicBuilder.LABEL));
-        JSONArray fonts = textSymb.getJSONArray(JSONLegendGraphicBuilder.FONTS);
-        assertEquals(2, fonts.size());
-        assertEquals("9", fonts.getJSONObject(1).get(JSONLegendGraphicBuilder.FONT_SIZE));
-    }
-
-    @org.junit.Test
-    public void testContrastRaster() throws Exception {
-
-        Style multipleRulesStyle = readSLD("raster_brightness.sld");
-        // printStyle(multipleRulesStyle);
-        assertNotNull(multipleRulesStyle);
-
-        GetLegendGraphicRequest req = getRequest();
-        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
-        assertNotNull(cInfo);
-
-        GridCoverage coverage = cInfo.getGridCoverage(null, null);
-
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        req.setLayer(feature.getSchema());
-        req.setStyle(multipleRulesStyle);
-        req.setLegendOptions(new HashMap<String, String>());
-
-        // use default values for the rest of parameters
-
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
-        // System.out.println(result.toString(2));
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject rasterSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.RASTER);
-
-        assertNotEmpty(rasterSymb);
-        JSONObject ce = rasterSymb.getJSONObject(JSONLegendGraphicBuilder.CONTRAST_ENHANCEMENT);
-        assertNotEmpty(ce);
-        assertEquals("0.5", ce.getString(JSONLegendGraphicBuilder.GAMMA_VALUE));
-        assertEquals("true", ce.get(JSONLegendGraphicBuilder.NORMALIZE));
-    }
-    /** @param result */
-    private void assertNotEmpty(JSONObject result) {
-        assertNotNull(result);
-        assertFalse(result.isNullObject());
-        assertFalse(result.isEmpty());
-    }
-
-    @org.junit.Test
-    public void testDescreteRaster() throws Exception {
-
-        Style multipleRulesStyle = readSLD("raster_discretecolors.sld");
-        // printStyle(multipleRulesStyle);
-        assertNotNull(multipleRulesStyle);
-
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(WMS.get());
-        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
-        assertNotNull(cInfo);
-
-        GridCoverage coverage = cInfo.getGridCoverage(null, null);
-
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        req.setLayer(feature.getSchema());
-        req.setStyle(multipleRulesStyle);
-        req.setLegendOptions(new HashMap<String, String>());
-        req.setFormat(JSONFormat);
-
-        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        assertNotEmpty(result);
-        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-        assertNotNull(legend);
-        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
-        assertNotNull(rules);
-        assertFalse(rules.isEmpty());
-        JSONArray symbolizers =
-                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
-        assertNotNull(symbolizers);
-        assertFalse(symbolizers.isEmpty());
-
-        JSONObject rasterSymb =
-                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.RASTER);
-
-        assertNotEmpty(rasterSymb);
-        JSONObject ce = rasterSymb.getJSONObject(JSONLegendGraphicBuilder.CONTRAST_ENHANCEMENT);
-        assertTrue(ce.isEmpty());
-        JSONObject colormap = rasterSymb.getJSONObject(JSONLegendGraphicBuilder.COLORMAP);
-
-        assertEquals("intervals", colormap.get(JSONLegendGraphicBuilder.COLORMAP_TYPE));
-    }
     /**
      * @param sldName
      * @throws IOException
@@ -1453,34 +1322,5 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         Style style = readStyles[0];
         return style;
-    }
-    /**
-     * @param style
-     * @throws TransformerException
-     */
-    private void printStyle(Style style) throws TransformerException {
-        if (isQuietTests()) {
-            return;
-        }
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        SLDTransformer transformer = new SLDTransformer();
-        transformer.setIndentation(2);
-        transformer.transform(style, bos);
-        String styleStr = bos.toString();
-        System.out.println(styleStr);
-    }
-    /** basic setup */
-    private GetLegendGraphicRequest getRequest() {
-        return getRequest(null, null);
-    }
-
-    private GetLegendGraphicRequest getRequest(FeatureType layer, Style style) {
-
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(WMS.get());
-        req.setBaseUrl("http://local-test:8080/geoserver");
-        req.setLayer(layer);
-        req.setStyle(style);
-        req.setFormat(JSONFormat);
-        return req;
     }
 }

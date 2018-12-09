@@ -155,6 +155,11 @@ public abstract class LegendGraphicBuilder {
         return symbolizer;
     }
 
+    protected Rule[] updateRuleTitles(
+            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+        return processor.preProcessRules(legend, applicableRules);
+    }
+
     protected Style resizeForDPI(GetLegendGraphicRequest request, Style gt2Style) {
 
         // apply dpi rescale

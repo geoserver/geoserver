@@ -25,9 +25,9 @@ import org.junit.Before;
 public class BaseLegendTest extends WMSTestSupport {
 
     protected static final Logger LOGGER =
-            Logging.getLogger(AbstractLegendGraphicOutputFormatTest.class);
+            Logging.getLogger(BufferedImageLegendGraphicOutputFormatTest.class);
 
-    protected BufferedImageLegendGraphicBuilder legendProducer;
+    protected LegendGraphicBuilder legendProducer;
 
     protected GetLegendGraphic service;
 
@@ -63,12 +63,7 @@ public class BaseLegendTest extends WMSTestSupport {
 
     @Before
     public void setLegendProducer() throws Exception {
-        this.legendProducer =
-                new BufferedImageLegendGraphicBuilder() {
-                    public String getContentType() {
-                        return "image/png";
-                    }
-                };
+        this.legendProducer = new JSONLegendGraphicBuilder();
 
         service = new GetLegendGraphic(getWMS());
     }

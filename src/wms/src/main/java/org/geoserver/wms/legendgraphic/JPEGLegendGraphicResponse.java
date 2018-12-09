@@ -38,7 +38,7 @@ public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
             throws IOException, ServiceException {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
-        BufferedImage legendImage = ((BufferedImageLegendGraphic) legend).getLegend();
+        BufferedImage legendImage = (BufferedImage) ((LegendGraphic) legend).getLegend();
         JAISupport.encode(JPEGLegendOutputFormat.MIME_TYPE, legendImage, output);
     }
 

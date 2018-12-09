@@ -49,7 +49,7 @@ public class GIFLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
 
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
-        BufferedImage legendGraphic = ((BufferedImageLegendGraphic) legend).getLegend();
+        BufferedImage legendGraphic = (BufferedImage) ((LegendGraphic) legend).getLegend();
 
         RenderedImage forcedIndexed8Bitmask = ImageUtils.forceIndexed8Bitmask(legendGraphic, null);
         ImageWorker imageWorker = new ImageWorker(forcedIndexed8Bitmask);

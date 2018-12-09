@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.media.jai.PlanarImage;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -48,7 +49,6 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
-import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
@@ -58,13 +58,12 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * Tets the functioning of the abstract legend producer for raster formats, which relies on
- * Geotools' StyledShapePainter.
+ * Test the functioning of the abstract legend producer for JSON format,
  *
- * @author Gabriel Roldan
+ * @author Ian Turton
  * @version $Id$
  */
-public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
+public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
     /**
      * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
@@ -94,26 +93,16 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyle(multipleRulesStyle);
         req.setRule(rule.getName());
         req.setLegendOptions(new HashMap());
-
+        req.setFormat("application/json");
         final int HEIGHT_HINT = 30;
         req.setHeight(HEIGHT_HINT);
 
         // use default values for the rest of parameters
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
 
-        // was the legend painted?
-        assertNotBlank("testUserSpecifiedRule", image, LegendUtils.DEFAULT_BG_COLOR);
-
-        // was created only one rule?
-        String errMsg =
-                "expected just one legend of height "
-                        + HEIGHT_HINT
-                        + ", for the rule "
-                        + rule.getName();
-        int resultLegendCount = image.getHeight() / HEIGHT_HINT;
-        assertEquals(errMsg, 1, resultLegendCount);
+        System.out.println(result.toString(2));
     }
 
     /**
@@ -145,7 +134,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // was the legend painted?
             assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -183,7 +172,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         // use default values for the rest of parameters
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
         assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -208,7 +197,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -221,7 +210,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        image = this.legendProducer.buildLegendGraphic(req);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -271,7 +260,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -283,7 +272,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        image = this.legendProducer.buildLegendGraphic(req);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // was the legend painted?
         assertNotBlank("testForceTitlesOff", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -336,7 +325,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // first layer
         assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
@@ -389,7 +378,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // vector layer
             assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
@@ -451,7 +440,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // vector layer
             assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
@@ -503,7 +492,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // vector layer
         assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
@@ -516,7 +505,6 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertTrue(image.getHeight() < 70 + titleHeight * 2);
     }
 
-    @Test
     public void testMixedGeometry() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
@@ -560,12 +548,13 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayers(layers);
 
         List<Style> styles = new ArrayList<Style>();
-        styles.add(readSLD("MixedGeometry.sld"));
         req.setStyles(styles);
+
+        styles.add(readSLD("MixedGeometry.sld"));
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testMixedGeometry", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -593,7 +582,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("BigSymbol.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -621,7 +610,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("SymbolExpression.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank(
                 "testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -648,7 +637,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbols.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -689,7 +678,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsThickBorder.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank(
                 "testProportionalSymbolSizeThickBorder", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -719,7 +708,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsLine.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("ProportionalSymbolsLine", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -748,7 +737,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsUOM.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -794,7 +783,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsPartialUOM.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -827,7 +816,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbols.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -860,17 +849,17 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("Internationalized.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         int noLocalizedWidth = image.getWidth();
 
         req.setLocale(Locale.ITALIAN);
-        image = this.legendProducer.buildLegendGraphic(req);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         // test that using localized labels we get a different label than when not using it
         int itWidth = image.getWidth();
         assertTrue(itWidth != noLocalizedWidth);
 
         req.setLocale(Locale.ENGLISH);
-        image = this.legendProducer.buildLegendGraphic(req);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         // test that using localized labels we get a different label than when not using it
         int enWidth = image.getWidth();
         assertTrue(enWidth != noLocalizedWidth);
@@ -904,7 +893,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // ImageIO.write(image, "PNG", new File("/tmp/rv.png"));
 
@@ -981,7 +970,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // was the legend painted?
             assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -1022,7 +1011,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         // ImageIO.write(image, "PNG", new File("/tmp/vr.png"));
 
@@ -1059,7 +1048,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
             // was our external graphic icon painted?
             assertPixel(image, 10, HEIGHT_HINT + HEIGHT_HINT / 2, Color.YELLOW);
@@ -1096,7 +1085,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         assertEquals(HEIGHT_HINT * 2, image.getHeight());
         for (int x = 21; x <= 29; x++) {
             assertPixel(image, x, HEIGHT_HINT / 2, new Color(255, 255, 255));
@@ -1107,7 +1096,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         this.legendProducer.buildLegendGraphic(req);
 
-        image = this.legendProducer.buildLegendGraphic(req);
+        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
         assertEquals(HEIGHT_HINT * 2, image.getHeight());
         for (int x = 21; x <= 39; x++) {
             assertPixel(image, x, HEIGHT_HINT / 2, new Color(255, 255, 255));
@@ -1152,10 +1141,10 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
             int absoluteWidth = image.getWidth();
             legendOptions.put("absoluteMargins", "false");
-            image = this.legendProducer.buildLegendGraphic(req);
+            image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
             assertTrue(image.getWidth() > absoluteWidth);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
@@ -1184,7 +1173,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ThickBorder.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -1215,7 +1204,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ThickBorder.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("testThickPolygonBorder", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -1246,7 +1235,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("largeCircle.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("largeCircle", image, LegendUtils.DEFAULT_BG_COLOR);
 
@@ -1281,7 +1270,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("line.sld"));
 
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
         assertNotBlank("line", image, LegendUtils.DEFAULT_BG_COLOR);
 

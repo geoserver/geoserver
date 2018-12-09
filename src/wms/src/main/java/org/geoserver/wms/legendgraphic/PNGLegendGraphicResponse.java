@@ -44,7 +44,7 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
             throws IOException, ServiceException {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
-        BufferedImage image = ((BufferedImageLegendGraphic) legend).getLegend();
+        BufferedImage image = (BufferedImage) ((LegendGraphic) legend).getLegend();
         // /////////////////////////////////////////////////////////////////
         //
         // Reformatting this image for png

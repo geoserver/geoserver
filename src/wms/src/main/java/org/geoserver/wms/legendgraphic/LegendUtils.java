@@ -577,10 +577,9 @@ public class LegendUtils {
      */
     public static boolean isWithInScale(final Rule r, final double scaleDenominator) {
         return (scaleDenominator == -1)
-                || (((r.getMinScaleDenominator() - BufferedImageLegendGraphicBuilder.TOLERANCE)
+                || (((r.getMinScaleDenominator() - LegendGraphicBuilder.TOLERANCE)
                                 <= scaleDenominator)
-                        && ((r.getMaxScaleDenominator()
-                                        + BufferedImageLegendGraphicBuilder.TOLERANCE)
+                        && ((r.getMaxScaleDenominator() + LegendGraphicBuilder.TOLERANCE)
                                 > scaleDenominator));
     }
 

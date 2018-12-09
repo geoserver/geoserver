@@ -34,7 +34,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     private static final QName SF_STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
 
-    private BufferedImageLegendGraphicBuilder legendProducer;
+    private LegendGraphicBuilder legendProducer;
 
     private List<Rule[]> ruleSets = new ArrayList<>();
 

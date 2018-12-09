@@ -7,7 +7,7 @@ package org.geoserver.wms.legendgraphic;
 
 import java.awt.image.BufferedImage;
 
-public class BufferedImageLegendGraphic {
+public class BufferedImageLegendGraphic implements LegendGraphic {
 
     private BufferedImage legendGraphic;
 
@@ -15,6 +15,7 @@ public class BufferedImageLegendGraphic {
         this.legendGraphic = legendGraphic;
     }
 
+    @Override
     public BufferedImage getLegend() {
         return legendGraphic;
     }

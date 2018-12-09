@@ -33,6 +33,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphic;
+import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geoserver.wms.legendgraphic.PNGLegendOutputFormat;
 import org.opengis.feature.type.FeatureType;
 
@@ -203,7 +204,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
         legendGraphicRequest.setFormat(pngOutputFormat.getContentType());
         Object legendGraphic = pngOutputFormat.produceLegendGraphic(legendGraphicRequest);
         if (legendGraphic instanceof BufferedImageLegendGraphic) {
-            BufferedImage image = ((BufferedImageLegendGraphic) legendGraphic).getLegend();
+            BufferedImage image = (BufferedImage) ((LegendGraphic) legendGraphic).getLegend();
 
             PNGWriter writer = new PNGWriter();
             OutputStream outStream = null;

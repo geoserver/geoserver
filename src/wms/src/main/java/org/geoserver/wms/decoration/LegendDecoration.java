@@ -93,7 +93,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             }
 
             LegendGraphicBuilder legendGraphicBuilder = new BufferedImageLegendGraphicBuilder();
-            GetLegendGraphicRequest request = new GetLegendGraphicRequest(WMS.get());
+            GetLegendGraphicRequest request = new GetLegendGraphicRequest();
             request.setLayer(layer.getFeatureSource().getSchema());
             request.setTransparent(true);
             request.setScale(scaleDenominator);

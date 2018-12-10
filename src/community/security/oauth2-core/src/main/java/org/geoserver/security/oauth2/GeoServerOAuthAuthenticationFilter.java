@@ -206,7 +206,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     /** The cache key is the authentication key (global identifier) */
     @Override
     public String getCacheKey(HttpServletRequest request) {
-        final String access_token = getParameterValue("access_token", request);
+        final String access_token = getAccessTokenFromRequest(request);
         return access_token != null ? access_token : getCustomSessionCookieValue(request);
     }
 

@@ -62,7 +62,6 @@ CREATE INDEX object_type_id_idx ON object (type_id);
 CREATE UNIQUE INDEX object_id_idx ON object (id);
 
 CREATE INDEX object_property_value_upper_idx ON object_property (UPPER(value));
-CREATE INDEX object_property_oid_idx ON object_property (OID);
 CREATE INDEX object_property_property_type_idx ON object_property (property_type);
 CREATE INDEX object_property_id_idx ON object_property (id);
 CREATE INDEX object_property_related_oid_idx ON object_property (related_oid);

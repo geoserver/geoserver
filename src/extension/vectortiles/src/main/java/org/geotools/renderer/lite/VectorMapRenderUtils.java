@@ -19,6 +19,8 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
@@ -41,6 +43,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -443,4 +446,32 @@ public class VectorMapRenderUtils {
                                 || FeatureTypes.isDecendedFrom(
                                         ftype, null, fts.getFeatureTypeName())));
     }
+
+    /**
+     * This function executes transformations on the vector features e.g. point stacker.
+     * 
+     * @param layer the layer to process
+     * @param paintArea the area that is painted on
+     * @param mapScale the current map scale
+     * @param schema the schema of the features
+     * @param features the feature collection typically points
+     * @return the transformed feature collection
+     * @throws IOException
+     */
+	public static FeatureCollection<?, ?> transformIfNecessary(Layer layer, Rectangle paintArea, double mapScale,
+			FeatureType schema, FeatureCollection<?, ?> features) throws IOException {
+		
+		
+		List<LiteFeatureTypeStyle> featureTypeStyles = VectorMapRenderUtils.getFeatureStyles(
+        		layer,
+        		paintArea,
+        		mapScale,
+        		schema);
+		if(!featureTypeStyles.isEmpty() && featureTypeStyles.get(0).transformation != null) {
+        	Expression transform = featureTypeStyles.get(0).transformation;
+        	return (FeatureCollection<?, ?>) transform.evaluate(features);
+        } else {
+        	return features;
+        }
+	}
 }

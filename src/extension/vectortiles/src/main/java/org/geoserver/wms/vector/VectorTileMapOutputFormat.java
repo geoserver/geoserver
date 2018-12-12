@@ -11,6 +11,7 @@ import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 import com.google.common.base.Stopwatch;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -38,6 +39,7 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.expression.Expression;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -123,10 +125,10 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     VectorMapRenderUtils.getComputedBuffer(
                             mapContent.getBuffer(),
                             VectorMapRenderUtils.getFeatureStyles(
-                                    layer,
-                                    paintArea,
-                                    VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
-                                    (FeatureType) featureSource.getSchema()));
+                            		layer,
+                            		paintArea,
+                            		VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
+                            		(FeatureType) featureSource.getSchema()));
             Pipeline pipeline =
                     getPipeline(mapContent, renderingArea, paintArea, sourceCrs, buffer);
 
@@ -134,6 +136,12 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             query.getHints().remove(Hints.SCREENMAP);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
+            
+            features = VectorMapRenderUtils.transformIfNecessary(
+            		layer,
+            		paintArea,
+            		VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
+            		(FeatureType) featureSource.getSchema(), features);
 
             run(features, pipeline, geometryDescriptor, vectorTileBuilder, layer);
         }

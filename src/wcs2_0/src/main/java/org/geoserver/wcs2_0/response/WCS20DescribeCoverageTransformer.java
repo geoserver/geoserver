@@ -5,6 +5,8 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +162,9 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     buildSchemaLocation(
                             request.getBaseUrl(),
                             WCS.NAMESPACE,
-                            "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd");
+                            "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd",
+                            "http://www.geoserver.org/wcsgs/2.0",
+                            buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsgs.xsd"));
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
             start("wcs:CoverageDescriptions", attributes);
             int coverageIndex = 0;

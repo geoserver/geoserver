@@ -197,11 +197,10 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             // Get the dimension values from the coverage and put them on the mapping
             // Note that using tree set allows to respect the ordering when writing
             // down the NetCDF dimensions
-            stats = new DataPacking.DataStats();
+            this.stats = new DataPacking.DataStats();
             for (GridCoverage2D coverage : this.granuleStack.getGranules()) {
                 updateDimensionValues(coverage);
                 if (!(dataPacking == DataPacking.NONE)) {
-                    this.stats = new DataStats();
                     collectStats(coverage, Arrays.asList(this.stats));
                 }
             }

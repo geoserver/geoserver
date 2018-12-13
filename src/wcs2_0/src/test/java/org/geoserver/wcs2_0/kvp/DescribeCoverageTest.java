@@ -69,7 +69,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "3",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -86,7 +86,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("E N", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
         assertXpathEvaluatesTo(
                 "1",
@@ -108,7 +108,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "1",
                 "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)",
@@ -133,7 +133,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "347660.5162105911 5191763.949937257",
                 "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
@@ -165,7 +165,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "1",
                 "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)",
@@ -186,7 +186,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -203,7 +203,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -220,7 +220,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -237,7 +237,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -271,7 +271,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -305,7 +305,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -366,7 +366,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "3",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -407,6 +407,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__watertemp");
         // print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkWaterTempTimeEnvelope(dom);
 
@@ -441,7 +442,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 DimensionPresentation.CONTINUOUS_INTERVAL,
                 null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__watertemp");
-        //        print(dom);
+        // print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkWaterTempTimeEnvelope(dom);
 
@@ -464,7 +466,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 dom);
         assertXpathEvaluatesTo(
                 "0",
-                "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval)",
+                "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:timeInterval)",
                 dom);
     }
 
@@ -476,7 +478,9 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 DimensionPresentation.DISCRETE_INTERVAL,
                 1000 * 60 * 60 * 24d);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__watertemp");
+        checkValidationErrors(dom, getWcs20Schema());
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkWaterTempTimeEnvelope(dom);
 
@@ -499,11 +503,11 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 dom);
         assertXpathEvaluatesTo(
                 "1",
-                "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval",
+                "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:timeInterval",
                 dom);
         assertXpathEvaluatesTo(
                 "day",
-                "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval/@unit",
+                "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:timeInterval/@unit",
                 dom);
     }
 
@@ -513,6 +517,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__timeranges");
         // print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
@@ -687,6 +692,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 getLayerId(WATTEMP), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__watertemp");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkWaterTempTimeElevationEnvelope(dom);
 

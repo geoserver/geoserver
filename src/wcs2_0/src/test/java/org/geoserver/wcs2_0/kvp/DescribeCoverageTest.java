@@ -69,7 +69,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "3",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -86,7 +86,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("E N", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
         assertXpathEvaluatesTo(
                 "1",
@@ -108,7 +108,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "1",
                 "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)",
@@ -133,7 +133,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "347660.5162105911 5191763.949937257",
                 "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
@@ -165,7 +165,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "1",
                 "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)",
@@ -186,7 +186,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -203,7 +203,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -220,7 +220,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "9",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
@@ -237,7 +237,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -271,7 +271,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -305,7 +305,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo("2", "count(//wcs:CoverageDescription)", dom);
         assertXpathEvaluatesTo(
                 "wcs__multiband",
@@ -366,7 +366,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertNotNull(dom);
         // print(dom, System.out);
 
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
         assertXpathEvaluatesTo(
                 "3",
                 "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",

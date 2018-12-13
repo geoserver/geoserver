@@ -28,5 +28,6 @@
     <sequence minOccurs="0" maxOccurs="unbounded">
       <element ref="gml:AbstractTimeObject" />
     </sequence>
+    <attribute name="default"/>
   </complexType>
 </schema>

@@ -28,7 +28,9 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -127,6 +129,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                                     "/schemas/iso/19139/20070417/gsr/");
                             put("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/");
                             put("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/");
+                            put("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/");
                         }
                     };
 
@@ -200,7 +203,16 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                         });
                 WCS20_SCHEMA =
                         factory.newSchema(
-                                WCSTestSupport.class.getResource("/schemas/wcs/2.0/wcsAll.xsd"));
+                                new Source[] {
+                                    new StreamSource(
+                                            WCSTestSupport.class
+                                                    .getResource("/schemas/wcs/2.0/wcsAll.xsd")
+                                                    .toExternalForm()),
+                                    new StreamSource(
+                                            WCSTestSupport.class
+                                                    .getResource("/schemas/wcs/2.0/wcsgs.xsd")
+                                                    .toExternalForm())
+                                });
             } catch (Exception e) {
                 throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
             }

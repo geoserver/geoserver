@@ -130,8 +130,7 @@ public class XMPPClient extends RemoteProcessClient {
     protected List<String> serviceChannels;
 
     /*
-     * protected Map<String, List<String>> occupantsList = Collections
-     * .synchronizedMap(new HashMap<String, List<String>>());
+     * protected Map<String, List<String>> occupantsList = Collections .synchronizedMap(new HashMap<String, List<String>>());
      */
 
     protected List<Name> registeredServices = Collections.synchronizedList(new ArrayList<Name>());
@@ -529,9 +528,8 @@ public class XMPPClient extends RemoteProcessClient {
                         // if (url != null) {
                         this.certificateFile = loader.createFile(xmppServerEmbeddedCertFile.trim());
                         loader.copyFromClassPath(
-                                xmppServerEmbeddedCertFile.trim(), this.certificateFile /*
-														 * , RemoteProcessFactoryConfigurationWatcher.class
-														 */);
+                                xmppServerEmbeddedCertFile.trim(), this.certificateFile /*,
+                                    RemoteProcessFactoryConfigurationWatcher.class*/);
                         // }
                         this.certificateFile = loader.find(xmppServerEmbeddedCertFile.trim());
                         this.certificatePassword = xmppServerEmbeddedCertPwd.trim();
@@ -706,8 +704,8 @@ public class XMPPClient extends RemoteProcessClient {
                     new MultiUserChat(connection, managementChannel + "@" + bus + "." + domain);
             try {
                 mucManagementChannel.join(getJID(username), managementChannelPassword); /*
-													 * , history, connection. getPacketReplyTimeout());
-													 */
+                                                                                     * , history, connection. getPacketReplyTimeout());
+                                                                                     */
             } catch (Exception e) {
                 mucManagementChannel.join(username, managementChannelPassword);
             }
@@ -717,8 +715,8 @@ public class XMPPClient extends RemoteProcessClient {
                         new MultiUserChat(connection, channel + "@" + bus + "." + domain);
                 try {
                     serviceChannel.join(getJID(username), managementChannelPassword); /*
-														 * , history, connection. getPacketReplyTimeout());
-														 */
+                                                                                       * , history, connection. getPacketReplyTimeout());
+                                                                                       */
                 } catch (Exception e) {
                     serviceChannel.join(username, managementChannelPassword);
                 }
@@ -740,8 +738,7 @@ public class XMPPClient extends RemoteProcessClient {
      * @param username
      */
     private String getJID(String username) {
-        // final String id = md5Java(username + "@" + this.domain + "/" +
-        // System.nanoTime());
+        // final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
         return username + "@" + this.domain;
     }
 

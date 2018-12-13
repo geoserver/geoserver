@@ -10,7 +10,6 @@ import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -34,7 +33,7 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
     /** lock during reload */
     protected AtomicBoolean eventLock = new AtomicBoolean();
 
-    final ExecutorService reloadService;
+    final ThreadPoolExecutor reloadService;
 
     public ReloadHzSynchronizer(HzCluster cluster, GeoServer gs) {
         super(cluster, gs);

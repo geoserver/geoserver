@@ -10,6 +10,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -143,10 +144,16 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     @Override
     protected void waitForSync() throws Exception {
         super.waitForSync();
-        // Add a small delay to reload calls to mitigate a race condition.
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
+        // Wait up to 5 seconds for the executor to be ready for the next reload.
+        ThreadPoolExecutor executor = ((ReloadHzSynchronizer) sync).reloadService;
+        for (int i = 0; i < 200; i++) {
+            if (executor.getActiveCount() == 0) {
+                return;
+            }
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException e) {
+            }
         }
     }
 }

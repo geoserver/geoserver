@@ -19,7 +19,6 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.IllegalFilterException;
@@ -449,7 +448,7 @@ public class VectorMapRenderUtils {
 
     /**
      * This function executes transformations on the vector features e.g. point stacker.
-     * 
+     *
      * @param layer the layer to process
      * @param paintArea the area that is painted on
      * @param mapScale the current map scale
@@ -458,20 +457,21 @@ public class VectorMapRenderUtils {
      * @return the transformed feature collection
      * @throws IOException
      */
-	public static FeatureCollection<?, ?> transformIfNecessary(Layer layer, Rectangle paintArea, double mapScale,
-			FeatureType schema, FeatureCollection<?, ?> features) throws IOException {
-		
-		
-		List<LiteFeatureTypeStyle> featureTypeStyles = VectorMapRenderUtils.getFeatureStyles(
-        		layer,
-        		paintArea,
-        		mapScale,
-        		schema);
-		if(!featureTypeStyles.isEmpty() && featureTypeStyles.get(0).transformation != null) {
-        	Expression transform = featureTypeStyles.get(0).transformation;
-        	return (FeatureCollection<?, ?>) transform.evaluate(features);
+    public static FeatureCollection<?, ?> transformIfNecessary(
+            Layer layer,
+            Rectangle paintArea,
+            double mapScale,
+            FeatureType schema,
+            FeatureCollection<?, ?> features)
+            throws IOException {
+
+        List<LiteFeatureTypeStyle> featureTypeStyles =
+                VectorMapRenderUtils.getFeatureStyles(layer, paintArea, mapScale, schema);
+        if (!featureTypeStyles.isEmpty() && featureTypeStyles.get(0).transformation != null) {
+            Expression transform = featureTypeStyles.get(0).transformation;
+            return (FeatureCollection<?, ?>) transform.evaluate(features);
         } else {
-        	return features;
+            return features;
         }
-	}
+    }
 }

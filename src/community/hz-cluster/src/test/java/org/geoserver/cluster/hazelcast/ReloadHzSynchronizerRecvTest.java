@@ -146,14 +146,12 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         super.waitForSync();
         // Wait up to 5 seconds for the executor to be ready for the next reload.
         ThreadPoolExecutor executor = ((ReloadHzSynchronizer) sync).reloadService;
-        for (int i = 0; i < 200; i++) {
-            if (executor.getActiveCount() == 0) {
-                return;
-            }
+        for (int i = 0; i < 200 && executor.getActiveCount() > 0; i++) {
             try {
                 Thread.sleep(25);
             } catch (InterruptedException e) {
             }
         }
+        executor.purge();
     }
 }

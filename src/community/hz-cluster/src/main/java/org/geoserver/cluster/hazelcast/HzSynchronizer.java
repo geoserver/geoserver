@@ -8,14 +8,16 @@ package org.geoserver.cluster.hazelcast;
 import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
-import com.yammer.metrics.Metrics;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -55,6 +57,8 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
         implements MessageListener<Event> {
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
+
+    private final MetricRegistry registry = new MetricRegistry();
 
     protected final HzCluster cluster;
 
@@ -96,7 +100,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
             }
             return;
         }
-        Metrics.newCounter(getClass(), "recieved").inc();
+        incCounter(getClass(), "recieved");
         if (localAddress(cluster.getHz()).equals(event.getSource())) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer(
@@ -113,7 +117,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
         executor.schedule(new EventWorker(event), syncDelay, TimeUnit.SECONDS);
     }
 
-    private class EventWorker implements Runnable {
+    private class EventWorker implements Callable<Future<?>> {
 
         private Event event;
 
@@ -122,17 +126,19 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
         }
 
         @Override
-        public void run() {
+        public Future<?> call() {
             if (!isStarted()) {
-                return;
+                return null;
             }
+            Future<?> future = null;
             try {
-                processEvent(event);
+                future = processEvent(event);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
             }
 
-            Metrics.newCounter(getClass(), "reloads").inc();
+            incCounter(getClass(), "reloads");
+            return future;
         }
     }
 
@@ -144,7 +150,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
      * <p><b>Note:</b> It is the responsibility of subclasses to clear events from the queue as they
      * are processed.
      */
-    protected abstract void processEvent(Event event) throws Exception;
+    protected abstract Future<?> processEvent(Event event);
 
     ConfigChangeEvent newChangeEvent(CatalogEvent evt, Type type) {
         return newChangeEvent(evt.getSource(), type);
@@ -223,6 +229,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
     @Override
     public void handleSettingsRemoved(SettingsInfo settings) {
         dispatch(newChangeEvent(settings, Type.REMOVE));
+    }
+
+    /** Increments the counter for the specified class and name by one. */
+    protected void incCounter(Class<?> clazz, String name) {
+        this.registry.counter(MetricRegistry.name(clazz, name)).inc();
     }
 
     protected String nodeId() {

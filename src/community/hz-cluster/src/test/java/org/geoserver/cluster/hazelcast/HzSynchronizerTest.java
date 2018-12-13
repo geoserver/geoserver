@@ -26,10 +26,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
@@ -162,7 +165,7 @@ public abstract class HzSynchronizerTest {
         expectLastCall().atLeastOnce();
 
         executor = createMock(ScheduledExecutorService.class);
-        captureExecutor = new Capture<Runnable>(CaptureType.ALL);
+        captureExecutor = new Capture<>(CaptureType.ALL);
         expect(executor.schedule(capture(captureExecutor), anyLong(), (TimeUnit) anyObject()))
                 .andStubReturn(null);
     }
@@ -192,7 +195,7 @@ public abstract class HzSynchronizerTest {
     protected Capture<CatalogListener> catListenerCapture;
     protected Capture<MessageListener<Event>> captureTopicListener;
     protected Capture<MessageListener<UUID>> captureAckTopicListener;
-    protected Capture<Runnable> captureExecutor;
+    protected Capture<Callable<Future<?>>> captureExecutor;
     protected Capture<UUID> captureAckTopicPublish;
 
     public List<Object> myMocks() {
@@ -267,12 +270,19 @@ public abstract class HzSynchronizerTest {
         // Thread.sleep(SYNC_DELAY*1000+500); // Convert to millis, then add a little extra to be
         // sure
 
-        List<Runnable> tasks = captureExecutor.getValues();
+        List<Callable<Future<?>>> tasks = captureExecutor.getValues();
+        List<Future<?>> futures = new ArrayList<>(1);
 
-        for (Iterator<Runnable> i = tasks.iterator(); i.hasNext(); ) {
-            Runnable task = i.next();
+        for (Iterator<Callable<Future<?>>> i = tasks.iterator(); i.hasNext(); ) {
+            Callable<Future<?>> task = i.next();
             i.remove();
-            task.run();
+            Future<?> future = task.call();
+            if (future != null) {
+                futures.add(future);
+            }
+        }
+        for (Future<?> future : futures) {
+            future.get();
         }
     }
 

@@ -19,6 +19,12 @@ GeoServer supports a vendor option called ``labelObstacle`` that allows
 marking a symbolizer as an obstacle.
 This tells the labeller to avoid rendering labels that overlap it.
 
+.. warning::
+
+   Beware of marking a line or poly symbolizer as a label obstacle. The label conflict resolving routine is
+   based on the bounding box so marking as a label obstacle will result in no label overlapping not only
+   the geometry itself, but its bounding box as well.
+
 .. code-block:: xml
 
 	<?xml version="1.0" encoding="ISO-8859-1"?>
@@ -83,11 +89,5 @@ Applying the obstacle to line/polygon style style:
    .. figure:: images/obs-line2.png
    .. figure:: images/obs-poly1.png  
    .. figure:: images/obs-poly2.png
-
-.. warning::
-
-   Beware of marking a line or poly symbolizer as a label obstacle. The label conflict resolving routine is
-   based on the bounding box so marking as a label obstacle will result in no label overlapping not only
-   the geometry itself, but its bounding box as well.
 
 

@@ -33,6 +33,7 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
             @Override
             BlockingQueue<Runnable> getWorkQueue() {
+                // Don't allow any tasks to be queued in unit tests.
                 return new SynchronousQueue<>();
             }
 

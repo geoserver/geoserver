@@ -78,6 +78,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.spatial.BBOX;
@@ -504,7 +505,19 @@ public class ClassifierController extends BaseSLDServiceController {
         }
 
         List<Rule> rules = null;
-        Class<?> propertyType = ftType.getDescriptor(property).getType().getBinding();
+        final PropertyDescriptor pd = ftType.getDescriptor(property);
+        if (pd == null) {
+            throw new RestException(
+                    "Could not find property "
+                            + property
+                            + ", available attributes are: "
+                            + ftType.getDescriptors()
+                                    .stream()
+                                    .map(p -> p.getName().getLocalPart())
+                                    .collect(Collectors.joining(", ")),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Class<?> propertyType = pd.getType().getBinding();
 
         if (customClasses.isEmpty()) {
             if ("equalInterval".equals(method)) {

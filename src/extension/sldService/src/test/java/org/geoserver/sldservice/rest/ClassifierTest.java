@@ -7,6 +7,7 @@
 package org.geoserver.sldservice.rest;
 
 import static org.geoserver.sldservice.utils.classifier.RasterSymbolizerBuilder.DEFAULT_MAX_PIXELS;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -219,6 +220,23 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRule(rules[1], "#FF0000", org.opengis.filter.And.class);
 
         assertFalse(resultXml.indexOf("StyledLayerDescriptor") != -1);
+    }
+
+    @Test
+    public void testClassifyWrongAttribute() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foobar";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertEquals(400, response.getStatus());
+        final String xml = response.getContentAsString();
+        assertThat(
+                xml,
+                containsString(
+                        "Could not find property foobar, available attributes are: id, name, foo, bar, geom, group"));
     }
 
     @Test

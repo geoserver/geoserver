@@ -669,9 +669,11 @@ public abstract class BackupRestoreItem<T> {
             for (LayerGroupInfo lg : srcCatalog.getFacade().getLayerGroups()) {
                 LayerGroupInfo targetLayerGroup = catalog.getLayerGroupByName(lg.getName());
                 if (targetLayerGroup == null) {
-                    WorkspaceInfo targetWorkspace =
-                            catalog.getWorkspaceByName(targetLayerGroup.getWorkspace().getName());
+                    WorkspaceInfo targetWorkspace = lg.getWorkspace() != null ?
+                            catalog.getWorkspaceByName(lg.getWorkspace().getName()) : null;
                     targetLayerGroup = clone((LayerGroupInfo) unwrap(lg), targetWorkspace);
+                    catalog.add(targetLayerGroup);
+                    catalog.save(catalog.getLayerGroup(targetLayerGroup.getId()));
                 }
             }
         } catch (Exception e) {
@@ -887,7 +889,7 @@ public abstract class BackupRestoreItem<T> {
         return target;
     }
 
-    private LayerGroupInfo clone(LayerGroupInfo source, WorkspaceInfo workspace) {
+    protected LayerGroupInfo clone(LayerGroupInfo source, WorkspaceInfo workspace) {
         LayerGroupInfo target = catalog.getFactory().createLayerGroup();
         target.setWorkspace(workspace);
         target.setAbstract(source.getAbstract());

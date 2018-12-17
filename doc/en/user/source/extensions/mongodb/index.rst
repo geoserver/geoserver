@@ -9,7 +9,7 @@ This module provides support for MongoDB data store. This extension is build on 
 Installation
 ------------
 
-#. Download the ``mongodb`` extension for `your version of GeoServer <http://ares.opengeo.org/geoserver/>`_.
+#. Download the ``mongodb`` extension for `your version of GeoServer <https://build.geoserver.org/geoserver/>`_.
 
 #. Unzip the archive into the WEB-INF/lib directory of the GeoServer installation.
 

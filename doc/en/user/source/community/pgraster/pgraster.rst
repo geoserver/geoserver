@@ -24,7 +24,7 @@ Requirements
 Installation
 ------------
 
-#. Download the pgraster community module for your version of GeoServer from the `download page <http://ares.opengeo.org/geoserver/master/community-latest/>`_.
+#. Download the pgraster community module for your version of GeoServer from the `download page <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
 #. Unzip the archive into the WEB-INF/lib directory of the GeoServer installation.
 

@@ -49,6 +49,8 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
@@ -70,6 +72,7 @@ import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -403,6 +406,96 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testInvalidStdDev() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&open=false&stddevs=-1&fullSLD=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 400);
+        assertThat(
+                response.getContentAsString(),
+                containsString("stddevs must be a positive floating point number"));
+    }
+
+    @Test
+    public void testClassifyEqualIntervalsStdDevSmaller() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+
+        // stddev filter cuts 4 and 90 away leaving 8 and 61 as the extremes
+        // System.out.println(response.getContentAsString());
+
+        Rule[] rules = checkRules(response.getContentAsString(), 3);
+        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        assertFilter("foo >= 8 and foo < 25.667", f1);
+        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        assertFilter("foo >= 25.667 and foo < 43.333", f2);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        assertFilter("foo >= 43.333 and foo <= 61", f3);
+    }
+
+    @Test
+    public void testClassifyEqualIntervalsBBoxStdDev() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true&bbox=6,5,50,45";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+
+        // bbox leaves 8,12,20,29,43, stddev filter leaves 12,20,29
+        // System.out.println(response.getContentAsString());
+
+        Rule[] rules = checkRules(response.getContentAsString(), 3);
+        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        assertFilter("foo >= 12 and foo < 17.6667", f1);
+        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        assertFilter("foo >= 17.6667 and foo < 23.3333", f2);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        assertFilter("foo >= 23.3333 and foo <= 29", f3);
+    }
+
+    @Test
+    public void testClassifyEqualIntervalsStdDevAll() throws Exception {
+        // the stddev range will cover the entire data set
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&open=false&stddevs=3&fullSLD=true";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+
+        // stddev filter cuts 4 and 90 away leaving 8 and 61 as the extremes
+        // System.out.println(response.getContentAsString());
+
+        Rule[] rules = checkRules(response.getContentAsString(), 3);
+        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        assertFilter("foo >= 4 and foo < 32.667", f1);
+        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        assertFilter("foo >= 32.667 and foo < 61.333", f2);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        assertFilter("foo >= 61.333 and foo <= 90", f3);
+    }
+
+    private void assertFilter(String expectedCQL, Filter actual) throws CQLException {
+        final Filter expected = ECQL.toFilter(expectedCQL);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testQuantile() throws Exception {
         final String restPath =
                 RestBaseController.ROOT_PATH
@@ -423,6 +516,29 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertTrue(rules[0].getTitle().contains("20.0"));
         assertTrue(rules[1].getTitle().contains("20.0"));
         assertTrue(rules[2].getTitle().contains("61.0"));
+    }
+
+    @Test
+    public void testClassifyQuantileStdDev() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=3&open=false&stddevs=1&fullSLD=true&method=quantile";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertTrue(response.getStatus() == 200);
+
+        // stddev filter cuts 4 and 90 away
+        // System.out.println(response.getContentAsString());
+
+        Rule[] rules = checkRules(response.getContentAsString(), 3);
+        Filter f1 = checkRule(rules[0], "#690000", org.opengis.filter.And.class);
+        assertFilter("foo >= 8 and foo < 20", f1);
+        Filter f2 = checkRule(rules[1], "#B40000", org.opengis.filter.And.class);
+        assertFilter("foo >= 20 and foo < 43", f2);
+        Filter f3 = checkRule(rules[2], "#FF0000", org.opengis.filter.And.class);
+        assertFilter("foo >= 43 and foo <= 61", f3);
     }
 
     @Test
@@ -448,6 +564,28 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(" >= 43.0 AND < 61.0", rules[1].getDescription().getTitle().toString());
         assertEquals(" >= 61.0 AND < 90.0", rules[2].getDescription().getTitle().toString());
         assertEquals(" >= 90.0", rules[3].getDescription().getTitle().toString());
+    }
+
+    @Test
+    public void testEqualAreaStdDevs() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:ClassificationPolygons/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=foo&intervals=5&open=true&method=equalArea&stddevs=1";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertEquals(200, response.getStatus());
+        String resultXml = response.getContentAsString();
+        // System.out.println(resultXml);
+        Rule[] rules =
+                checkRules(
+                        resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
+
+        // not enough polygons to make 5 rules, only 3 (due also to stddev cut)
+        assertEquals(" < 29.0", rules[0].getDescription().getTitle().toString());
+        assertEquals(" >= 29.0 AND < 61.0", rules[1].getDescription().getTitle().toString());
+        assertEquals(" >= 61.0", rules[2].getDescription().getTitle().toString());
     }
 
     @Test
@@ -665,7 +803,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 weight, symbolizer.getGraphic().getMarks()[0].getStroke().getWidth().toString());
     }
 
-    private void checkRule(Rule rule, String color, Class<?> filterType) {
+    private Filter checkRule(Rule rule, String color, Class<?> filterType) {
         assertNotNull(rule.getFilter());
         assertTrue(filterType.isAssignableFrom(rule.getFilter().getClass()));
         assertNotNull(rule.getSymbolizers());
@@ -676,6 +814,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(1, symbolizer.getGraphic().getMarks().length);
         assertNotNull(symbolizer.getGraphic().getMarks()[0].getFill());
         assertEquals(color, symbolizer.getGraphic().getMarks()[0].getFill().getColor().toString());
+        return rule.getFilter();
     }
 
     @Test
@@ -714,6 +853,70 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(CQL.toExpression("'#00001F'"), entries[0].getColor());
         assertEquals(CQL.toExpression("178.0"), entries[166].getQuantity());
         assertEquals(CQL.toExpression("'#0000FF'"), entries[166].getColor());
+    }
+
+    @Test
+    public void testRasterUniqueByteStddev() throws Exception {
+        // filter the list of values to those within 2 stddevs from average
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=uniqueInterval&ramp=blue&fullSLD=true&stddevs=2";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(106, entries.length);
+        assertEquals(CQL.toExpression("1.0"), entries[0].getQuantity());
+        assertEquals(CQL.toExpression("'#000020'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("106.0"), entries[105].getQuantity());
+        assertEquals(CQL.toExpression("'#0000FF'"), entries[105].getColor());
+    }
+
+    @Test
+    public void testEqualIntervalByteStddev() throws Exception {
+        // filter the list of values to those within 2 stddevs from average
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&ramp=blue&fullSLD=true&stddevs=2&intervals=5";
+        Document dom = getAsDOM(restPath, 200);
+        // print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length); // 6 values to define the bounds of 5 intervals
+        // values reduced from 1 to 107 due to the stddev filter
+        assertEquals(CQL.toExpression("1.0"), entries[0].getQuantity());
+        assertEquals(CQL.toExpression("'#000000'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("107.00000000000001"), entries[5].getQuantity());
+        assertEquals(CQL.toExpression("'#0000FF'"), entries[5].getColor());
+    }
+
+    @Test
+    public void testQuantileByteStddev() throws Exception {
+        // filter the list of values to those within 2 stddevs from average
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&ramp=blue&fullSLD=true&stddevs=2&intervals=5";
+        Document dom = getAsDOM(restPath, 200);
+        // print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length); // 6 values to define the bounds of 5 intervals
+        // values reduced from 1 to 107 due to the stddev filter
+        assertEquals(CQL.toExpression("1.0"), entries[0].getQuantity());
+        assertEquals(CQL.toExpression("'#000000'"), entries[0].getColor());
+        assertEquals(CQL.toExpression("107.00000000000001"), entries[5].getQuantity());
+        assertEquals(CQL.toExpression("'#0000FF'"), entries[5].getColor());
     }
 
     @Test
@@ -827,6 +1030,28 @@ public class ClassifierTest extends SLDServiceBaseTest {
     }
 
     @Test
+    public void testQuantileStdDevOpenIntervalsSrtm() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=quantile&intervals=5&ramp=jet&fullSLD=true&open=true&stddevs=1";
+        Document dom = getAsDOM(restPath, 200);
+        // print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        // same as in
+        assertEntry(entries[0], 360, "< 360.640794", "#0000FF", 1, 10);
+        assertEntry(entries[1], 481, ">= 360.640794 AND < 481.343203", "#FFFF00", 1, 10);
+        assertEntry(entries[2], 610, ">= 481.343203 AND < 610.275321", "#FFAA00", 1, 10);
+        assertEntry(entries[3], 756, ">= 610.275321 AND < 755.666859", "#FF5500", 1, 10);
+        assertEntry(entries[4], Double.MAX_VALUE, ">= 755.666859", "#FF0000", 1);
+    }
+
+    @Test
     public void testQuantileContinuousSrtm() throws Exception {
         final String restPath =
                 RestBaseController.ROOT_PATH
@@ -895,6 +1120,28 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEntry(entries[2], 660, "654.707317", "#FFAA00", 1, 10);
         assertEntry(entries[3], 1011, "1005.6", "#FF5500", 1, 10);
         assertEntry(entries[4], 1796, "1796", "#FF0000", 1);
+    }
+
+    @Test
+    public void testJenksIntervalsSrtmStddev() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:srtm/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=jenks&intervals=5&ramp=jet&fullSLD=true&continuous=true&stddevs=1";
+        Document dom = getAsDOM(restPath, 200);
+        print(dom);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        // same as above, but the stddev filtering limits the range
+        assertEntry(entries[0], 223, "223.478966", "#0000FF", 1, 1);
+        assertEntry(entries[1], 394, "394.911765", "#FFFF00", 1, 1);
+        assertEntry(entries[2], 561, "561.92", "#FFAA00", 1, 1);
+        assertEntry(entries[3], 738, "738.037037", "#FF5500", 1, 1);
+        assertEntry(entries[4], 926, "925.747526", "#FF0000", 1, 1);
     }
 
     @Test

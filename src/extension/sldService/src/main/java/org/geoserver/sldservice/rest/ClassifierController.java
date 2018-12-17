@@ -54,6 +54,8 @@ import org.geotools.data.Query;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.CalcResult;
+import org.geotools.feature.visitor.StandardDeviationVisitor;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
@@ -68,6 +70,7 @@ import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Converters;
+import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.styling.SLDTransformer;
@@ -81,6 +84,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -163,6 +167,7 @@ public class ClassifierController extends BaseSLDServiceController {
             @RequestParam(value = "continuous", required = false, defaultValue = "false")
                     boolean continuous,
             @RequestParam(value = "bbox", required = false) ReferencedEnvelope bbox,
+            @RequestParam(value = "stddevs", required = false) Double stddevs,
             final HttpServletResponse response)
             throws Exception {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
@@ -172,6 +177,10 @@ public class ClassifierController extends BaseSLDServiceController {
         // default to the layer own CRS if not provided as 5th parameter
         if (bbox != null && bbox.getCoordinateReferenceSystem() == null) {
             bbox = new ReferencedEnvelope(bbox, layerInfo.getResource().getCRS());
+        }
+        if (stddevs != null && stddevs <= 0) {
+            throw new RestException(
+                    "stddevs must be a positive floating point number", HttpStatus.BAD_REQUEST);
         }
         if (cachingTime > 0) {
             response.setHeader(
@@ -208,7 +217,8 @@ public class ClassifierController extends BaseSLDServiceController {
                                 pointSize,
                                 (FeatureTypeInfo) obj,
                                 ramp,
-                                bbox);
+                                bbox,
+                                stddevs);
             } else if (obj instanceof CoverageInfo) {
                 rules =
                         getRasterRules(
@@ -223,7 +233,8 @@ public class ClassifierController extends BaseSLDServiceController {
                                 (CoverageInfo) obj,
                                 ramp,
                                 continuous,
-                                bbox);
+                                bbox,
+                                stddevs);
             } else {
                 throw new RestException(
                         "The classifier can only work against vector or raster data, "
@@ -369,7 +380,8 @@ public class ClassifierController extends BaseSLDServiceController {
             CoverageInfo coverageInfo,
             ColorRamp ramp,
             boolean continuous,
-            ReferencedEnvelope bbox)
+            ReferencedEnvelope bbox,
+            Double stddevs)
             throws Exception {
         int selectedBand = getRequestedBand(property); // one based band name
         // read the image to be classified
@@ -384,6 +396,7 @@ public class ClassifierController extends BaseSLDServiceController {
         RenderedImage image = imageReader.getImage();
 
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+        builder.setStandardDeviations(stddevs);
         ColorMap colorMap;
         try {
             if (customClasses.isEmpty()) {
@@ -477,7 +490,8 @@ public class ClassifierController extends BaseSLDServiceController {
             int pointSize,
             FeatureTypeInfo obj,
             ColorRamp ramp,
-            ReferencedEnvelope bbox)
+            ReferencedEnvelope bbox,
+            Double stddevs)
             throws IOException, TransformException, FactoryException {
         if (property == null || property.isEmpty()) {
             throw new IllegalArgumentException(
@@ -502,6 +516,25 @@ public class ClassifierController extends BaseSLDServiceController {
             query.setHints(getQueryHints(viewParams));
             ftCollection =
                     obj.getFeatureSource(new NullProgressListener(), null).getFeatures(query);
+
+            if (stddevs != null) {
+                NumberRange stdDevRange =
+                        getStandardDeviationsRange(property, ftCollection, stddevs);
+                PropertyIsBetween between =
+                        FF.between(
+                                FF.property(property),
+                                FF.literal(stdDevRange.getMinimum()),
+                                FF.literal(stdDevRange.getMaximum()));
+                if (query.getFilter() == Filter.INCLUDE) {
+                    query.setFilter(between);
+                } else {
+                    query.setFilter(FF.and(query.getFilter(), between));
+                }
+
+                // re-query
+                ftCollection =
+                        obj.getFeatureSource(new NullProgressListener(), null).getFeatures(query);
+            }
         }
 
         List<Rule> rules = null;
@@ -584,6 +617,31 @@ public class ClassifierController extends BaseSLDServiceController {
         }
 
         return rules;
+    }
+
+    /**
+     * Returns a range of N standard deviations around the mean for the given attribute and
+     * collection
+     */
+    private NumberRange getStandardDeviationsRange(
+            String property, FeatureCollection features, double numStandardDeviations)
+            throws IOException {
+        final StandardDeviationVisitor standardDeviationVisitor =
+                new StandardDeviationVisitor(FF.property(property));
+        features.accepts(standardDeviationVisitor, null);
+        final double mean = standardDeviationVisitor.getMean();
+        final CalcResult result = standardDeviationVisitor.getResult();
+        if (result.getValue() == null) {
+            throw new RestException(
+                    "The standard deviation visit did not find any value, the dataset is empty or previous filters removed all values",
+                    HttpStatus.BAD_REQUEST);
+        }
+        final double standardDeviation = standardDeviationVisitor.getResult().toDouble();
+
+        return new NumberRange(
+                Double.class,
+                mean - standardDeviation * numStandardDeviations,
+                mean + standardDeviation * numStandardDeviations);
     }
 
     private ColorRamp getColorRamp(

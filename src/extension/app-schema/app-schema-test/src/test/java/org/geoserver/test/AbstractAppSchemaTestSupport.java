@@ -32,6 +32,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.DataAccess;
 import org.geotools.data.complex.AppSchemaDataAccess;
@@ -602,5 +603,20 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         NestedFilterToSQL nestedFilterToSQL = new NestedFilterToSQL(mapping, original);
         nestedFilterToSQL.setInline(true);
         return nestedFilterToSQL;
+    }
+
+    /**
+     * Helper method that reads a resource from the class path converting it to text.
+     *
+     * @param resourcePath non relative path to the class path resource
+     * @return the content of the resource as text
+     */
+    protected String readResource(String resourcePath) {
+        try (InputStream input =
+                AbstractAppSchemaTestSupport.class.getResourceAsStream(resourcePath)) {
+            return IOUtils.toString(input);
+        } catch (Exception exception) {
+            throw new RuntimeException(String.format("Error reading resource '%s'.", resourcePath));
+        }
     }
 }

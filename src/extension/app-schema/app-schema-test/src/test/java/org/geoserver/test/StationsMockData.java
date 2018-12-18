@@ -300,6 +300,59 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     }
 
     /**
+     * Helper method that will add the desired App-Schema defined feature type customizing it for
+     * the desired GML version. If the provided GML prefix is NULL or empty it will be ignored.
+     */
+    protected void addAppSchemaFeatureType(
+            String namespacePrefix,
+            String gmlPrefix,
+            String typeName,
+            String mappingsFileResource,
+            Map<String, String> parameters,
+            String... otherResources) {
+        // create root directory
+        File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
+        gmlDirectory.mkdirs();
+        // create the mappings target file
+        File targetMappingsFile = getTargetFile(mappingsFileResource, gmlPrefix, gmlDirectory);
+        substituteParameters(mappingsFileResource, parameters, targetMappingsFile);
+        // create target files for the other resources
+        String[] otherResourcesFiles = new String[otherResources.length + 1];
+        otherResourcesFiles[0] = targetMappingsFile.getAbsolutePath();
+        for (int i = 0; i < otherResources.length; i++) {
+            File targetFile = getTargetFile(otherResources[i], gmlPrefix, gmlDirectory);
+            substituteParameters(otherResources[i], parameters, targetFile);
+            otherResourcesFiles[i + 1] = targetFile.getAbsolutePath();
+        }
+        // create station feature type
+        addFeatureType(
+                namespacePrefix,
+                typeName,
+                targetMappingsFile.getAbsolutePath(),
+                otherResourcesFiles);
+    }
+
+    private File getTargetFile(String resource, String gmlPrefix, File gmlDirectory) {
+        int index = resource.lastIndexOf("/");
+        if (index < 0) {
+            throw new RuntimeException(String.format("Invalid resource '%s'.", resource));
+        }
+        String name = resource.substring(index + 1);
+        index = name.lastIndexOf(".");
+        if (index < 0) {
+            throw new RuntimeException(
+                    String.format("Invalid resource name '%s' of resource '%s'.", name, resource));
+        }
+        String extension = name.substring(index);
+        name = name.substring(0, index);
+        if (gmlPrefix == null || gmlPrefix.isEmpty()) {
+            // no gml prefix to add
+            return new File(gmlDirectory, name + extension);
+        }
+        return new File(gmlDirectory, name + "_" + gmlPrefix + extension);
+    }
+
+    /**
      * Helper method that returns the directory, relative to tests root directory, that will contain
      * the mappings, schemas, properties, etc ... of the target GML version.
      */
@@ -308,7 +361,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
             // init the test directory
             testRootDirectory = createTestRootDirectory();
         }
-        return new File(testRootDirectory, gmlPrefix);
+        return gmlPrefix == null ? testRootDirectory : new File(testRootDirectory, gmlPrefix);
     }
 
     @Override

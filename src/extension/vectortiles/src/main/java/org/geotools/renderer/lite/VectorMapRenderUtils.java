@@ -467,11 +467,14 @@ public class VectorMapRenderUtils {
 
         List<LiteFeatureTypeStyle> featureTypeStyles =
                 VectorMapRenderUtils.getFeatureStyles(layer, paintArea, mapScale, schema);
-        if (!featureTypeStyles.isEmpty() && featureTypeStyles.get(0).transformation != null) {
-            Expression transform = featureTypeStyles.get(0).transformation;
-            return (FeatureCollection<?, ?>) transform.evaluate(features);
-        } else {
-            return features;
+        if (!featureTypeStyles.isEmpty()) {
+            for (LiteFeatureTypeStyle featureTypeStyle : featureTypeStyles) {
+                if (featureTypeStyle.transformation != null) {
+                    Expression transform = featureTypeStyle.transformation;
+                    features = (FeatureCollection<?, ?>) transform.evaluate(features);
+                }
+            }
         }
+        return features;
     }
 }

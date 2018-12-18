@@ -1,0 +1,18 @@
+<wfs:GetFeature service="WFS" version="2.0.2" xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                xmlns:fes="http://www.opengis.net/fes/2.0"
+                xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+    http://schemas.opengis.net/wfs/2.0/wfs.xsd
+    http://www.opengis.net/gml/3.2
+    http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+    <wfs:Query typeNames="st:Station">
+        <fes:Filter>
+            <fes:BBOX>
+                <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4052">
+                    <gml:lowerCorner>3 -3</gml:lowerCorner>
+                    <gml:upperCorner>6 0</gml:upperCorner>
+                </gml:Envelope>
+            </fes:BBOX>
+        </fes:Filter>
+    </wfs:Query>
+</wfs:GetFeature>

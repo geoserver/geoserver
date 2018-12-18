@@ -469,9 +469,15 @@ public class VectorMapRenderUtils {
                 VectorMapRenderUtils.getFeatureStyles(layer, paintArea, mapScale, schema);
         if (!featureTypeStyles.isEmpty()) {
             for (LiteFeatureTypeStyle featureTypeStyle : featureTypeStyles) {
-                if (featureTypeStyle.transformation != null) {
-                    Expression transform = featureTypeStyle.transformation;
-                    features = (FeatureCollection<?, ?>) transform.evaluate(features);
+                try {
+                    if (featureTypeStyle.transformation != null) {
+                        Expression transform = featureTypeStyle.transformation;
+                        features = (FeatureCollection<?, ?>) transform.evaluate(features);
+                    }
+                } catch (Exception ex) {
+                    if (LOGGER.isLoggable(Level.WARNING)) {
+                        LOGGER.log(Level.WARNING, "Error while appliying transformation", ex);
+                    }
                 }
             }
         }

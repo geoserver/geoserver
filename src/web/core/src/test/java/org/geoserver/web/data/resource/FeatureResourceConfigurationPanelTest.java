@@ -9,7 +9,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class FeatureResourceConfigurationPanelTest extends GeoServerWicketTestSupport {
     @Test()
@@ -28,12 +27,12 @@ public class FeatureResourceConfigurationPanelTest extends GeoServerWicketTestSu
 
                             @Override
                             public void setObject(Object o) {
-                                throw new NotImplementedException();
+                                throw new RuntimeException("Not implemented");
                             }
 
                             @Override
                             public void detach() {
-                                throw new NotImplementedException();
+                                throw new RuntimeException("Not implemented");
                             }
                         });
         panel.resourceUpdated(null);

@@ -11,7 +11,7 @@ import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
 import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -441,6 +441,10 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             }
         }
 
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Requesting external map at " + getMap.getFinalURL().toExternalForm());
+        }
+
         GetMapResponse response = server.issueRequest(getMap);
         try (InputStream is = response.getInputStream()) {
             BufferedImage image = ImageIO.read(new MemoryCacheImageInputStream(is));
@@ -523,6 +527,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         }
         // for merging layers, unless the request stated otherwise
         rawKvp.putIfAbsent("transparent", "true");
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Internal render of map with key/value params: " + rawKvp);
+        }
         CaseInsensitiveMap kvp = new CaseInsensitiveMap(new HashMap());
         kvp.putAll(rawKvp);
         List<Throwable> exceptions = KvpUtils.parse(kvp);

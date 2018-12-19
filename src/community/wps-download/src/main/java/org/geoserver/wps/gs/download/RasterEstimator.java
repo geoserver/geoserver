@@ -179,10 +179,12 @@ class RasterEstimator {
         // returned,
         // as raster processing operations (e.g. Crop, Scale) may fail if image size exceeds integer
         // limits
-        long targetArea = 1L;
+        long targetArea;
         Integer[] targetSize = scaling.getTargetSize();
         if (targetSize[0] != null && targetSize[1] != null) {
             targetArea = (long) targetSize[0] * targetSize[1];
+        } else {
+            targetArea = areaRead;
         }
         if (areaRead >= Integer.MAX_VALUE || targetArea >= Integer.MAX_VALUE) {
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -231,7 +233,7 @@ class RasterEstimator {
         }
 
         /// Total size in bytes
-        long rasterSizeInBytes = (long) targetArea * accumulatedPixelSizeInBits / 8;
+        long rasterSizeInBytes = targetArea * accumulatedPixelSizeInBits / 8;
 
         final long writeLimits = downloadServiceConfiguration.getWriteLimits();
 

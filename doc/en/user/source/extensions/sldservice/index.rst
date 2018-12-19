@@ -205,6 +205,10 @@ The parameters usable to customize the ColorMap are:
      - allows to run the classification on a specific bounding box. Recommended when the overall dataset is too big, and the classification can be performed on a smaller dataset, or to enhance the visualization of a particular subset of data
      - same syntax as WMS/WFS, expected axis order is east/north unless the spatial reference system is explicitly provided, ``minx,miny,max,maxy[,srsName]``
      - 
+   * - stddevs
+     - limits the data the classifier is working on to a range of "stddevs" standard deviations around the mean value. 
+     - a positive floating point number (e.g., '1', '2.5', '3').
+     -
     
 Examples
 ~~~~~~~~~~

@@ -1101,28 +1101,30 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             throws Exception {
         // Restore configuration files form source and Test that everything went well
         try {
-
             // - Prepare folder
             GeoserverXMLResourceProvider gwcConfigProvider =
                     (GeoserverXMLResourceProvider)
                             GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
             Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
-            Files.delete(targetGWCProviderRestoreDir.dir());
+            if (!filterIsValid()) {
+                Files.delete(targetGWCProviderRestoreDir.dir());
 
-            // Restore GWC Providers Configurations
-            for (GeoserverXMLResourceProvider gwcProvider :
-                    GeoServerExtensions.extensions(GeoserverXMLResourceProvider.class)) {
-                Resource providerConfigFile =
-                        sourceRestoreFolder.get(
-                                Paths.path(
-                                        GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME,
-                                        gwcProvider.getConfigFileName()));
-                if (Resources.exists(providerConfigFile)
-                        && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
-                    Resources.copy(
-                            providerConfigFile.in(),
-                            targetGWCProviderRestoreDir,
-                            providerConfigFile.name());
+                // Restore GWC Providers Configurations
+                for (GeoserverXMLResourceProvider gwcProvider :
+                        GeoServerExtensions.extensions(GeoserverXMLResourceProvider.class)) {
+                    Resource providerConfigFile =
+                            sourceRestoreFolder.get(
+                                    Paths.path(
+                                            GeoserverXMLResourceProvider
+                                                    .DEFAULT_CONFIGURATION_DIR_NAME,
+                                            gwcProvider.getConfigFileName()));
+                    if (Resources.exists(providerConfigFile)
+                            && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
+                        Resources.copy(
+                                providerConfigFile.in(),
+                                targetGWCProviderRestoreDir,
+                                providerConfigFile.name());
+                    }
                 }
             }
 
@@ -1136,7 +1138,6 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             BiMap<String, String> layersByName = null;
 
             if (gwcCatalog != null) {
-
                 if (isDryRun()) {
                     BiMap<String, String> baseBiMap = HashBiMap.create();
                     layersByName = Maps.synchronizedBiMap(baseBiMap);
@@ -1150,64 +1151,74 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 final DefaultTileLayerCatalog gwcRestoreCatalog =
                         new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
 
-                for (String layerName : gwcRestoreCatalog.getLayerNames()) {
-                    GeoServerTileLayerInfo gwcLayerInfo =
-                            gwcRestoreCatalog.getLayerByName(layerName);
-
-                    LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
-
-                    if (layerInfo != null) {
-
-                        WorkspaceInfo ws =
-                                layerInfo.getResource() != null
-                                                && layerInfo.getResource().getStore() != null
-                                                && layerInfo.getResource().getStore().getWorkspace()
-                                                        != null
-                                        ? getCatalog()
-                                                .getWorkspaceByName(
-                                                        layerInfo
-                                                                .getResource()
-                                                                .getStore()
-                                                                .getWorkspace()
-                                                                .getName())
-                                        : null;
-
-                        if (!filteredResource(layerInfo, ws, true, LayerInfo.class)) {
-                            restoreGWCTileLayerInfo(
-                                    gwcCatalog,
-                                    layersByName,
-                                    layerName,
-                                    gwcLayerInfo,
-                                    layerInfo.getId());
-                        }
-                    } else {
-                        LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
-
-                        if (layerGroupInfo != null) {
-
-                            WorkspaceInfo ws =
-                                    layerGroupInfo.getWorkspace() != null
-                                            ? getCatalog()
-                                                    .getWorkspaceByName(
-                                                            layerGroupInfo.getWorkspace().getName())
-                                            : null;
-
-                            if (!filteredResource(layerGroupInfo, ws, false, LayerInfo.class)) {
-                                restoreGWCTileLayerInfo(
-                                        gwcCatalog,
-                                        layersByName,
-                                        layerName,
-                                        gwcLayerInfo,
-                                        layerGroupInfo.getId());
-                            }
-                        }
-                    }
+                Resource gwcCatalogPersistenceLocation =
+                        targetGWCProviderRestoreDir
+                                .parent()
+                                .get(gwcCatalog.getPersistenceLocation());
+                Files.delete(gwcCatalogPersistenceLocation.dir());
+                if (!filterIsValid()) {
+                    restoreGWCTileLayersInfos(gwcCatalog, layersByName, gwcRestoreCatalog);
+                } else {
+                    restoreGWCTileLayersInfos(gwcCatalog, layersByName, gwcCatalog);
                 }
             }
 
         } catch (Exception e) {
             if (getCurrentJobExecution() != null) {
                 getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+            }
+        }
+    }
+
+    /**
+     * @param gwcCatalog
+     * @param layersByName
+     * @param gwcRestoreCatalog
+     */
+    private void restoreGWCTileLayersInfos(
+            final TileLayerCatalog gwcCatalog,
+            BiMap<String, String> layersByName,
+            final TileLayerCatalog gwcRestoreCatalog) {
+        for (String layerName : gwcRestoreCatalog.getLayerNames()) {
+            GeoServerTileLayerInfo gwcLayerInfo = gwcRestoreCatalog.getLayerByName(layerName);
+
+            LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
+
+            if (layerInfo != null) {
+                WorkspaceInfo ws =
+                        layerInfo.getResource() != null
+                                        && layerInfo.getResource().getStore() != null
+                                        && layerInfo.getResource().getStore().getWorkspace() != null
+                                ? getCatalog()
+                                        .getWorkspaceByName(
+                                                layerInfo
+                                                        .getResource()
+                                                        .getStore()
+                                                        .getWorkspace()
+                                                        .getName())
+                                : null;
+
+                restoreGWCTileLayerInfo(
+                        gwcCatalog, layersByName, layerName, gwcLayerInfo, layerInfo.getId());
+            } else {
+                LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
+
+                if (layerGroupInfo != null) {
+
+                    WorkspaceInfo ws =
+                            layerGroupInfo.getWorkspace() != null
+                                    ? getCatalog()
+                                            .getWorkspaceByName(
+                                                    layerGroupInfo.getWorkspace().getName())
+                                    : null;
+
+                    restoreGWCTileLayerInfo(
+                            gwcCatalog,
+                            layersByName,
+                            layerName,
+                            gwcLayerInfo,
+                            layerGroupInfo.getId());
+                }
             }
         }
     }

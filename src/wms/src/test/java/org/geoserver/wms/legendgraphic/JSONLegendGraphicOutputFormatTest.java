@@ -231,14 +231,18 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     List<Style> styles = new ArrayList<Style>();
     Style style1 = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
     styles.add(style1);
-    printStyle(style1);
+    //printStyle(style1);
     Style style2 = getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
     styles.add(style2);
-    printStyle(style2);
+    //printStyle(style2);
     req.setStyles(styles);
 
     JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-    System.out.println(result.toString(2) ); 
+    System.out.println(result.toString(2) );
+    assertNotNull(result);
+    JSONArray legend = result.getJSONArray("Legend");
+    System.out.println(legend.toString(2) ); 
+    assertEquals(2, legend.size());
   }
 
   /**

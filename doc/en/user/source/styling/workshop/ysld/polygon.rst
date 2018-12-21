@@ -514,13 +514,13 @@ When working with labels a map can become busy very quickly, and difficult to re
 
    .. image:: ../style/img/polygon_label_5.png
 
-#. And advanced technique for manually taking control of conflict resolution is the use of the  **x-labelPriority**.
+#. And advanced technique for manually taking control of conflict resolution is the use of the  **priority**.
 
    This property takes an expression which is used in the event of a conflict. The label with the highest priority "wins."
 
 #. The Natural Earth dataset we are using includes a **labelrank** intended to control what labels are displayed based on zoom level.
 
-   The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **x-labelPriority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
+   The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **priority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
 
    .. code-block:: yaml
       :emphasize-lines: 20

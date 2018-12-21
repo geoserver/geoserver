@@ -585,7 +585,7 @@ Dynamic Styling
 
       ${10 - LABELRANK}
 
-   This expression will result in values between 0 and 10 and will be used for the **x-labelPriority**.
+   This expression will result in values between 0 and 10 and will be used for the **priority**.
 
    .. code-block:: yaml
       :emphasize-lines: 2,19,20

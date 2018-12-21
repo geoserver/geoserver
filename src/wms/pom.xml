@@ -104,6 +104,7 @@
       <artifactId>spring-context-support</artifactId>
       <version>${spring.version}</version>
     </dependency>
+    
 	<dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>

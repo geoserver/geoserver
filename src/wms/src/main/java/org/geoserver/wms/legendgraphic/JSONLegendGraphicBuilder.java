@@ -108,6 +108,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         ArrayList<JSONObject> jRules = new ArrayList<>();
         for (Rule rule : applicableRules) {
           JSONObject jRule = new JSONObject();
+          String name = rule.getName();
+          if(name!=null && !name.isEmpty()) {
+            jRule.element("name", name);
+          }
           InternationalString title = rule.getDescription().getTitle();
           if (title != null) {
             jRule.element("title", title.toString());
@@ -131,9 +135,15 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
           jRule.element("symbolizers", jSymbolizers);
           jRules.add(jRule);
         }
-        response.element("Legend", jRules);
+        JSONArray legends = new JSONArray();
+        if(response.containsKey("Legend")) {
+          legends = response.getJSONArray("Legend");
+        }
+        legends.add(jRules);
+        response.element("Legend", legends);
       }
     }
+
     return response;
   }
 

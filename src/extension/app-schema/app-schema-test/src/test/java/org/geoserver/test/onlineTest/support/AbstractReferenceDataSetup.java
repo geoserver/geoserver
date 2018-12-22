@@ -5,12 +5,9 @@
  */
 package org.geoserver.test.onlineTest.support;
 
-import com.sun.rowset.CachedRowSetImpl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -140,28 +137,6 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
         } catch (IOException ioe) {
             System.out.println("Unable to write out example fixture " + exFixtureFile);
             ioe.printStackTrace();
-        }
-    }
-
-    /**
-     * This method doesn't not handle paging therefore care must be taken when dealing with large
-     * dataset.
-     *
-     * @param sql statement
-     * @return CachedRowSetImpl the result from the execution of the sql
-     */
-    public CachedRowSetImpl runWithResult(String sql) throws Exception {
-        // connect
-        Connection conn = getConnection();
-        Statement st = null;
-        try {
-            st = conn.createStatement();
-            CachedRowSetImpl crs = new CachedRowSetImpl();
-            crs.populate(st.executeQuery(sql));
-            return crs;
-        } finally {
-            st.close();
-            conn.close();
         }
     }
 

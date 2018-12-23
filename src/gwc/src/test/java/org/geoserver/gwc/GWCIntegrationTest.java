@@ -73,8 +73,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
@@ -96,13 +94,13 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-@TestSetup(run = TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     // WMTS 1.0 namespaces
@@ -149,10 +147,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         springContextLocations.add("gwc-integration-test.xml");
     }
 
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
+    private void prepareDataDirectory(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
         testData.addWorkspace(TEST_WORKSPACE_NAME, TEST_WORKSPACE_URI, catalog);
         WorkspaceInfo wi = catalog.getWorkspaceByName(TEST_WORKSPACE_NAME);
@@ -190,6 +185,20 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // clean up the recorded http requests
         HttpRequestRecorderCallback.reset();
+    }
+
+    @Before
+    public void cleanup() throws Exception {
+        SystemTestData testData = getTestData();
+        for (File f : testData.getDataDirectoryRoot().listFiles()) {
+            FileUtils.deleteQuietly(f);
+        }
+        testData.setUp();
+        testData.setUpDefault();
+        getGeoServer().reload();
+        //        GeoServerLoader loader = GeoServerExtensions.bean(DefaultGeoServerLoader.class);
+        //        loader.initializeStyles(getCatalog());
+        prepareDataDirectory(testData);
     }
 
     protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {

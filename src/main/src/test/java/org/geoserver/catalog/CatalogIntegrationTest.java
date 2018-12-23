@@ -13,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
+import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerConfigPersister;
@@ -527,6 +529,50 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
             Assert.fail("Should not be able to add invalid layer group to catalog");
         } catch (IllegalArgumentException e) {
             // expected
+        }
+    }
+
+    @Test
+    public void testRenameWorspaceAfterReload() throws Exception {
+        // reload
+        getGeoServer().reload();
+
+        // rename workspace
+        Catalog catalog = getCatalog();
+        List<CatalogEvent> events = new ArrayList<>();
+        final WorkspaceInfo ws = catalog.getDefaultWorkspace();
+        String name = ws.getName();
+        try {
+            final String newName = "renamed_" + name;
+            ws.setName(newName);
+            catalog.save(ws);
+
+            // check rename occurred
+            final WorkspaceInfo wsRenamed = getCatalog().getWorkspaceByName(newName);
+            assertNotNull(wsRenamed);
+            assertEquals(newName, wsRenamed.getName());
+            final NamespaceInfo nsRenamed = getCatalog().getNamespaceByPrefix(newName);
+            assertNotNull(nsRenamed);
+            assertEquals(newName, nsRenamed.getName());
+
+            // do a reload
+            getGeoServer().reload();
+
+            // check it was actually successfully stored. Get the catalog again,
+            // as it has been replaced
+            catalog = getCatalog();
+            final WorkspaceInfo wsRenamed2 = catalog.getWorkspaceByName(newName);
+            assertNotNull(wsRenamed2);
+            assertEquals(newName, wsRenamed.getName());
+            final NamespaceInfo nsRenamed2 = getCatalog().getNamespaceByPrefix(newName);
+            assertNotNull(nsRenamed2);
+            assertEquals(newName, nsRenamed2.getName());
+
+            // the old one is gone, too
+            assertNull(catalog.getWorkspaceByName(name));
+        } finally {
+            ws.setName(name);
+            catalog.save(ws);
         }
     }
 }

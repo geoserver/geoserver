@@ -32,6 +32,7 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
@@ -40,7 +41,8 @@ import org.geotools.util.logging.Logging;
  * Handles the persistence of configuration files when changes happen to the catalog, such as
  * rename, remove and change of workspace.
  */
-public class GeoServerConfigPersister implements CatalogListener, ConfigurationListener {
+public class GeoServerConfigPersister
+        implements CatalogListener, ConfigurationListener, ExtensionPriority {
 
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
@@ -616,14 +618,31 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     }
 
     private void rmRes(Resource r) {
-        rl.remove(r.path());
+        try {
+            rl.remove(r.path());
+        } catch (Exception e) {
+            throw new CatalogException(e);
+        }
     }
 
     private void renameRes(Resource r, String newName) {
-        rl.move(r.path(), r.parent().get(newName).path());
+        try {
+            rl.move(r.path(), r.parent().get(newName).path());
+        } catch (Exception e) {
+            throw new CatalogException(e);
+        }
     }
 
     private void moveResToDir(Resource r, Resource newDir) {
-        rl.move(r.path(), newDir.get(r.name()).path());
+        try {
+            rl.move(r.path(), newDir.get(r.name()).path());
+        } catch (Exception e) {
+            throw new CatalogException(e);
+        }
+    }
+
+    @Override
+    public int getPriority() {
+        return ExtensionPriority.HIGHEST;
     }
 }

@@ -5,7 +5,12 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +29,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
@@ -574,5 +580,22 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
             ws.setName(name);
             catalog.save(ws);
         }
+    }
+
+    @Test
+    public void testReloadDefaultStyles() throws Exception {
+        // clear up all "point" styles
+        final Resource styles = getDataDirectory().getStyles();
+        styles.list()
+                .stream()
+                .filter(r -> r.getType() == Resource.Type.RESOURCE && r.name().contains("point"))
+                .forEach(r -> r.delete());
+
+        // reload
+        getGeoServer().reload();
+
+        // check the default point style has been re-created
+        final StyleInfo point = getCatalog().getStyleByName("point");
+        assertNotNull(point);
     }
 }

@@ -23,7 +23,10 @@ import org.springframework.context.ApplicationContextAware;
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerLoaderProxy
-        implements BeanPostProcessor, DisposableBean, ApplicationContextAware {
+        implements BeanPostProcessor,
+                DisposableBean,
+                ApplicationContextAware,
+                GeoServerReinitializer {
 
     /** resource loader */
     protected GeoServerResourceLoader resourceLoader;
@@ -74,5 +77,10 @@ public class GeoServerLoaderProxy
             loader = new DefaultGeoServerLoader(resourceLoader);
         }
         return loader;
+    }
+
+    @Override
+    public void initialize(GeoServer geoServer) throws Exception {
+        loader.initializeDefaultStyles(geoServer.getCatalog());
     }
 }

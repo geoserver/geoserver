@@ -61,12 +61,7 @@ public class BaseLegendTest extends WMSTestSupport {
                         Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
     }
 
-    @Before
-    public void setLegendProducer() throws Exception {
-        this.legendProducer = new JSONLegendGraphicBuilder();
 
-        service = new GetLegendGraphic(getWMS());
-    }
 
     @After
     public void resetLegendProducer() throws Exception {

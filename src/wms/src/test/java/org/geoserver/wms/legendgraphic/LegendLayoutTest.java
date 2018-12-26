@@ -19,17 +19,24 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.styling.Style;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 
 public class LegendLayoutTest extends BaseLegendTest {
+    @Before
+    public void setLegendProducer() throws Exception {
+        this.legendProducer = new BufferedImageLegendGraphicBuilder();
 
+        service = new GetLegendGraphic(getWMS());
+    }
     /** Tests horizontal layout for raster with RAMP */
     @org.junit.Test
     public void testRampHorizontalRaster() throws Exception {

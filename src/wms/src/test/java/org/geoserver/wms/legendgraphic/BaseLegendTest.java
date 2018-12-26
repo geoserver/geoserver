@@ -20,7 +20,6 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
-import org.junit.Before;
 
 public class BaseLegendTest extends WMSTestSupport {
 
@@ -60,8 +59,6 @@ public class BaseLegendTest extends WMSTestSupport {
                 Font.createFont(
                         Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
     }
-
-
 
     @After
     public void resetLegendProducer() throws Exception {

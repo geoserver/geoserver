@@ -579,8 +579,9 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         options.setLayout(LegendUtils.getGroupLayout(req));
         return LegendMerger.mergeGroups(rules, options);
     }
-    
-    protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
-      return processor.preProcessRules(legend, applicableRules);
-  }
+
+    protected Rule[] updateRuleTitles(
+            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+        return processor.preProcessRules(legend, applicableRules);
+    }
 }

@@ -62,12 +62,6 @@ public class BaseLegendTest extends WMSTestSupport {
     }
 
 
-    @Before
-    public void setLegendProducer() throws Exception {
-        this.legendProducer = new JSONLegendGraphicBuilder();
-
-        service = new GetLegendGraphic(getWMS());
-    }
 
     @After
     public void resetLegendProducer() throws Exception {

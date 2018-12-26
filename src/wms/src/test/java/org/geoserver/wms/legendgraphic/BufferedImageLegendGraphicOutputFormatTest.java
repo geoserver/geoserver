@@ -54,7 +54,7 @@ import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.Before;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
@@ -217,7 +217,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
     assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
     int height = image.getHeight();
 
-    LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),WMS.get());
+    LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
     legend.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
     req.getLegends().add(legend);
 
@@ -278,7 +278,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
     assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
     int height = image.getHeight();
 
-    LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),WMS.get());
+    LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
     legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
     req.getLegends().add(legend);
 
@@ -387,42 +387,9 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
 
       BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
 
-      // vector layer
-      assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
 
       assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
 
-      assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
-
-      // coverage layer
-      assertPixel(image, 10, 70 + titleHeight * 2, new Color(115, 38, 0));
-    } finally {
-      RenderedImage ri = coverage.getRenderedImage();
-      if (coverage instanceof GridCoverage2D) {
-        ((GridCoverage2D) coverage).dispose(true);
-      }
-      if (ri instanceof PlanarImage) {
-        ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-      }
-    }
-  }
-
-  /**
-   * Tests that the legend graphic is produced for multiple layers with vector and coverage layers,
-   * when coverage is not visible at current scale.
-   */
-  @org.junit.Test
-  public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {
-    GetLegendGraphicRequest req = new GetLegendGraphicRequest();
-    req.setScale(1000);
-    int titleHeight = getTitleHeight(req);
-
-    FeatureTypeInfo ftInfo =
-        getCatalog()
-            .getFeatureTypeByName(
-                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
-    List<FeatureType> layers = new ArrayList<FeatureType>();
-    layers.add(ftInfo.getFeatureType());
 
     CoverageInfo cInfo = getCatalog().getCoverageByName("world");
     assertNotNull(cInfo);

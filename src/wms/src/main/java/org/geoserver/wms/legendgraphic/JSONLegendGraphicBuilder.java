@@ -17,24 +17,30 @@
 package org.geoserver.wms.legendgraphic;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.swing.Icon;
+import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.se.v1_1.bindings.NormalizeBinding;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.ContrastEnhancement;
+import org.geotools.styling.ContrastMethodStrategy;
 import org.geotools.styling.Description;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.ExternalGraphic;
@@ -49,6 +55,7 @@ import org.geotools.styling.LinePlacement;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.LineSymbolizerImpl;
 import org.geotools.styling.Mark;
+import org.geotools.styling.NormalizeContrastMethodStrategy;
 import org.geotools.styling.PointPlacement;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PointSymbolizerImpl;
@@ -57,23 +64,50 @@ import org.geotools.styling.PolygonSymbolizerImpl;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.RasterSymbolizerImpl;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.TextSymbolizerImpl;
+import org.geotools.xml.styling.SLDTransformer;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 import org.opengis.metadata.citation.OnLineResource;
+import org.opengis.style.ContrastMethod;
 import org.opengis.style.GraphicalSymbol;
 import org.opengis.util.InternationalString;
 
 /** @author Ian Turton */
 public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
+  /** COLORMAP_TYPE */
+  public static final String COLORMAP_TYPE = "type";
+  /** CONTRAST_ENHANCEMENT */
+  public static final String CONTRAST_ENHANCEMENT = "contrast-enhancement";
+  /** HISTOGRAM */
+  public static final String HISTOGRAM = "histogram";
+  /** EXPONENTIAL */
+  public static final String EXPONENTIAL = "exponential";
+  /** LOGARITHMIC */
+  public static final String LOGARITHMIC = "logarithmic";
+  /** NORMALIZE */
+  public static final String NORMALIZE = "normalize";
+  /** GRAY */
+  public static final String GRAY = "gray";
+  /** BLUE */
+  public static final String BLUE = "blue";
+  /** GREEN */
+  public static final String GREEN = "green";
+  /** RED */
+  public static final String RED = "red";
+  /** GAMMA_VALUE */
+  public static final String GAMMA_VALUE = "gamma-value";
   /** STROKE_LINEJOIN */
   public static final String STROKE_LINEJOIN = "stroke-linejoin";
   /** ABSTRACT */
@@ -172,7 +206,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
   /** TITLE */
   public static final String TITLE = "title";
   /** TYPE */
-  public static final String TYPE = "type";
+  public static final String TYPE = COLORMAP_TYPE;
   /** UOM */
   public static final String UOM = "uom";
 
@@ -204,6 +238,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
   private Feature feature;
 
+
   /**
    * @param request
    * @return
@@ -211,7 +246,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
   @Override
   public JSONObject buildLegendGraphic(GetLegendGraphicRequest request) {
     setup(request);
-
+    Locale locale = request.getLocale();
     JSONObject response = new JSONObject();
     for (LegendRequest legend : layers) {
       String layerName = legend.getLayerName().getLocalPart();
@@ -245,6 +280,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
       } else {
         applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
       }
+      
       ArrayList<JSONObject> jRules = new ArrayList<>();
       for (Rule rule : applicableRules) {
         JSONObject jRule = new JSONObject();
@@ -254,11 +290,11 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         InternationalString title = rule.getDescription().getTitle();
         if (title != null) {
-          jRule.element(TITLE, title.toString());
+          jRule.element(TITLE, title.toString(locale));
         }
         InternationalString abs = rule.getDescription().getAbstract();
         if (abs != null) {
-          jRule.element(ABSTRACT, abs.toString());
+          jRule.element(ABSTRACT, abs.toString(locale));
         }
         Filter filter = rule.getFilter();
         if (filter != null) {
@@ -267,8 +303,11 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         JSONArray jSymbolizers = new JSONArray();
         if (layer != null) {
           feature = getSampleFeatureForRule(layer, null, rule);
+        } else {
+          feature = null;
         }
-        for (Symbolizer symbolizer : rule.symbolizers()) {
+        List<Symbolizer> symbolizers2 = rule.symbolizers();
+        for (Symbolizer symbolizer : symbolizers2) {
           JSONObject jSymb = new JSONObject();
           JSONObject symb = processSymbolizer(symbolizer);
           jSymb.element(symbolizerNames.get(symbolizer.getClass()), symb);
@@ -313,11 +352,12 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
    * @param symbolizer
    * @return
    */
-  private String printExpression(Expression exp, Class type) {
+  private String printExpression(Expression exp, Class<?> type) {
+
     Object value = exp.evaluate(feature, type);
     if (value != null && type.equals(Color.class)) {
       Color c = (Color) value;
-      return String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue());
+      return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
     } else if (value != null && type.isAssignableFrom(Number.class)) {
       Number n = (Number) value;
       if (!Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
@@ -362,7 +402,19 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     JSONObject cm = new JSONObject();
     if (entries.size() > 0) {
       cm.element(ENTRIES, entries);
-      cm.element("type", colorMap.getFunction().getName());
+      int type = colorMap.getType();
+      switch (type) {
+        case ColorMap.TYPE_INTERVALS:
+          cm.element(COLORMAP_TYPE, "intervals");
+          break;
+        case ColorMap.TYPE_RAMP:
+          cm.element(COLORMAP_TYPE, "ramp");
+          break;
+        case ColorMap.TYPE_VALUES:
+          cm.element(COLORMAP_TYPE, "values");
+          break;
+      }
+
       ret.element(COLORMAP, cm);
     }
     return ret;
@@ -433,12 +485,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
       Mark m = ((Mark) g);
       Expression wkn = m.getWellKnownName();
       if (wkn != null) {
-        String value = wkn.evaluate(feature, String.class);
-        if (value != null) {
-          jGraphic.element(MARK, value);
-        } else {
-          jGraphic.element(MARK, "[" + wkn.toString() + "]");
-        }
+        jGraphic.element(MARK, printExpression(wkn, String.class));
       }
       jGraphic = processFill(jGraphic, m.getFill());
       jGraphic = processStroke(jGraphic, m.getStroke());
@@ -515,27 +562,60 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     if (op != null) {
       ret.element(OPACITY, printExpression(op, Double.class));
     }
-    ret=processChannelSelection(ret,symbolizer.getChannelSelection());
+    ret = processChannelSelection(ret, symbolizer.getChannelSelection());
+    ret = processContrastEnhancement(ret, symbolizer.getContrastEnhancement());
     return ret;
   }
+  /**
+   * @param ret
+   * @param contrastEnhancement
+   * @return
+   */
+  private JSONObject processContrastEnhancement(
+      JSONObject ret, ContrastEnhancement contrastEnhancement) {
+    if (contrastEnhancement != null) {
+      JSONObject ce = new JSONObject();
+      Expression gammaValue = contrastEnhancement.getGammaValue();
+      if (gammaValue != null) ce.element(GAMMA_VALUE, printExpression(gammaValue, Number.class));
+      ContrastMethod method = contrastEnhancement.getMethod();
+      if (ContrastMethod.NORMALIZE == method) {
+        JSONObject norm = new JSONObject();
+        //TODO handle vendor option
+        ce.element(NORMALIZE, "true");
+      } else if (ContrastMethod.HISTOGRAM == method) {
+        ce.element(HISTOGRAM, "true");
+      } else if (ContrastMethod.EXPONENTIAL == method) {
+        ce.element(EXPONENTIAL, "true");
+      } else if (ContrastMethod.LOGARITHMIC == method) {
+        ce.element(LOGARITHMIC, "true");
+      }
+      if (!ce.isEmpty()) ret.element(CONTRAST_ENHANCEMENT, ce);
+    }
+
+    return ret;
+  }
+
   /**
    * @param ret
    * @param channelSelection
    * @return
    */
   private JSONObject processChannelSelection(JSONObject ret, ChannelSelection channelSelection) {
-    if(channelSelection!=null) {
+    if (channelSelection != null) {
       JSONObject chs = new JSONObject();
       SelectedChannelType[] rgbChannels = channelSelection.getRGBChannels();
-      if(rgbChannels!=null) {
-        chs.element("red", printExpression(rgbChannels[0].getChannelName(),String.class));
-        chs.element("green", printExpression(rgbChannels[1].getChannelName(),String.class));
-        chs.element("blue", printExpression(rgbChannels[2].getChannelName(),String.class));
-      } else {
-        SelectedChannelType grayChannel = channelSelection.getGrayChannel();
-        if (grayChannel!=null) {
-          chs.element("gray", printExpression(grayChannel.getChannelName(),String.class));
-        }
+      if (rgbChannels != null) {
+        if (rgbChannels[0] != null)
+          chs.element(RED, printExpression(rgbChannels[0].getChannelName(), String.class));
+        if (rgbChannels[1] != null)
+          chs.element(GREEN, printExpression(rgbChannels[1].getChannelName(), String.class));
+        if (rgbChannels[2] != null)
+          chs.element(BLUE, printExpression(rgbChannels[2].getChannelName(), String.class));
+      }
+
+      SelectedChannelType grayChannel = channelSelection.getGrayChannel();
+      if (grayChannel != null) {
+        chs.element(GRAY, printExpression(grayChannel.getChannelName(), String.class));
       }
     }
     return ret;
@@ -618,7 +698,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     }
     Expression geometry = symbolizer.getGeometry();
     if (geometry != null) {
-      ret.element(GEOMETRY, geometry.toString());
+      ret.element(GEOMETRY, printExpression(geometry, Geometry.class));
     }
     if (symbolizer instanceof PointSymbolizer) {
       ret = processPointSymbolizer(ret, (PointSymbolizer) symbolizer);

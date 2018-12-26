@@ -473,11 +473,6 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         return symbolizer;
     }
 
-    protected Rule[] updateRuleTitles(
-            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
-        return processor.preProcessRules(legend, applicableRules);
-    }
-
     /**
      * Renders a title for a layer (to be put on top of the layer legend).
      *
@@ -584,4 +579,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         options.setLayout(LegendUtils.getGroupLayout(req));
         return LegendMerger.mergeGroups(rules, options);
     }
+    
+    protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+      return processor.preProcessRules(legend, applicableRules);
+  }
 }

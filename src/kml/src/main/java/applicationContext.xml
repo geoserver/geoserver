@@ -43,7 +43,7 @@
   </bean>
 
   <!--  icon service -->
-  <bean id="kmlIconService" class="org.geoserver.kml.icons.IconService">
+  <bean id="kmlIconService" class="org.geoserver.wms.icons.IconService">
     <constructor-arg ref="catalog"/>
   </bean>
 

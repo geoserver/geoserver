@@ -432,6 +432,12 @@
     <bean id="wmsPNGLegendGraphicResponse" 
         class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
     </bean>
+    <bean id="wmsJSONLegendOutputFormat" 
+		class="org.geoserver.wms.legendgraphic.JSONLegendOutputFormat">
+	</bean>
+    <bean id="wmsJSONLegendGraphicResponse" 
+        class="org.geoserver.wms.legendgraphic.JSONLegendGraphicResponse">
+    </bean>
 	
 	<!--  
 		Map producers and responses

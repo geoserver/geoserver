@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import javax.imageio.ImageIO;
 import org.geoserver.kml.KMLTest;
+import org.geoserver.wms.icons.IconRenderer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.styling.StyleFactory;

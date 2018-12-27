@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -38,7 +38,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public final class IconRenderer {
     private static final ReferencedEnvelope sampleArea = new ReferencedEnvelope(-1, 1, -1, 1, null);
     private static final SimpleFeatureCollection sampleData;
-    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.kml.icons");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.icons");
 
     static {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();

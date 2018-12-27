@@ -1349,7 +1349,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertEquals("[STATE_ABBR]", textSymb.getString(JSONLegendGraphicBuilder.LABEL));
         JSONArray fonts = textSymb.getJSONArray(JSONLegendGraphicBuilder.FONTS);
         assertEquals(2, fonts.size());
-        assertEquals("12", fonts.getJSONObject(0).get(JSONLegendGraphicBuilder.FONT_SIZE));
+        assertEquals("9", fonts.getJSONObject(1).get(JSONLegendGraphicBuilder.FONT_SIZE));
     }
 
     @org.junit.Test

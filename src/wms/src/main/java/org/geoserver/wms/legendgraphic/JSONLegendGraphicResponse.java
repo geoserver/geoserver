@@ -48,7 +48,7 @@ public class JSONLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        Assert.isInstanceOf(BufferedImageLegendGraphic.class, value);
-        return PNGLegendOutputFormat.MIME_TYPE;
+        Assert.isInstanceOf(JSONLegendGraphic.class, value);
+        return JSONLegendOutputFormat.MIME_TYPE;
     }
 }

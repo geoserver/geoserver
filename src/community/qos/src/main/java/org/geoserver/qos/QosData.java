@@ -13,7 +13,7 @@ import org.geoserver.wms.GetMapOutputFormat;
 
 public class QosData {
 
-    protected static QosData INSTANCE;
+    protected static volatile QosData INSTANCE;
 
     public static QosData instance() {
         if (INSTANCE == null) {

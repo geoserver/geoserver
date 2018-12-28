@@ -233,7 +233,7 @@ public class WCSUtils {
         final ArrayList selectedBands = new ArrayList();
 
         for (int d = 0; d < numDimensions; d++) {
-            dims.put("band" + (d + 1), new Integer(d));
+            dims.put("band" + (d + 1), Integer.valueOf(d));
         }
 
         if ((params != null) && !params.isEmpty()) {

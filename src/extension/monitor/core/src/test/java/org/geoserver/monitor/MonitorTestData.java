@@ -211,7 +211,7 @@ public class MonitorTestData {
         }
 
         for (int i = 0; i < id.length; i++) {
-            assertTrue(ids.contains(new Long(id[i])));
+            assertTrue(ids.contains(Long.valueOf(id[i])));
         }
     }
 

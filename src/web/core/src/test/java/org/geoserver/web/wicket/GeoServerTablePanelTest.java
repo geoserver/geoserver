@@ -45,7 +45,7 @@ public class GeoServerTablePanelTest {
         String firstLabelPath = "form:panel:listContainer:items:1:itemProperties:0:component";
         tester.assertComponent(firstLabelPath, Label.class);
         assertEquals(
-                new Integer(0),
+                Integer.valueOf(0),
                 tester.getComponentFromLastRenderedPage(firstLabelPath).getDefaultModelObject());
 
         // check we actually rendered 10 rows
@@ -73,7 +73,7 @@ public class GeoServerTablePanelTest {
         ft.setValue("panel:listContainer:selectAllContainer:selectAll", "true");
         tester.executeAjaxEvent(selectAllPath, "click");
         assertEquals(DEFAULT_ITEMS_PER_PAGE, table.getSelection().size());
-        assertEquals(new Integer(0), table.getSelection().get(0));
+        assertEquals(Integer.valueOf(0), table.getSelection().get(0));
 
         // reset selection
         table.setSelection(false);
@@ -93,8 +93,8 @@ public class GeoServerTablePanelTest {
         ft.setValue("panel:listContainer:items:7:selectItemContainer:selectItem", "true");
         ft.submit();
         assertEquals(2, table.getSelection().size());
-        assertEquals(new Integer(0), table.getSelection().get(0));
-        assertEquals(new Integer(6), table.getSelection().get(1));
+        assertEquals(Integer.valueOf(0), table.getSelection().get(0));
+        assertEquals(Integer.valueOf(6), table.getSelection().get(1));
     }
 
     @Test
@@ -105,14 +105,14 @@ public class GeoServerTablePanelTest {
         IntegerTable table = (IntegerTable) tester.getComponentFromLastRenderedPage("form:panel");
         assertEquals(0, table.getSelection().size());
 
-        table.selectObject(new Integer(5));
+        table.selectObject(Integer.valueOf(5));
         assertEquals(1, table.getSelection().size());
-        assertEquals(new Integer(5), table.getSelection().get(0));
+        assertEquals(Integer.valueOf(5), table.getSelection().get(0));
 
         table.selectObject(7);
         assertEquals(2, table.getSelection().size());
-        assertEquals(new Integer(5), table.getSelection().get(0));
-        assertEquals(new Integer(7), table.getSelection().get(1));
+        assertEquals(Integer.valueOf(5), table.getSelection().get(0));
+        assertEquals(Integer.valueOf(7), table.getSelection().get(1));
     }
 
     @Test

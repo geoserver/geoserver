@@ -139,7 +139,7 @@ public class XStreamPersisterTest {
         g1.setUpdateSequence(123);
         g1.setVerbose(true);
         g1.setVerboseExceptions(true);
-        g1.getMetadata().put("one", new Integer(1));
+        g1.getMetadata().put("one", Integer.valueOf(1));
         g1.getMetadata().put("two", new Double(2.2));
 
         ByteArrayOutputStream out = out();
@@ -1127,7 +1127,7 @@ public class XStreamPersisterTest {
 
         Multimap<String, Object> mmap = ArrayListMultimap.create();
         mmap.put("one", "abc");
-        mmap.put("one", new Integer(2));
+        mmap.put("one", Integer.valueOf(2));
         mmap.put("two", new NumberRange<Integer>(Integer.class, 10, 20));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

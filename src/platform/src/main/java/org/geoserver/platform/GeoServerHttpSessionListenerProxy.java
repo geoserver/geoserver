@@ -23,7 +23,7 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
 
-    protected Set<HttpSessionListener> listeners;
+    protected volatile Set<HttpSessionListener> listeners;
 
     /**
      * This constructor should be called only once by the J2EE container.
@@ -52,7 +52,7 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
 
     protected Set<HttpSessionListener> listeners() {
         if (listeners == null) {
-            synchronized (this) {
+            synchronized (listeners) {
                 if (listeners == null) {
                     listeners =
                             new LinkedHashSet<HttpSessionListener>(

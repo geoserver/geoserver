@@ -184,8 +184,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             // we already do everything that the optimized data loading does...
             // if we set it to true then it does it all twice...
             java.util.Map rendererParams = new HashMap();
-            rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-            rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+            rendererParams.put("optimizedDataLoadingEnabled", Boolean.valueOf(true));
+            rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
             // we need the renderer to draw everything on the batik provided graphics object
             rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
             // render everything in vector form if possible

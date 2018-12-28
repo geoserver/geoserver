@@ -1757,6 +1757,24 @@
        </execution>
      </executions>
    </plugin>
+   
+   <plugin>
+    <groupId>org.commonjava.maven.plugins</groupId>
+    <artifactId>directory-maven-plugin</artifactId>
+    <version>0.3.1</version>
+    <executions>
+      <execution>
+        <id>directories</id>
+        <goals>
+          <goal>highest-basedir</goal>
+        </goals>
+        <phase>initialize</phase>
+        <configuration>
+          <property>geoserverBaseDir</property>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
 
   </plugins>
 
@@ -2187,23 +2205,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.commonjava.maven.plugins</groupId>
-            <artifactId>directory-maven-plugin</artifactId>
-            <version>0.3.1</version>
-            <executions>
-              <execution>
-                <id>directories</id>
-                <goals>
-                  <goal>highest-basedir</goal>
-                </goals>
-                <phase>initialize</phase>
-                <configuration>
-                  <property>geoserverBaseDir</property>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
             <version>3.2.1</version>
@@ -2222,6 +2223,64 @@
         </plugins>
       </build>
     </profile>
+    
+    <profile>
+      <id>pmd</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+              <rulesets>
+                <ruleset>${geoserverBaseDir}/pmd-ruleset.xml</ruleset>
+              </rulesets>
+              <failurePriority>2</failurePriority>
+              <minimumPriority>2</minimumPriority>
+              <verbose>true</verbose>
+              <printFailingErrors>true</printFailingErrors>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>errorprone</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <source>8</source>
+              <target>8</target>
+              <compilerArgument>-XDcompilePolicy=simple -Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.*</compilerArgument>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.3.2</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>

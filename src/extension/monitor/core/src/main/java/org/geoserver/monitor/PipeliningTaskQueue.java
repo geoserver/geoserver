@@ -5,7 +5,6 @@
  */
 package org.geoserver.monitor;
 
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -127,16 +126,6 @@ public class PipeliningTaskQueue<K> implements Runnable {
             this.key = key;
             this.task = task;
             this.lock = new ReentrantLock();
-        }
-    }
-
-    public void print() {
-        for (Map.Entry<K, Queue<Pipelineable<K>>> e : pipelines.entrySet()) {
-            System.out.print(e.getKey());
-            for (Pipelineable<K> p : e.getValue()) {
-                System.out.print(p.desc + " ");
-            }
-            System.out.println();
         }
     }
 }

@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -60,10 +61,13 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.ToolPage;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CatalogStressTester extends GeoServerSecuredPage {
+
+    static final Logger LOGGER = Logging.getLogger(CatalogStressTester.class);
 
     DropDownChoice<Tuple> workspace;
 
@@ -360,7 +364,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             }
         }
 
-        System.err.println("Creating " + numCopies + " copies of " + original + " with sufix " + s);
+        LOGGER.info("Creating " + numCopies + " copies of " + original + " with sufix " + s);
 
         final Catalog catalog = getCatalog();
 
@@ -384,8 +388,10 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     null);
             if ((curr + 1) % 100 == 0) {
                 sw.stop();
-                System.out.printf(
-                        "inserted %s so far in %s (last 100 in %s)\n", (curr + 1), globalTime, sw);
+                LOGGER.info(
+                        String.format(
+                                "inserted %s so far in %s (last 100 in %s)\n",
+                                (curr + 1), globalTime, sw));
                 sw.reset();
                 sw.start();
             }
@@ -400,7 +406,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         String progressMessage =
                 MessageFormat.format(localizerString, numCopies, original, globalTime);
 
-        System.out.println(progressMessage);
+        LOGGER.info(progressMessage);
         progress.setDefaultModelObject(progressMessage);
 
         target.add(progress);

@@ -431,7 +431,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // setup the renderer hints
         Map<Object, Object> rendererParams = new HashMap<Object, Object>();
-        rendererParams.put("optimizedDataLoadingEnabled", Boolean.valueOf(true));
+        rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(

@@ -59,7 +59,7 @@ public class GZIPFilter implements Filter {
                 myCompressedTypes.add(Pattern.compile(typeNames[i]));
             }
         } catch (Exception e) {
-            System.out.println("Error while setting up GZIPFilter; " + e);
+            throw new RuntimeException("Error while setting up GZIPFilter; " + e);
         }
     }
 

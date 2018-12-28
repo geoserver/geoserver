@@ -355,7 +355,7 @@ class SVGWriter extends OutputStreamWriter {
             try {
                 write(ft.getID());
             } catch (IOException ex) {
-                System.err.println("error getting fid from " + ft);
+                LOGGER.severe("error getting fid from " + ft);
                 throw ex;
             }
 

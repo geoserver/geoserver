@@ -74,7 +74,7 @@ public class WPSExecutionManager
     private WPSResourceManager resourceManager;
 
     /** The classes that will actually run the process once the inputs are parsed */
-    private List<ProcessManager> processManagers;
+    private volatile List<ProcessManager> processManagers;
 
     /** Objects listening to the process lifecycles */
     private List<ProcessListener> listeners;

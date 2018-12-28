@@ -1478,7 +1478,7 @@
    <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
-     <version>2.3.2</version>
+     <version>3.8.0</version>
      <configuration>
        <source>1.8</source>
        <target>1.8</target>
@@ -1981,7 +1981,7 @@
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
   <fork.javac>true</fork.javac>
-  <javac.maxHeapSize>256m</javac.maxHeapSize>
+  <javac.maxHeapSize>256M</javac.maxHeapSize>
   <image.tests>true</image.tests>
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
@@ -2263,7 +2263,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
             <configuration>
               <source>8</source>
               <target>8</target>

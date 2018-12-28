@@ -141,7 +141,9 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
      */
     protected Query mixQueries(Query userQuery, Query securityQuery) {
         // first rough mix
-        Query result = DataUtilities.mixQueries(userQuery, securityQuery, userQuery.getHandle());
+        Query result =
+                new Query(
+                        DataUtilities.mixQueries(userQuery, securityQuery, userQuery.getHandle()));
 
         // check request attributes and use those ones only
         List<PropertyName> securityProperties = securityQuery.getProperties();

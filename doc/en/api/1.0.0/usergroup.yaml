@@ -129,6 +129,7 @@ paths:
       responses:
         200:
           description: OK
+  /usergroup/user/{user}:
     delete:
       operationId: userDefaultDelete
       summary: Delete a user

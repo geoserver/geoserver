@@ -20,7 +20,7 @@ import org.opengis.filter.Filter;
  *
  * @author David Winslow, OpenGeo
  */
-class MiniRule {
+public class MiniRule {
     public final Filter filter;
     public final boolean isElseFilter;
     public final List<PointSymbolizer> symbolizers;
@@ -31,7 +31,7 @@ class MiniRule {
         this.symbolizers = symbolizers;
     }
 
-    static List<List<MiniRule>> minify(Style style) {
+    public static List<List<MiniRule>> minify(Style style) {
         List<List<MiniRule>> ftStyles = new ArrayList<List<MiniRule>>();
         for (FeatureTypeStyle ftStyle : style.featureTypeStyles()) {
             List<MiniRule> rules = new ArrayList<MiniRule>();

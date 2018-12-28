@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.awt.Color;
 import java.io.UnsupportedEncodingException;

@@ -40,6 +40,9 @@ public final class IconPropertyExtractor {
         return new FeatureProperties(feature).properties();
     }
 
+    public static IconProperties extractProperties(List<List<MiniRule>> style, SimpleFeature feature) {
+      return new IconPropertyExtractor(style).propertiesFor(feature);
+    }
     public static IconProperties extractProperties(Style style, SimpleFeature feature) {
         return new IconPropertyExtractor(MiniRule.minify(style)).propertiesFor(feature);
     }

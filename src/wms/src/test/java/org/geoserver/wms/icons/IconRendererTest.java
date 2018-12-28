@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.imageio.ImageIO;
-import org.geoserver.kml.KMLTest;
+
 import org.geoserver.wms.icons.IconRenderer;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.test.ImageAssert;
@@ -216,8 +216,7 @@ public class IconRendererTest {
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
         GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("arrow-16.png"), "image/png");
+                sfact.createExternalGraphic(this.getClass().getResource("arrow-16.png"), "image/png");
 
         Graphic g =
                 sfact.graphic(
@@ -265,8 +264,7 @@ public class IconRendererTest {
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
         GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("arrow-16.png"), "image/png");
+                sfact.createExternalGraphic(this.getClass().getResource("arrow-16.png"), "image/png");
 
         Graphic g =
                 sfact.graphic(

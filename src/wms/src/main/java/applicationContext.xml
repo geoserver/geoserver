@@ -460,225 +460,259 @@
 	<bean id="wmsPNGLegendOutputFormat"
 		class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">
 	</bean>
-    <bean id="wmsPNGLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
-    </bean>
-    <bean id="wmsJSONLegendOutputFormat" 
+	<bean id="wmsPNGLegendGraphicResponse"
+		class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
+	</bean>
+	<bean id="wmsJSONLegendOutputFormat"
 		class="org.geoserver.wms.legendgraphic.JSONLegendOutputFormat">
 	</bean>
-    <bean id="wmsJSONLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.JSONLegendGraphicResponse">
-    </bean>
-	
-	<!--  
-		Map producers and responses
-	 -->
-    <bean id="wmsXMLTransformerResponse" class="org.geoserver.wms.map.XMLTransformerMapResponse">
-      <description>Handles responsed from GetMapOutputFormats that produce
-        an org.geoserver.wms.map.XMLTransformerMap, such as the KML and GeoRSS ones
-        </description>
-    </bean>
+	<bean id="wmsJSONLegendGraphicResponse"
+		class="org.geoserver.wms.legendgraphic.JSONLegendGraphicResponse">
+	</bean>
 
-    <bean id="PNGMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/png</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/png</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="png"/>
-    </bean>
-    <bean id="PNG8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/png; mode=8bit</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/png8</value>
-          <value>image/png; mode=8bit</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="png"/>
-    </bean>
-    
-    <bean id="PNGMapResponse" class="org.geoserver.wms.map.PNGMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-    
-    <bean id="GeoTiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/geotiff</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/geotiff</value>
-        </list>
-      </constructor-arg>
-      <property name="extension" value="tif"/>
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="GeoTiffMapProducer8" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/geotiff8</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/geotiff8</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
-    </bean>
-    <bean id="GeoTiffMapResponse" class="org.geoserver.wms.map.GeoTIFFMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
+	<!-- Map producers and responses -->
+	<bean id="wmsXMLTransformerResponse"
+		class="org.geoserver.wms.map.XMLTransformerMapResponse">
+		<description>Handles responsed from GetMapOutputFormats that produce
+			an org.geoserver.wms.map.XMLTransformerMap, such as the KML and
+			GeoRSS ones
+		</description>
+	</bean>
 
-    <bean id="TiffMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/tiff</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/tiff</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
-    </bean>
-    <bean id="Tiff8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/tiff8</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/tiff8</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="tif"/>
-    </bean>
-    <bean id="TiffMapResponse" class="org.geoserver.wms.map.TIFFMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-  
-    <bean id="GIFMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/gif</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>image/gif</value>
-          <value>image/gif;subtype=animated</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="extension" value="gif"/>
-    </bean>
-    <bean id="GIFMapResponse" class="org.geoserver.wms.map.GIFMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-  
-    <bean id="JPEGMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/jpeg</value>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="transparencySupported">
-        <description>JPEG does not support transparency</description>
-        <value>false</value>
-      </property>
-      <property name="paletteSupported">
-        <description>JPEG does not support 8-bit indexed color maps</description>
-        <value>false</value>
-      </property>
-      <property name="extension" value="jpg"/>
-    </bean>
-    <bean id="JPEGMapResponse" class="org.geoserver.wms.map.JPEGMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-    
-    <bean id="JpegPngMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/vnd.jpeg-png</value>
-     </constructor-arg>
-      <constructor-arg ref="wms" />
-      <property name="transparencySupported">
-        <description>JPEG-PNG does support transparency</description>
-        <value>true</value>
-      </property>
-      <property name="paletteSupported">
-        <description>JPEG-PNG does support 8-bit indexed color maps</description>
-        <value>true</value>
-      </property>
-      <!-- The extension is actually dynamically determined -->
-      <property name="extension" value="jpg-png"/>
-    </bean>
+	<bean id="PNGMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/png</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/png</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="png" />
+	</bean>
+	<bean id="PNG8MapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/png; mode=8bit</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/png8</value>
+				<value>image/png; mode=8bit</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="png" />
+	</bean>
 
-    <bean id="JpegPng8MapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-        <constructor-arg>
-            <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-            <value>image/vnd.jpeg-png8</value>
-        </constructor-arg>
-        <constructor-arg ref="wms" />
-        <property name="transparencySupported">
-            <description>JPEG-PNG8 does support transparency</description>
-            <value>true</value>
-        </property>
-        <property name="paletteSupported">
-            <description>JPEG-PNG8 does support 8-bit indexed color maps</description>
-            <value>true</value>
-        </property>
-        <!-- The extension is actually dynamically determined -->
-        <property name="extension" value="jpg-png8"/>
-    </bean>
-    
-    <bean id="JpegPngMapResponse" class="org.geoserver.wms.map.JpegPngMapResponse">
-        <constructor-arg index="0" ref="wms"/>
-        <constructor-arg index="1" ref="JPEGMapResponse"/>
-        <constructor-arg index="2" ref="PNGMapResponse"/>
-    </bean>
+	<bean id="PNGMapResponse"
+		class="org.geoserver.wms.map.PNGMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
 
-    <bean id="PDFMapProducer" class="org.geoserver.wms.map.PDFMapOutputFormat">
-    </bean>
-    <bean id="PDFMapResponse" class="org.geoserver.wms.map.PDFMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
+	<bean id="GeoTiffMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/geotiff</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/geotiff</value>
+			</list>
+		</constructor-arg>
+		<property name="extension" value="tif" />
+		<constructor-arg ref="wms" />
+	</bean>
+	<bean id="GeoTiffMapProducer8"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/geotiff8</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/geotiff8</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="tif" />
+	</bean>
+	<bean id="GeoTiffMapResponse"
+		class="org.geoserver.wms.map.GeoTIFFMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
 
-    <bean id="OpenLayers2MapProducer" class="org.geoserver.wms.map.OpenLayers2MapOutputFormat">
-        <constructor-arg index="0" ref="wms" />
-    </bean>
-    <bean id="OpenLayers3MapProducer" class="org.geoserver.wms.map.OpenLayers3MapOutputFormat">
-      <constructor-arg index="0" ref="wms" />
-    </bean>
-    <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
-      <constructor-arg index="0" ref="OpenLayers2MapProducer" />
-      <constructor-arg index="1" ref="OpenLayers3MapProducer" />
-    </bean>
-    <bean id="OpenLayersMapResponse" class="org.geoserver.wms.map.RawMapResponse">
-    </bean>
+	<bean id="TiffMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/tiff</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/tiff</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="tif" />
+	</bean>
+	<bean id="Tiff8MapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type</description>
+			<value>image/tiff8</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/tiff8</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="tif" />
+	</bean>
+	<bean id="TiffMapResponse"
+		class="org.geoserver.wms.map.TIFFMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
 
-  <bean id="AtomGeoRSSMapProducer"
-		scope="prototype"
+	<bean id="GIFMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type, same as declared
+				in the getcaps document</description>
+			<value>image/gif</value>
+		</constructor-arg>
+		<constructor-arg>
+			<description>The declared output format MIME-Types in the
+				capabilities document</description>
+			<list>
+				<value>image/gif</value>
+				<value>image/gif;subtype=animated</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="extension" value="gif" />
+	</bean>
+	<bean id="GIFMapResponse"
+		class="org.geoserver.wms.map.GIFMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
+
+	<bean id="JPEGMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type, same as declared
+				in the getcaps document</description>
+			<value>image/jpeg</value>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="transparencySupported">
+			<description>JPEG does not support transparency</description>
+			<value>false</value>
+		</property>
+		<property name="paletteSupported">
+			<description>JPEG does not support 8-bit indexed color maps</description>
+			<value>false</value>
+		</property>
+		<property name="extension" value="jpg" />
+	</bean>
+	<bean id="JPEGMapResponse"
+		class="org.geoserver.wms.map.JPEGMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
+
+	<bean id="JpegPngMapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type, same as declared
+				in the getcaps document</description>
+			<value>image/vnd.jpeg-png</value>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="transparencySupported">
+			<description>JPEG-PNG does support transparency</description>
+			<value>true</value>
+		</property>
+		<property name="paletteSupported">
+			<description>JPEG-PNG does support 8-bit indexed color maps</description>
+			<value>true</value>
+		</property>
+		<!-- The extension is actually dynamically determined -->
+		<property name="extension" value="jpg-png" />
+	</bean>
+
+	<bean id="JpegPng8MapProducer"
+		class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+		<constructor-arg>
+			<description>The prescribed output format MIME-Type, same as declared
+				in the getcaps document</description>
+			<value>image/vnd.jpeg-png8</value>
+		</constructor-arg>
+		<constructor-arg ref="wms" />
+		<property name="transparencySupported">
+			<description>JPEG-PNG8 does support transparency</description>
+			<value>true</value>
+		</property>
+		<property name="paletteSupported">
+			<description>JPEG-PNG8 does support 8-bit indexed color maps</description>
+			<value>true</value>
+		</property>
+		<!-- The extension is actually dynamically determined -->
+		<property name="extension" value="jpg-png8" />
+	</bean>
+
+	<bean id="JpegPngMapResponse"
+		class="org.geoserver.wms.map.JpegPngMapResponse">
+		<constructor-arg index="0" ref="wms" />
+		<constructor-arg index="1" ref="JPEGMapResponse" />
+		<constructor-arg index="2" ref="PNGMapResponse" />
+	</bean>
+
+	<bean id="PDFMapProducer"
+		class="org.geoserver.wms.map.PDFMapOutputFormat">
+	</bean>
+	<bean id="PDFMapResponse"
+		class="org.geoserver.wms.map.PDFMapResponse">
+		<constructor-arg ref="wms" />
+	</bean>
+
+	<bean id="OpenLayers2MapProducer"
+		class="org.geoserver.wms.map.OpenLayers2MapOutputFormat">
+		<constructor-arg index="0" ref="wms" />
+	</bean>
+	<bean id="OpenLayers3MapProducer"
+		class="org.geoserver.wms.map.OpenLayers3MapOutputFormat">
+		<constructor-arg index="0" ref="wms" />
+	</bean>
+	<bean id="OpenLayersMapProducer"
+		class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
+		<constructor-arg index="0"
+			ref="OpenLayers2MapProducer" />
+		<constructor-arg index="1"
+			ref="OpenLayers3MapProducer" />
+	</bean>
+	<bean id="OpenLayersMapResponse"
+		class="org.geoserver.wms.map.RawMapResponse">
+	</bean>
+
+	<bean id="AtomGeoRSSMapProducer" scope="prototype"
 		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
 		<constructor-arg index="0" ref="wms" />
 	</bean>

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.swing.Icon;
@@ -81,6 +82,8 @@ import net.sf.json.JSONObject;
 /** @author Ian Turton */
 public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
+  /** VENDOR_OPTIONS */
+  public static final String VENDOR_OPTIONS = "vendor-options";
   /** COLORMAP_TYPE */
   public static final String COLORMAP_TYPE = "type";
   /** CONTRAST_ENHANCEMENT */
@@ -489,7 +492,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
    */
   private JSONObject processGraphicalSymbol(GraphicalSymbol g) {
     JSONObject jGraphic = new JSONObject();
-    jGraphic.element("url", "IconService");
+    
     if (g instanceof Mark) {
       Mark m = ((Mark) g);
       Expression wkn = m.getWellKnownName();
@@ -719,6 +722,25 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
       ret = processRasterSymbolizer(ret, (RasterSymbolizer) symbolizer);
     } else if (symbolizer instanceof TextSymbolizer) {
       ret = processTextSymbolizer(ret, (TextSymbolizer) symbolizer);
+    }
+    
+    Map<String, String> opts = symbolizer.getOptions();
+    ret=processVendorOptions(ret, opts);
+    return ret;
+  }
+
+  /**
+   * @param ret
+   * @param opts
+   */
+  private JSONObject processVendorOptions(JSONObject ret, Map<String, String> opts) {
+    if(!opts.isEmpty()) {
+      JSONObject vendorOpts = new JSONObject();
+      
+      for(Entry<String, String> opt:opts.entrySet()) {
+        vendorOpts.element(opt.getKey(), opt.getValue());
+      }
+      ret.element(VENDOR_OPTIONS, vendorOpts);
     }
     return ret;
   }

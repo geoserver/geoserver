@@ -1318,6 +1318,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         }
     }
 
+    @Test
     public void testRssMime() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(

@@ -72,6 +72,7 @@ public class RangeSubsetKvpParserTest {
         assertEquals("Red", keys.get(0));
     }
 
+    @Test
     public void testAxisKeys() throws Exception {
         RangeSubsetType rs = (RangeSubsetType) parser.parse("radiance[bands[Red,Green,Blue]]");
         assertNotNull(rs);

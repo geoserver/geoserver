@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1294,7 +1295,7 @@ public class XStreamPersister {
                                 "Unexpected item "
                                         + item
                                         + " whose type is not among: "
-                                        + subclasses);
+                                        + Arrays.toString(subclasses));
                     }
                     String typeName = cam.serializedClass(theClass);
                     writer.addAttribute("type", typeName);

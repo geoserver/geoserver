@@ -69,7 +69,7 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
         try {
             transformer.transform(coverage, output);
         } catch (TransformerException e) {
-            new WcsException(e);
+            throw new WcsException(e);
         }
     }
 }

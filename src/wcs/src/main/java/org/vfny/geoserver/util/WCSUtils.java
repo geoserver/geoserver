@@ -148,7 +148,7 @@ public class WCSUtils {
                         (int) Math.round(padRange.getSpan(1)));
         GridEnvelope2D sourceRange = gg.getGridRange2D();
         if (sourceRange.x == targetRange.x
-                && sourceRange.y == sourceRange.y
+                && sourceRange.y == targetRange.y
                 && sourceRange.width == targetRange.width
                 && sourceRange.height == targetRange.height) {
             return coverage;

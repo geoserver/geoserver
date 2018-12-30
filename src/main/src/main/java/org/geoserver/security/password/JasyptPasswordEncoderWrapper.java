@@ -122,13 +122,13 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
 
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return encPass.equals(decodeToCharArray(rawPass.toString()));
+                return encPass.equals(new String(rawPass));
             }
 
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
                 return PasswordEncoderFactories.createDelegatingPasswordEncoder()
-                        .encode(rawPass.toString());
+                        .encode(new String(rawPass));
             }
         };
     }

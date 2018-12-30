@@ -13,7 +13,6 @@ import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -84,8 +83,6 @@ public class WPSOgrTest extends WPSTestSupport {
             assertTrue(formatNames.contains("OGR-MIF"));
             assertTrue(formatNames.contains("OGR-CSV"));
             assertTrue(formatNames.contains("OGR-KML"));
-        } catch (IOException e) {
-            System.err.println(e.getStackTrace());
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -132,9 +129,6 @@ public class WPSOgrTest extends WPSTestSupport {
                             getWpsRawXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
             assertEquals("application/vnd.google-earth.kml; subtype=OGR-KML", r.getContentType());
             assertTrue(r.getContentAsString().length() > 0);
-
-        } catch (IOException e) {
-            System.err.println(e.getStackTrace());
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -158,8 +152,6 @@ public class WPSOgrTest extends WPSTestSupport {
                     d,
                     xml.hasOneNode(
                             "//kml:kml/kml:Document/kml:Schema | //kml:kml/kml:Document/kml:Folder/kml:Schema"));
-        } catch (IOException e) {
-            System.err.println(e.getStackTrace());
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -182,8 +174,6 @@ public class WPSOgrTest extends WPSTestSupport {
             assertTrue(
                     r.getContentAsString().contains("WKT,gml_id,STATE_NAME")
                             || r.getContentAsString().contains("geometry,gml_id,STATE_NAME"));
-        } catch (IOException e) {
-            System.err.println(e.getStackTrace());
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -216,8 +206,6 @@ public class WPSOgrTest extends WPSTestSupport {
             }
             zis.close();
             assertTrue(found);
-        } catch (IOException e) {
-            System.err.println(e.getStackTrace());
         } finally {
             if (configuration != null) {
                 configuration.delete();

@@ -154,6 +154,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         tester.assertVisible("form:panel:authenticationPanel");
     }
 
+    @Test
     public void testAuthenticationEnabled() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
         setupPanel(true, true);

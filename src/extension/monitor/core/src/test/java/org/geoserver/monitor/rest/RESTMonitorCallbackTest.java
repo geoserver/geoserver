@@ -26,6 +26,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -107,6 +108,7 @@ public class RESTMonitorCallbackTest extends GeoServerSystemTestSupport {
         data = monitor.start();
     }
 
+    @After
     public void tearDown() throws Exception {
         monitor.complete();
     }

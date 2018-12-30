@@ -97,8 +97,8 @@ public class SLDValidator {
             }
 
             while (line != null) {
-                line.replace('\n', ' ');
-                line.replace('\r', ' ');
+                line = line.replace('\n', ' ');
+                line = line.replace('\r', ' ');
 
                 String header = linenumber + ": ";
                 result.append(header + line + "\n"); // record the current line

@@ -95,8 +95,8 @@ public abstract class Cell {
 
         Row() {}
 
-        Row(final List<Cell> columns) {
-            columns.addAll(columns);
+        Row(final List<Cell> cells) {
+            this.cells.addAll(cells);
         }
 
         protected Cell get(final int index) {

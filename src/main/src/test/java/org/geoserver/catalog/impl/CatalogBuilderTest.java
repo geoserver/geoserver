@@ -351,6 +351,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertEquals(fti.getNativeBoundingBox(), group.getBounds());
     }
 
+    @Test
     public void testLayerGroupEoBounds() throws Exception {
         Catalog cat = getCatalog();
 
@@ -367,6 +368,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         layer.setType(PublishedType.VECTOR);
 
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setMode(LayerGroupInfo.Mode.EO);
         group.setName("group_EO");
         group.setRootLayer(layer);
 
@@ -496,6 +498,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertTrue(ftInfo.getKeywords().contains(new Keyword("baz")));
     }
 
+    @Test
     public void testSetupMetadataResourceInfoException() throws Exception {
         FeatureTypeInfo ftInfo = createMock(FeatureTypeInfo.class);
         expect(ftInfo.getTitle()).andReturn("foo");

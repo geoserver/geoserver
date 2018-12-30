@@ -48,6 +48,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
+import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
@@ -515,6 +516,7 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertTrue(image.getHeight() < 70 + titleHeight * 2);
     }
 
+    @Test
     public void testMixedGeometry() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
@@ -558,9 +560,8 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayers(layers);
 
         List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-
         styles.add(readSLD("MixedGeometry.sld"));
+        req.setStyles(styles);
 
         this.legendProducer.buildLegendGraphic(req);
 

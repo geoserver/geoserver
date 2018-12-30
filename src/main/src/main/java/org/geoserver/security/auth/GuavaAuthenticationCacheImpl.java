@@ -175,8 +175,8 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
 
     @Override
     public Authentication get(String filterName, String cacheKey) {
-        AuthenticationCacheEntry entry =
-                cache.getIfPresent(new AuthenticationCacheKey(filterName, cacheKey));
+        final AuthenticationCacheKey key = new AuthenticationCacheKey(filterName, cacheKey);
+        AuthenticationCacheEntry entry = cache.getIfPresent(key);
         if (entry == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("AuthenticationCache has no entry for " + filterName + ", " + cacheKey);
@@ -188,7 +188,7 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Entry has expired");
             }
-            cache.invalidate(entry);
+            cache.invalidate(key);
             return null;
         }
         entry.setLastAccessed(System.currentTimeMillis());

@@ -24,6 +24,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
@@ -97,7 +98,9 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
      * well as the namespace of its previously configured resources @REVISIT: this test fails on
      * maven but is ok on eclipse...
      */
-    public void _testWorkspaceSyncsUpWithNamespace() {
+    @Test
+    @Ignore
+    public void testWorkspaceSyncsUpWithNamespace() {
         final FormTester formTester = tester.newFormTester("dataStoreForm");
         print(tester.getLastRenderedPage(), true, true);
         final String wsDropdownPath = "dataStoreForm:workspacePanel:border:border_body:paramValue";

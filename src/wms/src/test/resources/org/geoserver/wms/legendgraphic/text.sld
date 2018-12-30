@@ -54,6 +54,10 @@
 								<CssParameter name="fill">#FFFFFF</CssParameter>
 							</Fill>
 						</Halo>
+						<VendorOption name="labelAllGroup">true</VendorOption>
+						<VendorOption name="spaceAround">10</VendorOption>
+						<VendorOption name="followLine">true</VendorOption>
+						<VendorOption name="autoWrap">50</VendorOption>
 					</TextSymbolizer>
 				</Rule>
 			</FeatureTypeStyle>

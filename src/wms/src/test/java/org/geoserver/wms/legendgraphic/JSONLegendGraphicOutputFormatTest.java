@@ -875,16 +875,14 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
-        LegendRequest legend = req.new LegendRequest();
-        legend.setStyle(externalGraphicStyle);
+        //printStyle(externalGraphicStyle);
         req.setStyle(externalGraphicStyle);
-        printStyle(externalGraphicStyle);
-        req.getLegends().add(legend);
+        
         req.setScale(1.0);
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
-        System.out.println(result.toString(2) ); 
+        //System.out.println(result.toString(2) ); 
         JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertEquals(1, lx.size());
         // rule 1 is a mark
@@ -1265,6 +1263,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertFalse(
                 textSymb.getJSONObject(JSONLegendGraphicBuilder.LABEL_PLACEMENT).isNullObject());
         assertFalse(textSymb.getJSONObject(JSONLegendGraphicBuilder.HALO).isNullObject());
+        JSONObject vops = textSymb.getJSONObject(JSONLegendGraphicBuilder.VENDOR_OPTIONS);
+        assertNotEmpty(vops);
+        assertEquals("true",vops.get("followLine"));
     }
 
     @Test

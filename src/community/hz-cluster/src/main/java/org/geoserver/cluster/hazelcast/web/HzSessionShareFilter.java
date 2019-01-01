@@ -6,13 +6,11 @@
 package org.geoserver.cluster.hazelcast.web;
 
 import com.google.common.collect.Iterators;
-import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.web.WebFilter;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -62,16 +60,8 @@ public class HzSessionShareFilter implements Filter {
         // Don't bother if we already have one
         if (delegate != null) return;
 
-        // Create the delegate and override its getInstance method to use the cluster's instance
-        delegate =
-                new WebFilter() {
-
-                    @Override
-                    protected HazelcastInstance getInstance(Properties properties)
-                            throws ServletException {
-                        return getCluster().getHz();
-                    }
-                };
+        // Create the delegate
+        delegate = new WebFilter();
 
         initDelegate();
     }

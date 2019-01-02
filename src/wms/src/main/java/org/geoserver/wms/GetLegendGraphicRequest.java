@@ -253,8 +253,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
 
         public void setStyle(Style style) {
             this.style = style;
-            if(style!=null)
-              this.styleName = style.getName();
+            if (style != null) this.styleName = style.getName();
         }
 
         public LegendInfo getLegendInfo() {

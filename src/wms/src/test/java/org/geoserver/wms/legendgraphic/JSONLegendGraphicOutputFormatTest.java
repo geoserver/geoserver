@@ -30,6 +30,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
+import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -100,13 +101,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(),multipleRulesStyle);
+        GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), multipleRulesStyle);
         req.setRule(rule.getName());
         req.setLegendOptions(new HashMap<String, String>());
         req.setFormat(JSONFormat);
         final int HEIGHT_HINT = 30;
         req.setHeight(HEIGHT_HINT);
-
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
 
@@ -140,10 +140,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         SimpleFeatureCollection feature;
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-        GetLegendGraphicRequest req = getRequest(feature.getSchema(),multipleRulesStyle);
+        GetLegendGraphicRequest req = getRequest(feature.getSchema(), multipleRulesStyle);
 
         req.setLegendOptions(new HashMap<String, String>());
-        
+
         // use default values for the rest of parameters
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
@@ -182,12 +182,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                                 MockData.ROAD_SEGMENTS.getLocalPart());
         Style style = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
         GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), style);
-        
+
         JSONObject resp = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         // was the legend painted?
         assertNotEmpty(resp);
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
         legend.setStyle(style);
         req.getLegends().add(legend);
 
@@ -210,7 +210,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        
+
         List<FeatureType> layers = new ArrayList<FeatureType>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
@@ -227,7 +227,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyles(styles);
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         // System.out.println(legend.toString(2) );
@@ -294,7 +294,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {
         GetLegendGraphicRequest req = getRequest(null, null);
         req.setScale(1000);
-                FeatureTypeInfo ftInfo =
+        FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
@@ -374,7 +374,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     @Test
     public void testMixedGeometry() throws Exception {
         GetLegendGraphicRequest req = getRequest();
-        
+
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName("MIXEDGEOMETRY");
         builder.setNamespaceURI("test");
@@ -551,11 +551,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsLine.sld"));
-        
+
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
 
-        
         JSONArray rules =
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
                         .getJSONObject(0)
@@ -592,7 +591,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("ProportionalSymbolsUOM.sld");
-        //printStyle(style);
+        // printStyle(style);
         req.setStyle(style);
         req.setFormat(JSONFormat);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
@@ -679,7 +678,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
     @org.junit.Test
     public void testInternationalizedLabels() throws Exception {
-      GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = getRequest();
 
         Map<String, String> options = new HashMap<String, String>();
         options.put("forceLabels", "on");
@@ -693,7 +692,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("Internationalized.sld");
-        //printStyle(style);
+        // printStyle(style);
         req.setStyle(style);
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
@@ -707,7 +706,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                         .get(JSONLegendGraphicBuilder.TITLE));
         req.setLocale(Locale.ITALIAN);
         result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertEquals(
                 "titolomoltolungo",
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
@@ -717,7 +716,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
                         .get(JSONLegendGraphicBuilder.TITLE));
         req.setLocale(Locale.ENGLISH);
         result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertEquals(
                 "anothertitle",
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
@@ -755,8 +754,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         // was the legend painted?
         assertNotEmpty(result);
-        
-        //System.out.println(result.toString(2));
+
+        // System.out.println(result.toString(2));
     }
 
     /**
@@ -767,7 +766,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     public void testColorMapWithCql() throws Exception {
 
         Style style = readSLD("ColorMapWithCql.sld");
-        //printStyle(style);
+        // printStyle(style);
         assertNotNull(style.featureTypeStyles());
         assertEquals(1, style.featureTypeStyles().size());
         FeatureTypeStyle fts = style.featureTypeStyles().get(0);
@@ -853,14 +852,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(transformStyle);
-        //printStyle(transformStyle);
+        // printStyle(transformStyle);
         req.setLegendOptions(new HashMap<String, String>());
         req.setFormat(JSONFormat);
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
-
-        
     }
 
     /** Tests that a legend containing an ExternalGraphic icon is rendered properly. */
@@ -875,14 +872,14 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
-        //printStyle(externalGraphicStyle);
+        // printStyle(externalGraphicStyle);
         req.setStyle(externalGraphicStyle);
-        
+
         req.setScale(1.0);
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
-        //System.out.println(result.toString(2) ); 
+        // System.out.println(result.toString(2) );
         JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertEquals(1, lx.size());
         // rule 1 is a mark
@@ -914,8 +911,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     /** Tests that symbols relative sizes are proportional. */
     @org.junit.Test
     public void testThickPolygonBorder() throws Exception {
-      GetLegendGraphicRequest req = getRequest();
-      req.setWidth(20);
+        GetLegendGraphicRequest req = getRequest();
+        req.setWidth(20);
         req.setHeight(20);
 
         FeatureTypeInfo ftInfo =
@@ -964,10 +961,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
     @org.junit.Test
     public void testSimplePoint() throws Exception {
-      GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = getRequest();
         req.setWidth(20);
         req.setHeight(20);
-        
+
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -977,9 +974,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("point.sld");
         req.setStyle(style);
-        //printStyle(style);
+        // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -999,10 +996,10 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
 
     @org.junit.Test
     public void testFullPoint() throws Exception {
-      GetLegendGraphicRequest req = getRequest();
+        GetLegendGraphicRequest req = getRequest();
         req.setWidth(20);
         req.setHeight(20);
-        
+
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -1086,9 +1083,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("full_line.sld");
         req.setStyle(style);
-        //printStyle(style);
+        // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1132,9 +1129,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("polygon.sld");
         req.setStyle(style);
-        //printStyle(style);
+        // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1169,9 +1166,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("full_polygon.sld");
         req.setStyle(style);
-        //printStyle(style);
+        // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1265,7 +1262,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertFalse(textSymb.getJSONObject(JSONLegendGraphicBuilder.HALO).isNullObject());
         JSONObject vops = textSymb.getJSONObject(JSONLegendGraphicBuilder.VENDOR_OPTIONS);
         assertNotEmpty(vops);
-        assertEquals("true",vops.get("followLine"));
+        assertEquals("true", vops.get("followLine"));
     }
 
     @Test
@@ -1334,13 +1331,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setLayer(feature.getSchema());
         req.setStyle(multipleRulesStyle);
         req.setLegendOptions(new HashMap<String, String>());
-        
 
         // use default values for the rest of parameters
 
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertNotNull(legend);
         JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
@@ -1374,7 +1370,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         // printStyle(multipleRulesStyle);
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(WMS.get());
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -1426,6 +1422,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
      * @throws TransformerException
      */
     private void printStyle(Style style) throws TransformerException {
+        if (isQuietTests()) {
+            return;
+        }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         SLDTransformer transformer = new SLDTransformer();
         transformer.setIndentation(2);
@@ -1433,20 +1432,18 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         String styleStr = bos.toString();
         System.out.println(styleStr);
     }
-    /**
-     * basic setup
-     */
+    /** basic setup */
     private GetLegendGraphicRequest getRequest() {
-      return getRequest(null, null);
+        return getRequest(null, null);
     }
 
     private GetLegendGraphicRequest getRequest(FeatureType layer, Style style) {
-      GetLegendGraphicRequest req = new GetLegendGraphicRequest();
-      req.setBaseUrl("http://local-test:8080/geoserver");
-      req.setLayer(layer);
-      req.setStyle(style);
-      req.setFormat(JSONFormat);
-      return req;
-    }
 
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(WMS.get());
+        req.setBaseUrl("http://local-test:8080/geoserver");
+        req.setLayer(layer);
+        req.setStyle(style);
+        req.setFormat(JSONFormat);
+        return req;
+    }
 }

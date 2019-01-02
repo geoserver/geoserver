@@ -32,6 +32,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphic;
 import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geoserver.wms.legendgraphic.PNGLegendOutputFormat;
@@ -195,7 +196,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
      */
     private Dimension createNewSample(StyleInfo style, GetLegendGraphicOutputFormat pngOutputFormat)
             throws Exception {
-        GetLegendGraphicRequest legendGraphicRequest = new GetLegendGraphicRequest();
+        GetLegendGraphicRequest legendGraphicRequest = new GetLegendGraphicRequest(WMS.get());
         Resource sampleLegendFolder = getSamplesFolder();
 
         legendGraphicRequest.setStrict(false);

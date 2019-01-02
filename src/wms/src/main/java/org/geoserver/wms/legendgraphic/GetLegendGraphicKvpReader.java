@@ -250,7 +250,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         if (featureType != null) {
             LegendRequest legend =
                     request
-                    .new LegendRequest(featureType, layerInfo.getResource().getQualifiedName());
+                    .new LegendRequest(
+                            featureType, layerInfo.getResource().getQualifiedName(), wms);
             legend.setLayerInfo(layerInfo);
 
             MapLayerInfo mli = new MapLayerInfo(layerInfo);

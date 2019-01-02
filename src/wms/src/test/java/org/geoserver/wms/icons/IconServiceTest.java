@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.wms.icons.IconService;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.opengis.filter.Filter;

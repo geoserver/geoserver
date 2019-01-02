@@ -13,8 +13,6 @@ import static org.junit.Assert.assertNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
-import org.geoserver.wms.icons.IconProperties;
-import org.geoserver.wms.icons.IconPropertyExtractor;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;

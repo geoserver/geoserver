@@ -237,6 +237,25 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     }
 
     @Test
+    public void testInitCoverageSRSLookup_GEOS8973() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.WORLD.getLocalPart()));
+        CoverageInfo cinfo = cb.buildCoverage();
+        cinfo.setSRS(null);
+        String wkt =
+                "GEOGCS[\"ED50\",\n"
+                        + "  DATUM[\"European Datum 1950\",\n"
+                        + "  SPHEROID[\"International 1924\", 6378388.0, 297.0]],\n"
+                        + "PRIMEM[\"Greenwich\", 0.0],\n"
+                        + "UNIT[\"degree\", 0.017453292519943295]]";
+        CoordinateReferenceSystem testCRS = CRS.parseWKT(wkt);
+        cinfo.setNativeCRS(testCRS);
+        cb.initCoverage(cinfo, "srs lookup");
+        assertEquals("EPSG:4230", cinfo.getSRS());
+    }
+
+    @Test
     public void testNativeBoundsDefensiveCopy() throws Exception {
         Catalog cat = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(cat);

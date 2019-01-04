@@ -6,27 +6,25 @@ package org.geoserver.gwc.web.blob;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.geowebcache.sqlite.MbtilesConfiguration;
+import org.geowebcache.sqlite.MbtilesInfo;
 
-/**
- * Defines the MBTiles blob store.
- */
-public class MbtilesBlobStoreType implements BlobStoreType<MbtilesConfiguration> {
+/** Defines the MBTiles blob store. */
+public class MbtilesBlobStoreType implements BlobStoreType<MbtilesInfo> {
 
     @Override
-    public Class<MbtilesConfiguration> getConfigClass() {
-        return MbtilesConfiguration.class;
+    public Class<MbtilesInfo> getConfigClass() {
+        return MbtilesInfo.class;
     }
 
     @Override
-    public MbtilesConfiguration newConfigObject() {
-        MbtilesConfiguration configuration = new MbtilesConfiguration();
+    public MbtilesInfo newConfigObject() {
+        MbtilesInfo configuration = new MbtilesInfo();
         configuration.setEnabled(true);
         return configuration;
     }
 
     @Override
-    public Panel createPanel(String id, IModel<MbtilesConfiguration> model) {
+    public Panel createPanel(String id, IModel<MbtilesInfo> model) {
         return new MbtilesBlobStorePanel(id, model);
     }
 

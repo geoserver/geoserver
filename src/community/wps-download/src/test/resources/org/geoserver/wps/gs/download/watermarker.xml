@@ -1,0 +1,5 @@
+<layout>
+  <decoration type="image" affinity="bottom,right" offset="6,6" size="32,32">
+    <option name="url" value="geoserver.png"/>
+  </decoration>
+</layout>

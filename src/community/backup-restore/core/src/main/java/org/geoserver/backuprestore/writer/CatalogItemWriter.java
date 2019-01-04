@@ -4,36 +4,35 @@
  */
 package org.geoserver.backuprestore.writer;
 
+import java.util.Arrays;
 import java.util.List;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.core.io.Resource;
 
 /**
  * Concrete Spring Batch {@link ItemWriter}.
- * 
- * Writes unmarshalled items into the temporary {@link Catalog} in memory.
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * <p>Writes unmarshalled items into the temporary {@link Catalog} in memory.
+ *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
-    public CatalogItemWriter(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogItemWriter(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     @Override
@@ -49,21 +48,83 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         for (T item : items) {
             try {
                 if (item instanceof WorkspaceInfo) {
-                    getCatalog().add((WorkspaceInfo) item);
+                    WorkspaceInfo wsInfo = (WorkspaceInfo) item;
+                    WorkspaceInfo source = getCatalog().getWorkspaceByName(wsInfo.getName());
+                    if (source == null) {
+                        getCatalog().add(wsInfo);
+                        getCatalog().save(getCatalog().getWorkspace(wsInfo.getId()));
+                    }
                 } else if (item instanceof NamespaceInfo) {
-                    getCatalog().add((NamespaceInfo) item);
+                    NamespaceInfo source =
+                            getCatalog().getNamespaceByPrefix(((NamespaceInfo) item).getPrefix());
+                    if (source == null) {
+                        getCatalog().add((NamespaceInfo) item);
+                        getCatalog()
+                                .save(getCatalog().getNamespace(((NamespaceInfo) item).getId()));
+                    }
                 } else if (item instanceof DataStoreInfo) {
-                    getCatalog().add((DataStoreInfo) item);
+                    DataStoreInfo dsInfo = (DataStoreInfo) item;
+                    DataStoreInfo source = getCatalog().getDataStoreByName(dsInfo.getName());
+                    if (source == null) {
+                        getCatalog().add(dsInfo);
+                        getCatalog().save(getCatalog().getDataStore(dsInfo.getId()));
+                    }
                 } else if (item instanceof CoverageStoreInfo) {
-                    getCatalog().add((CoverageStoreInfo) item);
+                    CoverageStoreInfo source =
+                            getCatalog()
+                                    .getCoverageStoreByName(((CoverageStoreInfo) item).getName());
+                    if (source == null) {
+                        getCatalog().add((CoverageStoreInfo) item);
+                        getCatalog()
+                                .save(
+                                        getCatalog()
+                                                .getCoverageStore(
+                                                        ((CoverageStoreInfo) item).getId()));
+                    }
                 } else if (item instanceof ResourceInfo) {
-                    getCatalog().add((ResourceInfo) item);
+                    ResourceInfo resourceInfo = (ResourceInfo) item;
+                    if (getCatalog()
+                                            .getResourceByName(
+                                                    resourceInfo.getName(), FeatureTypeInfo.class)
+                                    == null
+                            && getCatalog()
+                                            .getResourceByName(
+                                                    resourceInfo.getName(), CoverageInfo.class)
+                                    == null) {
+                        Class clz = null;
+                        if (item instanceof FeatureTypeInfo) {
+                            clz = FeatureTypeInfo.class;
+                        } else if (item instanceof CoverageInfo) {
+                            clz = CoverageInfo.class;
+                        }
+                        getCatalog().add(resourceInfo);
+                        getCatalog().save(getCatalog().getResource(resourceInfo.getId(), clz));
+                    }
                 } else if (item instanceof LayerInfo) {
-                    getCatalog().add((LayerInfo) item);
+                    LayerInfo layerInfo = (LayerInfo) item;
+                    if (layerInfo.getName() != null) {
+                        LayerInfo source = getCatalog().getLayerByName(layerInfo.getName());
+                        if (source == null) {
+                            getCatalog().add((LayerInfo) item);
+                            getCatalog().save(getCatalog().getLayer(layerInfo.getId()));
+                        }
+                    }
                 } else if (item instanceof StyleInfo) {
-                    getCatalog().add((StyleInfo) item);
+                    StyleInfo source = getCatalog().getStyleByName(((StyleInfo) item).getName());
+                    if (source == null) {
+                        getCatalog().add((StyleInfo) item);
+                        getCatalog().save(getCatalog().getStyle(((StyleInfo) item).getId()));
+                    }
                 } else if (item instanceof LayerGroupInfo) {
-                    getCatalog().add((LayerGroupInfo) item);
+                    try {
+                        LayerGroupInfo layerGroupInfo = (LayerGroupInfo) item;
+                        getCatalog().add(layerGroupInfo);
+                        getCatalog().save(getCatalog().getLayerGroup(layerGroupInfo.getId()));
+                    } catch (Exception e) {
+                        if (getCurrentJobExecution() != null) {
+                            getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                        }
+                    }
                 }
             } catch (Exception e) {
                 logValidationExceptions((T) null, e);
@@ -78,12 +139,11 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     /**
      * Setter for resource. Represents a file that can be written.
-     * 
+     *
      * @param resource
      */
     @Override
     public void setResource(Resource resource) {
         // Nothing to do
     }
-
 }

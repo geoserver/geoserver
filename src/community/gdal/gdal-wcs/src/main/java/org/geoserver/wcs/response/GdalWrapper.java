@@ -15,15 +15,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.geoserver.ogr.core.AbstractToolWrapper;
 import org.geotools.util.logging.Logging;
 
 /**
  * Helper used to invoke gdal_translate.
- * 
+ *
  * @author Stefano Costa, GeoSolutions
- * 
  */
 public class GdalWrapper extends AbstractToolWrapper {
 
@@ -34,9 +32,8 @@ public class GdalWrapper extends AbstractToolWrapper {
     }
 
     /**
-     * Returns a list of the gdal_translate supported formats (i.e. what must be passed to gdal_translate via its -of parameter)
-     * 
-     *
+     * Returns a list of the gdal_translate supported formats (i.e. what must be passed to
+     * gdal_translate via its -of parameter)
      */
     public Set<String> getSupportedFormats() {
         try {
@@ -51,22 +48,24 @@ public class GdalWrapper extends AbstractToolWrapper {
 
             return formats;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "Could not get the list of output formats supported by gdal_translate", e);
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Could not get the list of output formats supported by gdal_translate",
+                    e);
             return Collections.emptySet();
         }
     }
 
     /**
-     * Runs the provided command and parses its output to extract a set of supported formats. 
-     *  
+     * Runs the provided command and parses its output to extract a set of supported formats.
+     *
      * @param commands the command to run
-     * @param formats the parsed formats will be added to this set 
+     * @param formats the parsed formats will be added to this set
      * @throws IOException
      * @throws InterruptedException
      */
-    private void addFormats(List<String> commands, Set<String> formats) throws IOException,
-            InterruptedException {
+    private void addFormats(List<String> commands, Set<String> formats)
+            throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         run(commands, sb);
 
@@ -82,10 +81,8 @@ public class GdalWrapper extends AbstractToolWrapper {
     }
 
     /**
-     * Returns true if gdal_translate is available, that is, if executing
-     * "gdal_translate --version" returns 0 as the exit code.
-     * 
-     *
+     * Returns true if gdal_translate is available, that is, if executing "gdal_translate --version"
+     * returns 0 as the exit code.
      */
     public boolean isAvailable() {
         List<String> commands = new ArrayList<String>();
@@ -94,7 +91,7 @@ public class GdalWrapper extends AbstractToolWrapper {
 
         try {
             return run(commands, null) == 0;
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "gdal_translate is not available", e);
             return false;
         }
@@ -104,5 +101,4 @@ public class GdalWrapper extends AbstractToolWrapper {
     public String getToolFormatParameter() {
         return "-of";
     }
-
 }

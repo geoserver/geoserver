@@ -7,7 +7,6 @@ package org.geoserver.web.data.store.raster;
 
 import org.apache.wicket.markup.html.form.Form;
 
-
 @SuppressWarnings("serial")
 public class DirectoryRasterEditPanel extends AbstractRasterFileEditPanel {
 

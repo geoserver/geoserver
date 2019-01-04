@@ -45,9 +45,9 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 Installing GDAL native libraries
 ++++++++++++++++++++++++++++++++
 
-The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.16 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.16/>`_.
+The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext whose latest artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/>`_.
 
-Browse to the native and then gdal directory for the `Image IO-Ext download link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.16/native/gdal/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
+Browse to the native and then gdal directory for the `Image IO-Ext download link <https://demo.geo-solutions.it/share/github/imageio-ext/releases/native/gdal/1.9.2/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
 
   #. The CRS definitions
   #. The native libraries matching the target operating system
@@ -65,7 +65,7 @@ We now have to install the native libraries.
 * Assuming you are using a 64 bit Ubuntu 11 Linux Operating System (for instance), click on the linux folder and then on "gdal192-Ubuntu11-gcc4.5.2-x86_64.tar.gz" to download the native libraries archive (Before doing this, make sure to read and agree with the ECWEULA if you intend to use ECW).
 * If you are using a Windows Operating System make sure to download the archive matching your Microsoft Visual C++ Redistributables and your architecture. For example on a 64 bit Windows with 2010 Redistributables, download the gdal-1.9.2-MSVC2010-x64.zip archive
 * Extract the archive on disk and place it in a proper directory on your system.
-* From the :file:`javainfo` directory in the archive, copy the :file:`imageio-ext-gdal-bindings-1.9.2.jar` to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+   .. warning:: If you are using a version of GDAL more recent than 1.9.2, replace the :file:`imageio-ext-gdal-bindings-1.9.2.jar` file with the equivalent java binding jar (typically named either :file:`gdal.jar` or :file:`imageio-ext-gdal-bindings-*.jar`) included with your GDAL version. If your GDAL version does not include a bindings jar, it was probably not compiled with the java bindings and will not work with GeoServer.
 
    .. warning:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
 
@@ -99,7 +99,7 @@ Note on running GeoServer as a Service on Windows
 
 Note that if you downloaded an installed GeoServer as a Windows service you installed the 32 bit version.
 
-Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) doesn't allow GeoServer to leverage on GDAL, when run as a service. As a result, during the service startup, GeoServer log reports this worrysome message:
+Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) doesn't allow GeoServer to leverage on GDAL, when run as a service. As a result, during the service startup, GeoServer log reports this worrisome message:
 
 *it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
 WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
@@ -118,7 +118,7 @@ Adding support for ECW and MrSID on Windows
 +++++++++++++++++++++++++++++++++++++++++++
 If you are on Windows and you want to add support for ECW and MrSID there is an extra step to perform.
 
-Download and install ECW and MrSID from `GeoSolutions site <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.16/native/gdal/windows/>`_
+Download and install ECW and MrSID from `GeoSolutions site <https://demo.geo-solutions.it/share/github/imageio-ext/releases/native/gdal/1.9.2/windows/>`_
 
 In the Windows packaging ECW and MrSID are built as plugins hence they are not loaded by default but we need to place their DLLs in a location that is pointed to by the *GDAL_DRIVER_PATH* environment variable. By default the installer place the plugins in C:\\Program Files\\GDAL\\gdalplugins.
 

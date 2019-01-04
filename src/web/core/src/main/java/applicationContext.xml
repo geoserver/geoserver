@@ -338,15 +338,6 @@
       value="org.geoserver.web.data.store.raster.FileRasterEditPanel" />
   </bean>
 
-  <bean id="gtopo30StorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <property name="id" value="gtopo30Raster" />
-    <property name="factoryClass" value="org.geotools.gce.gtopo30.GTopo30Format" />
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
-    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
-    <property name="componentClass"
-      value="org.geoserver.web.data.store.raster.FileRasterEditPanel" />
-  </bean>
-
   <bean id="worldImageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="gtopo30Raster" />
     <property name="factoryClass" value="org.geotools.gce.image.WorldImageFormat" />
@@ -354,6 +345,15 @@
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.WorldImageEditPanel" />
+  </bean>
+  
+  <bean id="geopkgStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="geopackageRaster" />
+    <property name="factoryClass" value="org.geotools.geopkg.mosaic.GeoPackageFormat" />
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.store.raster.FileRasterEditPanel" />
   </bean>
 
   <bean id="postgisDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
@@ -445,6 +445,7 @@
 		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
 		<property name="name" value="form" />
 		<property name="icon" value="img/icons/silk/door-in.png" />
+		<property name="filterClass" value="org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter" />
 		<property name="include" value="include_login_form.html" />
 		<property name="loginPath" value="j_spring_security_check" />
 	</bean>
@@ -458,6 +459,12 @@
 		<property name="name" value="form" />
 		<property name="icon" value="img/icons/silk/door-out.png" />
 		<property name="logoutPath" value="j_spring_security_logout" />
+	</bean>
+ 
+ 	<bean id="serviceLayerConfigurationPanelInfo" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+		<property name="id" value="serviceLayerConfigurationPanel"/>
+		<property name="titleKey" value="publish.layer.config"/>
+		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>
  
 </beans>

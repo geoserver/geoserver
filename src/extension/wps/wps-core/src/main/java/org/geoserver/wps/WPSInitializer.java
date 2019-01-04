@@ -6,13 +6,11 @@
 package org.geoserver.wps;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
@@ -31,7 +29,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Initializes WPS functionality from configuration.
- * 
+ *
  * @author Andrea Aime, GeoSolutions
  */
 public class WPSInitializer implements GeoServerInitializer {
@@ -48,9 +46,12 @@ public class WPSInitializer implements GeoServerInitializer {
 
     GeoServerResourceLoader resourceLoader;
 
-    public WPSInitializer(WPSExecutionManager executionManager,
-            DefaultProcessManager processManager, WPSStorageCleaner cleaner,
-            WPSResourceManager resources, GeoServerResourceLoader resourceLoader) {
+    public WPSInitializer(
+            WPSExecutionManager executionManager,
+            DefaultProcessManager processManager,
+            WPSStorageCleaner cleaner,
+            WPSResourceManager resources,
+            GeoServerResourceLoader resourceLoader) {
         this.executionManager = executionManager;
         this.processManager = processManager;
         this.cleaner = cleaner;
@@ -61,12 +62,13 @@ public class WPSInitializer implements GeoServerInitializer {
     public void initialize(final GeoServer geoServer) throws Exception {
         initWPS(geoServer.getService(WPSInfo.class), geoServer);
 
-        geoServer.addListener(new ConfigurationListenerAdapter() {
-            @Override
-            public void handlePostGlobalChange(GeoServerInfo global) {
-                initWPS(geoServer.getService(WPSInfo.class), geoServer);
-            }
-        });
+        geoServer.addListener(
+                new ConfigurationListenerAdapter() {
+                    @Override
+                    public void handlePostGlobalChange(GeoServerInfo global) {
+                        initWPS(geoServer.getService(WPSInfo.class), geoServer);
+                    }
+                });
     }
 
     void initWPS(WPSInfo info, GeoServer geoServer) {
@@ -106,27 +108,29 @@ public class WPSInitializer implements GeoServerInitializer {
         } else {
             processManager.setMaxAsynchronousProcesses(defaultMaxProcesses);
         }
-        
+
         // update the location of the artifact storage in case we are using a file system based
         // one
-        if(resources.getArtifactsStore() instanceof DefaultProcessArtifactsStore) {
+        if (resources.getArtifactsStore() instanceof DefaultProcessArtifactsStore) {
             WPSInfo wps = geoServer.getService(WPSInfo.class);
             String outputStorageDirectory = wps.getStorageDirectory();
             FileSystemResourceStore resourceStore;
             if (outputStorageDirectory == null || outputStorageDirectory.trim().isEmpty()) {
                 Resource temp = resourceLoader.get("temp/wps");
-                resourceStore = new FileSystemResourceStore(temp.dir()); 
+                resourceStore = new FileSystemResourceStore(temp.dir());
             } else {
                 File storage = new File(outputStorageDirectory);
                 // if it's a path relative to the data directory, make it absolute
                 if (!storage.isAbsolute()) {
                     storage = resourceLoader.url(outputStorageDirectory);
                 }
-                if(storage.exists() && !storage.isDirectory()) {
-                    throw new IllegalArgumentException("Invalid wps storage path, "
-                            + "it represents a file: " + storage.getPath());
+                if (storage.exists() && !storage.isDirectory()) {
+                    throw new IllegalArgumentException(
+                            "Invalid wps storage path, "
+                                    + "it represents a file: "
+                                    + storage.getPath());
                 }
-                if(!storage.exists()) {
+                if (!storage.exists()) {
                     if (!storage.mkdirs()) {
                         throw new IllegalArgumentException(
                                 "Invalid wps storage path, it does not exists and cannot be created: "
@@ -144,10 +148,9 @@ public class WPSInitializer implements GeoServerInitializer {
                         "Unexpected failure searching for tmp directory inside geoserver data dir",
                         e);
             }
-            
 
-            DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resources
-                    .getArtifactsStore();
+            DefaultProcessArtifactsStore artifactsStore =
+                    (DefaultProcessArtifactsStore) resources.getArtifactsStore();
             artifactsStore.setResourceStore(resourceStore);
         }
 
@@ -166,12 +169,12 @@ public class WPSInitializer implements GeoServerInitializer {
                 }
             }
             if (!found) {
-                //add it
+                // add it
                 newGroups.add(available);
             }
         }
 
-        //only save if we have anything new to add
+        // only save if we have anything new to add
         if (!newGroups.isEmpty()) {
             info.getProcessGroups().addAll(newGroups);
             geoServer.save(info);
@@ -180,40 +183,42 @@ public class WPSInitializer implements GeoServerInitializer {
 
     static List<ProcessGroupInfo> lookupProcessGroups() {
         List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
-        
+
         // here we build a full list of process factories infos, covering all available
         // factories: this makes sure the available factories are availablefrom both
         // GUI and REST configuration
-        
-        // get the full list of factories
-        List<ProcessFactory> factories = new ArrayList<ProcessFactory>(Processors.getProcessFactories());
-        
-        // ensure there is a stable order across invocations, JDK and so on
-        Collections.sort(factories, new Comparator<ProcessFactory>() {
 
-            @Override
-            public int compare(ProcessFactory o1, ProcessFactory o2) {
-                if(o1 == null) {
-                    return o2 == null ? 0 : -1;
-                } else if(o2 == null) {
-                    return 1;
-                } else {
-                    return o1.getClass().getName().compareTo(o2.getClass().getName());
-                }
-            }
-            
-        });
-        
+        // get the full list of factories
+        List<ProcessFactory> factories =
+                new ArrayList<ProcessFactory>(Processors.getProcessFactories());
+
+        // ensure there is a stable order across invocations, JDK and so on
+        Collections.sort(
+                factories,
+                new Comparator<ProcessFactory>() {
+
+                    @Override
+                    public int compare(ProcessFactory o1, ProcessFactory o2) {
+                        if (o1 == null) {
+                            return o2 == null ? 0 : -1;
+                        } else if (o2 == null) {
+                            return 1;
+                        } else {
+                            return o1.getClass().getName().compareTo(o2.getClass().getName());
+                        }
+                    }
+                });
+
         // build the result, adding the ProcessFactoryInfo as necessary for the factories
         // that do not already have a configuration
         for (final ProcessFactory pf : factories) {
             ProcessGroupInfo pfi = new ProcessGroupInfoImpl();
             pfi.setEnabled(true);
             pfi.setFactoryClass(pf.getClass());
-            
+
             processFactories.add(pfi);
         }
-        
+
         return processFactories;
     }
 }

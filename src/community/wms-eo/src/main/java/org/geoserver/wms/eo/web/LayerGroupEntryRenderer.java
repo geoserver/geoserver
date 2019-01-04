@@ -9,8 +9,8 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 
 /**
  * Renders layer group entries in drop down choice components
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 class LayerGroupEntryRenderer extends ChoiceRenderer<EoLayerGroupEntry> {
     private static final long serialVersionUID = 4073120717494762957L;
@@ -24,5 +24,4 @@ class LayerGroupEntryRenderer extends ChoiceRenderer<EoLayerGroupEntry> {
     public String getIdValue(EoLayerGroupEntry entry, int index) {
         return entry.getLayer().getId();
     }
-
 }

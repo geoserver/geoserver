@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/nsg/2.0" 
+xmlns:ows="http://www.opengis.net/ows/1.1" 
+xmlns:nsg="http://www.opengis.net/nsg/2.0"
+xmlns="http://www.w3.org/2001/XMLSchema" 
+elementFormDefault="qualified" version="1.1.0.3" xml:lang="en">
+	<annotation>
+		<appinfo>owsAll_nsg.xsd</appinfo>
+		<documentation>
+			This XML Schema Document is a Profile of the owsAll.xsd schema document from the OGC OWS Common 1.1 Standard.  
+			This profile includes additional XML schema documents required by OGC Web Services deployed in the National System of Geospatial-Intelligence (NSG).
+			
+			This XML Schema Document includes and imports, directly and indirectly, all the XML Schemas defined by the OWS Common Implemetation Specification.
+		
+			OWS is an OGC Standard.
+			Copyright (c) 2006,2010 Open Geospatial Consortium.
+			To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		
+			This WFS Schema Profile document was created by Charles Heazel in support of the NGA Standards Program, March 31, 2017
+		</documentation>
+	</annotation>
+	<!-- ==============================================================
+		includes and imports
+	============================================================== -->
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsGetResourceByID.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsExceptionReport.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsDomainType.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsContents.xsd"/>
+	<import namespace="http://www.opengis.net/ows/1.1" schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsInputOutputData.xsd"/>
+	<include schemaLocation="./owsGetCapabilities_nsg.xsd"/>
+</schema>

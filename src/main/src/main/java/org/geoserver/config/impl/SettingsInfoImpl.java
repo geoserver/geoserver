@@ -7,7 +7,6 @@ package org.geoserver.config.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
@@ -84,7 +83,7 @@ public class SettingsInfoImpl implements SettingsInfo {
 
     @Override
     public String getCharset() {
-        return charset; 
+        return charset;
     }
 
     @Override
@@ -174,21 +173,14 @@ public class SettingsInfoImpl implements SettingsInfo {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((charset == null) ? 0 : charset.hashCode());
-        result = prime
-                * result
-                + ((clientProperties == null) ? 0 : clientProperties.hashCode());
-        result = prime * result
-                + ((contact == null) ? 0 : contact.hashCode());
+        result = prime * result + ((clientProperties == null) ? 0 : clientProperties.hashCode());
+        result = prime * result + ((contact == null) ? 0 : contact.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result
-                + ((metadata == null) ? 0 : metadata.hashCode());
+        result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + numDecimals;
-        result = prime * result
-                + ((onlineResource == null) ? 0 : onlineResource.hashCode());
-        result = prime * result
-                + ((proxyBaseUrl == null) ? 0 : proxyBaseUrl.hashCode());
-        result = prime * result
-                + ((schemaBaseUrl == null) ? 0 : schemaBaseUrl.hashCode());
+        result = prime * result + ((onlineResource == null) ? 0 : onlineResource.hashCode());
+        result = prime * result + ((proxyBaseUrl == null) ? 0 : proxyBaseUrl.hashCode());
+        result = prime * result + ((schemaBaseUrl == null) ? 0 : schemaBaseUrl.hashCode());
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + (verbose ? 1231 : 1237);
         result = prime * result + (verboseExceptions ? 1231 : 1237);
@@ -196,62 +188,46 @@ public class SettingsInfoImpl implements SettingsInfo {
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!( obj instanceof SettingsInfo ) ) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof SettingsInfo)) {
             return false;
         }
         final SettingsInfo other = (SettingsInfo) obj;
         if (charset == null) {
-            if (other.getCharset() != null)
-                return false;
-        } else if (!charset.equals(other.getCharset()))
-            return false;
+            if (other.getCharset() != null) return false;
+        } else if (!charset.equals(other.getCharset())) return false;
         if (contact == null) {
-            if (other.getContact() != null)
-                return false;
-        } else if (!contact.equals(other.getContact()))
-            return false;
+            if (other.getContact() != null) return false;
+        } else if (!contact.equals(other.getContact())) return false;
         if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
-            return false;
-        if (numDecimals != other.getNumDecimals())
-            return false;
+            if (other.getId() != null) return false;
+        } else if (!id.equals(other.getId())) return false;
+        if (numDecimals != other.getNumDecimals()) return false;
         if (onlineResource == null) {
-            if (other.getOnlineResource() != null)
-                return false;
-        } else if (!onlineResource.equals(other.getOnlineResource()))
-            return false;
+            if (other.getOnlineResource() != null) return false;
+        } else if (!onlineResource.equals(other.getOnlineResource())) return false;
         if (proxyBaseUrl == null) {
-            if (other.getProxyBaseUrl() != null)
-                return false;
-        } else if (!proxyBaseUrl.equals(other.getProxyBaseUrl()))
-            return false;
+            if (other.getProxyBaseUrl() != null) return false;
+        } else if (!proxyBaseUrl.equals(other.getProxyBaseUrl())) return false;
         if (schemaBaseUrl == null) {
-            if (other.getSchemaBaseUrl() != null)
-                return false;
-        } else if (!schemaBaseUrl.equals(other.getSchemaBaseUrl()))
-            return false;
+            if (other.getSchemaBaseUrl() != null) return false;
+        } else if (!schemaBaseUrl.equals(other.getSchemaBaseUrl())) return false;
         if (title == null) {
-            if (other.getTitle() != null)
-                return false;
-        } else if (!title.equals(other.getTitle()))
-            return false;
-        if (verbose != other.isVerbose())
-            return false;
-        if (verboseExceptions != other.isVerboseExceptions())
-            return false;
+            if (other.getTitle() != null) return false;
+        } else if (!title.equals(other.getTitle())) return false;
+        if (verbose != other.isVerbose()) return false;
+        if (verboseExceptions != other.isVerboseExceptions()) return false;
 
         return true;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(title).append(']')
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(title)
+                .append(']')
                 .toString();
     }
 
@@ -264,5 +240,4 @@ public class SettingsInfoImpl implements SettingsInfo {
     public void setLocalWorkspaceIncludesPrefix(boolean removePrefix) {
         localWorkspaceIncludesPrefix = removePrefix;
     }
-
 }

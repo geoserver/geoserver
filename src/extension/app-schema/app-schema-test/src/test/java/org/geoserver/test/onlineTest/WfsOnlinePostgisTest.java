@@ -8,11 +8,8 @@ package org.geoserver.test.onlineTest;
 import org.geoserver.test.onlineTest.setup.WfsOnlineTestMockData;
 import org.geoserver.test.onlineTest.setup.WfsOnlineTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
-/**
- * 
- * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
- *
- */
+
+/** @author Victor Tey(CSIRO Earth Science and Resource Engineering) */
 public class WfsOnlinePostgisTest extends WfsOnlineTest {
 
     public WfsOnlinePostgisTest() throws Exception {
@@ -22,7 +19,6 @@ public class WfsOnlinePostgisTest extends WfsOnlineTest {
     @Override
     protected WfsOnlineTestMockData createTestData() {
         return new WfsOnlineTestMockData();
-
     }
 
     @Override

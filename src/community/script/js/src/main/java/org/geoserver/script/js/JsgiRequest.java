@@ -6,19 +6,14 @@
 package org.geoserver.script.js;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Enumeration;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.StringUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geotools.util.logging.Logging;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.restlet.data.Form;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 public class JsgiRequest extends ScriptableObject {
 
@@ -30,52 +25,60 @@ public class JsgiRequest extends ScriptableObject {
     /**
      * Generates a JavaScript object that conforms to the JSGI spec.
      * http://wiki.commonjs.org/wiki/JSGI/Level0/A/Draft2
-     * 
+     *
      * @param request
      * @param response
      * @param cx
      * @param scope
      */
-    public JsgiRequest(Request request, Response response, Context cx, Scriptable scope) {
+    public JsgiRequest(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Context cx,
+            Scriptable scope) {
         super(scope, ScriptableObject.getObjectPrototype(scope));
-
-        Reference ref = request.getResourceRef();
 
         this.put("method", this, request.getMethod().toString());
 
-        this.put("scriptName", this, ref.getLastSegment());
+        this.put(
+                "scriptName",
+                this,
+                request.getPathInfo()
+                        .substring(
+                                request.getPathInfo().lastIndexOf("/"))); /*ref.getLastSegment());*/
 
-        List<String> seg = new ArrayList<String>(ref.getSegments().subList(4, ref.getSegments().size()));
-        seg.add(0, "");
-        this.put("pathInfo", this, StringUtils.join(seg.toArray(), "/"));
-        
-        this.put("queryString", this, ref.getQuery());
-        
-        this.put("host", this, ref.getHostDomain());
-        
-        this.put("port", this, ref.getHostPort());
-        
-        this.put("scheme", this, ref.getScheme());
+        this.put(
+                "pathInfo", this, request.getPathInfo()); /*StringUtils.join(seg.toArray(), "/"));*/
+
+        this.put("queryString", this, request.getQueryString()); /*ref.getQuery());*/
+
+        this.put("host", this, request.getContextPath()); /*ref.getHostDomain());*/
+
+        this.put("port", this, request.getServerPort()); /*ref.getHostPort());*/
+
+        this.put("scheme", this, request.getScheme()); /*ref.getScheme());*/
 
         try {
             // TODO: deal with input
-            this.put("input", this, Context.javaToJS(request.getEntity().getStream(), scope));
+            this.put("input", this, Context.javaToJS(request.getInputStream(), scope));
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
 
         Scriptable headers = cx.newObject(scope);
-        Form requestHeaders = (Form) request.getAttributes().get("org.restlet.http.headers");
-        for (String name : requestHeaders.getNames()) {
-            String value = requestHeaders.getFirstValue(name, true);
-            headers.put(name.toLowerCase(), headers, value);
+        Enumeration<String> requestHeaders = request.getHeaderNames();
+        while (requestHeaders.hasMoreElements()) {
+            String value = request.getHeader(requestHeaders.nextElement());
+            headers.put(requestHeaders.nextElement().toLowerCase(), headers, value);
         }
+
         this.put("headers", this, headers);
 
         // create jsgi object
         Scriptable jsgiObject = cx.newObject(scope);
         int readonly = ScriptableObject.PERMANENT | ScriptableObject.READONLY;
-        Scriptable version = cx.newArray(scope, new Object[] {Integer.valueOf(0), Integer.valueOf(3)});
+        Scriptable version =
+                cx.newArray(scope, new Object[] {Integer.valueOf(0), Integer.valueOf(3)});
         ScriptableObject.defineProperty(jsgiObject, "version", version, readonly);
         ScriptableObject.defineProperty(jsgiObject, "multithread", Boolean.TRUE, readonly);
         ScriptableObject.defineProperty(jsgiObject, "multiprocess", Boolean.FALSE, readonly);
@@ -89,12 +92,10 @@ public class JsgiRequest extends ScriptableObject {
         env.put("servletRequest", env, Context.javaToJS(request, scope));
         env.put("servletResponse", env, Context.javaToJS(response, scope));
         this.put("env", this, env);
-        
     }
 
     @Override
     public String getClassName() {
         return "JsgiRequest";
     }
-
 }

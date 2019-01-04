@@ -5,16 +5,11 @@
  */
 package org.geoserver.test.onlineTest;
 
-
 import org.geoserver.test.onlineTest.setup.WfsOnlineTestMockData;
 import org.geoserver.test.onlineTest.setup.WfsOnlineTestOracleSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
-/**
- * 
- * @author Victor Tey (CSIRO Earth Science and Resource Engineering)
- *
- */
+/** @author Victor Tey (CSIRO Earth Science and Resource Engineering) */
 public class WfsOnlineOracleTest extends WfsOnlineTest {
 
     public WfsOnlineOracleTest() throws Exception {
@@ -30,5 +25,4 @@ public class WfsOnlineOracleTest extends WfsOnlineTest {
     public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
         return new WfsOnlineTestOracleSetup();
     }
-    
 }

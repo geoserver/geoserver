@@ -7,15 +7,14 @@ package org.geoserver.rest.util;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 
 /**
- * Abstract implementation of the {@link RESTUploadPathMapper} interface which does not remap the input root and file path. All the various
- * {@link RESTUploadPathMapper} implementations should extend this base class.
- * 
+ * Abstract implementation of the {@link RESTUploadPathMapper} interface which does not remap the
+ * input root and file path. All the various {@link RESTUploadPathMapper} implementations should
+ * extend this base class.
+ *
  * @author Nicola Lagomarsini Geosolutions S.A.S.
- * 
  */
 public abstract class RESTUploadPathMapperImpl implements RESTUploadPathMapper {
 
@@ -26,15 +25,17 @@ public abstract class RESTUploadPathMapperImpl implements RESTUploadPathMapper {
         this.catalog = catalog;
     }
 
-    public void mapStorePath(StringBuilder rootDir, String workspace, String store,
-            Map<String, String> storeParams) throws IOException {
-        return;
-    }
+    public void mapStorePath(
+            StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
+            throws IOException {}
 
-    public void mapItemPath(String workspace, String store,
-            Map<String, String> storeParams, StringBuilder itemPath, String itemName) throws IOException {
-        return;
-    }
+    public void mapItemPath(
+            String workspace,
+            String store,
+            Map<String, String> storeParams,
+            StringBuilder itemPath,
+            String itemName)
+            throws IOException {}
 
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;

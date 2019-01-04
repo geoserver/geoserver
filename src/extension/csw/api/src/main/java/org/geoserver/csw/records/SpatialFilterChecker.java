@@ -25,89 +25,91 @@ import org.opengis.filter.spatial.Touches;
 import org.opengis.filter.spatial.Within;
 
 /**
- * Checks if spatial filters are used against non spatial properties, if so, throws a ServiceException
- * (mandated for CSW cite compliance). Works fine for simple data models, but you might need
- * to use a custom one for more complex models (e.g., SpatialFilterChecker is known not to work with ebRIM)
- * 
+ * Checks if spatial filters are used against non spatial properties, if so, throws a
+ * ServiceException (mandated for CSW cite compliance). Works fine for simple data models, but you
+ * might need to use a custom one for more complex models (e.g., SpatialFilterChecker is known not
+ * to work with ebRIM)
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SpatialFilterChecker extends DefaultFilterVisitor {
-    
+
     FeatureType schema;
-    
+
     public SpatialFilterChecker(FeatureType schema) {
         this.schema = schema;
     }
-    
+
     private void checkBinarySpatialOperator(BinarySpatialOperator filter) {
         verifyGeometryProperty(filter.getExpression1());
         verifyGeometryProperty(filter.getExpression2());
     }
 
     private void verifyGeometryProperty(Expression expression) {
-        if(expression instanceof PropertyName) {
+        if (expression instanceof PropertyName) {
             PropertyName pn = ((PropertyName) expression);
-           
-            if (! (pn.evaluate(schema) instanceof GeometryDescriptor)) {
-                throw new ServiceException("Invalid spatial filter, property " + pn.getPropertyName() + " is not a geometry");
+
+            if (!(pn.evaluate(schema) instanceof GeometryDescriptor)) {
+                throw new ServiceException(
+                        "Invalid spatial filter, property "
+                                + pn.getPropertyName()
+                                + " is not a geometry");
             }
         }
     }
 
-    public Object visit( final BBOX filter, Object data ) {
+    public Object visit(final BBOX filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Beyond filter, Object data ) {
+    public Object visit(Beyond filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Contains filter, Object data ) {
+    public Object visit(Contains filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Crosses filter, Object data ) {
+    public Object visit(Crosses filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Disjoint filter, Object data ) {
+    public Object visit(Disjoint filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( DWithin filter, Object data ) {
+    public Object visit(DWithin filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Equals filter, Object data ) {
+    public Object visit(Equals filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Intersects filter, Object data ) {
+    public Object visit(Intersects filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Overlaps filter, Object data ) {
+    public Object visit(Overlaps filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Touches filter, Object data ) {
+    public Object visit(Touches filter, Object data) {
         checkBinarySpatialOperator(filter);
         return data;
     }
 
-    public Object visit( Within filter, Object data ) {
-        checkBinarySpatialOperator(filter);        
+    public Object visit(Within filter, Object data) {
+        checkBinarySpatialOperator(filter);
         return data;
     }
-
-
 }

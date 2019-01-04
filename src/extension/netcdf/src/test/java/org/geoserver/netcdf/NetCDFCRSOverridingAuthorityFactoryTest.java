@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -25,12 +24,15 @@ public class NetCDFCRSOverridingAuthorityFactoryTest extends GeoServerSystemTest
         File projectionFileDir = new File(testData.getDataDirectoryRoot(), "user_projections");
         if (!projectionFileDir.mkdir()) {
             FileUtils.deleteDirectory(projectionFileDir);
-            assertTrue("Unable to create projection dir: " + projectionFileDir, projectionFileDir.mkdir());
+            assertTrue(
+                    "Unable to create projection dir: " + projectionFileDir,
+                    projectionFileDir.mkdir());
         }
-        testData.copyTo(getClass().getResourceAsStream(netcdfProjectionsDefinition), 
-            "user_projections/" + netcdfProjectionsDefinition);
+        testData.copyTo(
+                getClass().getResourceAsStream(netcdfProjectionsDefinition),
+                "user_projections/" + netcdfProjectionsDefinition);
     }
-    
+
     @Test
     public void testCRSOverridingFactory() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:971801");

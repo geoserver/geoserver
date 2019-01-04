@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+    <suppress>
+        <notes><![CDATA[file name: gt-swing]]></notes>
+        <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
+        <cve>CVE-2015-6737</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-coverage]]></notes>
+        <gav regex="true">^org\.geotools:gt-coverage:.*$</gav>
+        <cve>CVE-2005-0406</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: imageio-ext-arcgrid-1.1.24.jar]]></notes>
+        <gav regex="true">^it\.geosolutions\.imageio-ext:imageio-ext-arcgrid:.*$</gav>
+        <cpe>cpe:/a:arc:arc</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gs-arcsde.jar]]></notes>
+        <gav regex="true">^org\.geoserver\.extension:gs-arcsde:.*$</gav>
+        <cpe>cpe:/a:arc:arc</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-jdbc-mysql.jar]]></notes>
+        <gav regex="true">^org\.geotools\.jdbc:gt-jdbc-mysql:.*$</gav>
+        <cpe>cpe:/a:mysql:mysql</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gs-mysql.jar]]></notes>
+        <gav regex="true">^org\.geoserver\.extension:gs-mysql:.*$</gav>
+        <cpe>cpe:/a:mysql:mysql</cpe>
+        <cpe>cpe:/a:mysql:mysql_server</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-mongodb.jar]]></notes>
+        <gav regex="true">^org\.geotools:gt-mongodb:.*$</gav>
+        <cpe>cpe:/a:mongodb:mongodb</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gs-mongodb.jar]]></notes>
+        <gav regex="true">^org\.geoserver\.extension:gs-mongodb:.*$</gav>
+        <cpe>cpe:/a:mongodb:mongodb</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: imageio-ext-gdalarcbinarygrid.jar]]></notes>
+        <gav regex="true">^it\.geosolutions\.imageio-ext:imageio-ext-gdalarcbinarygrid:.*$</gav>
+        <cpe>cpe:/a:arc:arc</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-swing.jar]]></notes>
+        <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
+        <cpe>cpe:/a:widgets_project:widgets</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-app-schema-resolver.jar]]></notes>
+        <gav regex="true">^org\.geotools:gt-app-schema-resolver:.*$</gav>
+        <cve>CVE-2018-13661</cve>
+    </suppress>
+</suppressions>

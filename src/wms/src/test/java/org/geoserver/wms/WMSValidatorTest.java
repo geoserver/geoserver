@@ -6,7 +6,6 @@ package org.geoserver.wms;
 
 import java.io.IOException;
 import java.util.Arrays;
-
 import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -18,39 +17,44 @@ import org.geoserver.data.test.MockCreator;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
-
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 
 public class WMSValidatorTest extends GeoServerMockTestSupport {
 
     @Override
     protected MockTestData createTestData() throws Exception {
         MockTestData td = new MockTestData();
-        td.setMockCreator(new MockCreator() {
-           
-            @Override
-            public void onResource(String name, ResourceInfo r, StoreInfo s, MockCatalogBuilder b) {
-                if(name.equals("Buildings")) {
-                    FeatureTypeInfo info = (FeatureTypeInfo) r;
-                    AttributeTypeInfoImpl geom1 = new AttributeTypeInfoImpl();
-                    geom1.setName("geom");
-                    EasyMock.expect(info.getAttributes()).andReturn(Arrays.asList(geom1)).anyTimes();
-                    AttributeTypeInfoImpl geom2 = new AttributeTypeInfoImpl();
-                    geom2.setName("geom");
-                    geom2.setBinding(Polygon.class);
-                    try {
-                        EasyMock.expect(info.attributes()).andReturn(Arrays.asList(geom2)).anyTimes();
-                    } catch (IOException e) {
-                        // will not happen
+        td.setMockCreator(
+                new MockCreator() {
+
+                    @Override
+                    public void onResource(
+                            String name, ResourceInfo r, StoreInfo s, MockCatalogBuilder b) {
+                        if (name.equals("Buildings")) {
+                            FeatureTypeInfo info = (FeatureTypeInfo) r;
+                            AttributeTypeInfoImpl geom1 = new AttributeTypeInfoImpl();
+                            geom1.setName("geom");
+                            EasyMock.expect(info.getAttributes())
+                                    .andReturn(Arrays.asList(geom1))
+                                    .anyTimes();
+                            AttributeTypeInfoImpl geom2 = new AttributeTypeInfoImpl();
+                            geom2.setName("geom");
+                            geom2.setBinding(Polygon.class);
+                            try {
+                                EasyMock.expect(info.attributes())
+                                        .andReturn(Arrays.asList(geom2))
+                                        .anyTimes();
+                            } catch (IOException e) {
+                                // will not happen
+                            }
+                        }
+                        super.onResource(name, r, s, b);
                     }
-                }
-                super.onResource(name, r, s, b);
-            }
-        });
-        
+                });
+
         return td;
     }
-    
+
     @Test
     public void testGeometryCheckLegacyDataDir() {
         // used to NPE

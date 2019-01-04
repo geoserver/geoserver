@@ -6,38 +6,27 @@
 package org.geoserver.wfs.xml;
 
 import java.io.IOException;
-
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.WFSInfo;
 
-
 /**
  * An xml schema describing a wfs feature type.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public abstract class FeatureTypeSchema {
-    /**
-     * The feature type metadata object.
-     */
+    /** The feature type metadata object. */
     protected FeatureTypeInfo featureType;
 
-    /**
-     * The xsd schema builder.
-     */
+    /** The xsd schema builder. */
     protected FeatureTypeSchemaBuilder builder;
 
-    /**
-     * The catalog
-     */
+    /** The catalog */
     protected Catalog catalog;
 
-    /**
-     * WFS configuration
-     */
+    /** WFS configuration */
     protected WFSInfo wfs;
 
     protected FeatureTypeSchema(FeatureTypeInfo featureType, WFSInfo wfs, Catalog catalog) {
@@ -46,22 +35,19 @@ public abstract class FeatureTypeSchema {
         this.wfs = wfs;
     }
 
-    /**
-     * @return The feautre type info.
-     */
+    /** @return The feautre type info. */
     FeatureTypeInfo getFeatureType() {
         return featureType;
     }
 
-    /**
-     * @return The {@link XSDSchema} representation of the schema.
-     */
+    /** @return The {@link XSDSchema} representation of the schema. */
     public XSDSchema schema(String baseUrl) throws IOException {
-        return builder.build(new FeatureTypeInfo[] { featureType }, baseUrl);
+        return builder.build(new FeatureTypeInfo[] {featureType}, baseUrl);
     }
 
     /**
      * Converts the schema to a gml2 schema.
+     *
      * @param baseUrl is the prefix-base to use for self-referencing urls.
      */
     public FeatureTypeSchema toGML2() {
@@ -72,9 +58,7 @@ public abstract class FeatureTypeSchema {
         return new GML2(featureType, wfs, catalog);
     }
 
-    /**
-     * Converts the schema to a gml3 schema.
-     */
+    /** Converts the schema to a gml3 schema. */
     public FeatureTypeSchema toGML3() {
         if (this instanceof GML3) {
             return this;

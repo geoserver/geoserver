@@ -8,19 +8,15 @@ package org.geoserver.test;
 
 /**
  * Mock data for testing validation with GeoServer.
- * 
- * 
- * 
+ *
  * @author Victor Tey, CSIRO Exploration and Mining
  */
 public class GUChainNoIDMFTestMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "GeologicUnit", "GUInLineNoIDMF.xml", "GeologicUnit.properties");
+        addFeatureType(
+                GSML_PREFIX, "GeologicUnit", "GUInLineNoIDMF.xml", "GeologicUnit.properties");
     }
-
 }

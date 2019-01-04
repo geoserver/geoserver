@@ -4,19 +4,6 @@
  */
 package org.geoserver.params.extractor;
 
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceStore;
-import org.geotools.util.logging.Logging;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -28,13 +15,25 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.util.logging.Logging;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public final class RulesDao {
 
     private static final Logger LOGGER = Logging.getLogger(RulesDao.class);
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private static final GeoServerDataDirectory DATA_DIRECTORY = (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
+    private static final GeoServerDataDirectory DATA_DIRECTORY =
+            (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
 
     public static String getRulesPath() {
         return "params-extractor/extraction-rules.xml";
@@ -74,7 +73,8 @@ public final class RulesDao {
         tmpRules.renameTo(rules);
     }
 
-    public static void saveOrUpdateRule(Rule rule, InputStream inputStream, OutputStream outputStream) {
+    public static void saveOrUpdateRule(
+            Rule rule, InputStream inputStream, OutputStream outputStream) {
         try {
             List<Rule> rules = getRules(inputStream);
             boolean exists = false;
@@ -102,12 +102,19 @@ public final class RulesDao {
         tmpRules.renameTo(rules);
     }
 
-    public static void deleteRules(InputStream inputStream, OutputStream outputStream, String... ruleIds) {
+    public static void deleteRules(
+            InputStream inputStream, OutputStream outputStream, String... ruleIds) {
         try {
-            writeRules(getRules(inputStream).stream()
-                    .filter(rule -> !Arrays.stream(ruleIds)
-                            .anyMatch(ruleId -> ruleId.equals(rule.getId())))
-                    .collect(Collectors.toList()), outputStream);
+            writeRules(
+                    getRules(inputStream)
+                            .stream()
+                            .filter(
+                                    rule ->
+                                            !Arrays.stream(ruleIds)
+                                                    .anyMatch(
+                                                            ruleId -> ruleId.equals(rule.getId())))
+                            .collect(Collectors.toList()),
+                    outputStream);
         } finally {
             Utils.closeQuietly(inputStream);
             Utils.closeQuietly(outputStream);
@@ -116,8 +123,9 @@ public final class RulesDao {
 
     private static void writeRules(List<Rule> rules, OutputStream outputStream) {
         try {
-            XMLStreamWriter output = XMLOutputFactory.newInstance().
-                    createXMLStreamWriter(new OutputStreamWriter(outputStream, "utf-8"));
+            XMLStreamWriter output =
+                    XMLOutputFactory.newInstance()
+                            .createXMLStreamWriter(new OutputStreamWriter(outputStream, "utf-8"));
             output.writeStartDocument();
             output.writeCharacters(NEW_LINE);
             output.writeStartElement("Rules");
@@ -152,7 +160,8 @@ public final class RulesDao {
         }
     }
 
-    private static <T> void writeAttribute(String name, T value, XMLStreamWriter output) throws Exception {
+    private static <T> void writeAttribute(String name, T value, XMLStreamWriter output)
+            throws Exception {
         if (value != null) {
             output.writeAttribute(name, value.toString());
         }
@@ -163,15 +172,18 @@ public final class RulesDao {
         final List<Rule> rules = new ArrayList<>();
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+                throws SAXException {
             if (!qName.equalsIgnoreCase("rule")) {
                 return;
             }
             Utils.debug(LOGGER, "Start parsing rule.");
             RuleBuilder ruleBuilder = new RuleBuilder();
             getAttribute("id", attributes, ruleBuilder::withId);
-            getAttribute("activated", attributes, compose(Boolean::valueOf, ruleBuilder::withActivated));
-            getAttribute("position", attributes, compose(Integer::valueOf, ruleBuilder::withPosition));
+            getAttribute(
+                    "activated", attributes, compose(Boolean::valueOf, ruleBuilder::withActivated));
+            getAttribute(
+                    "position", attributes, compose(Integer::valueOf, ruleBuilder::withPosition));
             getAttribute("match", attributes, ruleBuilder::withMatch);
             getAttribute("activation", attributes, ruleBuilder::withActivation);
             getAttribute("parameter", attributes, ruleBuilder::withParameter);
@@ -182,11 +194,13 @@ public final class RulesDao {
             Utils.debug(LOGGER, "End parsing rule.");
         }
 
-        private static <T> Consumer<String> compose(Function<String, T> convert, Consumer<T> setter) {
+        private static <T> Consumer<String> compose(
+                Function<String, T> convert, Consumer<T> setter) {
             return (value) -> setter.accept(convert.apply(value));
         }
 
-        private void getAttribute(String attributeName, Attributes attributes, Consumer<String> setter) {
+        private void getAttribute(
+                String attributeName, Attributes attributes, Consumer<String> setter) {
             String attributeValue = attributes.getValue(attributeName);
             if (attributeValue == null) {
                 Utils.debug(LOGGER, "Rule attribute %s is NULL.", attributeName);
@@ -196,8 +210,11 @@ public final class RulesDao {
             try {
                 setter.accept(attributeValue);
             } catch (Exception exception) {
-                throw Utils.exception(exception,
-                        "Error setting attribute '%s' with value '%s'.", attributeName, attributeValue);
+                throw Utils.exception(
+                        exception,
+                        "Error setting attribute '%s' with value '%s'.",
+                        attributeName,
+                        attributeValue);
             }
         }
     }

@@ -1,0 +1,384 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer WMTS Stores
+  description: A WMTS store is a store whose source is a remote WMTS. Also known as "Cascading WMTS".
+
+paths:
+
+  /workspaces/{workspace}/wmtsstores:
+
+    get:
+      operationId: getWMTSStores
+      summary: Get a list of WMTS stores
+      description: Displays a list of all WMTS stores on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/rest/workspaces/{workspace}/wmtsstores.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSStoresList"
+          examples:
+            application/xml: |
+              <wmtsStores>
+                <wmtsStore>
+                  <name>altgs</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmtsstores/altgs.xml" type="application/xml"/>
+                </wmtsStore>
+              </wmtsStores>
+            
+            application/json: |
+              {"wmtsStores":
+                {"wmtsStore": [
+                  {"name":"altgs",
+                   "href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmtsstores/altgs.json"}]}}
+            
+
+    post:
+      operationId: postWMTSStores
+      summary: Add a new WMTS store
+      description: Adds a new WMTS store entry to the server.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the worskpace containing the WMTS store.
+          type: string
+        - $ref: "#/parameters/WMTSStorePost"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: URL where the newly created store can be found
+              type: string
+        401:
+          description: Unauthorized
+
+    put:
+      operationId: putWMTSStores
+      description: Invalid. Use POST for adding a new WMTS store, or PUT on /workspaces/{workspace}/wmtsstores/{wmtsstore} to edit an existing WMTS store.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteWMTSStores
+      description: Invalid. Use /workspaces/{workspace}/wmtsstores/{wmtsstore} instead.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/wmtsstores/{store}:
+
+    get:
+      operationId: getWMTSStore
+      summary: Retrieve a WMTS store in a given workspace
+      description: Displays a representation of the WMTS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmtsstores/{store}.xml" for XML). Defaults to HTML representation.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the workspace containing the WMTS store.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: quietOnNotFound
+          in: query
+          required: false
+          description: When set to true, avoids to log an Exception when the WMTS store is not present. Note that 404 status code will be returned anyway.
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMTSStoreInfo"
+          examples:
+            application/json: |
+              {"wmtsStore": {
+                "name":"altgs",
+                "type":"WMTS",
+                "enabled":true,
+                "workspace": {"name":"cite", "href":"http://localhost:8080/geoserver/rest/workspaces/cite.json"},
+                "metadata": {"entry":{"@key":"useConnectionPooling","$":"true"}},
+                "_default":false,
+                "capabilitiesURL":"http://localhost:8081/geoserver/gwc?request=GetCapabilities",
+                "maxConnections":6,
+                "readTimeout":60,
+                "connectTimeout":30,
+                "wmtsLayers":"http://localhost:8080/geoserver/rest/workspaces/cite/wmtsstores/altgs/wmtslayers.json"}}
+            
+            application/xml: |
+              <wmtsStore>
+                <name>altgs</name>
+                <type>WMTS</type>
+                <enabled>true</enabled>
+                <workspace>
+                  <name>cite</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite.xml" type="application/xml"/>
+                </workspace>
+                <metadata>
+                  <entry key="useConnectionPooling">true</entry>
+                </metadata>
+                <__default>false</__default>
+                <capabilitiesURL>http://localhost:8081/geoserver/gwc?request=GetCapabilities</capabilitiesURL>
+                <maxConnections>6</maxConnections>
+                <readTimeout>60</readTimeout>
+                <connectTimeout>30</connectTimeout>
+                <wmtsLayers>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmtsstores/altgs/wmtslayers.xml" type="application/xml"/>
+                </wmtsLayers>
+              </wmtsStore>
+            
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postWMTSStore
+      description: Invalid. Use POST on /workspaces/{workspace}/WMTSstores for adding a new WMTS store, or PUT on /workspaces/{workspace}/wmtsstores/{store} to edit/upload an existing WMTS store.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMTSStore
+      summary: Modify a single WMTS store.
+      description: Modifies a single WMTS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the workspace containing the WMTS stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - $ref: "#/parameters/WMTSStorePut"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The WMTS store was successfully updated.
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteWMTSStore
+      summary: Delete WMTS store
+      description: Deletes a WMTS store
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace containing the WMTS store.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: Name of the WMTS store
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: When set to true all resources contained in the store are also removed.
+          default: false
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+parameters:
+  WMTSStorePost:
+    name: WMTSStoreBody
+    description: |
+      WMTS store body information to upload.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmtsStore>
+          <name>remote</name>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities</capabilitiesUrl>
+        </wmtsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmtsStore": {
+            "name": "remote",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities"
+          }
+        }
+        ```
+
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMTSStoreInfo"
+  WMTSStorePut:
+    name: WMTSStoreBody
+    description: |
+      WMTS store body information to upload.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmtsStore>
+          <description>A wmts store</description>
+          <enabled>true</enabled>
+          <__default>true</__default>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities</capabilitiesUrl>
+          <user>admin</user>
+          <password>geoserver</password>
+          <maxConnections>6</maxConnections>
+          <readTimeout>60</readTimeout>
+          <connectTimeout>30</connectTimeout>
+        </wmtsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmtsStore": {
+            "description": "A wmts store",
+            "enabled": "true",
+            "_default": "true",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/gwc/service/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "user": "admin",
+            "password": "geoserver",
+            "maxConnections": "6",
+            "readTimeout": "60",
+            "connectTimeout": "30"
+          }
+        }
+        ```
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMTSStoreInfo"
+
+definitions:
+
+  WMTSStoresList:
+    title: wmtsStores
+    type: array
+    items:
+      $ref: '#/definitions/WMTSStoresListItem'
+
+  WMTSStoresListItem:
+    title: wmtsStore
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of WMTS Store
+      link:
+        type: string
+        description: URL to WMTS store representation
+
+  WMTSStoreInfo:
+    type: object
+    title: wmtsStore
+    xml:
+      name: wmtsStore
+    properties:
+      name:
+        type: string
+        description: Name of the WMTS store
+      description:
+        type: string
+        description: Description of the WMTS store
+      type:
+        type: string
+        description: Type of store. Set to WMTS.
+      enabled:
+        type: boolean
+        description: Whether the store is enabled
+      workspace:
+        type: object
+        description: Workspace containing the store
+        required: [name]
+        properties:
+          name: 
+            type: string
+            description: Name of the workspace
+          link:
+            type: string
+            description: Link to the workspace representation
+      metadata:
+        type: object
+        description: Miscellaneous configuration details about the WMTS store
+        properties:
+          entry:
+            type: object
+            properties:
+              '@key':
+                type: string
+                enum:
+                - useConnectionPooling
+                description: Set to useConnectionPooling
+              text:
+                type: boolean
+                description: Whether connection pooling is enabled
+      __default__:
+          type: boolean
+          description: Whether the store is the default store of the workspace
+      capabilitiesURL:
+        type: string
+        description: Location of the WMTS capabilities URL where the store originates
+      user:
+        type: string
+        description: User name to use when connecting to the remote WMTS
+      password:
+        type: string
+        description: Password or hash to use when connecting to the remote WMTS
+      maxConnections:
+        type: number
+        description: Maximum number of simultaneous connections to use
+      readTimeout:
+        type: string
+        description: Time in seconds before read time out
+      connectTimeout:
+        type: string
+        description: Time in seconds before connection time out
+      wmtsLayers:
+        type: array
+        items:
+          type: object
+          properties:
+            link:
+              type: string
+              description: Link to the WMTS layers representation

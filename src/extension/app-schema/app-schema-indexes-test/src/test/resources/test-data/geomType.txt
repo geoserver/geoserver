@@ -1,0 +1,10 @@
+{
+  "add-field-type" : {
+ 	"name":"geometry",
+ 	"class":"solr.SpatialRecursivePrefixTreeFieldType",
+ 	"geo":"true",
+ 	"maxDistErr":"0.001",
+ 	"distErrPct":"0.025",
+ 	"distanceUnits":"kilometers",
+ 	"spatialContextFactory": "JTS" }
+}

@@ -30,21 +30,17 @@ With this setup the polygonal geometry will still be used for all spatial filter
 rendering, unless the style otherwise specifical demands for the centroid.
 
 Then, a style with scale dependencies can be setup in order to fetch only then centroids
-when fairly zoomed out, like in the following CSS example:
+when fairly zoomed out, like in the following CSS example: ::
 
-.. code-block:: css
-
-    [@scale > 50000] { 
-      geometry: [centroid]; 
+    [@scale > 50000] {
+      geometry: [centroid];
       mark: symbol(square);
     }
-    
     :mark {
       fill: red;
       size: 3;
     }​
-    
-    [@scale <= 50000] { 
+    [@scale <= 50000] {
       fill: red;
       stroke: black;
     }

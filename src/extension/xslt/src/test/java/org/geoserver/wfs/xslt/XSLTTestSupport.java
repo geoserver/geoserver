@@ -1,10 +1,13 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.xslt;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.wfs.WFSTestSupport;
 
 public class XSLTTestSupport extends WFSTestSupport {
@@ -20,8 +23,10 @@ public class XSLTTestSupport extends WFSTestSupport {
                 FileUtils.deleteQuietly(directory);
             }
             if (directory.exists()) {
-                throw new IOException("Could not remove directory " + directory.getPath()
-                        + " after repeated attempts");
+                throw new IOException(
+                        "Could not remove directory "
+                                + directory.getPath()
+                                + " after repeated attempts");
             }
         } else {
             // aaah, sanity

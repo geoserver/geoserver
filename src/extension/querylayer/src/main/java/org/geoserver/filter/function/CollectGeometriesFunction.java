@@ -6,30 +6,28 @@ package org.geoserver.filter.function;
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.geometry.jts.GeometryCollector;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
 /**
  * Collects all geometries provided in a list into a single {@link GeometryCollection} object (a
  * type specific subclass of it if possible)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class CollectGeometriesFunction extends FunctionImpl {
 
     long maxCoordinates;
 
-    public CollectGeometriesFunction(Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
+    public CollectGeometriesFunction(
+            Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
         functionName = new FunctionNameImpl(name, args != null ? args.size() : -1);
         setName(name.getLocalPart());
         setFallbackValue(fallback);
@@ -37,8 +35,9 @@ public class CollectGeometriesFunction extends FunctionImpl {
         this.maxCoordinates = maxCoordinates;
 
         if (args.size() != 1) {
-            throw new IllegalArgumentException("CollectGeometries function requires a single"
-                    + " argument, a collection of geometries");
+            throw new IllegalArgumentException(
+                    "CollectGeometries function requires a single"
+                            + " argument, a collection of geometries");
         }
     }
 
@@ -53,12 +52,11 @@ public class CollectGeometriesFunction extends FunctionImpl {
         GeometryCollector collector = new GeometryCollector();
         collector.setFactory(null);
         collector.setMaxCoordinates(maxCoordinates);
-        for (Iterator it = geometries.iterator(); it.hasNext();) {
+        for (Iterator it = geometries.iterator(); it.hasNext(); ) {
             Geometry geometry = (Geometry) it.next();
             collector.add(geometry);
         }
 
         return collector.collect();
     }
-
 }

@@ -9,84 +9,55 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMock;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.restlet.Restlet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
 
     DispatcherCallback callback;
-    
+
     @Before
     public void prepareCallback() throws Exception {
         callback = EasyMock.createMock(DispatcherCallback.class);
-        applicationContext.getBeanFactory().addBeanPostProcessor(new BeanPostProcessor() {
-            
-            public Object postProcessBeforeInitialization(Object bean, String beanName)
-                    throws BeansException {
-                if ("testCallback".equals(beanName)) {
-                    return callback;
-                }
-                return bean;
-            }
-            
-            public Object postProcessAfterInitialization(Object bean, String beanName)
-                    throws BeansException {
-                return bean;
-            }
-        });
-        applicationContext.getBeanFactory().destroySingletons();
-        applicationContext.getBeanFactory().preInstantiateSingletons();
-        dispatcher = buildDispatcher();
+        GeoServerExtensionsHelper.init(applicationContext);
+        GeoServerExtensionsHelper.singleton("testCallback", callback, DispatcherCallback.class);
     }
-    
+
     @Test
     public void testCallback() throws Exception {
-        callback.init((Request)anyObject(), (Response)anyObject());
+        callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched((Request)anyObject(), (Response)anyObject(), (Restlet)anyObject());
+        callback.dispatched(anyObject(), anyObject(), anyObject());
         expectLastCall();
-        callback.finished((Request)anyObject(), (Response)anyObject());
+        callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
-        
-        getAsServletResponse("/rest/index.html");
+
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/index.html");
+        assertEquals(200, response.getStatus());
         verify(callback);
     }
-    
+
     @Test
     public void testCallbackException() throws Exception {
-        
-        callback.init((Request)anyObject(), (Response)anyObject());
+        callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched((Request)anyObject(), (Response)anyObject(), (Restlet)anyObject());
+        callback.dispatched(anyObject(), anyObject(), anyObject());
         expectLastCall();
-        callback.exception((Request)anyObject(), (Response)anyObject(), (Exception)anyObject());
+        callback.exception(anyObject(), anyObject(), anyObject());
         expectLastCall();
-        callback.finished((Request)anyObject(), (Response)anyObject());
+        callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
-        
-        getAsServletResponse("/rest/exception?code=400&message=error");
+
+        getAsServletResponse(RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
         verify(callback);
-    }
-
-    static class TestCallback implements DispatcherCallback {
-
-        public void init(Request request, Response response) {}
-
-        public void dispatched(Request request, Response response, Restlet restlet) {}
-
-        public void exception(Request request, Response response, Exception error) {}
-
-        public void finished(Request request, Response response) {}
-
     }
 }

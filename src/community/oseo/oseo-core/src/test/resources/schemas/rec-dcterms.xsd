@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema id="dcmi-terms" targetNamespace="http://purl.org/dc/terms/"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xmlns:dct="http://purl.org/dc/terms/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/" elementFormDefault="qualified"
+   attributeFormDefault="unqualified" version="2.0.2.2">
+   <xs:annotation>
+      <xs:documentation xml:lang="en"
+         source="http://dublincore.org/documents/dcmi-terms/">This schema declares additional DCMI elements and element refinements 
+    in the "http://purl.org/dc/terms/" namespace.</xs:documentation>
+   </xs:annotation>
+   <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="http://schemas.opengis.net/csw/2.0.2/rec-dcmes.xsd"/>
+   <xs:element name="abstract" type="dc:SimpleLiteral"
+      substitutionGroup="dc:description"/>
+   <xs:element name="accessRights" type="dc:SimpleLiteral"
+      substitutionGroup="dc:rights"/>
+   <xs:element name="alternative" type="dc:SimpleLiteral"
+      substitutionGroup="dc:title"/>
+   <xs:element name="audience" type="dc:SimpleLiteral"
+      substitutionGroup="dc:DC-element"/>
+   <xs:element name="available" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="bibliographicCitation" type="dc:SimpleLiteral"
+      substitutionGroup="dc:identifier"/>
+   <xs:element name="conformsTo" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="created" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="dateAccepted" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="dateCopyrighted" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="dateSubmitted" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="educationLevel" type="dc:SimpleLiteral"
+      substitutionGroup="dct:audience"/>
+   <xs:element name="extent" type="dc:SimpleLiteral"
+      substitutionGroup="dc:format"/>
+   <xs:element name="hasFormat" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="hasPart" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="hasVersion" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="isFormatOf" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="isPartOf" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="isReferencedBy" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="isReplacedBy" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="isRequiredBy" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="issued" type="dc:SimpleLiteral" substitutionGroup="dc:date"/>
+   <xs:element name="isVersionOf" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="license" type="dc:SimpleLiteral"
+      substitutionGroup="dc:rights"/>
+   <xs:element name="mediator" type="dc:SimpleLiteral"
+      substitutionGroup="dct:audience"/>
+   <xs:element name="medium" type="dc:SimpleLiteral"
+      substitutionGroup="dc:format"/>
+   <xs:element name="modified" type="dc:SimpleLiteral"
+      substitutionGroup="dc:date"/>
+   <xs:element name="provenance" type="dc:SimpleLiteral"
+      substitutionGroup="dc:DC-element"/>
+   <xs:element name="references" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="replaces" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="requires" type="dc:SimpleLiteral"
+      substitutionGroup="dc:relation"/>
+   <xs:element name="rightsHolder" type="dc:SimpleLiteral"
+      substitutionGroup="dc:DC-element"/>
+   <xs:element name="spatial" type="dc:SimpleLiteral"
+      substitutionGroup="dc:coverage"/>
+   <xs:element name="tableOfContents" type="dc:SimpleLiteral"
+      substitutionGroup="dc:description"/>
+   <xs:element name="temporal" type="dc:SimpleLiteral"
+      substitutionGroup="dc:coverage"/>
+   <xs:element name="valid" type="dc:SimpleLiteral" substitutionGroup="dc:date"/>
+   <xs:group name="DCMI-terms">
+      <xs:annotation>
+         <xs:documentation xml:lang="en">This group is included as a convenience for schema authors who need 
+      to refer to the complete set of DCMI metadata terms.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="dc:DC-element"/>
+         </xs:choice>
+      </xs:sequence>
+   </xs:group>
+</xs:schema>

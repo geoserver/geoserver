@@ -5,35 +5,46 @@
  */
 package org.geoserver.security.password;
 
-import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
+import java.util.Objects;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Password encoder which encodes nothing
- * 
- * @author christian
  *
+ * @author christian
  */
 public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPasswordEncoder {
 
     @Override
     protected PasswordEncoder createStringEncoder() {
-        return new PlaintextPasswordEncoder();
+        return new PasswordEncoder() {
+
+            @Override
+            public boolean matches(CharSequence encPass, String rawPass)
+                    throws DataAccessException {
+                return Objects.equals(encPass.toString(), encode(rawPass));
+            }
+
+            @Override
+            public String encode(CharSequence rawPass) throws DataAccessException {
+                return rawPass.toString();
+            }
+        };
     }
 
     @Override
     protected CharArrayPasswordEncoder createCharEncoder() {
         return new CharArrayPasswordEncoder() {
-            PlaintextPasswordEncoder encoder = new PlaintextPasswordEncoder();
-            
+
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return encoder.isPasswordValid(encPass, new String(rawPass), salt);
+                return Objects.equals(encPass, encodePassword(rawPass, salt));
             }
-            
+
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
-                return encoder.encodePassword(new String(rawPass), salt);
+                return new String(rawPass);
             }
         };
     }
@@ -42,7 +53,7 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
     public PasswordEncodingType getEncodingType() {
         return PasswordEncodingType.PLAIN;
     }
-    
+
     public String decode(String encPass) throws UnsupportedOperationException {
         return removePrefix(encPass);
     }
@@ -50,5 +61,10 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
     @Override
     public char[] decodeToCharArray(String encPass) throws UnsupportedOperationException {
         return decode(encPass).toCharArray();
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return doEncodePassword(rawPassword.toString());
     }
 }

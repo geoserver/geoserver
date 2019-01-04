@@ -5,35 +5,34 @@
  */
 package org.geoserver.kml.decorator;
 
+import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.atom.Link;
 import java.io.IOException;
 import java.util.logging.Logger;
-
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.WMSInfo;
 import org.geotools.util.logging.Logging;
 
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.atom.Link;
-
 /**
- * Adds an atom link used by the GeoSearch extension 
- * TODO: move this to the GeoSearch module
- * 
+ * Adds an atom link used by the GeoSearch extension TODO: move this to the GeoSearch module
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
-            KmlEncodingContext context) {
+    public KmlDecorator getDecorator(
+            Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
-        if(!(context.getService() instanceof WMSInfo)) {
+        if (!(context.getService() instanceof WMSInfo)) {
             return null;
         }
-        
+
         String selfLinks = (String) context.getRequest().getFormatOptions().get("selfLinks");
-        if (selfLinks != null && selfLinks.equalsIgnoreCase("true") && Placemark.class.isAssignableFrom(featureClass)) {
+        if (selfLinks != null
+                && selfLinks.equalsIgnoreCase("true")
+                && Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkSelfLinkDecorator();
         } else {
             return null;
@@ -46,7 +45,7 @@ public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
             Placemark pm = (Placemark) feature;
-            
+
             String link = "";
 
             try {
@@ -60,10 +59,8 @@ public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
 
             Link al = pm.createAndSetAtomLink(link);
             al.setRel("self");
-            
+
             return pm;
         }
-
     }
-
 }

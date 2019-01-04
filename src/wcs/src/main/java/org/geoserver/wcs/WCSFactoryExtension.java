@@ -17,5 +17,4 @@ public class WCSFactoryExtension extends ServiceFactoryExtension<WCSInfo> {
     public <T> T create(Class<T> clazz) {
         return (T) new WCSInfoImpl();
     }
-
 }

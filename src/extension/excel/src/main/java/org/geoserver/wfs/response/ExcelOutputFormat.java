@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -32,9 +31,9 @@ import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Abstract base class for Excel WFS output format
- * 
+ *
  * @author Sebastian Benthall, OpenGeo, seb@opengeo.org and Shane StClair, Axiom Consulting,
- *         shane@axiomalaska.com
+ *     shane@axiomalaska.com
  */
 public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
     private static Logger log = Logger.getLogger(ExcelOutputFormat.class);
@@ -57,9 +56,7 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
 
     protected abstract Workbook getNewWorkbook();
 
-    /**
-     * @return mime type;
-     */
+    /** @return mime type; */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return mimeType;
@@ -78,19 +75,18 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
         return DISPOSITION_ATTACH;
     }
 
-    /**
-     * @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation)
-     */
+    /** @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation) */
     @Override
-    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
-        Operation getFeature) throws IOException ,ServiceException {
-    
+    protected void write(
+            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+            throws IOException, ServiceException {
+
         // Create the workbook
         Workbook wb = getNewWorkbook();
         CreationHelper helper = wb.getCreationHelper();
         ExcelCellStyles styles = new ExcelCellStyles(wb);
 
-        for (Iterator it = featureCollection.getFeature().iterator(); it.hasNext();) {
+        for (Iterator it = featureCollection.getFeature().iterator(); it.hasNext(); ) {
             SimpleFeatureCollection fc = (SimpleFeatureCollection) it.next();
 
             // create the sheet for this feature collection
@@ -125,8 +121,14 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                     if (r == (rowLimit - 1) && i.hasNext()) {
                         // there are more features than rows available in this
                         // Excel format. write out a warning line and break
-                        RichTextString rowWarning = helper.createRichTextString(TRUNCATE_WARNING
-                                + ": ROWS " + r + " - " + fc.size() + " NOT SHOWN");
+                        RichTextString rowWarning =
+                                helper.createRichTextString(
+                                        TRUNCATE_WARNING
+                                                + ": ROWS "
+                                                + r
+                                                + " - "
+                                                + fc.size()
+                                                + " NOT SHOWN");
                         cell.setCellValue(rowWarning);
                         cell.setCellStyle(styles.getWarningStyle());
                         break;
@@ -155,14 +157,17 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                                 // if string length > excel cell limit, truncate it and warn the
                                 // user, otherwise excel workbook will be corrupted
                                 if (stringVal.length() > CELL_CHAR_LIMIT) {
-                                    stringVal = TRUNCATE_WARNING
-                                            + " "
-                                            + stringVal.substring(0, CELL_CHAR_LIMIT
-                                                    - TRUNCATE_WARNING.length() - 1);
+                                    stringVal =
+                                            TRUNCATE_WARNING
+                                                    + " "
+                                                    + stringVal.substring(
+                                                            0,
+                                                            CELL_CHAR_LIMIT
+                                                                    - TRUNCATE_WARNING.length()
+                                                                    - 1);
                                     cell.setCellStyle(styles.getWarningStyle());
                                 }
                                 cell.setCellValue(helper.createRichTextString(stringVal));
-
                             }
                         }
                     }

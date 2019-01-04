@@ -6,19 +6,18 @@
 package org.geoserver.wms.animate;
 
 import java.util.Map;
-
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMapService;
 
 /**
- * The Frame Catalog initializes the list of frames to be produced.<br/>
- * The catalog takes care of splitting the "avalues" parameter and assigning
- * values to each frame.<br/>
- * Notice that the catalog is not delegated to the frame production, it just
- * handles the frames metadata.
- * 
+ * The Frame Catalog initializes the list of frames to be produced.<br>
+ * The catalog takes care of splitting the "avalues" parameter and assigning values to each frame.
+ * <br>
+ * Notice that the catalog is not delegated to the frame production, it just handles the frames
+ * metadata.
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S., alessio.fabiani@geo-solutions.it
  * @author Andrea Aime, GeoSolutions S.A.S., andrea.aime@geo-solutions.it
  */
@@ -34,17 +33,14 @@ public class FrameCatalog {
 
     private WMS wmsConfiguration;
 
-    /**
-     * Default Constructor.
-     */
-    private FrameCatalog() {
-    }
+    /** Default Constructor. */
+    private FrameCatalog() {}
 
     /**
      * Frame Catalog Constructor.
-     * 
+     *
      * @param request
-     * @param wmsConfiguration 
+     * @param wmsConfiguration
      */
     public FrameCatalog(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         this();
@@ -65,7 +61,7 @@ public class FrameCatalog {
             throw new RuntimeException(
                     "Missing \"animator\" mandatory params \"aparam\" and \"avalues\".");
         }
-        
+
         if (this.values.length > this.getWmsConfiguration().getMaxAllowedFrames()) {
             dispose();
             throw new RuntimeException(
@@ -73,54 +69,44 @@ public class FrameCatalog {
         }
     }
 
-    /**
-     * @return the parameter
-     */
+    /** @return the parameter */
     public String getParameter() {
         return parameter;
     }
 
-    /**
-     * @return the values
-     */
+    /** @return the values */
     public String[] getValues() {
         return values;
     }
 
-    /**
-     * @return the getMapRequest
-     */
+    /** @return the getMapRequest */
     public GetMapRequest getGetMapRequest() {
         return getMapRequest;
     }
 
-    /**
-     * @return the wms
-     */
+    /** @return the wms */
     public WebMapService getWms() {
         return wms;
     }
 
-    /**
-     * @return the wmsConfiguration
-     */
+    /** @return the wmsConfiguration */
     public WMS getWmsConfiguration() {
         return wmsConfiguration;
     }
 
     /**
      * Creates Frames visitors. Still not producing any image here.
+     *
      * @param visitor
      */
     void getFrames(FrameCatalogVisitor visitor) {
         for (String value : values) {
-            visitor.visit(this.getMapRequest, this.wms, this.wmsConfiguration, this.parameter, value);
+            visitor.visit(
+                    this.getMapRequest, this.wms, this.wmsConfiguration, this.parameter, value);
         }
     }
 
-    /**
-     * Dispose the catalog, removing all stored informations.
-     */
+    /** Dispose the catalog, removing all stored informations. */
     void dispose() {
         this.parameter = null;
         this.values = null;

@@ -8,10 +8,12 @@ package org.geoserver.wfs.web;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -46,7 +48,6 @@ import org.geoserver.wfs.response.ShapeZipOutputFormat;
 @SuppressWarnings("serial")
 public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
-    
     public WFSAdminPage() {
         super();
     }
@@ -62,108 +63,186 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     protected Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;
     }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
         // max features
-        form.add( new TextField<Integer>( "maxFeatures" ).add(RangeValidator.minimum(0)) );
-        form.add( new TextField<Integer>("maxNumberOfFeaturesForPreview") );
-        form.add( new CheckBox("featureBounding") );
-        form.add( new CheckBox("hitsIgnoreMaxFeatures"));
-        
-        //service level
-        RadioGroup sl = new RadioGroup( "serviceLevel" );
-        form.add( sl );
-        sl.add( new Radio( "basic", new Model( WFSInfo.ServiceLevel.BASIC ) ) );
-        sl.add( new Radio( "transactional", new Model( WFSInfo.ServiceLevel.TRANSACTIONAL  ) ) );
-        sl.add( new Radio( "complete", new Model( WFSInfo.ServiceLevel.COMPLETE ) ) );
-        
-        IModel gml2Model = new LoadableDetachableModel(){
-            public Object load(){
-                return ((WFSInfo)info.getObject()).getGML().get(WFSInfo.Version.V_10);
-            }
-        };
+        form.add(new TextField<Integer>("maxFeatures").add(RangeValidator.minimum(0)));
+        form.add(new TextField<Integer>("maxNumberOfFeaturesForPreview"));
+        form.add(new CheckBox("featureBounding"));
+        form.add(new CheckBox("hitsIgnoreMaxFeatures"));
 
-        IModel gml3Model = new LoadableDetachableModel(){
-            public Object load(){
-                return ((WFSInfo)info.getObject()).getGML().get(WFSInfo.Version.V_11);
-            }
-        };
+        // service level
+        RadioGroup sl = new RadioGroup("serviceLevel");
+        form.add(sl);
+        sl.add(new Radio("basic", new Model(WFSInfo.ServiceLevel.BASIC)));
+        sl.add(new Radio("transactional", new Model(WFSInfo.ServiceLevel.TRANSACTIONAL)));
+        sl.add(new Radio("complete", new Model(WFSInfo.ServiceLevel.COMPLETE)));
 
-        IModel gml32Model = new LoadableDetachableModel() {
-            @Override
-            protected Object load() {
-                return ((WFSInfo)info.getObject()).getGML().get(WFSInfo.Version.V_20);
-            }
-        };
+        IModel gml2Model =
+                new LoadableDetachableModel() {
+                    public Object load() {
+                        return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
+                    }
+                };
+
+        IModel gml3Model =
+                new LoadableDetachableModel() {
+                    public Object load() {
+                        return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
+                    }
+                };
+
+        IModel gml32Model =
+                new LoadableDetachableModel() {
+                    @Override
+                    protected Object load() {
+                        return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_20);
+                    }
+                };
 
         form.add(new GMLPanel("gml2", gml2Model));
         form.add(new GMLPanel("gml3", gml3Model));
-        form.add(new GMLPanel("gml32", gml32Model));
+        // add GML 3.2. configuration panel with alternative MIME types
+        form.add(
+                new GMLPanel(
+                        "gml32",
+                        gml32Model,
+                        "application/gml+xml; version=3.2",
+                        "text/xml; subtype=gml/3.2",
+                        "text/xml"));
 
-        form.add( new CheckBox("canonicalSchemaLocation") );
-        
+        form.add(new CheckBox("canonicalSchemaLocation"));
+
         // Encode response with one featureMembers element or multiple featureMember elements
         RadioGroup eo = new RadioGroup("encodeFeatureMember");
         form.add(eo);
         eo.add(new Radio("featureMembers", new Model(Boolean.FALSE)));
         eo.add(new Radio("featureMember", new Model(Boolean.TRUE)));
-        
+
         PropertyModel metadataModel = new PropertyModel(info, "metadata");
-        IModel<Boolean> prjFormatModel = new MapModel(metadataModel,
-                ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
+        IModel<Boolean> prjFormatModel =
+                new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
         CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
         form.add(defaultPrjFormat);
 
         try {
             // This is a temporary meassure until we fully implement ESRI WKT support in GeoTools.
             // See discussion in GEOS-4503
-            GeoServerResourceLoader resourceLoader = GeoServerExtensions
-                    .bean(GeoServerResourceLoader.class);
-            Resource esriProjs = resourceLoader.get(Paths.path("user_projections", "esri.properties"));
+            GeoServerResourceLoader resourceLoader =
+                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource esriProjs =
+                    resourceLoader.get(Paths.path("user_projections", "esri.properties"));
             if (esriProjs.getType() != Type.RESOURCE) {
                 defaultPrjFormat.setEnabled(false);
                 defaultPrjFormat.getModel().setObject(Boolean.FALSE);
-                defaultPrjFormat.add(new AttributeModifier("title", new Model(
-                        "No esri.properties file "
-                                + "found in the data directory's user_projections folder. "
-                                + "This option is not available")));
+                defaultPrjFormat.add(
+                        new AttributeModifier(
+                                "title",
+                                new Model(
+                                        "No esri.properties file "
+                                                + "found in the data directory's user_projections folder. "
+                                                + "This option is not available")));
             }
         } catch (Exception e) {
             LOGGER.log(Level.INFO, e.getMessage(), e);
         }
-        
-        // other srs list
-        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
-        form.add(srsList);
-        form.add(new AjaxLink("otherSRSHelp") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                dialog.showInfo(target, 
-                    new StringResourceModel("otherSRS", WFSAdminPage.this, null), 
-                    new StringResourceModel("otherSRS.message",WFSAdminPage.this, null));
-            }
-        });
 
+        // other srs list
+        TextArea srsList =
+                new SRSListTextArea(
+                        "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+        form.add(srsList);
+        form.add(
+                new AjaxLink("otherSRSHelp") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        dialog.showInfo(
+                                target,
+                                new StringResourceModel("otherSRS", WFSAdminPage.this, null),
+                                new StringResourceModel(
+                                        "otherSRS.message", WFSAdminPage.this, null));
+                    }
+                });
     }
-    
+
     static class GMLPanel extends Panel {
 
-        public GMLPanel(String id, IModel gmlModel) { 
+        public GMLPanel(String id, IModel gmlModel, String... mimeTypes) {
             super(id, new CompoundPropertyModel(gmlModel));
-            
-            //srsNameStyle
-            List<GMLInfo.SrsNameStyle> choices = 
-                Arrays.asList(SrsNameStyle.values());
-            DropDownChoice srsNameStyle = new DropDownChoice("srsNameStyle", choices, new EnumChoiceRenderer());
+
+            // srsNameStyle
+            List<GMLInfo.SrsNameStyle> choices = Arrays.asList(SrsNameStyle.values());
+            DropDownChoice srsNameStyle =
+                    new DropDownChoice("srsNameStyle", choices, new EnumChoiceRenderer());
             add(srsNameStyle);
-            
+
             add(new CheckBox("overrideGMLAttributes"));
+
+            // GML MIME type overriding section
+            GMLInfo gmlInfo = (GMLInfo) gmlModel.getObject();
+            boolean mimesTypesProvided = mimeTypes.length != 0;
+            boolean activated = gmlInfo.getMimeTypeToForce().isPresent();
+            // add MIME type drop down choice
+            DropDownChoice<String> mimeTypeToForce =
+                    new DropDownChoice<>(
+                            "mimeTypeToForce",
+                            new Model<>(gmlInfo.getMimeTypeToForce().orElse(null)),
+                            Arrays.asList(mimeTypes));
+            mimeTypeToForce.add(
+                    new AjaxFormComponentUpdatingBehavior("change") {
+
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            // set the MIME type to force
+                            String value = mimeTypeToForce.getModelObject();
+                            gmlInfo.setMimeTypeToForce(value);
+                        }
+                    });
+            // set the select value if available
+            if (mimesTypesProvided) {
+                mimeTypeToForce.setModelObject(gmlInfo.getMimeTypeToForce().orElse(mimeTypes[0]));
+            }
+            // need for Ajax updates
+            mimeTypeToForce.setOutputMarkupId(mimesTypesProvided);
+            mimeTypeToForce.setOutputMarkupPlaceholderTag(mimesTypesProvided);
+            mimeTypeToForce.setVisible(mimesTypesProvided && activated);
+            add(mimeTypeToForce);
+            // add activate MIME type force checkbox
+            CheckBox checkBox =
+                    new AjaxCheckBox("forceGmlMimeType", new Model<>(activated)) {
+
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            boolean checked = getModelObject();
+                            if (checked) {
+                                // force MIME type activated
+                                mimeTypeToForce.setVisible(true);
+                                String value = mimeTypeToForce.getModelObject();
+                                gmlInfo.setMimeTypeToForce(value);
+                            } else {
+                                // force MIME type deactivated
+                                mimeTypeToForce.setVisible(false);
+                                gmlInfo.setMimeTypeToForce(null);
+                            }
+                            // update the drop down choice (requires markup ID and markup
+                            // placeholder)
+                            target.add(mimeTypeToForce);
+                        }
+                    };
+            checkBox.setVisible(mimesTypesProvided);
+            add(checkBox);
+            // add check box label
+            Label checkBoxLabel =
+                    new Label(
+                            "forceGmlMimeTypeLabel",
+                            new StringResourceModel("WFSAdminPage$GMLPanel.forceGmlMimeTypeLabel"));
+            checkBoxLabel.setVisible(mimesTypesProvided);
+            add(checkBoxLabel);
         }
-        
     }
 
-    protected String getServiceName(){
-       return "WFS";
+    protected String getServiceName() {
+        return "WFS";
     }
 }

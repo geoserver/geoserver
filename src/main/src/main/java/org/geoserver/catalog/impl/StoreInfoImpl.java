@@ -10,17 +10,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.opengis.util.ProgressListener;
 
-/**
- * Default implementation of {@link StoreInfo}.
- * 
- */
+/** Default implementation of {@link StoreInfo}. */
 @SuppressWarnings("serial")
 public abstract class StoreInfoImpl implements StoreInfo {
 
@@ -31,23 +27,22 @@ public abstract class StoreInfoImpl implements StoreInfo {
     protected String description;
 
     protected String type;
-    
+
     protected boolean enabled;
 
     protected WorkspaceInfo workspace;
-    
+
     protected transient Catalog catalog;
 
     protected Map<String, Serializable> connectionParameters = new HashMap<String, Serializable>();
 
     protected MetadataMap metadata = new MetadataMap();
-    
+
     protected Throwable error;
 
     protected boolean _default;
-    
-    protected StoreInfoImpl() {
-    }
+
+    protected StoreInfoImpl() {}
 
     protected StoreInfoImpl(Catalog catalog) {
         this.catalog = catalog;
@@ -65,15 +60,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public Catalog getCatalog() {
         return catalog;
     }
 
-    public void setCatalog( Catalog catalog ) {
+    public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -93,11 +88,11 @@ public abstract class StoreInfoImpl implements StoreInfo {
     public String getType() {
         return type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -109,11 +104,11 @@ public abstract class StoreInfoImpl implements StoreInfo {
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }
-    
+
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
     }
-    
+
     public Map<String, Serializable> getConnectionParameters() {
         return connectionParameters;
     }
@@ -145,18 +140,21 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(name)
+                .append(']')
                 .toString();
     }
 
     public Throwable getError() {
         return error;
     }
-    
+
     public void setError(Throwable error) {
         this.error = error;
     }
-    
+
     public boolean isDefault() {
         return _default;
     }
@@ -164,60 +162,45 @@ public abstract class StoreInfoImpl implements StoreInfo {
     public void setDefault(boolean _default) {
         this._default = _default;
     }
+
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime
-                * result
-                + ((connectionParameters == null) ? 0 : connectionParameters
-                        .hashCode());
-        result = prime * result
-                + ((description == null) ? 0 : description.hashCode());
+        result =
+                prime * result
+                        + ((connectionParameters == null) ? 0 : connectionParameters.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result
-                + ((workspace == null) ? 0 : workspace.hashCode());
+        result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
         return result;
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!( obj instanceof StoreInfo ) ) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof StoreInfo)) {
             return false;
         }
-        
+
         final StoreInfo other = (StoreInfo) obj;
         if (connectionParameters == null) {
-            if (other.getConnectionParameters() != null)
-                return false;
-        } else if (!connectionParameters.equals(other.getConnectionParameters()))
-            return false;
+            if (other.getConnectionParameters() != null) return false;
+        } else if (!connectionParameters.equals(other.getConnectionParameters())) return false;
         if (description == null) {
-            if (other.getDescription() != null)
-                return false;
-        } else if (!description.equals(other.getDescription()))
-            return false;
-        if (enabled != other.isEnabled())
-            return false;
+            if (other.getDescription() != null) return false;
+        } else if (!description.equals(other.getDescription())) return false;
+        if (enabled != other.isEnabled()) return false;
         if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
-            return false;
+            if (other.getId() != null) return false;
+        } else if (!id.equals(other.getId())) return false;
         if (name == null) {
-            if (other.getName() != null)
-                return false;
-        } else if (!name.equals(other.getName()))
-            return false;
+            if (other.getName() != null) return false;
+        } else if (!name.equals(other.getName())) return false;
         if (workspace == null) {
-            if (other.getWorkspace() != null)
-                return false;
-        } else if (!workspace.equals(other.getWorkspace()))
-            return false;
+            if (other.getWorkspace() != null) return false;
+        } else if (!workspace.equals(other.getWorkspace())) return false;
         return true;
     }
 }

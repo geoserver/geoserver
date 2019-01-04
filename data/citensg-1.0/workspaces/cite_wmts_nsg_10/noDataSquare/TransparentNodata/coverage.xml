@@ -1,0 +1,130 @@
+<coverage>
+  <id>CoverageInfoImpl--77332cf0:16004924dc0:-7ff2</id>
+  <name>TransparentNodata</name>
+  <nativeName>TransparentNodata</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--77332cf0:16004924dc0:-7ff4</id>
+  </namespace>
+  <title>TransparentNodata</title>
+  <description>Generated from WorldImage</description>
+  <keywords>
+    <string>nodataSquare</string>
+    <string>WCS</string>
+    <string>WorldImage</string>
+  </keywords>
+  <nativeCRS class="org.geotools.referencing.crs.DefaultEngineeringCRS">LOCAL_CS[&quot;Wildcard 2D cartesian plane in metric unit&quot;, 
+  LOCAL_DATUM[&quot;Unknown&quot;, 0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;x&quot;, EAST], 
+  AXIS[&quot;y&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;404000&quot;]]</nativeCRS>
+  <srs>EPSG:404000</srs>
+  <nativeBoundingBox>
+    <minx>-180.35205696202533</minx>
+    <maxx>-0.0988924050632818</maxx>
+    <miny>-89.9011075949367</miny>
+    <maxy>90.35205696202532</maxy>
+    <crs class="org.geotools.referencing.crs.DefaultEngineeringCRS">EPSG:404000</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-180.35205696202533</minx>
+    <maxx>-0.0988924050632818</maxx>
+    <miny>-89.9011075949367</miny>
+    <maxy>90.35205696202532</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="dirName">noDataSquare_nodataSquare</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--77332cf0:16004924dc0:-7ff3</id>
+  </store>
+  <nativeFormat>WorldImage</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>256 256</high>
+    </range>
+    <transform>
+      <scaleX>0.704113924050633</scaleX>
+      <scaleY>-0.7041139240506329</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>-180.0</translateX>
+      <translateY>90.0</translateY>
+    </transform>
+    <crs>EPSG:404000</crs>
+  </grid>
+  <supportedFormats>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>TIFF</string>
+    <string>GEOTIFF</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+    <string>bilinear</string>
+    <string>bicubic</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>RED_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>GREEN_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>BLUE_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>ALPHA_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:404000</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:404000</string>
+  </responseSRS>
+  <nativeCoverageName>nodataSquare</nativeCoverageName>
+</coverage>

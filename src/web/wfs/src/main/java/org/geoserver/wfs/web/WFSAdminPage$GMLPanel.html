@@ -5,12 +5,23 @@
     <label for="srsNameStyle"><wicket:message key="WFSAdminPage$GMLPanel.srsStyle">SRS Style</wicket:message></label>
     <select class="select" wicket:id="srsNameStyle"></select>
   </li>
-  <li>
-    <label for="overrideAbstractFeatureTypeAttributes">
-      <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
-    </label>
-    <input type="checkbox" wicket:id="overrideGMLAttributes"></input>
-  </li>
+    <li>
+        <div class="choiceItem">
+            <input type="checkbox" wicket:id="overrideGMLAttributes"/>
+            <label for="overrideAbstractFeatureTypeAttributes">
+                <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
+            </label>
+        </div>
+    </li>
+    <li>
+        <div class="choiceItem">
+            <input wicket:id="forceGmlMimeType" type="checkbox"/>
+            <label wicket:id="forceGmlMimeTypeLabel"></label>
+        </div>
+    </li>
+    <li>
+        <select class="select" wicket:id="mimeTypeToForce"></select>
+    </li>
 </ul>
 </wicket:panel>
 </html>

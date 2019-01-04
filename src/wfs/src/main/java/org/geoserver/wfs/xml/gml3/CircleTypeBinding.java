@@ -6,24 +6,22 @@
 package org.geoserver.wfs.xml.gml3;
 
 import javax.xml.namespace.QName;
-
 import org.geoserver.wfs.WFSException;
 import org.geotools.gml3.Circle;
 import org.geotools.gml3.GML;
-import org.geotools.xml.AbstractComplexBinding;
-import org.geotools.xml.ElementInstance;
-import org.geotools.xml.Node;
-
+import org.geotools.xsd.AbstractComplexBinding;
+import org.geotools.xsd.ElementInstance;
+import org.geotools.xsd.Node;
 
 /**
  * Binding object for the type http://www.opengis.net/gml:CircleType.
- * <p>
- * We include this here, and not part of gml because its job is to fail, its a cite
- * compliance thing :).
- * </p>
+ *
+ * <p>We include this here, and not part of gml because its job is to fail, its a cite compliance
+ * thing :).
  *
  * <p>
- *        <pre>
+ *
+ * <pre>
  *         <code>
  *  &lt;complexType name="CircleType"&gt;
  *      &lt;annotation&gt;
@@ -36,17 +34,17 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
+ *
  * @generated
  */
 public class CircleTypeBinding extends AbstractComplexBinding {
-    /**
-     * @generated
-     */
+    /** @generated */
     public QName getTarget() {
         return GML.CircleType;
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
@@ -57,13 +55,13 @@ public class CircleTypeBinding extends AbstractComplexBinding {
     }
 
     /**
+     *
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      *
      * @generated modifiable
      */
-    public Object parse(ElementInstance instance, Node node, Object value)
-        throws Exception {
+    public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         throw new WFSException("Circle is not supported", "InvalidParameterValue");
     }
 }

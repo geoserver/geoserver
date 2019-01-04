@@ -6,7 +6,6 @@ package org.geoserver.wps.remote.plugin;
 
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
@@ -14,9 +13,8 @@ import org.jivesoftware.smack.packet.Packet;
 
 /**
  * Listens for "PROGRESS" messages from XMPP service channels and takes action accordingly.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class XMPPProgressMessage implements XMPPMessage {
 
@@ -31,8 +29,8 @@ public class XMPPProgressMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message,
-            Map<String, String> signalArgs) {
+    public void handleSignal(
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String pID = signalArgs.get("id");
         final Double progress = Double.parseDouble(signalArgs.get("message"));
@@ -42,5 +40,4 @@ public class XMPPProgressMessage implements XMPPMessage {
             listener.progress(pID, progress);
         }
     }
-
 }

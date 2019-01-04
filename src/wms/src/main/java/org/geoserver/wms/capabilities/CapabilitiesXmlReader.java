@@ -9,16 +9,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.wms.GetCapabilitiesRequest;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -28,7 +26,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
  * Reads a WMS GetCapabilities request from an XML stream
- * 
+ *
  * @author Gabriel Roldan
  * @version $Id$
  */
@@ -38,7 +36,7 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
 
     /**
      * Creates the new reader.
-     * 
+     *
      * @param resolverProvider used to resolve URLs
      */
     public CapabilitiesXmlReader(EntityResolverProvider resolverProvider) {
@@ -63,14 +61,14 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
             adapter.setContentHandler(currentRequest);
             adapter.parse(new InputSource(reader));
         } catch (SAXException e) {
-            throw new ServiceException(e, "XML capabilities request parsing error", getClass()
-                    .getName());
+            throw new ServiceException(
+                    e, "XML capabilities request parsing error", getClass().getName());
         } catch (IOException e) {
-            throw new ServiceException(e, "XML capabilities request input error", getClass()
-                    .getName());
+            throw new ServiceException(
+                    e, "XML capabilities request input error", getClass().getName());
         } catch (ParserConfigurationException e) {
-            throw new ServiceException(e, "Some sort of issue creating parser", getClass()
-                    .getName());
+            throw new ServiceException(
+                    e, "Some sort of issue creating parser", getClass().getName());
         }
 
         return req;
@@ -78,21 +76,22 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
 
     /**
      * A SAX content handler that acquires a GetCapabilities request from an incoming XML stream.
-     * 
+     *
      * @author Rob Hranac, TOPP
      * @version $Id$
      */
     private static class CapabilitiesHandler extends XMLFilterImpl implements ContentHandler {
         /** Class logger */
-        private static Logger LOGGER = org.geotools.util.logging.Logging
-                .getLogger("org.geoserver.wms.xml.CapabilitiesHandler");
+        private static Logger LOGGER =
+                org.geotools.util.logging.Logging.getLogger(
+                        "org.geoserver.wms.xml.CapabilitiesHandler");
 
         /** Internal Capabilities request for construction. */
         private GetCapabilitiesRequest request = null;
 
         /**
          * Creates a new CapabilitiesHandler
-         * 
+         *
          * @param request this is the AbstractService Handling the Request
          */
         public CapabilitiesHandler(GetCapabilitiesRequest request) {
@@ -106,21 +105,16 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
 
         /**
          * Notes the start of the element and sets version and service tags, as required.
-         * 
-         * @param namespaceURI
-         *            URI for namespace appended to element.
-         * @param localName
-         *            Local name of element.
-         * @param rawName
-         *            Raw name of element.
-         * @param atts
-         *            Element attributes.
-         * 
-         * @throws SAXException
-         *             For any standard SAX errors.
+         *
+         * @param namespaceURI URI for namespace appended to element.
+         * @param localName Local name of element.
+         * @param rawName Raw name of element.
+         * @param atts Element attributes.
+         * @throws SAXException For any standard SAX errors.
          */
-        public void startElement(String namespaceURI, String localName, String rawName,
-                Attributes atts) throws SAXException {
+        public void startElement(
+                String namespaceURI, String localName, String rawName, Attributes atts)
+                throws SAXException {
             if (localName.equals("GetCapabilities")) {
                 LOGGER.finer("found capabilities start.");
 
@@ -137,5 +131,4 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
             }
         }
     }
-
 }

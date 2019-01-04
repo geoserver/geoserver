@@ -1,0 +1,17 @@
+{
+  "version": 8,
+  "name": "point-circle-test",
+  "layers": [
+    {
+      "id": "point",
+      "type": "circle",
+      "paint": {
+        "circle-radius": 3,
+        "circle-color": "#FF0000",
+        "circle-pitch-scale": "map",
+        "circle-stroke-color": "#000000",
+        "circle-stroke-width": 2
+      }
+    }
+  ]
+}

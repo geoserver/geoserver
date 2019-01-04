@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+  <typedef name="Status" class='org.geoserver.monitor.hib.EnumUserType'>
+      <param name="enumClassName">org.geoserver.monitor.RequestData$Status</param>
+  </typedef>
+  <typedef name="Category" class='org.geoserver.monitor.hib.EnumUserType'>
+      <param name="enumClassName">org.geoserver.monitor.RequestData$Category</param>
+  </typedef>
+  <typedef name="Error" class='org.geoserver.monitor.hib.ErrorUserType'>
+  </typedef>
+  <typedef class="org.geoserver.monitor.hib.BoundingBoxType" name="BoundingBox"/>
+  <typedef class="org.geoserver.monitor.hib.BoundingBoxType" name="NativeBoundingBox">
+     <param name="storeCRSAsWKT">true</param>
+  </typedef>
+
+  <!-- TODO specify which attributes are not null -->
+  <class name="org.geoserver.monitor.RequestData" table="REQUEST">
+    <id column="ID" name="id">
+      <generator class="native"/>
+    </id>
+    <property column="STATUS" name="status" type="Status" index="REQ_STATUS_IDX"/>
+    <property column="CATEGORY" name="category" type="Category" index="REQ_CATEGORY_IDX"/>
+    
+    <property column="PATH" name="path"/>
+    
+    <property column="BODY" name="body" length="1024"/>
+    <!-- Use this instead for an unbounded body field -->
+    <!-- <property column="BODY" name="body"/>-->
+    
+    <property column="QUERY_STRING" name="queryString" length="4096"/>
+    <property column="BODY_CONTENT_TYPE" name="bodyContentType"/>
+    <property column="BODY_CONTENT_LENGTH" name="bodyContentLength"/>
+    <property column="SERVER_HOST" name="host"/>
+    <property column="INTERNAL_SERVER_HOST" name="internalHost"/>
+    <property column="HTTP_METHOD" name="httpMethod"/>
+    <property column="START_TIME" name="startTime" index="REQ_START_TIME_IDX"/>
+    <property column="END_TIME" name="endTime" index="REQ_END_TIME_IDX"/>
+    <property column="TOTAL_TIME" name="totalTime" index="REQ_TOTAL_TIME_IDX"/>
+    
+    <property column="REMOTE_ADDRESS" name="remoteAddr" />
+    <property column="REMOTE_HOST" name="remoteHost"/>
+    <property column="REMOTE_USER" name="remoteUser"/>
+    <property column="REMOTE_USER_AGENT" name="remoteUserAgent" length="1024"/>
+    <property column="REMOTE_COUNTRY" name="remoteCountry"/>
+    <property column="REMOTE_CITY" name="remoteCity"/>
+    <property column="REMOTE_LAT" name="remoteLat"/>
+    <property column="REMOTE_LON" name="remoteLon"/>
+    
+    <property column="SERVICE" name="service" index="REQ_SERVICE_IDX"/>
+    <property column="OPERATION" name="operation" index="REQ_OPERATION_IDX"/>
+    <property column="SUB_OPERATION" name="subOperation" index="REQ_SUB_OPERATION_IDX"/>
+    <property column="OWS_VERSION" name="owsVersion"/>
+    
+    <property column="CONTENT_TYPE" name="responseContentType"/>
+    <property column="RESPONSE_LENGTH" name="responseLength"/>
+    
+    <property column="ERROR_MESSAGE" name="errorMessage" length="1024"/>
+    <property column="EXCEPTION_STACK_TRACE" name="error" type="Error"/>
+    
+    <property column="RESPONSE_STATUS" name="responseStatus" />
+    
+    <property column="HTTP_REFERER" name="httpReferer" length="4096"/>
+    
+    <property  name="bbox" type="BoundingBox">
+      <column name="MINX"/>
+      <column name="MINY"/>
+      <column name="MAXX"/>
+      <column name="MAXY"/>
+      <column name="CRS"/>
+    </property>
+    
+    <list name="resources" table="REQUEST_RESOURCES">
+      <key column="REQUEST_ID" not-null="true"/>
+      <list-index column="IDX"/>
+      <element column="NAME" type="string"/>
+    </list>
+
+    <property column="CACHE_RESULT" name="cacheResult" length="4096"/>
+    <property column="MISS_REASON" name="missReason" length="4096"/>
+    
+    <!--list name="layers" table="REQUEST_LAYERS">
+        <key column="REQUEST_ID" not-null="true"/>
+        <list-index column="INDEX"/>
+        <many-to-many column="LAYER_ID" class="org.geoserver.monitor.LayerData"/>
+    </list-->
+  </class>
+  
+  <!--class name="org.geoserver.monitor.LayerData" table="LAYER">
+     <id column="NAME" name="name"/>
+     <property column="ACCESS_COUNT" name="accessCount"/>
+  </class-->
+  
+  <!-- hibernate only automatically creates index for mysql, added them manually -->
+  <database-object>
+     <create>CREATE INDEX REQUEST_START_TIME_IDX ON REQUEST(START_TIME)</create>
+     <drop>DROP INDEX REQUEST_START_TIME_IDX</drop>
+     <dialect-scope name="org.geoserver.monitor.hib.H2Dialect"/>
+     <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+  </database-object>
+  
+</hibernate-mapping>

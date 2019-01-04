@@ -6,7 +6,6 @@ package org.geoserver.platform.resource;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
@@ -16,9 +15,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Factory for ResourceStore creation. Looks for a resourceStoreImpl bean before falling back
- * to the dataDirectoryResourceStore bean. Used to override ResourceStore implementation if
- * desired.
+ * Factory for ResourceStore creation. Looks for a resourceStoreImpl bean before falling back to the
+ * dataDirectoryResourceStore bean. Used to override ResourceStore implementation if desired.
  */
 public class ResourceStoreFactory implements FactoryBean<ResourceStore>, ApplicationContextAware {
 
@@ -31,16 +29,20 @@ public class ResourceStoreFactory implements FactoryBean<ResourceStore>, Applica
 
         ResourceStore resourceStore = null;
         try {
-            resourceStore = (ResourceStore) GeoServerExtensions.bean(
-                    "resourceStoreImpl", applicationContext);
-        }
-        catch (NoSuchBeanDefinitionException e) {
-            LOGGER.log(Level.FINER, "No resourceStoreImpl beans found, "
-                    + "falling back to DataDirectoryResourceStore");
+            resourceStore =
+                    (ResourceStore)
+                            GeoServerExtensions.bean("resourceStoreImpl", applicationContext);
+        } catch (NoSuchBeanDefinitionException e) {
+            LOGGER.log(
+                    Level.FINER,
+                    "No resourceStoreImpl beans found, "
+                            + "falling back to DataDirectoryResourceStore");
         }
         if (resourceStore == null) {
-            resourceStore = (ResourceStore) GeoServerExtensions.bean(
-                    "dataDirectoryResourceStore", applicationContext);
+            resourceStore =
+                    (ResourceStore)
+                            GeoServerExtensions.bean(
+                                    "dataDirectoryResourceStore", applicationContext);
         }
 
         return resourceStore;
@@ -57,8 +59,7 @@ public class ResourceStoreFactory implements FactoryBean<ResourceStore>, Applica
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 }

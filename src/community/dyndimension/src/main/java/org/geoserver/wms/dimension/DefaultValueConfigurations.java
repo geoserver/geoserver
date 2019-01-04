@@ -10,9 +10,8 @@ import java.util.List;
 
 /**
  * Container for the default value configurations for all dimensions associated to a ResourceInfo
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DefaultValueConfigurations implements Serializable, Cloneable {
     private static final long serialVersionUID = -5773499155045618173L;

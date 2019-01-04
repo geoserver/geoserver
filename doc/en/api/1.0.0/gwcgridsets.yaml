@@ -1,0 +1,278 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache GridSets
+  description: A Grid Set is a set of tile grids associated with a coordinate reference system. 
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /gridsets:
+    get:
+      operationId: gridsetsGet
+      summary: Get a list of configured gridsets
+      description: Displays a list of all configured gridsets on the server.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/GridSets"
+          examples:
+            application/xml: |
+              <gridSets>
+                <gridSet>
+                  <name>EPSG:2163</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/EPSG:2163.xml" type="text/xml"/>
+                </gridSet>
+                <gridSet>
+                  <name>GlobalCRS84Pixel</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/GlobalCRS84Pixel.xml" type="text/xml"/>
+                </gridSet>
+                <gridSet>
+                  <name>EPSG:4326</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/EPSG:4326.xml" type="text/xml"/>
+                </gridSet>
+                <gridSet>
+                  <name>GoogleCRS84Quad</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/GoogleCRS84Quad.xml" type="text/xml"/>
+                </gridSet>
+                <gridSet>
+                  <name>EPSG:900913</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/EPSG:900913.xml" type="text/xml"/>
+                </gridSet>
+                <gridSet>
+                  <name>GlobalCRS84Scale</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geowebcache/rest/gridsets/GlobalCRS84Scale.xml" type="text/xml"/>
+                </gridSet>
+              </gridSets>
+
+  /gridsets/{gridsetName}:
+    get:
+      operationId: gridsetGet
+      summary: Retrieve a configured gridset
+      description: Retrieves a single configured gridset definition.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: gridsetName
+          in: path
+          required: true
+          description: The name of the gridset to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/GridSet"
+          examples:
+            application/xml: |
+              <gridSet>
+                <name>EPSG:4326</name>
+                <description>A default WGS84 tile matrix set where the first zoom level covers the world with two tiles on the horizonal axis and one tile over the vertical axis and each subsequent zoom level is calculated by half the resolution of its previous one.</description>
+                <srs>
+                  <number>4326</number>
+                </srs>
+                <extent>
+                  <coords>
+                    <double>-180.0</double>
+                    <double>-90.0</double>
+                    <double>180.0</double>
+                    <double>90.0</double>
+                  </coords>
+                </extent>
+                <alignTopLeft>false</alignTopLeft>
+                <resolutions>
+                  <double>0.703125</double>
+                  <double>0.3515625</double>
+                  <double>0.17578125</double>
+                  <double>0.087890625</double>
+                  <double>0.0439453125</double>
+                  <double>0.02197265625</double>
+                  <double>0.010986328125</double>
+                  <double>0.0054931640625</double>
+                  <double>0.00274658203125</double>
+                  <double>0.001373291015625</double>
+                  <double>6.866455078125E-4</double>
+                  <double>3.4332275390625E-4</double>
+                  <double>1.71661376953125E-4</double>
+                  <double>8.58306884765625E-5</double>
+                  <double>4.291534423828125E-5</double>
+                  <double>2.1457672119140625E-5</double>
+                  <double>1.0728836059570312E-5</double>
+                  <double>5.364418029785156E-6</double>
+                  <double>2.682209014892578E-6</double>
+                  <double>1.341104507446289E-6</double>
+                  <double>6.705522537231445E-7</double>
+                  <double>3.3527612686157227E-7</double>
+                </resolutions>
+                <metersPerUnit>111319.49079327358</metersPerUnit>
+                <pixelSize>2.8E-4</pixelSize>
+                <scaleNames>
+                  <string>EPSG:4326:0</string>
+                  <string>EPSG:4326:1</string>
+                  <string>EPSG:4326:2</string>
+                  <string>EPSG:4326:3</string>
+                  <string>EPSG:4326:4</string>
+                  <string>EPSG:4326:5</string>
+                  <string>EPSG:4326:6</string>
+                  <string>EPSG:4326:7</string>
+                  <string>EPSG:4326:8</string>
+                  <string>EPSG:4326:9</string>
+                  <string>EPSG:4326:10</string>
+                  <string>EPSG:4326:11</string>
+                  <string>EPSG:4326:12</string>
+                  <string>EPSG:4326:13</string>
+                  <string>EPSG:4326:14</string>
+                  <string>EPSG:4326:15</string>
+                  <string>EPSG:4326:16</string>
+                  <string>EPSG:4326:17</string>
+                  <string>EPSG:4326:18</string>
+                  <string>EPSG:4326:19</string>
+                  <string>EPSG:4326:20</string>
+                  <string>EPSG:4326:21</string>
+                </scaleNames>
+                <tileHeight>256</tileHeight>
+                <tileWidth>256</tileWidth>
+                <yCoordinateFirst>true</yCoordinateFirst>
+              </gridSet>
+        404:
+          description: Unknown gridset
+
+    put:
+      operationId: gridsetPut
+      summary: Create or update a configured gridset.
+      description: Creates a new configured gridset on the server, or modifies an existing gridset.
+      parameters:
+        - name: gridsetName
+          in: path
+          required: true
+          description: The name of the gridset to add or update.
+          type: string
+        - name: gridsetBody
+          in: body
+          description: The new gridset definition.
+          required: true
+          schema:
+            $ref: "#/definitions/GridSet"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The gridset was successfully updated.
+        201:
+          description: The gridset was successfully created.
+    delete:
+      operationId: gridsetDelete
+      summary: Delete configured gridset
+      description: Deletes a configured gridset from the server.
+      parameters:
+        - name: gridsetName
+          in: path
+          required: true
+          description: The name of the gridset to delete.
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Unknown gridset
+
+definitions:
+  GridSets:
+    title: gridSets
+    type: array
+    items:
+      $ref: "#/definitions/GridSetReference"
+
+  GridSetReference:
+    title: gridSet
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the gridset
+      link:
+        type: string
+        description: URL to gridset definition
+
+  GridSet:
+    title: gridSet
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the gridset. Should be unique.
+      description: 
+        type: string
+        description: Description of the gridset
+      srs:
+        type: object
+        description: The reference system of the gridSet
+        properties:
+          number:
+            type: integer
+            description: The SRS number
+      extent:
+        type: object
+        description: The gridset extent
+        properties:
+          coords:
+            type: array
+            description: The coordinates of the extent.
+            items:
+              type: object
+              description: A coordinate of the extent.
+              properties:
+                double:
+                  type: number
+                  description: The coordinate value.
+      alignTopLeft:
+        type: boolean
+        default: false
+        description: Whether the y-coordinate of the tile origin is at the top (true) or bottom (false).
+      resolutions:
+        type: object
+        description: The resolutions of each gridset level
+        properties:
+          items:
+            type: object
+            description: The resolution of a gridset level.
+            properties:
+              double:
+                type: number
+                description: The resolution value.
+      metersPerUnit: 
+        type: number
+        description: The number of meters per coordinate unit.
+      pixelSize:
+        type: number
+        description: The assumed pixel size of the display device, in meters.
+      scaleNames:
+        type: object
+        description: The scale names of each gridset level
+        properties:
+          items:
+            type: object
+            description: The scale name of a gridset level.
+            properties:
+              double:
+                type: string
+                description: The scale name.
+      tileHeight:
+        type: integer
+        description: The height of a tile in pixels.
+      tileWidth:
+        type: integer
+        description: The width of a tile in pixels.
+      yCoordinateFirst: 
+        type: boolean
+        default: false
+        description: By default the coordinates are {x,y}, this flag reverses the output for WMTS getcapabilities.
+

@@ -23,17 +23,20 @@ public class WhitelistRuleEditor extends Panel {
 
     private boolean isNew;
 
-    public WhitelistRuleEditor(String id, IModel<WhitelistRule> model, final ModalWindow window,
-            final WhitelistRulePanel table, boolean isNew) {
+    public WhitelistRuleEditor(
+            String id,
+            IModel<WhitelistRule> model,
+            final ModalWindow window,
+            final WhitelistRulePanel table,
+            boolean isNew) {
         super(id, model);
         this.isNew = isNew;
         Form<WhitelistRule> form = new Form<>("form", model);
         add(form);
-        TextField<String> name = new TextField<>("name", new PropertyModel<>(model,
-                "name"));
+        TextField<String> name = new TextField<>("name", new PropertyModel<>(model, "name"));
         name.setRequired(true);
-        TextField<String> pattern = new TextField<>("pattern", new PropertyModel<>(
-                model, "pattern"));
+        TextField<String> pattern =
+                new TextField<>("pattern", new PropertyModel<>(model, "pattern"));
         pattern.setRequired(true);
 
         form.add(name);
@@ -44,36 +47,38 @@ public class WhitelistRuleEditor extends Panel {
         feedbackPanel.setOutputMarkupId(true);
         form.add(feedbackPanel);
 
-        form.add(new AjaxSubmitLink("submit", form) {
+        form.add(
+                new AjaxSubmitLink("submit", form) {
 
-            private static final long serialVersionUID = 1080309070367012502L;
+                    private static final long serialVersionUID = 1080309070367012502L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(feedbackPanel);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        target.add(feedbackPanel);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                boolean isNew = WhitelistRuleEditor.this.isNew;
-                if (isNew) {
-                    WhitelistRule rule = (WhitelistRule) form.getModelObject();
-                    table.add(rule);
-                }
-                table.save();
-                window.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        boolean isNew = WhitelistRuleEditor.this.isNew;
+                        if (isNew) {
+                            WhitelistRule rule = (WhitelistRule) form.getModelObject();
+                            table.add(rule);
+                        }
+                        table.save();
+                        window.close(target);
+                        target.add(table);
+                    }
+                });
 
-        form.add(new AjaxLink<Void>("cancel") {
-            private static final long serialVersionUID = 4762717512666965125L;
+        form.add(
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = 4762717512666965125L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                window.close(target);
-                target.add(table);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        window.close(target);
+                        target.add(table);
+                    }
+                });
     }
 }

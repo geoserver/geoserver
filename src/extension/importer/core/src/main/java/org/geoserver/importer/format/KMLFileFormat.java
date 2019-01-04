@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -68,7 +67,8 @@ public class KMLFileFormat extends VectorFormat {
         File file = getFileFromData(data);
 
         // we need to get the feature type, to use for the particular parse through the file
-        // since we put it on the metadata from the list method, we first check if that's still available
+        // since we put it on the metadata from the list method, we first check if that's still
+        // available
         SimpleFeatureType ft = (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
         if (ft == null) {
             // if the type is not available, we can generate one from the resource
@@ -85,8 +85,8 @@ public class KMLFileFormat extends VectorFormat {
         return read(ft, file);
     }
 
-    public FeatureReader<SimpleFeatureType, SimpleFeature> read(SimpleFeatureType featureType,
-            File file) {
+    public FeatureReader<SimpleFeatureType, SimpleFeature> read(
+            SimpleFeatureType featureType, File file) {
         try {
             return new KMLTransformingFeatureReader(featureType, new FileInputStream(file));
         } catch (Exception e) {
@@ -94,8 +94,8 @@ public class KMLFileFormat extends VectorFormat {
         }
     }
 
-    public FeatureReader<SimpleFeatureType, SimpleFeature> read(SimpleFeatureType featureType,
-            InputStream inputStream) {
+    public FeatureReader<SimpleFeatureType, SimpleFeature> read(
+            SimpleFeatureType featureType, InputStream inputStream) {
         return new KMLTransformingFeatureReader(featureType, inputStream);
     }
 
@@ -162,8 +162,8 @@ public class KMLFileFormat extends VectorFormat {
         return ftb.buildFeatureType();
     }
 
-    public SimpleFeatureType convertParsedFeatureType(SimpleFeatureType ft, String name,
-            Set<String> untypedAttributes) {
+    public SimpleFeatureType convertParsedFeatureType(
+            SimpleFeatureType ft, String name, Set<String> untypedAttributes) {
         SimpleFeatureType transformedType = kmlTransform.convertFeatureType(ft);
         SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
         ftb.init(transformedType);
@@ -184,8 +184,8 @@ public class KMLFileFormat extends VectorFormat {
 
     public List<SimpleFeatureType> parseFeatureTypes(String typeName, InputStream inputStream)
             throws IOException {
-        KMLRawReader reader = new KMLRawReader(inputStream,
-                KMLRawReader.ReadType.SCHEMA_AND_FEATURES);
+        KMLRawReader reader =
+                new KMLRawReader(inputStream, KMLRawReader.ReadType.SCHEMA_AND_FEATURES);
         Set<String> untypedAttributes = new HashSet<String>();
         List<String> schemaNames = new ArrayList<String>();
         List<SimpleFeatureType> schemas = new ArrayList<SimpleFeatureType>();
@@ -197,8 +197,8 @@ public class KMLFileFormat extends VectorFormat {
                 aggregateFeatureType = unionFeatureTypes(aggregateFeatureType, ft);
                 Map<Object, Object> userData = feature.getUserData();
                 @SuppressWarnings("unchecked")
-                Map<String, Object> untypedData = (Map<String, Object>) userData
-                        .get("UntypedExtendedData");
+                Map<String, Object> untypedData =
+                        (Map<String, Object>) userData.get("UntypedExtendedData");
                 if (untypedData != null) {
                     untypedAttributes.addAll(untypedData.keySet());
                 }

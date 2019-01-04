@@ -1,7 +1,10 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import java.io.IOException;
-
 import org.geotools.data.DataAccess;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
@@ -12,21 +15,23 @@ import org.opengis.feature.type.Name;
 public class VirtualTableCallback implements FeatureTypeCallback {
 
     @Override
-    public boolean canHandle(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         return dataAccess instanceof JDBCDataStore
                 && info.getMetadata() != null
-                && (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) instanceof VirtualTable);
-
+                && (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE)
+                        instanceof VirtualTable);
     }
 
     @Override
-    public boolean initialize(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
+    public boolean initialize(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName)
             throws IOException {
         JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-        VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE,
-                VirtualTable.class);
+        VirtualTable vt =
+                info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
 
         FeatureType ft = null;
         // building the virtual table structure is expensive, see if the VT is already registered in
@@ -51,19 +56,22 @@ public class VirtualTableCallback implements FeatureTypeCallback {
                 jstore.createVirtualTable(vt);
             }
         }
-        
+
         return false;
     }
 
     @Override
-    public void flush(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) throws IOException {
+    public void flush(
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
+            throws IOException {
         // nothing to do
     }
 
     @Override
-    public void dispose(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
+    public void dispose(
+            FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            Name temporaryName)
             throws IOException {
         JDBCDataStore ds = (JDBCDataStore) dataAccess;
         if (temporaryName != null) {
@@ -71,7 +79,5 @@ public class VirtualTableCallback implements FeatureTypeCallback {
         } else {
             ds.dropVirtualTable(info.getNativeName());
         }
-
     }
-
 }

@@ -8,7 +8,6 @@ package org.geoserver.security.web.usergroup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
@@ -16,11 +15,11 @@ import org.geoserver.web.GeoServerApplication;
 
 /**
  * Model for list of user group service configurations.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class UserGroupServiceConfigListModel 
-    extends LoadableDetachableModel<List<SecurityUserGroupServiceConfig>> {
+public class UserGroupServiceConfigListModel
+        extends LoadableDetachableModel<List<SecurityUserGroupServiceConfig>> {
 
     @Override
     protected List<SecurityUserGroupServiceConfig> load() {
@@ -28,7 +27,7 @@ public class UserGroupServiceConfigListModel
         List<SecurityUserGroupServiceConfig> configs = new ArrayList();
         try {
             for (String ugServiceName : secMgr.listUserGroupServices()) {
-                SecurityUserGroupServiceConfig config = 
+                SecurityUserGroupServiceConfig config =
                         secMgr.loadUserGroupServiceConfig(ugServiceName);
                 configs.add(config);
             }

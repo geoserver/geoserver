@@ -13,12 +13,8 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.ConfigurationListenerAdapter;
 
-/**
- * Base class for synchronising catalog changes across a cluster.
- *
- */
-public class GeoServerSynchronizer extends ConfigurationListenerAdapter 
-    implements CatalogListener {
+/** Base class for synchronising catalog changes across a cluster. */
+public class GeoServerSynchronizer extends ConfigurationListenerAdapter implements CatalogListener {
 
     protected ClusterConfigWatcher configWatcher;
 
@@ -27,19 +23,14 @@ public class GeoServerSynchronizer extends ConfigurationListenerAdapter
     }
 
     @Override
-    public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
-    }
+    public void handleAddEvent(CatalogAddEvent event) throws CatalogException {}
 
     @Override
-    public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
-    }
+    public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {}
 
     @Override
-    public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
-    }
+    public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {}
 
     @Override
-    public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
-    }
-
+    public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {}
 }

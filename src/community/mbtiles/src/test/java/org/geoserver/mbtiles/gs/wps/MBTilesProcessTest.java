@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.mbtiles.gs.wps;
 
 import static org.junit.Assert.assertEquals;
@@ -7,18 +11,17 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
-import org.geotools.data.DataUtilities;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 
 public class MBTilesProcessTest extends WPSTestSupport {
 
-    private final static Logger LOGGER = Logging.getLogger(MBTilesProcessTest.class);
+    private static final Logger LOGGER = Logging.getLogger(MBTilesProcessTest.class);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -57,10 +60,13 @@ public class MBTilesProcessTest extends WPSTestSupport {
     public String getXml(File temp) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
-                + "  <ows:Identifier>gs:MBTiles</ows:Identifier>" + "  <wps:DataInputs>"
-                + "    <wps:Input>" + "      <ows:Identifier>path</ows:Identifier>"
-                + "      <wps:Data>" + "        <wps:LiteralData>"
-                + DataUtilities.fileToURL(temp)
+                + "  <ows:Identifier>gs:MBTiles</ows:Identifier>"
+                + "  <wps:DataInputs>"
+                + "    <wps:Input>"
+                + "      <ows:Identifier>path</ows:Identifier>"
+                + "      <wps:Data>"
+                + "        <wps:LiteralData>"
+                + URLs.fileToUrl(temp)
                 + "</wps:LiteralData>"
                 + "      </wps:Data>"
                 + "    </wps:Input>"
@@ -120,6 +126,7 @@ public class MBTilesProcessTest extends WPSTestSupport {
                 + "    <wps:RawDataOutput>"
                 + "      <ows:Identifier>mbtile</ows:Identifier>"
                 + "    </wps:RawDataOutput>"
-                + "  </wps:ResponseForm>" + "</wps:Execute>";
+                + "  </wps:ResponseForm>"
+                + "</wps:Execute>";
     }
 }

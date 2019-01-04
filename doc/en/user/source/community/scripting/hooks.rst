@@ -114,7 +114,7 @@ groovy:
 
 .. code-block:: groovy
  
-  import com.vividsolutions.jts.geom.Geometry
+  import org.locationtech.jts.geom.Geometry
 
   title = 'Buffer'
   description = 'Buffers a geometry'
@@ -137,7 +137,7 @@ In Python the api is slightly different and makes use of Python decorators:
 .. code-block:: python
 
   from geoserver.wps import process
-  from com.vividsolutions.jts.geom import Geometry
+  from org.locationtech.jts.geom import Geometry
 
   @process(
     title='Buffer', 

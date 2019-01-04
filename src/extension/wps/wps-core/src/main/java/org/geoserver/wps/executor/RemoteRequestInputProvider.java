@@ -12,12 +12,10 @@ import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.opengis.wps10.HeaderType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
@@ -30,13 +28,14 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
-import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.util.ProgressListener;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Handles an internal reference to a remote location
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class RemoteRequestInputProvider extends AbstractInputProvider {
@@ -49,7 +48,8 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
     private long maxSize;
 
-    public RemoteRequestInputProvider(InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
+    public RemoteRequestInputProvider(
+            InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
         super(input, ppio);
         this.timeout = timeout;
         this.complexPPIO = ppio;
@@ -70,10 +70,16 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         listener.started();
         try {
             if ("file".equalsIgnoreCase(destination.getProtocol())) {
-                File file = DataUtilities.urlToFile(destination);
+                File file = URLs.urlToFile(destination);
                 if (maxSize > 0 && maxSize < file.length()) {
-                    throw new WPSException("Input " + getInputId() + " size " + file.length()
-                            + " exceeds maximum allowed size of " + maxSize, "NoApplicableCode",
+                    throw new WPSException(
+                            "Input "
+                                    + getInputId()
+                                    + " size "
+                                    + file.length()
+                                    + " exceeds maximum allowed size of "
+                                    + maxSize,
+                            "NoApplicableCode",
                             getInputId());
                 }
 
@@ -81,7 +87,6 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             } else if ("http".equalsIgnoreCase(destination.getProtocol())) {
                 // setup the client
                 HttpClient client = new HttpClient();
-                // setting timeouts (30 seconds, TODO: make this configurable)
                 HttpConnectionManagerParams params = new HttpConnectionManagerParams();
                 params.setSoTimeout(timeout);
                 params.setConnectionTimeout(timeout);
@@ -120,26 +125,27 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                                 conn.setReadTimeout(timeout);
                                 refInput = conn.getInputStream();
                             }
-                            post.setRequestEntity(new InputStreamRequestEntity(refInput,
-                                    complexPPIO
-                                    .getMimeType()));
+                            post.setRequestEntity(
+                                    new InputStreamRequestEntity(
+                                            refInput, complexPPIO.getMimeType()));
                         } else {
-                            throw new WPSException("A POST request should contain a non empty body");
+                            throw new WPSException(
+                                    "A POST request should contain a non empty body");
                         }
                     } else if (body instanceof String) {
-                        post.setRequestEntity(new StringRequestEntity((String) body, complexPPIO
-                                .getMimeType(), encoding));
+                        post.setRequestEntity(
+                                new StringRequestEntity(
+                                        (String) body, complexPPIO.getMimeType(), encoding));
                     } else {
                         throw new WPSException(
                                 "The request body should be contained in a CDATA section, "
                                         + "otherwise it will get parsed as XML instead of being preserved as is");
-
                     }
                     method = post;
                 }
                 // add eventual extra headers
                 if (ref.getHeader() != null) {
-                    for (Iterator it = ref.getHeader().iterator(); it.hasNext();) {
+                    for (Iterator it = ref.getHeader().iterator(); it.hasNext(); ) {
                         HeaderType header = (HeaderType) it.next();
                         method.setRequestHeader(header.getKey(), header.getValue());
                     }
@@ -148,27 +154,40 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
                 if (code == 200) {
                     try {
-                        Header length = method.getResponseHeader("Content-Lenght");
-                        if (maxSize > 0 && length != null
+                        Header length = method.getResponseHeader(HttpHeaders.CONTENT_LENGTH);
+                        if (maxSize > 0
+                                && length != null
                                 && Long.parseLong(length.getValue()) > maxSize) {
                             throw new WPSException(
-                                    "Input " + getInputId() + " size " + length.getValue()
-                                            + " exceeds maximum allowed size of " + maxSize
+                                    "Input "
+                                            + getInputId()
+                                            + " size "
+                                            + length.getValue()
+                                            + " exceeds maximum allowed size of "
+                                            + maxSize
                                             + " according to HTTP Content-Lenght response header",
-                                    "NoApplicableCode", getInputId());
+                                    "NoApplicableCode",
+                                    getInputId());
                         }
                     } catch (NumberFormatException e) {
-                        LOGGER.log(Level.FINE,
+                        LOGGER.log(
+                                Level.FINE,
                                 "Failed to parse content lenght to check input limits respect, "
-                                        + "moving on and checking data as it comes in", e);
+                                        + "moving on and checking data as it comes in",
+                                e);
                     }
                     input = method.getResponseBodyAsStream();
                     if (maxSize > 0) {
                         input = new MaxSizeInputStream(input, getInputId(), maxSize);
                     }
                 } else {
-                    throw new WPSException("Error getting remote resources from " + ref.getHref()
-                            + ", http error " + code + ": " + method.getStatusText());
+                    throw new WPSException(
+                            "Error getting remote resources from "
+                                    + ref.getHref()
+                                    + ", http error "
+                                    + code
+                                    + ": "
+                                    + method.getStatusText());
                 }
             } else {
                 // use the normal url connection methods then...
@@ -185,10 +204,29 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             // actually parse the data
             if (input != null) {
                 CancellingInputStream is = new CancellingInputStream(input, listener);
-                return complexPPIO.decode(is);
+                Object result = complexPPIO.decode(is);
+                if (result == null || complexPPIO.getType().isInstance(result)) {
+                    return result;
+                }
+                // Some text parsers return a Map when it can not be converted to
+                // the proper type.  Detect those errors here rather than later.
+                throw new IllegalArgumentException(
+                        "Decoded result is not a "
+                                + complexPPIO.getType().getName()
+                                + ", got a: "
+                                + result.getClass().getName());
             } else {
                 throw new WPSException("Could not find a mean to read input " + inputId);
             }
+        } catch (WPSException e) {
+            throw e;
+        } catch (Exception e) {
+            // Log the exception and replace with a generic exception to prevent
+            // potentially disclosing sensitive information from a remote resource.
+            listener.exceptionOccurred(e);
+            String message = "Failed to retrieve value for input " + getInputId();
+            LOGGER.log(Level.WARNING, message, e);
+            throw new WPSException(message);
         } finally {
             listener.progress(100);
             listener.complete();
@@ -212,5 +250,4 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
     public int longStepCount() {
         return 1;
     }
-
 }

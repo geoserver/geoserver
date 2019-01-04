@@ -7,7 +7,6 @@ package org.geoserver.wms.dimension;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.Range;
 import org.opengis.filter.Filter;
@@ -18,30 +17,29 @@ import org.opengis.filter.expression.PropertyName;
 /**
  * Helper class that builds dimension related filters against reference objects that can be point
  * ones (date, number, string) or range types (DateRange, NumberRange)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DimensionFilterBuilder {
 
     Filter filter = null;
 
     FilterFactory ff;
-    
+
     public DimensionFilterBuilder(FilterFactory ff) {
         this.ff = ff;
     }
 
-    public void appendFilters(String startAttributeName, String endAttributeName,
-            List<Object> ranges) {
+    public void appendFilters(
+            String startAttributeName, String endAttributeName, List<Object> ranges) {
         if (ranges == null || ranges.size() == 0) {
             return;
         }
 
         final List<Filter> timeFilters = new ArrayList<Filter>();
         final PropertyName attribute = ff.property(startAttributeName);
-        final PropertyName endAttribute = endAttributeName == null ? null : ff
-                .property(endAttributeName);
+        final PropertyName endAttribute =
+                endAttributeName == null ? null : ff.property(endAttributeName);
 
         for (Object datetime : ranges) {
             timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
@@ -64,11 +62,10 @@ public class DimensionFilterBuilder {
     /**
      * Build a filter for a single value based on an attribute and optional endAttribute. The value
      * is either a Range or object that can be used as a literal (Date,Number).
-     * 
+     *
      * @param value
      * @param attribute
      * @param endAttribute
-     *
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;
@@ -77,8 +74,11 @@ public class DimensionFilterBuilder {
         } else if (value instanceof Range) {
             Range range = (Range) value;
             if (endAttribute == null) {
-                filter = ff.between(attribute, ff.literal(range.getMinValue()),
-                        ff.literal(range.getMaxValue()));
+                filter =
+                        ff.between(
+                                attribute,
+                                ff.literal(range.getMinValue()),
+                                ff.literal(range.getMaxValue()));
             } else {
                 // Range intersects valid range of feature
                 // @todo adding another option to dimensionInfo allows contains, versus intersects
@@ -109,5 +109,4 @@ public class DimensionFilterBuilder {
         SimplifyingFilterVisitor visitor = new SimplifyingFilterVisitor();
         return (Filter) filter.accept(visitor, null);
     }
-
 }

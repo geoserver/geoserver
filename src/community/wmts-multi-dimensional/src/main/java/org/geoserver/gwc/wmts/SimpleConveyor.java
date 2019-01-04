@@ -4,13 +4,12 @@
  */
 package org.geoserver.gwc.wmts;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.platform.ServiceException;
 import org.geowebcache.conveyor.Conveyor;
 import org.geowebcache.storage.StorageBroker;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 final class SimpleConveyor extends Conveyor {
 
@@ -19,8 +18,12 @@ final class SimpleConveyor extends Conveyor {
     private final Operation operation;
     private final KvpMap parameters;
 
-    SimpleConveyor(Operation operation, HttpServletRequest request, HttpServletResponse response,
-                   StorageBroker storageBroker, KvpMap parameters) {
+    SimpleConveyor(
+            Operation operation,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            StorageBroker storageBroker,
+            KvpMap parameters) {
         super((String) parameters.get("layer"), storageBroker, request, response);
         this.request = request;
         this.response = response;
@@ -40,7 +43,8 @@ final class SimpleConveyor extends Conveyor {
     Object getParameter(String parameterName, boolean mandatory) {
         Object value = parameters.get(parameterName.toUpperCase());
         if (value == null && mandatory) {
-            throw new ServiceException(String.format("Mandatory '%s' parameter is missing.", parameterName));
+            throw new ServiceException(
+                    String.format("Mandatory '%s' parameter is missing.", parameterName));
         }
         return value;
     }

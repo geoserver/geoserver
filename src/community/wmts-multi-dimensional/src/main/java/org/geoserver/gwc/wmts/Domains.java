@@ -4,6 +4,8 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.io.IOException;
+import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -16,38 +18,91 @@ import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
-
-import java.io.IOException;
-import java.util.List;
+import org.opengis.filter.sort.SortOrder;
 
 /**
- * Utility class for aggregating several dimensions. All the dimensions will share the same
- * spatial domain (bounding box), restrictions (filter) and resource.
+ * Utility class for aggregating several dimensions. All the dimensions will share the same spatial
+ * domain (bounding box), restrictions (filter) and resource.
  */
 public class Domains {
 
     private final List<Dimension> dimensions;
-    private final ReferencedEnvelope boundingBox;
+    private final ReferencedEnvelope spatialDomain;
     private final Filter filter;
 
     private final LayerInfo layerInfo;
+    private int expandLimit;
+    private int maxReturnedValues;
+    private SortOrder sortOrder;
 
     private String histogram;
     private String resolution;
+    private String fromValue;
 
-    public Domains(List<Dimension> dimensions, LayerInfo layerInfo, ReferencedEnvelope boundingBox, Filter filter) {
+    public Domains(
+            List<Dimension> dimensions,
+            LayerInfo layerInfo,
+            ReferencedEnvelope boundingBox,
+            Filter filter) {
         this.dimensions = dimensions;
         this.layerInfo = layerInfo;
-        this.boundingBox = boundingBox;
+        this.spatialDomain = boundingBox;
         this.filter = filter;
+    }
+
+    public Domains withExpandLimit(int expandLimit) {
+        this.expandLimit = expandLimit;
+        return this;
+    }
+
+    public Domains withMaxReturnedValues(int maxReturnedValues) {
+        this.maxReturnedValues = maxReturnedValues;
+        return this;
+    }
+
+    public Domains withSortOrder(SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        return this;
+    }
+
+    public Domains withFromValue(String fromValue) {
+        this.fromValue = fromValue;
+        return this;
+    }
+
+    /**
+     * The maximum number of returned values in a GetDomainValues request
+     *
+     * @return
+     */
+    public int getMaxReturnedValues() {
+        return maxReturnedValues;
+    }
+
+    /**
+     * Returns the "fromValue" parameter in a GetDomainValues request
+     *
+     * @return
+     */
+    public String getFromValue() {
+        return fromValue;
+    }
+
+    /**
+     * The sort direction in a GetDomainValues request
+     *
+     * @return
+     */
+    public SortOrder getSortOrder() {
+        return sortOrder;
     }
 
     public List<Dimension> getDimensions() {
         return dimensions;
     }
 
-    ReferencedEnvelope getBoundingBox() {
-        return boundingBox;
+    ReferencedEnvelope getSpatialDomain() {
+        return spatialDomain;
     }
 
     public Filter getFilter() {
@@ -66,6 +121,10 @@ public class Domains {
         return histogram;
     }
 
+    public int getExpandLimit() {
+        return expandLimit;
+    }
+
     Tuple<String, List<Integer>> getHistogramValues() {
         for (Dimension dimension : dimensions) {
             if (dimension.getDimensionName().equalsIgnoreCase(histogram)) {
@@ -75,30 +134,32 @@ public class Domains {
         throw new RuntimeException(String.format("Dimension '%s' could not be found.", histogram));
     }
 
-    /**
-     * Returns the feature collection associated with these domains.
-     */
+    /** Returns the feature collection associated with these domains. */
     FeatureCollection getFeatureCollection() {
         ResourceInfo resourceInfo = layerInfo.getResource();
         try {
             if (resourceInfo instanceof FeatureTypeInfo) {
                 // accessing the features of a vector
-                return new FilteredFeatureType((FeatureTypeInfo) resourceInfo, filter).getFeatureSource(null, null).getFeatures();
+                return new FilteredFeatureType((FeatureTypeInfo) resourceInfo, filter)
+                        .getFeatureSource(null, null)
+                        .getFeatures();
             }
             // accessing the features of a raster
             return getFeatureCollection((CoverageInfo) resourceInfo);
         } catch (IOException exception) {
-            throw new RuntimeException(String.format("Error getting features of layer '%s'.", layerInfo.getName()), exception);
+            throw new RuntimeException(
+                    String.format("Error getting features of layer '%s'.", layerInfo.getName()),
+                    exception);
         }
     }
 
-    /**
-     * Helper method that just gets a feature collection from a raster.
-     */
+    /** Helper method that just gets a feature collection from a raster. */
     private FeatureCollection getFeatureCollection(CoverageInfo typeInfo) throws IOException {
-        GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
         if (!(reader instanceof StructuredGridCoverage2DReader)) {
-            throw new RuntimeException("Is not possible to obtain a feature collection from a non structured reader.");
+            throw new RuntimeException(
+                    "Is not possible to obtain a feature collection from a non structured reader.");
         }
         StructuredGridCoverage2DReader structuredReader = (StructuredGridCoverage2DReader) reader;
         String coverageName = structuredReader.getGridCoverageNames()[0];

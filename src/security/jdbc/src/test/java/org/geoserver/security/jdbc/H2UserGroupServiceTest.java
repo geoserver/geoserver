@@ -17,14 +17,11 @@ public class H2UserGroupServiceTest extends JDBCUserGroupServiceTest {
     }
 
     @Override
-
     protected JDBCUserGroupServiceConfig createConfigObject(String serviceName) {
         return JDBCTestSupport.createConfigObjectH2(serviceName, getSecurityManager());
-
     }
-    
-    public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {        
+
+    public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
         return JDBCTestSupport.createH2UserGroupService(getFixtureId(), getSecurityManager());
     }
-
 }

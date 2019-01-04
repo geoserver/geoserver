@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -36,9 +35,8 @@ public class Script implements Serializable {
 
     private String contents;
 
-    public Script() {
-    }
-    
+    public Script() {}
+
     public Script(Resource file) {
         this.file = file;
         this.name = getNameFromFile(file);
@@ -70,17 +68,18 @@ public class Script implements Serializable {
     }
 
     private Resource findFile(String name, String type, String extension) {
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         try {
             if (name.contains(":")) {
-                name = name.replace(":",File.separator);
+                name = name.replace(":", File.separator);
             }
             Resource f = scriptManager.scriptFile(name, ScriptType.getByLabel(type), extension);
             return f;
         } catch (IOException ex) {
-            LOGGER.warning(String.format(
-                    "Error finding file for name = %s, type = %s extension = %s because ", name,
-                    type, extension, ex.getMessage()));
+            LOGGER.warning(
+                    String.format(
+                            "Error finding file for name = %s, type = %s extension = %s because ",
+                            name, type, extension, ex.getMessage()));
         }
         return null;
     }
@@ -91,8 +90,9 @@ public class Script implements Serializable {
             String s = IOUtils.toString(in);
             return s;
         } catch (IOException ex) {
-            LOGGER.warning(String.format("Error reading file '%s' because ",
-                    file.path(), ex.getMessage()));
+            LOGGER.warning(
+                    String.format(
+                            "Error reading file '%s' because ", file.path(), ex.getMessage()));
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -100,7 +100,7 @@ public class Script implements Serializable {
     }
 
     private String findType(Resource file) {
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         return scriptManager.getScriptType(file).getLabel();
     }
 
@@ -134,8 +134,14 @@ public class Script implements Serializable {
 
     @Override
     public String toString() {
-        return "Script [extension=" + extension + ", file=" + file + ", name=" + name + ", type="
-                + type + "]";
+        return "Script [extension="
+                + extension
+                + ", file="
+                + file
+                + ", name="
+                + name
+                + ", type="
+                + type
+                + "]";
     }
-
 }

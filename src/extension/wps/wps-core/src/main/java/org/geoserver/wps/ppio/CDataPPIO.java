@@ -5,32 +5,26 @@
  */
 package org.geoserver.wps.ppio;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Process parameter input / output for objects which are text based (no Base64 encoding needed)
- *  
+ *
  * @author Andrea Aime, OpenGEO
  */
 public abstract class CDataPPIO extends ComplexPPIO {
 
-	protected CDataPPIO(Class externalType, Class internalType, String mimeType) {
-		super(externalType, internalType, mimeType);
-	}
-	
-    
+    protected CDataPPIO(Class externalType, Class internalType, String mimeType) {
+        super(externalType, internalType, mimeType);
+    }
+
     @Override
     public Object decode(Object input) throws Exception {
-    	return decode((String) input);
+        return decode((String) input);
     }
 
     /**
-     * Decodes a String into the internal object (used for CDATA inputs) 
-     * @param input
+     * Decodes a String into the internal object (used for CDATA inputs)
      *
+     * @param input
      */
     public abstract Object decode(String input) throws Exception;
-    
-    
 }

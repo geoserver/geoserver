@@ -5,20 +5,25 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.apache.wicket.Component;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
-import org.geotools.gce.gtopo30.GTopo30FormatFactory;
+import org.geotools.gce.geotiff.GeoTiffFormatFactorySpi;
+import org.geotools.geopkg.mosaic.GeoPackageFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.Format;
 
 public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
-    /**
-     * print page structure?
-     */
+    /** print page structure? */
     private static final boolean debugMode = false;
 
     String formatType;
@@ -27,15 +32,15 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void init() {
-        Format format = new GTopo30FormatFactory().createFormat();
+        Format format = new GeoTiffFormatFactorySpi().createFormat();
         formatType = format.getName();
         formatDescription = format.getDescription();
     }
 
     private CoverageStoreNewPage startPage() {
 
-        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         login();
+        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
         tester.startPage(page);
 
         if (debugMode) {
@@ -50,6 +55,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
         final String formatName = "_invalid_";
         try {
+            login();
             new CoverageStoreNewPage(formatName);
             fail("Expected IAE on invalid format name");
         } catch (IllegalArgumentException e) {
@@ -57,9 +63,7 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         }
     }
 
-    /**
-     * A kind of smoke test that only asserts the page is rendered when first loaded
-     */
+    /** A kind of smoke test that only asserts the page is rendered when first loaded */
     @Test
     public void testPageRendersOnLoad() {
 
@@ -80,10 +84,11 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         tester.assertModelValue("rasterStoreForm:enabledPanel:paramValue", Boolean.TRUE);
-        tester.assertModelValue("rasterStoreForm:workspacePanel:border:border_body:paramValue", getCatalog()
-                .getDefaultWorkspace());
-        tester.assertModelValue("rasterStoreForm:parametersPanel:url",
-                "file:data/example.extension");
+        tester.assertModelValue(
+                "rasterStoreForm:workspacePanel:border:border_body:paramValue",
+                getCatalog().getDefaultWorkspace());
+        tester.assertModelValue(
+                "rasterStoreForm:parametersPanel:url", "file:data/example.extension");
     }
 
     @Test
@@ -94,10 +99,23 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         tester.assertModelValue("rasterStoreForm:enabledPanel:paramValue", Boolean.TRUE);
-        tester.assertModelValue("rasterStoreForm:workspacePanel:border:border_body:paramValue", getCatalog()
-                .getDefaultWorkspace());
-        tester.assertModelValue("rasterStoreForm:parametersPanel:url",
-                "file:data/example.extension");
+        tester.assertModelValue(
+                "rasterStoreForm:workspacePanel:border:border_body:paramValue",
+                getCatalog().getDefaultWorkspace());
+        tester.assertModelValue(
+                "rasterStoreForm:parametersPanel:url", "file:data/example.extension");
+    }
 
+    @Test
+    public void testGeoPackageRaster() {
+        login();
+        formatType = new GeoPackageFormat().getName();
+        final CoverageStoreNewPage page = new CoverageStoreNewPage(formatType);
+        tester.startPage(page);
+
+        tester.debugComponentTrees();
+        Component urlComponent =
+                tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel:url");
+        assertThat(urlComponent, instanceOf(FileParamPanel.class));
     }
 }

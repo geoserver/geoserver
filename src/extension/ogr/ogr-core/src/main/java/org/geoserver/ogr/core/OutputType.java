@@ -5,10 +5,9 @@
 
 package org.geoserver.ogr.core;
 
-/**
- * Enumeration to mapping possible output types
- *
- */
+/** Enumeration to mapping possible output types */
 public enum OutputType {
-    BINARY, TEXT, XML;
+    BINARY,
+    TEXT,
+    XML;
 }

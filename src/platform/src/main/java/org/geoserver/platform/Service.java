@@ -6,49 +6,37 @@
 package org.geoserver.platform;
 
 import java.util.List;
-
 import org.geotools.util.Version;
-
 
 /**
  * A service descriptor which provides metadata such as id, and version.
- * <p>
- * Service descriptors are identified by an id, version pair. Two service
- * descriptors are considered equal if they have the same id, and version.
- * </p>
- * <p>
- * The underlying service implementation is a plain old java object,
- * available via {@link #service}.
- * </p>
+ *
+ * <p>Service descriptors are identified by an id, version pair. Two service descriptors are
+ * considered equal if they have the same id, and version.
+ *
+ * <p>The underlying service implementation is a plain old java object, available via {@link
+ * #service}.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public final class Service {
-    /**
-     * Identifier for the service.
-     */
+    /** Identifier for the service. */
     final String id;
 
-    /**
-     * Namespace for the service
-     */
+    /** Namespace for the service */
     final String namespace;
 
-    /**
-     * The service implementation.
-     */
+    /** The service implementation. */
     final Object service;
 
-    /**
-     * The service version
-     */
+    /** The service version */
     final Version version;
 
-    /**
-     * List of operations provided by the service
-     */
+    /** List of operations provided by the service */
     final List<String> operations;
+
+    /** Optional capabilities backlink in case the service is not a traditional OWS service */
+    String customCapabilitiesLink;
 
     /**
      * Creates a new service descriptor.
@@ -68,9 +56,10 @@ public final class Service {
      * @param namespace The namespace of the service, may be <code>null</code>
      * @param service The object implementing the service.
      * @param version The version of the service.
-     * @param operations The list of operations the service provides 
+     * @param operations The list of operations the service provides
      */
-    public Service(String id, String namespace, Object service, Version version, List<String> operations) {
+    public Service(
+            String id, String namespace, Object service, Version version, List<String> operations) {
         this.id = id;
         this.service = service;
         this.version = version;
@@ -101,6 +90,14 @@ public final class Service {
         return operations;
     }
 
+    public String getCustomCapabilitiesLink() {
+        return customCapabilitiesLink;
+    }
+
+    public void setCustomCapabilitiesLink(String customCapabilitiesLink) {
+        this.customCapabilitiesLink = customCapabilitiesLink;
+    }
+
     public boolean equals(Object obj) {
         if (!(obj instanceof Service)) {
             return false;
@@ -122,7 +119,7 @@ public final class Service {
             }
         }
 
-        return operations.equals( other.operations );
+        return operations.equals(other.operations);
     }
 
     public int hashCode() {

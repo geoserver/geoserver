@@ -4,18 +4,16 @@
  */
 package org.geoserver.inspire.wmts;
 
-import org.geoserver.gwc.GWC;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Test;
-
 import static org.geoserver.inspire.wmts.InspireGridSetLoader.INSPIRE_GRID_SET_NAME;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-/**
- * Testing that INSPIRE grid set is correctly loaded and configured.
- */
+import org.geoserver.gwc.GWC;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
+
+/** Testing that INSPIRE grid set is correctly loaded and configured. */
 public class InspireGridSetLoaderTest extends GeoServerSystemTestSupport {
 
     @Test

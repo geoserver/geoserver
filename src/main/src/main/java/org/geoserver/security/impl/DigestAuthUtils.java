@@ -12,27 +12,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-
 /**
- * This is an exact copy of 
- * org.springframework.security.web.authentication.www.DigestAuthUtils;
+ * This is an exact copy of org.springframework.security.web.authentication.www.DigestAuthUtils;
  *
- * The Spring class has package visibility, no idea why.
- * The functionally is used for test cases and may be
- * used by a client agent using the geoserver library 
- * 
+ * <p>The Spring class has package visibility, no idea why. The functionally is used for test cases
+ * and may be used by a client agent using the geoserver library
+ *
  * @author mcr
- *
  */
 public class DigestAuthUtils {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    public  static String encodePasswordInA1Format(String username, String realm, String password) {
+    public static String encodePasswordInA1Format(String username, String realm, String password) {
         String a1 = username + ":" + realm + ":" + password;
         String a1Md5 = md5Hex(a1);
 
@@ -87,26 +82,35 @@ public class DigestAuthUtils {
     }
 
     /**
-     * Computes the <code>response</code> portion of a Digest authentication header. Both the server and user
-     * agent should compute the <code>response</code> independently. Provided as a static method to simplify the
-     * coding of user agents.
+     * Computes the <code>response</code> portion of a Digest authentication header. Both the server
+     * and user agent should compute the <code>response</code> independently. Provided as a static
+     * method to simplify the coding of user agents.
      *
-     * @param passwordAlreadyEncoded true if the password argument is already encoded in the correct format. False if
-     *                               it is plain text.
-     * @param username               the user's login name.
-     * @param realm                  the name of the realm.
-     * @param password               the user's password in plaintext or ready-encoded.
-     * @param httpMethod             the HTTP request method (GET, POST etc.)
-     * @param uri                    the request URI.
-     * @param qop                    the qop directive, or null if not set.
-     * @param nonce                  the nonce supplied by the server
-     * @param nc                     the "nonce-count" as defined in RFC 2617.
-     * @param cnonce                 opaque string supplied by the client when qop is set.
+     * @param passwordAlreadyEncoded true if the password argument is already encoded in the correct
+     *     format. False if it is plain text.
+     * @param username the user's login name.
+     * @param realm the name of the realm.
+     * @param password the user's password in plaintext or ready-encoded.
+     * @param httpMethod the HTTP request method (GET, POST etc.)
+     * @param uri the request URI.
+     * @param qop the qop directive, or null if not set.
+     * @param nonce the nonce supplied by the server
+     * @param nc the "nonce-count" as defined in RFC 2617.
+     * @param cnonce opaque string supplied by the client when qop is set.
      * @return the MD5 of the digest authentication response, encoded in hex
      * @throws IllegalArgumentException if the supplied qop value is unsupported.
      */
-    public static String generateDigest(boolean passwordAlreadyEncoded, String username, String realm, String password,
-                                        String httpMethod, String uri, String qop, String nonce, String nc, String cnonce)
+    public static String generateDigest(
+            boolean passwordAlreadyEncoded,
+            String username,
+            String realm,
+            String password,
+            String httpMethod,
+            String uri,
+            String qop,
+            String nonce,
+            String nc,
+            String cnonce)
             throws IllegalArgumentException {
         String a1Md5 = null;
         String a2 = httpMethod + ":" + uri;
@@ -136,19 +140,23 @@ public class DigestAuthUtils {
     }
 
     /**
-     * Takes an array of <code>String</code>s, and for each element removes any instances of
-     * <code>removeCharacter</code>, and splits the element based on the <code>delimiter</code>. A <code>Map</code> is
-     * then generated, with the left of the delimiter providing the key, and the right of the delimiter providing the
-     * value.<p>Will trim both the key and value before adding to the <code>Map</code>.</p>
+     * Takes an array of <code>String</code>s, and for each element removes any instances of <code>
+     * removeCharacter</code>, and splits the element based on the <code>delimiter</code>. A <code>
+     * Map</code> is then generated, with the left of the delimiter providing the key, and the right
+     * of the delimiter providing the value.
      *
-     * @param array            the array to process
-     * @param delimiter        to split each element using (typically the equals symbol)
-     * @param removeCharacters one or more characters to remove from each element prior to attempting the split
-     *                         operation (typically the quotation mark symbol) or <code>null</code> if no removal should occur
-     * @return a <code>Map</code> representing the array contents, or <code>null</code> if the array to process was
-     *         null or empty
+     * <p>Will trim both the key and value before adding to the <code>Map</code>.
+     *
+     * @param array the array to process
+     * @param delimiter to split each element using (typically the equals symbol)
+     * @param removeCharacters one or more characters to remove from each element prior to
+     *     attempting the split operation (typically the quotation mark symbol) or <code>null</code>
+     *     if no removal should occur
+     * @return a <code>Map</code> representing the array contents, or <code>null</code> if the array
+     *     to process was null or empty
      */
-    public static Map<String, String> splitEachArrayElementAndCreateMap(String[] array, String delimiter, String removeCharacters) {
+    public static Map<String, String> splitEachArrayElementAndCreateMap(
+            String[] array, String delimiter, String removeCharacters) {
         if ((array == null) || (array.length == 0)) {
             return null;
         }
@@ -176,15 +184,15 @@ public class DigestAuthUtils {
         return map;
     }
 
-
     /**
-     * Splits a <code>String</code> at the first instance of the delimiter.<p>Does not include the delimiter in
-     * the response.</p>
+     * Splits a <code>String</code> at the first instance of the delimiter.
      *
-     * @param toSplit   the string to split
+     * <p>Does not include the delimiter in the response.
+     *
+     * @param toSplit the string to split
      * @param delimiter to split the string up with
-     * @return a two element array with index 0 being before the delimiter, and index 1 being after the delimiter
-     *         (neither element includes the delimiter)
+     * @return a two element array with index 0 being before the delimiter, and index 1 being after
+     *     the delimiter (neither element includes the delimiter)
      * @throws IllegalArgumentException if an argument was invalid
      */
     public static String[] split(String toSplit, String delimiter) {
@@ -204,7 +212,7 @@ public class DigestAuthUtils {
         String beforeDelimiter = toSplit.substring(0, offset);
         String afterDelimiter = toSplit.substring(offset + 1);
 
-        return new String[]{beforeDelimiter, afterDelimiter};
+        return new String[] {beforeDelimiter, afterDelimiter};
     }
 
     public static String md5Hex(String data) {

@@ -20,64 +20,59 @@ class DummyMonitorDAO implements MonitorDAO {
     }
 
     @Override
-    public void init(MonitorConfig config) {
-    }
+    public void init(MonitorConfig config) {}
 
     public RequestData init(RequestData data) {
         request = data;
         return data;
     }
 
-    public void add(RequestData data) {
-    }
-    
-    public void update(RequestData data) {
-    }
-    
+    public void add(RequestData data) {}
+
+    public void update(RequestData data) {}
+
     public void save(RequestData data) {
         last = request;
         request = null;
     }
-    
+
     public List<RequestData> getRequests() {
         return Arrays.asList(request);
     }
-    
+
     public List<RequestData> getRequests(Query query) {
         return null;
     }
-    
-    public void getRequests(Query query, RequestDataVisitor visitor) {
-    }
-    
+
+    public void getRequests(Query query, RequestDataVisitor visitor) {}
+
     public RequestData getRequest(long id) {
         return null;
     }
-    
+
     public long getCount(Query query) {
         return 0;
     }
-    
+
     public Iterator<RequestData> getIterator(Query query) {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     public ResourceData getLayer(String name) {
         return null;
     }
-    
+
     public List<ResourceData> getLayers() {
         return null;
     }
-    
+
     public List<ResourceData> getLayers(Query query) {
         return null;
     }
-    
-    public void getLayers(Query query, MonitorVisitor<ResourceData> visitor) {
-    }
-    
+
+    public void getLayers(Query query, MonitorVisitor<ResourceData> visitor) {}
+
     public List<RequestData> getHistory() {
         return getRequests();
     }
@@ -97,12 +92,8 @@ class DummyMonitorDAO implements MonitorDAO {
     public List<RequestData> getOwsRequests(String service, String operation, String version) {
         return null;
     }
-    
-    public void clear() {
-    }
-    
-    public void dispose() {
-    }
 
-   
+    public void clear() {}
+
+    public void dispose() {}
 }

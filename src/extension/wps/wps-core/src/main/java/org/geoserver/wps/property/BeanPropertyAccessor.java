@@ -6,20 +6,17 @@ package org.geoserver.wps.property;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.geoserver.wps.WPSException;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
-/**
- * Extracts a property from any JavaBean using Spring bean utilities
- */
+/** Extracts a property from any JavaBean using Spring bean utilities */
 public class BeanPropertyAccessor implements PropertyAccessor {
 
     private static final Logger LOGGER = Logging.getLogger(BeanPropertyAccessor.class);
-    
+
     @Override
     public boolean canHandle(Object object, String xpath, Class<?> target) {
         return true;
@@ -45,6 +42,4 @@ public class BeanPropertyAccessor implements PropertyAccessor {
             throws IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
-
-
 }

@@ -12,5 +12,4 @@ public class PostGisRoleServiceTest extends JDBCRoleServiceTest {
     protected String getFixtureId() {
         return "postgis";
     }
-
 }

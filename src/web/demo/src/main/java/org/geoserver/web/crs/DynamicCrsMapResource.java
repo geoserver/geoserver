@@ -11,30 +11,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
-
 import javax.imageio.ImageIO;
-
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
- * A wicket resource that acts as a mini WMS to generate a map for a
- * {@link CoordinateReferenceSystem CRS}'s area of validity.
- * <p>
- * This resource expects the following parameters in order to generate the area of validity map:
+ * A wicket resource that acts as a mini WMS to generate a map for a {@link
+ * CoordinateReferenceSystem CRS}'s area of validity.
+ *
+ * <p>This resource expects the following parameters in order to generate the area of validity map:
+ *
  * <ul>
- * <li>WIDTH
- * <li>HEIGHT
- * <li>BBOX
+ *   <li>WIDTH
+ *   <li>HEIGHT
+ *   <li>BBOX
  * </ul>
- * </p>
- * 
+ *
  * @author Gabriel Roldan
  */
 public class DynamicCrsMapResource extends AbstractResource {
@@ -50,35 +47,37 @@ public class DynamicCrsMapResource extends AbstractResource {
     @Override
     protected ResourceResponse newResourceResponse(Attributes attributes) {
         ResourceResponse rsp = new ResourceResponse();
-        rsp.setWriteCallback(new WriteCallback() {
-            @Override
-            public void writeData(Attributes attributes) throws IOException {
-                IRequestParameters params = attributes.getRequest().getQueryParameters();
-                int width = params.getParameterValue("WIDTH").toInt(400);
-                int height = params.getParameterValue("HEIGHT").toInt(200);
-                String bboxStr = params.getParameterValue("BBOX").toOptionalString();
-        
-                ByteArrayOutputStream output = null;
-                if (bboxStr != null) {
-        
-                    try {
-                        CRSAreaOfValidityMapBuilder builder = new CRSAreaOfValidityMapBuilder(width, height);
-                        Envelope envelope = parseEnvelope(bboxStr);
-                        RenderedImage image = builder.createMapFor(crs, envelope);
-                        output = new ByteArrayOutputStream();
-                        ImageIO.write(image, "PNG", output);
-                    } catch (Exception e) {
-                        output = null;
-                        e.printStackTrace();
+        rsp.setWriteCallback(
+                new WriteCallback() {
+                    @Override
+                    public void writeData(Attributes attributes) throws IOException {
+                        IRequestParameters params = attributes.getRequest().getQueryParameters();
+                        int width = params.getParameterValue("WIDTH").toInt(400);
+                        int height = params.getParameterValue("HEIGHT").toInt(200);
+                        String bboxStr = params.getParameterValue("BBOX").toOptionalString();
+
+                        ByteArrayOutputStream output = null;
+                        if (bboxStr != null) {
+
+                            try {
+                                CRSAreaOfValidityMapBuilder builder =
+                                        new CRSAreaOfValidityMapBuilder(width, height);
+                                Envelope envelope = parseEnvelope(bboxStr);
+                                RenderedImage image = builder.createMapFor(crs, envelope);
+                                output = new ByteArrayOutputStream();
+                                ImageIO.write(image, "PNG", output);
+                            } catch (Exception e) {
+                                output = null;
+                                e.printStackTrace();
+                            }
+                        }
+
+                        final byte[] byteArray = output == null ? null : output.toByteArray();
+                        if (byteArray != null) {
+                            attributes.getResponse().write(byteArray);
+                        }
                     }
-                }
-        
-                final byte[] byteArray = output == null ? null : output.toByteArray();
-                if (byteArray != null) {
-                    attributes.getResponse().write(byteArray);
-                }
-            }
-        });
+                });
         return rsp;
     }
 
@@ -101,11 +100,10 @@ public class DynamicCrsMapResource extends AbstractResource {
             this.content = content;
         }
 
-        public void setLocale(Locale arg0) {
-        }
+        public void setLocale(Locale arg0) {}
 
         public Bytes length() {
-            return Bytes.bytes(content == null? 0 : content.length);
+            return Bytes.bytes(content == null ? 0 : content.length);
         }
 
         public InputStream getInputStream() throws ResourceStreamNotFoundException {
@@ -119,8 +117,6 @@ public class DynamicCrsMapResource extends AbstractResource {
             return "image/png";
         }
 
-        public void close() throws IOException {
-        }
-
+        public void close() throws IOException {}
     }
 }

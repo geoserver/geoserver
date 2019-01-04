@@ -4,13 +4,14 @@
  */
 package org.geoserver.wps.validator;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.wps.ProcessGroupInfo;
@@ -30,26 +31,20 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.Validator;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-
 /**
  * A process filter that applies the well known input validators to the process parameters, so that
  * DescribeFeatureType can advertise them to the world
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
-public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAware,
-        ExtensionPriority {
+public class ProcessLimitsFilter
+        implements ProcessFilter, ApplicationContextAware, ExtensionPriority {
 
     static final Logger LOGGER = Logging.getLogger(ProcessLimitsFilter.class);
 
     static final Multimap<String, WPSInputValidator> EMPTY_MULTIMAP = ImmutableMultimap.of();
 
-    /**
-     * Key where the parameter validators will be stored
-     */
+    /** Key where the parameter validators will be stored */
     public static final String VALIDATORS_KEY = "wpsValidators";
 
     GeoServer geoServer;
@@ -96,12 +91,13 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
             Map<String, Parameter<?>> result = super.getParameterInfo(name);
             int maxComplexInputSize = wps.getMaxComplexInputSize();
             if (maxComplexInputSize <= 0
-                    && (processInfo == null || processInfo.getValidators() == null || processInfo
-                            .getValidators().isEmpty())) {
+                    && (processInfo == null
+                            || processInfo.getValidators() == null
+                            || processInfo.getValidators().isEmpty())) {
                 return result;
             } else {
-                Multimap<String, WPSInputValidator> validatorsMap = processInfo != null ? processInfo
-                        .getValidators() : EMPTY_MULTIMAP;
+                Multimap<String, WPSInputValidator> validatorsMap =
+                        processInfo != null ? processInfo.getValidators() : EMPTY_MULTIMAP;
                 // clone just to be on the safe side
                 HashMap<String, Parameter<?>> params = new LinkedHashMap<>(result);
                 for (String paramName : params.keySet()) {
@@ -109,21 +105,21 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                     Collection<WPSInputValidator> validators = validatorsMap.get(paramName);
                     // can we skip to build a clone?
                     if (validators == null
-                            && (maxComplexInputSize <= 0 || !ProcessParameterIO.isComplex(param,
-                                    applicationContext))) {
+                            && (maxComplexInputSize <= 0
+                                    || !ProcessParameterIO.isComplex(param, applicationContext))) {
                         continue;
                     }
-                    
+
                     // setup the global size limits. non complex params will just ignore it
                     Map<String, Object> metadataClone = new HashMap(param.metadata);
                     if (wps.getMaxComplexInputSize() > 0) {
-                        metadataClone.put(MaxSizeValidator.PARAMETER_KEY,
-                                wps.getMaxComplexInputSize());
+                        metadataClone.put(
+                                MaxSizeValidator.PARAMETER_KEY, wps.getMaxComplexInputSize());
                     }
 
                     // collect all validator overrides
                     int maxOccurs = param.getMaxOccurs();
-                    if(validators != null) {
+                    if (validators != null) {
                         metadataClone.put(VALIDATORS_KEY, validators);
                         for (Validator validator : validators) {
                             if (validator instanceof MaxSizeValidator) {
@@ -137,12 +133,14 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                                 Comparable max = (Comparable) param.metadata.get(Parameter.MAX);
                                 boolean restricting = false;
                                 if (range.getMinValue() != null
-                                        && (min == null || min.compareTo(range.getMinValue()) < 0)) {
+                                        && (min == null
+                                                || min.compareTo(range.getMinValue()) < 0)) {
                                     min = range.getMinValue();
                                     restricting = true;
                                 }
                                 if (range.getMaxValue() != null
-                                        && (max == null || max.compareTo(range.getMaxValue()) > 0)) {
+                                        && (max == null
+                                                || max.compareTo(range.getMaxValue()) > 0)) {
                                     max = range.getMaxValue();
                                     restricting = true;
                                 }
@@ -165,16 +163,23 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
                     }
 
                     // rebuild the param and put it in the params
-                    Parameter<?> substitute = new Parameter(param.key, param.type, param.title,
-                            param.description, param.required, param.minOccurs, maxOccurs,
-                            param.sample, metadataClone);
+                    Parameter<?> substitute =
+                            new Parameter(
+                                    param.key,
+                                    param.type,
+                                    param.title,
+                                    param.description,
+                                    param.required,
+                                    param.minOccurs,
+                                    maxOccurs,
+                                    param.sample,
+                                    metadataClone);
                     params.put(param.key, substitute);
                 }
 
                 return params;
             }
         }
-
     }
 
     @Override
@@ -186,5 +191,4 @@ public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAwa
     public int getPriority() {
         return Integer.MAX_VALUE;
     }
-
 }

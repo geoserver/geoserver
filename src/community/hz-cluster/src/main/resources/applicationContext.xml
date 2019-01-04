@@ -12,25 +12,30 @@
          class="org.geoserver.cluster.hazelcast.HzSynchronizerInitializer">
       <property name="cluster" ref="hzCluster"/>
    </bean>
+   
+   <!-- override the default one -->
+   <bean id="hzResourceNotificationDispatcher"
+   		class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" >
+   </bean>
+   <alias name="hzResourceNotificationDispatcher" alias="resourceNotificationDispatcher" />
+   
    <bean id="hzCluster" 
          class="org.geoserver.cluster.hazelcast.HzCluster">
       <property name="resourceStore" ref="resourceStore"/>
       <property name="rawCatalog" ref="rawCatalog"/>
+      <property name="resourceNotificationDispatcher" ref="hzResourceNotificationDispatcher"/>
    </bean>
 
-   <bean id="hzCacheProvider" class="org.geoserver.cluster.hazelcast.HzCacheProvider">
+<!--    <bean id="hzCacheProvider" class="org.geoserver.cluster.hazelcast.HzCacheProvider">
       <constructor-arg ref="xstreamPersisterFactory"/>
-   </bean>
+   </bean> 
    
    <bean id="hzExtensionFilter" class="org.geoserver.cluster.hazelcast.HzExtensionFilter">
-   </bean>
+   </bean> -->
 
    <bean id="hzLockProvider" class="org.geoserver.cluster.hazelcast.HzLockProvider">
       <property name="cluster" ref="hzCluster"/>
    </bean>
-   
-   <!-- override the default one -->
-   <bean id="resourceNotificationDispatcher" class="org.geoserver.cluster.hazelcast.HzResourceNotificationDispatcher" />
    
    <!-- turn of default webui redirect -->
    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >

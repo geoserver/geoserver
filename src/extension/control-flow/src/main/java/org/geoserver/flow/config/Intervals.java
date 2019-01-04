@@ -6,12 +6,14 @@ package org.geoserver.flow.config;
 
 /**
  * The time intervals used in rate control
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public enum Intervals {
-    s(1000), m(60000), h(3600000), d(86400000);
+    s(1000),
+    m(60000),
+    h(3600000),
+    d(86400000);
 
     int duration;
 

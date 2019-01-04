@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 import org.vfny.geoserver.global.dto.CloneLibrary;
 import org.vfny.geoserver.global.dto.EqualsLibrary;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 
 /**

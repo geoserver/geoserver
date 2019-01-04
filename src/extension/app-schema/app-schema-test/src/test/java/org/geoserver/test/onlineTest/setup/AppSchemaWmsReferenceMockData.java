@@ -11,18 +11,26 @@ public class AppSchemaWmsReferenceMockData extends AbstractAppSchemaMockData {
     @Override
     protected void addContent() {
         addFeatureType(GSML_PREFIX, "Contact", "DataReferenceData/gsml_Contact/gsml_Contact.xml");
-        addFeatureType(GSML_PREFIX, "MappedFeature",
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
                 "WmsDataReferenceData/gsml_MappedFeature/gsml_MappedFeature.xml",
                 "DataReferenceData/gsml_MappedFeature/MF_CGITermValue.xml");
 
-        addFeatureType(GSML_PREFIX, "DisplacementEvent",
+        addFeatureType(
+                GSML_PREFIX,
+                "DisplacementEvent",
                 "DataReferenceData/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
 
-        addFeatureType(GSML_PREFIX, "GeologicEvent",
+        addFeatureType(
+                GSML_PREFIX,
+                "GeologicEvent",
                 "WmsDataReferenceData/gsml_GeologicEvent/gsml_GeologicEvent.xml",
                 "DataReferenceData/gsml_GeologicEvent/GE_CGITermValue.xml");
 
-        addFeatureType(GSML_PREFIX, "GeologicUnit",
+        addFeatureType(
+                GSML_PREFIX,
+                "GeologicUnit",
                 "WmsDataReferenceData/gsml_GeologicUnit/gsml_GeologicUnit.xml",
                 "DataReferenceData/gsml_GeologicUnit/gsml_PhysicalDescription.xml",
                 "DataReferenceData/gsml_GeologicUnit/GU_CGITermValue.xml",
@@ -32,7 +40,9 @@ public class AppSchemaWmsReferenceMockData extends AbstractAppSchemaMockData {
                 "DataReferenceData/gsml_CompositionPart/gsml_Mineral.xml",
                 "DataReferenceData/gsml_CompositionPart/RockMaterial.xml");
 
-        addFeatureType(GSML_PREFIX, "ShearDisplacementStructure",
+        addFeatureType(
+                GSML_PREFIX,
+                "ShearDisplacementStructure",
                 "DataReferenceData/gsml_ShearDisplacementStructure/gsml_ShearDisplacementStructure.xml");
     }
 }

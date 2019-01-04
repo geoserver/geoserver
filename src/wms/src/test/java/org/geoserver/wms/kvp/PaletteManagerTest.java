@@ -8,12 +8,11 @@ import static org.junit.Assert.*;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
-
 import org.geotools.image.palette.InverseColorMapOp;
 import org.junit.Test;
 
 public class PaletteManagerTest {
-    
+
     @Test
     public void testSameIndexColorModel() {
         IndexColorModel safePalette = PaletteManager.safePalette;
@@ -22,7 +21,7 @@ public class PaletteManagerTest {
         InverseColorMapOp op2 = PaletteManager.getInverseColorMapOp(safePalette);
         assertEquals(op1, op2);
     }
-    
+
     @Test
     public void testDifferentColorModels() {
         IndexColorModel safePalette = PaletteManager.safePalette;
@@ -33,10 +32,7 @@ public class PaletteManagerTest {
         assertNotEquals(op1, op2);
     }
 
-    
-    /**
-     * Builds a palette with the same structure as the safe one, but fully gray
-     */
+    /** Builds a palette with the same structure as the safe one, but fully gray */
     static IndexColorModel buildGrayPalette() {
         int[] cmap = new int[256];
 
@@ -50,7 +46,6 @@ public class PaletteManagerTest {
         cmap[255] = (255 << 16) | (255 << 8) | 255;
 
         // create the color model
-        return new IndexColorModel(8, 256, cmap, 0, true, 255,
-                DataBuffer.TYPE_BYTE);
+        return new IndexColorModel(8, 256, cmap, 0, true, 255, DataBuffer.TYPE_BYTE);
     }
 }

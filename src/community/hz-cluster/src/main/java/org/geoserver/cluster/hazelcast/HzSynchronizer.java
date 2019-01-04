@@ -8,14 +8,20 @@ package org.geoserver.cluster.hazelcast;
 import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.hazelcast.core.ITopic;
+import com.hazelcast.core.Message;
+import com.hazelcast.core.MessageListener;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.ResourceInfo;
@@ -36,30 +42,23 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.hazelcast.core.ITopic;
-import com.hazelcast.core.Message;
-import com.hazelcast.core.MessageListener;
-import com.yammer.metrics.Metrics;
-
 /**
  * Base hazelcast based synchronizer that does event collapsing.
- * <p>
- * This synchronizer maintains a thread safe queue that is populated with events as they occur. Upon
- * receiving of an event a new runnable is scheduled and run after a short delay (default 5 sec).
- * The runnable calls the {@link #processEvent(Queue)} method to be implemented by subclasses.
- * </p>
- * <p>
- * This synchronizer events messages received from the same source.
- * </p>
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>This synchronizer maintains a thread safe queue that is populated with events as they occur.
+ * Upon receiving of an event a new runnable is scheduled and run after a short delay (default 5
+ * sec). The runnable calls the {@link #processEvent(Queue)} method to be implemented by subclasses.
+ *
+ * <p>This synchronizer events messages received from the same source.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
-public abstract class HzSynchronizer extends GeoServerSynchronizer implements
-        MessageListener<Event> {
+public abstract class HzSynchronizer extends GeoServerSynchronizer
+        implements MessageListener<Event> {
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
+
+    private final MetricRegistry registry = new MetricRegistry();
 
     protected final HzCluster cluster;
 
@@ -74,8 +73,8 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     private volatile boolean started;
 
     ScheduledExecutorService getNewExecutor() {
-        return Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(
-                "HzSynchronizer-%d").build());
+        return Executors.newSingleThreadScheduledExecutor(
+                new ThreadFactoryBuilder().setNameFormat("HzSynchronizer-%d").build());
     }
 
     public HzSynchronizer(HzCluster cluster, GeoServer gs) {
@@ -101,10 +100,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
             }
             return;
         }
-        Metrics.newCounter(getClass(), "recieved").inc();
+        incCounter(getClass(), "recieved");
         if (localAddress(cluster.getHz()).equals(event.getSource())) {
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("%s - Skipping message generated locally: %s", nodeId(), event));
+                LOGGER.finer(
+                        format("%s - Skipping message generated locally: %s", nodeId(), event));
             }
             return;
         }
@@ -117,7 +117,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         executor.schedule(new EventWorker(event), syncDelay, TimeUnit.SECONDS);
     }
 
-    private class EventWorker implements Runnable {
+    private class EventWorker implements Callable<Future<?>> {
 
         private Event event;
 
@@ -126,17 +126,19 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         }
 
         @Override
-        public void run() {
+        public Future<?> call() {
             if (!isStarted()) {
-                return;
+                return null;
             }
+            Future<?> future = null;
             try {
-                processEvent(event);
+                future = processEvent(event);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
             }
 
-            Metrics.newCounter(getClass(), "reloads").inc();
+            incCounter(getClass(), "reloads");
+            return future;
         }
     }
 
@@ -144,12 +146,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
 
     /**
      * Processes the event queue.
-     * <p>
-     * <b>Note:</b> It is the responsibility of subclasses to clear events from the queue as they
+     *
+     * <p><b>Note:</b> It is the responsibility of subclasses to clear events from the queue as they
      * are processed.
-     * </p>
      */
-    protected abstract void processEvent(Event event) throws Exception;
+    protected abstract Future<?> processEvent(Event event);
 
     ConfigChangeEvent newChangeEvent(CatalogEvent evt, Type type) {
         return newChangeEvent(evt.getSource(), type);
@@ -157,18 +158,19 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
 
     ConfigChangeEvent newChangeEvent(Info subj, Type type) {
         String name = (String) (OwsUtils.has(subj, "name") ? OwsUtils.get(subj, "name") : null);
-        WorkspaceInfo ws = (WorkspaceInfo) (OwsUtils.has(subj, "workspace") ? OwsUtils.get(subj,
-                "workspace") : null);
-        
-        StoreInfo store = (StoreInfo) (OwsUtils.has(subj, "store") ? OwsUtils.get(subj,
-                "store") : null);
+        WorkspaceInfo ws =
+                (WorkspaceInfo)
+                        (OwsUtils.has(subj, "workspace") ? OwsUtils.get(subj, "workspace") : null);
+
+        StoreInfo store =
+                (StoreInfo) (OwsUtils.has(subj, "store") ? OwsUtils.get(subj, "store") : null);
 
         ConfigChangeEvent ev = new ConfigChangeEvent(subj.getId(), name, subj.getClass(), type);
         if (ws != null) {
             ev.setWorkspaceId(ws.getId());
         }
-        if (store !=null) {
-        	ev.setStoreId(store.getId());
+        if (store != null) {
+            ev.setStoreId(store.getId());
         }
         if (subj instanceof ResourceInfo) {
             ev.setNativeName(((ResourceInfo) subj).getNativeName());
@@ -192,8 +194,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     }
 
     @Override
-    public void handleGlobalChange(GeoServerInfo global, List<String> propertyNames,
-            List<Object> oldValues, List<Object> newValues) {
+    public void handleGlobalChange(
+            GeoServerInfo global,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         // optimization for update sequence
         if (propertyNames.size() == 1 && propertyNames.contains("updateSequence")) {
             return;
@@ -224,6 +229,11 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     @Override
     public void handleSettingsRemoved(SettingsInfo settings) {
         dispatch(newChangeEvent(settings, Type.REMOVE));
+    }
+
+    /** Increments the counter for the specified class and name by one. */
+    protected void incCounter(Class<?> clazz, String name) {
+        this.registry.counter(MetricRegistry.name(clazz, name)).inc();
     }
 
     protected String nodeId() {

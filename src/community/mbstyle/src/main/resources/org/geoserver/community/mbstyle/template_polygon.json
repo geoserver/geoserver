@@ -1,0 +1,14 @@
+{
+  "version": 8,
+  "name": "${colorName} polygon",
+  "layers": [
+      {
+          "id": "${colorName} polygon",
+          "type": "fill",
+          "paint": {
+              "fill-color": "${colorCode}",
+              "fill-outline-color":"#000000"
+          }
+      }
+  ]
+}

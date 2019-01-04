@@ -8,26 +8,25 @@ package org.geoserver.data;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-
 /**
  * Writes the GeoServer catalog.xml file.
- * <p>
- * Usage:
+ *
+ * <p>Usage:
  *
  * <pre>
  *         <code>
@@ -46,36 +45,24 @@ import org.w3c.dom.Element;
  * </code>
  * </pre>
  *
- * </p>
- *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class CatalogWriter {
-    /**
-     * The xml document
-     */
+    /** The xml document */
     Document document;
 
-    /**
-     * Root catalog element.
-     */
+    /** Root catalog element. */
     Element catalog;
 
-    /**
-     * The coverage type key (aka format name)
-     */    
+    /** The coverage type key (aka format name) */
     public static final String COVERAGE_TYPE_KEY = "coverageType";
 
-    /**
-     * The coverage url key (the actual coverage data location)
-     */
+    /** The coverage url key (the actual coverage data location) */
     public static final String COVERAGE_URL_KEY = "coverageUrl";
 
     public CatalogWriter() {
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory
-                .newInstance();
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setNamespaceAware(false);
             builderFactory.setValidating(false);
 
@@ -92,14 +79,15 @@ public class CatalogWriter {
      *
      * @param dataStores map of id to connection parameter map
      * @param namespaces map of id to namespace prefix map
-     *
-     *
      */
-    public void dataStores(Map /* <String,Map> */ dataStores, Map /*<String,String>*/ namespaces, Set/*<String>*/ disabled) {
+    public void dataStores(
+            Map /* <String,Map> */ dataStores,
+            Map /*<String,String>*/ namespaces,
+            Set /*<String>*/ disabled) {
         Element dataStoresElement = document.createElement("datastores");
         catalog.appendChild(dataStoresElement);
 
-        for (Iterator d = dataStores.entrySet().iterator(); d.hasNext();) {
+        for (Iterator d = dataStores.entrySet().iterator(); d.hasNext(); ) {
             Map.Entry dataStore = (Map.Entry) d.next();
             String id = (String) dataStore.getKey();
             Map params = (Map) dataStore.getValue();
@@ -111,14 +99,14 @@ public class CatalogWriter {
             dataStoreElement.setAttribute("id", id);
             dataStoreElement.setAttribute("enabled", Boolean.toString(!disabled.contains(id)));
 
-            //set the namespace
+            // set the namespace
             dataStoreElement.setAttribute("namespace", (String) namespaces.get(id));
 
             // encode hte ocnnection paramters
             Element connectionParamtersElement = document.createElement("connectionParams");
             dataStoreElement.appendChild(connectionParamtersElement);
 
-            for (Iterator p = params.entrySet().iterator(); p.hasNext();) {
+            for (Iterator p = params.entrySet().iterator(); p.hasNext(); ) {
                 Map.Entry param = (Map.Entry) p.next();
                 String name = (String) param.getKey();
                 Object value = param.getValue();
@@ -136,17 +124,18 @@ public class CatalogWriter {
             }
         }
     }
-    
+
     /**
-     * Writers the "formats" element of the catalog.xml file 
+     * Writers the "formats" element of the catalog.xml file
+     *
      * @param coverageStores
      * @param coverageStoresNamespaces
      */
     public void coverageStores(HashMap coverageStores, HashMap namespaces, Set disabled) {
         Element formatsElement = document.createElement("formats");
         catalog.appendChild(formatsElement);
-        
-        for (Iterator d = coverageStores.entrySet().iterator(); d.hasNext();) {
+
+        for (Iterator d = coverageStores.entrySet().iterator(); d.hasNext(); ) {
             Map.Entry dataStore = (Map.Entry) d.next();
             String id = (String) dataStore.getKey();
             Map params = (Map) dataStore.getValue();
@@ -158,7 +147,7 @@ public class CatalogWriter {
             formatElement.setAttribute("id", id);
             formatElement.setAttribute("enabled", Boolean.toString(!disabled.contains(id)));
 
-            //set the namespace
+            // set the namespace
             formatElement.setAttribute("namespace", (String) namespaces.get(id));
 
             // encode type and url
@@ -174,16 +163,23 @@ public class CatalogWriter {
     /**
      * Writes "namespace" elements to the catalog.xml file.
      *
-     * @param namespaces
-     *            map of <prefix,uri>, default uri is located under the empty
-     *            string key.
-     *
+     * @param namespaces map of <prefix,uri>, default uri is located under the empty string key.
      */
     public void namespaces(Map namespaces) {
+        namespaces(namespaces, Collections.emptyList());
+    }
+
+    /**
+     * Writes namespaces elements to the catalog.xml file.
+     *
+     * @param namespaces map containing namespaces prefix and URIs
+     * @param isolatedNamespaces list containing the prefix of isolated namespaces
+     */
+    public void namespaces(Map namespaces, List<String> isolatedNamespaces) {
         Element namespacesElement = document.createElement("namespaces");
         catalog.appendChild(namespacesElement);
 
-        for (Iterator n = namespaces.entrySet().iterator(); n.hasNext();) {
+        for (Iterator n = namespaces.entrySet().iterator(); n.hasNext(); ) {
             Map.Entry namespace = (Map.Entry) n.next();
             String prefix = (String) namespace.getKey();
             String uri = (String) namespace.getValue();
@@ -203,21 +199,25 @@ public class CatalogWriter {
             if (uri.equals(namespaces.get(""))) {
                 namespaceElement.setAttribute("default", "true");
             }
+
+            // check if is an isolated workspace
+            if (isolatedNamespaces.contains(prefix)) {
+                // mark this namespace as isolated
+                namespaceElement.setAttribute("isolated", "true");
+            }
         }
     }
 
     /**
      * Writes "style" elements to the catalog.xml file.
      *
-     * @param styles
-     *            map of <id,filename>
-     *
+     * @param styles map of <id,filename>
      */
     public void styles(Map styles) {
         Element stylesElement = document.createElement("styles");
         catalog.appendChild(stylesElement);
 
-        for (Iterator s = styles.entrySet().iterator(); s.hasNext();) {
+        for (Iterator s = styles.entrySet().iterator(); s.hasNext(); ) {
             Map.Entry style = (Map.Entry) s.next();
             String id = (String) style.getKey();
             String filename = (String) style.getValue();
@@ -229,23 +229,17 @@ public class CatalogWriter {
             styleElement.setAttribute("filename", filename);
         }
     }
-    
-    
 
     /**
      * WRites the catalog.xml file.
-     * <p>
-     * This method *must* be called after any other methods.
-     * </p>
      *
-     * @param file
-     *            The catalog.xml file.
+     * <p>This method *must* be called after any other methods.
      *
-     * @throws IOException
-     *             In event of a writing error.
+     * @param file The catalog.xml file.
+     * @throws IOException In event of a writing error.
      */
     public void write(File file) throws IOException {
-        try(FileOutputStream os = new FileOutputStream(file)) {
+        try (FileOutputStream os = new FileOutputStream(file)) {
             Transformer tx = TransformerFactory.newInstance().newTransformer();
             tx.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
@@ -257,6 +251,4 @@ public class CatalogWriter {
             throw (IOException) new IOException(msg).initCause(e);
         }
     }
-
-    
 }

@@ -5,16 +5,21 @@
  */
 package org.geoserver.web.catalogstresstool;
 
+import com.google.common.base.Function;
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -57,13 +62,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.ToolPage;
 import org.opengis.filter.Filter;
 
-import com.google.common.base.Function;
-import com.google.common.base.Stopwatch;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CatalogStressTester extends GeoServerSecuredPage {
 
     DropDownChoice<Tuple> workspace;
@@ -80,10 +79,11 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     AjaxButton startLink;
 
+    private CheckBox recursive;
+
     /**
      * DropDown choice model object becuase dbconfig freaks out if using the CatalogInfo objects
      * directly
-     * 
      */
     private static final class Tuple implements Serializable, Comparable<Tuple> {
         private static final long serialVersionUID = 1L;
@@ -121,142 +121,168 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         Form form = new Form("form", new Model());
         add(form);
 
-        IModel<List<Tuple>> wsModel = new LoadableDetachableModel<List<Tuple>>() {
-            private static final long serialVersionUID = 1L;
+        IModel<List<Tuple>> wsModel =
+                new LoadableDetachableModel<List<Tuple>>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected List<Tuple> load() {
-                Catalog catalog = GeoServerApplication.get().getCatalog();
-                Filter filter = Predicates.acceptAll();
-                CloseableIterator<WorkspaceInfo> list = catalog.list(WorkspaceInfo.class, filter,
-                        null, 4000, null);
-                List<Tuple> workspaces;
-                try {
-                    workspaces = Lists.newArrayList(Iterators.transform(list,
-                            new Function<WorkspaceInfo, Tuple>() {
-                                @Override
-                                public Tuple apply(WorkspaceInfo input) {
-                                    return new Tuple(input.getId(), input.getName());
-                                }
-                            }));
-                } finally {
-                    list.close();
-                }
-                Collections.sort(workspaces);
-                return workspaces;
-            }
-        };
-        workspace = new DropDownChoice<Tuple>("workspace", new Model<Tuple>(), wsModel,
-                new TupleChoiceRenderer());
+                    @Override
+                    protected List<Tuple> load() {
+                        Catalog catalog = GeoServerApplication.get().getCatalog();
+                        Filter filter = Predicates.acceptAll();
+                        CloseableIterator<WorkspaceInfo> list =
+                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null);
+                        List<Tuple> workspaces;
+                        try {
+                            workspaces =
+                                    Lists.newArrayList(
+                                            Iterators.transform(
+                                                    list,
+                                                    new Function<WorkspaceInfo, Tuple>() {
+                                                        @Override
+                                                        public Tuple apply(WorkspaceInfo input) {
+                                                            return new Tuple(
+                                                                    input.getId(), input.getName());
+                                                        }
+                                                    }));
+                        } finally {
+                            list.close();
+                        }
+                        Collections.sort(workspaces);
+                        return workspaces;
+                    }
+                };
+        workspace =
+                new DropDownChoice<Tuple>(
+                        "workspace", new Model<Tuple>(), wsModel, new TupleChoiceRenderer());
         workspace.setNullValid(true);
 
         workspace.setOutputMarkupId(true);
         workspace.setRequired(true);
         form.add(workspace);
-        workspace.add(new OnChangeAjaxBehavior() {
-            private static final long serialVersionUID = -5613056077847641106L;
+        workspace.add(
+                new OnChangeAjaxBehavior() {
+                    private static final long serialVersionUID = -5613056077847641106L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(store);
-                target.add(resourceAndLayer);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(store);
+                        target.add(resourceAndLayer);
+                    }
+                });
 
-        IModel<List<Tuple>> storesModel = new LoadableDetachableModel<List<Tuple>>() {
-            private static final long serialVersionUID = 1L;
+        IModel<List<Tuple>> storesModel =
+                new LoadableDetachableModel<List<Tuple>>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected List<Tuple> load() {
-                Catalog catalog = GeoServerApplication.get().getCatalog();
-                Tuple ws = workspace.getModelObject();
-                if (ws == null) {
-                    return Lists.newArrayList();
-                }
-                Filter filter = Predicates.equal("workspace.id", ws.id);
-                int limit = 100;
-                CloseableIterator<StoreInfo> iter = catalog.list(StoreInfo.class, filter, null,
-                        limit, null);
+                    @Override
+                    protected List<Tuple> load() {
+                        Catalog catalog = GeoServerApplication.get().getCatalog();
+                        Tuple ws = workspace.getModelObject();
+                        if (ws == null) {
+                            return Lists.newArrayList();
+                        }
+                        Filter filter = Predicates.equal("workspace.id", ws.id);
+                        int limit = 100;
+                        CloseableIterator<StoreInfo> iter =
+                                catalog.list(StoreInfo.class, filter, null, limit, null);
 
-                List<Tuple> stores;
-                try {
-                    stores = Lists.newArrayList(Iterators.transform(iter,
-                            new Function<StoreInfo, Tuple>() {
+                        List<Tuple> stores;
+                        try {
+                            stores =
+                                    Lists.newArrayList(
+                                            Iterators.transform(
+                                                    iter,
+                                                    new Function<StoreInfo, Tuple>() {
 
-                                @Override
-                                public Tuple apply(StoreInfo input) {
-                                    return new Tuple(input.getId(), input.getName());
-                                }
-                            }));
-                } finally {
-                    iter.close();
-                }
-                Collections.sort(stores);
-                return stores;
-            }
-        };
+                                                        @Override
+                                                        public Tuple apply(StoreInfo input) {
+                                                            return new Tuple(
+                                                                    input.getId(), input.getName());
+                                                        }
+                                                    }));
+                        } finally {
+                            iter.close();
+                        }
+                        Collections.sort(stores);
+                        return stores;
+                    }
+                };
 
-        store = new DropDownChoice<Tuple>("store", new Model<Tuple>(), storesModel,
-                new TupleChoiceRenderer());
+        store =
+                new DropDownChoice<Tuple>(
+                        "store", new Model<Tuple>(), storesModel, new TupleChoiceRenderer());
         store.setNullValid(true);
 
         store.setOutputMarkupId(true);
-        store.add(new OnChangeAjaxBehavior() {
-            private static final long serialVersionUID = -5333344688588590014L;
+        store.add(
+                new OnChangeAjaxBehavior() {
+                    private static final long serialVersionUID = -5333344688588590014L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                target.add(resourceAndLayer);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(resourceAndLayer);
+                    }
+                });
         form.add(store);
 
-        IModel<List<Tuple>> resourcesModel = new LoadableDetachableModel<List<Tuple>>() {
-            private static final long serialVersionUID = 1L;
+        IModel<List<Tuple>> resourcesModel =
+                new LoadableDetachableModel<List<Tuple>>() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected List<Tuple> load() {
-                Catalog catalog = getCatalog();
-                Tuple storeInfo = store.getModelObject();
-                if (storeInfo == null) {
-                    return Lists.newArrayList();
-                }
-                Integer limit = 100;
-                Filter filter = Predicates.equal("store.id", storeInfo.id);
-                CloseableIterator<ResourceInfo> iter = catalog.list(ResourceInfo.class, filter,
-                        null, limit, null);
+                    @Override
+                    protected List<Tuple> load() {
+                        Catalog catalog = getCatalog();
+                        Tuple storeInfo = store.getModelObject();
+                        if (storeInfo == null) {
+                            return Lists.newArrayList();
+                        }
+                        Integer limit = 100;
+                        Filter filter = Predicates.equal("store.id", storeInfo.id);
+                        CloseableIterator<ResourceInfo> iter =
+                                catalog.list(ResourceInfo.class, filter, null, limit, null);
 
-                List<Tuple> resources;
-                try {
-                    resources = Lists.newArrayList(Iterators.transform(iter,
-                            new Function<ResourceInfo, Tuple>() {
-                                @Override
-                                public Tuple apply(ResourceInfo input) {
-                                    return new Tuple(input.getId(), input.getName());
-                                }
-                            }));
-                } finally {
-                    iter.close();
-                }
-                Collections.sort(resources);
-                return resources;
-            }
-        };
+                        List<Tuple> resources;
+                        try {
+                            resources =
+                                    Lists.newArrayList(
+                                            Iterators.transform(
+                                                    iter,
+                                                    new Function<ResourceInfo, Tuple>() {
+                                                        @Override
+                                                        public Tuple apply(ResourceInfo input) {
+                                                            return new Tuple(
+                                                                    input.getId(), input.getName());
+                                                        }
+                                                    }));
+                        } finally {
+                            iter.close();
+                        }
+                        Collections.sort(resources);
+                        return resources;
+                    }
+                };
 
-        resourceAndLayer = new DropDownChoice<Tuple>("resourceAndLayer", new Model<Tuple>(),
-                resourcesModel, new TupleChoiceRenderer());
+        resourceAndLayer =
+                new DropDownChoice<Tuple>(
+                        "resourceAndLayer",
+                        new Model<Tuple>(),
+                        resourcesModel,
+                        new TupleChoiceRenderer());
         resourceAndLayer.setNullValid(true);
 
         resourceAndLayer.setOutputMarkupId(true);
         form.add(resourceAndLayer);
 
-        duplicateCount = new TextField<Integer>("duplicateCount", new Model<Integer>(100),
-                Integer.class);
+        recursive = new CheckBox("recursive", new Model<Boolean>(Boolean.FALSE));
+        form.add(recursive);
+
+        duplicateCount =
+                new TextField<Integer>("duplicateCount", new Model<Integer>(100), Integer.class);
         duplicateCount.setRequired(true);
         duplicateCount.add(new RangeValidator<Integer>(1, 100000));
         form.add(duplicateCount);
 
-        sufix = new TextField<String>("sufix", new Model<String>("copy-"));
+        sufix = new TextField<String>("sufix", new Model<String>("-copy-"));
         sufix.setRequired(true);
         form.add(sufix);
 
@@ -264,44 +290,46 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         progress.setOutputMarkupId(true);
         form.add(progress);
 
-        form.add(new AjaxButton("cancel") {
-            private static final long serialVersionUID = 5767430648099432407L;
+        form.add(
+                new AjaxButton("cancel") {
+                    private static final long serialVersionUID = 5767430648099432407L;
 
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                setResponsePage(ToolPage.class);
-            }
-        });
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        setResponsePage(ToolPage.class);
+                    }
+                });
 
-        startLink = new AjaxButton("submit", form) {
-            private static final long serialVersionUID = -4087484089208211355L;
+        startLink =
+                new AjaxButton("submit", form) {
+                    private static final long serialVersionUID = -4087484089208211355L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                progress.setDefaultModelObject("");
-                startLink.setVisible(false);
-                target.add(startLink);
-                target.add(progress);
-                try {
-                    startCopy(target, form);
-                } catch (Exception e) {
-                    form.error(e.getMessage());
-                    target.add(form);
-                } finally {
-                    startLink.setVisible(true);
-                    target.add(startLink);
-                    target.add(progress);
-                }
-            }
-
-        };
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        progress.setDefaultModelObject("");
+                        startLink.setVisible(false);
+                        target.add(startLink);
+                        target.add(progress);
+                        try {
+                            startCopy(target, form);
+                        } catch (Exception e) {
+                            form.error(e.getMessage());
+                            target.add(form);
+                        } finally {
+                            startLink.setVisible(true);
+                            target.add(startLink);
+                            target.add(progress);
+                        }
+                    }
+                };
         form.add(startLink);
         startLink.setOutputMarkupId(true);
     }
 
     private void startCopy(AjaxRequestTarget target, Form<?> form) {
         Session.get().getFeedbackMessages().clear();
-        target.add(getFeedbackPanel());
+        addFeedbackPanels(target);
 
+        final boolean recursive = this.recursive.getModelObject();
         final int numCopies = duplicateCount.getModelObject();
         final String s = sufix.getModelObject();
 
@@ -345,30 +373,53 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         for (int curr = 0; curr < numCopies; curr++) {
             String paddedIndex = Strings.padStart(String.valueOf(curr), padLength, '0');
             String nameSuffix = s + paddedIndex;
-            copyOne(catalog, original, (Class<CatalogInfo>) clazz, layer, nameSuffix, globalTime);
+            copyOne(
+                    catalog,
+                    original,
+                    (Class<CatalogInfo>) clazz,
+                    layer,
+                    nameSuffix,
+                    globalTime,
+                    recursive,
+                    null);
             if ((curr + 1) % 100 == 0) {
                 sw.stop();
-                System.out.printf("inserted %s so far in %s (last 100 in %s)\n", (curr + 1),
-                        globalTime, sw);
+                System.out.printf(
+                        "inserted %s so far in %s (last 100 in %s)\n", (curr + 1), globalTime, sw);
                 sw.reset();
                 sw.start();
             }
         }
 
+        String localizerString =
+                this.getLocalizer()
+                        .getString(
+                                "CatalogStressTester.progressStatusMessage",
+                                this,
+                                "Inserted {0} copies of {1} in {2}");
+        String progressMessage =
+                MessageFormat.format(localizerString, numCopies, original, globalTime);
 
-        String localizerString = this.getLocalizer().getString("CatalogStressTester.progressStatusMessage", this,  "Inserted {0} copies of {1} in {2}");
-        String progressMessage = MessageFormat.format(localizerString, numCopies, original, globalTime);
-        
         System.out.println(progressMessage);
         progress.setDefaultModelObject(progressMessage);
-        
+
         target.add(progress);
     }
 
     private Class<? extends CatalogInfo> interfaceOf(CatalogInfo original) {
-        Class<?>[] interfaces = { LayerGroupInfo.class, LayerInfo.class, NamespaceInfo.class,
-                WorkspaceInfo.class, StyleInfo.class, CoverageStoreInfo.class, DataStoreInfo.class,
-                WMSStoreInfo.class, CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class };
+        Class<?>[] interfaces = {
+            LayerGroupInfo.class,
+            LayerInfo.class,
+            NamespaceInfo.class,
+            WorkspaceInfo.class,
+            StyleInfo.class,
+            CoverageStoreInfo.class,
+            DataStoreInfo.class,
+            WMSStoreInfo.class,
+            CoverageInfo.class,
+            FeatureTypeInfo.class,
+            WMSLayerInfo.class
+        };
         for (Class c : interfaces) {
             if (c.isAssignableFrom(original.getClass())) {
                 return c;
@@ -377,9 +428,15 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         throw new IllegalArgumentException();
     }
 
-    private void copyOne(Catalog catalog, final CatalogInfo original,
-            final Class<CatalogInfo> clazz, final LayerInfo layer, final String nameSuffix,
-            final Stopwatch sw) {
+    private void copyOne(
+            Catalog catalog,
+            final CatalogInfo original,
+            final Class<CatalogInfo> clazz,
+            final LayerInfo layer,
+            final String nameSuffix,
+            final Stopwatch sw,
+            boolean recursive,
+            CatalogInfo parent) {
 
         CatalogInfo prototype = prototype(original, catalog);
 
@@ -403,21 +460,62 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 catalog.add(ns2);
                 sw.stop();
 
+                if (recursive) {
+                    for (StoreInfo store :
+                            catalog.getStoresByWorkspace(
+                                    (WorkspaceInfo) original, StoreInfo.class)) {
+                        copyOne(
+                                catalog,
+                                store,
+                                (Class<CatalogInfo>) interfaceOf(store),
+                                (LayerInfo) null,
+                                nameSuffix,
+                                sw,
+                                true,
+                                prototype);
+                    }
+                }
             } else if (prototype instanceof StoreInfo) {
 
                 sw.start();
-                catalog.add((StoreInfo) prototype);
+                final StoreInfo ps = (StoreInfo) prototype;
+                if (parent != null) {
+                    ps.setWorkspace((WorkspaceInfo) parent);
+                }
+                // reset the cache, or we might stumble into a error about too many connections
+                // while cloning many jdbc stores
+                catalog.getResourcePool().dispose();
+                catalog.add(ps);
                 sw.stop();
+
+                if (recursive) {
+                    for (ResourceInfo resource :
+                            catalog.getResourcesByStore((StoreInfo) original, ResourceInfo.class)) {
+                        LayerInfo resourceLayer = catalog.getLayerByName(resource.prefixedName());
+                        copyOne(
+                                catalog,
+                                resource,
+                                (Class<CatalogInfo>) interfaceOf(resource),
+                                resourceLayer,
+                                nameSuffix,
+                                sw,
+                                true,
+                                prototype);
+                    }
+                }
 
             } else if (prototype instanceof ResourceInfo) {
                 ((ResourceInfo) prototype).setNativeName(((ResourceInfo) original).getNativeName());
                 ((ResourceInfo) prototype).setName(newName);
+                if (parent != null) {
+                    ((ResourceInfo) prototype).setStore((StoreInfo) parent);
+                }
                 sw.start();
                 catalog.add((ResourceInfo) prototype);
                 sw.stop();
 
                 String id = prototype.getId();
-                // prototype = catalog.getResource(id, ResourceInfo.class);
+                prototype = catalog.getResource(id, ResourceInfo.class);
 
                 if (layer == null) {
                     return;
@@ -425,7 +523,6 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 LayerInfoImpl layerCopy;
                 {
                     layerCopy = new LayerInfoImpl();
-                    layerCopy.setResource((ResourceInfo) original);
                     OwsUtils.copy(LayerInfo.class.cast(layer), layerCopy, LayerInfo.class);
                     layerCopy.setResource((ResourceInfo) prototype);
                     layerCopy.setId(null);
@@ -461,5 +558,4 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         }
         return prototype;
     }
-
 }

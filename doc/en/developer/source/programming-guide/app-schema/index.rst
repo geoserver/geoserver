@@ -160,3 +160,12 @@ For Oracle:
       For example, I installed the package using the System user. Then I gave onlinetestuser permission to execute it.
       I run the tests with -DSC4OUser=System so it knows to use the System.SC4O.ST_GeomFromEWKT method.
 
+Running MongoDB Online Tests 
+----------------------------
+
+MongoDB online tests are activated by the ``app-schema-online-test`` profile and will run if configuration file ``{user directory}/.geoserver/mongodb.properties`` is available. If the configuration file is not available an example file will be created and tests will be skipped. The content of the configuration file should look like this::
+
+	mongo.port=27017
+	mongo.host=127.0.0.1
+
+During the tests a new database will be created in MongoDB and when the tests end that database will be removed. 

@@ -8,15 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
-import javax.measure.unit.UnitFormat;
-
+import javax.measure.Unit;
+import javax.measure.format.UnitFormat;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -28,18 +23,21 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.netcdf.NetCDFExtensionPanel;
 import org.geoserver.web.netcdf.NetCDFPanel;
-import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
+import si.uom.NonSI;
+import si.uom.SI;
+import tec.uom.se.format.SimpleUnitFormat;
 
 /**
- * Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of Measure
- * 
+ * Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of
+ * Measure
  */
 public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsContainer> {
 
@@ -62,38 +60,42 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
 
     private final TextField<String> uom;
 
-    public NetCDFOutSettingsEditor(String id, IModel<NetCDFLayerSettingsContainer> netcdfModel,
+    public NetCDFOutSettingsEditor(
+            String id,
+            IModel<NetCDFLayerSettingsContainer> netcdfModel,
             IModel<CoverageInfo> cinfo) {
         super(id, netcdfModel);
         // Add panel for Standard name definition
-        standardName = new TextField<String>("standardName", new PropertyModel(netcdfModel,
-                "layerName"));
+        standardName =
+                new TextField<String>("standardName", new PropertyModel(netcdfModel, "layerName"));
         // Add panel for UOM definition
-        uom = new AutoCompleteTextField<String>("uom", new PropertyModel(netcdfModel, "layerUOM")) {
+        uom =
+                new AutoCompleteTextField<String>(
+                        "uom", new PropertyModel(netcdfModel, "layerUOM")) {
 
-            @Override
-            protected Iterator<String> getChoices(String input) {
-                if (Strings.isEmpty(input)) {
-                    List<String> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
+                    @Override
+                    protected Iterator<String> getChoices(String input) {
+                        if (Strings.isEmpty(input)) {
+                            List<String> emptyList = Collections.emptyList();
+                            return emptyList.iterator();
+                        }
 
-                List<String> unitNames = new ArrayList<String>();
-                UnitFormat format = UnitFormat.getInstance(Locale.ENGLISH);
-                for (Unit<?> unit : UNITS) {
-                    unitNames.add(format.format(unit));
-                }
+                        List<String> unitNames = new ArrayList<String>();
+                        UnitFormat format = SimpleUnitFormat.getInstance();
+                        for (Unit<?> unit : UNITS) {
+                            unitNames.add(format.format(unit));
+                        }
 
-                List<String> choices = new ArrayList<String>();
-                for (String name : unitNames) {
-                    if (name.toLowerCase().startsWith(input.toLowerCase())) {
-                        choices.add(name);
+                        List<String> choices = new ArrayList<String>();
+                        for (String name : unitNames) {
+                            if (name.toLowerCase().startsWith(input.toLowerCase())) {
+                                choices.add(name);
+                            }
+                        }
+
+                        return choices.iterator();
                     }
-                }
-
-                return choices.iterator();
-            }
-        };
+                };
         // Setting the default value if not defined
         String startUOM = uom.getModelObject();
         if ((startUOM == null || startUOM.isEmpty()) && cinfo != null) {
@@ -102,7 +104,6 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
             if (infos != null && infos.size() > 0) {
                 CoverageDimensionInfo info = infos.get(0);
                 uom.setModelObject(info.getUnit());
-
             }
         }
 
@@ -124,52 +125,72 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         container.add(availableNames);
 
         // Add Behaviour related to standard name choice
-        standardName.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        standardName.add(
+                new AjaxFormComponentUpdatingBehavior("Change") {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                String name = standardName.getModelObject();
-                if (name != null && !name.isEmpty()) {
-                    NetCDFParserBean bean = GeoServerExtensions.bean(NetCDFParserBean.class);
-                    if (bean != null && bean.getParser() != null) {
-                        NetCDFCFParser parser = bean.getParser();
-                        Entry e = null;
-                        if (parser.hasEntryId(name)) {
-                            e = parser.getEntry(name);
-                        } else if (parser.hasAliasId(name)) {
-                            e = parser.getEntryFromAlias(name);
-                        }
-                        if (e != null) {
-                            uom.setModelObject(e.getCanonicalUnits());
-                            target.add(container);
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        String name = standardName.getModelObject();
+                        if (name != null && !name.isEmpty()) {
+                            NetCDFParserBean bean =
+                                    GeoServerExtensions.bean(NetCDFParserBean.class);
+                            if (bean != null && bean.getParser() != null) {
+                                NetCDFCFParser parser = bean.getParser();
+                                Entry e = null;
+                                if (parser.hasEntryId(name)) {
+                                    e = parser.getEntry(name);
+                                } else if (parser.hasAliasId(name)) {
+                                    e = parser.getEntryFromAlias(name);
+                                }
+                                if (e != null) {
+                                    uom.setModelObject(e.getCanonicalUnits());
+                                    target.add(container);
+                                }
+                            }
                         }
                     }
-                }
-            }
-        });
+                });
     }
 
     @Override
     public void convertInput() {
-        globalAttributes.visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
-                formComponent.processInput();
-            }
-        });
+        IVisitor<Component, Object> formComponentVisitor =
+                (component, visit) -> {
+                    if (component instanceof FormComponent) {
+                        FormComponent<?> formComponent = (FormComponent<?>) component;
+                        formComponent.processInput();
+                    }
+                };
+        globalAttributes.visitChildren(formComponentVisitor);
+        variableAttributes.visitChildren(formComponentVisitor);
+        extraVariables.visitChildren(formComponentVisitor);
         compressionLevel.processInput();
         dataPacking.processInput();
         shuffle.processInput();
+        copyAttributes.processInput();
+        copyGlobalAttributes.processInput();
         standardName.processInput();
         uom.processInput();
-        List<GlobalAttribute> info = globalAttributes.getModelObject();
         NetCDFLayerSettingsContainer convertedInput = new NetCDFLayerSettingsContainer();
         convertedInput.setCompressionLevel(compressionLevel.getModelObject());
-        convertedInput.setGlobalAttributes(info);
+        convertedInput.setGlobalAttributes(globalAttributes.getModelObject());
+        convertedInput.setVariableAttributes(variableAttributes.getModelObject());
+        convertedInput.setExtraVariables(extraVariables.getModelObject());
         convertedInput.setDataPacking(dataPacking.getModelObject());
         convertedInput.setShuffle(shuffle.getModelObject());
+        convertedInput.setCopyAttributes(copyAttributes.getModelObject());
+        convertedInput.setCopyGlobalAttributes(copyGlobalAttributes.getModelObject());
         convertedInput.setLayerName(standardName.getModelObject());
         convertedInput.setLayerUOM(uom.getModelObject());
+
+        extensionPanels.visitChildren(
+                (component, visit) -> {
+                    if (component instanceof NetCDFExtensionPanel) {
+                        NetCDFExtensionPanel extension = (NetCDFExtensionPanel) component;
+                        extension.convertInput(convertedInput);
+                    }
+                });
+
         setConvertedInput(convertedInput);
     }
 }

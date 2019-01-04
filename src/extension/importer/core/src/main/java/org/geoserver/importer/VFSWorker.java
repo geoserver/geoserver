@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -30,19 +29,27 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Utility to work with compressed files
- * 
+ *
  * @author groldan
  */
 public class VFSWorker {
 
     private static final Logger LOGGER = Logging.getLogger(VFSWorker.class);
 
-    private static final List<String> extensions = Arrays.asList(".zip", ".tar", ".tar.gz", ".tgz",
-            ".tar.bz2", ".tbz2", ".gz", ".bz2", ".jar", ".kmz");
+    private static final List<String> extensions =
+            Arrays.asList(
+                    ".zip",
+                    ".tar",
+                    ".tar.gz",
+                    ".tgz",
+                    ".tar.bz2",
+                    ".tbz2",
+                    ".gz",
+                    ".bz2",
+                    ".jar",
+                    ".kmz");
 
-    public VFSWorker() {
-
-    }
+    public VFSWorker() {}
 
     public boolean canHandle(final File file) {
         final String name = file.getName().toLowerCase();
@@ -68,11 +75,8 @@ public class VFSWorker {
     }
 
     /**
-     * 
      * @param archiveFile
      * @param filter
-     * 
-     *
      */
     public List<String> listFiles(final File archiveFile, final FilenameFilter filter) {
         FileSystemManager fsManager;
@@ -81,23 +85,27 @@ public class VFSWorker {
             String absolutePath = resolveArchiveURI(archiveFile);
             FileObject resolvedFile = fsManager.resolveFile(absolutePath);
 
-            FileSelector fileSelector = new FileSelector() {
-                /**
-                 * @see org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
-                 */
-                public boolean traverseDescendents(FileSelectInfo folderInfo) throws Exception {
-                    return true;
-                }
+            FileSelector fileSelector =
+                    new FileSelector() {
+                        /**
+                         * @see
+                         *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
+                         */
+                        public boolean traverseDescendents(FileSelectInfo folderInfo)
+                                throws Exception {
+                            return true;
+                        }
 
-                /**
-                 * @see org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
-                 */
-                public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
-                    File folder = archiveFile.getParentFile();
-                    String name = fileInfo.getFile().getName().getFriendlyURI();
-                    return filter.accept(folder, name);
-                }
-            };
+                        /**
+                         * @see
+                         *     org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
+                         */
+                        public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
+                            File folder = archiveFile.getParentFile();
+                            String name = fileInfo.getFile().getName().getFriendlyURI();
+                            return filter.accept(folder, name);
+                        }
+                    };
 
             FileObject fileSystem;
             if (fsManager.canCreateFileSystem(resolvedFile)) {
@@ -113,8 +121,13 @@ public class VFSWorker {
                 String pathDecoded = fo.getName().getPathDecoded();
                 names.add(pathDecoded);
             }
-            LOGGER.fine("Found " + names.size() + " spatial data files in " + archiveFile.getName()
-                    + ": " + names);
+            LOGGER.fine(
+                    "Found "
+                            + names.size()
+                            + " spatial data files in "
+                            + archiveFile.getName()
+                            + ": "
+                            + names);
             return names;
         } catch (FileSystemException e) {
             e.printStackTrace();
@@ -172,16 +185,19 @@ public class VFSWorker {
         if (manager.canCreateFileSystem(source)) {
             source = manager.createFileSystem(source);
         }
-        FileObject target = manager.createVirtualFileSystem(manager.resolveFile(targetFolder
-                .getAbsolutePath()));
+        FileObject target =
+                manager.createVirtualFileSystem(
+                        manager.resolveFile(targetFolder.getAbsolutePath()));
 
-        FileSelector selector = new AllFileSelector() {
-            @Override
-            public boolean includeFile(FileSelectInfo fileInfo) {
-                LOGGER.fine("Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
-                return true;
-            }
-        };
+        FileSelector selector =
+                new AllFileSelector() {
+                    @Override
+                    public boolean includeFile(FileSelectInfo fileInfo) {
+                        LOGGER.fine(
+                                "Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
+                        return true;
+                    }
+                };
         target.copyFrom(source, selector);
         source.close();
         target.close();
@@ -189,21 +205,21 @@ public class VFSWorker {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<File> listFilesInFolder(final File targetFolder,
-            final FilenameFilter fileNameFilter) {
-        IOFileFilter fileFilter = new IOFileFilter() {
+    public Collection<File> listFilesInFolder(
+            final File targetFolder, final FilenameFilter fileNameFilter) {
+        IOFileFilter fileFilter =
+                new IOFileFilter() {
 
-            public boolean accept(File dir, String name) {
-                return fileNameFilter.accept(dir, name);
-            }
+                    public boolean accept(File dir, String name) {
+                        return fileNameFilter.accept(dir, name);
+                    }
 
-            public boolean accept(File file) {
-                return fileNameFilter.accept(file.getParentFile(), file.getName());
-            }
-        };
+                    public boolean accept(File file) {
+                        return fileNameFilter.accept(file.getParentFile(), file.getName());
+                    }
+                };
         IOFileFilter dirFilter = TrueFileFilter.INSTANCE;
         Collection<File> listFiles = FileUtils.listFiles(targetFolder, fileFilter, dirFilter);
         return listFiles;
     }
-
 }

@@ -9,24 +9,24 @@ package org.geoserver.wfs.json;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 
-/**
- * 
- * @author carlo cancellieri - GeoSolutions
- * 
- */
+/** @author carlo cancellieri - GeoSolutions */
 public class GeoJsonDescribeTest extends WFSTestSupport {
 
     @Test
     public void testDescribePrimitiveGeoFeatureJSON() throws Exception {
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
-                + JSONType.json + "&typeName=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        String output =
+                getAsString(
+                        "wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                                + JSONType.json
+                                + "&typeName="
+                                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         testOutput(output);
     }
 
@@ -153,14 +153,17 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
         assertEquals(true, props.getJSONObject(i).get("nillable"));
         assertEquals("xsd:boolean", props.getJSONObject(i).get("type"));
         assertEquals("boolean", props.getJSONObject(i).get("localType"));
-
     }
 
     @Test
     public void testDescribePrimitiveGeoFeatureJSONP() throws Exception {
         JSONType.setJsonpEnabled(true);
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
-                + JSONType.jsonp + "&typeName=" + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        String output =
+                getAsString(
+                        "wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                                + JSONType.jsonp
+                                + "&typeName="
+                                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         JSONType.setJsonpEnabled(false);
         // removing specific parts
         output = output.substring(0, output.length() - 2);
@@ -171,11 +174,15 @@ public class GeoJsonDescribeTest extends WFSTestSupport {
     @Test
     public void testDescribePrimitiveGeoFeatureJSONPCustom() throws Exception {
         JSONType.setJsonpEnabled(true);
-        String output = getAsString("wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
-                + JSONType.jsonp
-                + "&typeName="
-                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE)
-                + "&format_options=" + JSONType.CALLBACK_FUNCTION_KEY + ":custom");
+        String output =
+                getAsString(
+                        "wfs?service=WFS&request=DescribeFeatureType&version=1.0.0&outputFormat="
+                                + JSONType.jsonp
+                                + "&typeName="
+                                + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE)
+                                + "&format_options="
+                                + JSONType.CALLBACK_FUNCTION_KEY
+                                + ":custom");
         JSONType.setJsonpEnabled(false);
         // removing specific parts
         assertTrue(output.startsWith("custom("));

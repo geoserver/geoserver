@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+             xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1" 
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:DownloadMap</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>bbox</ows:Identifier>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4326">
+          <ows:LowerCorner>-0.003 -0.003</ows:LowerCorner>
+          <ows:UpperCorner>0.003 0.003</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>width</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>256</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>height</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>256</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Forests</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Lakes</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Ponds</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:DividedRoutes</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:RoadSegments</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Buildings</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Streams</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>cite:Bridges</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="image/png">
+      <ows:Identifier>result</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>

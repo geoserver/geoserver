@@ -10,17 +10,15 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Authorizer that allows access if the user has authenticated.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class AuthenticatedComponentAuthorizer implements ComponentAuthorizer {
 
     @Override
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
-        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest() == false)
             return true;
         return authentication != null && authentication.isAuthenticated();
     }
-
 }

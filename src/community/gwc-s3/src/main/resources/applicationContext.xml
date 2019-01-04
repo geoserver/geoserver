@@ -11,9 +11,9 @@
    Bean configuration file for the gwc-aws-s3 module
   </description>
   
-  <bean id="S3BlobStoreConfigProvider" class="org.geowebcache.s3.S3BlobStoreConfigProvider">
+  <bean id="S3BlobStoreConfigProvider" class="org.geowebcache.s3.S3BlobStoreConfigProvider" depends-on="geoWebCacheExtensions">
     <description>
-      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode S3BlobStoreConfig instances
+      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode S3BlobStoreInfo instances
     </description>
   </bean>
 

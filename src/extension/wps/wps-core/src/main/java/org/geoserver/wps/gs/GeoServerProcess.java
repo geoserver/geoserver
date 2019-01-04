@@ -9,9 +9,7 @@ import org.geotools.process.gs.GSProcess;
 
 /**
  * A marker interface used to lookup the processes
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
-public interface GeoServerProcess extends GSProcess {
-
-}
+public interface GeoServerProcess extends GSProcess {}

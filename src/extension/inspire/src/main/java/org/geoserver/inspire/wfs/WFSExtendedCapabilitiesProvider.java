@@ -6,34 +6,31 @@
 package org.geoserver.inspire.wfs;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.DLS_SCHEMA;
 
+import java.io.IOException;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.inspire.UniqueResourceIdentifier;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
-
 import org.geoserver.wfs.GetCapabilities;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
-import java.io.IOException;
-import org.geoserver.catalog.MetadataMap;
-
-public class WFSExtendedCapabilitiesProvider implements
-        org.geoserver.wfs.WFSExtendedCapabilitiesProvider {
+public class WFSExtendedCapabilitiesProvider
+        implements org.geoserver.wfs.WFSExtendedCapabilitiesProvider {
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
-        return new String[]{DLS_NAMESPACE, DLS_SCHEMA};
+        return new String[] {DLS_NAMESPACE, DLS_SCHEMA};
     }
 
     @Override
@@ -53,18 +50,22 @@ public class WFSExtendedCapabilitiesProvider implements
             return;
         }
         MetadataMap serviceMetadata = wfs.getMetadata();
-        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities =
+                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         String language = (String) serviceMetadata.get(LANGUAGE.key);
-        UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
-        //Don't create extended capabilities element if mandatory content not present
-        //or turned off
+        UniqueResourceIdentifiers ids =
+                (UniqueResourceIdentifiers)
+                        serviceMetadata.get(
+                                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                                UniqueResourceIdentifiers.class);
+        // Don't create extended capabilities element if mandatory content not present
+        // or turned off
         if (metadataURL == null
                 || ids == null
                 || ids.isEmpty()
-                || createExtendedCapabilities != null
-                && !createExtendedCapabilities) {
+                || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }
 
@@ -96,7 +97,9 @@ public class WFSExtendedCapabilitiesProvider implements
         tx.end("inspire_common:ResponseLanguage");
         for (UniqueResourceIdentifier id : ids) {
             if (id.getMetadataURL() != null) {
-                tx.start("inspire_dls:SpatialDataSetIdentifier", atts("metadataURL", id.getMetadataURL()));
+                tx.start(
+                        "inspire_dls:SpatialDataSetIdentifier",
+                        atts("metadataURL", id.getMetadataURL()));
             } else {
                 tx.start("inspire_dls:SpatialDataSetIdentifier");
             }
@@ -121,5 +124,4 @@ public class WFSExtendedCapabilitiesProvider implements
         }
         return attributes;
     }
-
 }

@@ -1,0 +1,215 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Namespace
+  description: A namespace is a uniquely identifiable grouping of feature types. It is identified by a prefix and a URI.
+
+paths:
+  /namespaces:
+    get:
+      operationId: getNamespaces
+      summary: Get a list of namespaces
+      description: Displays a list of all namespaces on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/namespaces.xml" for XML)
+      produces:
+        - text/html
+        - application/json
+        - application/xml
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/NamespacesResponse"
+          examples:
+            application/xml: |
+              <namespaces>
+                <namespace>
+                  <name>topp</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/topp.xml" type="application/xml"/>
+                </namespace>
+                <namespace>
+                  <name>it.geosolutions</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.xml" type="application/xml"/>
+                </namespace>
+              </namespaces>
+
+            application/json: |
+              {
+                "namespaces": {
+                  "namespace": [
+                    {
+                    "name": "topp",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/topp.json"
+                    },
+                    {
+                    "name": "it.geosolutions",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.json"
+                    }
+                  ]
+                }
+              }
+        401:
+          description: Unauthorized
+          
+    post:
+      operationId: postNamespaces
+      summary: Add a new namespace to GeoServer
+      description: Adds a new namespace to the server
+      parameters:
+        - name: namespaceBody
+          description: The layer group body information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Namespace"
+      consumes: 
+        - application/json
+        - application/xml
+      produces:
+        - text/html
+        - application/json
+        - application/xml
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created namespace can be found
+              type: string
+        401:
+          description: Unable to add namespace as it already exists
+     
+    put:
+      operationId: putNamespaces
+      responses:
+        405:
+          description: Not permitted
+    
+    delete:
+      operationId: deleteNamespaces
+      responses:
+        405:
+          description: Not permitted
+          
+  /namespaces/{namespaceName}:
+    get:
+      operationId: getNamespace
+      summary: Retrieve a namespace
+      description: Retrieves a single namespace definition. Use the "Accept:" header to specify format or 
+        append an extension to the endpoint (example "/namespaces/{namespace}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: namespaceName
+          description: The name of the namespace to fetch, or "default" to get the default namespace.
+          in: path
+          required: true
+          type: string
+      responses:
+        200:  
+          description: OK
+          schema:
+            $ref: "#/definitions/NamespaceResponse"
+          examples:       
+            application/xml: 
+              '<namespace>
+              <prefix>topp</prefix>
+              <uri>http://www.openplans.org/topp</uri>
+              <featureTypes>
+              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/featuretypes.xml" type="application/xml"/>
+              </featureTypes>
+              </namespace>'
+
+            application/json: 
+              '{
+              "namespace": {
+              "prefix": "topp",
+              "uri": "http://www.openplans.org/topp",
+              "featureTypes": "http://localhost:8080/geoserver/rest/workspaces/topp/featuretypes.json"
+              }
+              }'
+        404:
+          description: namespace does not exist
+    put:
+      summary: Update a namespace
+      description: Takes the body of the put and modifies the namespace from it.
+      operationId: putNamespace
+      consumes:
+        - application/json
+        - application/xml
+      responses:
+        200:
+          description: Modified
+        405:      
+          description: Forbidden to change the name of the namespace
+        404:
+          description: Namespace not found
+      parameters:
+        - name: namespaceName
+          in: path
+          description: Name of namespace, or "default" to set the default namespace using the namespace prefix in the body of the post.
+          required: true
+          type: string
+    post:
+      operationId: postNamespace
+      responses:
+        405:
+          description: Forbidden to post to an existing namespace (use PUT)
+          
+    delete:
+      operationId: deleteNamespace
+      summary: Delete a namespace
+      parameters:
+        - name: namespaceName
+          in: path
+          description: Name of the namespace
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success. Namespace deleted 
+        404:
+          description: Namespace doesn't exist
+        405:
+          description: Can't delete default namespace
+        403: 
+          description: Namespace or related Workspace is not empty (and recurse not true) 
+
+definitions:
+  Namespace:
+    title: Namespace
+    xml:
+      name: namespace
+    type: object
+    properties:
+      prefix:
+        type: string
+        description: Name/prefix of the namespace
+      uri:
+        type: string
+        description: URI that identifies the namespace
+        
+  NamespacesResponse:
+    title: Namespaces
+    type: object
+    properties:
+      namespaces:
+        $ref: "#/definitions/NamespaceResponse"
+
+  NamespaceResponse:
+    title: Namespace Response
+    type: object
+    properties:
+      prefix:
+        type: string
+        description: Name of namespace
+      uri:
+        type: string
+        description: URI of the namespace
+      featureTypes:
+        type: string
+        description: URL to featureTypes associated with this namespace        

@@ -115,10 +115,11 @@ distribution of GeoServer:
     is the default HTTP port that GeoServer attempts to bind to at startup.
     To change this port, open the file:
 
-       $GEOSERVER_HOME/etc/jetty.xml
-    
-    and search for '8080'.  Change it to a port that isn't in use, but is
-    greater than 1024 (such as 8090).  Save this file and restart GeoServer.
+       $GEOSERVER_HOME/start.ini
+
+    and search for 'jetty.port' or '8080'.  Change it to a port that isn't
+    in use, but is greater than 1024 (such as 8090).  Save this file and
+    restart GeoServer.
     Make sure, of course, that you try to access GeoServer on the new port:
 
        http://localhost:####

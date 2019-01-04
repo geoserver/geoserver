@@ -20,16 +20,15 @@ import org.geoserver.wps.WPSInfo;
 
 /**
  * Configure the WPS service global informations
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
     public WPSAdminPage() {
         super();
     }
-    
+
     public WPSAdminPage(WPSInfo service) {
         super(service);
     }
@@ -48,43 +47,54 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
     @Override
     protected void build(IModel info, final Form form) {
-        TextField<Integer> connectionTimeout = new TextField<Integer>("connectionTimeout", Integer.class);
+        TextField<Integer> connectionTimeout =
+                new TextField<Integer>("connectionTimeout", Integer.class);
         connectionTimeout.add(RangeValidator.minimum(-1));
         form.add(connectionTimeout);
-        
-        TextField<Integer> maxSynchProcesses = new TextField<Integer>("maxSynchronousProcesses", Integer.class);
+
+        TextField<Integer> maxSynchProcesses =
+                new TextField<Integer>("maxSynchronousProcesses", Integer.class);
         maxSynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxSynchProcesses);
-        
-        TextField<Integer> maxSynchExecutionTime = new TextField<Integer>("maxSynchronousExecutionTime", Integer.class);
+
+        TextField<Integer> maxSynchExecutionTime =
+                new TextField<Integer>("maxSynchronousExecutionTime", Integer.class);
         maxSynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxSynchExecutionTime);
 
-        TextField<Integer> maxSynchTotalTime = new TextField<Integer>("maxSynchronousTotalTime", Integer.class);
+        TextField<Integer> maxSynchTotalTime =
+                new TextField<Integer>("maxSynchronousTotalTime", Integer.class);
         maxSynchTotalTime.add(RangeValidator.minimum(-1));
         form.add(maxSynchTotalTime);
 
-        TextField<Integer> maxAsynchProcesses = new TextField<Integer>("maxAsynchronousProcesses", Integer.class);
+        TextField<Integer> maxAsynchProcesses =
+                new TextField<Integer>("maxAsynchronousProcesses", Integer.class);
         maxAsynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxAsynchProcesses);
-        
-        TextField<Integer> maxAsynchExecutionTime = new TextField<Integer>("maxAsynchronousExecutionTime", Integer.class);
+
+        TextField<Integer> maxAsynchExecutionTime =
+                new TextField<Integer>("maxAsynchronousExecutionTime", Integer.class);
         maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxAsynchExecutionTime);
 
-        TextField<Integer> maxAsynchTotalTime = new TextField<Integer>("maxAsynchronousTotalTime", Integer.class);
+        TextField<Integer> maxAsynchTotalTime =
+                new TextField<Integer>("maxAsynchronousTotalTime", Integer.class);
         maxAsynchTotalTime.add(RangeValidator.minimum(-1));
         form.add(maxAsynchTotalTime);
 
-        TextField<Integer> resourceExpirationTimeout = new TextField<Integer>("resourceExpirationTimeout", Integer.class);
+        TextField<Integer> resourceExpirationTimeout =
+                new TextField<Integer>("resourceExpirationTimeout", Integer.class);
         resourceExpirationTimeout.add(RangeValidator.minimum(0));
         form.add(resourceExpirationTimeout);
-        
+
         // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
         // new PropertyModel<String>(info, "storageDirectory"));
-        DirectoryParamPanel chooser = new DirectoryParamPanel("storageDirectory",
-                new PropertyModel<String>(
-                info, "storageDirectory"), new ParamResourceModel("storageDirectory", this), false);
+        DirectoryParamPanel chooser =
+                new DirectoryParamPanel(
+                        "storageDirectory",
+                        new PropertyModel<String>(info, "storageDirectory"),
+                        new ParamResourceModel("storageDirectory", this),
+                        false);
         form.add(chooser);
 
         form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
@@ -96,9 +106,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         super.handleSubmit(info);
     }
 
-    /**
-     * Validator that checks that the total time is greater than the execution time
-     */
+    /** Validator that checks that the total time is greater than the execution time */
     class TotalTimeValidator extends AbstractFormValidator {
 
         private static final long serialVersionUID = 1L;
@@ -106,8 +114,8 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         private FormComponent<Integer> totalTime;
         private FormComponent<Integer> executionTime;
 
-        public TotalTimeValidator(FormComponent<Integer> totalTime,
-                FormComponent<Integer> executionTime) {
+        public TotalTimeValidator(
+                FormComponent<Integer> totalTime, FormComponent<Integer> executionTime) {
             this.totalTime = totalTime;
             this.executionTime = executionTime;
         }
@@ -119,12 +127,11 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
         @Override
         public void validate(Form<?> form) {
-            if (executionTime.getConvertedInput() != null 
-             && totalTime.getConvertedInput() != null
-             && totalTime.getConvertedInput() != 0
-             && totalTime.getConvertedInput() < executionTime.getConvertedInput()) {
-                form.error(new ParamResourceModel("totalTimeError", getPage())
-                .getString());
+            if (executionTime.getConvertedInput() != null
+                    && totalTime.getConvertedInput() != null
+                    && totalTime.getConvertedInput() != 0
+                    && totalTime.getConvertedInput() < executionTime.getConvertedInput()) {
+                form.error(new ParamResourceModel("totalTimeError", getPage()).getString());
             }
         }
     }

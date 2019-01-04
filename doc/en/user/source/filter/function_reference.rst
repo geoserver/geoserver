@@ -5,7 +5,7 @@ Filter Function Reference
 
 This reference describes all filter functions that can be used in WFS/WMS filtering or in SLD expressions.
 
-The list of functions available on a Geoserver instance can be determined by 
+The list of functions available on a GeoServer instance can be determined by 
 browsing to http://localhost:8080/geoserver/wfs?request=GetCapabilities 
 and searching for ``ogc:FunctionNames`` in the returned XML.  
 If a function is described in the Capabilities document but is not in this reference, 

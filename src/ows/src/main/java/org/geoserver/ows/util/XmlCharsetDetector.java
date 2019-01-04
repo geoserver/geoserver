@@ -18,55 +18,44 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
- * Provides a methods that can be used to detect charset of some
- * XML document and (optionally) return a reader that is aware of
- * this charset and can correctly decode document's data.
+ * Provides a methods that can be used to detect charset of some XML document and (optionally)
+ * return a reader that is aware of this charset and can correctly decode document's data.
  */
 public class XmlCharsetDetector {
-    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
+    protected static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
-    /**
-     * In current context naming this "GT", "GREATER_THAN" or like
-     * would be misleading.
-     */
+    /** In current context naming this "GT", "GREATER_THAN" or like would be misleading. */
     private static final char RIGHT_ANGLE_BRACKET = '\u003E';
-    private static final Pattern ENCODING_PATTERN = Pattern.compile(
-            "encoding\\s*\\=\\s*\"([^\"]+)\"");
+
+    private static final Pattern ENCODING_PATTERN =
+            Pattern.compile("encoding\\s*\\=\\s*\"([^\"]+)\"");
 
     /**
-     * Maximum number of characters we are expecting in XML Declaration.
-     * There are probably will be less then 100, but just in case...
+     * Maximum number of characters we are expecting in XML Declaration. There are probably will be
+     * less then 100, but just in case...
      */
     private static final int MAX_XMLDECL_SIZE = 100;
 
     /**
-     * Based on Xerces-J code, this method will try its best to return a
-     * reader which is able to decode content of incoming XML document
-     * properly. To achieve this goal, it first infers general
-     * encoding scheme of the above document and then uses this
-     * information to extract actual charset from XML declaration. In
-     * any recoverable error situation default UTF-8 reader will be
-     * created.
+     * Based on Xerces-J code, this method will try its best to return a reader which is able to
+     * decode content of incoming XML document properly. To achieve this goal, it first infers
+     * general encoding scheme of the above document and then uses this information to extract
+     * actual charset from XML declaration. In any recoverable error situation default UTF-8 reader
+     * will be created.
      *
-     * @param istream Byte stream (most probably obtained with
-     *                <code>HttpServletRequest.getInputStream</code>
-     *                that gives access to XML document in question).
-     *
-     * @param encInfo Instance of EncodingInfo where information about
-     *                detected charset will be stored. You can then
-     *                use it, for example, to form a response encoded
-     *                with this charset.
-     *
+     * @param istream Byte stream (most probably obtained with <code>
+     *     HttpServletRequest.getInputStream</code> that gives access to XML document in question).
+     * @param encInfo Instance of EncodingInfo where information about detected charset will be
+     *     stored. You can then use it, for example, to form a response encoded with this charset.
      * @throws IOException in case of any unrecoverable I/O errors.
-     * @throws UnsupportedCharsetException <code>InputStreamReader</code>'s
-     *             constructor will probably throw this exception if
-     *             inferred charset of XML document is not supported by
-     *             current JVM.
+     * @throws UnsupportedCharsetException <code>InputStreamReader</code>'s constructor will
+     *     probably throw this exception if inferred charset of XML document is not supported by
+     *     current JVM.
      */
     public static Reader getCharsetAwareReader(InputStream istream, EncodingInfo encInfo)
-        throws IOException, UnsupportedCharsetException {
+            throws IOException, UnsupportedCharsetException {
         RewindableInputStream stream;
         stream = new RewindableInputStream(istream, false);
 
@@ -89,13 +78,24 @@ public class XmlCharsetDetector {
         if (LOGGER.isLoggable(Level.FINER)) {
             // Such number of concatenating strings makes me sick.
             // But using StringBuffer will make this uglier, not?
-            LOGGER.finer("First 4 bytes of XML doc are : "
-                + Integer.toHexString((int) b4[0] & 0xff).toUpperCase() + " ('" + (char) b4[0]
-                + "') " + Integer.toHexString((int) b4[1] & 0xff).toUpperCase() + " ('"
-                + (char) b4[1] + "') " + Integer.toHexString((int) b4[2] & 0xff).toUpperCase()
-                + " ('" + (char) b4[2] + "') "
-                + Integer.toHexString((int) b4[3] & 0xff).toUpperCase() + " ('" + (char) b4[3]
-                + "')");
+            LOGGER.finer(
+                    "First 4 bytes of XML doc are : "
+                            + Integer.toHexString((int) b4[0] & 0xff).toUpperCase()
+                            + " ('"
+                            + (char) b4[0]
+                            + "') "
+                            + Integer.toHexString((int) b4[1] & 0xff).toUpperCase()
+                            + " ('"
+                            + (char) b4[1]
+                            + "') "
+                            + Integer.toHexString((int) b4[2] & 0xff).toUpperCase()
+                            + " ('"
+                            + (char) b4[2]
+                            + "') "
+                            + Integer.toHexString((int) b4[3] & 0xff).toUpperCase()
+                            + " ('"
+                            + (char) b4[3]
+                            + "')");
         }
 
         /*
@@ -200,8 +200,11 @@ public class XmlCharsetDetector {
         String declEncoding = getXmlEncoding(reader);
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Charset detection phase 2. Charset in XML declaration " + "is `"
-                + declEncoding + "`.");
+            LOGGER.fine(
+                    "Charset detection phase 2. Charset in XML declaration "
+                            + "is `"
+                            + declEncoding
+                            + "`.");
         }
 
         stream.reset();
@@ -226,8 +229,11 @@ public class XmlCharsetDetector {
              */
             if (!declEncoding.equals("ISO-10646-UCS-2")) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("Declared charset differs from inferred one. "
-                        + "Trying to construct InputStreamReader for `" + declEncoding + "`.");
+                    LOGGER.fine(
+                            "Declared charset differs from inferred one. "
+                                    + "Trying to construct InputStreamReader for `"
+                                    + declEncoding
+                                    + "`.");
                 }
 
                 reader = new InputStreamReader(stream, declEncoding);
@@ -239,40 +245,34 @@ public class XmlCharsetDetector {
     } // END getCharsetAwareReader(InputStream) : Reader
 
     /**
-     * Use this variant when you aren't interested in encoding data, and just
-     * want to get a suitable reader for incoming request.
+     * Use this variant when you aren't interested in encoding data, and just want to get a suitable
+     * reader for incoming request.
      *
      * @param istream See <code>getCharsetAwareReader(InputStream,
      *                              EncodingInfo)</code>.
-     *
      */
     public static Reader getCharsetAwareReader(InputStream istream)
-        throws IOException, UnsupportedCharsetException {
+            throws IOException, UnsupportedCharsetException {
         return getCharsetAwareReader(istream, new EncodingInfo());
     }
 
     /**
-     * Creates a new reader on top of the given <code>InputStream</code> using
-     * existing (external) encoding information. Unlike
-     * <code>getCharsetAwareReader</code>, this method never tries to detect
-     * charset or encoding scheme of <code>InputStream</code>'s data. This also
-     * means that it <em>must</em> be provided with valid
-     * <code>EncodingInfo</code> instance, which may be obtained, for example,
-     * from previous <code>getCharsetAwareReader(InputStream, EncodingInfo)</code>
-     * call.
+     * Creates a new reader on top of the given <code>InputStream</code> using existing (external)
+     * encoding information. Unlike <code>getCharsetAwareReader</code>, this method never tries to
+     * detect charset or encoding scheme of <code>InputStream</code>'s data. This also means that it
+     * <em>must</em> be provided with valid <code>EncodingInfo</code> instance, which may be
+     * obtained, for example, from previous <code>getCharsetAwareReader(InputStream, EncodingInfo)
+     * </code> call.
      *
      * @param istream byte-stream containing textual (presumably XML) data
-     * @param encInfo correctly initialized object which holds information of
-     *                the above byte-stream's contents charset.
-     *
-     * @throws IllegalArgumentException      if charset name is not specified
-     * @throws UnsupportedEncodingException  in cases when specified charset is
-     *             not supported by platform or due to invalid byte order for
-     *             <code>ISO-10646-UCS-2|4</code> charsets.
-     *
+     * @param encInfo correctly initialized object which holds information of the above
+     *     byte-stream's contents charset.
+     * @throws IllegalArgumentException if charset name is not specified
+     * @throws UnsupportedEncodingException in cases when specified charset is not supported by
+     *     platform or due to invalid byte order for <code>ISO-10646-UCS-2|4</code> charsets.
      */
     public static Reader createReader(InputStream istream, EncodingInfo encInfo)
-        throws IllegalArgumentException, UnsupportedEncodingException {
+            throws IllegalArgumentException, UnsupportedEncodingException {
         String charset = encInfo.getEncoding();
         Boolean isBigEndian = encInfo.isBigEndian();
 
@@ -284,8 +284,11 @@ public class XmlCharsetDetector {
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Trying to create reader basing on existing charset " + "information: `"
-                + encInfo + "`.");
+            LOGGER.fine(
+                    "Trying to create reader basing on existing charset "
+                            + "information: `"
+                            + encInfo
+                            + "`.");
         }
 
         Reader reader = null;
@@ -327,15 +330,13 @@ public class XmlCharsetDetector {
     } // END createReader(InputStream, EncodingInfo) : Reader
 
     /**
-     * Returns the IANA encoding name that is auto-detected from
-     * the bytes specified, with the endian-ness of that encoding where
-     * appropriate. Note, that encoding obtained this way is only an
-     * <em>encoding scheme</em> of the request, i.e. step 1 of detection
-     * process. To learn the exact <em>charset</em> of the request data,
-     * you should also perform step 2 - read XML declaration and get the
-     * value of its <code>encoding</code> pseudoattribute.
+     * Returns the IANA encoding name that is auto-detected from the bytes specified, with the
+     * endian-ness of that encoding where appropriate. Note, that encoding obtained this way is only
+     * an <em>encoding scheme</em> of the request, i.e. step 1 of detection process. To learn the
+     * exact <em>charset</em> of the request data, you should also perform step 2 - read XML
+     * declaration and get the value of its <code>encoding</code> pseudoattribute.
      *
-     * @param b4    The first four bytes of the input.
+     * @param b4 The first four bytes of the input.
      * @param count The number of bytes actually read.
      * @return Instance of EncodingInfo incapsulating all encoding-related data.
      */
@@ -427,18 +428,15 @@ public class XmlCharsetDetector {
     } // END getEncodingName(byte[], int) : EncodingInfo
 
     /**
-     * Gets the encoding of the xml request made to the dispatcher.  This
-     * works by reading the temp file where we are storing the request,
-     * looking to match the header specified encoding that should be present
-     * on all xml files.  This call should only be made after the temp file
-     * has been set.  If no encoding is found, or if an IOError is encountered
-     * then null shall be returned.
+     * Gets the encoding of the xml request made to the dispatcher. This works by reading the temp
+     * file where we are storing the request, looking to match the header specified encoding that
+     * should be present on all xml files. This call should only be made after the temp file has
+     * been set. If no encoding is found, or if an IOError is encountered then null shall be
+     * returned.
      *
-     * @param reader This character stream is supposed to contain XML data
-     *               (i.e. it should start with valid XML declaration).
-     *
-     * @return The encoding specified in the xml header read from the supplied
-     *         character stream.
+     * @param reader This character stream is supposed to contain XML data (i.e. it should start
+     *     with valid XML declaration).
+     * @return The encoding specified in the xml header read from the supplied character stream.
      */
     protected static String getXmlEncoding(Reader reader) {
         try {
@@ -476,8 +474,10 @@ public class XmlCharsetDetector {
              * megabytes of useless data :)
              */
             for (;
-                    (MAX_XMLDECL_SIZE > count) && (-1 != (c = reader.read()))
-                    && (RIGHT_ANGLE_BRACKET != (char) c); count++) {
+                    (MAX_XMLDECL_SIZE > count)
+                            && (-1 != (c = reader.read()))
+                            && (RIGHT_ANGLE_BRACKET != (char) c);
+                    count++) {
                 sw.write(c);
             }
 
@@ -492,8 +492,10 @@ public class XmlCharsetDetector {
             }
         } catch (IOException e) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning("Failed to extract charset info from XML "
-                    + "declaration due to IOException: " + e.getMessage());
+                LOGGER.warning(
+                        "Failed to extract charset info from XML "
+                                + "declaration due to IOException: "
+                                + e.getMessage());
             }
 
             return null;

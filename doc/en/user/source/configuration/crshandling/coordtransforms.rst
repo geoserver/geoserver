@@ -71,7 +71,7 @@ NTv2
    4230,4326,SPED2ETV2.gsb,OGP
    4230,4326,sped2et.gsb,OGP
    4258,4275,rgf93_ntf.gsb,OGP
-   4267,4269,NTv2_0.gsb,http://www.geod.nrcan.gc.ca/products/html-public/GSDapps/English/NTv2_Fact_Sheet.html
+   4267,4269,NTv2_0.gsb,https://open.canada.ca/data/en/dataset/b3534942-31ea-59cf-bcc3-f8dc4875081a
    4267,4269,QUE27-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
    4267,4326,NTv2_0.gsb,OGP
    4267,4326,QUE27-98.gsb,OGP
@@ -91,7 +91,7 @@ NTv2
    4314,4258,BETA2007.gsb,BKG via EuroGeographics http://crs.bkg.bund.de/crs-eu/
    4314,4326,BETA2007.gsb,OGP
    4326,4275,rgf93_ntf.gsb,OGP
-   4608,4269,May76v20.gsb,Geodetic Survey of Canada  http://www.geod.nrcan.gc.ca/
+   4608,4269,May76v20.gsb,Geodetic Survey of Canada Natural Resources Canada; https://www.geod.nrcan.gc.ca/
    4608,4326,May76v20.gsb,OGP
    4609,4269,CGQ77-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
    4609,4326,CGQ77-98.gsb,OGP

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -27,7 +26,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
 
 public class DefaultGeoServerFacade implements GeoServerFacade {
-    
+
     static final Logger LOGGER = Logging.getLogger(DefaultGeoServerFacade.class);
 
     GeoServerInfo global;
@@ -36,45 +35,44 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
     GeoServer geoServer;
-    
+
     public DefaultGeoServerFacade(GeoServer geoServer) {
         this.geoServer = geoServer;
         this.global = geoServer.getFactory().createGlobal();
         this.logging = geoServer.getFactory().createLogging();
     }
-    
+
     public GeoServer getGeoServer() {
         return geoServer;
     }
-    
+
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
-    
+
     public GeoServerInfo getGlobal() {
-        if ( global == null ) {
+        if (global == null) {
             return null;
         }
-        
-        return ModificationProxy.create( global, GeoServerInfo.class );
+
+        return ModificationProxy.create(global, GeoServerInfo.class);
     }
-    
+
     public void setGlobal(GeoServerInfo global) {
         resolve(global);
         setId(global.getSettings());
         this.global = global;
     }
-    
+
     public void save(GeoServerInfo global) {
-        ModificationProxy proxy = 
-            (ModificationProxy) Proxy.getInvocationHandler( global );
-        
+        ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(global);
+
         List propertyNames = proxy.getPropertyNames();
         List oldValues = proxy.getOldValues();
         List newValues = proxy.getNewValues();
-        
+
         geoServer.fireGlobalModified(global, propertyNames, oldValues, newValues);
-        
+
         proxy.commit();
     }
 
@@ -96,13 +94,12 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     @Override
     public void save(SettingsInfo settings) {
-        ModificationProxy proxy = 
-            (ModificationProxy) Proxy.getInvocationHandler( settings );
-        
+        ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(settings);
+
         List propertyNames = proxy.getPropertyNames();
         List oldValues = proxy.getOldValues();
         List newValues = proxy.getNewValues();
-        
+
         settings = (SettingsInfo) proxy.getProxyObject();
         geoServer.fireSettingsModified(settings, propertyNames, oldValues, newValues);
 
@@ -116,52 +113,50 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     }
 
     public LoggingInfo getLogging() {
-        if ( logging == null ) {
+        if (logging == null) {
             return null;
         }
-        
-        return ModificationProxy.create( logging, LoggingInfo.class );
+
+        return ModificationProxy.create(logging, LoggingInfo.class);
     }
-    
+
     public void setLogging(LoggingInfo logging) {
         this.logging = logging;
     }
 
     public void save(LoggingInfo logging) {
-        ModificationProxy proxy = 
-            (ModificationProxy) Proxy.getInvocationHandler( logging );
-        
+        ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(logging);
+
         List propertyNames = proxy.getPropertyNames();
         List oldValues = proxy.getOldValues();
         List newValues = proxy.getNewValues();
-        
+
         geoServer.fireLoggingModified(logging, propertyNames, oldValues, newValues);
 
         proxy.commit();
     }
-    
+
     public void add(ServiceInfo service) {
-        //may be adding a proxy, need to unwrap
+        // may be adding a proxy, need to unwrap
         service = unwrap(service);
         setId(service);
         service.setGeoServer(geoServer);
 
-        services.add( service );
+        services.add(service);
     }
-    
+
     public void save(ServiceInfo service) {
-        ModificationProxy proxy = 
-            (ModificationProxy) Proxy.getInvocationHandler( service );
-        
+        ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(service);
+
         List propertyNames = proxy.getPropertyNames();
         List oldValues = proxy.getOldValues();
         List newValues = proxy.getNewValues();
-        
+
         geoServer.fireServiceModified(service, propertyNames, oldValues, newValues);
 
         proxy.commit();
     }
-    
+
     public void remove(ServiceInfo service) {
         services.remove(service);
     }
@@ -176,17 +171,22 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     }
 
     public <T extends ServiceInfo> T getService(String id, Class<T> clazz) {
-        for ( ServiceInfo si : services ) {
-            if( id.equals( si.getId() ) ) {
-                return ModificationProxy.create( (T) si, clazz );
+        for (ServiceInfo si : services) {
+            if (id.equals(si.getId())) {
+                return ModificationProxy.create((T) si, clazz);
             }
         }
-        
-        if(LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Could not locate service of type " + clazz + " and id '" + id 
-                    + "', available services were " + services);
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(
+                    "Could not locate service of type "
+                            + clazz
+                            + " and id '"
+                            + id
+                            + "', available services were "
+                            + services);
         }
-        
+
         return null;
     }
 
@@ -195,36 +195,36 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     }
 
     @Override
-    public <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace,
-            Class<T> clazz) {
+    public <T extends ServiceInfo> T getServiceByName(
+            String name, WorkspaceInfo workspace, Class<T> clazz) {
         return findByName(name, workspace, clazz, services);
     }
 
     public Collection<? extends ServiceInfo> getServices() {
-        return ModificationProxy.createList(filter(services, null), ServiceInfo.class );
+        return ModificationProxy.createList(filter(services, null), ServiceInfo.class);
     }
 
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
-        return ModificationProxy.createList(filter(services, workspace), ServiceInfo.class );
+        return ModificationProxy.createList(filter(services, workspace), ServiceInfo.class);
     }
 
     public void dispose() {
-        if ( global != null ) global.dispose();
-        if ( settings != null) settings.clear();
-        if ( services != null ) services.clear();
+        if (global != null) global.dispose();
+        if (settings != null) settings.clear();
+        if (services != null) services.clear();
     }
 
     public static <T> T unwrap(T obj) {
         return ModificationProxy.unwrap(obj);
     }
-    
+
     protected void resolve(GeoServerInfo info) {
         GeoServerInfoImpl global = (GeoServerInfoImpl) info;
-        if(global.getMetadata() == null) {
+        if (global.getMetadata() == null) {
             global.setMetadata(new MetadataMap());
         }
-        if(global.getClientProperties() == null) {
+        if (global.getClientProperties() == null) {
             global.setClientProperties(new HashMap<Object, Object>());
         }
         if (global.getCoverageAccess() == null) {
@@ -232,33 +232,46 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         }
     }
 
-     <T extends ServiceInfo> T find(Class<T> clazz, WorkspaceInfo workspace, List<ServiceInfo> services) {
-         for ( ServiceInfo si : services ) {
-             if( clazz.isAssignableFrom( si.getClass() ) && wsEquals(workspace, si.getWorkspace())) {
-                 
-                 return ModificationProxy.create( (T) si, clazz );
-             }
-          }
-         
-         if(LOGGER.isLoggable(Level.FINE)) {
-             LOGGER.fine("Could not locate service of type " + clazz + " in workspace " + workspace 
-                     + ", available services were " + services);
-         }
-          
-         return null;
-     }
+    <T extends ServiceInfo> T find(
+            Class<T> clazz, WorkspaceInfo workspace, List<ServiceInfo> services) {
+        for (ServiceInfo si : services) {
+            if (clazz.isAssignableFrom(si.getClass()) && wsEquals(workspace, si.getWorkspace())) {
 
- <T extends ServiceInfo> T findByName(String name, WorkspaceInfo workspace, Class<T> clazz, 
-        List<ServiceInfo> services) {
-        for ( ServiceInfo si : services ) {
-            if( name.equals( si.getName() ) && wsEquals(workspace, si.getWorkspace())) {
-                return ModificationProxy.create( (T) si, clazz );
+                return ModificationProxy.create((T) si, clazz);
             }
         }
-        
-        if(LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Could not locate service of type " + clazz + " in workspace " + workspace 
-                    + " and name '" + name + "', available services were " + services);
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(
+                    "Could not locate service of type "
+                            + clazz
+                            + " in workspace "
+                            + workspace
+                            + ", available services were "
+                            + services);
+        }
+
+        return null;
+    }
+
+    <T extends ServiceInfo> T findByName(
+            String name, WorkspaceInfo workspace, Class<T> clazz, List<ServiceInfo> services) {
+        for (ServiceInfo si : services) {
+            if (name.equals(si.getName()) && wsEquals(workspace, si.getWorkspace())) {
+                return ModificationProxy.create((T) si, clazz);
+            }
+        }
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(
+                    "Could not locate service of type "
+                            + clazz
+                            + " in workspace "
+                            + workspace
+                            + " and name '"
+                            + name
+                            + "', available services were "
+                            + services);
         }
 
         return null;
@@ -281,12 +294,11 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
         return ws1.equals(ws2);
     }
-    
-    protected void setId( Object o ) {
-        if ( OwsUtils.get( o, "id") == null ) {
+
+    protected void setId(Object o) {
+        if (OwsUtils.get(o, "id") == null) {
             String uid = new UID().toString();
-            OwsUtils.set( o, "id", o.getClass().getSimpleName() + "-"+uid );
+            OwsUtils.set(o, "id", o.getClass().getSimpleName() + "-" + uid);
         }
     }
 }
- 

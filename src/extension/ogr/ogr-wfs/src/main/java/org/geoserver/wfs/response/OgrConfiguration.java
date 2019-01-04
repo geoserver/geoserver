@@ -5,44 +5,48 @@
  */
 package org.geoserver.wfs.response;
 
+import com.thoughtworks.xstream.XStream;
 import java.util.Map;
-
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.OutputType;
 import org.geoserver.ogr.core.ToolConfiguration;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
- * Represents the ogr2ogr output format configuration as a whole.
- * Only used for XStream driven de-serialization
+ * Represents the ogr2ogr output format configuration as a whole. Only used for XStream driven
+ * de-serialization
  *
  * @author Andrea Aime - OpenGeo
  * @author Stefano Costa - GeoSolutions
-
  */
 public class OgrConfiguration extends ToolConfiguration {
 
     public static final OgrConfiguration DEFAULT;
+
     static {
         DEFAULT = new OgrConfiguration();
         // assume it's in the classpath and GDAL_DATA is properly set in the enviroment
         DEFAULT.ogr2ogrLocation = "ogr2ogr";
         // add some default formats
-        DEFAULT.formats = new OgrFormat[] {
-                new OgrFormat("MapInfo File", "OGR-TAB", ".tab", false, null),
-                new OgrFormat("MapInfo File", "OGR-MIF", ".mif", false, null, "-dsco", "FORMAT=MIF"),
-                new OgrFormat("CSV", "OGR-CSV", ".csv", true, "text/csv", OutputType.TEXT),
-                new OgrFormat("KML", "OGR-KML", ".kml", true, "application/vnd.google-earth.kml", OutputType.XML),
-        };
+        DEFAULT.formats =
+                new OgrFormat[] {
+                    new OgrFormat("MapInfo File", "OGR-TAB", ".tab", false, null),
+                    new OgrFormat(
+                            "MapInfo File", "OGR-MIF", ".mif", false, null, "-dsco", "FORMAT=MIF"),
+                    new OgrFormat("CSV", "OGR-CSV", ".csv", true, "text/csv", OutputType.TEXT),
+                    new OgrFormat(
+                            "KML",
+                            "OGR-KML",
+                            ".kml",
+                            true,
+                            "application/vnd.google-earth.kml",
+                            OutputType.XML),
+                };
     }
 
     public String ogr2ogrLocation;
     public String gdalData;
 
-    /**
-     * Ensures compatibility with old style configuration files.
-     */
+    /** Ensures compatibility with old style configuration files. */
     @Override
     public String getExecutable() {
         if (ogr2ogrLocation != null) {
@@ -52,9 +56,7 @@ public class OgrConfiguration extends ToolConfiguration {
         }
     }
 
-    /**
-     * Ensures compatibility with old style configuration files.
-     */
+    /** Ensures compatibility with old style configuration files. */
     @Override
     public Map<String, String> getEnvironment() {
         if (gdalData != null) {
@@ -73,5 +75,4 @@ public class OgrConfiguration extends ToolConfiguration {
 
         System.out.println(xstream.toXML(OgrConfiguration.DEFAULT));
     }
-
 }

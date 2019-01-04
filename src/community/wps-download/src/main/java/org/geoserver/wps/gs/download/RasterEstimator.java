@@ -8,29 +8,28 @@ package org.geoserver.wps.gs.download;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
-
 /**
- * This class check whether or not the provided download request goes beyond the provided limits for raster data or not.
- * 
+ * This class check whether or not the provided download request goes beyond the provided limits for
+ * raster data or not.
+ *
  * @author Simone Giannecchini, GeoSolutions
- * 
  */
 class RasterEstimator {
 
@@ -39,14 +38,18 @@ class RasterEstimator {
     /** The downloadServiceConfiguration object containing the limits to check */
     private DownloadServiceConfiguration downloadServiceConfiguration;
 
+    private Catalog catalog;
+
     /**
      * Constructor
-     * 
-     * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits to be enforced.
-     * 
+     *
+     * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits
+     *     to be enforced.
+     * @param catalog
      */
-    public RasterEstimator(DownloadServiceConfiguration limits) {
+    public RasterEstimator(DownloadServiceConfiguration limits, Catalog catalog) {
         this.downloadServiceConfiguration = limits;
+        this.catalog = catalog;
         if (limits == null) {
             throw new NullPointerException("The provided DownloadEstimatorProcess is null!");
         }
@@ -54,7 +57,7 @@ class RasterEstimator {
 
     /**
      * Check the download limits for raster data.
-     * 
+     *
      * @param coverage the {@link CoverageInfo} to estimate the download limits
      * @param roi the {@link Geometry} for the clip/intersection
      * @param targetCRS the reproject {@link CoordinateReferenceSystem} (useless for the moment)
@@ -63,11 +66,18 @@ class RasterEstimator {
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
      * @param selectedBands the band indices selected for output, in case of raster input
-     *
      */
-    public boolean execute(final ProgressListener progressListener, CoverageInfo coverageInfo,
-            Geometry roi, CoordinateReferenceSystem targetCRS, boolean clip, Filter filter,
-            Integer targetSizeX, Integer targetSizeY, int[] bandIndices) throws Exception {
+    public boolean execute(
+            final ProgressListener progressListener,
+            CoverageInfo coverageInfo,
+            Geometry roi,
+            CoordinateReferenceSystem targetCRS,
+            boolean clip,
+            Filter filter,
+            Integer targetSizeX,
+            Integer targetSizeY,
+            int[] bandIndices)
+            throws Exception {
 
         final long rasterSizeLimits = downloadServiceConfiguration.getRasterSizeLimits();
 
@@ -98,11 +108,14 @@ class RasterEstimator {
             roiManager = new ROIManager(roi, roiCRS);
             // set use nativeCRS
             roiManager.useNativeCRS(nativeCRS);
+            if (targetCRS != null) {
+                roiManager.useTargetCRS(targetCRS);
+            }
         }
 
         // get a reader for this CoverageInfo
-        final GridCoverage2DReader reader = (GridCoverage2DReader) coverageInfo
-                .getGridCoverageReader(null, null);
+        final GridCoverage2DReader reader =
+                (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
 
         // Area to read in pixel
         final long areaRead;
@@ -114,12 +127,16 @@ class RasterEstimator {
                 LOGGER.log(Level.FINE, "Reprojecting ROI");
             }
             final Geometry safeRoiInNativeCRS = roiManager.getSafeRoiInNativeCRS();
-            Geometry roiInNativeCRS_ = safeRoiInNativeCRS.intersection(FeatureUtilities.getPolygon(
-                    reader.getOriginalEnvelope(), new GeometryFactory(new PrecisionModel(
-                            PrecisionModel.FLOATING))));
+            Geometry roiInNativeCRS_ =
+                    safeRoiInNativeCRS.intersection(
+                            FeatureUtilities.getPolygon(
+                                    reader.getOriginalEnvelope(),
+                                    new GeometryFactory(
+                                            new PrecisionModel(PrecisionModel.FLOATING))));
             if (roiInNativeCRS_.isEmpty()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE,
+                    LOGGER.log(
+                            Level.FINE,
                             "Empty intersection, so the result does not exceed the limits");
                 }
                 return true; // EMPTY Intersection
@@ -139,7 +156,17 @@ class RasterEstimator {
             scaling = new ScaleToTarget(reader);
         }
         scaling.setTargetSize(targetSizeX, targetSizeY);
-        GridGeometry2D gg = scaling.getGridGeometry();
+
+        GridGeometry2D gg = null;
+
+        if (targetSizeX == null && targetSizeY == null) {
+            // Ask to the GridGeometryProvider
+            GridGeometryProvider provider =
+                    new GridGeometryProvider(reader, roiManager, filter, catalog);
+            gg = provider.getGridGeometry();
+        } else {
+            gg = scaling.getGridGeometry();
+        }
 
         areaRead = (long) gg.getGridRange2D().width * gg.getGridRange2D().height;
 
@@ -148,22 +175,29 @@ class RasterEstimator {
             LOGGER.fine("Area to read in pixels: " + areaRead);
         }
 
-        // If the area to read or the target image size are above Integer.MAX_VALUE, false is returned,
-        // as raster processing operations (e.g. Crop, Scale) may fail if image size exceeds integer limits
-        long targetArea = 1L;
+        // If the area to read or the target image size are above Integer.MAX_VALUE, false is
+        // returned,
+        // as raster processing operations (e.g. Crop, Scale) may fail if image size exceeds integer
+        // limits
+        long targetArea;
         Integer[] targetSize = scaling.getTargetSize();
         if (targetSize[0] != null && targetSize[1] != null) {
             targetArea = (long) targetSize[0] * targetSize[1];
+        } else {
+            targetArea = areaRead;
         }
         if (areaRead >= Integer.MAX_VALUE || targetArea >= Integer.MAX_VALUE) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Area to read or target image size exceeds maximum integer value: " + Integer.MAX_VALUE);
+                LOGGER.log(
+                        Level.FINE,
+                        "Area to read or target image size exceeds maximum integer value: "
+                                + Integer.MAX_VALUE);
             }
             return false;
         }
 
         // If the area exceeds the limits, false is returned
-        if (rasterSizeLimits > DownloadServiceConfiguration.NO_LIMIT 
+        if (rasterSizeLimits > DownloadServiceConfiguration.NO_LIMIT
                 && (areaRead > rasterSizeLimits || targetArea > rasterSizeLimits)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Area exceeds the limits");
@@ -173,49 +207,61 @@ class RasterEstimator {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Area does not exceed the limits");
         }
-        // Try to check write limits, using input's coverageinfo 
-        int bandsCount =  coverageInfo.getDimensions().size();
-        
+        // Try to check write limits, using input's coverageinfo
+        int bandsCount = coverageInfo.getDimensions().size();
+
         // Use sample info type for each output band to estimate size
         List<CoverageDimensionInfo> coverageDimensionInfoList = coverageInfo.getDimensions();
         int accumulatedPixelSizeInBits = 0;
-        
+
         // Use only selected bands for output, if specified
-        if (bandIndices!=null && bandIndices.length>0){
-            for (int i=0;i<bandIndices.length;i++){
-                //Use valid indices
-                if (bandIndices[i]>=0 && bandIndices[i]<bandsCount)
+        if (bandIndices != null && bandIndices.length > 0) {
+            for (int i = 0; i < bandIndices.length; i++) {
+                // Use valid indices
+                if (bandIndices[i] >= 0 && bandIndices[i] < bandsCount)
                     accumulatedPixelSizeInBits +=
-                        TypeMap.getSize(coverageDimensionInfoList.get(bandIndices[i]).getDimensionType());
+                            TypeMap.getSize(
+                                    coverageDimensionInfoList
+                                            .get(bandIndices[i])
+                                            .getDimensionType());
             }
-        }else{
-            for (int i=0;i<bandsCount;i++){
+        } else {
+            for (int i = 0; i < bandsCount; i++) {
                 accumulatedPixelSizeInBits +=
                         TypeMap.getSize(coverageDimensionInfoList.get(i).getDimensionType());
-            
             }
         }
-        
+
         /// Total size in bytes
-        long rasterSizeInBytes = (long) targetArea*accumulatedPixelSizeInBits/8;
-        
+        long rasterSizeInBytes = targetArea * accumulatedPixelSizeInBits / 8;
+
         final long writeLimits = downloadServiceConfiguration.getWriteLimits();
-        
+
         // If size exceeds the write limits, false is returned
-        if (writeLimits > DownloadServiceConfiguration.NO_LIMIT && rasterSizeInBytes > writeLimits) {
+        if (writeLimits > DownloadServiceConfiguration.NO_LIMIT
+                && rasterSizeInBytes > writeLimits) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Output raw raster size ("+rasterSizeInBytes+") exceeds"
-                        + " the specified write limits ("+writeLimits+")");
+                LOGGER.log(
+                        Level.FINE,
+                        "Output raw raster size ("
+                                + rasterSizeInBytes
+                                + ") exceeds"
+                                + " the specified write limits ("
+                                + writeLimits
+                                + ")");
             }
             return false;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Output raw raster size ("+rasterSizeInBytes+") does not exceed"
-                    + " the specified write limits ("+writeLimits+")");
-        }    
+            LOGGER.log(
+                    Level.FINE,
+                    "Output raw raster size ("
+                            + rasterSizeInBytes
+                            + ") does not exceed"
+                            + " the specified write limits ("
+                            + writeLimits
+                            + ")");
+        }
         return true;
-
     }
-
-
 }

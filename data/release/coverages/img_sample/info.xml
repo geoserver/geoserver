@@ -85,7 +85,7 @@
     <responseCRSs>EPSG:32633</responseCRSs>
   </supportedCRSs>
   <supportedFormats nativeFormat = "WorldImage" >
-    <formats>GIF,PNG,JPEG,TIFF,GTOPO30,GEOTIFF,IMAGEMOSAIC,ARCGRID</formats>
+    <formats>GIF,PNG,JPEG,TIFF,GEOTIFF,IMAGEMOSAIC,ARCGRID</formats>
   </supportedFormats>
   <supportedInterpolations default = "nearest neighbor" >
     <interpolationMethods>nearest neighbor,bilinear,bicubic,bicubic_2</interpolationMethods>

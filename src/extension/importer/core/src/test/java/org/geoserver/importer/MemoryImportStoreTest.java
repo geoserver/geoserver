@@ -6,13 +6,11 @@
  */
 package org.geoserver.importer;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author Ian Schneider <ischneider@opengeo.org>
- */
+import org.junit.Test;
+
+/** @author Ian Schneider <ischneider@opengeo.org> */
 public class MemoryImportStoreTest {
 
     @Test

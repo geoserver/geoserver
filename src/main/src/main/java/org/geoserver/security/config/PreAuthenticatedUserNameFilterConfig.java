@@ -12,23 +12,24 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 
 /**
  * {@link GeoServerPreAuthenticatedUserNameFilter} configuration object.
- * 
- *<p>
- * {@link #getRoleSource()} determines how to calculate the roles:
+ *
+ * <p>{@link #getRoleSource()} determines how to calculate the roles:
+ *
  * <ol>
- * <li>{@link PreAuthenticatedUserNameRoleSource#UserGroupService} - Roles are calculated using the named user group service
- *     {@link #getUserGroupServiceName()}</li>
- * <li>{@link PreAuthenticatedUserNameRoleSource#RoleService} - Roles are calculated using the named role service
- *     {@link #getRoleServiceName()}. If no role service is given, the default is 
- *     {@link GeoServerSecurityManager#getActiveRoleService()}</li>
- * <li>{@link PreAuthenticatedUserNameRoleSource#Header} - Roles are calculated using the content of 
- *     {@link #getRolesHeaderAttribute()} parsed by {@link #getRoleConverterName()}. if no converter 
- *     is given, roles are parsed by the default converter {@link GeoServerRoleConverter}</li>
- * 
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#UserGroupService} - Roles are calculated using
+ *       the named user group service {@link #getUserGroupServiceName()}
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#RoleService} - Roles are calculated using the
+ *       named role service {@link #getRoleServiceName()}. If no role service is given, the default
+ *       is {@link GeoServerSecurityManager#getActiveRoleService()}
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#Header} - Roles are calculated using the content
+ *       of {@link #getRolesHeaderAttribute()} parsed by {@link #getRoleConverterName()}. if no
+ *       converter is given, roles are parsed by the default converter {@link
+ *       GeoServerRoleConverter}
+ *
  * @author christian
  */
-public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilterConfig 
-    implements SecurityAuthFilterConfig {
+public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilterConfig
+        implements SecurityAuthFilterConfig {
 
     private RoleSource roleSource;
     private String rolesHeaderAttribute;
@@ -37,23 +38,23 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
     private String roleServiceName;
 
     /**
-     * RoleSource list values common to all PreAuthenticatedUserNameFilterConfig
-     * hierarchy.
-     * 
-     * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
+     * RoleSource list values common to all PreAuthenticatedUserNameFilterConfig hierarchy.
      *
+     * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      */
-    public static enum  PreAuthenticatedUserNameRoleSource implements RoleSource {
-        Header,UserGroupService,RoleService;
-        
+    public static enum PreAuthenticatedUserNameRoleSource implements RoleSource {
+        Header,
+        UserGroupService,
+        RoleService;
+
         @Override
         public boolean equals(RoleSource other) {
             return other != null && other.toString().equals(toString());
         }
-    } ;
-    
+    };
+
     private static final long serialVersionUID = 1L;
-    
+
     public RoleSource getRoleSource() {
         return roleSource;
     }
@@ -87,7 +88,7 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
     }
 
     @Override
-    public  boolean providesAuthenticationEntryPoint() {
+    public boolean providesAuthenticationEntryPoint() {
         return true;
     }
 
@@ -98,5 +99,4 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
     public void setRoleServiceName(String roleServiceName) {
         this.roleServiceName = roleServiceName;
     }
-
 }

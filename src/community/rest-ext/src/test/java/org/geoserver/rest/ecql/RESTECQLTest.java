@@ -17,10 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -41,14 +38,11 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.expression.Expression;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import org.springframework.mock.web.MockHttpServletResponse;
-
-/**
- * Unit test for evaluating the ECQL REST PathMapper.
- */
+/** Unit test for evaluating the ECQL REST PathMapper. */
 public class RESTECQLTest extends CatalogRESTTestSupport {
 
     private static SimpleFeatureType type;
@@ -73,8 +67,9 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     @Test
     public void testRegExp() throws Exception {
         // RegExp expression
-        String expression = "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
-                + "'/${1}/${4}/${5}/${6}/${0}')";
+        String expression =
+                "stringTemplate(path, '(\\w{4})_(\\w{7})_(\\d{3})_(\\d{4})(\\d{2})(\\d{2})T(\\d{7})_(\\d{2})\\.(\\w{4})', "
+                        + "'/${1}/${4}/${5}/${6}/${0}')";
         // Testing of the defined exception
         testExpression("test", "mosaic_test", expression, fileNames);
     }
@@ -82,14 +77,15 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     @Test
     public void testSubString() throws Exception {
         // SubString expression
-        String expression = "if_then_else(strEndsWith(name,'.tiff'),Concatenate(strSubstring(path, 0, 4),'/',name),'')";
+        String expression =
+                "if_then_else(strEndsWith(name,'.tiff'),Concatenate(strSubstring(path, 0, 4),'/',name),'')";
         // Testing of the defined exception
         testExpression("test2", "mosaic_test2", expression, fileNames);
     }
 
     /**
      * Initial settings for the root key, mapper and expression used
-     * 
+     *
      * @param expression
      */
     private void initialSetup(String expression) {
@@ -113,9 +109,9 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     }
 
     /**
-     * Private method for adding the selected coverage inside the defined workspace via REST and then checking if the coverage has been placed inside
-     * the defined directory
-     * 
+     * Private method for adding the selected coverage inside the defined workspace via REST and
+     * then checking if the coverage has been placed inside the defined directory
+     *
      * @param root
      * @param workspace
      * @param coverageStore
@@ -124,32 +120,38 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    private void testExpression(String workspace, String coverageStore, String expression,
-            List<String> fileNames) throws IOException, Exception, ParserConfigurationException,
-            SAXException {
+    private void testExpression(
+            String workspace, String coverageStore, String expression, List<String> fileNames)
+            throws IOException, Exception, ParserConfigurationException, SAXException {
         // Initial Settings
         initialSetup(expression);
         // Selection of a zip file
         URL zip = MockData.class.getResource("watertemp.zip");
 
-        //byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
-        
+        // byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
+
         InputStream is = null;
         byte[] bytes;
-        try  {
+        try {
             is = zip.openStream();
             bytes = IOUtils.toByteArray(is);
         } finally {
             IOUtils.closeQuietly(is);
         }
-        
+
         // creation of the workspace if not already present
         createWorkSpace(workspace);
 
         // Uploading the file via rest
-        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/" + workspace
-                + "/coveragestores/" + coverageStore + "/file.imagemosaic", bytes,
-                "application/zip");
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "/rest/workspaces/"
+                                + workspace
+                                + "/coveragestores/"
+                                + coverageStore
+                                + "/file.imagemosaic",
+                        bytes,
+                        "application/zip");
         assertEquals(201, response.getStatus());
         // Check if the coverage is present
         String content = response.getContentAsString();
@@ -171,22 +173,23 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
     }
 
     /**
-     * Private method for creating a new file object associated to the input path. 
-     * 
+     * Private method for creating a new file object associated to the input path.
+     *
      * @param expression
      * @param cs
      * @param filename
-     *
      * @throws CQLException
      */
-    private File extractFile(String expression, CoverageStoreInfo cs, String itemPath, String filename)
+    private File extractFile(
+            String expression, CoverageStoreInfo cs, String itemPath, String filename)
             throws CQLException {
         // Url to the final element
         String url = cs.getURL();
         // Convert the String expression into a CQL expression
         Expression exp = ECQL.toExpression(expression);
         // Feature associated to the input path
-        SimpleFeature feature = SimpleFeatureBuilder.build(type, new Object[] { itemPath, filename }, null);
+        SimpleFeature feature =
+                SimpleFeatureBuilder.build(type, new Object[] {itemPath, filename}, null);
         // Perform Regular Expression match
         String newPath = exp.evaluate(feature, String.class);
         // Final FILE creation
@@ -195,7 +198,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
 
     /**
      * Creation of a new workspace defined by the input "workspace" name
-     * 
+     *
      * @param workspace
      */
     private void createWorkSpace(String workspace) throws Exception {
@@ -207,8 +210,8 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         // Creation of a new Workspace called "test"
         String xml = "<workspace>" + "<name>" + workspace + "</name>" + "</workspace>";
 
-        MockHttpServletResponse responseBefore = postAsServletResponse("/rest/workspaces", xml,
-                "text/xml");
+        MockHttpServletResponse responseBefore =
+                postAsServletResponse("/rest/workspaces", xml, "text/xml");
         assertEquals(201, responseBefore.getStatus());
         assertNotNull(responseBefore.getHeader("Location"));
         assertTrue(responseBefore.getHeader("Location").endsWith("/workspaces/" + workspace));

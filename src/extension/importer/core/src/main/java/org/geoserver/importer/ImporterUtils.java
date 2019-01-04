@@ -14,9 +14,8 @@ import org.geoserver.ows.util.OwsUtils;
 
 /**
  * Utility class.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ImporterUtils {
 
@@ -27,7 +26,7 @@ public class ImporterUtils {
                 resolved = cat.getWorkspace(ws.getId());
             }
             if (resolved == null && lookupByName) {
-                //try looking up by name
+                // try looking up by name
                 resolved = cat.getWorkspaceByName(ws.getName());
             }
 
@@ -44,7 +43,7 @@ public class ImporterUtils {
             if (s.getId() != null) {
                 resolved = cat.getStore(s.getId(), StoreInfo.class);
             }
-            
+
             if (resolved == null && lookupByName) {
                 resolved = cat.getStoreByName(s.getWorkspace(), s.getName(), StoreInfo.class);
             }
@@ -54,7 +53,7 @@ public class ImporterUtils {
         }
 
         if (s != null && s.getCatalog() == null && s instanceof StoreInfoImpl) {
-            ((StoreInfoImpl)s).setCatalog(cat);
+            ((StoreInfoImpl) s).setCatalog(cat);
         }
         return resolveCollections(s);
     }

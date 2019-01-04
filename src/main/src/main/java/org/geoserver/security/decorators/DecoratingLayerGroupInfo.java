@@ -6,10 +6,10 @@
 package org.geoserver.security.decorators;
 
 import java.util.List;
-
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -24,12 +24,13 @@ import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will override selected
+ * methods to perform their "decoration" job
+ *
  * @author Andrea Aime
  */
-public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> implements LayerGroupInfo {
+public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
+        implements LayerGroupInfo {
 
     public DecoratingLayerGroupInfo(LayerGroupInfo delegate) {
         super(delegate);
@@ -49,17 +50,17 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public LayerInfo getRootLayer() {
         return delegate.getRootLayer();
     }
-    
+
     @Override
     public StyleInfo getRootLayerStyle() {
         return delegate.getRootLayerStyle();
-    }   
-    
+    }
+
     @Override
     public List<PublishedInfo> getLayers() {
         return delegate.getLayers();
     }
-    
+
     @Override
     public List<LayerInfo> layers() {
         LayerGroupHelper helper = new LayerGroupHelper(this);
@@ -70,8 +71,8 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public List<StyleInfo> styles() {
         LayerGroupHelper helper = new LayerGroupHelper(this);
         return helper.allStylesForRendering();
-    }  
-    
+    }
+
     @Override
     public String getName() {
         return delegate.getName();
@@ -81,17 +82,17 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public Mode getMode() {
         return delegate.getMode();
     }
-    
+
     @Override
     public boolean isQueryDisabled() {
         return delegate.isQueryDisabled();
     }
-    
+
     @Override
     public void setQueryDisabled(boolean queryDisabled) {
         delegate.setQueryDisabled(queryDisabled);
     }
-    
+
     @Override
     public WorkspaceInfo getWorkspace() {
         return delegate.getWorkspace();
@@ -115,8 +116,8 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     @Override
     public void setRootLayerStyle(StyleInfo style) {
         delegate.setRootLayerStyle(style);
-    }    
-    
+    }
+
     @Override
     public void setBounds(ReferencedEnvelope bounds) {
         delegate.setBounds(bounds);
@@ -131,7 +132,7 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public void setMode(Mode mode) {
         delegate.setMode(mode);
     }
-    
+
     @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         delegate.setWorkspace(workspace);
@@ -141,32 +142,32 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public MetadataMap getMetadata() {
         return delegate.getMetadata();
     }
-    
+
     @Override
     public String getTitle() {
         return delegate.getTitle();
     }
-    
+
     @Override
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
-    
+
     @Override
     public String getAbstract() {
         return delegate.getAbstract();
     }
-    
+
     @Override
     public void setAbstract(String abstractTxt) {
         delegate.setAbstract(abstractTxt);
-    }    
-    
+    }
+
     @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
-    
+
     @Override
     public List<AuthorityURLInfo> getAuthorityURLs() {
         return delegate.getAuthorityURLs();
@@ -179,8 +180,11 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(delegate).append(
-                ']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(delegate)
+                .append(']')
+                .toString();
     }
 
     @Override
@@ -207,14 +211,19 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         return LayerGroupInfo.equals(this, obj);
     }
-    
+
     @Override
     public int hashCode() {
         return LayerGroupInfo.hashCode(this);
+    }
+
+    @Override
+    public List<KeywordInfo> getKeywords() {
+        return delegate.getKeywords();
     }
 }

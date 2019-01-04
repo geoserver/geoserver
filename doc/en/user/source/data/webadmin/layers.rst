@@ -117,7 +117,23 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 
 * **Native SRS**—Specifies the coordinate system the layer is stored in. Clicking the projection link displays a description of the SRS.
 * **Declared SRS**—Specifies the coordinate system GeoServer publishes to clients
-* **SRS Handling**—Determines how GeoServer should handle projection when the two SRSes differ
+* **SRS Handling**—Determines how GeoServer should handle projection when the two SRSes differ. Possible values are:
+  
+  * **Force declared** (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action,
+    the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the
+    database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no
+    native CRS, has a wrong one, or has one matching the EPSG code (in order to get full metadata in the CRS used by GeoServer).
+  * **Reproject from native**: This setting should be used when the native data set has a CRS that is not matching any official EPSG. OGC protocols need to advertise
+    a EPSG code for the layers, with this setting the declared one will be advertised, and reprojection from native will happen on the fly as needed (in case a third
+    CRS is requested, the reprojection will go directly from native to declared)
+  * **Keep native**: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then
+    using the native CRS in all othe requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source
+    is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). 
+    The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection 
+    and datum change.
+    
+In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native**
+only if you really know what you're doing.
 
 Bounding Boxes
 ^^^^^^^^^^^^^^
@@ -169,7 +185,7 @@ Restricting features showing up in the layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default GeoServer will publish all the features available in the layer. It is possible
-to restrict the features to a subset by specyfing a CQL filter in the configuration:
+to restrict the features to a subset by specifying a CQL filter in the configuration:
 
 .. figure:: img/data_layers_cql.png
 
@@ -200,6 +216,24 @@ Cache parameters that apply to the HTTP response from client requests.
 
 * **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
 
+Services Settings
+^^^^^^^^^^^^^^^^^
+
+Sets services configuration on layer level.
+
+  .. figure:: img/service_enable_layer.png
+
+     Services Settings
+
+* **Selectively enable services for layer**—Activate/deactivate service enable/disable configuration for the layer.
+* **Enabled Services**—Selects enabled services list for this layer.
+* **Disabled Services**—Selects disabled services list for this layer.
+
+  .. note::
+
+     It is also possible to set by-default disabled services to all layers using the ``org.geoserver.service.disabled`` system/env/servlet context variable.  This variable accepts a comma separated list of services that should be disabled by default, in case the resource in question has no explicit configuration.
+
+
 WMS Settings
 ^^^^^^^^^^^^
 
@@ -214,6 +248,7 @@ Sets the WMS specific publishing parameters.
 * **Additional styles**—Other styles that can be associated with this layer. Some clients (and the GeoServer Layer Preview) will present those as styling alternatives for that layer to the user.
 * **Default rendering buffer**—Default value of the ``buffer`` GetMap/GetFeatureInfo vendor parameter. See the :ref:`wms_vendor_parameters` for more details.
 * **Default WMS path**—Location of the layer in the WMS capabilities layer tree. Useful for building non-opaque layer groups
+* **Default Interpolation Method**—Allows to specify a default resampling (interpolation) method for this layer. The available options are *Nearest neighbor*, *Bilinear*, *Bicubic*, or *Use service default*, which means that no layer specific configuration will be created (the default interpolation method selected in the WMS service configuration page will be used, see :ref:`Raster Rendering Options <services_webadmin_wms_raster_options>` for details). Can be overridden by the :ref:`interpolations vendor parameter <wms_vendor_parameter_interpolations>`.
 
 WMS Attribution
 ^^^^^^^^^^^^^^^
@@ -232,6 +267,12 @@ Sets publishing information about data providers.
 WFS Settings
 ^^^^^^^^^^^^
 
+Sets the WFS specific publishing parameters.
+
+  .. figure:: img/wfs_settings.png
+
+     WFS Settings
+
 * **Per-Request Feature Limit**—Sets the maximum number of features for a layer a WFS GetFeature operation should generate (regardless of the actual number of query hits)
 * **Maximum number of decimals**—Sets the maximum number of decimals in GML output.
 
@@ -244,6 +285,8 @@ WFS Settings
         WFS otherSRS/otherCRS override
 
      The list will be used only for the capabilities document generation, but will not be used to limit the actual target SRS usage in GetFeature requests.
+
+* **Encode coordinates measures**—Checking this setting will cause coordinates measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.  
 
 WCS Settings
 ^^^^^^^^^^^^
@@ -292,6 +335,11 @@ For each enabled dimension the following configuration options are available:
   * **reference value**—Tries to use the given reference value as-is, regardless of whether its actually available in the data or not.
 
 * **Reference value**—The default value specifier. Only shown for the default value strategies where its used.
+* **Nearest match**—Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.
+* **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled). 
+  Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to 
+  specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,
+  but not after.
 
 For time dimension the value must be in ISO 8601 DateTime format ``yyyy-MM-ddThh:mm:ss.SSSZ`` For elevation dimension, the value must be and integer of floating point number.
 

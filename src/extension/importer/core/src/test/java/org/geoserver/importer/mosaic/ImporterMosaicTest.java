@@ -17,9 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -34,23 +32,23 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.ImporterTest;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.referencing.factory.gridshift.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 
-
-
 public class ImporterMosaicTest extends ImporterTestSupport {
 
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-
+    protected static QName POLYPHEMUS =
+            new QName(MockData.SF_URI, "polyphemus", MockData.SF_PREFIX);
 
     @Test
     public void testSimpleMosaic() throws Exception {
@@ -72,14 +70,14 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         Mosaic m = new Mosaic(unpack("mosaic/bm_time.zip"));
 
         m.setTimeMode(TimeMode.FILENAME);
-        FilenameTimeHandler th = (FilenameTimeHandler) m.getTimeHandler(); 
+        FilenameTimeHandler th = (FilenameTimeHandler) m.getTimeHandler();
         th.setFilenameRegex("(\\d){6}");
         th.setTimeFormat("yyyyMM");
 
         m.prepare();
 
         List<FileData> files = m.getFiles();
-        assertEquals(4,files.size());
+        assertEquals(4, files.size());
 
         for (int i = 0; i < files.size(); i++) {
             FileData fd = files.get(i);
@@ -87,9 +85,9 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
             Granule g = (Granule) fd;
 
-            //TODO: comparison fails on build server
+            // TODO: comparison fails on build server
             assertNotNull(g.getTimestamp());
-            //assertEquals(date(2004, i), g.getTimestamp());
+            // assertEquals(date(2004, i), g.getTimestamp());
         }
     }
 
@@ -98,13 +96,13 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         Mosaic m = new Mosaic(unpack("mosaic/bm_time.zip"));
 
         m.setTimeMode(TimeMode.FILENAME);
-        FilenameTimeHandler th = (FilenameTimeHandler) m.getTimeHandler(); 
+        FilenameTimeHandler th = (FilenameTimeHandler) m.getTimeHandler();
         th.setFilenameRegex("(\\d){6}");
         th.setTimeFormat("yyyyMM");
 
         ImportContext context = importer.createContext(m);
         assertEquals(1, context.getTasks().size());
-        
+
         importer.run(context);
 
         LayerInfo l = context.getTasks().get(0).getLayer();
@@ -116,11 +114,13 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
         runChecks(l.getName());
 
-        Document dom = getAsDOM(String.format("/%s/%s/wms?request=getcapabilities", 
-            r.getStore().getWorkspace().getName(), l.getName()));
+        Document dom =
+                getAsDOM(
+                        String.format(
+                                "/%s/%s/wms?request=getcapabilities",
+                                r.getStore().getWorkspace().getName(), l.getName()));
         XMLAssert.assertXpathExists(
-            "//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
-        
+                "//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
     }
 
     @Test
@@ -142,36 +142,37 @@ public class ImporterMosaicTest extends ImporterTestSupport {
 
         runChecks(l.getName());
 
-        Document dom = getAsDOM(String.format("/%s/%s/wms?request=getcapabilities", 
-            r.getStore().getWorkspace().getName(), l.getName()));
+        Document dom =
+                getAsDOM(
+                        String.format(
+                                "/%s/%s/wms?request=getcapabilities",
+                                r.getStore().getWorkspace().getName(), l.getName()));
         XMLAssert.assertXpathExists(
-            "//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
+                "//wms:Layer[wms:Name = '" + m.getName() + "']/wms:Dimension[@name = 'time']", dom);
     }
 
     @Test
     public void testHarvest() throws Exception {
         Catalog catalog = getCatalog();
-        getTestData().addRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class,
-                catalog);
+        getTestData().addRasterLayer(WATTEMP, "watertemp.zip", null, null, TestData.class, catalog);
 
         // check how many layers we have
         int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
 
         // grab the original count
         CoverageStoreInfo store = catalog.getCoverageStoreByName(WATTEMP.getLocalPart());
-        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
-                .getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) store.getGridCoverageReader(null, null);
         GranuleSource gs = reader.getGranules(reader.getGridCoverageNames()[0], true);
         int originalCount = gs.getCount(Query.ALL);
 
-
         String mosaicLocation = store.getURL();
-        File mosaicFolder = DataUtilities.urlToFile(new URL(mosaicLocation));
-        
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
+
         try (InputStream is = MockData.class.getResourceAsStream("harvesting.zip")) {
             IOUtils.decompress(is, mosaicFolder);
         }
-        
+
         String fileName1 = "NCOM_wattemp_000_20081102T0000000_12.tiff";
         File file1 = new File(mosaicFolder, fileName1);
         assertTrue(file1.exists());
@@ -185,10 +186,10 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         importer.run(context);
 
         assertEquals(originalCount + 2, gs.getCount(Query.ALL));
-        assertEquals(1,
-                gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName1 + "'"))));
-        assertEquals(1,
-                gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName2 + "'"))));
+        assertEquals(
+                1, gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName1 + "'"))));
+        assertEquals(
+                1, gs.getCount(new Query(null, ECQL.toFilter("location = '" + fileName2 + "'"))));
 
         // make sure we did not create a new layer
         int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
@@ -210,8 +211,8 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         Properties props = new Properties();
         props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
         props.put("database", "empty");
-        try (FileOutputStream fos = new FileOutputStream(new File(mosaicRoot,
-                "datastore.properties"))) {
+        try (FileOutputStream fos =
+                new FileOutputStream(new File(mosaicRoot, "datastore.properties"))) {
             props.store(fos, null);
         }
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -233,14 +234,135 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         importer.run(context);
 
         // check the import produced a granule
-        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) store
-                .getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) store.getGridCoverageReader(null, null);
         GranuleSource granules = reader.getGranules(mosaicName, true);
         assertEquals(1, granules.getCount(Query.ALL));
 
         // check we now also have a layer
         LayerInfo layer = catalog.getLayerByName(mosaicName);
         assertNotNull(layer);
+    }
+
+    @Test
+    public void testHarvestNetCDF() throws Exception {
+        Catalog catalog = getCatalog();
+        getTestData()
+                .addRasterLayer(
+                        POLYPHEMUS,
+                        "test-data/mosaic/polyphemus.zip",
+                        null,
+                        null,
+                        ImporterTest.class,
+                        catalog);
+
+        // check how many layers we have
+        int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+
+        // grab the original count
+        CoverageStoreInfo store = catalog.getCoverageStoreByName(POLYPHEMUS.getLocalPart());
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) store.getGridCoverageReader(null, null);
+        GranuleSource gs = reader.getGranules(reader.getGridCoverageNames()[0], true);
+        int originalCount = gs.getCount(Query.ALL);
+
+        String mosaicLocation = store.getURL();
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
+
+        File fileToHarvest = new File(mosaicFolder, "polyphemus_20130302_test.nc");
+        try (InputStream is =
+                ImporterTest.class.getResourceAsStream(
+                        "test-data/mosaic/polyphemus_20130302_test.nc")) {
+            FileUtils.copyInputStreamToFile(is, fileToHarvest);
+        }
+        assertTrue(fileToHarvest.exists());
+
+        ImportContext context = importer.createContext(new SpatialFile(fileToHarvest), store);
+        assertEquals(1, context.getTasks().size());
+        assertEquals(ImportTask.State.READY, context.getTasks().get(0).getState());
+
+        importer.run(context);
+
+        // check it succeeded
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the import added slices (2 times per file)
+        assertEquals(originalCount + 2, gs.getCount(Query.ALL));
+        assertEquals(
+                2,
+                gs.getCount(
+                        new Query(
+                                null, ECQL.toFilter("location = 'polyphemus_20130301_test.nc'"))));
+        assertEquals(
+                2,
+                gs.getCount(
+                        new Query(
+                                null, ECQL.toFilter("location = 'polyphemus_20130302_test.nc'"))));
+
+        // make sure we did not create a new layer
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        assertEquals(initialLayerCount, layerCount);
+    }
+
+    @Test
+    public void testHarvestNetCDFWithAuxiliaryNetCDFStore() throws Exception {
+        Catalog catalog = getCatalog();
+        // same as test above, but using a auxiliary datastore for netcdf internal indexes
+        getTestData()
+                .addRasterLayer(
+                        POLYPHEMUS,
+                        "test-data/mosaic/polyphemus_aux.zip",
+                        null,
+                        null,
+                        ImporterTest.class,
+                        catalog);
+
+        // check how many layers we have
+        int initialLayerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+
+        // grab the original count
+        CoverageStoreInfo store = catalog.getCoverageStoreByName(POLYPHEMUS.getLocalPart());
+        StructuredGridCoverage2DReader reader =
+                (StructuredGridCoverage2DReader) store.getGridCoverageReader(null, null);
+        GranuleSource gs = reader.getGranules(reader.getGridCoverageNames()[0], true);
+        int originalCount = gs.getCount(Query.ALL);
+
+        String mosaicLocation = store.getURL();
+        File mosaicFolder = URLs.urlToFile(new URL(mosaicLocation));
+
+        File fileToHarvest = new File(mosaicFolder, "polyphemus_20130302_test.nc");
+        try (InputStream is =
+                ImporterTest.class.getResourceAsStream(
+                        "test-data/mosaic/polyphemus_20130302_test.nc")) {
+            FileUtils.copyInputStreamToFile(is, fileToHarvest);
+        }
+        assertTrue(fileToHarvest.exists());
+
+        ImportContext context = importer.createContext(new SpatialFile(fileToHarvest), store);
+        assertEquals(1, context.getTasks().size());
+        assertEquals(ImportTask.State.READY, context.getTasks().get(0).getState());
+
+        importer.run(context);
+
+        // check it succeeded
+        assertEquals(ImportContext.State.COMPLETE, context.getState());
+
+        // check the import added slices (2 times per file)
+        assertEquals(originalCount + 2, gs.getCount(Query.ALL));
+        assertEquals(
+                2,
+                gs.getCount(
+                        new Query(
+                                null, ECQL.toFilter("location = 'polyphemus_20130301_test.nc'"))));
+        assertEquals(
+                2,
+                gs.getCount(
+                        new Query(
+                                null, ECQL.toFilter("location = 'polyphemus_20130302_test.nc'"))));
+
+        // make sure we did not create a new layer
+        int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
+        assertEquals(initialLayerCount, layerCount);
     }
 
     Date date(int year, int month) {

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -28,7 +27,7 @@ import org.opengis.filter.expression.Function;
 
 /**
  * Simple test class for testing the InstanceOf class.
- * 
+ *
  * @author Nicola Lagomarsini geosolutions
  */
 public class InstanceOfTest {
@@ -82,7 +81,6 @@ public class InstanceOfTest {
         }
 
         assertTrue(catchedException);
-
     }
 
     @Test
@@ -133,5 +131,4 @@ public class InstanceOfTest {
         assertFalse(filter.evaluate(1));
         assertFalse(filter.evaluate(true));
     }
-
 }

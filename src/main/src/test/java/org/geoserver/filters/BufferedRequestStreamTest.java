@@ -12,25 +12,27 @@ import org.junit.Test;
 
 /**
  * Wrap a String up as a ServletInputStream so we can read it multiple times.
+ *
  * @author David Winslow <dwinslow@openplans.org>
  */
 public class BufferedRequestStreamTest {
     BufferedRequestStream myBRS;
-	String myTestString;
+    String myTestString;
 
-	@Before
-    public void setUpInternal() throws Exception{
-		myTestString = "Hello, this is a test";
+    @Before
+    public void setUpInternal() throws Exception {
+        myTestString = "Hello, this is a test";
         myBRS = new BufferedRequestStream(myTestString.getBytes());
-	}
+    }
 
-	@Test
-    public void testReadLine() throws Exception{
-		byte[] b = new byte[1024];
-		int off = 0;
-		int len = 1024;
-		int amountRead = myBRS.readLine(b, off, len);
-		String s = new String(b, 0, amountRead);
-		assertEquals(s, myTestString);;
+    @Test
+    public void testReadLine() throws Exception {
+        byte[] b = new byte[1024];
+        int off = 0;
+        int len = 1024;
+        int amountRead = myBRS.readLine(b, off, len);
+        String s = new String(b, 0, amountRead);
+        assertEquals(s, myTestString);
+        ;
     }
 }

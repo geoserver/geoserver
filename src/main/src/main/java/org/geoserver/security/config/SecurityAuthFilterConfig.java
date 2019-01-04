@@ -7,10 +7,7 @@ package org.geoserver.security.config;
 
 /**
  * Marker interface for {@link SecurityFilterConfig} that implement an authentication scheme.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-public interface SecurityAuthFilterConfig extends SecurityNamedServiceConfig {
-
-}
+public interface SecurityAuthFilterConfig extends SecurityNamedServiceConfig {}

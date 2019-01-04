@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.ResourceAccessManager;
@@ -16,51 +15,48 @@ import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
 /**
- * Authorizer that allows access if the user has admin rights to any workspace. 
- * 
- * @author Justin Deoliveira, OpenGeo
+ * Authorizer that allows access if the user has admin rights to any workspace.
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer {
-    private final static Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
+    private static final Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
 
     @Override
-    public boolean isAccessAllowed(Class<?> componentClass,
-            Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
 
-        //if full admin grant access
+        // if full admin grant access
         if (super.isAccessAllowed(componentClass, authentication)) {
             return true;
         }
 
-        //if not authenticated deny access
+        // if not authenticated deny access
         if (authentication == null || !authentication.isAuthenticated()) {
             return false;
         }
 
-        //TODO: we should cache this result somehow
-        if(isWorkspaceAdmin(authentication)) {
+        // TODO: we should cache this result somehow
+        if (isWorkspaceAdmin(authentication)) {
             return true;
         }
 
         return false;
     }
 
-    /**
-     * Check if the current user has any admin privilege on at least one workspace.
-     */
+    /** Check if the current user has any admin privilege on at least one workspace. */
     boolean isWorkspaceAdmin(Authentication authentication) {
 
         Catalog catalog = getSecurityManager().getCatalog();
 
         // the secure catalog builds and owns the ResourceAccessManager
-        SecureCatalogImpl secureCatalog = GeoServerApplication.get().getBeanOfType(SecureCatalogImpl.class);
+        SecureCatalogImpl secureCatalog =
+                GeoServerApplication.get().getBeanOfType(SecureCatalogImpl.class);
         ResourceAccessManager manager = secureCatalog.getResourceAccessManager();
 
         if (manager != null) {
             for (WorkspaceInfo workspace : catalog.getWorkspaces()) {
-                WorkspaceAccessLimits accessLimits = manager.getAccessLimits(authentication,
-                        workspace);
+                WorkspaceAccessLimits accessLimits =
+                        manager.getAccessLimits(authentication, workspace);
                 if (accessLimits != null && accessLimits.isAdminable()) {
                     return true;
                 }

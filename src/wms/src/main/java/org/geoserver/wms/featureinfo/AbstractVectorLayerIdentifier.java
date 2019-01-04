@@ -7,7 +7,6 @@ package org.geoserver.wms.featureinfo;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.wms.MapLayerInfo;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -24,10 +23,9 @@ abstract class AbstractVectorLayerIdentifier implements LayerIdentifier {
 
     /**
      * Selects the rules active at this zoom level
-     * 
+     *
      * @param style
      * @param scaleDenominator
-     *
      */
     protected List<Rule> getActiveRules(Style style, double scaleDenominator) {
         List<Rule> result = new ArrayList<Rule>();
@@ -35,13 +33,13 @@ abstract class AbstractVectorLayerIdentifier implements LayerIdentifier {
         for (FeatureTypeStyle fts : style.featureTypeStyles()) {
             for (Rule r : fts.rules()) {
                 if ((r.getMinScaleDenominator() - TOLERANCE <= scaleDenominator)
-                        && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator) 
-                        && r.getSymbolizers() != null && r.getSymbolizers().length > 0) {
+                        && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator)
+                        && r.getSymbolizers() != null
+                        && r.getSymbolizers().length > 0) {
                     result.add(r);
                 }
             }
         }
         return result;
     }
-
 }

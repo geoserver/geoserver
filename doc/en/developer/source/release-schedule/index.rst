@@ -134,3 +134,14 @@ reservations or concerns about them from the PSC. Such changes may be subject to
 * back port of larger changes that have proven to be working well on trunk for an extended period of time
 
 During the **open development phase** all types of commits are fair game but of course large changes are still subject to proposals and reviews.
+
+During a Release
+----------------
+
+During a release (on any branch) your cooperation is needed:
+
+* We hold off merging fixes several days prior to release, email if you are approaching this deadline and need help
+* To help identify any blockers (an email will be sent out prior to release)
+* Help test pre-release artifacts prior to their being published for download
+* Keep issue tracker status up to date so the release notes are correct
+* Please treat our release volunteers with respect, we know deadlines can be stressful

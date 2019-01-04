@@ -9,39 +9,26 @@ import java.util.regex.Pattern;
 
 /**
  * A keyword used for service and layer metadata.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public interface KeywordInfo {
 
-    /**
-     * regular expression for valid keyword and vocabulary.
-     */
+    /** regular expression for valid keyword and vocabulary. */
     static Pattern RE = Pattern.compile("[^\\\\]+");
 
-    /**
-     * The keyword value.
-     */
+    /** The keyword value. */
     String getValue();
 
-    /**
-     * The language of the keyword, <code>null</code> if no language.
-     */
+    /** The language of the keyword, <code>null</code> if no language. */
     String getLanguage();
 
-    /**
-     * Sets the language of the keyword.
-     */
+    /** Sets the language of the keyword. */
     void setLanguage(String language);
 
-    /**
-     * The vocabulary of the keyword, <code>null</code> if no vocabulary.
-     */
+    /** The vocabulary of the keyword, <code>null</code> if no vocabulary. */
     String getVocabulary();
 
-    /**
-     * Sets the vocabulary of the keyword.
-     */
+    /** Sets the vocabulary of the keyword. */
     void setVocabulary(String vocabulary);
-
 }

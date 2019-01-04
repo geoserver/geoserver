@@ -5,16 +5,31 @@
  */
 package org.geoserver.wms.map;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.pdf.DefaultFontMapper;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGraphics2D;
+import com.lowagie.text.pdf.PdfPatternPainter;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.swing.Icon;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
@@ -22,22 +37,27 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.map.PDFMapOutputFormat.PDFMap;
+import org.geotools.geometry.jts.Decimator;
+import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.renderer.lite.LabelCache;
+import org.geotools.renderer.lite.ParallelLinesFiller;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.renderer.lite.StyledShapePainter;
+import org.geotools.renderer.style.IconStyle2D;
+import org.geotools.renderer.style.MarkStyle2D;
+import org.geotools.renderer.style.Style2D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.DefaultFontMapper;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGraphics2D;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Handles a GetMap request that spects a map in PDF format.
- * 
+ *
  * @author Pierre-Emmanuel Balageas, ALCER (http://www.alcer.com)
  * @author Simone Giannecchini - GeoSolutions
  * @author Gabriel Roldan
@@ -45,12 +65,18 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class PDFMapResponse extends AbstractMapResponse {
     /** A logger for this class. */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging
-            .getLogger("org.vfny.geoserver.responses.wms.map.pdf");
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses.wms.map.pdf");
 
     /**
-     * A kilobyte
+     * Whether to apply the new vector hatch fill optimization, or not (on by default, this is just
+     * a safeguard)
      */
+    static boolean ENCODE_TILING_PATTERNS =
+            Boolean.parseBoolean(
+                    System.getProperty("org.geoserver.pdf.encodeTilingPatterns", "true"));
+
+    /** A kilobyte */
     private static final int KB = 1024;
 
     private WMS wms;
@@ -62,18 +88,17 @@ public class PDFMapResponse extends AbstractMapResponse {
 
     /**
      * Writes the PDF.
-     * <p>
-     * NOTE: the document seems to actually be created in memory, and being written down to
+     *
+     * <p>NOTE: the document seems to actually be created in memory, and being written down to
      * {@code output} once we call {@link Document#close()}. If there's no other way to do so, it'd
      * be better to actually split out the process into produceMap/write?
-     * </p>
-     * 
+     *
      * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream,
-     *      org.geoserver.platform.Operation)
+     *     org.geoserver.platform.Operation)
      */
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
 
         Assert.isInstanceOf(PDFMap.class, value);
         WMSMapContent mapContent = ((PDFMap) value).getContext();
@@ -125,8 +150,12 @@ public class PDFMapResponse extends AbstractMapResponse {
                 int type = AlphaComposite.SRC;
                 graphic.setComposite(AlphaComposite.getInstance(type));
 
-                Color c = new Color(mapContent.getBgColor().getRed(), mapContent.getBgColor()
-                        .getGreen(), mapContent.getBgColor().getBlue(), 0);
+                Color c =
+                        new Color(
+                                mapContent.getBgColor().getRed(),
+                                mapContent.getBgColor().getGreen(),
+                                mapContent.getBgColor().getBlue(),
+                                0);
                 graphic.setBackground(mapContent.getBgColor());
                 graphic.setColor(c);
                 graphic.fillRect(0, 0, width, height);
@@ -137,13 +166,19 @@ public class PDFMapResponse extends AbstractMapResponse {
 
             Rectangle paintArea = new Rectangle(width, height);
 
-            StreamingRenderer renderer = new StreamingRenderer();
+            StreamingRenderer renderer;
+            if (ENCODE_TILING_PATTERNS) {
+                renderer = new PDFStreamingRenderer();
+            } else {
+                renderer = new StreamingRenderer();
+            }
             renderer.setMapContent(mapContent);
             // TODO: expose the generalization distance as a param
             // ((StreamingRenderer) renderer).setGeneralizationDistance(0);
 
-            RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints hints =
+                    new RenderingHints(
+                            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             renderer.setJava2DHints(hints);
 
             // we already do everything that the optimized data loading does...
@@ -158,7 +193,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
                 rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
             }
-            rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+            rendererParams.put(
+                    StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
                     mapContent.getRendererScaleMethod());
 
             renderer.setRendererHints(rendererParams);
@@ -181,12 +217,15 @@ public class PDFMapResponse extends AbstractMapResponse {
             PDFMaxSizeEnforcer memoryChecker = new PDFMaxSizeEnforcer(renderer, graphic, maxMemory);
 
             // render the map
-            renderer.paint(graphic, paintArea, mapContent.getRenderingArea(),
+            renderer.paint(
+                    graphic,
+                    paintArea,
+                    mapContent.getRenderingArea(),
                     mapContent.getRenderingTransform());
 
             // render the watermark
-            MapDecorationLayout.Block watermark = RenderedImageMapOutputFormat.getWatermark(wms
-                    .getServiceInfo());
+            MapDecorationLayout.Block watermark =
+                    RenderedImageMapOutputFormat.getWatermark(wms.getServiceInfo());
 
             if (watermark != null) {
                 MapDecorationLayout layout = new MapDecorationLayout();
@@ -196,21 +235,24 @@ public class PDFMapResponse extends AbstractMapResponse {
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
-                throw new ServiceException("Rendering process failed", renderError, "internalError");
+                throw new ServiceException(
+                        "Rendering process failed", renderError, "internalError");
             }
 
             // check if too many errors occurred
             if (errorChecker.exceedsMaxErrors()) {
-                throw new ServiceException("More than " + maxErrors
-                        + " rendering errors occurred, bailing out",
-                        errorChecker.getLastException(), "internalError");
+                throw new ServiceException(
+                        "More than " + maxErrors + " rendering errors occurred, bailing out",
+                        errorChecker.getLastException(),
+                        "internalError");
             }
 
             // check we did not use too much memory
             if (memoryChecker.exceedsMaxSize()) {
                 long kbMax = maxMemory / KB;
                 throw new ServiceException(
-                        "Rendering request used more memory than the maximum allowed:" + kbMax
+                        "Rendering request used more memory than the maximum allowed:"
+                                + kbMax
                                 + "KB");
             }
 
@@ -223,6 +265,165 @@ public class PDFMapResponse extends AbstractMapResponse {
             writer.close();
         } catch (DocumentException t) {
             throw new ServiceException("Error setting up the PDF", t, "internalError");
+        }
+    }
+
+    private static class PDFStreamingRenderer extends StreamingRenderer {
+
+        public PDFStreamingRenderer() {
+            this.painter = new PDFStyledPainter(labelCache);
+        }
+    }
+
+    /**
+     * Optimized StyledShapePainter that can optimize painting repeated external graphics by
+     * encoding them in a native PDF pattern painter, with no repetition
+     */
+    private static class PDFStyledPainter extends StyledShapePainter {
+
+        /**
+         * Re-creating the patterns is expensive and would increase the overall document size, keep
+         * a cache of them instead
+         */
+        WeakHashMap<Style2D, PdfPatternPainter> patternCache = new WeakHashMap<>();
+
+        public PDFStyledPainter(LabelCache labelCache) {
+            super(labelCache);
+        }
+
+        @Override
+        protected void paintGraphicFill(
+                Graphics2D graphics, Shape shape, Style2D graphicFill, double scale) {
+
+            if (graphics instanceof PdfGraphics2D
+                    && (graphicFill instanceof IconStyle2D || isMarkNonHatchFill(graphicFill))) {
+                fillShapeAsPattern((PdfGraphics2D) graphics, shape, graphicFill, scale);
+            } else {
+                super.paintGraphicFill(graphics, shape, graphicFill, scale);
+            }
+        }
+
+        private boolean isMarkNonHatchFill(Style2D graphicFill) {
+            if (!(graphicFill instanceof MarkStyle2D)) {
+                return false;
+            }
+
+            if (OPTIMIZE_VECTOR_HATCH_FILLS) {
+                MarkStyle2D ms = (MarkStyle2D) graphicFill;
+                ParallelLinesFiller filler = ParallelLinesFiller.fromStipple(ms.getShape());
+                if (filler != null) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void fillShapeAsPattern(
+                PdfGraphics2D graphics, Shape shape, Style2D graphicFill, double scale) {
+            final PdfContentByte content = graphics.getContent();
+            Paint oldPaint = graphics.getPaint();
+            try {
+                // prepare the PDF pattern
+                PdfPatternPainter pattern = getPatternPainter(graphicFill, content, scale);
+                final PdfContentByte cb = graphics.getContent();
+                content.setPatternFill(pattern);
+
+                // Paint the pattern. Unfortunately we cannot rely on PDFGraphic but have to
+                // use the low level API to walk the shape
+                AffineTransform tx = new AffineTransform(graphics.getTransform());
+                float documentHeight = cb.getPdfDocument().getPageSize().getHeight();
+                tx.concatenate(new AffineTransform(1, 0, 0, -1, 0, documentHeight));
+                PathIterator pathIterator = shape.getPathIterator(tx);
+                float[] coords = new float[6];
+                if (!pathIterator.isDone()) {
+                    // walk the path
+                    while (!pathIterator.isDone()) {
+                        int segtype = pathIterator.currentSegment(coords);
+                        switch (segtype) {
+                            case PathIterator.SEG_MOVETO:
+                                cb.moveTo(coords[0], coords[1]);
+                                break;
+
+                            case PathIterator.SEG_LINETO:
+                                cb.lineTo(coords[0], coords[1]);
+                                break;
+
+                            case PathIterator.SEG_QUADTO:
+                                cb.curveTo(coords[0], coords[1], coords[2], coords[3]);
+                                break;
+
+                            case PathIterator.SEG_CUBICTO:
+                                cb.curveTo(
+                                        coords[0], coords[1], coords[2], coords[3], coords[4],
+                                        coords[5]);
+                                break;
+
+                            case PathIterator.SEG_CLOSE:
+                                cb.closePath();
+                                break;
+                        }
+                        pathIterator.next();
+                    }
+                    // run the actual fill
+                    if (pathIterator.getWindingRule() == PathIterator.WIND_EVEN_ODD) {
+                        cb.eoFill();
+                    } else {
+                        cb.fill();
+                    }
+                }
+            } finally {
+                // reset the old paint
+                graphics.setPaint(oldPaint);
+            }
+        }
+
+        private PdfPatternPainter getPatternPainter(
+                Style2D graphicFill, final PdfContentByte content, double scale) {
+            PdfPatternPainter pattern = patternCache.get(graphicFill);
+            if (pattern == null) {
+
+                pattern = buildPattern(graphicFill, content, scale);
+                patternCache.put(graphicFill, pattern);
+            }
+            return pattern;
+        }
+
+        private PdfPatternPainter buildPattern(
+                Style2D graphicFill, final PdfContentByte content, double scale) {
+            PdfPatternPainter pattern;
+            if (graphicFill instanceof IconStyle2D) {
+                final Icon icon = ((IconStyle2D) graphicFill).getIcon();
+                int width = icon.getIconWidth();
+                int height = icon.getIconHeight();
+                pattern = content.createPattern(width, height);
+                Graphics2D patternGraphic = pattern.createGraphics(width, height);
+                icon.paintIcon(null, patternGraphic, 0, 0);
+                patternGraphic.dispose();
+            } else if (graphicFill instanceof MarkStyle2D) {
+                MarkStyle2D mark = (MarkStyle2D) graphicFill;
+                int size = (int) Math.round(mark.getSize());
+                pattern = content.createPattern(size, size);
+                Graphics2D patternGraphic = pattern.createGraphics(size, size);
+                GeometryFactory geomFactory = new GeometryFactory();
+                Coordinate stippleCoord = new Coordinate(size / 2d, size / 2d);
+                Geometry stipplePoint = geomFactory.createPoint(stippleCoord);
+                Decimator nullDecimator = new Decimator(-1, -1);
+                AffineTransform2D identityTransf = new AffineTransform2D(new AffineTransform());
+                try {
+                    paint(
+                            patternGraphic,
+                            new LiteShape2(stipplePoint, identityTransf, nullDecimator, false),
+                            mark,
+                            scale);
+                } catch (TransformException | FactoryException e) {
+                    // this should not happen given the arguments passed to the lite shape
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported style " + graphicFill);
+            }
+            return pattern;
         }
     }
 }

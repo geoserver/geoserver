@@ -6,10 +6,8 @@
 package org.geoserver.script.js.engine;
 
 import java.util.ArrayList;
-
 import javax.script.Bindings;
 import javax.script.ScriptContext;
-
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -22,12 +20,12 @@ public class EngineScope implements Scriptable {
     public EngineScope(ScriptContext context) {
         this.context = context;
     }
-    
+
     @Override
     public String getClassName() {
         return "Engine";
     }
-    
+
     @Override
     public synchronized Object get(String name, Scriptable start) {
         Object value;
@@ -41,12 +39,12 @@ public class EngineScope implements Scriptable {
         }
         return value;
     }
-    
+
     @Override
     public synchronized Object get(int index, Scriptable start) {
         return get(String.valueOf(index), start);
     }
-    
+
     @Override
     public synchronized boolean has(String name, Scriptable start) {
         boolean has;
@@ -55,12 +53,12 @@ public class EngineScope implements Scriptable {
         }
         return has;
     }
-    
+
     @Override
     public synchronized boolean has(int index, Scriptable start) {
         return has(String.valueOf(index), start);
     }
-    
+
     @Override
     public synchronized void put(String name, Scriptable start, Object value) {
         if (start == this) {
@@ -74,15 +72,13 @@ public class EngineScope implements Scriptable {
         } else {
             start.put(name, this, value);
         }
-    
     }
-    
+
     @Override
     public synchronized void put(int index, Scriptable start, Object value) {
         put(String.valueOf(index), start, value);
-    
     }
-    
+
     @Override
     public synchronized void delete(String name) {
         synchronized (context) {
@@ -92,35 +88,32 @@ public class EngineScope implements Scriptable {
             }
         }
     }
-    
+
     @Override
     public synchronized void delete(int index) {
         delete(String.valueOf(index));
-    
     }
 
     @Override
     public Scriptable getPrototype() {
         return prototype;
     }
-    
+
     @Override
     public void setPrototype(Scriptable prototype) {
         this.prototype = prototype;
-    
     }
-    
+
     @Override
     public Scriptable getParentScope() {
         return parent;
     }
-    
+
     @Override
     public void setParentScope(Scriptable parent) {
         this.parent = parent;
-    
     }
-    
+
     @Override
     public Object[] getIds() {
         ArrayList<String> list = new ArrayList<String>();
@@ -137,12 +130,12 @@ public class EngineScope implements Scriptable {
         }
         return list.toArray(new String[list.size()]);
     }
-    
+
     @Override
     public Object getDefaultValue(Class<?> hint) {
         return ScriptableObject.getDefaultValue(this, hint);
     }
-    
+
     @Override
     public boolean hasInstance(Scriptable instance) {
         Scriptable proto = instance.getPrototype();
@@ -156,5 +149,4 @@ public class EngineScope implements Scriptable {
         }
         return has;
     }
-
 }

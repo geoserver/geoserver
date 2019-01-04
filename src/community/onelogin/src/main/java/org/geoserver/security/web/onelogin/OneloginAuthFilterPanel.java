@@ -14,7 +14,7 @@ import org.geoserver.web.wicket.HelpLink;
 
 /**
  * Configuration panel for {@link OneloginAuthenticationFilter}.
- * 
+ *
  * @author Xandros
  */
 public class OneloginAuthFilterPanel
@@ -30,5 +30,4 @@ public class OneloginAuthFilterPanel
         add(new TextField<String>("entityId"));
         add(new TextField<String>("metadataURL"));
     }
-
 }

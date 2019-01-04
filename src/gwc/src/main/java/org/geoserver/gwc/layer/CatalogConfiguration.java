@@ -5,76 +5,58 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Objects.*;
-import static com.google.common.base.Preconditions.*;
-import static com.google.common.base.Throwables.*;
-import static com.google.common.collect.Maps.*;
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
+import static com.google.common.collect.Maps.newConcurrentMap;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.google.common.base.Predicates;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedType;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.gwc.GWC;
-import org.geoserver.ows.LocalWorkspace;
-import org.geotools.util.logging.Logging;
-import org.geowebcache.config.Configuration;
-import org.geowebcache.config.XMLGridSubset;
-import org.geowebcache.config.meta.ServiceInformation;
-import org.geowebcache.grid.BoundingBox;
-import org.geowebcache.grid.GridSetBroker;
-import org.geowebcache.layer.TileLayer;
-import org.geowebcache.layer.TileLayerDispatcher;
-
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.geoserver.catalog.*;
+import org.geoserver.gwc.GWC;
+import org.geoserver.ows.LocalPublished;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.wms.WMS;
+import org.geotools.util.logging.Logging;
+import org.geowebcache.ReinitializingBean;
+import org.geowebcache.config.TileLayerConfiguration;
+import org.geowebcache.config.XMLGridSubset;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.layer.TileLayer;
+import org.geowebcache.layer.TileLayerDispatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * A GWC's {@link Configuration} implementation that provides {@link TileLayer}s directly from the
- * GeoServer {@link Catalog}'s {@link LayerInfo}s and {@link LayerGroupInfo}s.
- * <p>
- * The sole responsibility of the class is to provide the {@link GeoServerTileLayer}s out of the
+ * A GWC's {@link TileLayerConfiguration} implementation that provides {@link TileLayer}s directly
+ * from the GeoServer {@link Catalog}'s {@link LayerInfo}s and {@link LayerGroupInfo}s.
+ *
+ * <p>The sole responsibility of the class is to provide the {@link GeoServerTileLayer}s out of the
  * geoserver catalog for {@link TileLayerDispatcher}
- * </p>
- * 
- * @see #createLayer(LayerInfo)
- * @see #createLayer(LayerGroupInfo)
- * @see #getTileLayers(boolean)
+ *
  * @see CatalogStyleChangeListener
  */
-public class CatalogConfiguration implements Configuration {
-    
-    /**
-     * The configuration lock timeout, in seconds
-     */
-    static final int GWC_CONFIGURATION_LOCK_TIMEOUT = Integer.getInteger("gwc.configuration.lock.timeout", 60);
+public class CatalogConfiguration implements TileLayerConfiguration {
 
-    /**
-     * {@link GeoServerTileLayer} cache loader
-     * 
-     */
+    /** The configuration lock timeout, in seconds */
+    static final int GWC_CONFIGURATION_LOCK_TIMEOUT =
+            Integer.getInteger("gwc.configuration.lock.timeout", 60);
+
+    /** {@link GeoServerTileLayer} cache loader */
     private final class TileLayerLoader extends CacheLoader<String, GeoServerTileLayer> {
         private final TileLayerCatalog tileLayerCatalog;
 
@@ -97,22 +79,22 @@ public class CatalogConfiguration implements Configuration {
                     tileLayerInfo = tileLayerCatalog.getLayerById(layerId);
                 }
                 if (tileLayerInfo == null) {
-                    throw new IllegalArgumentException("GeoServerTileLayerInfo '" + layerId
-                            + "' does not exist.");
+                    throw new IllegalArgumentException(
+                            "GeoServerTileLayerInfo '" + layerId + "' does not exist.");
                 }
 
-                tileLayer = new GeoServerTileLayer(geoServerCatalog, layerId, gridSetBroker,
-                        tileLayerInfo);
+                tileLayer =
+                        new GeoServerTileLayer(
+                                geoServerCatalog, layerId, gridSetBroker, tileLayerInfo);
             } finally {
                 lock.releaseReadLock();
             }
             if (null == tileLayer) {
-                throw new IllegalArgumentException("GeoServer layer or layer group '" + layerId
-                        + "' does not exist");
+                throw new IllegalArgumentException(
+                        "GeoServer layer or layer group '" + layerId + "' does not exist");
             }
             return tileLayer;
         }
-
     }
 
     private static final Logger LOGGER = Logging.getLogger(CatalogConfiguration.class);
@@ -123,21 +105,20 @@ public class CatalogConfiguration implements Configuration {
 
     private GridSetBroker gridSetBroker;
 
-    /**
-     * Maps pending modifications by {@link GeoServerTileLayerInfo#getId()}
-     */
+    /** Maps pending modifications by {@link GeoServerTileLayerInfo#getId()} */
     private final Map<String, GeoServerTileLayerInfo> pendingModications = newConcurrentMap();
 
     private final LoadingCache<String, GeoServerTileLayer> layerCache;
 
-    /**
-     * Ids of pending deletes
-     */
+    /** Ids of pending deletes */
     private final Set<String> pendingDeletes = new CopyOnWriteArraySet<String>();
 
-    private final TimeoutReadWriteLock lock = new TimeoutReadWriteLock(GWC_CONFIGURATION_LOCK_TIMEOUT * 1000, "GWC Configuration");
+    private final TimeoutReadWriteLock lock =
+            new TimeoutReadWriteLock(GWC_CONFIGURATION_LOCK_TIMEOUT * 1000, "GWC Configuration");
 
-    public CatalogConfiguration(final Catalog catalog, final TileLayerCatalog tileLayerCatalog,
+    public CatalogConfiguration(
+            final Catalog catalog,
+            final TileLayerCatalog tileLayerCatalog,
             final GridSetBroker gridSetBroker) {
         checkNotNull(catalog);
         checkNotNull(tileLayerCatalog);
@@ -146,78 +127,69 @@ public class CatalogConfiguration implements Configuration {
         this.geoServerCatalog = catalog;
         this.gridSetBroker = gridSetBroker;
 
-        this.layerCache = CacheBuilder.newBuilder()//
-                .concurrencyLevel(10)//
-                .expireAfterAccess(10, TimeUnit.MINUTES)//
-                .initialCapacity(10)//
-                .maximumSize(100)//
-                .build(new TileLayerLoader(tileLayerCatalog));
+        this.layerCache =
+                CacheBuilder.newBuilder() //
+                        .concurrencyLevel(10) //
+                        .expireAfterAccess(10, TimeUnit.MINUTES) //
+                        .initialCapacity(10) //
+                        .maximumSize(100) //
+                        .build(new TileLayerLoader(tileLayerCatalog));
+
+        tileLayerCatalog.addListener(
+                new TileLayerCatalogListener() {
+
+                    @Override
+                    public void onEvent(String layerId, TileLayerCatalogListener.Type type) {
+                        if (type == TileLayerCatalogListener.Type.MODIFY
+                                || type == TileLayerCatalogListener.Type.DELETE) {
+                            layerCache.invalidate(layerId);
+                        }
+                    }
+                });
     }
-    
-    /**
-     * 
-     * @see org.geowebcache.config.Configuration#getIdentifier()
-     */
+
+    /** @see TileLayerConfiguration#getIdentifier() */
     @Override
     public String getIdentifier() {
         return "GeoServer Catalog Configuration";
     }
 
     /**
-     * @see org.geowebcache.config.Configuration#getServiceInformation()
-     * @return {@code null}
-     */
-    @Override
-    public ServiceInformation getServiceInformation() {
-        return null;
-    }
-
-    /**
-     * @return {@code true}
-     * @see org.geowebcache.config.Configuration#isRuntimeStatsEnabled()
-     */
-    @Override
-    public boolean isRuntimeStatsEnabled() {
-        return true;
-    }
-
-    /**
      * Returns the list of {@link GeoServerTileLayer} objects matching the GeoServer ones.
-     * <p>
-     * The list is built dynamically on each call.
-     * </p>
-     * 
-     * @see org.geowebcache.config.Configuration#getTileLayers(boolean)
-     * @see org.geowebcache.config.Configuration#getTileLayers()
+     *
+     * <p>The list is built dynamically on each call.
+     *
+     * @see TileLayerConfiguration#getTileLayers()
      * @deprecated
      */
+    @Deprecated
     @Override
-    public List<GeoServerTileLayer> getTileLayers() {
-        Iterable<GeoServerTileLayer> layers = getLayers();
+    public List<TileLayer> getTileLayers() {
+        Iterable<TileLayer> layers = getLayers();
         return Lists.newArrayList(layers);
     }
 
-    /**
-     * @see org.geowebcache.config.Configuration#getLayers()
-     */
+    /** @see TileLayerConfiguration#getLayers() */
     @Override
-    public Iterable<GeoServerTileLayer> getLayers() {
+    public Collection<TileLayer> getLayers() {
         lock.acquireReadLock();
         try {
-            final Set<String> layerIds = tileLayerCatalog.getLayerIds();
+            final Set<String> layerNames = tileLayerCatalog.getLayerNames();
 
-            Function<String, GeoServerTileLayer> lazyLayerFetch = new Function<String, GeoServerTileLayer>() {
-                @Override
-                public GeoServerTileLayer apply(final String layerId) {
-                    return CatalogConfiguration.this.getTileLayerById(layerId);
-                }
-            };
+            Function<String, Optional<TileLayer>> lazyLayerFetch =
+                    CatalogConfiguration.this::getLayer;
 
             // removing the NULL results
-            return Iterables.filter(
-                Iterables.transform(layerIds, lazyLayerFetch),
-                Predicates.notNull()
-            );
+            // TODO Should deep copy or wrap with modification proxies,
+            // see
+            // org.geoserver.gwc.layer.CatalogConfigurationLayerConformanceTest.testModifyCallRequiredToChangeInfoFromGetInfo()
+            return Lists.newArrayList(
+                    layerNames
+                            .stream()
+                            .map(lazyLayerFetch)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList()));
         } finally {
             lock.releaseReadLock();
         }
@@ -225,11 +197,11 @@ public class CatalogConfiguration implements Configuration {
 
     /**
      * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
-     * 
-     * @see org.geowebcache.config.Configuration#getTileLayerNames()
+     *
+     * @see TileLayerConfiguration#getLayerNames()
      */
     @Override
-    public Set<String> getTileLayerNames() {
+    public Set<String> getLayerNames() {
         lock.acquireReadLock();
         try {
             final Set<String> storedNames = tileLayerCatalog.getLayerNames();
@@ -264,22 +236,34 @@ public class CatalogConfiguration implements Configuration {
         }
     }
 
+    /**
+     * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
+     *
+     * @see TileLayerConfiguration#getTileLayerNames()
+     */
+    @Deprecated
     @Override
-    public boolean containsLayer(String layerId) {
-        checkNotNull(layerId, "layer id is null");
+    public Set<String> getTileLayerNames() {
+        return getLayerNames();
+    }
+
+    @Override
+    public boolean containsLayer(String layerName) {
+        checkNotNull(layerName, "layer id is null");
         lock.acquireReadLock();
         try {
-            if (pendingDeletes.contains(layerId)) {
+            if (pendingDeletes.contains(layerName)) {
                 return false;
             }
-            Set<String> layerIds = tileLayerCatalog.getLayerIds();
-            boolean hasLayer = layerIds.contains(layerId);
+            Set<String> layerNames = tileLayerCatalog.getLayerNames();
+            boolean hasLayer = layerNames.contains(layerName);
             return hasLayer;
         } finally {
             lock.releaseReadLock();
         }
     }
 
+    @Deprecated
     @Override
     public GeoServerTileLayer getTileLayerById(final String layerId) {
         checkNotNull(layerId, "layer id is null");
@@ -290,24 +274,49 @@ public class CatalogConfiguration implements Configuration {
             layer = layerCache.get(layerId);
             // let's see if this a virtual service request
             WorkspaceInfo localWorkspace = LocalWorkspace.get();
+            PublishedInfo localPublished = LocalPublished.get();
             if (localWorkspace != null) {
                 // yup this is a virtual service request, so we need to filter layers per workspace
                 WorkspaceInfo layerWorkspace;
-                LayerInfo layerInfo = layer.getLayerInfo();
-                if (layerInfo != null) {
+                PublishedInfo publishedInfo = layer.getPublishedInfo();
+                if (publishedInfo instanceof LayerInfo) {
                     // this is a normal layer
-                    layerWorkspace = layer.getLayerInfo().getResource().getStore().getWorkspace();
+                    layerWorkspace =
+                            ((LayerInfo) publishedInfo).getResource().getStore().getWorkspace();
                 } else {
                     // this is a layer group
-                    layerWorkspace = layer.getLayerGroupInfo().getWorkspace();
+                    layerWorkspace = ((LayerGroupInfo) publishedInfo).getWorkspace();
                 }
                 // check if the layer doesn't have an workspace (this is possible for layer groups)
                 if (layerWorkspace == null) {
                     // no workspace means that it doesn't belong to this workspace
                     return null;
                 }
-                // if the layer matches the virtual service workspace we return the layer otherwise NULL is returned
-                return localWorkspace.getName().equals(layerWorkspace.getName()) ? layer : null;
+                // if the layer matches the virtual service workspace we return the layer otherwise
+                // NULL is returned
+                if (!localWorkspace.getName().equals(layerWorkspace.getName())) {
+                    return null;
+                }
+
+                // are we in a layer specific case too?
+
+                if (localPublished != null
+                        && !localPublished.getName().equals(publishedInfo.getName())) {
+                    return null;
+                }
+            } else if (localPublished != null) {
+                // this implies we're looking at a global layer group, there is no such a thing
+                // as a global layer
+                PublishedInfo publishedInfo = layer.getPublishedInfo();
+                if (!(publishedInfo instanceof LayerGroupInfo)) {
+                    return null;
+                } else {
+                    LayerGroupInfo lg = (LayerGroupInfo) publishedInfo;
+                    if (lg.getWorkspace() != null
+                            || !lg.getName().equals(localPublished.getName())) {
+                        return null;
+                    }
+                }
             }
         } catch (ExecutionException e) {
             throw propagate(e.getCause());
@@ -320,11 +329,9 @@ public class CatalogConfiguration implements Configuration {
         return layer;
     }
 
-    /**
-     * @see org.geowebcache.config.Configuration#getTileLayer(java.lang.String)
-     */
+    /** @see TileLayerConfiguration#getLayer(String) */
     @Override
-    public GeoServerTileLayer getTileLayer(final String layerName) {
+    public Optional<TileLayer> getLayer(final String layerName) {
         checkNotNull(layerName, "layer name is null");
 
         final String layerId;
@@ -333,12 +340,19 @@ public class CatalogConfiguration implements Configuration {
         try {
             layerId = getLayerId(layerName);
             if (layerId == null) {
-                return null;
+                return Optional.ofNullable(null);
             }
         } finally {
             lock.releaseReadLock();
         }
-        return getTileLayerById(layerId);
+        return Optional.ofNullable(getTileLayerById(layerId));
+    }
+
+    /** @see TileLayerConfiguration#getTileLayer(String) */
+    @Deprecated
+    @Override
+    public GeoServerTileLayer getTileLayer(final String layerName) {
+        return getTileLayerById(layerName);
     }
 
     private String getLayerId(final String layerName) {
@@ -397,11 +411,9 @@ public class CatalogConfiguration implements Configuration {
         return tileLayerInfo;
     }
 
-    /**
-     * @see org.geowebcache.config.Configuration#getTileLayerCount()
-     */
+    /** @see TileLayerConfiguration#getLayerCount() */
     @Override
-    public int getTileLayerCount() {
+    public int getLayerCount() {
         int count = 0;
         lock.acquireReadLock();
         try {
@@ -422,73 +434,39 @@ public class CatalogConfiguration implements Configuration {
         return count;
     }
 
-    /**
-     * @see org.geowebcache.config.Configuration#initialize(org.geowebcache.grid.GridSetBroker)
-     */
+    /** @see TileLayerConfiguration#getTileLayerCount() */
+    @Deprecated
     @Override
-    public int initialize(GridSetBroker gridSetBroker) {
+    public int getTileLayerCount() {
+        return getLayerCount();
+    }
+
+    @Override
+    public void afterPropertiesSet() {
         lock.acquireWriteLock();
         try {
             LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
-            this.gridSetBroker = gridSetBroker;
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.initialize();
-
-            // startup sanity check
-            for (String layerId : tileLayerCatalog.getLayerIds()) {
-                final String layerName = tileLayerCatalog.getLayerName(layerId);
-                try {
-                    getTileLayerById(layerId);
-                } catch (Exception e) {
-                    String msg = "GeoServer TileLayer named '" + layerName + "' with id '"
-                            + layerId + "' can't be loaded. "
-                            + "It will be removed from the configuration but you'll need"
-                            + " to delete its cache manually (if any). Original error message: "
-                            + e.getMessage();
-                    LOGGER.log(Level.SEVERE, msg, e);
-                    tileLayerCatalog.delete(layerId);
-                }
-            }
-            LOGGER.info("GWC configuration based on GeoServer's Catalog loaded successfuly");
         } finally {
             lock.releaseWriteLock();
         }
-        return getTileLayerCount();
     }
 
     /**
      * @return {@code true} only if {@code tl instanceof} {@link GeoServerTileLayer} .
-     * @see org.geowebcache.config.Configuration#canSave(org.geowebcache.layer.TileLayer)
+     * @see TileLayerConfiguration#canSave(TileLayer)
      */
     @Override
     public boolean canSave(TileLayer tl) {
         return tl instanceof GeoServerTileLayer && (!tl.isTransientLayer());
     }
-    
+
     public static boolean isLayerExposable(LayerInfo layer) {
-        assert layer!=null;
-        // TODO: this was copied from WMS 1.1 GetCapabilitesTransformer.handleLayerTree and is
-        // replicated again in the WMS 1.3 implementation.  Should be refactored to eliminate
-        // duplication.
-        
-        // no sense in exposing a geometryless layer through wms...
-        boolean wmsExposable = false;
-        if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
-            wmsExposable = true;
-        } else {
-            try {
-                wmsExposable = layer.getType() == PublishedType.VECTOR
-                        && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                .getGeometryDescriptor() != null;
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                        + " the layer is geometryless", e);
-            }
-        }
-        
-        return wmsExposable;
+        assert layer != null;
+        return WMS.isWmsExposable(layer);
     }
- 
+
     @Override
     public synchronized void addLayer(final TileLayer tl) {
         checkNotNull(tl);
@@ -499,10 +477,13 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(tileLayer.getInfo().getName(), "name is null");
 
         GeoServerTileLayerInfo info = tileLayer.getInfo();
-        
+
         LayerInfo layerInfo = tileLayer.getLayerInfo();
-        if(layerInfo!=null && !isLayerExposable(layerInfo)) {
-            LOGGER.warning("Requested layer " + layerInfo.getName() + " has no geometry. Won't create TileLayer");
+        if (layerInfo != null && !isLayerExposable(layerInfo)) {
+            LOGGER.warning(
+                    "Requested layer "
+                            + layerInfo.getName()
+                            + " has no geometry. Won't create TileLayer");
             return;
         }
 
@@ -512,21 +493,23 @@ public class CatalogConfiguration implements Configuration {
             boolean exists = null != tileLayerCatalog.getLayerById(info.getId());
             boolean notExists = !pending && !exists;
 
-            checkArgument(notExists, "A GeoServerTileLayer named '" + info.getName()
-                    + "' already exists");
+            checkArgument(
+                    notExists,
+                    "A GeoServerTileLayer named '" + info.getName() + "' already exists");
             if (pendingDeletes.remove(info.getId())) {
-                LOGGER.finer("Adding a new layer " + info.getName()
-                        + " before saving the deleted one with the same id");
+                LOGGER.finer(
+                        "Adding a new layer "
+                                + info.getName()
+                                + " before saving the deleted one with the same id");
             }
             pendingModications.put(info.getId(), info);
         } finally {
             lock.releaseWriteLock();
         }
+        save();
     }
 
-    /**
-     * @see org.geowebcache.config.Configuration#modifyLayer(org.geowebcache.layer.TileLayer)
-     */
+    /** @see TileLayerConfiguration#modifyLayer(TileLayer) */
     @Override
     public synchronized void modifyLayer(TileLayer tl) throws NoSuchElementException {
         checkNotNull(tl, "TileLayer is null");
@@ -543,24 +526,62 @@ public class CatalogConfiguration implements Configuration {
         try {
             final String layerId = info.getId();
             // check pendingModifications too to catch unsaved adds
-            boolean exists = pendingModications.containsKey(layerId)
-                    || tileLayerCatalog.exists(layerId);
+            boolean exists =
+                    pendingModications.containsKey(layerId) || tileLayerCatalog.exists(layerId);
+            if (!exists) {
+                throw new NoSuchElementException(
+                        "No GeoServerTileLayer named '" + info.getName() + "' exists");
+            }
+            pendingModications.put(layerId, info);
+            layerCache.invalidate(layerId);
+        } finally {
+            lock.releaseWriteLock();
+        }
+        save();
+    }
+
+    /** @see TileLayerConfiguration#renameLayer(String, String) */
+    @Override
+    public synchronized void renameLayer(String oldName, String newName)
+            throws NoSuchElementException {
+        TileLayer tl =
+                getLayer(oldName)
+                        .orElseThrow(
+                                () ->
+                                        new NullPointerException(
+                                                "TileLayer " + oldName + " not found"));
+        checkArgument(canSave(tl), "Can't rename TileLayer of type ", tl.getClass());
+
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) tl;
+
+        checkNotNull(tileLayer.getInfo(), "GeoServerTileLayerInfo is null");
+        checkNotNull(tileLayer.getInfo().getId(), "id is null");
+        checkNotNull(tileLayer.getInfo().getName(), "name is null");
+
+        final GeoServerTileLayerInfo info = tileLayer.getInfo();
+        lock.acquireWriteLock();
+        try {
+            final String layerId = info.getId();
+            info.setName(newName);
+            // check pendingModifications too to catch unsaved adds
+            boolean exists =
+                    pendingModications.containsKey(layerId) || tileLayerCatalog.exists(layerId);
             checkArgument(exists, "No GeoServerTileLayer named '" + info.getName() + "' exists");
             pendingModications.put(layerId, info);
             layerCache.invalidate(layerId);
         } finally {
             lock.releaseWriteLock();
         }
+        save();
     }
 
     /**
      * {@link TileLayerDispatcher} is requesting to remove the layer named after {@code layerName}
-     * 
-     * @see org.geowebcache.config.Configuration#removeLayer(java.lang.String)
-     * @return {@code true} if the layer was removed, false if it didn't exist
+     *
+     * @see TileLayerConfiguration#removeLayer(String)
      */
     @Override
-    public boolean removeLayer(final String layerName) {
+    public void removeLayer(final String layerName) throws NoSuchElementException {
         checkNotNull(layerName);
         lock.acquireWriteLock();
         try {
@@ -576,34 +597,29 @@ public class CatalogConfiguration implements Configuration {
                 try {
                     GWC.get().layerRemoved(tileLayerInfo.getName());
                 } catch (RuntimeException e) {
-                    LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + tileLayerInfo.getName()
-                            + "' from cache", e);
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Error deleting tile layer '"
+                                    + tileLayerInfo.getName()
+                                    + "' from cache",
+                            e);
                 }
                 pendingDeletes.add(layerId);
                 layerCache.invalidate(layerId);
-                return true;
             } else {
-                return false;
+                throw new NoSuchElementException("Tile layer " + layerName + " does not exist");
             }
         } finally {
             lock.releaseWriteLock();
         }
+        save();
     }
 
-    /**
-     * @see GWC#layerAdded(String)
-     * @see GWC#layerRemoved(String)
-     * @see GWC#layerRenamed(String, String)
-     * @see GWC#truncateByLayerAndStyle(String, String)
-     * @see GWC#truncate(String, String, String, BoundingBox, String)
-     * @see org.geowebcache.config.Configuration#save()
-     */
-    @Override
-    public synchronized void save() {
+    private synchronized void save() {
 
         final GWC mediator = GWC.get();
 
-        final List<GeoServerTileLayerInfo[/* old, new */]> modifications = Lists.newLinkedList();
+        final List<GeoServerTileLayerInfo[ /* old, new */]> modifications = Lists.newLinkedList();
 
         lock.acquireWriteLock();
         // perform the transaction while holding the write lock, then downgrade to the read lock and
@@ -614,8 +630,10 @@ public class CatalogConfiguration implements Configuration {
                 try {
                     tileLayerCatalog.delete(deletedId);
                 } catch (RuntimeException e) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error deleting tile layer '" + deletedId + "' from catalog", e);
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Error deleting tile layer '" + deletedId + "' from catalog",
+                            e);
                 }
             }
 
@@ -623,10 +641,12 @@ public class CatalogConfiguration implements Configuration {
                 final GeoServerTileLayerInfo old;
                 try {
                     old = tileLayerCatalog.save(modified);
-                    modifications.add(new GeoServerTileLayerInfo[] { old, modified });
+                    modifications.add(new GeoServerTileLayerInfo[] {old, modified});
                 } catch (RuntimeException e) {
-                    LOGGER.log(Level.SEVERE,
-                            "Error saving tile layer '" + modified.getName() + "'", e);
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Error saving tile layer '" + modified.getName() + "'",
+                            e);
                 }
             }
             this.pendingModications.clear();
@@ -649,8 +669,12 @@ public class CatalogConfiguration implements Configuration {
                             issueTileLayerInfoChangeNotifications(old, modified);
                         }
                     } catch (RuntimeException e) {
-                        LOGGER.log(Level.SEVERE, "Error issuing change events for tile layer "
-                                + modified +".  This may result in leaked tiles that will not be truncated.", e);
+                        LOGGER.log(
+                                Level.SEVERE,
+                                "Error issuing change events for tile layer "
+                                        + modified
+                                        + ".  This may result in leaked tiles that will not be truncated.",
+                                e);
                     }
                 }
             } finally {
@@ -659,8 +683,8 @@ public class CatalogConfiguration implements Configuration {
         }
     }
 
-    private void issueTileLayerInfoChangeNotifications(final GeoServerTileLayerInfo oldInfo,
-            final GeoServerTileLayerInfo newInfo) {
+    private void issueTileLayerInfoChangeNotifications(
+            final GeoServerTileLayerInfo oldInfo, final GeoServerTileLayerInfo newInfo) {
 
         checkNotNull(oldInfo);
         checkNotNull(newInfo);
@@ -710,7 +734,7 @@ public class CatalogConfiguration implements Configuration {
 
         Set<String> oldStyles = oldInfo.cachedStyles();
         Set<String> newStyles = newInfo.cachedStyles();
-        
+
         if (!newStyles.equals(oldStyles)) {
             oldStyles = new HashSet<String>(oldStyles);
             oldStyles.removeAll(newStyles);
@@ -728,6 +752,7 @@ public class CatalogConfiguration implements Configuration {
         return names;
     }
 
+    /** Invalidates the later cache and resets the tile layer catalog. */
     public void reset() {
         lock.acquireWriteLock();
         try {
@@ -739,8 +764,8 @@ public class CatalogConfiguration implements Configuration {
     }
 
     /**
-     * Helper method that will remove the workspace prefix from a layer name.
-     * If the layer is not prefixed by an workspace name the layer name will be returned as is.
+     * Helper method that will remove the workspace prefix from a layer name. If the layer is not
+     * prefixed by an workspace name the layer name will be returned as is.
      */
     public static String removeWorkspacePrefix(String layerName, Catalog catalog) {
         // checking if we have an workspace prefix
@@ -755,5 +780,27 @@ public class CatalogConfiguration implements Configuration {
         }
         // we are already good
         return layerName;
+    }
+
+    /** @see TileLayerConfiguration#getLocation() */
+    @Override
+    public String getLocation() {
+        return this.tileLayerCatalog.getPersistenceLocation();
+    }
+
+    /** @see ReinitializingBean#deinitialize() */
+    @Override
+    public void deinitialize() throws Exception {}
+
+    /**
+     * Sets the {@link GridSetBroker} for use by this configuration. Automatically called by spring
+     * on context initialization.
+     *
+     * @param broker The GridSet broker
+     */
+    @Autowired
+    @Override
+    public void setGridSetBroker(@Qualifier("gwcGridSetBroker") GridSetBroker broker) {
+        this.gridSetBroker = broker;
     }
 }

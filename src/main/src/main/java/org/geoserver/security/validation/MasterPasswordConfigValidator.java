@@ -10,12 +10,10 @@ import org.geoserver.security.password.MasterPasswordConfig;
 
 public class MasterPasswordConfigValidator extends AbstractSecurityValidator {
 
-    public MasterPasswordConfigValidator( GeoServerSecurityManager securityManager) {
+    public MasterPasswordConfigValidator(GeoServerSecurityManager securityManager) {
         super(securityManager);
     }
 
-    public void validateMasterPasswordConfig(MasterPasswordConfig config) 
-        throws SecurityConfigException {
-        
-    }
+    public void validateMasterPasswordConfig(MasterPasswordConfig config)
+            throws SecurityConfigException {}
 }

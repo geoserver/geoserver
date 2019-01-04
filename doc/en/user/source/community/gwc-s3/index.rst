@@ -7,7 +7,7 @@ This plugin supports the use of the `AWS <https://aws.amazon.com>`_ Simple Stora
 Installing the S3 BlobStore plugin
 ----------------------------------
 
- #. Download the extension from the `nightly GeoServer community module builds <http://ares.opengeo.org/geoserver/master/community-latest/>`_.
+ #. Download the extension from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/master/community-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

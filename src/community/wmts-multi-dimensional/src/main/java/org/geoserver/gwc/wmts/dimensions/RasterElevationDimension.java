@@ -4,38 +4,49 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.filter.Filter;
+import org.geotools.data.Query;
+import org.geotools.feature.FeatureCollection;
+import org.opengis.filter.sort.SortOrder;
 
-import java.util.List;
-
-/**
- * Represents an elevation dimension of a raster.
- */
-public class RasterElevationDimension extends Dimension {
+/** Represents an elevation dimension of a raster. */
+public class RasterElevationDimension extends RasterDimension {
 
     public RasterElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo);
+        super(
+                wms,
+                ResourceInfo.ELEVATION,
+                layerInfo,
+                dimensionInfo,
+                CoverageDimensionsReader.DataType.NUMERIC);
+    }
+
+    @Override
+    public Class getDimensionType() {
+        return Number.class;
+    }
+
+    @Override
+    protected FeatureCollection getDomain(Query query) {
+        CoverageDimensionsReader reader =
+                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        Tuple<String, FeatureCollection> values =
+                reader.getValues(
+                        this.dimensionName,
+                        query,
+                        CoverageDimensionsReader.DataType.NUMERIC,
+                        SortOrder.ASCENDING);
+
+        return values.second;
     }
 
     @Override
     protected String getDefaultValueFallbackAsString() {
-        return DimensionDefaultValueSetting.TIME_CURRENT;
-    }
-
-    @Override
-    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
-        return getRasterDomainValues(filter, noDuplicates, CoverageDimensionsReader.DataType.NUMERIC, DimensionsUtils.NUMERICAL_COMPARATOR);
-    }
-
-    @Override
-    public Filter getFilter() {
-        return buildRasterFilter();
+        return "0";
     }
 }

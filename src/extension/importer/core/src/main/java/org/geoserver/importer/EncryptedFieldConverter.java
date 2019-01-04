@@ -5,12 +5,10 @@
  */
 package org.geoserver.importer;
 
-import org.geoserver.security.GeoServerSecurityManager;
+/** Encrypts/decrypts fields using GeoServer security manager help */
 
-/**
- * Encrypts/decrypts fields using GeoServer security manager help
- */
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import org.geoserver.security.GeoServerSecurityManager;
 
 class EncryptedFieldConverter extends AbstractSingleValueConverter {
 
@@ -34,5 +32,4 @@ class EncryptedFieldConverter extends AbstractSingleValueConverter {
     public String toString(Object obj) {
         return securityManager.getConfigPasswordEncryptionHelper().encode((String) obj);
     }
-
 }

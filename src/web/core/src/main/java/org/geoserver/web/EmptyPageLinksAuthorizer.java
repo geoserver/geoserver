@@ -7,18 +7,17 @@ package org.geoserver.web;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.springframework.security.core.Authentication;
 
 /**
  * Shows the tools link only if there is at least one tool around
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
-    
+
     List<Class> linkClasses = Collections.emptyList();
-    
+
     public List<Class> getLinkClasses() {
         return linkClasses;
     }
@@ -26,7 +25,6 @@ public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
     public void setLinkClasses(List<Class> linkClasses) {
         this.linkClasses = linkClasses;
     }
-
 
     @Override
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
@@ -38,11 +36,10 @@ public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
         // hide the page if there is demo around
         GeoServerApplication app = GeoServerApplication.get();
         for (Class<?> linkClass : linkClasses) {
-            if(app.getBeansOfType(linkClass).size() > 0) {
+            if (app.getBeansOfType(linkClass).size() > 0) {
                 return true;
             }
         }
         return false;
     }
-
 }

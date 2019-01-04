@@ -7,16 +7,38 @@ A reference for developing GeoServer with Eclipse.
 
 .. contents:: :local:
 
-Importing modules
------------------
+Setting up Eclipse
+------------------
 
-See the Eclipse section of the :ref:`maven_guide`.
+Use of Maven M2 Plugin
+^^^^^^^^^^^^^^^^^^^^^^
 
+The Eclipse built-in support for maven can be used to build and run GeoServer, see :ref:`quickstart_eclipse_m2` for details.
+
+Use of maven eclipse plugin
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The maven eclipse plugin is used to generate eclipse projects for a set of 
+modules::
+
+  mvn eclipse:eclipse
+
+After which the modules can be imported into an eclipse workspace, see :ref:`quickstart_eclipse` for details.
+
+A useful feature of the plugin is the ability to download associated source code
+for third party dependencies. This is done with the ``downloadSources`` flag::
+
+  mvn -DdownloadSources eclipse:eclipse
+
+.. warning::
+
+   The first time you enable the ``downloadSources`` flag the build will take a  long time as it will attempt to download the sources for every single library GeoServer depends on.
+   
 Running and debugging
 ---------------------
 
 Run or debug the class ``org.geoserver.web.Start`` in the ``web-app`` 
-module. The steps to do so are detailed in the :ref:`quickstart`.
+module. The steps to do so are detailed in the :ref:`quickstart_eclipse` or :ref:`quickstart_eclipse_m2`.
 
 Running GeoServer with Extensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,8 +89,8 @@ in which the launch configuration runs. Naming factory system properties must al
 configured for Jetty. For example, ``VM arguments`` could include::
 
     -Djetty.config.file=../../../../../settings/jetty.xml
-    -Djava.naming.factory.url.pkgs=org.mortbay.naming
-    -Djava.naming.factory.initial=org.mortbay.naming.InitialContextFactory
+    -Djava.naming.factory.url.pkgs=org.eclipse.jetty.jndi
+    -Djava.naming.factory.initial=org.eclipse.jetty.jndi.InitialContextFactory
 
 The following Jetty server configuration file
 configures a JNDI data source ``java:comp/env/jdbc/demo`` that is a
@@ -76,12 +98,12 @@ connection pool for an Oracle database::
 
     <?xml version="1.0"?>
     <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
-    <Configure class="org.mortbay.jetty.Server">
-        <New class="org.mortbay.jetty.plus.naming.Resource">
+    <Configure class="org.eclipse.jetty.server.Server">
+        <New class="org.eclipse.jetty.plus.jndi.Resource">
             <Arg>java:comp/env/jdbc/demo</Arg>
             <Arg>
                 <New class="org.apache.commons.dbcp.BasicDataSource">
-                    <Set name="driverClassName">oracle.jdbc.driver.OracleDriver</Set>
+                    <Set name="driverClassName">oracle.jdbc.OracleDriver</Set>
                     <Set name="url">jdbc:oracle:thin:@oracle.example.com:1521:demodb</Set>
                     <Set name="username">claudius</Set>
                     <Set name="password">s3cr3t</Set>
@@ -96,6 +118,7 @@ connection pool for an Oracle database::
                     <Set name="maxOpenPreparedStatements">100</Set>
                     <Set name="testOnBorrow">true</Set>
                     <Set name="validationQuery">SELECT SYSDATE FROM DUAL</Set>
+                    <Set name="accessToUnderlyingConnectionAllowed">true</Set>
                 </New>
             </Arg>
         </New>
@@ -135,41 +158,32 @@ Eclipse preferences
 Code formatting
 ^^^^^^^^^^^^^^^
 
-#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/formatter.xml
+The Google formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build before committing!
+
+The `google-java-format <https://github.com/google/google-java-format>`__ project offers a plugin for Eclipse, but we are waiting an support for ASOP variant. While we wait for this fix build once on the command line, to format the any code changes before committing.
+
+You may also:
+
+#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/eclipse-java-google-style.xml
 #. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
-
-   .. image:: code_formatting1.jpg
-
-#. Select the ``formatter.xml`` file downloaded in step 1
+#. Select the ``eclipse-java-google-style.xml`` file downloaded in step 1
 #. Click ``Apply``
 
-   .. image:: code_formatting2.jpg
+   .. image:: code_formatting2.png
 
-#. We follow "Sun Coding Conventions and a little bit more":
+#. We follow `Google Code Formatting <https://google.github.io/styleguide/javaguide.html>`__ with the AOSP variant (4 spaces indent instead of 2).
   
-  * `Code Conventions for the Java Programming Language <http://www.oracle.com/technetwork/java/index-135089.html>`__
-  * but allow for 100 characters in width
-  * developers should use spaces for indentations, not tabulations. The tab width (4 or 8 spaces) is not the same on all editors.
-  
-  For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
+   For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
 
 Code templates
 ^^^^^^^^^^^^^^
 
-#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/codetemplates.xml
+#. Download :download:`codetemplates.xml </../../../../build/codetemplates.xml>`.
 #. Navigate to ``Java``, ``Code Style``, ``Code Templates`` and click ``Import...``
-
-   .. image:: code_templates.jpg
-
-#. Select the ``codetemplates.xml`` file downloaded in step 1
-#. Update the file header::
-      
-      /* (c) ${year} Open Source Geospatial Foundation - all rights reserved
-       * This code is licensed under the GPL 2.0 license, available at the root
-       * application directory.
-       */
-   
+#. Select the ``codetemplates.xml`` file downloaded in step 1   
 #. Click ``Apply``
+
+.. image:: code-template.png
 
 Text editors
 ^^^^^^^^^^^^
@@ -185,18 +199,6 @@ Text editors
       Showing whitespace characters can help insure that unecessary whitespace 
       is not unintentionaly comitted.
    
-   .. image:: text_editors.jpg
+   .. image:: text_editors.png
 
 #. Click ``Apply``
-
-Compiler
-^^^^^^^^
-
-#. Navigate to ``Java``, ``Compiler``, ``Building``
-#. Expand ``Output folder`` and add ".svn/" to the list of 
-   ``Filtered resources``
-
-   .. image:: compiler.jpg
-
-#. Click ``Apply``
-

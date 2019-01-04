@@ -17,9 +17,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.httpclient.util.DateParseException;
@@ -48,9 +46,8 @@ import org.geowebcache.layer.TileLayer;
 /**
  * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to serve cached tiles
  * whenever the request matches a GeoWebCache tile.
- * 
+ *
  * @author Gabriel Roldan
- * 
  */
 public class CachingWebMapService implements MethodInterceptor {
 
@@ -64,9 +61,10 @@ public class CachingWebMapService implements MethodInterceptor {
 
     /**
      * Wraps {@link WebMapService#getMap(GetMapRequest)}, called by the {@link Dispatcher}
-     * 
+     *
      * @see WebMapService#getMap(GetMapRequest)
-     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+     * @see
+     *     org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
         GWCConfig config = gwc.getConfig();
@@ -86,8 +84,8 @@ public class CachingWebMapService implements MethodInterceptor {
         if (cachedTile == null) {
             WebMap dynamicResult = (WebMap) invocation.proceed();
             dynamicResult.setResponseHeader("geowebcache-cache-result", MISS.toString());
-            dynamicResult.setResponseHeader("geowebcache-miss-reason",
-                    requestMistmatchTarget.toString());
+            dynamicResult.setResponseHeader(
+                    "geowebcache-miss-reason", requestMistmatchTarget.toString());
             return dynamicResult;
         }
         checkState(cachedTile.getTileLayer() != null);
@@ -124,7 +122,8 @@ public class CachingWebMapService implements MethodInterceptor {
 
         RawMap map = new RawMap(null, tileBytes, mimeType);
 
-        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension(), false);
+        map.setContentDispositionHeader(
+                null, "." + cachedTile.getMimeType().getFileExtension(), false);
 
         Integer cacheAgeMax = getCacheAge(layer);
         LOGGER.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);
@@ -138,10 +137,10 @@ public class CachingWebMapService implements MethodInterceptor {
         setCacheMetadataHeaders(map, cachedTile, layer);
 
         return map;
-
     }
 
-    private void setConditionalGetHeaders(RawMap map, ConveyorTile cachedTile, GetMapRequest request, String etag) {
+    private void setConditionalGetHeaders(
+            RawMap map, ConveyorTile cachedTile, GetMapRequest request, String etag) {
         map.setResponseHeader("ETag", etag);
 
         final long tileTimeStamp = cachedTile.getTSCreated();
@@ -151,8 +150,8 @@ public class CachingWebMapService implements MethodInterceptor {
         // (e.g. 'Sun, 06 Nov 1994 08:49:37 GMT'). See
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
 
-        final String lastModified = org.apache.commons.httpclient.util.DateUtil
-                .formatDate(new Date(tileTimeStamp));
+        final String lastModified =
+                org.apache.commons.httpclient.util.DateUtil.formatDate(new Date(tileTimeStamp));
         map.setResponseHeader("Last-Modified", lastModified);
 
         final Date ifModifiedSince;
@@ -167,8 +166,10 @@ public class CachingWebMapService implements MethodInterceptor {
                 }
             } catch (DateParseException e) {
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer("Can't parse client's If-Modified-Since header: '"
-                            + ifModSinceHeader + "'");
+                    LOGGER.finer(
+                            "Can't parse client's If-Modified-Since header: '"
+                                    + ifModSinceHeader
+                                    + "'");
                 }
             }
         }
@@ -198,7 +199,11 @@ public class CachingWebMapService implements MethodInterceptor {
                 MetadataMap metadata = layerInfo.getResource().getMetadata();
                 Boolean enabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
                 if (enabled != null && enabled) {
-                    cacheAge = layerInfo.getResource().getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+                    cacheAge =
+                            layerInfo
+                                    .getResource()
+                                    .getMetadata()
+                                    .get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
                 }
             }
         }

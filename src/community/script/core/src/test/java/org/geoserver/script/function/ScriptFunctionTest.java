@@ -7,7 +7,6 @@ package org.geoserver.script.function;
 
 import java.io.File;
 import java.util.Collections;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptTestSupport;
 import org.opengis.filter.expression.Function;
@@ -17,7 +16,7 @@ public class ScriptFunctionTest extends ScriptTestSupport {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
         File function = scriptMgr.function().dir();
         File script = new File(function, "factorial." + getExtension());
 
@@ -39,6 +38,6 @@ public class ScriptFunctionTest extends ScriptTestSupport {
 
         Function f = sff.function("factorial", Collections.EMPTY_LIST, null);
         assertNotNull(f);
-        assertEquals(120, ((Number)f.evaluate(5)).intValue());
+        assertEquals(120, ((Number) f.evaluate(5)).intValue());
     }
 }

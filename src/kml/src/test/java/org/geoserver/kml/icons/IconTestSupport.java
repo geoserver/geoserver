@@ -8,11 +8,13 @@ package org.geoserver.kml.icons;
 import java.awt.Color;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Graphic;
@@ -22,11 +24,18 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory2;
 import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
 import org.junit.BeforeClass;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
+import org.opengis.style.Fill;
+import org.opengis.style.Font;
 
 public class IconTestSupport {
 
@@ -34,21 +43,26 @@ public class IconTestSupport {
     protected static SimpleFeature fieldIs2;
     protected static StyleFactory2 styleFactory;
     protected static FilterFactory2 filterFactory;
+    protected static SimpleFeatureType featureType;
 
     @BeforeClass
     public static void classSetup() {
         styleFactory = (StyleFactory2) CommonFactoryFinder.getStyleFactory();
         filterFactory = (FilterFactory2) CommonFactoryFinder.getFilterFactory2();
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("example");
         typeBuilder.setNamespaceURI("http://example.com/");
         typeBuilder.setSRS("EPSG:4326");
         typeBuilder.add("field", String.class);
-        SimpleFeatureType featureType = typeBuilder.buildFeatureType();
+        typeBuilder.add("geom", Point.class, "EPSG:4326");
+        featureType = typeBuilder.buildFeatureType();
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
         featureBuilder.set("field", "1");
+        featureBuilder.set("geom", geometryFactory.createPoint(new Coordinate(0, 0)));
         fieldIs1 = featureBuilder.buildFeature(null);
         featureBuilder.set("field", "2");
+        featureBuilder.set("geom", geometryFactory.createPoint(new Coordinate(0, 0)));
         fieldIs2 = featureBuilder.buildFeature(null);
     }
 
@@ -63,8 +77,8 @@ public class IconTestSupport {
                     buff.append("&");
                 }
                 buff.append(entry.getKey())
-                    .append("=")
-                    .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
             }
             return buff.toString();
         } catch (UnsupportedEncodingException e) {
@@ -72,14 +86,39 @@ public class IconTestSupport {
         }
     }
 
-    protected final PointSymbolizer mark(String name, Color stroke, Color fill,
-            float opacity, int size) {
-                return SLD.pointSymbolizer(SLD.createPointStyle(name, stroke, fill, opacity, size));
-            }
+    protected final Fill fill(Color color, Double opacity) {
+        Expression colorExpr = color == null ? null : filterFactory.literal(color);
+        Expression opacityExpr = opacity == null ? null : filterFactory.literal(opacity);
+        return styleFactory.fill(null, colorExpr, opacityExpr);
+    }
+
+    protected final Font font(String fontFace, String style, String weight, Integer size) {
+        List<Expression> fontFaceList =
+                fontFace == null
+                        ? null
+                        : Collections.singletonList(filterFactory.literal(fontFace));
+        Expression styleExpr = style == null ? null : filterFactory.literal(style);
+        Expression weightExpr = weight == null ? null : filterFactory.literal(weight);
+        Expression sizeExpr = size == null ? null : filterFactory.literal(size);
+        return styleFactory.font(fontFaceList, styleExpr, weightExpr, sizeExpr);
+    }
+
+    protected final TextSymbolizer text(String name, String label, Font font, Fill fill) {
+        Expression geometry = filterFactory.property("");
+        return styleFactory.textSymbolizer(
+                name, geometry, null, null, filterFactory.property(label), font, null, null, fill);
+    }
+
+    protected final PointSymbolizer mark(
+            String name, Color stroke, Color fill, float opacity, int size) {
+        return SLD.pointSymbolizer(SLD.createPointStyle(name, stroke, fill, opacity, size));
+    }
 
     protected final PointSymbolizer externalGraphic(String url, String format) {
         ExternalGraphic exGraphic = styleFactory.createExternalGraphic(url, format);
-        Graphic graphic = styleFactory.createGraphic(new ExternalGraphic[] { exGraphic }, null, null, null, null, null);
+        Graphic graphic =
+                styleFactory.createGraphic(
+                        new ExternalGraphic[] {exGraphic}, null, null, null, null, null);
         return styleFactory.createPointSymbolizer(graphic, null);
     }
 
@@ -122,5 +161,4 @@ public class IconTestSupport {
         for (FeatureTypeStyle f : ftStyles) style.featureTypeStyles().add(f);
         return style;
     }
-
 }

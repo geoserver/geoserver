@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.geoserver.security.impl.GeoServerUser;
 
 /**
  * Mock mapper used for testing purposes.
- * 
- * @author Mauro Bartolomeoli
  *
+ * @author Mauro Bartolomeoli
  */
 public class FakeMapper extends AbstractAuthenticationKeyMapper {
 
@@ -23,24 +21,23 @@ public class FakeMapper extends AbstractAuthenticationKeyMapper {
     public GeoServerUser getUser(String key) throws IOException {
         return new GeoServerUser("fakeuser");
     }
-    
+
     @Override
     public int synchronize() throws IOException {
         return 0;
     }
-    
+
     @Override
     public boolean supportsReadOnlyUserGroupService() {
         return false;
     }
-    
+
     public String getMapperParameter(String parameter) {
         return super.getMapperConfiguration().get(parameter);
     }
-    
+
     @Override
     public Set<String> getAvailableParameters() {
         return new HashSet(Arrays.asList("param1", "param2"));
     }
-
 }

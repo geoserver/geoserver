@@ -5,15 +5,15 @@
 package org.geoserver.web.wicket;
 
 import java.util.List;
-
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
 
 /**
- * A TextField for a space separated list of {@code java.lang.Double} representations that allows for arbitrary number of decimal places, since the
- * default TextField rounds up doubles to three decimals.
- * 
+ * A TextField for a space separated list of {@code java.lang.Double} representations that allows
+ * for arbitrary number of decimal places, since the default TextField rounds up doubles to three
+ * decimals.
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class DecimalListTextField extends TextField<List> {
@@ -40,6 +40,4 @@ public class DecimalListTextField extends TextField<List> {
         }
         return super.getConverter(type);
     }
-    
-    
 }

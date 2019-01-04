@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.topojson;
 
+import com.google.common.collect.ImmutableList;
 import java.awt.geom.AffineTransform;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -12,14 +13,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 public class TopoJSONEncoderTest {
 
@@ -32,8 +30,8 @@ public class TopoJSONEncoderTest {
 
         List<LineString> arcs = arcs("LINESTRING(0 1, 2 3)");
 
-        Collection<? extends TopoGeom> geoms = ImmutableList.of(new TopoGeom.LineString(
-                ImmutableList.of(1, 2, 3, 4, 5)));
+        Collection<? extends TopoGeom> geoms =
+                ImmutableList.of(new TopoGeom.LineString(ImmutableList.of(1, 2, 3, 4, 5)));
         GeometryColleciton layer = new GeometryColleciton(geoms);
 
         Map<String, GeometryColleciton> layers = new HashMap<>();
@@ -61,8 +59,8 @@ public class TopoJSONEncoderTest {
 
         List<LineString> arcs = arcs("LINESTRING(0 1, 2 3)");
 
-        Collection<? extends TopoGeom> geoms = ImmutableList.of(new TopoGeom.LineString(
-                ImmutableList.of(1, 2, 3, 4, 5)));
+        Collection<? extends TopoGeom> geoms =
+                ImmutableList.of(new TopoGeom.LineString(ImmutableList.of(1, 2, 3, 4, 5)));
         GeometryColleciton layer = new GeometryColleciton(geoms);
 
         Map<String, GeometryColleciton> layers = new HashMap<>();
@@ -82,5 +80,4 @@ public class TopoJSONEncoderTest {
         }
         return arcs;
     }
-
 }

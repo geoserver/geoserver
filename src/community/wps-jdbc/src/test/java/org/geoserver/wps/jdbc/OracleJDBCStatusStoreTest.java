@@ -6,14 +6,13 @@ package org.geoserver.wps.jdbc;
 
 public class OracleJDBCStatusStoreTest extends AbstractJDBCStatusStoreTest {
 
-	
-	@Override
-	String getFixtureId() {
-		return "wps-oracle";
-	}
+    @Override
+    String getFixtureId() {
+        return "wps-oracle";
+    }
 
-	@Override
-	protected String getStatusTable() {
-		return JDBCStatusStore.STATUS.toUpperCase();
-	}
+    @Override
+    protected String getStatusTable() {
+        return JDBCStatusStore.STATUS.toUpperCase();
+    }
 }

@@ -7,7 +7,6 @@ package org.geoserver.wms.dimension.impl;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -21,71 +20,65 @@ import org.geotools.util.Converters;
 import org.opengis.filter.FilterFactory2;
 
 /**
- * Default implementation for selecting the default values for dimensions of 
- * feature (vector) resources using the nearest-domain-value-to-the-reference-value
- * strategy.
- *  
- * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ * Default implementation for selecting the default values for dimensions of feature (vector)
+ * resources using the nearest-domain-value-to-the-reference-value strategy.
  *
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-
-public class FeatureNearestValueSelectionStrategyImpl extends
-        AbstractFeatureAttributeVisitorSelectionStrategy {
+public class FeatureNearestValueSelectionStrategyImpl
+        extends AbstractFeatureAttributeVisitorSelectionStrategy {
 
     private Object toMatch;
     private String fixedCapabilitiesValue;
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-    
-    /**
-     * Default constructor.
-     */
-    public FeatureNearestValueSelectionStrategyImpl(Object toMatch){
-        this(toMatch,null);
+
+    /** Default constructor. */
+    public FeatureNearestValueSelectionStrategyImpl(Object toMatch) {
+        this(toMatch, null);
     }
-        
+
     public FeatureNearestValueSelectionStrategyImpl(Object toMatch, String capabilitiesValue) {
         this.toMatch = toMatch;
         this.fixedCapabilitiesValue = capabilitiesValue;
     }
 
     @Override
-    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class clz) {        
+    public Object getDefaultValue(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
         String attrName = dimension.getAttribute();
         Class<?> attrType = String.class;
-        if (resource instanceof FeatureTypeInfo){
+        if (resource instanceof FeatureTypeInfo) {
             List<AttributeTypeInfo> attrTypes;
             try {
-                attrTypes = ((FeatureTypeInfo)resource).attributes();
-                for (AttributeTypeInfo attr:attrTypes){
-                    if (attr.getName().equals(attrName)){
+                attrTypes = ((FeatureTypeInfo) resource).attributes();
+                for (AttributeTypeInfo attr : attrTypes) {
+                    if (attr.getName().equals(attrName)) {
                         attrType = attr.getBinding();
                         break;
                     }
                 }
             } catch (IOException e) {
-            }                       
+            }
         }
 
-        final FeatureCalc nearest = new NearestVisitor(ff.property(dimension.getAttribute()),
-                this.toMatch);
-        
+        final FeatureCalc nearest =
+                new NearestVisitor(ff.property(dimension.getAttribute()), this.toMatch);
+
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, nearest);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            return Converters.convert(res.getValue(),clz);
+            return Converters.convert(res.getValue(), clz);
         }
     }
 
     @Override
-    public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
-        if (fixedCapabilitiesValue != null){
+    public String getCapabilitiesRepresentation(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
+        if (fixedCapabilitiesValue != null) {
             return this.fixedCapabilitiesValue;
         } else {
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }
-
-  
 }

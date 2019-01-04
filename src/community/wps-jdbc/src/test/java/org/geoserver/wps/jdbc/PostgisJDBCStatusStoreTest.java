@@ -6,8 +6,8 @@ package org.geoserver.wps.jdbc;
 
 public class PostgisJDBCStatusStoreTest extends AbstractJDBCStatusStoreTest {
 
-	@Override
-	String getFixtureId() {
-		return "wps-postgis";
-	}
+    @Override
+    String getFixtureId() {
+        return "wps-postgis";
+    }
 }

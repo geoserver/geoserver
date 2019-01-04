@@ -1,0 +1,15 @@
+.. warning:: If you encounter the following error during startup, you may have some invalid JAI jars from the default Mac Java install:
+
+    .. code-block:: bash
+
+        java.lang.NoClassDefFoundError: Could not initialize class javax.media.jai.JAI
+    
+    To fix this error, locate your Java extensions folder (Usually ``/System/Library/Java/Extensions`` and/or ``~/Library/Java/Extensions``), and delete the following jars:
+
+    .. code-block:: bash
+
+        jai_codec-1.1.3.jar
+        jai_core-1.1.3.jar
+        jai_imageio-1.1.jar
+
+    If you have upgraded your OS from an older version, you may not have permission to delete these jars. In this case, you will first need to `disable System Integrity Protection <https://developer.apple.com/library/content/documentation/Security/Conceptual/System_Integrity_Protection_Guide/ConfiguringSystemIntegrityProtection/ConfiguringSystemIntegrityProtection.html#//apple_ref/doc/uid/TP40016462-CH5-SW1>`_.

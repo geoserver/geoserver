@@ -21,10 +21,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -45,7 +44,7 @@ import org.geotools.arcsde.session.UnavailableConnectionException;
  * A panel for {@link ArcSDECoverageStoreEditPanel} that shows a drop down list where to choose the
  * raster table to create the coverage store for, and a refresh button to populate the list of
  * available raster tables based on the form's connection input fields.
- * 
+ *
  * @author Gabriel Roldan
  */
 public class RasterTableSelectionPanel extends Panel {
@@ -60,8 +59,8 @@ public class RasterTableSelectionPanel extends Panel {
      */
     public static final String TABLE_NAME = "tableName";
 
-    private static final String RESOURCE_KEY_PREFIX = RasterTableSelectionPanel.class
-            .getSimpleName();
+    private static final String RESOURCE_KEY_PREFIX =
+            RasterTableSelectionPanel.class.getSimpleName();
 
     private final DropDownChoice<String> choice;
 
@@ -75,9 +74,15 @@ public class RasterTableSelectionPanel extends Panel {
 
     private FormComponent<?> passwordComponent;
 
-    public RasterTableSelectionPanel(final String id, final IModel<Map<String, Object>> paramsModel,
-            final Form<?> storeEditForm, FormComponent<?> server, FormComponent<?> port,
-            FormComponent<?> instance, FormComponent<?> user, FormComponent<?> password) {
+    public RasterTableSelectionPanel(
+            final String id,
+            final IModel<Map<String, Object>> paramsModel,
+            final Form<?> storeEditForm,
+            FormComponent<?> server,
+            FormComponent<?> port,
+            FormComponent<?> instance,
+            FormComponent<?> user,
+            FormComponent<?> password) {
 
         super(id);
         this.serverComponent = server;
@@ -99,17 +104,18 @@ public class RasterTableSelectionPanel extends Panel {
         /*
          * Make table name match the option id
          */
-        choice.setChoiceRenderer(new ChoiceRenderer<String>() {
-            private static final long serialVersionUID = 1L;
+        choice.setChoiceRenderer(
+                new ChoiceRenderer<String>() {
+                    private static final long serialVersionUID = 1L;
 
-            public String getIdValue(String tableName, int index) {
-                return tableName.toString();
-            }
+                    public String getIdValue(String tableName, int index) {
+                        return tableName.toString();
+                    }
 
-            public Object getDisplayValue(String tableName) {
-                return tableName;
-            }
-        });
+                    public Object getDisplayValue(String tableName) {
+                        return tableName;
+                    }
+                });
         choice.setOutputMarkupId(true);
         choice.setNullValid(false);
         choice.setRequired(true);
@@ -124,45 +130,47 @@ public class RasterTableSelectionPanel extends Panel {
             choice.add(AttributeModifier.replace("title", title));
         }
 
-        final AjaxSubmitLink refreshTablesLink = new AjaxSubmitLink("refresh", storeEditForm) {
-            private static final long serialVersionUID = 1L;
+        final AjaxSubmitLink refreshTablesLink =
+                new AjaxSubmitLink("refresh", storeEditForm) {
+                    private static final long serialVersionUID = 1L;
 
-            /**
-             * We're not doing any validation here, just want to perform the same attempt to get to
-             * the list of connection parameters than at {@link #onSumbit}
-             */
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                onSubmit(target, form);
-            }
+                    /**
+                     * We're not doing any validation here, just want to perform the same attempt to
+                     * get to the list of connection parameters than at {@link #onSumbit}
+                     */
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        onSubmit(target, form);
+                    }
 
-            @Override
-            protected void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
+                    @Override
+                    protected void onSubmit(final AjaxRequestTarget target, final Form<?> form) {
 
-                final String server = serverComponent.getValue();
-                final String port = portComponent.getValue();
-                final String instance = instanceComponent.getValue();
-                final String user = userComponent.getValue();
-                final String password = passwordComponent.getValue();
+                        final String server = serverComponent.getValue();
+                        final String port = portComponent.getValue();
+                        final String instance = instanceComponent.getValue();
+                        final String user = userComponent.getValue();
+                        final String password = passwordComponent.getValue();
 
-                final ISessionPoolFactory sessionFac = getSessionFactory();
+                        final ISessionPoolFactory sessionFac = getSessionFactory();
 
-                List<String> rasterColumns;
-                try {
-                    rasterColumns = getRasterColumns(server, port, instance, user, password,
-                            sessionFac);
-                } catch (IllegalArgumentException e) {
-                    rasterColumns = Collections.emptyList();
-                    String message = "Refreshing raster tables list: " + e.getMessage();
-                    storeEditForm.error(message);
-                    target.add(storeEditForm);// refresh
-                }
+                        List<String> rasterColumns;
+                        try {
+                            rasterColumns =
+                                    getRasterColumns(
+                                            server, port, instance, user, password, sessionFac);
+                        } catch (IllegalArgumentException e) {
+                            rasterColumns = Collections.emptyList();
+                            String message = "Refreshing raster tables list: " + e.getMessage();
+                            storeEditForm.error(message);
+                            target.add(storeEditForm); // refresh
+                        }
 
-                choice.setChoices(rasterColumns);
-                target.add(choice);
-                // do nothing else, so we return to the same page...
-            }
-        };
+                        choice.setChoices(rasterColumns);
+                        target.add(choice);
+                        // do nothing else, so we return to the same page...
+                    }
+                };
         add(refreshTablesLink);
         {
             final String titleKey = RESOURCE_KEY_PREFIX + ".refresh.title";
@@ -189,18 +197,21 @@ public class RasterTableSelectionPanel extends Panel {
     }
 
     /**
-     * 
      * @param server
      * @param port
      * @param instance
      * @param user
      * @param password
      * @param sessionFac
-     *
      * @throws IllegalArgumentException
      */
-    List<String> getRasterColumns(final String server, final String port, final String instance,
-            final String user, final String password, final ISessionPoolFactory sessionFac)
+    List<String> getRasterColumns(
+            final String server,
+            final String port,
+            final String instance,
+            final String user,
+            final String password,
+            final ISessionPoolFactory sessionFac)
             throws IllegalArgumentException {
 
         final ISessionPool pool;

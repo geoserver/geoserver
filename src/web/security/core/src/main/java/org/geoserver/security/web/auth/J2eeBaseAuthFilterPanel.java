@@ -6,20 +6,17 @@
 package org.geoserver.security.web.auth;
 
 import java.util.Arrays;
-
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
-import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.config.RoleSource;
-import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 
 /**
  * Base Configuration panel for J2EE supporting filters
- * 
+ *
  * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
  */
 public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFilterConfig>
@@ -33,30 +30,30 @@ public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFi
     }
 
     @Override
-    protected void addRoleSourceDropDown(WebMarkupContainer container,
-            RoleSource rs) {        
+    protected void addRoleSourceDropDown(WebMarkupContainer container, RoleSource rs) {
         if (J2EERoleSource.J2EE.equals(rs)) {
             container.addOrReplace(new RoleServicePanel("panel"));
         } else {
             super.addRoleSourceDropDown(container, rs);
         }
     }
-    
+
     @Override
     protected Panel getRoleSourcePanel(RoleSource model) {
-        if(J2EERoleSource.J2EE.equals(model)) {
+        if (J2EERoleSource.J2EE.equals(model)) {
             return new RoleServicePanel("panel");
         } else {
             return super.getRoleSourcePanel(model);
         }
     }
-    
+
     @Override
     protected void createRoleSourceDropDown() {
-        add(roleSourceChoice = 
-            new DropDownChoice<RoleSource>("roleSource", Arrays.asList(J2EERoleSource.values()),
-            new RoleSourceChoiceRenderer()));
+        add(
+                roleSourceChoice =
+                        new DropDownChoice<RoleSource>(
+                                "roleSource",
+                                Arrays.asList(J2EERoleSource.values()),
+                                new RoleSourceChoiceRenderer()));
     }
-    
-    
 }

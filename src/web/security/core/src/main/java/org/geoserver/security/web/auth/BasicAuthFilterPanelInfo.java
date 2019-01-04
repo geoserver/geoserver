@@ -10,11 +10,12 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 
 /**
  * Configuration panel extension for {@link GeoServerBasicAuthenticationFilter}.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class BasicAuthFilterPanelInfo 
-    extends AuthenticationFilterPanelInfo<BasicAuthenticationFilterConfig, BasicAuthFilterPanel>{
+public class BasicAuthFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                BasicAuthenticationFilterConfig, BasicAuthFilterPanel> {
 
     public BasicAuthFilterPanelInfo() {
         setServiceClass(GeoServerBasicAuthenticationFilter.class);

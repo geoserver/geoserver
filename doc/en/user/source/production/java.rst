@@ -10,20 +10,34 @@ GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE). Th
 
 Tested:
 
+* Java 11 - GeoServer 2.15.x and above (OpenJDK tested)
 * Java 8 - GeoServer 2.9.x and above (OpenJDK and Oracle JRE tested)
 * Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)
 * Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)
 * Java 5 - GeoServer 2.2.x and earlier (Sun JRE tested)
-
-Unsupported:
-
-* Java 9 - Incompatibility with Service Provider Interface Plugin System has been noted
 
 For best performance we recommend the use *Oracle JRE 8* (also known as JRE 1.8).
 
 .. Further speed improvements can be released using `Marlin renderer <https://github.com/bourgesl/marlin-renderer>`__ alternate renderer.
 
 As of GeoServer 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).
+
+Running on Java 11
+------------------
+
+GeoServer 2.15 will run under Java 11 with no additional configuration on **Tomcat 9** or newer and **Jetty 9.4.12** or newer.
+
+Running GeoServer under Java 11 on other Application Servers may require some additional configuration. Some Application Servers do not support Java 11 yet.
+
+* **Wildfly 14** supports Java 11, with some additional configuration - in the run configuration, under VM arguments add:
+
+      --add-modules=java.se
+
+  Future WildFly releases should support Java 11 with no additional configuration.
+
+* **GlassFish** does not currently Java 11, although the upcoming 5.0.1 release is expected to include support for it.
+
+* **WebLogic** do not yet support Java 11.
 
 Install native JAI and ImageIO extensions
 -----------------------------------------
@@ -32,7 +46,9 @@ The `Java Advanced Imaging API <http://www.oracle.com/technetwork/java/javase/te
 
 The `Java Image I/O Technology <http://docs.oracle.com/javase/6/docs/technotes/guides/imageio/index.html>`__ (ImageIO) is used for  raster reading and writing. ImageIO affects both WMS and WCS for reading raster data, and is very useful (even if there is no raster data involved) for WMS output as encoding is required when writing PNG/GIF/JPEG images.
 
-By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**.
+By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**. 
+
+However, native JAI does not support the concept of "NoData" pixels. In case you have those in input better avoid installing native JAI, and instead go and enable JAI-EXT.
 
 Native JAI and ImageIO extensions are available for:
 
@@ -58,10 +74,6 @@ Native JAI and ImageIO extensions are available for:
    
 .. note:: Native ImageIO encoding may not always be the best choice, we recommend the built-in :ref:`PNGJ based encoder <JAI>` and :ref:`community_libjpeg-turbo` for png8 and jpeg encoding performance.
    
-.. note:: These installers are limited to allow adding native extensions to just one version of the JDK/JRE on your system.  If native extensions are needed on multiple versions, manually unpacking the extensions will be necessary.  See the section on :ref:`native_JAI_manual_install`.
-
-.. note:: These installers are also only able to apply the extensions to the currently used JDK/JRE.  If native extensions are needed on a different JDK/JRE than that which is currently used, it will be necessary to uninstall the current one first, then run the setup program against the remaining JDK/JRE.
-
 Installing native JAI on Windows
 ````````````````````````````````
 
@@ -69,6 +81,10 @@ Installing native JAI on Windows
 #. Run the installer and point it to the JDK/JRE install that GeoServer will use to run.
 #. Go to the `JAI Image I/O download page <http://download.java.net/media/jai-imageio/builds/release/1.1/>`_ and download the Windows installer for version 1.1. At the time of writing only the 32 bit version of the installer is available, so if you are using a JDK, you will want to download `jai_imageio-1_1-lib-windows-i586-jdk.exe <http://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-windows-i586-jdk.exe>`_, and if you are using a JRE, you will want to download `jai_imageio-1_1-lib-windows-i586-jre.exe <http://download.java.net/media/jai-imageio/builds/release/1.1/jai_imageio-1_1-lib-windows-i586-jre.exe>`_
 #. Run the installer and point it to the JDK/JRE install that GeoServer will use to run.
+
+.. note:: These installers are limited to allow adding native extensions to just one version of the JDK/JRE on your system.  If native extensions are needed on multiple versions, manually unpacking the extensions will be necessary.  See the section on :ref:`native_JAI_manual_install`.
+
+.. note:: These installers are also only able to apply the extensions to the currently used JDK/JRE.  If native extensions are needed on a different JDK/JRE than that which is currently used, it will be necessary to uninstall the current one first, then run the setup program against the remaining JDK/JRE.
 
 Installing native JAI on Linux
 ``````````````````````````````

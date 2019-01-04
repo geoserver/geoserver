@@ -13,7 +13,7 @@
     </bean>
     <bean id="gdalConfigurator" class="org.geoserver.wcs.response.GdalConfigurator">
         <constructor-arg>
-            <ref local="gdalCoverageResponseDelegate" />
+            <ref bean="gdalCoverageResponseDelegate" />
         </constructor-arg>
         <constructor-arg ref="gdalWrapperFactory" />
     </bean>

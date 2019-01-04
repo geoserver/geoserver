@@ -10,6 +10,7 @@
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
 	<constructor-arg ref="gwcRuntimeStats"/>
+    <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
   </bean>
   <bean id="gwcServiceKMLProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="targetName">

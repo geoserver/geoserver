@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeature version="2.0.0" service="WFS" handle="Filter on element test with PropertyIsNull deegree"
+    xmlns="http://www.opengis.net/wfs/2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:wfs="http://www.opengis.net/wfs/2.0"
+    xmlns:ms_gml32="http://www.measurements_gml32.org/1.0"
+    xmlns:st_gml32="http://www.stations_gml32.org/1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+    <Query typeNames="ms_gml32:Measurement_gml32">
+         <Filter xmlns="http://www.opengis.net/fes/2.0">
+              <PropertyIsEqualTo>
+                <ValueReference>Measurement_gml32/@gml:id</ValueReference>
+                <Literal>ms.1</Literal>
+              </PropertyIsEqualTo>
+          </Filter>
+    </Query>
+    <Query typeNames="st_gml32:Station_gml32">
+         <Filter xmlns="http://www.opengis.net/fes/2.0">
+              <PropertyIsEqualTo>
+                <ValueReference>Station_gml32/@gml:id</ValueReference>
+                <Literal>st.1</Literal>
+              </PropertyIsEqualTo>
+          </Filter>
+    </Query>
+ </GetFeature>

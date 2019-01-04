@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.opengis.wfs20.ParameterExpressionType;
 import net.opengis.wfs20.StoredQueryListItemType;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -65,7 +63,8 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         storedQueriesDropDown = storedQueriesDropDown();
         f.add(storedQueriesDropDown);
 
-        TextField<String> textField = new TextField<>("nativeName", new PropertyModel<>(this, "nativeName"));
+        TextField<String> textField =
+                new TextField<>("nativeName", new PropertyModel<>(this, "nativeName"));
         textField.setRequired(true);
         textField.add(new ViewNameValidator());
 
@@ -82,8 +81,8 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     @Override
-    public void populateStoredQueryParameterAttribute(String storedQueryId,
-            ParameterExpressionType pet, StoredQueryParameterAttribute attr) {
+    public void populateStoredQueryParameterAttribute(
+            String storedQueryId, ParameterExpressionType pet, StoredQueryParameterAttribute attr) {
         // We're creating a new layer, all parameters are empty by default
         attr.setMappingType(ParameterMappingType.NONE);
         attr.setValue(null);
@@ -92,15 +91,15 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     @Override
     protected void onSave() {
         // TODO: check stuff before saving
-        StoredQuery selection = (StoredQuery)storedQueriesDropDown.getDefaultModelObject();
+        StoredQuery selection = (StoredQuery) storedQueriesDropDown.getDefaultModelObject();
         StoredQueryConfiguration config =
-                createStoredQueryConfiguration(parameterProvider.getItems(),
-                selection.storedQueryId);
+                createStoredQueryConfiguration(
+                        parameterProvider.getItems(), selection.storedQueryId);
 
         try {
             DataStoreInfo dsInfo = getCatalog().getStore(storeId, DataStoreInfo.class);
             WFSDataStore directDs = getContentDataStore();
-            DataAccess<?,?> da = dsInfo.getDataStore(null);
+            DataAccess<?, ?> da = dsInfo.getDataStore(null);
 
             Name typeName = directDs.addStoredQuery(getNativeName(), config.getStoredQueryId());
 
@@ -112,10 +111,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
             LayerInfo layerInfo = builder.buildLayer(fti);
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(new ParamResourceModel("creationFailure", this, e.getMessage())
-                    .getString());
+            error(new ParamResourceModel("creationFailure", this, e.getMessage()).getString());
         }
     }
 
@@ -125,22 +123,27 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     private DropDownChoice<StoredQuery> storedQueriesDropDown() {
-        final DropDownChoice<StoredQuery> dropdown = new DropDownChoice<>("storedQueriesDropDown", new Model<>(),
-                new StoredQueryListModel(), new StoredQueryListRenderer());
+        final DropDownChoice<StoredQuery> dropdown =
+                new DropDownChoice<>(
+                        "storedQueriesDropDown",
+                        new Model<>(),
+                        new StoredQueryListModel(),
+                        new StoredQueryListRenderer());
 
         dropdown.setRequired(true);
-        dropdown.add(new AjaxFormComponentUpdatingBehavior("change") {
+        dropdown.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
 
-            /** serialVersionUID */
-            private static final long serialVersionUID = -7195159596309736905L;
+                    /** serialVersionUID */
+                    private static final long serialVersionUID = -7195159596309736905L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                StoredQuery selection = (StoredQuery)dropdown.getDefaultModelObject();
-                parameterProvider.refreshItems(selection.storedQueryId);
-                target.add(parameters);
-            }
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        StoredQuery selection = (StoredQuery) dropdown.getDefaultModelObject();
+                        parameterProvider.refreshItems(selection.storedQueryId);
+                        target.add(parameters);
+                    }
+                });
 
         return dropdown;
     }
@@ -211,16 +214,23 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
             String csqName = (String) validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
-            List<FeatureTypeInfo> ftis = getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
+            List<FeatureTypeInfo> ftis =
+                    getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
             for (FeatureTypeInfo curr : ftis) {
-                StoredQueryConfiguration config = curr.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
-                if(config != null) {
-                    if(curr.getNativeName().equals(csqName)) {
+                StoredQueryConfiguration config =
+                        curr.getMetadata()
+                                .get(
+                                        FeatureTypeInfo.STORED_QUERY_CONFIGURATION,
+                                        StoredQueryConfiguration.class);
+                if (config != null) {
+                    if (curr.getNativeName().equals(csqName)) {
                         Map<String, Object> map = new HashMap<>();
                         map.put("name", csqName);
                         map.put("dataStore", store.getName());
-                        IValidationError err = new ValidationError("duplicateSqlViewName")
-                                .addKey("duplicateSqlViewName").setVariables(map);
+                        IValidationError err =
+                                new ValidationError("duplicateSqlViewName")
+                                        .addKey("duplicateSqlViewName")
+                                        .setVariables(map);
                         validatable.error(err);
                         return;
                     }

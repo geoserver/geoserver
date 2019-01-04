@@ -5,24 +5,22 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
-
-import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
+public class IpBlacklistFilterTest {
 
     @Test
     public void testFilterIp() throws IOException, ServletException {
@@ -74,5 +72,4 @@ public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
             return serviceCalled;
         }
     }
-
 }

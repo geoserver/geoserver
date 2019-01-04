@@ -12,9 +12,6 @@
           <RasterSymbolizer>
             <Opacity>1.0</Opacity>
             <ColorMap type="interval">
-              <!-- The nodata value is at -9999, but there is a fair number of values above 50k that
-                   do not make sense either -->
-              <ColorMapEntry color="#ffffff" quantity="-9999" label="values" opacity="0"/>
               <ColorMapEntry color="#00ff00" quantity="0" opacity="0.125"/>
               <ColorMapEntry color="#00ff00" quantity="100" label="values" opacity="0.250"/>
               <ColorMapEntry color="#00ff00" quantity="200" label="values" opacity="0.375"/>

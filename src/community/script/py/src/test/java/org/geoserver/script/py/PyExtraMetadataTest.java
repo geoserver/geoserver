@@ -1,15 +1,17 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.script.py;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.script.wps.ScriptProcessFactory;
 import org.geoserver.script.wps.ScriptProcessTestSupport;
 import org.geotools.data.Parameter;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.type.Name;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 public class PyExtraMetadataTest extends ScriptProcessTestSupport {
 
@@ -41,20 +43,26 @@ public class PyExtraMetadataTest extends ScriptProcessTestSupport {
 
         checkParameter(inputs, "geom", Geometry.class, "The geometry to buffer", 1, 1);
         checkParameter(inputs, "distance", Number.class, "The buffer distance", 1, 1);
-        Parameter<?> capStyle = checkParameter(inputs, "capStyle", String.class,
-                "The style of buffer endings", 0, 1);
+        Parameter<?> capStyle =
+                checkParameter(
+                        inputs, "capStyle", String.class, "The style of buffer endings", 0, 1);
         assertEquals("round", capStyle.sample);
         List<String> options = (List<String>) capStyle.metadata.get(Parameter.OPTIONS);
         assertNotNull(options);
         assertEquals(Arrays.asList("round", "flat", "square"), options);
-        Parameter<?> quadrantSegments = checkParameter(inputs, "quadrantSegments", Integer.class,
-                "Number of segments", 0, 1);
+        Parameter<?> quadrantSegments =
+                checkParameter(
+                        inputs, "quadrantSegments", Integer.class, "Number of segments", 0, 1);
         assertEquals(8, quadrantSegments.sample);
     }
 
-    public Parameter<?> checkParameter(Map<String, Parameter<?>> parameters, String name,
+    public Parameter<?> checkParameter(
+            Map<String, Parameter<?>> parameters,
+            String name,
             Class type,
-            String description, int minOccurs, int maxOccurs) {
+            String description,
+            int minOccurs,
+            int maxOccurs) {
         assertTrue(parameters.containsKey(name));
         Parameter<?> param = parameters.get(name);
         assertTrue(type.isAssignableFrom(param.type));
@@ -63,7 +71,5 @@ public class PyExtraMetadataTest extends ScriptProcessTestSupport {
         assertEquals(maxOccurs, param.maxOccurs);
 
         return param;
-
     }
-
 }

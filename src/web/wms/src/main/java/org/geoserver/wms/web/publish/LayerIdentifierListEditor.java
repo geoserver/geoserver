@@ -8,11 +8,10 @@ package org.geoserver.wms.web.publish;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -38,7 +37,7 @@ import org.springframework.util.Assert;
 /**
  * Shows and allows editing of the list of {@link LayerIdentifierInfo} attached to a {@code WMSInfo}
  * , a {@code LayerInfo}, or a {@code LayerGroupInfo}.
- * 
+ *
  * @author groldan
  * @see WMSInfo#getIdentifiers()
  * @see LayerInfo#getIdentifiers()
@@ -80,13 +79,14 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
     /**
      * @param id
-     * @param model
-     *            the model over the appropriate cataloginfo's list of {@link LayerIdentifierInfo}
+     * @param model the model over the appropriate cataloginfo's list of {@link LayerIdentifierInfo}
      * @see WMSInfo#getIdentifiers()
      * @see LayerInfo#getIdentifiers()
      * @see LayerGroupInfo#getIdentifiers()
      */
-    public LayerIdentifierListEditor(final String id, final IModel<List<LayerIdentifierInfo>> list,
+    public LayerIdentifierListEditor(
+            final String id,
+            final IModel<List<LayerIdentifierInfo>> list,
             final AuthorityURLListEditor availableAuthoritiesProvider) {
         super(id, list);
         this.availableAuthoritiesProvider = availableAuthoritiesProvider;
@@ -116,65 +116,72 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
         table.setOutputMarkupId(true);
         container.add(table);
 
-        identifiers = new ListView<LayerIdentifierInfo>("identifiers",
-                new ArrayList<LayerIdentifierInfo>(getModelObject())) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void populateItem(final ListItem<LayerIdentifierInfo> item) {
-                // odd/even style
-                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even"
-                        : "odd"));
-
-                IModel<String> authModel = new PropertyModel<String>(item.getModel(), "authority");
-
-                IModel<List<String>> authNamesModel = new AuthListModel();
-
-                // Authority name
-                DropDownChoice<String> authorities;
-                authorities = new DropDownChoice<String>("authority", authModel,
-                        authNamesModel.getObject());
-
-                authorities.setRequired(true);
-
-                FormComponentFeedbackBorder authFeedbak = new FormComponentFeedbackBorder(
-                        "authFeedbak");
-                authFeedbak.add(authorities);
-                item.add(authFeedbak);
-
-                // Identifier
-                TextField<String> identifier;
-                identifier = new TextField<String>("identifier", new PropertyModel<String>(
-                        item.getModel(), "identifier"));
-                identifier.setRequired(true);
-
-                FormComponentFeedbackBorder idFeedbak = new FormComponentFeedbackBorder("idFeedbak");
-                idFeedbak.add(identifier);
-                item.add(idFeedbak);
-
-                // remove link
-                AjaxLink<Integer> link = new AjaxLink<Integer>("removeLink", new Model<Integer>(
-                        item.getIndex())) {
+        identifiers =
+                new ListView<LayerIdentifierInfo>(
+                        "identifiers", new ArrayList<LayerIdentifierInfo>(getModelObject())) {
 
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        List<LayerIdentifierInfo> list = new ArrayList<LayerIdentifierInfo>(
-                                identifiers.getModelObject());
-                        int index = getModelObject();
-                        list.remove(index);
-                        identifiers.setModelObject(list);
-                        updateLinksVisibility();
-                        target.add(container);
+                    protected void populateItem(final ListItem<LayerIdentifierInfo> item) {
+                        // odd/even style
+                        item.add(
+                                AttributeModifier.replace(
+                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+                        IModel<String> authModel =
+                                new PropertyModel<String>(item.getModel(), "authority");
+
+                        IModel<List<String>> authNamesModel = new AuthListModel();
+
+                        // Authority name
+                        DropDownChoice<String> authorities;
+                        authorities =
+                                new DropDownChoice<String>(
+                                        "authority", authModel, authNamesModel.getObject());
+
+                        authorities.setRequired(true);
+
+                        FormComponentFeedbackBorder authFeedbak =
+                                new FormComponentFeedbackBorder("authFeedbak");
+                        authFeedbak.add(authorities);
+                        item.add(authFeedbak);
+
+                        // Identifier
+                        TextField<String> identifier;
+                        identifier =
+                                new TextField<String>(
+                                        "identifier",
+                                        new PropertyModel<String>(item.getModel(), "identifier"));
+                        identifier.setRequired(true);
+
+                        FormComponentFeedbackBorder idFeedbak =
+                                new FormComponentFeedbackBorder("idFeedbak");
+                        idFeedbak.add(identifier);
+                        item.add(idFeedbak);
+
+                        // remove link
+                        AjaxLink<Integer> link =
+                                new AjaxLink<Integer>(
+                                        "removeLink", new Model<Integer>(item.getIndex())) {
+
+                                    private static final long serialVersionUID = 1L;
+
+                                    @Override
+                                    public void onClick(AjaxRequestTarget target) {
+                                        List<LayerIdentifierInfo> list =
+                                                new ArrayList<LayerIdentifierInfo>(
+                                                        identifiers.getModelObject());
+                                        int index = getModelObject();
+                                        list.remove(index);
+                                        identifiers.setModelObject(list);
+                                        updateLinksVisibility();
+                                        target.add(container);
+                                    }
+                                };
+                        item.add(link);
                     }
-
                 };
-                item.add(link);
-            }
-
-        };
         // this is necessary to avoid loosing item contents on edit/validation checks
         identifiers.setOutputMarkupId(true);
         identifiers.setReuseItems(true);
@@ -186,20 +193,20 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
         updateLinksVisibility();
 
         // add new identifier button
-        AjaxButton button = new AjaxButton("addIdentifier") {
-            private static final long serialVersionUID = 1L;
+        AjaxButton button =
+                new AjaxButton("addIdentifier") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                List<LayerIdentifierInfo> list = identifiers.getModelObject();
-                LayerIdentifierInfo newIdentifier = new LayerIdentifier();
-                list.add(newIdentifier);
-                identifiers.setModelObject(list);
-                updateLinksVisibility();
-                target.add(LayerIdentifierListEditor.this);
-            }
-
-        };
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        List<LayerIdentifierInfo> list = identifiers.getModelObject();
+                        LayerIdentifierInfo newIdentifier = new LayerIdentifier();
+                        list.add(newIdentifier);
+                        identifiers.setModelObject(list);
+                        updateLinksVisibility();
+                        target.add(LayerIdentifierListEditor.this);
+                    }
+                };
         add(button);
     }
 
@@ -216,11 +223,9 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
         setConvertedInput(info);
     }
 
-    /**
-     */
+    /** */
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
     }
-
 }

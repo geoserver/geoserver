@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
@@ -24,7 +23,7 @@ import org.springframework.beans.factory.DisposableBean;
 
 public class JDBCStatusStoreLoader implements DisposableBean {
     @SuppressWarnings("unused")
-    private final static Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);
+    private static final Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);
 
     private static final String JDBCSTATUS_NAME = "jdbcstatusstore.props";
     private GeoServerDataDirectory dataDir;
@@ -36,32 +35,32 @@ public class JDBCStatusStoreLoader implements DisposableBean {
 
     /**
      * Loads a new {@link JDBCDatastore} from the data directory, and
-     * 
+     *
      * @param dd
      * @throws IOException
      */
     public JDBCStatusStoreLoader(GeoServerDataDirectory dd) throws IOException {
-        // see if we have the JDBCDatastore configuration ready, otherwise create one from the classpath
+        // see if we have the JDBCDatastore configuration ready, otherwise create one from the
+        // classpath
         dataDir = dd;
         try {
             Properties params = getParameters();
-            
+
             store = DataStoreFinder.getDataStore(params);
 
         } catch (IOException e) {
             LOGGER.info("can't find or create JDBC Status store configuration file");
             LOGGER.log(Level.FINE, "no config file?", e);
         }
-
     }
 
     public Properties getParameters() throws IOException {
-        
+
         Resource resource = dataDir.get(JDBCSTATUS_NAME);
         if (resource.getType() == Type.UNDEFINED) {
             try (OutputStream os = resource.out();
-                    InputStream is = JDBCStatusStoreLoader.class
-                            .getResourceAsStream(JDBCSTATUS_NAME)) {
+                    InputStream is =
+                            JDBCStatusStoreLoader.class.getResourceAsStream(JDBCSTATUS_NAME)) {
                 IOUtils.copy(is, os);
             }
         }
@@ -72,10 +71,11 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         }
         return params;
     }
+
     public void saveParameters(Properties props) throws IOException {
         Resource resource = dataDir.get(JDBCSTATUS_NAME);
         if (resource.getType() != Type.UNDEFINED) {
-            Resource backup = dataDir.get(JDBCSTATUS_NAME+".bak");
+            Resource backup = dataDir.get(JDBCSTATUS_NAME + ".bak");
             try (OutputStream os = backup.out();
                     InputStream is = resource.in()) {
                 IOUtils.copy(is, os);
@@ -85,9 +85,10 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         }
 
         OutputStream os = resource.out();
-        props.store(os, "saved by GeoServer @"+new Date());
+        props.store(os, "saved by GeoServer @" + new Date());
         os.close();
     }
+
     @Override
     public void destroy() throws Exception {
         store.dispose();

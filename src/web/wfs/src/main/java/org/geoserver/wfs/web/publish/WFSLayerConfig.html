@@ -18,6 +18,14 @@
             <div wicket:id="maxDecimalsBorder">
               <input id="maxDecimals" class="text" wicket:id="maxDecimals" type="text"></input>
             </div>
+            <label for="padWithZeros"><wicket:message key="padWithZeros">Right-pad decimals with zeros</wicket:message></label>
+            <div wicket:id="padWithZerosBorder">
+              <input id="padWithZeros" wicket:id="padWithZeros" type="checkbox"></input>
+            </div>
+            <label for="forcedDecimal"><wicket:message key="forcedDecimal">Force decimals, don't use scientific notation</wicket:message></label>
+            <div wicket:id="forcedDecimalBorder">
+              <input id="forcedDecimal" wicket:id="forcedDecimal" type="checkbox"></input>
+            </div>
           </li>
         </ul>
       </fieldset>
@@ -55,6 +63,20 @@
         </ul>
       </fieldset>
     </li>
+      <li>
+          <fieldset>
+              <legend>
+                  <span><wicket:message key="coordinatesEncodingTitle">Coordinates Encoding</wicket:message></span>
+                  <a href="#" wicket:id="coordinatesEncodingHelp" class="help-link"></a>
+              </legend>
+              <ul class="choiceList">
+                  <li>
+                      <input id="encodeMeasures" wicket:id="encodeMeasures" type="checkbox"/>
+                      <label for="encodeMeasures"><wicket:message key="encodeMeasures">Encode coordinates measures</wicket:message></label>
+                  </li>
+              </ul>
+          </fieldset>
+      </li>
     </ul>
     <div wicket:id="wfsDialog"></div>
   </wicket:panel>

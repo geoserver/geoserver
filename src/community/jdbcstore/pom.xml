@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcstore</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.15-SNAPSHOT</version>
   <name>GeoServer JDBC Configuration Resource Store</name>
   <dependencies>
     <dependency>
@@ -38,8 +38,8 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <!-- Testing -->

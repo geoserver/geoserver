@@ -12,12 +12,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geoserver.platform.ServiceException;
@@ -35,24 +33,25 @@ import org.w3c.dom.Document;
 /**
  * Renders svg using the Batik SVG Toolkit. An SVG context is created for a map and then passed of
  * to {@link org.geotools.renderer.lite.StreamingRenderer}.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
-    
-    /** 
+
+    /**
      * Default capabilities for SVG format.
-     * 
+     *
      * <p>
+     *
      * <ol>
-     *         <li>tiled = unsupported</li>
-     *         <li>multipleValues = unsupported</li>
-     *         <li>paletteSupported = unsupported</li>
-     *         <li>transparency = supported</li>
+     *   <li>tiled = unsupported
+     *   <li>multipleValues = unsupported
+     *   <li>paletteSupported = unsupported
+     *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES= new MapProducerCapabilities(false, false, false, true, null);
+    private static MapProducerCapabilities CAPABILITIES =
+            new MapProducerCapabilities(false, false, false, true, null);
 
     private final WMS wms;
 
@@ -76,10 +75,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         return SVG.MIME_TYPE;
     }
 
-    /**
-     * 
-     * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
-     */
+    /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
     public BatikSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
 
         StreamingRenderer renderer = setUpRenderer(mapContent);
@@ -112,15 +108,17 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }
-        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+        rendererParams.put(
+                StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
                 mapContent.getRendererScaleMethod());
         renderer.setRendererHints(rendererParams);
         renderer.setMapContent(mapContent);
         return renderer;
     }
 
-    public SVGGraphics2D createSVGMap(final StreamingRenderer renderer,
-            final WMSMapContent mapContent) throws ServiceException, IOException {
+    public SVGGraphics2D createSVGMap(
+            final StreamingRenderer renderer, final WMSMapContent mapContent)
+            throws ServiceException, IOException {
         try {
             MapContent map = renderer.getMapContent();
             double width = -1;
@@ -148,11 +146,11 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
             // turn off/on anti aliasing
             if (wms.isSvgAntiAlias()) {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             } else {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
             // enforce no more than x rendering errors
@@ -166,20 +164,25 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
-            renderer.paint(g, new Rectangle(g.getSVGCanvasSize()), mapContent.getRenderingArea(),
+            renderer.paint(
+                    g,
+                    new Rectangle(g.getSVGCanvasSize()),
+                    mapContent.getRenderingArea(),
                     mapContent.getRenderingTransform());
 
             // check if too many errors occurred
             if (errorChecker.exceedsMaxErrors()) {
-                throw new ServiceException("More than " + maxErrors
-                        + " rendering errors occurred, bailing out.",
-                        errorChecker.getLastException(), "internalError");
+                throw new ServiceException(
+                        "More than " + maxErrors + " rendering errors occurred, bailing out.",
+                        errorChecker.getLastException(),
+                        "internalError");
             }
 
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
-                throw new ServiceException("Rendering process failed", renderError, "internalError");
+                throw new ServiceException(
+                        "Rendering process failed", renderError, "internalError");
             }
 
             return g;
@@ -188,8 +191,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         }
     }
 
-    private SVGGeneratorContext setupContext() throws FactoryConfigurationError,
-            ParserConfigurationException {
+    private SVGGeneratorContext setupContext()
+            throws FactoryConfigurationError, ParserConfigurationException {
         Document document = null;
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -207,5 +210,4 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }
-
 }

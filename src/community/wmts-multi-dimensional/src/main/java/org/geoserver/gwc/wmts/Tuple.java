@@ -6,9 +6,7 @@ package org.geoserver.gwc.wmts;
 
 import java.util.Objects;
 
-/**
- * Utility class for return two values.
- */
+/** Utility class for return two values. */
 public final class Tuple<T, U> {
 
     public final T first;
@@ -28,8 +26,7 @@ public final class Tuple<T, U> {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Tuple<?, ?> tuple = (Tuple<?, ?>) object;
-        return Objects.equals(first, tuple.first) &&
-                Objects.equals(second, tuple.second);
+        return Objects.equals(first, tuple.first) && Objects.equals(second, tuple.second);
     }
 
     @Override

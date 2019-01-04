@@ -9,8 +9,14 @@ function check_rc() {
   fi
 }
 
+# find marlin jar in zip file
+geoserver_zip=`find . -name "geoserver-*-bin.zip" | head -1`
+if [ ! -z "$geoserver_zip" ]; then
+  marlin_jar=`unzip -l -qq ${geoserver_zip} "*/WEB-INF/lib/marlin*.jar" | awk -F "/" '{print $NF}'`
+fi
+
 # build the app
-ant
+ant -Dmarlin_jar=${marlin_jar}
 check_rc $? "build app"
 
 APP_NAME=GeoServer.app
@@ -39,6 +45,7 @@ rm *.dmg
 # https://pypi.python.org/pypi/dmgbuild
 # note: dmgbuild does not need Finder.app or an active GUI login
 dmgbuild -s ./dmgbuild_settings.py -D app=$APP "${VOL}" "${VOL}.dmg"
+check_rc $? "generating DMG"
 
 exit 0
 

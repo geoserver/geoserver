@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.geoserver.community</groupId>
         <artifactId>gs-gdal</artifactId>
-        <version>2.11-SNAPSHOT</version>
+        <version>2.15-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
@@ -22,13 +22,6 @@
             <groupId>org.geoserver.community</groupId>
             <artifactId>gs-gdal-wcs</artifactId>
             <version>${gs.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver.community</groupId>
-            <artifactId>gs-gdal-wcs</artifactId>
-            <version>${gs.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver.extension</groupId>

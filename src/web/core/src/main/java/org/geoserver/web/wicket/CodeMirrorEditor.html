@@ -55,15 +55,9 @@
 <body>
 <wicket:panel>
   <div wicket:id="editorContainer" style="background-color: white">
-    <div wicket:id="toolbar" style="border-top: 1px solid black; padding-top: 3px">
+    <div wicket:id="toolbar" style="padding-top: 3px; padding-bottom: 3px">
       <wicket:link>
         <div class="button-group button-toolbar selfclear">
-              <!--  Sigh, does not work... oh well, commenting out for the time being and hoping
-                    a good soul might help 
-              <a class="button-fullscreen icon separator" href="#" title="View fullscreen" id="cm_fullscreen">
-                <span></span>
-              </a>
-               -->
               <a class="button-undo icon" href="#" title="Undo" id="cm_undo">
                 <span></span>
               </a>
@@ -76,15 +70,40 @@
               <a class="button-reformat icon separator" href="#" title="Reformat" id="cm_reformat">
                 <span></span>
               </a>
+              <wicket:message key="font"/>
               <select style="margin:0; position: " id="cm_font_size">
-              <option value="8">8pt</option>
-              <option value="10">10pt</option>
-              <option value="12" selected="selected">12pt</option>
-              <option value="14">14pt</option>
-              <option value="16">16pt</option>
-              <option value="18">18pt</option>
-              <option value="20">20pt</option>
-            </select>
+                <option value="8">8pt</option>
+                <option value="10">10pt</option>
+                <option value="12" selected="selected">12pt</option>
+                <option value="14">14pt</option>
+                <option value="16">16pt</option>
+                <option value="18">18pt</option>
+                <option value="20">20pt</option>
+              </select>
+              <wicket:message key="height"/>
+              <select style="margin:0; position: " id="cm_editor_heigth">
+                <option value="200">200px</option>
+                <option value="250">250px</option>
+                <option value="300" selected="selected">300px</option>
+                <option value="350">350px</option>
+                <option value="400">400px</option>
+                <option value="450">450px</option>
+                <option value="500">500px</option>
+                <option value="450">550px</option>
+                <option value="600">600px</option>
+                <option value="650">650px</option>
+                <option value="700">700px</option>
+                <option value="750">750px</option>
+                <option value="800">800px</option>
+                <option value="850">850px</option>
+                <option value="900">900px</option>
+                <option value="950">950px</option>
+                <option value="1000">1000px</option>                  
+              </select>
+
+              <a class="icon separator" wicket:id="custom-buttons">
+                <span></span>
+              </a>    
             </div>
       </wicket:link>
     </div>

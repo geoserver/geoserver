@@ -12,9 +12,8 @@ import org.apache.wicket.model.Model;
 
 /**
  * Panel for pasting.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class PanelPaste extends Panel {
 
@@ -22,25 +21,24 @@ public class PanelPaste extends Panel {
 
     public PanelPaste(String id, String source, String directory, boolean isCopy) {
         super(id);
-        
+
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("source", new Model<String>(source)).setOutputMarkupId(true));    
+        add(new TextField<String>("source", new Model<String>(source)).setOutputMarkupId(true));
         add(new WebMarkupContainer("labelMove").setVisible(!isCopy));
         add(new WebMarkupContainer("labelCopy").setVisible(isCopy));
         add(new TextField<String>("directory", new Model<String>(directory)));
     }
-    
+
     public String getDirectory() {
         return get("directory").getDefaultModelObjectAsString();
     }
-        
+
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
     }
-    
+
     @SuppressWarnings("unchecked")
     public TextField<String> getSourceField() {
         return ((TextField<String>) get("source"));
     }
-
 }

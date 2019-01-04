@@ -14,7 +14,7 @@ function get_file() {
     rm $dir/$file
   fi
   pushd $dir > /dev/null
-  wget $base_url/$file
+  wget --no-check-certificate $base_url/$file
   popd > /dev/null
 }
 
@@ -54,7 +54,14 @@ function upload_installer() {
 
   if [ -z $SKIP_UPLOAD ]; then
     echo "uploading $file"
-    scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:$DIST_PATH/$tag
+    # add an extra / to beginning of file path to overcome issue with MinGW text substitution
+    # where the :/ remote path is converted to ;z: (and connection fails to resolve hostname)
+    # http://www.mingw.org/wiki/Posix_path_conversion
+    echo "scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:/$DIST_PATH/$tag"
+    scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:/$DIST_PATH/$tag
+    # set access permissions for www
+    echo "ssh $ssh_opts -p $DIST_PORT $DIST_USER@$DIST_HOST \"chmod 0644 '$DIST_PATH/$tag/$file'\""
+    ssh $ssh_opts -p $DIST_PORT $DIST_USER@$DIST_HOST "chmod 0644 '$DIST_PATH/$tag/$file'"
   fi
 }
 

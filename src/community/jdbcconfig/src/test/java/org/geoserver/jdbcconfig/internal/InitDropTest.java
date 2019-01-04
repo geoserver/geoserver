@@ -16,13 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-/**
- *
- * @author Ian Schneider <ischneider@boundlessgeo.com>
- */
+/** @author Ian Schneider <ischneider@boundlessgeo.com> */
 @RunWith(Parameterized.class)
 public class InitDropTest {
-   JDBCConfigTestSupport.DBConfig dbConfig;
+    JDBCConfigTestSupport.DBConfig dbConfig;
 
     JDBCConfigTestSupport testSupport;
 
@@ -39,23 +36,24 @@ public class InitDropTest {
     public void assertScript(String script) throws IOException {
         Logger logger = Logger.getAnonymousLogger();
         logger.setLevel(Level.WARNING);
-        logger.addHandler(new Handler() {
-            
-                {setLevel(Level.WARNING);}
+        logger.addHandler(
+                new Handler() {
 
-            @Override
-            public void close() throws SecurityException {
-            }
+                    {
+                        setLevel(Level.WARNING);
+                    }
 
-            @Override
-            public void flush() {
-            }
+                    @Override
+                    public void close() throws SecurityException {}
 
-            @Override
-            public void publish(LogRecord lr) {
-                Assert.fail(lr.getMessage());
-            }
-        });
+                    @Override
+                    public void flush() {}
+
+                    @Override
+                    public void publish(LogRecord lr) {
+                        Assert.fail(lr.getMessage());
+                    }
+                });
         try {
             logger.warning("testing123");
             Assert.fail("test assumption failure");
@@ -71,5 +69,4 @@ public class InitDropTest {
         assertScript(dbConfig.getDropScript());
         assertScript(dbConfig.getInitScript());
     }
-
 }

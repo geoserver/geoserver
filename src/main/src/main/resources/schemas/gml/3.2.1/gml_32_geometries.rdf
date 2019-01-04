@@ -1,0 +1,368 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:geo="http://www.opengis.net/ont/geosparql#"
+    xmlns:gml="http://www.opengis.net/ont/gml#"
+  xml:base="http://www.opengis.net/ont/gml">
+  <!--
+    GeoSPARQL 1.0 is an OGC Standard.
+    Copyright (c) 2012 Open Geospatial Consortium.
+    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+    
+    Version: 1.0.1
+  -->
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.opengis.net/ont/geosparql"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Point">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AbstractGeometricPrimitive"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Point</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="AbstractGriddedSurface">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AbstractParametricCurveSurface"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Gridded Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="PolyhedralSurface">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Surface"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Polyhedral Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Arc">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ArcString"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Arc</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="PolynomialSpline">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SplineCurve"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Polynomial Spline</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiCurve">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="MultiGeometry"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Multi-Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="CompositeSurface">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Composite"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OrientableSurface"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Composite Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ArcString">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Arc String</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Cylinder">
+    <rdfs:subClassOf rdf:resource="#AbstractGriddedSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Cylinder</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Shell">
+    <rdfs:subClassOf rdf:resource="#CompositeSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Shell</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Polygon">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Surface"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Polygon</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Tin">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="TriangulatedSurface"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Triangulated Irregular Network</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#MultiGeometry">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="AbstractGeometry"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Multi-Geometry</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Bezier">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="BSpline"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Bezier</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Curve">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractGeometricPrimitive"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OrientableCurve"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#BSpline">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SplineCurve"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">BSpline</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="LineStringSegment">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Line String Segment</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Geodesic">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="GeodesicString"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Geodesic</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="AbstractSurfacePatch">
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.opengis.net/ont/geosparql#Geometry">
+        <rdfs:isDefinedBy rdf:resource=""/>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Surface Patch</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="GeometricComplex">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractGeometry"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Geometric Complex</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="ArcByBulge">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ArcStringByBulge"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Arc by Bulge</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="CircleByCenterPoint">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ArcByCenterPoint"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">CircleByCenterPoint</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiPoint">
+    <rdfs:subClassOf rdf:resource="#MultiGeometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Multi-Point</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ArcByCenterPoint">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Arc by Center Point</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OffsetCurve">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Offset Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#SplineCurve">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Spline Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Composite">
+    <rdfs:subClassOf rdf:resource="#GeometricComplex"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Composite</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="LineString">
+    <rdfs:subClassOf rdf:resource="#LineStringSegment"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Line String</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Circle">
+    <rdfs:subClassOf rdf:resource="#Arc"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Circle</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OrientableCurve">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractGeometricPrimitive"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Orientable Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OrientableSurface">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractGeometricPrimitive"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Orientable Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Clothoid">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Clothoid</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ArcStringByBulge">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Arc String by Bulge</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#TriangulatedSurface">
+    <rdfs:subClassOf rdf:resource="#PolyhedralSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Triangulated Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Triangle">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PolygonPatch"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Triangle</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="CubicSpline">
+    <rdfs:subClassOf rdf:resource="#PolynomialSpline"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Cubic Spline</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#AbstractGeometry">
+    <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Geometry</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Cone">
+    <rdfs:subClassOf rdf:resource="#AbstractGriddedSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Cone</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="CompositeSolid">
+    <rdfs:subClassOf rdf:resource="#Composite"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Solid"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Composite Solid</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#AbstractGeometricPrimitive">
+    <rdfs:subClassOf rdf:resource="#AbstractGeometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Geometric Primitive</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="LinearRing">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Ring"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Linear Ring</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#AbstractParametricCurveSurface">
+    <rdfs:subClassOf rdf:resource="#AbstractSurfacePatch"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Parametric Curve Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#GeodesicString">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#AbstractCurveSegment"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Geodesic String</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiSolid">
+    <rdfs:subClassOf rdf:resource="#MultiGeometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Multi-Solid</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Solid">
+    <rdfs:subClassOf rdf:resource="#AbstractGeometricPrimitive"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Solid</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="CompositeCurve">
+    <rdfs:subClassOf rdf:resource="#Composite"/>
+    <rdfs:subClassOf rdf:resource="#OrientableCurve"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Composite Curve</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Rectangle">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#PolygonPatch"/>
+    </rdfs:subClassOf>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Rectangle</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Sphere">
+    <rdfs:subClassOf rdf:resource="#AbstractGriddedSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Sphere</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Ring">
+    <rdfs:subClassOf rdf:resource="#CompositeCurve"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Ring</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#PolygonPatch">
+    <rdfs:subClassOf rdf:resource="#AbstractSurfacePatch"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Polygon Patch</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiSurface">
+    <rdfs:subClassOf rdf:resource="#MultiGeometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Multi-Surface</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#AbstractCurveSegment">
+    <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Abstract Curve Segment</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Surface">
+    <rdfs:subClassOf rdf:resource="#AbstractGeometricPrimitive"/>
+    <rdfs:subClassOf rdf:resource="#OrientableSurface"/>
+    <rdfs:isDefinedBy rdf:resource=""/>
+    <rdfs:label xml:lang="en">Surface</rdfs:label>
+  </owl:Class>
+  <rdf:Description rdf:about="http://www.opengis.net/ont/geosparql#Feature">
+    <rdfs:isDefinedBy rdf:resource=""/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.opengis.net/ont/geosparql#SpatialObject">
+    <rdfs:isDefinedBy rdf:resource=""/>
+  </rdf:Description>
+</rdf:RDF>

@@ -8,7 +8,6 @@ package org.geoserver.platform.exception;
 import static junit.framework.Assert.assertEquals;
 
 import java.util.Locale;
-
 import org.junit.Test;
 
 public class ExceptionLocalizeTest {
@@ -22,8 +21,8 @@ public class ExceptionLocalizeTest {
     @Test
     public void testFallback() throws Exception {
         GeoServerException e = new TestException2().id("hi");
-        //assertEquals("hello", GeoServerExceptions.localize(e));
-        //assertEquals("hello", GeoServerExceptions.localize(e, Locale.ENGLISH));
+        // assertEquals("hello", GeoServerExceptions.localize(e));
+        // assertEquals("hello", GeoServerExceptions.localize(e, Locale.ENGLISH));
         assertEquals("hello", GeoServerExceptions.localize(e, Locale.FRENCH));
     }
 
@@ -52,8 +51,7 @@ public class ExceptionLocalizeTest {
         Locale.setDefault(Locale.FRENCH);
         try {
             assertEquals("bonjour", GeoServerExceptions.localize(new TestException().id("hi")));
-        }
-        finally {
+        } finally {
             Locale.setDefault(old);
         }
     }

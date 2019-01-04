@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.gwc.web.diskquota;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -8,9 +12,9 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
- * Warns the administrator that the 
- * @author Andrea Aime - GeoSolutions
+ * Warns the administrator that the
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class DiskQuotaWarningPanel extends Panel {
 
@@ -18,11 +22,12 @@ public class DiskQuotaWarningPanel extends Panel {
 
     public DiskQuotaWarningPanel(String id) {
         super(id);
-        
+
         Exception exception = getException();
         Label label = new Label("diskQuotaError", new Model<String>());
-        if(exception != null) {
-            ParamResourceModel rm = new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
+        if (exception != null) {
+            ParamResourceModel rm =
+                    new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
             label.setDefaultModelObject(rm.getString());
         } else {
             label.setVisible(false);
@@ -31,9 +36,9 @@ public class DiskQuotaWarningPanel extends Panel {
     }
 
     static Exception getException() {
-        ConfigurableQuotaStoreProvider provider = GeoServerApplication.get().getBeanOfType(ConfigurableQuotaStoreProvider.class);
+        ConfigurableQuotaStoreProvider provider =
+                GeoServerApplication.get().getBeanOfType(ConfigurableQuotaStoreProvider.class);
         Exception exception = provider.getException();
         return exception;
     }
-
 }

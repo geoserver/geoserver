@@ -7,7 +7,6 @@ package org.geoserver.wms.style;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-
 import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.Test;
 import org.opengis.filter.expression.Function;
@@ -34,5 +33,4 @@ public class PaletteStyleHandlerTest {
         List<Exception> exceptions = handler.validate("abcde", null, null);
         assertEquals(1, exceptions.size());
     }
-
 }

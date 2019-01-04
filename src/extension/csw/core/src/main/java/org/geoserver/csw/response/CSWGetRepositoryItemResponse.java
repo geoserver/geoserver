@@ -8,7 +8,6 @@ package org.geoserver.csw.response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.GetRepositoryItemType;
@@ -20,7 +19,7 @@ import org.geoserver.platform.ServiceException;
 
 /**
  * Encodes Repository Item stream
- * 
+ *
  * @author Alessio Fabiani - GeoSolutions
  */
 public class CSWGetRepositoryItemResponse extends Response {
@@ -49,8 +48,8 @@ public class CSWGetRepositoryItemResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
 
         InputStream input = null;
         try {
@@ -66,7 +65,5 @@ public class CSWGetRepositoryItemResponse extends Response {
             IOUtils.closeQuietly(input);
             output.flush();
         }
-        
     }
-
 }

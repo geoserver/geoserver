@@ -73,7 +73,7 @@ For more information on installing and using the Findbugs plugin for Eclipse, se
 
 .. figure:: findbugs-eclipse.png
 
-    The Findbugs Eclipse perspective browsing the Geoserver Main module
+    The Findbugs Eclipse perspective browsing the GeoServer Main module
 
 Fixing Bugs from Findbugs
 -------------------------

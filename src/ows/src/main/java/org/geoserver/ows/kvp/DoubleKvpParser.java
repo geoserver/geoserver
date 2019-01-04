@@ -7,10 +7,9 @@ package org.geoserver.ows.kvp;
 
 import org.geoserver.ows.KvpParser;
 
-
 /**
  * Parses double kvp's of the form 'key=&lt;double&gt;'.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class DoubleKvpParser extends KvpParser {

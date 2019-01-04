@@ -8,7 +8,6 @@ package org.geoserver.gwc.dispatch;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -16,9 +15,8 @@ import org.geoserver.platform.ServiceException;
 /**
  * The configured GeoServer Dispatcher {@link Response} object that writes down the contents of the
  * {@link GwcOperationProxy} response produced by a {@link GwcServiceProxy}.
- * <p>
- * See the package documentation for more insights on how these all fit together.
- * 
+ *
+ * <p>See the package documentation for more insights on how these all fit together.
  */
 public class GwcResponseProxy extends Response {
 
@@ -32,7 +30,7 @@ public class GwcResponseProxy extends Response {
         String mimeType = op.getMimeType();
         return mimeType;
     }
-    
+
     @Override
     public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
         GwcOperationProxy op = (GwcOperationProxy) value;
@@ -49,20 +47,19 @@ public class GwcResponseProxy extends Response {
         }
         return headers;
     }
-    
+
     @Override
-    public void write(Object value, OutputStream output, Operation operation) throws IOException,
-            ServiceException {
+    public void write(Object value, OutputStream output, Operation operation)
+            throws IOException, ServiceException {
 
         GwcOperationProxy op = (GwcOperationProxy) value;
         byte[] contents = op.getContents();
         output.write(contents);
     }
-    
+
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         // do not override the content disposition set by GWC
         return null;
     }
-
 }

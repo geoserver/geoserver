@@ -12,15 +12,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Used to represent geometries in WKT format
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class WKTPPIO extends CDataPPIO {
@@ -45,17 +44,16 @@ public class WKTPPIO extends CDataPPIO {
         try {
             Geometry g = (Geometry) value;
             if (g instanceof LinearRing) {
-                g = g.getFactory().createLineString(((LinearRing)g).getCoordinateSequence());
+                g = g.getFactory().createLineString(((LinearRing) g).getCoordinateSequence());
             }
             new WKTWriter().write(g, w);
         } finally {
             w.flush();
         }
     }
-    
+
     @Override
     public String getFileExtension() {
         return "wkt";
     }
-
 }

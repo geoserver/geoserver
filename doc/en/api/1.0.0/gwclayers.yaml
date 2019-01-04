@@ -1,0 +1,234 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Layers
+  description: A layer is a published resource (feature type or coverage).
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /layers:
+    get:
+      operationId: layersGet
+      summary: Get a list of cached layers
+      description: Displays a list of all cached layers on the server.
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layers"
+          examples:
+            application/xml: |
+              <layers>
+                <layer>
+                  <name>opengeo:countries</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/gwc/layers/opengeo%3Acountries.xml" type="text/xml"/>
+                </layer>
+                <layer>
+                  <name>usa:states</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/gwc/layers/usa%3Astates.xml" type="text/xml"/>
+                </layer>
+              </layers>
+
+  /layers/{layerName}:
+    get:
+      operationId: layersNameGet
+      summary: Retrieve a cached layer
+      description: Retrieves a single cached layer definition.
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layer"
+          examples:
+            application/xml: |
+              <GeoServerLayer>
+                <id>LayerInfoImpl--3a33e7d0:1400d3d823c:-7fdf</id>
+                <enabled>true</enabled>
+                <inMemoryCached>true</inMemoryCached>
+                <name>opengeo:countries</name>
+                <mimeFormats>
+                  <string>image/png</string>
+                  <string>image/jpeg</string>
+                </mimeFormats>
+                <gridSubsets>
+                  <gridSubset>
+                    <gridSetName>EPSG:900913</gridSetName>
+                  </gridSubset>
+                  <gridSubset>
+                    <gridSetName>EPSG:4326</gridSetName>
+                  </gridSubset>
+                </gridSubsets>
+                <metaWidthHeight>
+                  <int>4</int>
+                  <int>4</int>
+                </metaWidthHeight>
+                <expireCache>0</expireCache>
+                <expireClients>0</expireClients>
+                <parameterFilters>
+                  <styleParameterFilter>
+                    <key>STYLES</key>
+                    <defaultValue/>
+                  </styleParameterFilter>
+                </parameterFilters>
+                <gutter>0</gutter>
+              </GeoServerLayer>
+        404:
+          description: Unknown layer
+
+    put:
+      operationId: layersNamePut
+      summary: Create or update a cached layer.
+      description: Creates a new cached layer on the server, or modifies an existing cached layer.
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to add.
+          type: string
+        - name: layerBody
+          in: body
+          description: The new layer definition.
+          required: true
+          schema:
+            $ref: "#/definitions/Layer"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The layer was successfully updated.
+        201:
+          description: The layer was successfully created.
+
+    post:
+      operationId: layersNamePost
+      summary: Modify a cached layer (Deprecated).
+      description: Modifies an existing cached layer on the server. Deprecated - use PUT instead.
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to modify.
+          type: string
+        - name: layerBody
+          in: body
+          description: The updated layer definition.
+          required: true
+          schema:
+            $ref: "#/definitions/Layer"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The layer was successfully updated.
+
+    delete:
+      operationId: layersNameDelete
+      summary: Delete cached layer
+      description: Deletes a cached layer from the server.
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to delete.
+          type: string
+      responses:
+        200:
+          description: OK
+
+definitions:
+  Layers:
+    title: layers
+    type: array
+    items:
+      $ref: "#/definitions/LayerReference"
+
+  LayerReference:
+    title: layer
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of layer
+      link:
+        type: string
+        description: URL to layer definition
+
+  Layer:
+    title: layer
+    xml:
+      name: layer
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique ID of the layer.
+      enabled:
+        type: boolean
+        description: Indicates whether tile caching is enabled for this layer.
+      inMemoryCached:
+        type: boolean
+        description: Determines if the layer is cached.
+      name:
+        type: string
+        description: The name of the layer.
+      mimeFormats:
+        type: array
+        items:
+          type: string
+        description: List of formats to be supported (ie. img/jpeg...).
+      gridSubsets:
+        type: object
+        description:  The grid definitions contain information about the SRS, the maximum extent for this SRS and the bounds of your data.
+        properties:
+          'gridSubset':
+            type: object
+            description: Contains the values for gridSetName.
+            properties:
+              'gridSetName':
+                type: string
+                description: This name must match the name of the parent gridSet exactly.
+              'extent':
+                type: object
+                description: These bounds define the subset of the extent that this grid subset covers.
+                properties:
+                  'bounds':
+                    type: number
+                    description: Coordinates used to set bounds uses double(ie. {-x,-y,x,y})
+              'zoomStart':
+                type: integer
+                description: If the the layer does not make sense at high zoom levels you can define a starting point here.
+              'zoomStop':
+                type: integer
+                description: If the layer does not contain features that make sense to show when zoomed in then you can set the stop level here.
+      metaWidthHeight:
+        type: integer
+        description: The metatiling factors used for this layer.
+      expireCache:
+        type: integer
+        description: How old the tile may be before it is refetched from the backend.
+      expireClients:
+        type: integer
+        description: The HTTP expiration header sent to client.
+      parameterFilters:
+        type: object
+        description: A list of parameter filters, meaning parameters the client may specify that GWC will forward to the backend.
+      gutter:
+        type: integer
+        description: The gutter is a buffer around the image that is sliced away when saving the tiles to disk.

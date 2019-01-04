@@ -8,7 +8,6 @@ package org.geoserver.csw.store.simple;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -22,7 +21,7 @@ import org.opengis.filter.sort.SortBy;
 
 /**
  * A feature collection reading record files from the specified directory
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
@@ -59,5 +58,4 @@ class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Fe
         MemoryFeatureCollection memory = new MemoryFeatureCollection(getSchema(), features);
         return memory.sort(order);
     }
-
 }

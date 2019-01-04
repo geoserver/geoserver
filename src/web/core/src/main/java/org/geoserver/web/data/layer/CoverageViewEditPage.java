@@ -8,7 +8,6 @@ package org.geoserver.web.data.layer;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -23,8 +22,13 @@ public class CoverageViewEditPage extends CoverageViewAbstractPage {
     /** serialVersionUID */
     private static final long serialVersionUID = -3932025430605245513L;
 
-    public CoverageViewEditPage(String workspaceName, String storeName, String coverageName,
-            CoverageInfo coverageInfo, ResourceConfigurationPage previusPage) throws IOException {
+    public CoverageViewEditPage(
+            String workspaceName,
+            String storeName,
+            String coverageName,
+            CoverageInfo coverageInfo,
+            ResourceConfigurationPage previusPage)
+            throws IOException {
         super(workspaceName, storeName, coverageName, coverageInfo);
         this.previousPage = previusPage;
         this.coverageInfo = coverageInfo;
@@ -51,7 +55,9 @@ public class CoverageViewEditPage extends CoverageViewAbstractPage {
             setResponsePage(previousPage);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
+            error(
+                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
+                            .getString());
         }
     }
 

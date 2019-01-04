@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl--27105a88:1247622085b:-7ffc</id>
+  <name>sf</name>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--27105a88:1247622085b:-7fff</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Estimated extends">false</entry>
+    <entry key="database">cite</entry>
+    <entry key="passwd">plain:cite</entry>
+    <entry key="port">5432</entry>
+    <entry key="validate connections">true</entry>
+    <entry key="wkb enabled">true</entry>
+    <entry key="namespace">http://cite.opengeospatial.org/gmlsf</entry>
+    <entry key="host">localhost</entry>
+    <entry key="dbtype">postgisng</entry>
+    <entry key="loose bbox">false</entry>
+    <entry key="user">cite</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.zip.ZipOutputStream;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
@@ -42,61 +41,53 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml.producer.FeatureTransformer;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements FormatConverter {
-    
-    /**
-     * The types of geometries a shapefile can handle
-     */
-    private static final Set<Class> SHAPEFILE_GEOM_TYPES = new HashSet<Class>() {
-        {
-            add(Point.class);
-            add(LineString.class);
-            add(LinearRing.class);
-            add(Polygon.class);
-            add(MultiPoint.class);
-            add(MultiLineString.class);
-            add(MultiPolygon.class);
-        }
-    };
 
-    /**
-     * Factory to create the ogr2ogr wrapper.
-     */
+    /** The types of geometries a shapefile can handle */
+    private static final Set<Class> SHAPEFILE_GEOM_TYPES =
+            new HashSet<Class>() {
+                {
+                    add(Point.class);
+                    add(LineString.class);
+                    add(LinearRing.class);
+                    add(Polygon.class);
+                    add(MultiPoint.class);
+                    add(MultiLineString.class);
+                    add(MultiPolygon.class);
+                }
+            };
+
+    /** Factory to create the ogr2ogr wrapper. */
     ToolWrapperFactory ogrWrapperFactory;
 
     /**
-     * The fs path to ogr2ogr. If null, we'll assume ogr2ogr is in the PATH and
-     * that we can execute it just by running ogr2ogr
+     * The fs path to ogr2ogr. If null, we'll assume ogr2ogr is in the PATH and that we can execute
+     * it just by running ogr2ogr
      */
     String ogrPath = null;
 
-    /**
-     * The full path to ogr2ogr
-     */
+    /** The full path to ogr2ogr */
     String ogrExecutable = "ogr2ogr";
-    
-    /**
-     * The environment variables to set before invoking ogr2ogr
-     */
+
+    /** The environment variables to set before invoking ogr2ogr */
     Map<String, String> environment = null;
 
     /**
-     * The output formats we can generate using ogr2ogr. Using a concurrent
-     * one so that it can be reconfigured while the output format is working
+     * The output formats we can generate using ogr2ogr. Using a concurrent one so that it can be
+     * reconfigured while the output format is working
      */
     static Map<String, Format> formats = new ConcurrentHashMap<String, Format>();
 
@@ -108,20 +99,16 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         this.environment = new HashMap<String, String>();
     }
 
-    /**
-     * Returns the ogr2ogr executable full path
-     * 
-     *
-     */
+    /** Returns the ogr2ogr executable full path */
     @Override
     public String getExecutable() {
         return ogrExecutable;
     }
 
     /**
-     * Sets the ogr2ogr executable full path. The default value is simply
-     * "ogr2ogr", which will work if ogr2ogr is in the path
-     * 
+     * Sets the ogr2ogr executable full path. The default value is simply "ogr2ogr", which will work
+     * if ogr2ogr is in the path
+     *
      * @param ogrExecutable
      */
     @Override
@@ -129,20 +116,16 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         this.ogrExecutable = ogrExecutable;
     }
 
-    /**
-     * Returns the environment variables that are set prior to invoking ogr2ogr
-     * 
-     *
-     */
+    /** Returns the environment variables that are set prior to invoking ogr2ogr */
     @Override
     public Map<String, String> getEnvironment() {
         return environment;
     }
 
     /**
-     * Provides the environment variables that are set prior to invoking ogr2ogr (notably the GDAL_DATA variable, specifying the location of
-     * GDAL's data directory).
-     * 
+     * Provides the environment variables that are set prior to invoking ogr2ogr (notably the
+     * GDAL_DATA variable, specifying the location of GDAL's data directory).
+     *
      * @param environment
      */
     @Override
@@ -153,9 +136,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         }
     }
 
-    /**
-     * @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation)
-     */
+    /** @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation) */
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
@@ -175,11 +156,11 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         }
         return mimeType;
     }
-    
+
     @Override
     public boolean canHandle(Operation operation) {
         // we can't handle anything if the ogr2ogr configuration failed
-        if(formats.size() == 0) {
+        if (formats.size() == 0) {
             return false;
         } else {
             return super.canHandle(operation);
@@ -190,40 +171,40 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     public String getPreferredDisposition(Object value, Operation operation) {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
-        
+
         Format format = formats.get(outputFormat);
         List<Query> queries = request.getQueries();
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
-        } else if(format.getType() == OutputType.BINARY || queries.size() > 1) {
+        } else if (format.getType() == OutputType.BINARY || queries.size() > 1) {
             return DISPOSITION_ATTACH;
         } else {
             return DISPOSITION_INLINE;
-        } 
+        }
     }
-    
+
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
-        
+
         Format format = formats.get(outputFormat);
         List<Query> queries = request.getQueries();
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
         } else {
             String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
-            if(!format.isSingleFile() || queries.size() > 1) {
+            if (!format.isSingleFile() || queries.size() > 1) {
                 return outputFileName + ".zip";
             } else {
                 return outputFileName + format.getFileExtension();
             }
-        } 
+        }
     }
-    
+
     /**
      * Adds a ogr format among the supported ones
-     * 
+     *
      * @param parameters
      */
     @Override
@@ -231,11 +212,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         formats.put(parameters.getGeoserverFormat(), parameters);
     }
 
-    /**
-     * Get a list of supported ogr formats
-     *
-     *
-     */
+    /** Get a list of supported ogr formats */
     @Override
     public List<Format> getFormats() {
         return new ArrayList<Format>(formats.values());
@@ -249,27 +226,26 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     @Override
     public void replaceFormats(List<Format> newFormats) {
         clearFormats();
-        for (Format newFormat: newFormats) {
+        for (Format newFormat : newFormats) {
             addFormat(newFormat);
         }
     }
 
     /**
-     * Writes out the data to an OGR known format (GML/shapefile) to disk and
-     * then ogr2ogr each generated file into the destination format. Finally,
-     * zips up all the resulting files.
+     * Writes out the data to an OGR known format (GML/shapefile) to disk and then ogr2ogr each
+     * generated file into the destination format. Finally, zips up all the resulting files.
      */
     @Override
-    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, 
-        Operation getFeature) throws IOException ,ServiceException {
+    protected void write(
+            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+            throws IOException, ServiceException {
 
         // figure out which output format we're going to generate
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
 
         Format format = formats.get(outputFormat);
-        if (format == null)
-            throw new WFSException("Unknown output format " + outputFormat);
+        if (format == null) throw new WFSException("Unknown output format " + outputFormat);
 
         // create the first temp directory, used for dumping gs generated
         // content
@@ -286,29 +262,29 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
             File outputFile = null;
             while (outputFeatureCollections.hasNext()) {
-                curCollection = (SimpleFeatureCollection) outputFeatureCollections
-                        .next();
-                
+                curCollection = (SimpleFeatureCollection) outputFeatureCollections.next();
+
                 // write out the gml
                 File intermediate = writeToDisk(tempGS, curCollection);
 
                 // convert with ogr2ogr
                 final SimpleFeatureType schema = curCollection.getSchema();
                 final CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
-                outputFile = wrapper.convert(intermediate, tempOGR, schema.getTypeName(), format, crs);
+                outputFile =
+                        wrapper.convert(intermediate, tempOGR, schema.getTypeName(), format, crs);
 
                 // wipe out the input dir contents
                 IOUtils.emptyDirectory(tempGS);
             }
-            
+
             // was is a single file output?
-            if(format.isSingleFile() && featureCollection.getFeature().size() == 1) {
+            if (format.isSingleFile() && featureCollection.getFeature().size() == 1) {
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(outputFile);
                     org.apache.commons.io.IOUtils.copy(fis, output);
                 } finally {
-                    if(fis != null) {
+                    if (fis != null) {
                         fis.close();
                     }
                 }
@@ -331,27 +307,26 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
             throw new ServiceException("Exception occurred during output generation", e);
         }
     }
-    
+
     /**
      * Writes to disk using shapefile if the feature type allows for it, GML otherwise
+     *
      * @param tempDir
      * @param curCollection
-     *
      */
-    private File writeToDisk(File tempDir,
-            SimpleFeatureCollection curCollection) throws Exception {
+    private File writeToDisk(File tempDir, SimpleFeatureCollection curCollection) throws Exception {
         // ogr2ogr cannot handle empty gml collections, but it can handle empty
         // shapefiles
         final SimpleFeatureType originalSchema = curCollection.getSchema();
-        if(curCollection.isEmpty()) {
-            if(isShapefileCompatible(originalSchema)) {
+        if (curCollection.isEmpty()) {
+            if (isShapefileCompatible(originalSchema)) {
                 return writeShapefile(tempDir, curCollection);
             } else {
                 SimpleFeatureType simplifiedShema = buildShapefileCompatible(originalSchema);
                 return writeShapefile(tempDir, new EmptyFeatureCollection(simplifiedShema));
             }
         }
-        
+
         // create the temp file for this output
         File outFile = new File(tempDir, originalSchema.getTypeName() + ".gml");
 
@@ -363,8 +338,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
             // let's invoke the transformer
             FeatureTransformer ft = new FeatureTransformer();
             ft.setNumDecimals(16);
-            ft.getFeatureNamespaces().declarePrefix("gs",
-                    originalSchema.getName().getNamespaceURI());
+            ft.getFeatureNamespaces()
+                    .declarePrefix("gs", originalSchema.getName().getNamespaceURI());
             ft.transform(curCollection, os);
         } finally {
             os.close();
@@ -372,7 +347,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
         return outFile;
     }
-    
+
     private SimpleFeatureType buildShapefileCompatible(SimpleFeatureType originalSchema) {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName(originalSchema.getName());
@@ -380,7 +355,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         tb.add("the_geom", Point.class, originalSchema.getCoordinateReferenceSystem());
         // preserve all othr attributes
         for (AttributeDescriptor at : originalSchema.getAttributeDescriptors()) {
-            if(!(at instanceof GeometryDescriptor)) {
+            if (!(at instanceof GeometryDescriptor)) {
                 tb.add(at);
             }
         }
@@ -389,26 +364,24 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
     /**
      * Returns true if the schema has just one geometry and the geom type is known
-     * @param schema
      *
+     * @param schema
      */
     private boolean isShapefileCompatible(SimpleFeatureType schema) {
         GeometryType gt = null;
         for (AttributeDescriptor at : schema.getAttributeDescriptors()) {
-            if(at instanceof GeometryDescriptor) {
-                if(gt == null)
-                    gt = ((GeometryDescriptor) at).getType();
+            if (at instanceof GeometryDescriptor) {
+                if (gt == null) gt = ((GeometryDescriptor) at).getType();
                 else
-                    // more than one geometry 
+                    // more than one geometry
                     return false;
             }
-        } 
-        
-        return gt != null && SHAPEFILE_GEOM_TYPES.contains(gt.getBinding()); 
+        }
+
+        return gt != null && SHAPEFILE_GEOM_TYPES.contains(gt.getBinding());
     }
-    
-    private File writeShapefile(File tempDir,
-            SimpleFeatureCollection collection) {
+
+    private File writeShapefile(File tempDir, SimpleFeatureCollection collection) {
         SimpleFeatureType schema = collection.getSchema();
 
         SimpleFeatureStore fstore = null;
@@ -418,25 +391,26 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
             file = new File(tempDir, schema.getTypeName() + ".shp");
             dstore = new ShapefileDataStore(file.toURL());
             dstore.createSchema(schema);
-            
+
             fstore = (SimpleFeatureStore) dstore.getFeatureSource(schema.getTypeName());
             fstore.addFeatures(collection);
         } catch (IOException ioe) {
-            LOGGER.log(Level.WARNING,
-                "Error while writing featuretype '" + schema.getTypeName() + "' to shapefile.", ioe);
+            LOGGER.log(
+                    Level.WARNING,
+                    "Error while writing featuretype '" + schema.getTypeName() + "' to shapefile.",
+                    ioe);
             throw new ServiceException(ioe);
         } finally {
-            if(dstore != null) {
+            if (dstore != null) {
                 dstore.dispose();
             }
         }
-        
-        return file; 
+
+        return file;
     }
-    
+
     @Override
     public List<String> getCapabilitiesElementNames() {
         return getAllCapabilitiesElementNames();
     }
-
 }

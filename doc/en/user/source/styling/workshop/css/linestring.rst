@@ -17,7 +17,7 @@ Review of line symbology:
 
 * SLD uses a **LineSymbolizer** record how the shape of a line is drawn. The primary characteristic documented is the **Stroke** used to draw each segment between vertices.
 
-* Labeling of line work is anchored to the mid-point of the line. GeoServer provides a vendor option to allow label rotation aligned with line segments.
+* Labeling of line work is anchored to the mid-point of the line. GeoServer provides an option to allow label rotation aligned with line segments.
 
 For our exercises we are going to be using simple CSS documents, often consisting of a single rule, in order to focus on the properties used for line symbology.
 
@@ -252,11 +252,9 @@ How Labeling Works
 
 The rendering engine collects all the generated labels during the rendering of each layer. Then, during labeling, the engine sorts through the labels performing collision avoidance (to prevent labels overlapping). Finally the rendering engine draws the labels on top of the map. Even with collision avoidance you can spot areas where labels are so closely spaced that the result is hard to read.
 
-The parameters provided by SLD are general purpose and should be compatible with any rendering engine.
+To take greater control over the GeoServer rendering engine we can use extra parameters. 
 
-To take greater control over the GeoServer rendering engine we can use "vendor specific" parameters. These hints are used specifically for the GeoServer rendering engine and will be ignored by other systems. The GeoServer rendering engine marks each vendor specific parameter with the prefix **-gt-**.
-
-#. The ability to take control of the labeling process is exactly the kind of hint a vendor specific parameter is intended for.
+#. The ability to take control of the labeling process is exactly the kind of hint a extra parameter is intended for.
     
    Update ``line_example`` with the following:
 
@@ -267,10 +265,10 @@ To take greater control over the GeoServer rendering engine we can use "vendor s
         label: [name];
         font-fill: black;
         label-offset: 7px;
-        -gt-label-padding: 10;
+        label-padding: 10;
       }
 
-#. The parameter **-gt-label-padding** provides additional space around our label for use in collision avoidance.
+#. The parameter **label-padding** provides additional space around our label for use in collision avoidance.
 
    .. code-block:: css
       :emphasize-lines: 6
@@ -280,7 +278,7 @@ To take greater control over the GeoServer rendering engine we can use "vendor s
         label: [name];
         font-fill: black;
         label-offset: 7px;
-        -gt-label-padding: 10;
+        label-padding: 10;
       }
 
 #. Each label is now separated from its neighbor, improving legibility.
@@ -384,21 +382,21 @@ In a classroom setting please divide the challenges between teams (this allows u
  
       The use of selectors using the roads **type** attribute provides this opportunity.
 
-Explore Vendor Option Follow Line
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Explore Follow Line Option
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
+Options can be used to enable some quite useful effects, while still providing a style that can be used by other applications.
 
 #. Update `line_example` with the following:
 
    .. code-block:: css
 
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
-        -gt-label-follow-line: true;
+        label-follow-line: true;
       }
 
 #. The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label. 
@@ -407,11 +405,11 @@ Vendor options can be used to enable some quite spectacular effects, while still
       :emphasize-lines: 3
    
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
-        -gt-label-follow-line: true;
+        label-follow-line: true;
       }
 
 #. The **label** property combines combine several CQL expressions together for a longer label.
@@ -420,11 +418,11 @@ Vendor options can be used to enable some quite spectacular effects, while still
       :emphasize-lines: 4
 
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
-        -gt-label-follow-line: true;
+        label-follow-line: true;
       }
 
    The combined **label** property::
@@ -435,17 +433,17 @@ Vendor options can be used to enable some quite spectacular effects, while still
 
       [Concatenate(level,' #', name)] 
 
-#. The property **-gt-label-follow-line** provides the ability of have a label exactly follow a LineString character by character.
+#. The property **label-follow-line** provides the ability of have a label exactly follow a LineString character by character.
 
    .. code-block:: css
       :emphasize-lines: 6
    
       * {
-        stroke: ededff;
+        stroke: #ededff;
         stroke-width: 10;
         label: [level] " " [name];
         font-fill: black;
-        -gt-label-follow-line: true;
+        label-follow-line: true;
       }
 
 #. The result is a new appearance for our roads.

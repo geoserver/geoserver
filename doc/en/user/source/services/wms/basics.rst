@@ -47,7 +47,7 @@ be reversed for ``SRS`` values which are geographic coordinate systems.
 
 For example, consider the WMS 1.1 request using the WGS84 SRS (EPSG:4326):: 
 
-   geoserver/wms?VERSION=1.1.1&REQUEST=GetMap&SRS=epsg:4326&BBOX=-180,-90.180,90&...
+   geoserver/wms?VERSION=1.1.1&REQUEST=GetMap&SRS=epsg:4326&BBOX=-180,-90,180,90&...
 
 The equivalent WMS 1.3.0 request is::
 

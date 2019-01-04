@@ -7,7 +7,6 @@ package org.geoserver.script.py;
 
 import java.util.HashMap;
 import java.util.Properties;
-
 import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.app.AppHook;
@@ -27,9 +26,8 @@ import org.python.util.PythonInterpreter;
 
 /**
  * Python script plugin.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class PythonPlugin extends ScriptPlugin {
 
@@ -39,32 +37,34 @@ public class PythonPlugin extends ScriptPlugin {
 
     @Override
     public void init(ScriptManager scriptMgr) throws Exception {
-        //add lib to python.path
+        // add lib to python.path
         Properties props = new Properties();
         props.put("python.path", scriptMgr.script("lib/" + "py").dir().getAbsolutePath());
         PythonInterpreter.initialize(null, props, null);
 
-//        codecs.register(new PyObject() {
-//            @Override
-//            public PyObject __call__(PyObject arg0) {
-//                if ("idna".equals(arg0.toString())) {
-//                    return new PyTuple(
-//                        new PyObject() {
-//                            public PyObject __call__(PyObject v) {
-//                                return new PyTuple(new PyString(IDN.toUnicode(v.toString())), new PyInteger(0));
-//                            }
-//                        }, 
-//                        new PyObject() {
-//                            public PyObject __call__(PyObject v) {
-//                                return new PyTuple(new PyString(IDN.toASCII(v.toString())), new PyInteger(0));
-//                            }
-//                        }
-//                    );
-//                }
-//                return Py.None;
-//            }
-//        });
-        
+        //        codecs.register(new PyObject() {
+        //            @Override
+        //            public PyObject __call__(PyObject arg0) {
+        //                if ("idna".equals(arg0.toString())) {
+        //                    return new PyTuple(
+        //                        new PyObject() {
+        //                            public PyObject __call__(PyObject v) {
+        //                                return new PyTuple(new
+        // PyString(IDN.toUnicode(v.toString())), new PyInteger(0));
+        //                            }
+        //                        },
+        //                        new PyObject() {
+        //                            public PyObject __call__(PyObject v) {
+        //                                return new PyTuple(new
+        // PyString(IDN.toASCII(v.toString())), new PyInteger(0));
+        //                            }
+        //                        }
+        //                    );
+        //                }
+        //                return Py.None;
+        //            }
+        //        });
+
     }
 
     @Override
@@ -93,15 +93,16 @@ public class PythonPlugin extends ScriptPlugin {
     }
 
     static HashMap<Class<? extends PyObject>, Class> pyToJava = new HashMap();
+
     static {
         pyToJava.put(PyString.class, String.class);
         pyToJava.put(PyInteger.class, Integer.class);
         pyToJava.put(PyLong.class, Long.class);
         pyToJava.put(PyFloat.class, Double.class);
         pyToJava.put(PyBoolean.class, Boolean.class);
-        //pyToJava.put(PyFile.class, File.class);
+        // pyToJava.put(PyFile.class, File.class);
     }
-    
+
     public static Class toJavaClass(PyType type) {
         Class clazz = null;
         try {
@@ -109,9 +110,9 @@ public class PythonPlugin extends ScriptPlugin {
             if (o != null && o instanceof Class) {
                 clazz = (Class) o;
             }
+        } catch (PyException e) {
         }
-        catch(PyException e) {}
-        
+
         if (clazz != null && PyObject.class.isAssignableFrom(clazz)) {
             try {
                 PyObject pyobj = (PyObject) clazz.newInstance();
@@ -119,26 +120,25 @@ public class PythonPlugin extends ScriptPlugin {
                 if (obj != null) {
                     clazz = obj.getClass();
                 }
+            } catch (Exception e) {
             }
-            catch(Exception e) {}
         }
-        
+
         if (clazz != null && PyObject.class.isAssignableFrom(clazz)) {
             Class jclass = pyToJava.get(clazz);
             if (jclass != null) {
                 clazz = jclass;
             }
         }
-        
+
         if (clazz != null && clazz.getName().startsWith("org.python.proxies")) {
-            //get base type
+            // get base type
             PyType base = (PyType) type.getBase();
             Class c = toJavaClass(base);
             if (c != null) {
                 clazz = c;
             }
         }
-         return clazz;
+        return clazz;
     }
-
 }

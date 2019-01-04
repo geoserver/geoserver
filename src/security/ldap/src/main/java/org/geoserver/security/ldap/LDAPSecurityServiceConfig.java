@@ -7,31 +7,27 @@ package org.geoserver.security.ldap;
 
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
-public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig 
-    implements SecurityAuthProviderConfig {
+public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
+        implements SecurityAuthProviderConfig {
 
     private static final long serialVersionUID = 6093735229286602599L;
 
     // extract user data using a distinguished name
     String userDnPattern;
-    
-    String userGroupServiceName;
-    
-    
-     
-    // format username before doing authentication using the given format
-    String userFormat; 
 
-    public LDAPSecurityServiceConfig() {
-    }
+    String userGroupServiceName;
+
+    // format username before doing authentication using the given format
+    String userFormat;
+
+    public LDAPSecurityServiceConfig() {}
 
     public LDAPSecurityServiceConfig(LDAPSecurityServiceConfig other) {
-        super(other);        
-        userDnPattern = other.getUserDnPattern();        
-        userGroupServiceName = other.getUserGroupServiceName();        
+        super(other);
+        userDnPattern = other.getUserDnPattern();
+        userGroupServiceName = other.getUserGroupServiceName();
         userFormat = other.getUserFormat();
     }
-    
 
     public String getUserFormat() {
         return userFormat;
@@ -41,15 +37,13 @@ public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
         this.userFormat = userFormat;
     }
 
-    
-
     public String getUserDnPattern() {
         return userDnPattern;
     }
+
     public void setUserDnPattern(String userDnPattern) {
         this.userDnPattern = userDnPattern;
     }
-
 
     @Override
     public String getUserGroupServiceName() {
@@ -60,6 +54,4 @@ public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }
-
-
 }

@@ -17,7 +17,7 @@ public class NetCDFOutInitializer implements GeoServerInitializer {
         // Add a new Element to the metadata map
         GeoServerInfo global = geoServer.getGlobal();
         MetadataMap metadata = global.getSettings().getMetadata();
-        if(!metadata.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)){
+        if (!metadata.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
             metadata.put(NetCDFSettingsContainer.NETCDFOUT_KEY, new NetCDFSettingsContainer());
             geoServer.save(global);
         }

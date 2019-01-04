@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Authorizer that allows allows access.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class AllowComponentAuthorizer implements ComponentAuthorizer {
@@ -17,5 +17,4 @@ public class AllowComponentAuthorizer implements ComponentAuthorizer {
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         return true;
     }
-
 }

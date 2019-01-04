@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
@@ -24,77 +23,74 @@ import org.apache.wicket.model.ResourceModel;
 
 public class PaletteFormComponent<T> extends FormComponentPanel {
 
-    /**
-     * the palette
-     */
+    /** the palette */
     protected Palette<T> palette;
 
-    /**
-     * list of behaviors to add, staged before the palette recorder component is created
-     */
+    /** list of behaviors to add, staged before the palette recorder component is created */
     List<Behavior> toAdd = new ArrayList<>();
 
-    public PaletteFormComponent(String id, IModel<List<T>> model, IModel<Collection<T>> choicesModel, 
+    public PaletteFormComponent(
+            String id,
+            IModel<List<T>> model,
+            IModel<Collection<T>> choicesModel,
             ChoiceRenderer<T> renderer) {
         super(id, new Model());
 
-        add(palette = new Palette<T>("palette", model, choicesModel, renderer, 10, false) {
-            @Override
-            protected Recorder<T> newRecorderComponent() {
-                Recorder<T> rec = super.newRecorderComponent();
+        add(
+                palette =
+                        new Palette<T>("palette", model, choicesModel, renderer, 10, false) {
+                            @Override
+                            protected Recorder<T> newRecorderComponent() {
+                                Recorder<T> rec = super.newRecorderComponent();
 
-                //add any behaviors that need to be added
-                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
-                toAdd.clear();
-                return rec;
-            }
-            
-            /**
-             * Override otherwise the header is not i18n'ized
-             */
-            @Override
-            public Component newSelectedHeader(final String componentId) {
-                
-                return new Label(componentId, new ResourceModel(getSelectedHeaderPropertyKey()));
-            }
+                                // add any behaviors that need to be added
+                                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
+                                toAdd.clear();
+                                return rec;
+                            }
 
-            /**
-             * Override otherwise the header is not i18n'ized
-             */
-            @Override
-            public Component newAvailableHeader(final String componentId) {
-                return new Label(componentId, new ResourceModel(
-                        getAvaliableHeaderPropertyKey()));
-            }
-        });
+                            /** Override otherwise the header is not i18n'ized */
+                            @Override
+                            public Component newSelectedHeader(final String componentId) {
+
+                                return new Label(
+                                        componentId,
+                                        new ResourceModel(getSelectedHeaderPropertyKey()));
+                            }
+
+                            /** Override otherwise the header is not i18n'ized */
+                            @Override
+                            public Component newAvailableHeader(final String componentId) {
+                                return new Label(
+                                        componentId,
+                                        new ResourceModel(getAvaliableHeaderPropertyKey()));
+                            }
+                        });
         palette.add(new DefaultTheme());
         palette.setOutputMarkupId(true);
     }
 
     /**
-     * @return the default key, subclasses may override, if "Selected" is not
-     *         illustrative enough
+     * @return the default key, subclasses may override, if "Selected" is not illustrative enough
      */
     protected String getSelectedHeaderPropertyKey() {
         return "PaletteFormComponent.selectedHeader";
     }
 
     /**
-     * @return the default key, subclasses may override, if "Available" is not
-     *         illustrative enough
+     * @return the default key, subclasses may override, if "Available" is not illustrative enough
      */
     protected String getAvaliableHeaderPropertyKey() {
         return "PaletteFormComponent.availableHeader";
     }
-    
+
     @Override
     public Component add(Behavior... behaviors) {
         if (palette.getRecorderComponent() == null) {
-            //stage for them for later
+            // stage for them for later
             toAdd.addAll(Arrays.asList(behaviors));
-        }
-        else {
-            //add them now
+        } else {
+            // add them now
             palette.getRecorderComponent().add(behaviors);
         }
         return this;

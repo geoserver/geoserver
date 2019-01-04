@@ -316,3 +316,37 @@ By default, GeoServer conceals the existence of database columns with a primary 
 
 This is known to work with PostGIS, Oracle, and JNDI data stores.
 
+MongoDB
+-------
+
+The data store configuration for a MongoDB data base will look like this:  
+
+.. code-block:: xml 
+
+    <sourceDataStores>
+        <DataStore>
+            <id>data_source</id>
+            <parameters>
+                <Parameter>
+                    <name>data_store</name>
+                    <value>MONGO_DB_URL</value>
+                </Parameter>
+                <Parameter>
+                    <name>namespace</name>
+                    <value>NAME_SPACE</value>
+                </Parameter>
+                <Parameter>
+                    <name>schema_store</name>
+                    <value>SCHEMA_STORE</value>
+                </Parameter>
+                <Parameter>
+                    <name>data_store_type</name>
+                    <value>complex</value>
+                </Parameter>
+            </parameters>
+        </DataStore>
+    </sourceDataStores>
+
+Check :ref:`mongo_tutorial` for a more detailed description about how to use MongoDB with app-schema.
+
+.. note:: You must install the MongoDB plugin to connect to MongoDB databases.

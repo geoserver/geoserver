@@ -8,7 +8,6 @@ package org.geoserver.wps.security;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -71,47 +70,47 @@ public abstract class AbstractWPSAccessTest extends WPSTestSupport {
         gs.save(wps);
     }
 
-    /**
-     * Enable the Spring Security auth filters
-     */
+    /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
-                .bean("filterChainProxy"));
+        return Collections.singletonList(
+                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     protected abstract CatalogMode getMode();
 
-    protected static final String executeRequestXml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-            + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-            + "<ows:Identifier>JTS:buffer</ows:Identifier>"
-            + "<wps:DataInputs>"
-            + "<wps:Input>"
-            + "<ows:Identifier>distance</ows:Identifier>"
-            + "<wps:Data>"
-            + "<wps:LiteralData>1</wps:LiteralData>"
-            + "</wps:Data>"
-            + "</wps:Input>"
-            + "<wps:Input>"
-            + "<ows:Identifier>geom</ows:Identifier>"
-            + "<wps:Data>"
-            + "<wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">"
-            + "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>"
-            + "<gml:exterior>"
-            + "<gml:LinearRing>"
-            + "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>"
-            + "</gml:LinearRing>"
-            + "</gml:exterior>"
-            + "</gml:Polygon>"
-            + "</wps:ComplexData>"
-            + "</wps:Data>"
-            + "</wps:Input>"
-            + "</wps:DataInputs>"
-            + "<wps:ResponseForm>"
-            + "<wps:ResponseDocument storeExecuteResponse='false'>"
-            + "<wps:Output>"
-            + "<ows:Identifier>result</ows:Identifier>"
-            + "</wps:Output>"
-            + "</wps:ResponseDocument>" + "</wps:ResponseForm>" + "</wps:Execute>";
-
+    protected static final String executeRequestXml =
+            "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                    + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                    + "<ows:Identifier>JTS:buffer</ows:Identifier>"
+                    + "<wps:DataInputs>"
+                    + "<wps:Input>"
+                    + "<ows:Identifier>distance</ows:Identifier>"
+                    + "<wps:Data>"
+                    + "<wps:LiteralData>1</wps:LiteralData>"
+                    + "</wps:Data>"
+                    + "</wps:Input>"
+                    + "<wps:Input>"
+                    + "<ows:Identifier>geom</ows:Identifier>"
+                    + "<wps:Data>"
+                    + "<wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">"
+                    + "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'>"
+                    + "<gml:exterior>"
+                    + "<gml:LinearRing>"
+                    + "<gml:coordinates>1 1 2 1 2 2 1 2 1 1</gml:coordinates>"
+                    + "</gml:LinearRing>"
+                    + "</gml:exterior>"
+                    + "</gml:Polygon>"
+                    + "</wps:ComplexData>"
+                    + "</wps:Data>"
+                    + "</wps:Input>"
+                    + "</wps:DataInputs>"
+                    + "<wps:ResponseForm>"
+                    + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                    + "<wps:Output>"
+                    + "<ows:Identifier>result</ows:Identifier>"
+                    + "</wps:Output>"
+                    + "</wps:ResponseDocument>"
+                    + "</wps:ResponseForm>"
+                    + "</wps:Execute>";
 }

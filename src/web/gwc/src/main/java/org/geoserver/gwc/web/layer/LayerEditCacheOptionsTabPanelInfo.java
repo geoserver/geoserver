@@ -20,8 +20,7 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
 
     @Override
     public GeoServerTileLayerInfoModel createOwnModel(
-            final IModel<? extends PublishedInfo> layerModel,
-            final boolean isNew) {
+            final IModel<? extends PublishedInfo> layerModel, final boolean isNew) {
 
         PublishedInfo layerInfo = layerModel.getObject();
         GeoServerTileLayerInfo tileLayerInfo;
@@ -44,11 +43,11 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
         }
 
         tileLayerInfo.setEnabled(true);
-        final boolean initWithTileLayer = (isNew && defaultSettings.isCacheLayersByDefault())
-                || tileLayer != null;
+        final boolean initWithTileLayer =
+                (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
 
         if (!initWithTileLayer) {
-            tileLayerInfo.setId(null);// indicate not to create the tile layer
+            tileLayerInfo.setId(null); // indicate not to create the tile layer
         }
 
         return new GeoServerTileLayerInfoModel(tileLayerInfo, isNew);

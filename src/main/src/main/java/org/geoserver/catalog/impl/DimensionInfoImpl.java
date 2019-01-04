@@ -6,7 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.math.BigDecimal;
-
+import java.util.Objects;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -14,9 +14,8 @@ import org.geoserver.catalog.DimensionPresentation;
 /**
  * Configuration about a dimension, such as time or elevation (theoretically could be a custom one
  * too)
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DimensionInfoImpl implements DimensionInfo {
 
@@ -26,31 +25,34 @@ public class DimensionInfoImpl implements DimensionInfo {
     boolean enabled;
 
     String attribute;
-    
+
     String endAttribute;
 
     DimensionPresentation presentation;
 
     BigDecimal resolution;
-    
+
     String units;
-    
+
     String unitSymbol;
 
     DimensionDefaultValueSetting defaultValue;
-    
-    /**
-     * The default constructor
-     */
-    public DimensionInfoImpl(){
+
+    Boolean nearestMatchEnabled;
+
+    String acceptableInterval;
+
+    /** The default constructor */
+    public DimensionInfoImpl() {
         super();
     }
-    
+
     /**
      * Creates a shallow copy of the given Dimension object
+     *
      * @param info
      */
-    public DimensionInfoImpl(DimensionInfo info){
+    public DimensionInfoImpl(DimensionInfo info) {
         super();
         this.enabled = info.isEnabled();
         this.attribute = info.getAttribute();
@@ -62,7 +64,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         this.defaultValue = info.getDefaultValue();
         this.enabled = info.isEnabled();
     }
-    
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -78,7 +80,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
-        
+
     public String getEndAttribute() {
         return this.endAttribute;
     }
@@ -102,7 +104,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setResolution(BigDecimal resolution) {
         this.resolution = resolution;
     }
-    
+
     public String getUnits() {
         return units;
     }
@@ -118,7 +120,26 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setUnitSymbol(String unitSymbol) {
         this.unitSymbol = unitSymbol;
     }
-    
+
+    public boolean isNearestMatchEnabled() {
+        // for backwards compatiblity we allow nearest search to be null
+        return nearestMatchEnabled == null ? false : nearestMatchEnabled;
+    }
+
+    public void setNearestMatchEnabled(boolean nearestMatchEnabled) {
+        this.nearestMatchEnabled = nearestMatchEnabled;
+    }
+
+    @Override
+    public String getAcceptableInterval() {
+        return acceptableInterval;
+    }
+
+    @Override
+    public void setAcceptableInterval(String searchRange) {
+        this.acceptableInterval = searchRange;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -128,7 +149,10 @@ public class DimensionInfoImpl implements DimensionInfo {
         sb.append(", units=").append(units);
         sb.append(", unitSymbol=").append(unitSymbol);
         sb.append(", presentation=").append(presentation);
-        sb.append(", resolution=").append(resolution).append("]");
+        sb.append(", resolution=").append(resolution);
+        sb.append(", nearest=").append(nearestMatchEnabled);
+        sb.append(", acceptableInterval=").append(acceptableInterval);
+        sb.append("]");
         return sb.toString();
     }
 
@@ -143,51 +167,26 @@ public class DimensionInfoImpl implements DimensionInfo {
         result = prime * result + ((unitSymbol == null) ? 0 : unitSymbol.hashCode());
         result = prime * result + ((presentation == null) ? 0 : presentation.hashCode());
         result = prime * result + ((resolution == null) ? 0 : resolution.hashCode());
+        result = prime * result + ((nearestMatchEnabled == null) ? 0 : resolution.hashCode());
+        result = prime * result + ((acceptableInterval == null) ? 0 : resolution.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DimensionInfoImpl other = (DimensionInfoImpl) obj;
-        if (attribute == null) {
-            if (other.attribute != null)
-                return false;
-        } else if (!attribute.equals(other.attribute))
-            return false;
-        if (units == null) {
-            if (other.units != null)
-                return false;
-        } else if (!units.equals(other.units))
-            return false;
-        if (unitSymbol == null) {
-            if (other.unitSymbol != null)
-                return false;
-        } else if (!unitSymbol.equals(other.unitSymbol))
-            return false;
-        if (enabled != other.enabled)
-            return false;
-        if (presentation == null) {
-            if (other.presentation != null)
-                return false;
-        } else if (!presentation.equals(other.presentation))
-            return false;
-        if (resolution == null) {
-            if (other.resolution != null)
-                return false;
-        } else if (!resolution.equals(other.resolution))
-            return false;
-        if (endAttribute == null) {
-            if (other.endAttribute != null)
-                return false;
-        } else if (!endAttribute.equals(other.endAttribute))
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DimensionInfoImpl that = (DimensionInfoImpl) o;
+        return enabled == that.enabled
+                && Objects.equals(attribute, that.attribute)
+                && Objects.equals(endAttribute, that.endAttribute)
+                && presentation == that.presentation
+                && Objects.equals(resolution, that.resolution)
+                && Objects.equals(units, that.units)
+                && Objects.equals(unitSymbol, that.unitSymbol)
+                && Objects.equals(defaultValue, that.defaultValue)
+                && Objects.equals(nearestMatchEnabled, that.nearestMatchEnabled)
+                && Objects.equals(acceptableInterval, that.acceptableInterval);
     }
 
     @Override
@@ -197,7 +196,6 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
-       this.defaultValue = defaultValue;        
+        this.defaultValue = defaultValue;
     }
-
 }

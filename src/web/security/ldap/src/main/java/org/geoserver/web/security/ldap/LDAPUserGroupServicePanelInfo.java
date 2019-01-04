@@ -8,13 +8,9 @@ import org.geoserver.security.ldap.LDAPUserGroupService;
 import org.geoserver.security.ldap.LDAPUserGroupServiceConfig;
 import org.geoserver.security.web.usergroup.UserGroupServicePanelInfo;
 
-/**
- * 
- * @author Niels Charlier
- *
- */
+/** @author Niels Charlier */
 public class LDAPUserGroupServicePanelInfo
-	extends UserGroupServicePanelInfo<LDAPUserGroupServiceConfig, LDAPUserGroupServicePanel>  {
+        extends UserGroupServicePanelInfo<LDAPUserGroupServiceConfig, LDAPUserGroupServicePanel> {
 
     private static final long serialVersionUID = 3768741389681107925L;
 

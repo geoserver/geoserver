@@ -1,0 +1,11 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--77332cf0:16004924dc0:-7ffd</id>
+  <name>noDataSquare</name>
+  <type>WorldImage</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--77332cf0:16004924dc0:-7fff</id>
+  </workspace>
+  <__default>false</__default>
+  <url>file:data/nodataSquare.png</url>
+</coverageStore>

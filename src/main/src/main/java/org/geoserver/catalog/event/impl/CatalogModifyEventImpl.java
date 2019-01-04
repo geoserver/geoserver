@@ -7,11 +7,9 @@ package org.geoserver.catalog.event.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.catalog.event.CatalogModifyEvent;
 
-public class CatalogModifyEventImpl extends CatalogEventImpl implements
-        CatalogModifyEvent {
+public class CatalogModifyEventImpl extends CatalogEventImpl implements CatalogModifyEvent {
 
     List propertyNames = new ArrayList();
     List oldValues = new ArrayList();
@@ -40,5 +38,4 @@ public class CatalogModifyEventImpl extends CatalogEventImpl implements
     public void setOldValues(List oldValues) {
         this.oldValues = oldValues;
     }
-
 }

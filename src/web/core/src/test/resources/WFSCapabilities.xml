@@ -1,0 +1,2271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities version="2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.opengis.net/wfs/2.0" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://localhost:8080/geoserver/schemas/wfs/2.0/wfs.xsd"
+  xmlns:it.geosolutions="http://www.geo-solutions.it" xmlns:cite="http://www.opengeospatial.net/cite"
+  xmlns:pg="http://geoserver.org/postgis" xmlns:tiger="http://www.census.gov" xmlns:sde="http://geoserver.sf.net"
+  xmlns:topp="http://www.openplans.org/topp" xmlns:sf="http://www.openplans.org/spearfish"
+  xmlns:nurc="http://www.nurc.nato.int" updateSequence="87">
+  <ows:ServiceIdentification>
+    <ows:Title>GeoServer Web Feature Service</ows:Title>
+    <ows:Abstract>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS
+      operations including Transaction.</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WFS</ows:Keyword>
+      <ows:Keyword>WMS</ows:Keyword>
+      <ows:Keyword>GEOSERVER</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>NONE</ows:Fees>
+    <ows:AccessConstraints>NONE</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>The ancient geographes INC</ows:ProviderName>
+    <ows:ServiceContact>
+      <ows:IndividualName>Claudius Ptolomaeus</ows:IndividualName>
+      <ows:PositionName>Chief geographer</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice />
+          <ows:Facsimile />
+        </ows:Phone>
+        <ows:Address>
+          <ows:City>Alexandria</ows:City>
+          <ows:AdministrativeArea />
+          <ows:PostalCode />
+          <ows:Country>Egypt</ows:Country>
+        </ows:Address>
+      </ows:ContactInfo>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:AllowedValues>
+          <ows:Value>1.0.0</ows:Value>
+          <ows:Value>1.1.0</ows:Value>
+          <ows:Value>2.0.0</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:AllowedValues>
+          <ows:Value>text/xml</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:AllowedValues>
+          <ows:Value>text/xml; subtype=gml/3.2</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:AllowedValues>
+          <ows:Value>results</ows:Value>
+          <ows:Value>hits</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:AllowedValues>
+          <ows:Value>text/xml; subtype=gml/3.2</ows:Value>
+          <ows:Value>GML2</ows:Value>
+          <ows:Value>GML2-GZIP</ows:Value>
+          <ows:Value>SHAPE-ZIP</ows:Value>
+          <ows:Value>application/gml+xml; version=3.2</ows:Value>
+          <ows:Value>csv</ows:Value>
+          <ows:Value>gml3</ows:Value>
+          <ows:Value>gml32</ows:Value>
+          <ows:Value>json</ows:Value>
+          <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+          <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Constraint name="PagingIsTransactionSafe">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </ows:Constraint>
+      <ows:Constraint name="CountDefault">
+        <ows:NoValues />
+        <ows:DefaultValue>1000000</ows:DefaultValue>
+      </ows:Constraint>
+    </ows:Operation>
+    <ows:Operation name="GetPropertyValue">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resolve">
+        <ows:AllowedValues>
+          <ows:Value>none</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="ListStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="CreateStoredQuery">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DropStoredQuery">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="LockFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="releaseAction">
+        <ows:AllowedValues>
+          <ows:Value>ALL</ows:Value>
+          <ows:Value>SOME</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeatureWithLock">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:AllowedValues>
+          <ows:Value>results</ows:Value>
+          <ows:Value>hits</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:AllowedValues>
+          <ows:Value>text/xml; subtype=gml/3.2</ows:Value>
+          <ows:Value>GML2</ows:Value>
+          <ows:Value>GML2-GZIP</ows:Value>
+          <ows:Value>SHAPE-ZIP</ows:Value>
+          <ows:Value>application/gml+xml; version=3.2</ows:Value>
+          <ows:Value>csv</ows:Value>
+          <ows:Value>gml3</ows:Value>
+          <ows:Value>gml32</ows:Value>
+          <ows:Value>json</ows:Value>
+          <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+          <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Constraint name="PagingIsTransactionSafe">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </ows:Constraint>
+      <ows:Constraint name="CountDefault">
+        <ows:NoValues />
+        <ows:DefaultValue>1000000</ows:DefaultValue>
+      </ows:Constraint>
+    </ows:Operation>
+    <ows:Operation name="Transaction">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/geoserver/wfs" />
+          <ows:Post xlink:href="http://localhost:8080/geoserver/wfs" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="inputFormat">
+        <ows:AllowedValues>
+          <ows:Value>text/xml; subtype=gml/3.2</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="releaseAction">
+        <ows:AllowedValues>
+          <ows:Value>ALL</ows:Value>
+          <ows:Value>SOME</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Constraint name="ImplementsBasicWFS">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTransactionalWFS">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsLockingWFS">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="KVPEncoding">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="XMLEncoding">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="SOAPEncoding">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsInheritance">
+      <ows:NoValues />
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsRemoteResolve">
+      <ows:NoValues />
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsResultPaging">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsStandardJoins">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsSpatialJoins">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTemporalJoins">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsFeatureVersioning">
+      <ows:NoValues />
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ManageStoredQueries">
+      <ows:NoValues />
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="PagingIsTransactionSafe">
+      <ows:NoValues />
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="QueryExpressions">
+      <ows:AllowedValues>
+        <ows:Value>wfs:Query</ows:Value>
+        <ows:Value>wfs:StoredQuery</ows:Value>
+      </ows:AllowedValues>
+    </ows:Constraint>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType xmlns:tiger="http://www.census.gov">
+      <Name>tiger:poly_landmarks</Name>
+      <Title>Manhattan (NY) landmarks</Title>
+      <Abstract>Manhattan landmarks, identifies water, lakes, parks, interesting buildilngs
+      </Abstract>
+      <ows:Keywords>
+        <ows:Keyword>landmarks</ows:Keyword>
+        <ows:Keyword>DS_poly_landmarks</ows:Keyword>
+        <ows:Keyword>manhattan</ows:Keyword>
+        <ows:Keyword>poly_landmarks</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-74.047185 40.679648</ows:LowerCorner>
+        <ows:UpperCorner>-73.90782 40.882078</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:tiger="http://www.census.gov">
+      <Name>tiger:poi</Name>
+      <Title>Manhattan (NY) points of interest</Title>
+      <Abstract>Points of interest in New York, New York (on Manhattan). One of the attributes
+        contains the name of a file with a picture of the point of interest.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>poi</ows:Keyword>
+        <ows:Keyword>Manhattan</ows:Keyword>
+        <ows:Keyword>DS_poi</ows:Keyword>
+        <ows:Keyword>points_of_interest</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-74.0118315772888 40.70754683896324</ows:LowerCorner>
+        <ows:UpperCorner>-74.00857344353275 40.711945649065406</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:tiger="http://www.census.gov">
+      <Name>tiger:tiger_roads</Name>
+      <Title>Manhattan (NY) roads</Title>
+      <Abstract>Highly simplified road layout of Manhattan in New York..</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>DS_tiger_roads</ows:Keyword>
+        <ows:Keyword>tiger_roads</ows:Keyword>
+        <ows:Keyword>roads</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-74.02722 40.684221</ows:LowerCorner>
+        <ows:UpperCorner>-73.907005 40.878178</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:archsites</Name>
+      <Title>Spearfish archeological sites</Title>
+      <Abstract>Sample data from GRASS, archeological sites location, Spearfish, South Dakota, USA
+      </Abstract>
+      <ows:Keywords>
+        <ows:Keyword>archsites</ows:Keyword>
+        <ows:Keyword>spearfish</ows:Keyword>
+        <ows:Keyword>sfArchsites</ows:Keyword>
+        <ows:Keyword>archeology</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:x-ogc:def:crs:EPSG:6.11.2:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.8725637911543 44.37740330855979</ows:LowerCorner>
+        <ows:UpperCorner>-103.63794182141925 44.48804280772808</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:bugsites</Name>
+      <Title>Spearfish bug locations</Title>
+      <Abstract>Sample data from GRASS, bug sites location, Spearfish, South Dakota, USA</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>spearfish</ows:Keyword>
+        <ows:Keyword>sfBugsites</ows:Keyword>
+        <ows:Keyword>insects</ows:Keyword>
+        <ows:Keyword>bugsites</ows:Keyword>
+        <ows:Keyword>tiger_beetles</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.86796131703647 44.373938816704396</ows:LowerCorner>
+        <ows:UpperCorner>-103.63773523234195 44.43418821380063</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:rivers</Name>
+      <Title>Rivers</Title>
+      <Abstract>Rivers</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>rivers</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.86796131703647 44.373938816704396</ows:LowerCorner>
+        <ows:UpperCorner>-103.63773523234195 44.43418821380063</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:restricted</Name>
+      <Title>Spearfish restricted areas</Title>
+      <Abstract>Sample data from GRASS, restricted areas, Spearfish, South Dakota, USA</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>spearfish</ows:Keyword>
+        <ows:Keyword>restricted</ows:Keyword>
+        <ows:Keyword>areas</ows:Keyword>
+        <ows:Keyword>sfRestricted</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.85057172920756 44.39436387625042</ows:LowerCorner>
+        <ows:UpperCorner>-103.74741494853805 44.48215752041131</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:roads</Name>
+      <Title>roads_Type</Title>
+      <Abstract>Generated from sfRoads</Abstract>
+      <Abstract>Sample data from GRASS, road layout, Spearfish, South Dakota, USA</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>sfRoads roads</ows:Keyword>
+        <ows:Keyword>spearfish</ows:Keyword>
+        <ows:Keyword>roads</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:x-ogc:def:crs:EPSG:6.11.2:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.87741691493184 44.37087275281798</ows:LowerCorner>
+        <ows:UpperCorner>-103.62231404880659 44.50015918338962</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+      <Name>sf:streams</Name>
+      <Title>Spearfish streams</Title>
+      <Abstract>Sample data from GRASS, streams, Spearfish, South Dakota, USA</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>spearfish</ows:Keyword>
+        <ows:Keyword>sfStreams</ows:Keyword>
+        <ows:Keyword>streams</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:26713</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-103.87789019829768 44.372335260095554</ows:LowerCorner>
+        <ows:UpperCorner>-103.62287788915457 44.502218486214815</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:topp="http://www.openplans.org/topp">
+      <Name>topp:tasmania_cities</Name>
+      <Title>Tasmania cities</Title>
+      <Abstract>Cities in Tasmania (actually, just the capital)</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>cities</ows:Keyword>
+        <ows:Keyword>Tasmania</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>145.19754 -43.423512</ows:LowerCorner>
+        <ows:UpperCorner>148.27298000000002 -40.852802</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:topp="http://www.openplans.org/topp">
+      <Name>topp:tasmania_roads</Name>
+      <Title>Tasmania roads</Title>
+      <Abstract>Main Tasmania roads</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Roads</ows:Keyword>
+        <ows:Keyword>Tasmania</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>145.19754 -43.423512</ows:LowerCorner>
+        <ows:UpperCorner>148.27298000000002 -40.852802</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:topp="http://www.openplans.org/topp">
+      <Name>topp:tasmania_state_boundaries</Name>
+      <Title>Tasmania state boundaries</Title>
+      <Abstract>Tasmania state boundaries</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>boundaries</ows:Keyword>
+        <ows:Keyword>tasmania_state_boundaries</ows:Keyword>
+        <ows:Keyword>Tasmania</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>143.83482400000003 -43.648056</ows:LowerCorner>
+        <ows:UpperCorner>148.47914100000003 -39.573891</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:topp="http://www.openplans.org/topp">
+      <Name>topp:tasmania_water_bodies</Name>
+      <Title>Tasmania water bodies</Title>
+      <Abstract>Tasmania water bodies</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Lakes</ows:Keyword>
+        <ows:Keyword>Bodies</ows:Keyword>
+        <ows:Keyword>Australia</ows:Keyword>
+        <ows:Keyword>Water</ows:Keyword>
+        <ows:Keyword>Tasmania</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>145.97161899999998 -43.031944</ows:LowerCorner>
+        <ows:UpperCorner>147.219696 -41.775558</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:topp="http://www.openplans.org/topp">
+      <Name>topp:states</Name>
+      <Title>USA Population</Title>
+      <Abstract>This is some census data on the states.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>census</ows:Keyword>
+        <ows:Keyword>united</ows:Keyword>
+        <ows:Keyword>boundaries</ows:Keyword>
+        <ows:Keyword>state</ows:Keyword>
+        <ows:Keyword>states</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-124.731422 24.955967</ows:LowerCorner>
+        <ows:UpperCorner>-66.969849 49.371735</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:tiger="http://www.census.gov">
+      <Name>tiger:giant_polygon</Name>
+      <Title>World rectangle</Title>
+      <Abstract>A simple rectangular polygon covering most of the world, it's only used for the
+        purpose of providing a background (WMS bgcolor could be used instead)</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>DS_giant_polygon</ows:Keyword>
+        <ows:Keyword>giant_polygon</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>
+        <ows:UpperCorner>180.0 90.0</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:pg="http://geoserver.org/postgis">
+      <Name>pg:sqlview</Name>
+      <Title>sqlview</Title>
+      <Abstract />
+      <ows:Keywords>
+        <ows:Keyword>features</ows:Keyword>
+        <ows:Keyword>sqlview</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-124.731422 24.955967</ows:LowerCorner>
+        <ows:UpperCorner>-66.969849 49.371735</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType xmlns:pg="http://geoserver.org/postgis">
+      <Name>pg:states</Name>
+      <Title>states</Title>
+      <Abstract />
+      <ows:Keywords>
+        <ows:Keyword>features</ows:Keyword>
+        <ows:Keyword>states</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG:4326</DefaultCRS>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-124.731422 24.955967</ows:LowerCorner>
+        <ows:UpperCorner>-66.969849 49.371735</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+  </FeatureTypeList>
+  <fes:Filter_Capabilities>
+    <fes:Conformance>
+      <fes:Constraint name="ImplementsQuery">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsAdHocQuery">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsFunctions">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinStandardFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsStandardFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinSpatialFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSpatialFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinTemporalFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsTemporalFilter">
+        <ows:NoValues />
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsVersionNav">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSorting">
+        <ows:AllowedValues>
+          <ows:Value>ASC</ows:Value>
+          <ows:Value>DESC</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>ASC</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsExtendedOperators">
+        <ows:NoValues />
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+    </fes:Conformance>
+    <fes:Id_Capabilities>
+      <fes:ResourceIdentifier name="fes:ResourceId" />
+    </fes:Id_Capabilities>
+    <fes:Scalar_Capabilities>
+      <fes:LogicalOperators />
+      <fes:ComparisonOperators>
+        <fes:ComparisonOperator name="PropertyIsLessThan" />
+        <fes:ComparisonOperator name="PropertyIsGreaterThan" />
+        <fes:ComparisonOperator name="PropertyIsLessThanOrEqualTo" />
+        <fes:ComparisonOperator name="PropertyIsGreaterThanOrEqualTo" />
+        <fes:ComparisonOperator name="PropertyIsEqualTo" />
+        <fes:ComparisonOperator name="PropertyIsNotEqualTo" />
+        <fes:ComparisonOperator name="PropertyIsLike" />
+        <fes:ComparisonOperator name="PropertyIsBetween" />
+        <fes:ComparisonOperator name="PropertyIsNull" />
+        <fes:ComparisonOperator name="PropertyIsNil" />
+      </fes:ComparisonOperators>
+    </fes:Scalar_Capabilities>
+    <fes:Spatial_Capabilities>
+      <fes:GeometryOperands>
+        <fes:GeometryOperand name="gml:Envelope" />
+        <fes:GeometryOperand name="gml:Point" />
+        <fes:GeometryOperand name="gml:MultiPoint" />
+        <fes:GeometryOperand name="gml:LineString" />
+        <fes:GeometryOperand name="gml:MultiLineString" />
+        <fes:GeometryOperand name="gml:Polygon" />
+        <fes:GeometryOperand name="gml:MultiPolygon" />
+        <fes:GeometryOperand name="gml:MultiGeometry" />
+      </fes:GeometryOperands>
+      <fes:SpatialOperators>
+        <fes:SpatialOperator name="Disjoint" />
+        <fes:SpatialOperator name="Equals" />
+        <fes:SpatialOperator name="DWithin" />
+        <fes:SpatialOperator name="Beyond" />
+        <fes:SpatialOperator name="Intersects" />
+        <fes:SpatialOperator name="Touches" />
+        <fes:SpatialOperator name="Crosses" />
+        <fes:SpatialOperator name="Contains" />
+        <fes:SpatialOperator name="Overlaps" />
+        <fes:SpatialOperator name="BBOX" />
+      </fes:SpatialOperators>
+    </fes:Spatial_Capabilities>
+    <fes:Temporal_Capabilities>
+      <fes:TemporalOperands>
+        <fes:TemporalOperand name="gml:TimeInstant" />
+        <fes:TemporalOperand name="gml:TimePeriod" />
+      </fes:TemporalOperands>
+      <fes:TemporalOperators>
+        <fes:TemporalOperator name="After" />
+        <fes:TemporalOperator name="Before" />
+        <fes:TemporalOperator name="Begins" />
+        <fes:TemporalOperator name="BegunBy" />
+        <fes:TemporalOperator name="TContains" />
+        <fes:TemporalOperator name="During" />
+        <fes:TemporalOperator name="TEquals" />
+        <fes:TemporalOperator name="TOverlaps" />
+        <fes:TemporalOperator name="Meets" />
+        <fes:TemporalOperator name="OverlappedBy" />
+        <fes:TemporalOperator name="MetBy" />
+        <fes:TemporalOperator name="EndedBy" />
+      </fes:TemporalOperators>
+    </fes:Temporal_Capabilities>
+    <fes:Functions>
+      <fes:Function name="abs">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="int">
+            <fes:Type>xs:int</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="abs_2">
+        <fes:Returns>xs:long</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:long</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="abs_3">
+        <fes:Returns>xs:float</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="abs_4">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="acos">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Area">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="asin">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="atan">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="atan2">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="x">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="y">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="between">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="low">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="high">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="boundary">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="boundaryDimension">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="buffer">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="distance">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="bufferWithSegments">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="distance">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="numberOfSegments">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Categorize">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="LookupValue">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Value">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Threshold 1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Value 1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Threshold 2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Value 2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="succeeding or preceding">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="ceil">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="centroid">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="classify">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="classifer">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Average">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Bounds">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Count">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Max">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Median">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Min">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Sum">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Collection_Unique">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="expression">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Concatenate">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="text">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="contains">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="convert">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="class">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="convexHull">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="cos">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="radians">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="crosses">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="dateFormat">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="format">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="date">
+            <fes:Type>xs:date</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="dateParse">
+        <fes:Returns>xs:date</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="format">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="dateString">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="difference">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="dimension">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="disjoint">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="distance">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="double2bool">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="double">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="endAngle">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="linestring">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="endPoint">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="linestring">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="env">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="variable">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="envelope">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="EqualInterval">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg0">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="equalsExact">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="equalsExactTolerance">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="tolarance">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="equalTo">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="object1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="object2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="exp">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="exteriorRing">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="floor">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="double">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="geometryType">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="geomFromWKT">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="geomLength">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="getGeometryN">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="index">
+            <fes:Type>xs:int</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="getX">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="getY">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="getz">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="greaterEqualThan">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="object1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="object2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="greaterThan">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="object1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="object2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="id">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="IEEEremainder">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="dividend">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="divisor">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="if_then_else">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="condition">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="then">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="else">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in10">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in4">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in5">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in6">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in7">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in8">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in9">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in10">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in2">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in3">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in4">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in4">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in5">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in4">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in5">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in6">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in4">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in5">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in6">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="in7">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in3">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in4">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in5">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in6">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="in7">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="int2bbool">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="int">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="int2ddouble">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="int">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="interiorPoint">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="interiorRingN">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Interpolate">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="data value pairs">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="mode">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="method">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="intersection">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="intersects">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isClosed">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isEmpty">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isLike">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="regex">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isNull">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="isometric">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="extrusion">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isRing">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isSimple">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isValid">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="isWithinDistance">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="distance">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Jenks">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg0">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="length">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="lessEqualThan">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="lessThan">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="log">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="value">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="max">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="double">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="double">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="max_2">
+        <fes:Returns>xs:long</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="long">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="long">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="max_3">
+        <fes:Returns>xs:float</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="float">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="float">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="max_4">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="int">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="int">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="min">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="double">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="double">
+            <fes:Type>xs:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="min_2">
+        <fes:Returns>xs:long</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="long">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="long">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="min_3">
+        <fes:Returns>xs:float</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="float">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="float">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="min_4">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="int">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="int">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="not">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="notEqualTo">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="numberFormat">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="number">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="numberFormat2">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="format">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="number">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="minus">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="decimal">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="seperator">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="numGeometries">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="numInteriorRing">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="polygon">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="numPoints">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="offset">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="offsetX">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="offsetY">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="overlaps">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometr">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="parseBoolean">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="parseDouble">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="parseInt">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="parseLong">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="pi">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="pointN">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="index">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="pow">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="base">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="exponent">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="PropertyExists">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="propertyName">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Quantile">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg0">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="random">
+        <fes:Returns>xs:string</fes:Returns>
+      </fes:Function>
+      <fes:Function name="Recode">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="LookupValue">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Data 1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Value 1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Data 2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="Value 2">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="relate">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="relatePattern">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="pattern">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="rint">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="double">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="round">
+        <fes:Returns>xs:float</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="round_2">
+        <fes:Returns>xs:long</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="roundDouble">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="sin">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="radians">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="sqrt">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="number">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="StandardDeviation">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg0">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="startAngle">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="linestring">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="startPoint">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="linestring">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strCapitalize">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strConcat">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strEndsWith">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="String">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="postfix">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strEqualsIgnoreCase">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="String">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="lookup">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strIndexOf">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="String">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="lookup">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strLastIndexOf">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="String">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="lookup">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strLength">
+        <fes:Returns>xs:int</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strMatches">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="regex">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strPosition">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="lookup">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="method">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strReplace">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="search">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="replace">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="all">
+            <fes:Type>xs:boolean</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strStartsWith">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="prefix">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strSubstring">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="beginIndex">
+            <fes:Type>xs:int</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="endIndex">
+            <fes:Type>xs:int</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strSubstringStart">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="beginIndex">
+            <fes:Type>xs:int</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strToLowerCase">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strToUpperCase">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strTrim">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="strTrim2">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="string">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="method">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="character">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="symDifference">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="tan">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="radians">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="toDegrees">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="radians">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="toRadians">
+        <fes:Returns>xs:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="degree">
+            <fes:Type>xs:float</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="touches">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="toWKT">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="union">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="UniqueInterval">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg0">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg1">
+            <fes:Type>xs:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="vertices">
+        <fes:Returns>xs:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="within">
+        <fes:Returns>xs:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="geometry">
+            <fes:Type>gml:AbstractGeometryType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+    </fes:Functions>
+  </fes:Filter_Capabilities>
+</wfs:WFS_Capabilities>

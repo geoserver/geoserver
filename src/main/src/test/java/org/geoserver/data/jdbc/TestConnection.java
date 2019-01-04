@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.data.jdbc;
 
 import java.sql.Array;
@@ -142,8 +146,7 @@ class TestConnection implements Connection {
     }
 
     @Override
-    public void clearWarnings() throws SQLException {
-    }
+    public void clearWarnings() throws SQLException {}
 
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
@@ -152,8 +155,8 @@ class TestConnection implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, int resultSetType,
-            int resultSetConcurrency) throws SQLException {
+    public PreparedStatement prepareStatement(
+            String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         throw new SQLException("Not implemented");
     }
 
@@ -204,20 +207,23 @@ class TestConnection implements Connection {
     }
 
     @Override
-    public Statement createStatement(int resultSetType, int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
+    public Statement createStatement(
+            int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
         throw new SQLException("Not implemented");
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, int resultSetType,
-            int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    public PreparedStatement prepareStatement(
+            String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
         throw new SQLException("Not implemented");
     }
 
     @Override
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
+    public CallableStatement prepareCall(
+            String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
         throw new SQLException("Not implemented");
     }
 
@@ -233,7 +239,8 @@ class TestConnection implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, String[] columnNames)
+            throws SQLException {
         throw new SQLException("Not implemented");
     }
 
@@ -324,5 +331,4 @@ class TestConnection implements Connection {
     public String toString() {
         return getClass().getSimpleName();
     }
-
 }

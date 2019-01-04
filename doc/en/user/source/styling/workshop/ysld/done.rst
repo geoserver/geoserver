@@ -472,9 +472,7 @@ Answer for :ref:`Challenge Layer Group <ysld.point.q3>`:
 
    .. image:: ../style/img/point_challenge_1.png
 
-   This is opportunity to revisit label halo settings from :doc:`polygon`:
-   
-   .. code-block:: css
+   This is opportunity to revisit label halo settings from :doc:`polygon`: ::
 
       symbolizers:
       - point:
@@ -498,8 +496,8 @@ Answer for :ref:`Challenge Layer Group <ysld.point.q3>`:
                 fill-color: `lightgray`
                 radius: 2
                 opacity: 0.7
-              x-max-displacement: 90
-              x-label-priority: ${`0` - LABELRANK}
+              priority: ${`0` - LABELRANK}
+              x-maxDisplacement: 90
 
    Using a lightgray halo, 0.7 opacity and radius 2 fades out the complexity immediately surrounding the label text improving legibility.
 

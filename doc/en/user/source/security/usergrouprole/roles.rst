@@ -13,7 +13,7 @@ GeoServer roles support inheritance—a child role inherits all the access grant
 
 Key/value pairs are implementation-specific and may be configured by the :ref:`role service <security_rolesystem_roleservices>` the user or group belongs to. For example, a role service that assigns roles based on employee organization may wish to associate additional information with the role such as Department Name.
 
-Geoserver has a number of system roles, the names of which are reserved. Adding a new GeoServer role with reserved name is not permitted.
+GeoServer has a number of system roles, the names of which are reserved. Adding a new GeoServer role with reserved name is not permitted.
 
 * ``ROLE_ADMINISTRATOR``—Provides access to all operations and resources
 * ``ROLE_GROUP_ADMIN``—Special role for administrating user groups

@@ -7,9 +7,7 @@ package org.geoserver.security.auth;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -22,21 +20,17 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * An authentication provider for the superuser called {@link #ROOTUSERNAME}.
- * This user hat the administrator role {@link GeoServerRole#ADMIN_ROLE}
- * No other users are authenticated.
- * 
- * The password is checked using  {@link GeoServerSecurityManager#checkMasterPassword(String)}
- * 
- * If the password does not match, NO {@link BadCredentialsException} is thrown.
- * Maybe there is a user in one of the {@link GeoServerUserGroupService} objects
- * with the same name.
- *  
- * @author christian
+ * An authentication provider for the superuser called {@link #ROOTUSERNAME}. This user hat the
+ * administrator role {@link GeoServerRole#ADMIN_ROLE} No other users are authenticated.
  *
+ * <p>The password is checked using {@link GeoServerSecurityManager#checkMasterPassword(String)}
+ *
+ * <p>If the password does not match, NO {@link BadCredentialsException} is thrown. Maybe there is a
+ * user in one of the {@link GeoServerUserGroupService} objects with the same name.
+ *
+ * @author christian
  */
 public class GeoServerRootAuthenticationProvider extends GeoServerAuthenticationProvider {
-
 
     public GeoServerRootAuthenticationProvider() {
         super();
@@ -51,29 +45,30 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
-        
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
+
+        UsernamePasswordAuthenticationToken token =
+                (UsernamePasswordAuthenticationToken) authentication;
 
         // check if name is root
-        if (GeoServerUser.ROOT_USERNAME.equals(token.getPrincipal())==false) return null;
+        if (GeoServerUser.ROOT_USERNAME.equals(token.getPrincipal()) == false) return null;
 
-        //check password        
-        if (token.getCredentials() !=null) {
+        // check password
+        if (token.getCredentials() != null) {
             if (getSecurityManager().checkMasterPassword(token.getCredentials().toString())) {
                 Collection<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
                 roles.add(GeoServerRole.ADMIN_ROLE);
 
-                UsernamePasswordAuthenticationToken result = 
-                    new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, null,roles);
+                UsernamePasswordAuthenticationToken result =
+                        new UsernamePasswordAuthenticationToken(
+                                GeoServerUser.ROOT_USERNAME, null, roles);
                 result.setDetails(token.getDetails());
-                return result;        
+                return result;
             }
         }
-            
-        // not BadCredentialException is thrown, maybe there is another user with 
+
+        // not BadCredentialException is thrown, maybe there is another user with
         // the same name
-        log(new BadCredentialsException("Bad credentials for: "+ token.getPrincipal()));
+        log(new BadCredentialsException("Bad credentials for: " + token.getPrincipal()));
         return null;
     }
-
 }

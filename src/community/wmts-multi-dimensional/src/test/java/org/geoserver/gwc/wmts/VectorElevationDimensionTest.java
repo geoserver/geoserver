@@ -4,8 +4,14 @@
  */
 package org.geoserver.gwc.wmts;
 
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
 import org.geoserver.catalog.*;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
@@ -13,13 +19,9 @@ import org.geoserver.gwc.wmts.dimensions.VectorElevationDimension;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-
 /**
- * This class contains tests that check that elevation dimensions values are correctly extracted from vector data.
+ * This class contains tests that check that elevation dimensions values are correctly extracted
+ * from vector data.
  */
 public class VectorElevationDimensionTest extends TestsSupport {
 
@@ -32,26 +34,28 @@ public class VectorElevationDimensionTest extends TestsSupport {
         vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(vectorInfo);
         // check that we correctly retrieve the elevation dimension
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(1));
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
         // disable the elevation dimension
         dimensionInfo.setEnabled(false);
         vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(vectorInfo);
         // no dimensions should be available
-        assertThat(DimensionsUtils.extractDimensions(wms, getLayerInfo()).size(), is(0));
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
     }
 
     @Test
     public void testGetDefaultValue() {
         testDefaultValueStrategy(Strategy.MINIMUM, "1.0");
-        testDefaultValueStrategy(Strategy.MAXIMUM, "2.0");
+        testDefaultValueStrategy(Strategy.MAXIMUM, "5.0");
     }
 
     @Test
     public void testGetDomainsValues() throws Exception {
-        testDomainsValuesRepresentation(DimensionPresentation.LIST, "1.0", "2.0");
-        testDomainsValuesRepresentation(DimensionPresentation.CONTINUOUS_INTERVAL, "1.0--2.0");
-        testDomainsValuesRepresentation(DimensionPresentation.DISCRETE_INTERVAL, "1.0--2.0");
+        testDomainsValuesRepresentation(2, "1.0--5.0");
+        testDomainsValuesRepresentation(4, "1.0", "2.0", "3.0", "5.0");
+        testDomainsValuesRepresentation(7, "1.0", "2.0", "3.0", "5.0");
     }
 
     @Override
@@ -66,23 +70,28 @@ public class VectorElevationDimensionTest extends TestsSupport {
 
     @Test
     public void testGetHistogram() {
-        DimensionInfo dimensionInfo = createDimension(true, DimensionPresentation.LIST, null);
+        DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.1");
-        assertThat(histogram.first, is("1.0/2.0/0.1"));
-        assertThat(histogram.second, containsInAnyOrder(2, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
+        assertThat(histogram.first, is("1.0/6.0/1.0"));
+        assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 1)));
     }
 
-    /**
-     * Helper method that just returns the current layer info.
-     */
+    @Test
+    public void testGetHistogramMisaligned() {
+        DimensionInfo dimensionInfo = createDimension(true, null);
+        Dimension dimension = buildDimension(dimensionInfo);
+        Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.75");
+        assertThat(histogram.first, is("1.0/5.0/0.75"));
+        assertThat(histogram.second, equalTo(Arrays.asList(1, 1, 1, 0, 0, 1)));
+    }
+
+    /** Helper method that just returns the current layer info. */
     private LayerInfo getLayerInfo() {
         return catalog.getLayerByName(VECTOR_ELEVATION.getLocalPart());
     }
 
-    /**
-     * Helper method that just returns the current vector info.
-     */
+    /** Helper method that just returns the current vector info. */
     private FeatureTypeInfo getVectorInfo() {
         LayerInfo layerInfo = getLayerInfo();
         assertThat(layerInfo.getResource(), instanceOf(FeatureTypeInfo.class));

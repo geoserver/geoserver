@@ -5,12 +5,7 @@
  */
 package org.geoserver.wms.decoration;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,14 +15,13 @@ import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.data.DataUtilities;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.URLs;
 
 public class WatermarkDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -41,13 +35,11 @@ public class WatermarkDecoration implements MapDecoration {
 
     private float opacity = 1.0f;
 
-    /**
-     * Transient cache to avoid reloading the same file over and over
-     */
+    /** Transient cache to avoid reloading the same file over and over */
     private static final Map<URL, LogoCacheEntry> logoCache =
-        new SoftValueHashMap<URL, LogoCacheEntry>();
+            new SoftValueHashMap<URL, LogoCacheEntry>();
 
-    public void loadOptions(Map<String, String> options){
+    public void loadOptions(Map<String, String> options) {
         this.imageURL = options.get("url");
 
         if (options.containsKey("opacity")) {
@@ -60,8 +52,8 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
-    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
-        try{
+    public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
+        try {
             BufferedImage logo = getLogo();
             return new Dimension(logo.getWidth(), logo.getHeight());
         } catch (Exception e) {
@@ -71,30 +63,27 @@ public class WatermarkDecoration implements MapDecoration {
 
     /**
      * Print the WaterMarks into the graphic2D.
-     * 
+     *
      * @param g2D
      * @param paintArea
      * @throws IOException
      * @throws ClassCastException
      * @throws MalformedURLException
      */
-    public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent) 
-    throws MalformedURLException, ClassCastException, IOException {
+    public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent)
+            throws MalformedURLException, ClassCastException, IOException {
         BufferedImage logo = getLogo();
 
         if (logo != null) {
             Composite oldComposite = g2D.getComposite();
-            g2D.setComposite(
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity)
-            );
+            g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
-            AffineTransform tx = 
-                AffineTransform.getTranslateInstance(paintArea.getX(), paintArea.getY());
+            AffineTransform tx =
+                    AffineTransform.getTranslateInstance(paintArea.getX(), paintArea.getY());
 
             tx.scale(
-                paintArea.getWidth() / logo.getWidth(),
-                paintArea.getHeight() / logo.getHeight()
-            );
+                    paintArea.getWidth() / logo.getWidth(),
+                    paintArea.getHeight() / logo.getHeight());
 
             g2D.drawImage(logo, tx, null);
 
@@ -106,23 +95,37 @@ public class WatermarkDecoration implements MapDecoration {
         BufferedImage logo = null;
 
         // fully resolve the url (consider data dir)
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         URL url = null;
-
         try {
             url = new URL(imageURL);
+
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
-                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
                 File file = loader.url(imageURL);
-                if (file.exists()){
-                    url = DataUtilities.fileToURL(file);
+                if (file.exists()) {
+                    url = URLs.fileToUrl(file);
                 }
             }
         } catch (MalformedURLException e) {
-            url = null;
+            // could be a relative reference, check if we can find it in the layouts directory
+            Resource layouts = loader.get("layouts");
+            if (layouts.getType() == Resource.Type.DIRECTORY) {
+                Resource image = layouts.get(imageURL);
+                if (image.getType() == Resource.Type.RESOURCE) {
+                    url = URLs.fileToUrl(image.file());
+                }
+            }
+            if (url == null) {
+                // also check from the root of the data dir (backwards compatibility)
+                Resource image = loader.get(imageURL);
+                if (image.getType() == Resource.Type.RESOURCE) {
+                    url = URLs.fileToUrl(image.file());
+                }
+            }
         }
-
-        if (url == null)
+        if (url == null) {
             return null;
+        }
 
         LogoCacheEntry entry = logoCache.get(url);
         if (entry == null || entry.isExpired()) {
@@ -139,11 +142,10 @@ public class WatermarkDecoration implements MapDecoration {
     }
 
     /**
-     * Contains an already loaded logo and the tools to check it's up to date
-     * compared to the file system
-     * 
+     * Contains an already loaded logo and the tools to check it's up to date compared to the file
+     * system
+     *
      * @author Andrea Aime - TOPP
-     * 
      */
     private static class LogoCacheEntry {
         private BufferedImage logo;

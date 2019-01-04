@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wms.DefaultWebMapService;
@@ -22,50 +21,41 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wms.map.RenderedImageMap;
-import org.geotools.styling.Style;
-
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * GIF Animated reflecting service.
- * <p>
- * This is the main entry point to easily create animations.<br/>
- * The reflector is able to parse incomplete WMS GetMap requests containing at least:<br/>
+ *
+ * <p>This is the main entry point to easily create animations.<br>
+ * The reflector is able to parse incomplete WMS GetMap requests containing at least:<br>
+ *
  * <ul>
- * <li>A multivalued request supported output format</li>
- * <li>An "aparam" animation parameter</li>
- * <li>An "avalues" list of values for the animation parameter</li>
+ *   <li>A multivalued request supported output format
+ *   <li>An "aparam" animation parameter
+ *   <li>An "avalues" list of values for the animation parameter
  * </ul>
- * 
- * </p>
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions S.A.S., alessio.fabiani@geo-solutions.it
  * @author Andrea Aime, GeoSolutions S.A.S., andrea.aime@geo-solutions.it
  */
 public class Animator {
 
-    private static Logger LOGGER = org.geotools.util.logging.Logging
-            .getLogger("org.vfny.geoserver.wms.responses.map.anim");
+    private static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(
+                    "org.vfny.geoserver.wms.responses.map.anim");
 
-    /** 
-     * default 'format' value
-     * - used if no output format has been found on the GetMap request
-     **/
+    /** default 'format' value - used if no output format has been found on the GetMap request */
     public static final String GIF_ANIMATED_FORMAT = "image/gif;subtype=animated";
 
-    /**
-     * web map service
-     */
+    /** web map service */
     WebMapService wms;
 
-    /**
-     * The WMS configuration
-     */
+    /** The WMS configuration */
     WMS wmsConfiguration;
 
     /**
      * The prototype Constructor
-     * 
+     *
      * @param wms
      * @param wmsConfiguration
      */
@@ -75,16 +65,14 @@ public class Animator {
     }
 
     /**
-     * Produce method. 
-     * Returns the full animation WebMap request.
-     * 
+     * Produce method. Returns the full animation WebMap request.
+     *
      * @param request
      * @param wms
      * @param wmsConfiguration
-     *
      */
-    public static org.geoserver.wms.WebMap produce(GetMapRequest request, WebMapService wms,
-            WMS wmsConfiguration) throws Exception {
+    public static org.geoserver.wms.WebMap produce(
+            GetMapRequest request, WebMapService wms, WMS wmsConfiguration) throws Exception {
 
         // initializing the catalog of frames. The method analyzes the main request looking for
         // 'aparam' and 'avalues' and initializes the list of frames to be produced.
@@ -93,30 +81,44 @@ public class Animator {
         if (frameCatalog == null) {
             throw new RuntimeException("Animator initialization error!");
         }
-        
+
         // Setup AnimGifOUTputFormat as default if not specified
         if (request.getFormat() == null) {
             request.setFormat(GIF_ANIMATED_FORMAT);
         }
-        
+
         // if we have a case of layers being the param, stick the first value into the request
-        if(frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
-            List<String> layers0 = Arrays.asList(frameCatalog.getValues()[0].replaceAll("\\\\,", ",").split("\\s*,\\s*"));
+        if (frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
+            List<String> layers0 =
+                    Arrays.asList(
+                            frameCatalog
+                                    .getValues()[0]
+                                    .replaceAll("\\\\,", ",")
+                                    .split("\\s*,\\s*"));
             LayerParser parser = new LayerParser(wmsConfiguration);
-            List<MapLayerInfo> layers = parser.parseLayerInfos(layers0, 
-                    request.getRemoteOwsURL(), request.getRemoteOwsType());
+            List<MapLayerInfo> layers =
+                    parser.parseLayerInfos(
+                            layers0, request.getRemoteOwsURL(), request.getRemoteOwsType());
             request.setLayers(layers);
         }
-        
+
         // set rest of the wms defaults
         request = DefaultWebMapService.autoSetMissingProperties(request);
-        
+
         // if we have a case of layers being the param, we should also try to get uniform
         // width and height and bbox
-        if(frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
+        if (frameCatalog.getParameter().equalsIgnoreCase("LAYERS")) {
             Envelope bbox = request.getBbox();
-            request.getRawKvp().put("BBOX", bbox.getMinX() + "," + request.getBbox().getMinY() + "," 
-                    + request.getBbox().getMaxX() + "," + request.getBbox().getMaxY());
+            request.getRawKvp()
+                    .put(
+                            "BBOX",
+                            bbox.getMinX()
+                                    + ","
+                                    + request.getBbox().getMinY()
+                                    + ","
+                                    + request.getBbox().getMaxX()
+                                    + ","
+                                    + request.getBbox().getMaxY());
             request.getRawKvp().put("WIDTH", String.valueOf(request.getWidth()));
             request.getRawKvp().put("HEIGHT", String.valueOf(request.getHeight()));
         }
@@ -130,23 +132,26 @@ public class Animator {
         // run a single getmap to get the right mime type and map context
         WebMap wmsResponse = wms.getMap(request);
 
-        return new RenderedImageMap(((RenderedImageMap) wmsResponse).getMapContext(), imageList,
+        return new RenderedImageMap(
+                ((RenderedImageMap) wmsResponse).getMapContext(),
+                imageList,
                 wmsResponse.getMimeType());
     }
 
     /**
      * Initializes the Animator engine.
-     * 
-     * @param request
-     * @param wmsConfiguration 
      *
+     * @param request
+     * @param wmsConfiguration
      */
-    private static FrameCatalog initRequestManager(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
+    private static FrameCatalog initRequestManager(
+            GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         return new FrameCatalog(request, wms, wmsConfiguration);
     }
-    
+
     /**
      * A helper that avoids duplicating the code to parse a layer
+     *
      * @author Andrea Aime - GeoSolutions
      */
     static class LayerParser extends GetMapKvpRequestReader {
@@ -155,10 +160,12 @@ public class Animator {
             super(wmsConfiguration);
         }
 
-        public List<MapLayerInfo> parseLayerInfos(List<String> requestedLayerNames, URL remoteOwsUrl,
-                String remoteOwsType) throws Exception {
-            List requestedLayerInfos = super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
-            
+        public List<MapLayerInfo> parseLayerInfos(
+                List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType)
+                throws Exception {
+            List requestedLayerInfos =
+                    super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
+
             List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
             for (Object o : requestedLayerInfos) {
                 if (o instanceof LayerInfo) {
@@ -172,12 +179,8 @@ public class Animator {
                     layers.add((MapLayerInfo) o);
                 }
             }
-            
+
             return layers;
         }
-        
     }
-
-    
-
 }

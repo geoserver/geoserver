@@ -27,12 +27,12 @@ public class ExcelCellStyles {
 
         headerStyle = wb.createCellStyle();
         Font headerFont = wb.createFont();
-        headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         headerStyle.setFont(headerFont);
 
         warningStyle = wb.createCellStyle();
         Font warningFont = wb.createFont();
-        warningFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        warningFont.setBold(true);
         warningFont.setColor(Font.COLOR_RED);
         warningStyle.setFont(warningFont);
     }

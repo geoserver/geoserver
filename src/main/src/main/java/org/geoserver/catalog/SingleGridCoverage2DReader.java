@@ -6,13 +6,10 @@
 package org.geoserver.catalog;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-
 import javax.media.jai.ImageLayout;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
@@ -28,29 +25,29 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 
-/**
- * A wrapper restricting the provided reader to return a single grid coverage
- */
+/** A wrapper restricting the provided reader to return a single grid coverage */
 public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     protected GridCoverage2DReader delegate;
 
     protected String coverageName;
-    
-    public static SingleGridCoverage2DReader wrap(GridCoverage2DReader delegate, String coverageName) {
-        if(delegate instanceof StructuredGridCoverage2DReader) {
-            return new StructuredSingleGridCoverage2DReader((StructuredGridCoverage2DReader) delegate, coverageName);
+
+    public static SingleGridCoverage2DReader wrap(
+            GridCoverage2DReader delegate, String coverageName) {
+        if (delegate instanceof StructuredGridCoverage2DReader) {
+            return new StructuredSingleGridCoverage2DReader(
+                    (StructuredGridCoverage2DReader) delegate, coverageName);
         } else {
             return new SingleGridCoverage2DReader((GridCoverage2DReader) delegate, coverageName);
         }
     }
 
     public SingleGridCoverage2DReader(GridCoverage2DReader delegate, String coverageName) {
-        if(delegate == null) {
+        if (delegate == null) {
             throw new IllegalArgumentException("The delegate coverage reader cannot be null");
         }
         this.delegate = delegate;
-        if(coverageName == null) {
+        if (coverageName == null) {
             throw new IllegalArgumentException("The coverage name must be specified");
         }
         this.coverageName = coverageName;
@@ -58,12 +55,16 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     /**
      * Checks the specified name is the one we are expecting
+     *
      * @param coverageName
      */
     protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
-            throw new IllegalArgumentException("Unknown coverage named " + coverageName
-                    + ", the only valid value is: " + this.coverageName);
+            throw new IllegalArgumentException(
+                    "Unknown coverage named "
+                            + coverageName
+                            + ", the only valid value is: "
+                            + this.coverageName);
         }
     }
 
@@ -140,8 +141,8 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
-            IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters)
+            throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }
 
@@ -175,14 +176,17 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getReadingResolutions(this.coverageName, policy, requestedResolution);
     }
 
-    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy,
-            double[] requestedResolution) throws IOException {
+    public double[] getReadingResolutions(
+            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+            throws IOException {
         checkCoverageName(coverageName);
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
     public String[] getGridCoverageNames() throws IOException {
-        return new String[]{coverageName}; //Being a singleGridCoverage reader, I can return the only coverage
+        return new String[] {
+            coverageName
+        }; // Being a singleGridCoverage reader, I can return the only coverage
     }
 
     public int getGridCoverageCount() throws IOException {

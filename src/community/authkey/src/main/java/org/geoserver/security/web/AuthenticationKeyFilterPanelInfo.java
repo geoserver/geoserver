@@ -11,11 +11,12 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
  * Configuration panel extension for {@link GeoServerAuthenticationKeyFilter}.
- * 
+ *
  * @author mcr
  */
-public class AuthenticationKeyFilterPanelInfo 
-    extends AuthenticationFilterPanelInfo<AuthenticationKeyFilterConfig, AuthenticationKeyFilterPanel> {
+public class AuthenticationKeyFilterPanelInfo
+        extends AuthenticationFilterPanelInfo<
+                AuthenticationKeyFilterConfig, AuthenticationKeyFilterPanel> {
 
     private static final long serialVersionUID = 1L;
 

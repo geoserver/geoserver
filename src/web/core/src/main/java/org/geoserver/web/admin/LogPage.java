@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.logging.Level;
-
+import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -31,13 +31,17 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geotools.util.logging.Logging;
 
 /**
  * Shows the log file contents
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 public class LogPage extends GeoServerSecuredPage {
+
+    static final Logger LOGGER = Logging.getLogger(LogPage.class);
+
     private static final long serialVersionUID = 4742103132576413211L;
 
     static final String LINES = "lines";
@@ -51,30 +55,29 @@ public class LogPage extends GeoServerSecuredPage {
         @SuppressWarnings("rawtypes")
         Form<?> form = new Form("form");
         add(form);
-        
+
         /**
-         * take geoserver log file location from Config as absolute path and only use if valid, 
+         * take geoserver log file location from Config as absolute path and only use if valid,
          * otherwise fallback to (geoserver-root)/logs/geoserver.log as default.
          */
         String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
-        if(location == null) {
-            location= getGeoServerApplication().getGeoServer().getLogging().getLocation();
+        if (location == null) {
+            location = getGeoServerApplication().getGeoServer().getLogging().getLocation();
         }
         if (location == null) {
             GeoServerResourceLoader loader = getGeoServerApplication().getResourceLoader();
-            logFile = loader.get("logs").get("geoserver.log").file();         
+            logFile = loader.get("logs").get("geoserver.log").file();
             location = logFile.getAbsolutePath();
         } else {
             logFile = new File(location);
             if (!logFile.isAbsolute()) {
                 // locate the geoserver.log file
-                GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(
-                        GeoServerDataDirectory.class);
+                GeoServerDataDirectory dd =
+                        getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
                 logFile = dd.get(Paths.convert(logFile.getPath())).file();
             }
         }
-        
-        
+
         if (!logFile.exists()) {
             error("Could not find the GeoServer log file: " + logFile.getAbsolutePath());
         }
@@ -86,17 +89,22 @@ public class LogPage extends GeoServerSecuredPage {
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error parsing the lines parameter: ", params.get(LINES).toString());
+            LOGGER.log(
+                    Level.WARNING,
+                    "Error parsing the lines parameter: ",
+                    params.get(LINES).toString());
         }
 
-        form.add(new SubmitLink("refresh") {
-            @Override
-            public void onSubmit() {
-                setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
-            }
-        });
+        form.add(
+                new SubmitLink("refresh") {
+                    @Override
+                    public void onSubmit() {
+                        setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
+                    }
+                });
 
-        NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<Integer>(this, "lines"));
+        NumberTextField<Integer> lines =
+                new NumberTextField<Integer>("lines", new PropertyModel<Integer>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
@@ -105,22 +113,24 @@ public class LogPage extends GeoServerSecuredPage {
         logs.setMarkupId("logs");
         add(logs);
 
-        add(new Link<Object>("download") {
+        add(
+                new Link<Object>("download") {
 
-            @Override
-            public void onClick() {
-                IResourceStream stream = new FileResourceStream(logFile){
-                    public String getContentType() {
-                        return "text/plain";
+                    @Override
+                    public void onClick() {
+                        IResourceStream stream =
+                                new FileResourceStream(logFile) {
+                                    public String getContentType() {
+                                        return "text/plain";
+                                    }
+                                };
+                        ResourceStreamRequestHandler handler =
+                                new ResourceStreamRequestHandler(stream, "geoserver.log");
+                        handler.setContentDisposition(ContentDisposition.ATTACHMENT);
+
+                        RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
                     }
-                };
-                ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream, "geoserver.log");
-                handler.setContentDisposition(ContentDisposition.ATTACHMENT);
-
-                RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
-            }
-        });
-
+                });
     }
 
     public class GSLogsModel extends LoadableDetachableModel<String> {
@@ -132,6 +142,10 @@ public class LogPage extends GeoServerSecuredPage {
             try {
                 // load the logs line by line, keep only the last 1000 lines
                 LinkedList<String> lineList = new LinkedList<String>();
+
+                if (!logFile.exists()) {
+                    return "";
+                }
 
                 br = new BufferedReader(new FileReader(logFile));
                 String line;
@@ -148,7 +162,7 @@ public class LogPage extends GeoServerSecuredPage {
                 }
                 return result.toString();
             } catch (Exception e) {
-                error(e);
+                LOGGER.log(Level.SEVERE, "Failed to load log file contents", e);
                 return e.getMessage();
             } finally {
                 if (br != null) {
@@ -160,6 +174,5 @@ public class LogPage extends GeoServerSecuredPage {
                 }
             }
         }
-
     }
 }

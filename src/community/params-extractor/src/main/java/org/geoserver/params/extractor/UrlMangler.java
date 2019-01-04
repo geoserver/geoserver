@@ -4,6 +4,10 @@
  */
 package org.geoserver.params.extractor;
 
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -11,12 +15,6 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceStore;
-
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UrlMangler implements URLMangler {
 
@@ -27,11 +25,13 @@ public class UrlMangler implements URLMangler {
     public UrlMangler(GeoServerDataDirectory dataDirectory) {
         Resource resource = dataDirectory.get(EchoParametersDao.getEchoParametersPath());
         echoParameters = EchoParametersDao.getEchoParameters(resource.in());
-        resource.addListener(notify -> echoParameters = EchoParametersDao.getEchoParameters(resource.in()));
+        resource.addListener(
+                notify -> echoParameters = EchoParametersDao.getEchoParameters(resource.in()));
     }
 
     @Override
-    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+    public void mangleURL(
+            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Request request = Dispatcher.REQUEST.get();
         if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
             return;
@@ -64,8 +64,10 @@ public class UrlMangler implements URLMangler {
             if (!echoParameter.getActivated()) {
                 continue;
             }
-            Map.Entry rawParameter = Utils.caseInsensitiveSearch(echoParameter.getParameter(), requestRawKvp);
-            if (rawParameter != null && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
+            Map.Entry rawParameter =
+                    Utils.caseInsensitiveSearch(echoParameter.getParameter(), requestRawKvp);
+            if (rawParameter != null
+                    && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
                 if (rawParameter.getValue() instanceof String) {
                     kvp.put((String) rawParameter.getKey(), (String) rawParameter.getValue());
                 }

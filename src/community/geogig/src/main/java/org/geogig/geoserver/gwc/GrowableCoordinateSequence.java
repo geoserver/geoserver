@@ -7,15 +7,15 @@ package org.geogig.geoserver.gwc;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.primitives.Floats;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 
 /**
- * A {@link CoordinateSequence} that grows as needed when coordinates are
- * {@link #add(double, double) added}, and stores all coordinates in a single {@code float[]}
- * <p>
- * A subset of this coordinate sequence can be obtained as a view sharing internal state using
+ * A {@link CoordinateSequence} that grows as needed when coordinates are {@link #add(double,
+ * double) added}, and stores all coordinates in a single {@code float[]}
+ *
+ * <p>A subset of this coordinate sequence can be obtained as a view sharing internal state using
  * {@link #subSequence(int, int)}
  */
 class GrowableCoordinateSequence implements CoordinateSequence {
@@ -215,5 +215,15 @@ class GrowableCoordinateSequence implements CoordinateSequence {
         public Object clone() {
             return new SubSequence(orig, fromIndex, toIndex);
         }
+
+        @Override
+        public CoordinateSequence copy() {
+            return new SubSequence(orig.copy(), fromIndex, toIndex);
+        }
+    }
+
+    @Override
+    public CoordinateSequence copy() {
+        return new GrowableCoordinateSequence(ordinates.clone(), size());
     }
 }

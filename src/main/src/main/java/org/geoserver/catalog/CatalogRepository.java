@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -21,36 +20,33 @@ import org.opengis.feature.type.Name;
 
 /**
  * Implementation of GeoTools Repository interface wrapped around the GeoServer catalog.
- * 
+ *
  * @author Christian Mueller
  * @author Justin Deoliveira
  */
 public class CatalogRepository implements Repository, Serializable {
 
-    /**
-     * logger
-     */
-    static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
-    
-    /**
-     * the geoserver catalog
-     */
+    /** logger */
+    static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
+
+    /** the geoserver catalog */
     private Catalog catalog;
 
-    public CatalogRepository() {
-    }
-    
+    public CatalogRepository() {}
+
     public CatalogRepository(Catalog catalog) {
         this.catalog = catalog;
     }
 
     public DataStore dataStore(Name name) {
         DataAccess da = access(name);
-        if ( da instanceof DataStore ) {
+        if (da instanceof DataStore) {
             return (DataStore) da;
         }
-        
-        LOGGER.severe( name + " is not a data store.");
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(name + " is not a data store.");
+        }
         return null;
     }
 
@@ -60,8 +56,10 @@ public class CatalogRepository implements Repository, Serializable {
 
         DataStoreInfo info = getCatalog().getDataStoreByName(workspace, localName);
         if (info == null) {
-            throw new RuntimeException("Cannot find datastore " + localName + "in workspace "
-                    + workspace);
+            info = getCatalog().getDataStoreByName(localName);
+            if (info == null) {
+                return null;
+            }
         }
         try {
             return info.getDataStore(null);
@@ -69,38 +67,35 @@ public class CatalogRepository implements Repository, Serializable {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public List<DataStore> getDataStores() {
         List<DataStore> dataStores = new ArrayList<DataStore>();
-        for ( DataStoreInfo ds : getCatalog().getDataStores() ) {
-            if ( !ds.isEnabled() ) {
+        for (DataStoreInfo ds : getCatalog().getDataStores()) {
+            if (!ds.isEnabled()) {
                 continue;
             }
-            
+
             try {
-                DataAccess da = ds.getDataStore( null );
-                if ( da instanceof DataStore ) {
-                    dataStores.add( (DataStore) da );
+                DataAccess da = ds.getDataStore(null);
+                if (da instanceof DataStore) {
+                    dataStores.add((DataStore) da);
                 }
-            } 
-            catch (IOException e) {
-                LOGGER.log( Level.WARNING, "Unable to get datastore '" + ds.getName() + "'", e );
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Unable to get datastore '" + ds.getName() + "'", e);
             }
         }
         return dataStores;
     }
-    
-    /**
-     * Accessor for the GeoServer catalog.
-     */
+
+    /** Accessor for the GeoServer catalog. */
     public Catalog getCatalog() {
         if (catalog != null) {
             return catalog;
         }
 
-        catalog = GeoServerExtensions.bean( Catalog.class );
-        if ( catalog == null ) {
-            LOGGER.severe( "Could not locate geoserver catalog");
+        catalog = GeoServerExtensions.bean(Catalog.class);
+        if (catalog == null) {
+            LOGGER.severe("Could not locate geoserver catalog");
         }
         return catalog;
     }

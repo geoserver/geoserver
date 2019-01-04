@@ -1,0 +1,138 @@
+<!--
+  ~ (c) 2018 Open Source Geospatial Foundation - all rights reserved
+  ~ This code is licensed under the GPL 2.0 license, available at the root
+  ~ application directory.
+  ~
+  -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:head>
+    <style type="text/css">
+  ul.horizontal div {
+    display:inline;
+  }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </style>
+</wicket:head>
+<wicket:extend>
+    <ul>
+        <li>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="connectionParameters"></wicket:message></span>
+                    <a href="#" wicket:id="connectionParametersHelp" class="help-link"></a>
+                </legend>
+                <ul>
+                    <li class="choiceItem">
+                        <input id="enableRedirectAuthenticationEntryPoint"
+                               wicket:id="enableRedirectAuthenticationEntryPoint" type="checkbox"/>
+                        <label for="enableRedirectAuthenticationEntryPoint"><span><wicket:message
+                                key="enableRedirectAuthenticationEntryPoint"></wicket:message></span></label>
+                        <a href="#" wicket:id="enableRedirectAuthenticationEntryPointHelp"
+                           class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="loginEndpoint"><span><wicket:message
+                                key="loginEndpoint"></wicket:message></span></label>
+                        <input id="loginEndpoint" wicket:id="loginEndpoint" type="text"
+                               class="field text"/>
+                    </li>
+                    <li>
+                        <label for="logoutEndpoint"><span><wicket:message
+                                key="logoutEndpoint"></wicket:message></span></label>
+                        <input id="logoutEndpoint" wicket:id="logoutEndpoint" type="text"
+                               class="field text"></input>
+                    </li>
+                    <li class="choiceItem">
+                        <input id="forceAccessTokenUriHttps"
+                               wicket:id="forceAccessTokenUriHttps"
+                               type="checkbox"/>
+                        <label for="forceAccessTokenUriHttps"><span><wicket:message
+                                key="forceAccessTokenUriHttps"></wicket:message></span></label>
+                    </li>
+                    <li>
+                        <label for="accessTokenUri"><span><wicket:message
+                                key="accessTokenUri"></wicket:message></span></label>
+                        <input id="accessTokenUri" wicket:id="accessTokenUri" type="text"
+                               class="field text"/>
+                        <a href="#" wicket:id="accessTokenUriHelp" class="help-link"></a>
+                    </li>
+                    <li class="choiceItem">
+                        <input id="forceUserAuthorizationUriHttps"
+                               wicket:id="forceUserAuthorizationUriHttps" type="checkbox"/>
+                        <label for="forceUserAuthorizationUriHttps"><span><wicket:message
+                                key="forceUserAuthorizationUriHttps"></wicket:message></span></label>
+                    </li>
+                    <li>
+                        <label for="userAuthorizationUri"><span><wicket:message
+                                key="userAuthorizationUri"></wicket:message></span></label>
+                        <input id="userAuthorizationUri" wicket:id="userAuthorizationUri"
+                               type="text" class="field text"/>
+                        <a href="#" wicket:id="userAuthorizationUriHelp"
+                           class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="redirectUri"><span><wicket:message
+                                key="redirectUri"></wicket:message></span></label>
+                        <input id="redirectUri" wicket:id="redirectUri" type="text"
+                               class="field text"/>
+                        <a href="#" wicket:id="redirectUriHelp" class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="checkTokenEndpointUrl"><span><wicket:message
+                                key="checkTokenEndpointUrl"></wicket:message></span></label>
+                        <input id="checkTokenEndpointUrl" wicket:id="checkTokenEndpointUrl"
+                               type="text" class="field text"/>
+                        <a href="#" wicket:id="checkTokenEndpointUrlHelp"
+                           class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="logoutUri"><span><wicket:message
+                                key="logoutUri"></wicket:message></span></label>
+                        <input id="logoutUri" wicket:id="logoutUri" type="text" class="field text"/>
+                        <a href="#" wicket:id="logoutUriHelp" class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="scopes"><span><wicket:message
+                                key="scopes"></wicket:message></span></label>
+                        <input id="scopes" wicket:id="scopes" type="text"
+                               class="field text"></input>
+                        <a href="#" wicket:id="scopesHelp" class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="cliendId"><span><wicket:message key="cliendId"></wicket:message></span></label>
+                        <input id="cliendId" wicket:id="cliendId" type="text" class="field text"/>
+                        <a href="#" wicket:id="cliendIdHelp" class="help-link"></a>
+                    </li>
+                    <li>
+                        <label for="clientSecret"><span><wicket:message
+                            key="clientSecret"></wicket:message></span></label>
+                        <input id="clientSecret" wicket:id="clientSecret" type="text"
+                               class="field text"/>
+                        <a href="#" wicket:id="clientSecretHelp" class="help-link"></a>
+                    </li>
+                    <wicket:child></wicket:child>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

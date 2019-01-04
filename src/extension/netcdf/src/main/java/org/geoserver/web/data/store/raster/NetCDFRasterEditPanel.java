@@ -11,7 +11,9 @@ import org.apache.wicket.markup.html.form.Form;
 public class NetCDFRasterEditPanel extends AbstractRasterFileEditPanel {
 
     public NetCDFRasterEditPanel(String componentId, Form storeEditForm) {
-        super(componentId, storeEditForm, new String[] { ".nc", ".cdf", ".netcdf", ".nc3", ".nc4", ".ncml" });
+        super(
+                componentId,
+                storeEditForm,
+                new String[] {".nc", ".cdf", ".netcdf", ".nc3", ".nc4", ".ncml"});
     }
-
 }

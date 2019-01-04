@@ -9,30 +9,27 @@ package org.geoserver.security.cas;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
 import org.jasig.cas.client.session.SessionMappingStorage;
 
 /**
- * Removes HTTP sessions recorded by CAS for
- * a single sign out configuration
- * 
- * @author christian
+ * Removes HTTP sessions recorded by CAS for a single sign out configuration
  *
+ * @author christian
  */
 public class SingleSignOutHttpSessionListener implements HttpSessionListener {
 
     private SessionMappingStorage sessionMappingStorage;
-    
+
     public void sessionCreated(final HttpSessionEvent event) {
         // nothing to do at the moment
     }
 
     public void sessionDestroyed(final HttpSessionEvent event) {
         if (sessionMappingStorage == null) {
-            sessionMappingStorage = GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage();
+            sessionMappingStorage =
+                    GeoServerCasAuthenticationFilter.getHandler().getSessionMappingStorage();
         }
         final HttpSession session = event.getSession();
         sessionMappingStorage.removeBySessionById(session.getId());
     }
-
 }

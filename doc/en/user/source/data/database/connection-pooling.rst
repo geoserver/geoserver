@@ -27,7 +27,7 @@ Connection pool options
    * - connection timeout
      - Time, in seconds, the connection pool will wait before giving up its attempt to get a new connection from the database. Defaults to 20 seconds. 
    * - Test while idle
-     - Periodically test if the connections are still valid also while idle in the pool. Sometimes performing a test query using an idle connection can make the datastore unavailable for a while. Often the cause of this troublesome behaviour is related to a network firewall placed between Geoserver and the Database that force the closing of the underlying idle TCP connections.
+     - Periodically test if the connections are still valid also while idle in the pool. Sometimes performing a test query using an idle connection can make the datastore unavailable for a while. Often the cause of this troublesome behaviour is related to a network firewall placed between GeoServer and the Database that force the closing of the underlying idle TCP connections.
    * - Evictor run periodicity
      - Number of seconds between idle object evictor runs.
    * - Max connection idle time

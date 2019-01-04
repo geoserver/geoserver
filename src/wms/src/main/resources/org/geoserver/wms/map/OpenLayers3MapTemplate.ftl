@@ -163,6 +163,7 @@
             <option value="image/gif">GIF</option>
             <option id="jpeg" value="image/jpeg">JPEG</option>
             <option id="jpeg-png" value="image/vnd.jpeg-png">JPEG-PNG</option>
+            <option id="jpeg-png8" value="image/vnd.jpeg-png8">JPEG-PNG8</option>
           </select>
         </li>
         <li>
@@ -234,13 +235,17 @@
       var bounds = [${request.bbox.minX?c}, ${request.bbox.minY?c},
                     ${request.bbox.maxX?c}, ${request.bbox.maxY?c}];
       if (pureCoverage) {
-        document.getElementById('filterType').disabled = true;
-        document.getElementById('filter').disabled = true;
         document.getElementById('antialiasSelector').disabled = true;
-        document.getElementById('updateFilterButton').disabled = true;
-        document.getElementById('resetFilterButton').disabled = true;
         document.getElementById('jpeg').selected = true;
         format = "image/jpeg";
+      }
+
+      var supportsFiltering = ${supportsFiltering?string};
+      if (!supportsFiltering) {
+        document.getElementById('filterType').disabled = true;
+        document.getElementById('filter').disabled = true;
+        document.getElementById('updateFilterButton').disabled = true;
+        document.getElementById('resetFilterButton').disabled = true;
       }
 
       var mousePositionControl = new ol.control.MousePosition({
@@ -256,7 +261,7 @@
           params: {'FORMAT': format,
                    'VERSION': '1.1.1',  
              <#list parameters as param>
-                ${param.name}: '${param.value?js_string}',
+                "${param.name?js_string}": '${param.value?js_string}',
              </#list>
           }
         })
@@ -269,7 +274,7 @@
                    'VERSION': '1.1.1',
                    tiled: true,
              <#list parameters as param>
-                ${param.name}: '${param.value?js_string}',
+                "${param.name?js_string}": '${param.value?js_string}',
              </#list>
              tilesOrigin: ${request.bbox.minX?c} + "," + ${request.bbox.minY?c}
           }
@@ -397,7 +402,7 @@
       }
 
       function updateFilter(){
-        if (pureCoverage) {
+        if (!supportsFiltering) {
           return;
         }
         var filterType = document.getElementById('filterType').value;
@@ -425,7 +430,7 @@
         }
 
         function resetFilter() {
-          if (pureCoverage) {
+          if (!supportsFiltering) {
             return;
           }
           document.getElementById('filter').value = "";

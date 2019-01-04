@@ -8,7 +8,6 @@ package org.geoserver.wfs.xml;
 import org.geotools.gml.producer.GeometryTransformer.GeometryTranslator;
 import org.xml.sax.ContentHandler;
 
-
 public class GML3GeometryTranslator extends GeometryTranslator {
     public GML3GeometryTranslator(ContentHandler handler) {
         super(handler);
@@ -20,6 +19,23 @@ public class GML3GeometryTranslator extends GeometryTranslator {
 
     public GML3GeometryTranslator(ContentHandler handler, int numDecimals) {
         super(handler, numDecimals);
+    }
+
+    public GML3GeometryTranslator(
+            ContentHandler handler,
+            int numDecimals,
+            boolean padWithZeros,
+            boolean forceDecimalEncoding,
+            boolean useDummyZ) {
+        super(handler, numDecimals, padWithZeros, forceDecimalEncoding, useDummyZ);
+    }
+
+    public GML3GeometryTranslator(
+            ContentHandler handler,
+            int numDecimals,
+            boolean padWithZeros,
+            boolean forceDecimalEncoding) {
+        super(handler, numDecimals, padWithZeros, forceDecimalEncoding);
     }
 
     protected String boxName() {

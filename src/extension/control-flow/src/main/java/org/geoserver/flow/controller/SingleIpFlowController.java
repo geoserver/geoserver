@@ -9,7 +9,7 @@ package org.geoserver.flow.controller;
 /**
  * A flow controller that throttles concurrent requests made from the same ip (single ip, specified
  * in configuration file)
- * 
+ *
  * @author Juan Marin, OpenGeo
  */
 public class SingleIpFlowController extends SingleQueueFlowController {
@@ -17,8 +17,9 @@ public class SingleIpFlowController extends SingleQueueFlowController {
     private final String ip;
 
     public SingleIpFlowController(final int queueSize, final String ip) {
-        super(queueSize, new IpRequestMatcher(ip));
+        // building a simpLe thread blocker as this queue is for a single IP, there is no priority
+        // concept here
+        super(new IpRequestMatcher(ip), queueSize, new SimpleThreadBlocker(queueSize));
         this.ip = ip;
     }
-
 }

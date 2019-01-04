@@ -12,10 +12,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 /**
  * A form component for a {@link Point} object.
@@ -29,12 +28,10 @@ public class PointPanel extends FormComponentPanel<Point> {
     GeometryFactory gf = new GeometryFactory();
 
     protected Label xLabel, yLabel;
-
     protected Double x, y;
-
     protected DecimalTextField xInput, yInput;
 
-    public PointPanel(String id ) {
+    public PointPanel(String id) {
         super(id, new Model<Point>(null));
 
         initComponents();
@@ -61,8 +58,8 @@ public class PointPanel extends FormComponentPanel<Point> {
         add(xLabel = new Label("xL", new ResourceModel("x")));
         add(yLabel = new Label("yL", new ResourceModel("y")));
 
-        add( xInput = new DecimalTextField( "x", new PropertyModel<Double>(this, "x")) );
-        add( yInput = new DecimalTextField( "y", new PropertyModel<Double>(this, "y")) );
+        add(xInput = new DecimalTextField("x", new PropertyModel<Double>(this, "x")));
+        add(yInput = new DecimalTextField("y", new PropertyModel<Double>(this, "y")));
     }
 
     @Override
@@ -73,28 +70,32 @@ public class PointPanel extends FormComponentPanel<Point> {
 
     private void updateFields() {
         Point p = (Point) getModelObject();
-        if(p != null) {
+        if (p != null) {
             this.x = p.getX();
             this.y = p.getY();
         }
     }
 
-    public PointPanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (component, visit) -> {
-            component.setEnabled(!readOnly);
-        });
+    public PointPanel setReadOnly(final boolean readOnly) {
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    component.setEnabled(!readOnly);
+                });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField<?>) component).processInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField<?>) component).processInput();
+                });
 
         // update the point model
-        if(x != null && y != null) {
+        if (x != null && y != null) {
             setConvertedInput(gf.createPoint(new Coordinate(x, y)));
         } else {
             setConvertedInput(null);
@@ -106,19 +107,20 @@ public class PointPanel extends FormComponentPanel<Point> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField<?>) component).clearInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField<?>) component).clearInput();
+                });
     }
 
     /**
      * Sets the max number of digits for the
+     *
      * @param maximumFractionDigits
      */
     public void setMaximumFractionDigits(int maximumFractionDigits) {
         xInput.setMaximumFractionDigits(maximumFractionDigits);
         yInput.setMaximumFractionDigits(maximumFractionDigits);
     }
-
-
 }

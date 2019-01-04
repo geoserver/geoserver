@@ -12,9 +12,7 @@ package org.geoserver.wps.transmute;
  * @author Lucas Reed, Refractions Research Inc
  */
 public class GML2LineStringTransmuter extends GML2ComplexTransmuter {
-    /**
-     * @see ComplexTransmuter#getSchema(String)
-     */
+    /** @see ComplexTransmuter#getSchema(String) */
     public String getSchema(String urlBase) {
         return urlBase + "ows?service=WPS&request=GetSchema&Identifier=gml2linestring.xsd";
     }

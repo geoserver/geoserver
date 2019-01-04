@@ -12,9 +12,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.geoserver.security.CatalogMode;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class WPSAccessMixedTest extends AbstractWPSAccessTest {
 
@@ -41,7 +40,9 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     @Test
     public void testNotAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth(null, null);
-        MockHttpServletResponse response = getAsServletResponse("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wps?service=wps&request=describeprocess&identifier=JTS:buffer");
         assertEquals(response.getStatus(), 401);
     }
 
@@ -49,7 +50,8 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     public void testAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth("test", "test");
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertXpathEvaluatesTo("1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
+        assertXpathEvaluatesTo(
+                "1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
     }
 
     // Execute process
@@ -77,5 +79,4 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     protected CatalogMode getMode() {
         return CatalogMode.MIXED;
     }
-
 }

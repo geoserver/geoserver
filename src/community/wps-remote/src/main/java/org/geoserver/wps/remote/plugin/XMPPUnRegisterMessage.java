@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
@@ -16,9 +15,8 @@ import org.jivesoftware.smack.packet.Packet;
 
 /**
  * Listens for "UNREGISTER" messages from XMPP service channels and takes action accordingly.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class XMPPUnRegisterMessage implements XMPPMessage {
 
@@ -33,15 +31,15 @@ public class XMPPUnRegisterMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message,
-            Map<String, String> signalArgs) {
+    public void handleSignal(
+            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         try {
             xmppClient.handleMemberLeave(packet);
         } catch (Exception e) {
             // NOTIFY LISTENERS
-            final Set<RemoteProcessClientListener> remoteClientListeners = xmppClient
-                    .getRemoteClientListeners();
+            final Set<RemoteProcessClientListener> remoteClientListeners =
+                    xmppClient.getRemoteClientListeners();
             synchronized (remoteClientListeners) {
                 for (RemoteProcessClientListener listener : remoteClientListeners) {
 
@@ -54,7 +52,5 @@ public class XMPPUnRegisterMessage implements XMPPMessage {
                 }
             }
         }
-
     }
-
 }

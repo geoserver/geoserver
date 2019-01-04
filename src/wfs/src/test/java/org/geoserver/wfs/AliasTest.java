@@ -9,9 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
 import javax.xml.namespace.QName;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -23,32 +21,33 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class AliasTest extends WFSTestSupport {
-  
+
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
-        setAliasedType( CiteTestData.FIFTEEN, "ft15", getCatalog());
+        setAliasedType(CiteTestData.FIFTEEN, "ft15", getCatalog());
     }
-    
-    private void setAliasedType( QName qName, String alias, Catalog catalog)
-            throws IOException {
-    	String name = qName.getLocalPart();        
+
+    private void setAliasedType(QName qName, String alias, Catalog catalog) throws IOException {
+        String name = qName.getLocalPart();
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(name);
         featureType.setName(alias);
         getCatalog().save(featureType);
     }
-    
+
     @Test
     public void testAliasFifteen() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&service=wfs");
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertTrue(doc.getElementsByTagName("gml:featureMember").getLength() > 0);
         assertTrue(doc.getElementsByTagName("cdf:ft15").getLength() > 0);
     }
-    
+
     @Test
     public void testGetByFeatureId() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&featureId=ft15.1");
+        Document doc =
+                getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&featureId=ft15.1");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMember").getLength());
@@ -58,7 +57,7 @@ public class AliasTest extends WFSTestSupport {
         final Node fidNode = feature.getAttributes().getNamedItem("fid");
         assertEquals("ft15.1", fidNode.getTextContent());
     }
-    
+
     @Test
     public void testDescribeFeatureType() throws Exception {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&typename=cdf:ft15&version=1.0.0");
@@ -67,6 +66,4 @@ public class AliasTest extends WFSTestSupport {
 
         XMLAssert.assertXpathEvaluatesTo("ft15", "/xs:schema/xs:element/@name", doc);
     }
-    
-    
 }

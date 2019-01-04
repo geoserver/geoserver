@@ -1,0 +1,128 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--27105a88:1247622085b:-7ff7</id>
+  <name>PrimitiveGeoFeature</name>
+  <nativeName>PrimitiveGeoFeature</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--27105a88:1247622085b:-8000</id>
+  </namespace>
+  <title>PrimitiveGeoFeatureType</title>
+  <abstract>Generated from sf</abstract>
+  <keywords>
+    <string>sf</string>
+    <string>PrimitiveGeoFeature</string>
+  </keywords>
+  <metadataLinks>
+    <metadataLink>
+      <type>text/xml</type>
+      <metadataType>ISO19115:2003</metadataType>
+      <content>http://demo.geo-solutions.it/geonetwork/srv/eng/xml_iso19139?uuid=56999ff4-c701-48df-8050-955a45c4478e</content>
+    </metadataLink>
+  </metadataLinks>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cachingEnabled">false</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">sf_PrimitiveGeoFeature</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--27105a88:1247622085b:-7ffc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>description</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>identifier</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>surfaceProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>pointProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>curveProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>intProperty</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>uriProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>measurand</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>dateTimeProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>dateProperty</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>decimalProperty</name>
+      <minOccurs>1</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

@@ -6,12 +6,9 @@ package org.geoserver.web;
 
 /**
  * Interface for GeoServer Pages which can simply ignore ConfigurationLock since they are safe.
- * 
- * The developer *MUST* know what he is doing and manage the configuration read/write safely!
- * 
- * @author Alessio Fabiani, GeoSolutions S.A.S.
  *
+ * <p>The developer *MUST* know what he is doing and manage the configuration read/write safely!
+ *
+ * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public interface GeoServerUnlockablePage {
-
-}
+public interface GeoServerUnlockablePage {}

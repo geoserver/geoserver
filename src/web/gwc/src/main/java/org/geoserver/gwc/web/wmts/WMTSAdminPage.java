@@ -35,7 +35,5 @@ public class WMTSAdminPage extends BaseServiceAdminPage<WMTSInfo> {
     }
 
     @Override
-    protected void build(IModel info, Form form) {
-        form.get("citeCompliant").setEnabled(false);
-    }
+    protected void build(IModel info, Form form) {}
 }

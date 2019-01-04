@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class StyleEditPageNoLayersTest extends GeoServerWicketTestSupport {
-    
+
     StyleInfo buildingsStyle;
     StyleEditPage edit;
 
@@ -22,18 +22,18 @@ public class StyleEditPageNoLayersTest extends GeoServerWicketTestSupport {
     public void setUp() throws Exception {
         Catalog catalog = getCatalog();
         login();
-        
+
         buildingsStyle = catalog.getStyleByName(MockData.BUILDINGS.getLocalPart());
-        if(buildingsStyle == null) {
+        if (buildingsStyle == null) {
             // undo the rename performed in one of the test methods
             StyleInfo si = catalog.getStyleByName("BuildingsNew");
-            if(si != null) {
+            if (si != null) {
                 si.setName(MockData.BUILDINGS.getLocalPart());
                 catalog.save(si);
             }
             buildingsStyle = catalog.getStyleByName(MockData.BUILDINGS.getLocalPart());
         }
-        //Clear all layers
+        // Clear all layers
         catalog.getLayers().forEach(catalog::remove);
 
         edit = new StyleEditPage(buildingsStyle);
@@ -47,27 +47,31 @@ public class StyleEditPageNoLayersTest extends GeoServerWicketTestSupport {
 
         tester.debugComponentTrees();
         tester.assertComponent("styleForm:context:panel:name", TextField.class);
-        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent(
+                "styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
     }
-    
+
     @Test
     public void testPublishingTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
-        tester.assertErrorMessages(new String[] {"Cannot show Publishing options: No Layers available."});
+        tester.assertErrorMessages(
+                new String[] {"Cannot show Publishing options: No Layers available."});
     }
 
     @Test
     public void testLayerPreviewTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
-        tester.assertErrorMessages(new String[] {"Cannot show Layer Preview: No Layers available."});
+        tester.assertErrorMessages(
+                new String[] {"Cannot show Layer Preview: No Layers available."});
     }
 
     @Test
     public void testLayerAttributesTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
-        tester.assertErrorMessages(new String[] {"Cannot show Attribute Preview: No Layers available."});
+        tester.assertErrorMessages(
+                new String[] {"Cannot show Attribute Preview: No Layers available."});
     }
 }

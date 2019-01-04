@@ -89,8 +89,9 @@
 
   <bean id="wcs100SectionKvpParser" class="org.geoserver.wcs.kvp.SectionKvpParser" />
   
-  <bean id="wcs100TimeKvpParser" class="org.geoserver.ows.kvp.TimeKvpParser">
+  <bean id="wcs100TimeKvpParser" class="org.geoserver.wcs.kvp.TimeKvpParser">
     <constructor-arg value="TIME"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
 
 

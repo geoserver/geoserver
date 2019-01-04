@@ -9,18 +9,17 @@ import org.geoserver.config.GeoServer;
 
 /**
  * Base class for transaction element handlers.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public abstract class AbstractTransactionElementHandler implements TransactionElementHandler {
 
     protected GeoServer geoServer;
-    
+
     protected AbstractTransactionElementHandler(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
-    
+
     protected WFSInfo getInfo() {
         return geoServer.getService(WFSInfo.class);
     }

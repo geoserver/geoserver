@@ -5,13 +5,9 @@
  */
 package org.geoserver.wms.map;
 
-
 public class GIFMapResponseTest extends RenderedImageMapOutputFormatTest {
-
- 
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
         return new RenderedImageMapOutputFormat("image/gif", getWMS());
     }
-
 }

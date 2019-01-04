@@ -14,30 +14,26 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.util.Converters;
 
 /**
- * Default implementation for selecting the default values for dimensions of 
- * feature (vector) resources using the maximum domain value strategy.
- *  
- * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ * Default implementation for selecting the default values for dimensions of feature (vector)
+ * resources using the maximum domain value strategy.
  *
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class FeatureMaximumValueSelectionStrategyImpl extends
-        AbstractFeatureAttributeVisitorSelectionStrategy {
+public class FeatureMaximumValueSelectionStrategyImpl
+        extends AbstractFeatureAttributeVisitorSelectionStrategy {
 
-    /**
-     * Default constructor.
-     */
-    public FeatureMaximumValueSelectionStrategyImpl() {
-    }
+    /** Default constructor. */
+    public FeatureMaximumValueSelectionStrategyImpl() {}
 
     @Override
-    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class clz) {
+    public Object getDefaultValue(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
         final MaxVisitor max = new MaxVisitor(dimension.getAttribute());
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, max);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            return Converters.convert(max.getMax(),clz);
+            return Converters.convert(max.getMax(), clz);
         }
-    }   
+    }
 }

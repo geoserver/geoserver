@@ -6,7 +6,6 @@
 package org.geoserver.security.web.auth;
 
 import java.util.Arrays;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -26,34 +25,35 @@ import org.geoserver.web.wicket.HelpLink;
 
 /**
  * Configuration panel for {@link GeoServerPreAuthenticatedUserNameFilter}.
- * 
+ *
  * @author mcr
  */
-public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthenticatedUserNameFilterConfig> 
-    extends AuthenticationFilterPanel<T> {
+public abstract class PreAuthenticatedUserNameFilterPanel<
+                T extends PreAuthenticatedUserNameFilterConfig>
+        extends AuthenticationFilterPanel<T> {
 
     DropDownChoice<RoleSource> roleSourceChoice;
 
     public PreAuthenticatedUserNameFilterPanel(String id, IModel<T> model) {
         super(id, model);
-                                        
-        add(new HelpLink("roleSourceHelp",this).setDialog(dialog));
-        
+
+        add(new HelpLink("roleSourceHelp", this).setDialog(dialog));
+
         createRoleSourceDropDown();
 
         roleSourceChoice.setNullValid(false);
-        
-        roleSourceChoice.add(new OnChangeAjaxBehavior() {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                Panel p = getRoleSourcePanel(roleSourceChoice.getModelObject());
-                
-                WebMarkupContainer c = (WebMarkupContainer)get("container"); 
-                c.addOrReplace(p);
-                target.add(c);
-            }
-        });
-        
+
+        roleSourceChoice.add(
+                new OnChangeAjaxBehavior() {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        Panel p = getRoleSourcePanel(roleSourceChoice.getModelObject());
+
+                        WebMarkupContainer c = (WebMarkupContainer) get("container");
+                        c.addOrReplace(p);
+                        target.add(c);
+                    }
+                });
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         add(container.setOutputMarkupId(true));
@@ -64,24 +64,26 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
     }
 
     protected Panel getRoleSourcePanel(RoleSource model) {
-        if(PreAuthenticatedUserNameRoleSource.UserGroupService.equals(model)) {
+        if (PreAuthenticatedUserNameRoleSource.UserGroupService.equals(model)) {
             return new UserGroupServicePanel("panel");
-        } else if(PreAuthenticatedUserNameRoleSource.RoleService.equals(model)) {
+        } else if (PreAuthenticatedUserNameRoleSource.RoleService.equals(model)) {
             return new RoleServicePanel("panel");
-        } else if(PreAuthenticatedUserNameRoleSource.Header.equals(model)) {
+        } else if (PreAuthenticatedUserNameRoleSource.Header.equals(model)) {
             return new HeaderPanel("panel");
         }
         return new EmptyPanel("panel");
     }
 
     protected void createRoleSourceDropDown() {
-        add(roleSourceChoice = new DropDownChoice<RoleSource>("roleSource",
-                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
-                new RoleSourceChoiceRenderer()));
+        add(
+                roleSourceChoice =
+                        new DropDownChoice<RoleSource>(
+                                "roleSource",
+                                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
+                                new RoleSourceChoiceRenderer()));
     }
 
-    protected void addRoleSourceDropDown(WebMarkupContainer container,
-            RoleSource rs) {
+    protected void addRoleSourceDropDown(WebMarkupContainer container, RoleSource rs) {
         container.addOrReplace(getRoleSourcePanel(rs));
     }
 

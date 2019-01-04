@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2015 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="qosWmsExtendedCapsProvider" class="org.geoserver.qos.wms.QosWMSCapabilitiesProvider">
+  	<property name="configLoader" ref="wmsQosConfigurationLoader" />
+  </bean>
+  
+  <!-- 
+  <bean id="inspireWfsExtendedCapsProvider" class="org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider">
+  </bean>
+    
+  <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireWmsAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+  </bean>
+  <bean id="inspireWfsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireWfsAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+  </bean> -->
+  
+  <bean id="qosWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="qosWmsAdminPanel"/>
+    <property name="titleKey" value="qos"/>
+    <property name="componentClass" value="org.geoserver.qos.web.QosWmsAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+  </bean>
+  
+  <bean id="wmsQosConfigurationLoader" class="org.geoserver.qos.wms.WmsQosConfigurationLoader">
+  	 <property name="dataDirectory" ref="dataDirectory" />
+  </bean>
+  
+  <bean id="qosXStreamPersisterInitializer" class="org.geoserver.qos.QosXStreamPersisterInitializer"></bean>
+  
+  <!-- WFS -->
+  <bean id="qosWfsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="qosWfsAdminPanel"/>
+    <property name="titleKey" value="qos"/>
+    <property name="componentClass" value="org.geoserver.qos.web.QosWfsAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
+  </bean>
+  
+  <bean id="wfsQosConfigurationLoader" class="org.geoserver.qos.wfs.WfsQosConfigurationLoader">
+  	 <property name="dataDirectory" ref="dataDirectory" />
+  </bean>
+  
+  <bean id="qosWfsExtendedCapsProvider" class="org.geoserver.qos.wfs.QosWFSCapabilitiesProvider">
+  	<property name="configLoader" ref="wfsQosConfigurationLoader" />
+  </bean>
+  
+</beans>

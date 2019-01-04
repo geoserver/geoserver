@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -28,8 +27,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
  */
 
 public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
-    
-    
+
     public void configure(XStreamPersister xp) {
         super.configure(xp);
         xp.getXStream().alias("memoryreadonlygroupservice", MemoryUserGroupServiceConfigImpl.class);
@@ -38,15 +36,14 @@ public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
 
     @Override
     public Map<Class<?>, Set<String>> getFieldsForEncryption() {
-        Map<Class<?>, Set<String>> map = new HashMap <Class<?>, Set<String>>();
-        
-        Set<String> fields= new HashSet<String>();
-        fields.add("toBeEncrypted");        
-        map.put(MemoryRoleServiceConfigImpl.class,fields);
-        map.put(MemoryUserGroupServiceConfigImpl.class,fields);
+        Map<Class<?>, Set<String>> map = new HashMap<Class<?>, Set<String>>();
+
+        Set<String> fields = new HashSet<String>();
+        fields.add("toBeEncrypted");
+        map.put(MemoryRoleServiceConfigImpl.class, fields);
+        map.put(MemoryUserGroupServiceConfigImpl.class, fields);
         return map;
     }
-
 
     @Override
     public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
@@ -69,10 +66,10 @@ public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
             throws IOException {
         return new ReadOnlyRoleService();
     }
-    
-    @Override
-    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
-        return new MemorySecurityConfigValidator(securityManager); 
-     }
 
+    @Override
+    public SecurityConfigValidator createConfigurationValidator(
+            GeoServerSecurityManager securityManager) {
+        return new MemorySecurityConfigValidator(securityManager);
+    }
 }

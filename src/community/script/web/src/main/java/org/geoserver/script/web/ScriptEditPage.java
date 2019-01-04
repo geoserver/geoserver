@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -30,9 +29,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
-/**
- * Allows editing a specific Script
- */
+/** Allows editing a specific Script */
 @SuppressWarnings("serial")
 public class ScriptEditPage extends GeoServerSecuredPage {
 
@@ -61,42 +58,52 @@ public class ScriptEditPage extends GeoServerSecuredPage {
     private void init(Script script) {
         scriptModel = new ScriptDetachableModel(script);
 
-        Form<?> form = new Form<Object>("form", new CompoundPropertyModel<Object>(scriptModel)) {
-            protected void onSubmit() {
-                try {
-                    saveScript();
-                    doReturn(ScriptPage.class);
-                } catch (RuntimeException e) {
-                    LOGGER.log(Level.WARNING, "Failed to save script", e);
-                    error(e.getMessage() == null ? "Failed to save script, no error message available, see logs for details"
-                            : e.getMessage());
-                }
-            }
-        };
+        Form<?> form =
+                new Form<Object>("form", new CompoundPropertyModel<Object>(scriptModel)) {
+                    protected void onSubmit() {
+                        try {
+                            saveScript();
+                            doReturn(ScriptPage.class);
+                        } catch (RuntimeException e) {
+                            LOGGER.log(Level.WARNING, "Failed to save script", e);
+                            error(
+                                    e.getMessage() == null
+                                            ? "Failed to save script, no error message available, see logs for details"
+                                            : e.getMessage());
+                        }
+                    }
+                };
         add(form);
 
         // Name
         Label nameLabel = new Label("nameLabel", new PropertyModel<Object>(scriptModel, "name"));
         form.add(nameLabel);
-        HiddenField<?> name = new HiddenField<Object>("name", new PropertyModel<Object>(scriptModel, "name"));
+        HiddenField<?> name =
+                new HiddenField<Object>("name", new PropertyModel<Object>(scriptModel, "name"));
         form.add(name);
-        
+
         // Type
         Label typeLabel = new Label("typeLabel", new PropertyModel<Object>(scriptModel, "type"));
         form.add(typeLabel);
-        HiddenField<?> type = new HiddenField<Object>("type", new PropertyModel<Object>(scriptModel, "type"));
+        HiddenField<?> type =
+                new HiddenField<Object>("type", new PropertyModel<Object>(scriptModel, "type"));
         form.add(type);
-        
+
         // Extension
-        Label extensionLabel = new Label("extensionLabel", new PropertyModel<Object>(scriptModel, "extension"));
+        Label extensionLabel =
+                new Label("extensionLabel", new PropertyModel<Object>(scriptModel, "extension"));
         form.add(extensionLabel);
-        HiddenField<?> extension = new HiddenField<Object>("extension", new PropertyModel<Object>(scriptModel, "extension"));
+        HiddenField<?> extension =
+                new HiddenField<Object>(
+                        "extension", new PropertyModel<Object>(scriptModel, "extension"));
         form.add(extension);
 
         // Content
-        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptManager");
         String mode = scriptManager.lookupPluginEditorMode(script.getResource());
-        CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel<String>(scriptModel, "contents"));
+        CodeMirrorEditor content =
+                new CodeMirrorEditor(
+                        "contents", mode, new PropertyModel<String>(scriptModel, "contents"));
         content.setRequired(true);
         form.add(content);
 
@@ -112,7 +119,7 @@ public class ScriptEditPage extends GeoServerSecuredPage {
 
     private void saveScript() {
         Script script = (Script) scriptModel.getObject();
-        OutputStream out = script.getResource().out();        
+        OutputStream out = script.getResource().out();
         try {
             IOUtils.write(script.getContents(), out);
         } catch (IOException e) {

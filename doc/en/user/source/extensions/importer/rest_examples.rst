@@ -194,7 +194,7 @@ Drilling into the task layer we can see the srs information is missing::
 	    "attributes": [
 	      {
 	        "name": "the_geom",
-	        "binding": "com.vividsolutions.jts.geom.MultiPoint"
+	        "binding": "org.locationtech.jts.geom.MultiPoint"
 	      },
 	      {
 	        "name": "CITY_NAME",

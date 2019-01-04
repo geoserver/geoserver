@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -21,15 +20,15 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import org.apache.commons.io.IOUtils;
+// import org.apache.commons.io.IOUtils;
 
 /**
  * Jetty starter, will run GeoBatch inside the Jetty web container.<br>
- * Useful for debugging, especially in IDE were you have direct dependencies between the sources of the various modules (such as Eclipse).
- * 
+ * Useful for debugging, especially in IDE were you have direct dependencies between the sources of
+ * the various modules (such as Eclipse).
+ *
  * @author Andrea Aime - GeoSolutions SAS
  * @author Carlo Cancellieri - GeoSolutions SAS
- * 
  */
 public class Start {
     private static final Logger log = LoggerFactory.getLogger(Start.class);
@@ -41,78 +40,74 @@ public class Start {
         tp.setMaximumPoolSize(50);
 
         Server server = null;
-		ServerConnector conn = null;
-		try {
-			server = new Server(new ExecutorThreadPool(tp));
+        ServerConnector conn = null;
+        try {
+            server = new Server(new ExecutorThreadPool(tp));
 
-			// TODO pass properties file
-			File properties = null;
-			if (args.length == 1) {
-				String propertiesFileName = args[0];
-				if (!propertiesFileName.isEmpty()) {
-					properties = new File(propertiesFileName);
-				}
-			} else {
-				properties = new File("src/test/resources/jetty.properties");
-			}
-			Properties prop = loadProperties(properties);
-			
-			for (Object key : prop.keySet()){
-			    String property=System.getProperty(key.toString());
-			    String envProp=System.getenv(key.toString());
-			    if (property !=null){
-			        prop.put(key,property);			        
-			    } else if (envProp!=null) {
-			        prop.put(key,envProp);
-			    }
-			}
-			
-			// load properties into system env
-			setSystemProperties(prop);
+            // TODO pass properties file
+            File properties = null;
+            if (args.length == 1) {
+                String propertiesFileName = args[0];
+                if (!propertiesFileName.isEmpty()) {
+                    properties = new File(propertiesFileName);
+                }
+            } else {
+                properties = new File("src/test/resources/jetty.properties");
+            }
+            Properties prop = loadProperties(properties);
 
-			server.setHandler(configureContext(prop));
+            for (Object key : prop.keySet()) {
+                String property = System.getProperty(key.toString());
+                String envProp = System.getenv(key.toString());
+                if (property != null) {
+                    prop.put(key, property);
+                } else if (envProp != null) {
+                    prop.put(key, envProp);
+                }
+            }
 
-			conn = configureConnection(prop, server);
+            // load properties into system env
+            setSystemProperties(prop);
 
-			server.setConnectors(new Connector[] { conn });
+            server.setHandler(configureContext(prop));
 
-			server.start();
+            conn = configureConnection(prop, server);
 
-			// use this to test normal stop behavior, that is, to check stuff
-			// that
-			// need to be done on container shutdown (and yes, this will make
-			// jetty stop just after you started it...)
-			// jettyServer.stop();
-		} catch (Throwable e) {
-			log.error("Could not start the Jetty server: " + e.getMessage(), e);
+            server.setConnectors(new Connector[] {conn});
 
-			if (server != null) {
-				try {
-					server.stop();
-				} catch (Exception e1) {
-					log.error(
-							"Unable to stop the Jetty server:"
-									+ e1.getMessage(), e1);
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.stop();
-				} catch (Exception e1) {
-					log.error(
-							"Unable to stop the connection:" + e1.getMessage(),
-							e1);
-				}
-			}
-		}
-	}
+            server.start();
 
-    public final static String JETTY_PORT = "jetty.port";
+            // use this to test normal stop behavior, that is, to check stuff
+            // that
+            // need to be done on container shutdown (and yes, this will make
+            // jetty stop just after you started it...)
+            // jettyServer.stop();
+        } catch (Throwable e) {
+            log.error("Could not start the Jetty server: " + e.getMessage(), e);
 
-    public final static String JETTY_PORT_DEFAULT = "8080";
+            if (server != null) {
+                try {
+                    server.stop();
+                } catch (Exception e1) {
+                    log.error("Unable to stop the Jetty server:" + e1.getMessage(), e1);
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.stop();
+                } catch (Exception e1) {
+                    log.error("Unable to stop the connection:" + e1.getMessage(), e1);
+                }
+            }
+        }
+    }
 
-    private static Properties loadProperties(final File props) throws IllegalArgumentException,
-            IOException {
+    public static final String JETTY_PORT = "jetty.port";
+
+    public static final String JETTY_PORT_DEFAULT = "8080";
+
+    private static Properties loadProperties(final File props)
+            throws IllegalArgumentException, IOException {
         Properties prop = new Properties();
         if (props == null || !props.exists()) {
             throw new IllegalArgumentException("Bad file name argument: " + props);
@@ -122,8 +117,7 @@ public class Start {
             is = new FileInputStream(props);
             prop.load(is);
         } finally {
-            if (is != null)
-                is.close();
+            if (is != null) is.close();
         }
 
         return prop;
@@ -151,17 +145,17 @@ public class Start {
         return conn;
     }
 
-    public final static String CONTEXT_PATH = "context.path";
+    public static final String CONTEXT_PATH = "context.path";
 
-    public final static String CONTEXT_PATH_DEFAULT = "/geobatch";
+    public static final String CONTEXT_PATH_DEFAULT = "/geobatch";
 
-    public final static String WAR_PATH = "war.path";
+    public static final String WAR_PATH = "war.path";
 
-    public final static String WAR_PATH_DEFAULT = "src/main/webapp";
+    public static final String WAR_PATH_DEFAULT = "src/main/webapp";
 
-    public final static String TEMP_DIR = "temp.dir";
+    public static final String TEMP_DIR = "temp.dir";
 
-    public final static String TEMP_DIR_DEFAULT = "target/work";
+    public static final String TEMP_DIR_DEFAULT = "target/work";
 
     private static WebAppContext configureContext(final Properties prop) {
         WebAppContext wah = new WebAppContext();

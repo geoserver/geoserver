@@ -8,23 +8,18 @@ package org.geoserver.csw.feature.sort;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import org.geoserver.catalog.Info;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 /**
  * Builds comparators against catalog info objects based on {@link SortBy} definitions
- * 
+ *
  * @author Niels Charlier
- * 
  */
 public class CatalogComparatorFactory {
 
-    /**
-     * Builds a composite comparator matching the specified sortBy array
-     *
-     */
+    /** Builds a composite comparator matching the specified sortBy array */
     public static Comparator<Info> buildComparator(SortBy... sortBy) {
         if (sortBy.length == 0) {
             throw new IllegalArgumentException(
@@ -44,9 +39,7 @@ public class CatalogComparatorFactory {
         }
     }
 
-    /**
-     * Builds a single comparator based on the sortBy specification
-     */
+    /** Builds a single comparator based on the sortBy specification */
     public static Comparator<Info> buildComparator(SortBy sortBy) {
         if (sortBy == null) {
             throw new NullPointerException("The sortBy argument must be not null");
@@ -57,8 +50,8 @@ public class CatalogComparatorFactory {
         } else if (sortBy == SortBy.REVERSE_ORDER) {
             return new InfoComparator(false);
         } else {
-            return new PropertyComparator<Info>(sortBy.getPropertyName(),
-                    sortBy.getSortOrder() == SortOrder.ASCENDING);
+            return new PropertyComparator<Info>(
+                    sortBy.getPropertyName(), sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }
 }

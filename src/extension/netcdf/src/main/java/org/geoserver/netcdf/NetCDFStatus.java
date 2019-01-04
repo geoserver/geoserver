@@ -7,10 +7,9 @@ package org.geoserver.netcdf;
 
 import java.util.Optional;
 import org.geoserver.platform.ModuleStatus;
-import org.geotools.factory.GeoTools;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.Version;
-
+import org.geotools.util.factory.GeoTools;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 
 public class NetCDFStatus implements ModuleStatus {
@@ -60,5 +59,4 @@ public class NetCDFStatus implements ModuleStatus {
     public Optional<String> getDocumentation() {
         return Optional.ofNullable("");
     }
-
 }

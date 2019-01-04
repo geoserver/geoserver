@@ -6,7 +6,6 @@
 package org.geoserver.gwc.web;
 
 import java.io.Serializable;
-
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -15,32 +14,30 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.wms.WMSLayer;
 
-/**
- * Utility class used to lookup icons for various catalog objects
- */
+/** Utility class used to lookup icons for various catalog objects */
 @SuppressWarnings("serial")
 public class GWCIconFactory implements Serializable {
 
-    public static final PackageResourceReference UNKNOWN_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final PackageResourceReference UNKNOWN_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final PackageResourceReference DISABLED_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final PackageResourceReference DISABLED_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
 
-    public static final PackageResourceReference ENABLED_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/tick.png");
+    public static final PackageResourceReference ENABLED_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/tick.png");
 
-    public static final PackageResourceReference ADD_ICON = new PackageResourceReference(GeoServerBasePage.class,
-            "img/icons/silk/add.png");
+    public static final PackageResourceReference ADD_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/add.png");
 
-    public static final PackageResourceReference DELETE_ICON = new PackageResourceReference(
-            GeoServerBasePage.class, "img/icons/silk/delete.png");
+    public static final PackageResourceReference DELETE_ICON =
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
 
-    public static final PackageResourceReference GRIDSET = new PackageResourceReference(GWCSettingsPage.class,
-            "gridset.png");
+    public static final PackageResourceReference GRIDSET =
+            new PackageResourceReference(GWCSettingsPage.class, "gridset.png");
 
-    public static final PackageResourceReference GWC = new PackageResourceReference(GWCSettingsPage.class,
-            "geowebcache-16.png");
+    public static final PackageResourceReference GWC =
+            new PackageResourceReference(GWCSettingsPage.class, "geowebcache-16.png");
 
     private GWCIconFactory() {
         // private constructor, this is a singleton
@@ -48,9 +45,8 @@ public class GWCIconFactory implements Serializable {
 
     /**
      * Returns the appropriate icon for the specified layer type.
-     * 
-     * @param info
      *
+     * @param info
      */
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer) {

@@ -10,9 +10,8 @@ import org.geoserver.security.validation.FilterConfigException;
 
 /**
  * Exception for {@link AuthenticationKeyFilterConfig} objects
- * 
- * @author mcr
  *
+ * @author mcr
  */
 public class AuthenticationKeyFilterConfigException extends FilterConfigException {
 
@@ -20,18 +19,16 @@ public class AuthenticationKeyFilterConfigException extends FilterConfigExceptio
 
     public AuthenticationKeyFilterConfigException(String errorId, Object... args) {
         super(errorId, args);
-        
     }
 
     public AuthenticationKeyFilterConfigException(String errorId, String message, Object... args) {
         super(errorId, message, args);
-        
     }
-    
-    public static final String AUTH_KEY_PARAM_NAME_REQUIRED ="AUTH_KEY_PARAM_NAME_REQUIRED";
-    public static final String AUTH_KEY_MAPPER_NAME_REQUIRED ="AUTH_KEY_MAPPER_NAME_REQUIRED";
-    public static final String AUTH_KEY_MAPPER_NOT_FOUND_$1 ="AUTH_KEY_MAPPER_NOT_FOUND";
-    public static final String INVALID_AUTH_KEY_MAPPER_$2="INVALID_AUTH_KEY_MAPPER";
-    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 ="INVALID_AUTH_KEY_MAPPER_PARAMETER";
-                
+
+    public static final String AUTH_KEY_PARAM_NAME_REQUIRED = "AUTH_KEY_PARAM_NAME_REQUIRED";
+    public static final String AUTH_KEY_MAPPER_NAME_REQUIRED = "AUTH_KEY_MAPPER_NAME_REQUIRED";
+    public static final String AUTH_KEY_MAPPER_NOT_FOUND_$1 = "AUTH_KEY_MAPPER_NOT_FOUND";
+    public static final String INVALID_AUTH_KEY_MAPPER_$2 = "INVALID_AUTH_KEY_MAPPER";
+    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 =
+            "INVALID_AUTH_KEY_MAPPER_PARAMETER";
 }

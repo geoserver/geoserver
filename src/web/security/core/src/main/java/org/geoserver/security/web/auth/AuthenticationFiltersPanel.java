@@ -5,16 +5,15 @@
  */
 package org.geoserver.security.web.auth;
 
-import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
-import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geoserver.security.web.SecurityNamedServicesPanel;
 
-public class AuthenticationFiltersPanel extends SecurityNamedServicesPanel<SecurityAuthFilterConfig>{
+public class AuthenticationFiltersPanel
+        extends SecurityNamedServicesPanel<SecurityAuthFilterConfig> {
 
     public AuthenticationFiltersPanel(String id) {
         super(id, new AuthenticationFiltersProvider());
@@ -28,14 +27,13 @@ public class AuthenticationFiltersPanel extends SecurityNamedServicesPanel<Secur
     @Override
     protected void validateRemoveConfig(SecurityAuthFilterConfig config)
             throws SecurityConfigException {
-        SecurityConfigValidator.getConfigurationValiator(GeoServerSecurityFilter.class, 
-            config.getClassName()).validateRemoveFilter(config);
+        SecurityConfigValidator.getConfigurationValiator(
+                        GeoServerSecurityFilter.class, config.getClassName())
+                .validateRemoveFilter(config);
     }
 
     @Override
-    protected void removeConfig(SecurityAuthFilterConfig config)
-            throws Exception {
+    protected void removeConfig(SecurityAuthFilterConfig config) throws Exception {
         getSecurityManager().removeFilter(config);
     }
-
 }

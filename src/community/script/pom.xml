@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.15-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-script</artifactId>
@@ -22,16 +22,10 @@
    <artifactId>gs-rest</artifactId>
    <version>${project.version}</version>
   </dependency>
-
   <dependency>
-   <groupId>org.restlet</groupId>
-   <artifactId>org.restlet</artifactId>
-   <classifier>noobjrep</classifier> <!-- remove after upgrading Restlet -->
-  </dependency>
-  <dependency>
-    <groupId>org.restlet</groupId>
-    <artifactId>org.restlet</artifactId>
-    <scope>provided</scope>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-restconfig</artifactId>
+   <version>${project.version}</version>
   </dependency>
 
   <dependency>

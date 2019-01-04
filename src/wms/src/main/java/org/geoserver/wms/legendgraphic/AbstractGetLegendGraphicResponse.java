@@ -7,7 +7,6 @@ package org.geoserver.wms.legendgraphic;
 
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
@@ -21,20 +20,17 @@ abstract class AbstractGetLegendGraphicResponse extends Response {
     }
 
     private static Set<String> caseInsensitive(String outputFormat) {
-        Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> set = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         set.add(outputFormat);
         return set;
     }
 
-    /**
-     * @see org.geoserver.ows.Response#canHandle(org.geoserver.platform.Operation)
-     */
+    /** @see org.geoserver.ows.Response#canHandle(org.geoserver.platform.Operation) */
     @Override
     public boolean canHandle(Operation operation) {
         Object[] parameters = operation.getParameters();
-        GetLegendGraphicRequest request = OwsUtils.parameter(parameters,
-                GetLegendGraphicRequest.class);
+        GetLegendGraphicRequest request =
+                OwsUtils.parameter(parameters, GetLegendGraphicRequest.class);
         return request != null && getOutputFormats().contains(request.getFormat());
     }
-
 }

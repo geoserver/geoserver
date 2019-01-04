@@ -8,32 +8,30 @@ package org.geoserver.script.js;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.app.AppHook;
 import org.geoserver.script.js.engine.CommonJSEngine;
 import org.geotools.util.logging.Logging;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 public class JavaScriptAppHook extends AppHook {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.script.js");
-    
+
     OutputStream out;
 
     public JavaScriptAppHook(ScriptPlugin plugin) {
         super(plugin);
     }
-    
+
     @Override
-    public void run(Request request, Response response, ScriptEngine engine)
+    public void run(HttpServletRequest request, HttpServletResponse response, ScriptEngine engine)
             throws ScriptException, IOException {
 
         Invocable invocable = (Invocable) engine;

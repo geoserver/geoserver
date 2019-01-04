@@ -11,7 +11,7 @@ Simple random distribution
 
 Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixel tile (in case of conflicts the symbol will be skipped), enabling random symbol rotation), and setting the seed to "5" to get a distribution different than the default one:
 
-.. code-block:: css
+.. code-block:: scss
 
     * {
       fill: symbol("shape://slash");
@@ -22,11 +22,11 @@ Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixe
         stroke-linecap: round;
       };
       stroke: black;
-      -gt-fill-random: grid;
-      -gt-fill-random-seed: 5;
-      -gt-fill-random-rotation: free;
-      -gt-fill-random-symbol-count: 50;
-      -gt-fill-random-tile-size: 100;
+      fill-random: grid;
+      fill-random-seed: 5;
+      fill-random-rotation: free;
+      fill-random-symbol-count: 50;
+      fill-random-tile-size: 100;
     }
     
 .. figure:: ../../sld/extensions/images/random-slash.png
@@ -39,13 +39,13 @@ Thematic map using point density
 
 Randomized distributions can also be used for thematic mapping, for example, here is the SLD for a version of topp:states that displays the number of inhabitantìs varying the density of a random point distribution:
 
-.. code-block:: css
+.. code-block:: scss
 
     * { 
       fill: symbol("circle");
       stroke: black;
-      -gt-fill-random: grid; 
-      -gt-fill-random-tile-size: 100;
+      fill-random: grid; 
+      fill-random-tile-size: 100;
     
       :fill {
         size: 2;
@@ -53,15 +53,15 @@ Randomized distributions can also be used for thematic mapping, for example, her
       };
       /* @title low */
       [PERSONS < 2000000] {
-        -gt-fill-random-symbol-count: 50;
+        fill-random-symbol-count: 50;
       };
       /* @title mid */
       [PERSONS >= 2000000] [PERSONS < 4000000] {
-        -gt-fill-random-symbol-count: 150;
+        fill-random-symbol-count: 150;
       };
       /* @title high */
       [PERSONS >= 4000000] {
-        -gt-fill-random-symbol-count: 500;
+        fill-random-symbol-count: 500;
       }
     }
 

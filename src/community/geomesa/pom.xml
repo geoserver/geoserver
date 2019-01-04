@@ -12,13 +12,13 @@ application directory.
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.15-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-geomesa</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>  
+  <version>2.15-SNAPSHOT</version>  
   <name>GeoMesa Web Module</name>
 
   <description>GeoMesa GeoServer extensions</description>
@@ -64,7 +64,7 @@ application directory.
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.vividsolutions</groupId>
+                    <groupId>org.locationtech.jts</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
@@ -79,7 +79,7 @@ application directory.
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.vividsolutions</groupId>
+                    <groupId>org.locationtech.jts</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -15,15 +14,15 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected
+ * methods to perform their "decoration" job
+ *
  * @author Andrea Aime
  */
 public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements LayerInfo {
@@ -115,15 +114,18 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public void setAttribution(AttributionInfo attr) {
         delegate.setAttribution(attr);
     }
-    
+
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(delegate).append(
-                ']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(delegate)
+                .append(']')
+                .toString();
     }
 
     public void setQueryable(boolean _queryableEnabled) {
@@ -185,5 +187,15 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     @Override
     public String getPrefixedName() {
         return delegate.getPrefixedName();
+    }
+
+    @Override
+    public WMSInterpolation getDefaultWMSInterpolationMethod() {
+        return delegate.getDefaultWMSInterpolationMethod();
+    }
+
+    @Override
+    public void setDefaultWMSInterpolationMethod(WMSInterpolation interpolationMethod) {
+        delegate.setDefaultWMSInterpolationMethod(interpolationMethod);
     }
 }

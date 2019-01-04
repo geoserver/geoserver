@@ -143,9 +143,7 @@ If you want to store a separate standard template for complex feature collection
 Read the tutorial on :ref:`tutorial_freemarkertemplate` for more information on how to use the freemarker templates.
 Freemarker templates support recursive calls, which can be useful for templating complex content.
 For example, the following freemarker template creates a table of features with a column for each property, 
-and will create another table inside each cell that contains a feature as property:
-
-.. code-block:: html
+and will create another table inside each cell that contains a feature as property: ::
 
   <#-- 
   Macro's used for content

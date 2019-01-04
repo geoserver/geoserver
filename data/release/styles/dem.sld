@@ -13,7 +13,6 @@
           <RasterSymbolizer>
             <Opacity>1.0</Opacity>
             <ColorMap>
-              <ColorMapEntry color="#000000" quantity="-500" label="nodata" opacity="0.0" />
               <ColorMapEntry color="#AAFFAA" quantity="0" label="values" />
               <ColorMapEntry color="#00FF00" quantity="1000"/>
               <ColorMapEntry color="#FFFF00" quantity="1200" label="values" />

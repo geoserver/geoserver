@@ -9,23 +9,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
-
 import javax.script.ScriptException;
-
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.script.js.engine.CommonJSEngine;
 import org.geotools.util.logging.Logging;
-import org.mozilla.javascript.BoundFunction;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.FunctionObject;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.OutputRepresentation;
+import org.mozilla.javascript.*;
+import org.springframework.http.MediaType;
 
 public class JsgiResponse {
 
@@ -33,9 +22,9 @@ public class JsgiResponse {
     private ScriptableObject headers;
     private Scriptable body;
     private Function forEach;
-    
+
     static Logger LOGGER = Logging.getLogger("org.geoserver.script.js");
-        
+
     public JsgiResponse(Scriptable obj, Scriptable scope) {
 
         // extract status
@@ -43,13 +32,13 @@ public class JsgiResponse {
         if (statusObj instanceof Integer) {
             status = (Integer) statusObj;
         }
-        
+
         // extract headers
         Object headersObj = obj.get("headers", obj);
         if (headersObj instanceof ScriptableObject) {
             headers = (ScriptableObject) headersObj;
         }
-        
+
         // extract body
         Object bodyObj = obj.get("body", obj);
         if (bodyObj instanceof String) {
@@ -77,65 +66,71 @@ public class JsgiResponse {
                 }
             }
         }
-        
-        if (forEach == null) {
-            throw new RuntimeException("JSGI app must return an object with a 'body' member that has a 'forEach' function.");
-        }
 
+        if (forEach == null) {
+            throw new RuntimeException(
+                    "JSGI app must return an object with a 'body' member that has a 'forEach' function.");
+        }
     }
-    
-    public void commit(Response response, final Scriptable scope) throws SecurityException, NoSuchMethodException {
+
+    public void commit(HttpServletResponse response, final Scriptable scope)
+            throws SecurityException, NoSuchMethodException {
 
         // set response status
-        response.setStatus(new Status(status));
-        
+        response.setStatus(status);
+
         // set response headers
-        Form responseHeaders = (Form) response.getAttributes().get("org.restlet.http.headers");
-        if (responseHeaders == null) {
-            responseHeaders = new Form();
-            response.getAttributes().put("org.restlet.http.headers", responseHeaders);
-        }
         if (headers != null) {
             for (Object id : headers.getIds()) {
                 String name = id.toString();
                 String value = headers.get(name, headers).toString();
                 if (!name.equalsIgnoreCase("content-type")) {
-                    responseHeaders.add(name, value);
+                    response.addHeader(name, value);
                 }
             }
         }
-        
+
         // write response body
         MediaType mediaType;
-        String type = responseHeaders.getFirstValue("content-type", true);
+        String type = response.getContentType();
         if (type == null) {
             mediaType = MediaType.TEXT_PLAIN;
         } else {
             mediaType = new MediaType(type);
         }
-        
-        final Method writeMethod = getClass().getDeclaredMethod("write", Context.class, Scriptable.class, Object[].class, Function.class);
-        
-        response.setEntity(new OutputRepresentation(mediaType) {
-            
-            @Override
-            public void write(OutputStream outputStream) throws IOException {
-                Context cx = CommonJSEngine.enterContext();
-                FunctionObject writeFunc = new FunctionObject("bodyWriter", writeMethod, scope);
-                BoundFunction boundWrite = new BoundFunction(cx, scope, writeFunc, body, new Object[] {outputStream});
-                Object[] args = {boundWrite};
-                try {
-                    forEach.call(cx, scope, body, args);
-                } finally {
-                    Context.exit();
-                    outputStream.close();
-                }
-            }
-            
-        });
+        response.setContentType(mediaType.getType());
+        final Method writeMethod =
+                getClass()
+                        .getDeclaredMethod(
+                                "write",
+                                Context.class,
+                                Scriptable.class,
+                                Object[].class,
+                                Function.class);
+        try {
+            writeFunction(response.getOutputStream(), writeMethod, scope);
+        } catch (IOException e) {
+            response.setStatus(500);
+        }
     }
-    
-    public static Object write(Context cx, Scriptable thisObj, Object[] args, Function func) throws ScriptException {
+
+    private void writeFunction(OutputStream outputStream, Method writeMethod, Scriptable scope)
+            throws IOException {
+        Context cx = CommonJSEngine.enterContext();
+        FunctionObject writeFunc = new FunctionObject("bodyWriter", writeMethod, scope);
+        BoundFunction boundWrite =
+                new BoundFunction(cx, scope, writeFunc, body, new Object[] {outputStream});
+        Object[] args = {boundWrite};
+        try {
+            forEach.call(cx, scope, body, args);
+        } finally {
+            Context.exit();
+            outputStream.close();
+        }
+    }
+
+    public static Object write(Context cx, Scriptable thisObj, Object[] args, Function func)
+            throws ScriptException {
         OutputStream outputStream = (OutputStream) args[0];
         Object part = args[1];
         byte[] bytes = null;
@@ -153,6 +148,4 @@ public class JsgiResponse {
         }
         return null;
     }
-
-
 }

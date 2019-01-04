@@ -17,10 +17,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-/**
- *
- * @author Ian Schneider <ischneider@opengeo.org>
- */
+/** @author Ian Schneider <ischneider@opengeo.org> */
 public class FeatureDataConverterTest {
 
     @Test
@@ -31,10 +28,12 @@ public class FeatureDataConverterTest {
         assertEquals("_123_number_first", badatts.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("i_has_spaces", badatts.getAttributeDescriptors().get(1).getLocalName());
     }
-    
+
     @Test
     public void testPostgisConversion() {
-        SimpleFeatureType t = FeatureDataConverter.TO_POSTGIS.convertType(buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
+        SimpleFeatureType t =
+                FeatureDataConverter.TO_POSTGIS.convertType(
+                        buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
         assertEquals("_123_number_first", t.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("i_has_spaces", t.getAttributeDescriptors().get(1).getLocalName());
     }
@@ -51,20 +50,20 @@ public class FeatureDataConverterTest {
 
         return typeBuilder.buildFeatureType();
     }
-    
+
     @Test
     public void testLayerNameFromTask() {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("badname");
         SimpleFeatureType badname = typeBuilder.buildFeatureType();
-        
+
         ImportTask task = new ImportTask();
         LayerInfo layer = new LayerInfoImpl();
-        ResourceInfo resource = new FeatureTypeInfoImpl((Catalog)null);
+        ResourceInfo resource = new FeatureTypeInfoImpl((Catalog) null);
         layer.setResource(resource);
         layer.setName("goodname");
         task.setLayer(layer);
-        
+
         badname = FeatureDataConverter.DEFAULT.convertType(badname, null, null, task);
 
         assertEquals("goodname", badname.getName().getLocalPart());

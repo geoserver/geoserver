@@ -7,17 +7,17 @@ package org.geoserver.security.web.auth;
 
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
-import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geoserver.security.web.SecurityNamedServicesPanel;
 
 /**
  * Panel for providing list of authentication provider configurations.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class AuthenticationProvidersPanel extends SecurityNamedServicesPanel<SecurityAuthProviderConfig> {
+public class AuthenticationProvidersPanel
+        extends SecurityNamedServicesPanel<SecurityAuthProviderConfig> {
 
     public AuthenticationProvidersPanel(String id) {
         super(id, new AuthenticationProviderProvider());
@@ -31,8 +31,9 @@ public class AuthenticationProvidersPanel extends SecurityNamedServicesPanel<Sec
     @Override
     protected void validateRemoveConfig(SecurityAuthProviderConfig config)
             throws SecurityConfigException {
-        SecurityConfigValidator.getConfigurationValiator(GeoServerAuthenticationProvider.class, 
-            config.getClassName()).validateRemoveAuthProvider(config);
+        SecurityConfigValidator.getConfigurationValiator(
+                        GeoServerAuthenticationProvider.class, config.getClassName())
+                .validateRemoveAuthProvider(config);
     }
 
     @Override
@@ -40,5 +41,4 @@ public class AuthenticationProvidersPanel extends SecurityNamedServicesPanel<Sec
 
         getSecurityManager().removeAuthenticationProvider(config);
     }
-
 }

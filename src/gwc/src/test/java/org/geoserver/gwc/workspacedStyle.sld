@@ -11,6 +11,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <Name>workspacedStyle</Name>
       <FeatureTypeStyle>
         <Rule>
+           <MinScaleDenominator>100000</MinScaleDenominator>
+           <MaxScaleDenominator>300000</MaxScaleDenominator>
            <FeatureTypeStyle>
              <Rule>
                <PointSymbolizer>

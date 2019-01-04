@@ -5,21 +5,19 @@
  */
 package org.geoserver.web.demo;
 
-
-import java.util.ArrayList;
-
-import java.io.Serializable;
-
-import java.util.Arrays;
-
 import static org.geoserver.catalog.Predicates.*;
 
+import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -33,87 +31,79 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
-import com.google.common.base.Function;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
-
-
 /**
  * Provides a filtered, sorted view over the catalog layers.
- * 
+ *
  * @author Andrea Aime - OpenGeo
  */
 @SuppressWarnings("serial")
 public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
-    
+
     public static final long DEFAULT_CACHE_TIME = 1;
-    
+
     public static final String KEY_SIZE = "key.size";
-    
+
     public static final String KEY_FULL_SIZE = "key.fullsize";
 
-    private final Cache<String,Integer> cache;
+    private final Cache<String, Integer> cache;
 
     private SizeCallable sizeCaller;
 
     private FullSizeCallable fullSizeCaller;
-    
-    public PreviewLayerProvider(){
+
+    public PreviewLayerProvider() {
         super();
         // Initialization of an inner cache in order to avoid to calculate two times
         // the size() method in a time minor than a second
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        
+
         cache = builder.expireAfterWrite(DEFAULT_CACHE_TIME, TimeUnit.SECONDS).build();
         // Callable which internally calls the size method
         sizeCaller = new SizeCallable();
         // Callable which internally calls the fullSize() method
         fullSizeCaller = new FullSizeCallable();
-    }    
+    }
 
-    public static final Property<PreviewLayer> TYPE = new BeanProperty<PreviewLayer>(
-            "type", "type");
+    public static final Property<PreviewLayer> TYPE =
+            new BeanProperty<PreviewLayer>("type", "type");
 
-    public static final AbstractProperty<PreviewLayer> NAME = new AbstractProperty<PreviewLayer>("name") {
-        @Override
-        public Object getPropertyValue(PreviewLayer item) {
-            if (item.layerInfo != null) {
-                return item.layerInfo.prefixedName();
-            }
-            if (item.groupInfo != null) {
-                return item.groupInfo.prefixedName();
-            }
-            return null;
-        }
-    };
+    public static final AbstractProperty<PreviewLayer> NAME =
+            new AbstractProperty<PreviewLayer>("name") {
+                @Override
+                public Object getPropertyValue(PreviewLayer item) {
+                    if (item.layerInfo != null) {
+                        return item.layerInfo.prefixedName();
+                    }
+                    if (item.groupInfo != null) {
+                        return item.groupInfo.prefixedName();
+                    }
+                    return null;
+                }
+            };
 
-    public static final Property<PreviewLayer> TITLE = new BeanProperty<PreviewLayer>(
-            "title", "title");
-    
-    public static final Property<PreviewLayer> ABSTRACT = new BeanProperty<PreviewLayer>(
-            "abstract", "abstract", false);
-    
-    public static final Property<PreviewLayer> KEYWORDS = new BeanProperty<PreviewLayer>(
-            "keywords", "keywords", false);
+    public static final Property<PreviewLayer> TITLE =
+            new BeanProperty<PreviewLayer>("title", "title");
 
-    public static final Property<PreviewLayer> COMMON = new PropertyPlaceholder<PreviewLayer>(
-            "commonFormats");
+    public static final Property<PreviewLayer> ABSTRACT =
+            new BeanProperty<PreviewLayer>("abstract", "abstract", false);
 
-    public static final Property<PreviewLayer> ALL = new PropertyPlaceholder<PreviewLayer>(
-            "allFormats");
+    public static final Property<PreviewLayer> KEYWORDS =
+            new BeanProperty<PreviewLayer>("keywords", "keywords", false);
 
-    public static final List<Property<PreviewLayer>> PROPERTIES = Arrays.asList(TYPE,
-            TITLE, NAME, ABSTRACT, KEYWORDS, COMMON, ALL);
-    
+    public static final Property<PreviewLayer> COMMON =
+            new PropertyPlaceholder<PreviewLayer>("commonFormats");
+
+    public static final Property<PreviewLayer> ALL =
+            new PropertyPlaceholder<PreviewLayer>("allFormats");
+
+    public static final List<Property<PreviewLayer>> PROPERTIES =
+            Arrays.asList(TYPE, TITLE, NAME, ABSTRACT, KEYWORDS, COMMON, ALL);
+
     @Override
     protected List<PreviewLayer> getItems() {
         // forced to implement this method as its abstract in the super class
         throw new UnsupportedOperationException(
-                "This method should not be being called! "
-                        + "We use the catalog streaming API");
+                "This method should not be being called! " + "We use the catalog streaming API");
     }
 
     @Override
@@ -125,10 +115,14 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     protected IModel<PreviewLayer> newModel(PreviewLayer object) {
         return new PreviewLayerModel(object);
     }
-    
+
     @Override
     public long size() {
         try {
+            if (getKeywords() != null && getKeywords().length > 0) {
+                // Use a unique key for different queries
+                return cache.get(KEY_SIZE + "." + String.join(",", getKeywords()), sizeCaller);
+            }
             return cache.get(KEY_SIZE, sizeCaller);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -154,7 +148,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         Filter filter = Predicates.acceptAll();
         return getCatalog().count(PublishedInfo.class, filter);
     }
-    
+
     @Override
     public Iterator<PreviewLayer> iterator(final long first, final long count) {
         Iterator<PreviewLayer> iterator = filteredItems(first, count);
@@ -172,8 +166,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     }
 
     /**
-     * Returns the requested page of layer objects after applying any keyword
-     * filtering set on the page
+     * Returns the requested page of layer objects after applying any keyword filtering set on the
+     * page
      */
     @SuppressWarnings("resource")
     private Iterator<PreviewLayer> filteredItems(long first, long count) {
@@ -186,8 +180,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         SortBy sortOrder = null;
         if (sort != null) {
             if (property instanceof BeanProperty) {
-                final String sortProperty = ((BeanProperty<PreviewLayer>) property)
-                        .getPropertyPath();
+                final String sortProperty =
+                        ((BeanProperty<PreviewLayer>) property).getPropertyPath();
                 sortOrder = sortBy(sortProperty, sort.isAscending());
             } else if (property == NAME) {
                 sortOrder = sortBy("prefixedName", sort.isAscending());
@@ -195,23 +189,25 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         }
 
         Filter filter = getFilter();
-        CloseableIterator<PublishedInfo> pi = catalog.list(PublishedInfo.class, filter, (int) first,
-                (int) count, sortOrder);
+        CloseableIterator<PublishedInfo> pi =
+                catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
 
-        return CloseableIteratorAdapter.transform(pi, new Function<PublishedInfo, PreviewLayer>() {
+        return CloseableIteratorAdapter.transform(
+                pi,
+                new Function<PublishedInfo, PreviewLayer>() {
 
-            @Override
-            public PreviewLayer apply(PublishedInfo input) {
-                if (input instanceof LayerInfo) {
-                    return new PreviewLayer((LayerInfo) input);
-                } else if (input instanceof LayerGroupInfo) {
-                    return new PreviewLayer((LayerGroupInfo) input);
-                }
-                return null;
-            }
-        });
+                    @Override
+                    public PreviewLayer apply(PublishedInfo input) {
+                        if (input instanceof LayerInfo) {
+                            return new PreviewLayer((LayerInfo) input);
+                        } else if (input instanceof LayerGroupInfo) {
+                            return new PreviewLayer((LayerGroupInfo) input);
+                        }
+                        return null;
+                    }
+                });
     }
-    
+
     @Override
     protected Filter getFilter() {
         Filter filter = super.getFilter();
@@ -225,13 +221,16 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         Filter advertisedFilter = Predicates.equal("resource.advertised", true);
 
         // return only layer groups that are not containers
-        Filter nonContainerGroup = Predicates.or(Predicates.equal("mode", LayerGroupInfo.Mode.EO),
-                Predicates.equal("mode", LayerGroupInfo.Mode.NAMED),
-                Predicates.equal("mode", LayerGroupInfo.Mode.SINGLE));
+        Filter nonContainerGroup =
+                Predicates.or(
+                        Predicates.equal("mode", LayerGroupInfo.Mode.EO),
+                        Predicates.equal("mode", LayerGroupInfo.Mode.NAMED),
+                        Predicates.equal("mode", LayerGroupInfo.Mode.OPAQUE_CONTAINER),
+                        Predicates.equal("mode", LayerGroupInfo.Mode.SINGLE));
 
         // Filter for the Layers
-        Filter layerFilter = Predicates.and(isLayerInfo, enabledFilter, storeEnabledFilter,
-                advertisedFilter);
+        Filter layerFilter =
+                Predicates.and(isLayerInfo, enabledFilter, storeEnabledFilter, advertisedFilter);
         // Filter for the LayerGroups
         Filter layerGroupFilter = Predicates.and(isLayerGroupInfo, nonContainerGroup);
         // Or filter for merging them
@@ -242,9 +241,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     /**
      * Inner class which calls the sizeInternal() method
-     * 
+     *
      * @author Nicpla Lagomarsini geosolutions
-     * 
      */
     class SizeCallable implements Callable<Integer>, Serializable {
         @Override
@@ -255,9 +253,8 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     /**
      * Inner class which calls the fullsizeInternal() method
-     * 
+     *
      * @author Nicpla Lagomarsini geosolutions
-     * 
      */
     class FullSizeCallable implements Callable<Integer>, Serializable {
         @Override

@@ -6,13 +6,10 @@
 
 package org.geoserver.security.jdbc;
 
-
 public class PostGisUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
 
-    
     @Override
     protected String getFixtureId() {
         return "postgis";
     }
-        
 }

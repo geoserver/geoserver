@@ -12,14 +12,14 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 
 /**
  * Configuration panel for {@link UsernamePasswordAuthenticationProvider}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class UsernamePasswordAuthProviderPanel 
-    extends AuthenticationProviderPanel<UsernamePasswordAuthenticationProviderConfig> {
+public class UsernamePasswordAuthProviderPanel
+        extends AuthenticationProviderPanel<UsernamePasswordAuthenticationProviderConfig> {
 
-    public UsernamePasswordAuthProviderPanel(String id,
-            IModel<UsernamePasswordAuthenticationProviderConfig> model) {
+    public UsernamePasswordAuthProviderPanel(
+            String id, IModel<UsernamePasswordAuthenticationProviderConfig> model) {
         super(id, model);
 
         add(new UserGroupServiceChoice("userGroupServiceName"));

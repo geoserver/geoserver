@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.logging.Logger;
-
+import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
@@ -29,7 +29,6 @@ import org.geoserver.wms.WMS;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.Layer;
 import org.geotools.util.logging.Logging;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -40,22 +39,18 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.ProjectedCRS;
 import org.springframework.util.Assert;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
-import net.opengis.wfs.FeatureCollectionType;
-
-/**
- * Formats the output of a GetTimeSeries response as a JPG or PNG chart or as a CSV file.
- */
+/** Formats the output of a GetTimeSeries response as a JPG or PNG chart or as a CSV file. */
 public class GetTimeSeriesResponse extends Response {
     private static final Logger LOGGER = Logging.getLogger(GetTimeSeriesResponse.class);
 
     protected static final Set<String> outputFormats = new HashSet<String>();
+
     static {
         outputFormats.add("text/csv");
         outputFormats.add("image/png");
@@ -65,18 +60,16 @@ public class GetTimeSeriesResponse extends Response {
 
     private WMS wms;
 
-    private final static String ISO8601_2000_UTC_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final String ISO8601_2000_UTC_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    private final static int IMAGE_HEIGHT = 600, IMAGE_WIDTH = 700;
+    private static final int IMAGE_HEIGHT = 600, IMAGE_WIDTH = 700;
 
     public GetTimeSeriesResponse(final WMS wms) {
         super(FeatureCollectionType.class, outputFormats);
         this.wms = wms;
     }
 
-    /**
-     * @see org.geoserver.ows.Response#canHandle(org.geoserver.platform.Operation)
-     */
+    /** @see org.geoserver.ows.Response#canHandle(org.geoserver.platform.Operation) */
     @Override
     public boolean canHandle(Operation operation) {
         return "GetTimeSeries".equalsIgnoreCase(operation.getId());
@@ -84,8 +77,9 @@ public class GetTimeSeriesResponse extends Response {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        GetFeatureInfoRequest request = (GetFeatureInfoRequest) OwsUtils
-                .parameter(operation.getParameters(), GetFeatureInfoRequest.class);
+        GetFeatureInfoRequest request =
+                (GetFeatureInfoRequest)
+                        OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
         String infoFormat = (String) request.getRawKvp().get("INFO_FORMAT");
         if (infoFormat != null && outputFormats.contains(infoFormat.toLowerCase())) {
             return infoFormat;
@@ -100,8 +94,10 @@ public class GetTimeSeriesResponse extends Response {
         Assert.notNull(value, "value is null");
         Assert.notNull(operation, "operation is null");
         Assert.isTrue(value instanceof FeatureCollectionType, "unrecognized result type:");
-        Assert.isTrue(operation.getParameters() != null && operation.getParameters().length == 1
-                && operation.getParameters()[0] instanceof GetFeatureInfoRequest);
+        Assert.isTrue(
+                operation.getParameters() != null
+                        && operation.getParameters().length == 1
+                        && operation.getParameters()[0] instanceof GetFeatureInfoRequest);
 
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) operation.getParameters()[0];
         FeatureCollectionType results = (FeatureCollectionType) value;
@@ -115,8 +111,12 @@ public class GetTimeSeriesResponse extends Response {
     }
 
     @SuppressWarnings("rawtypes")
-    private void writeChart(GetFeatureInfoRequest request, FeatureCollectionType results,
-            OutputStream output, String mimeType) throws IOException {
+    private void writeChart(
+            GetFeatureInfoRequest request,
+            FeatureCollectionType results,
+            OutputStream output,
+            String mimeType)
+            throws IOException {
         final TimeSeries series = new TimeSeries("time", Millisecond.class);
         String valueAxisLabel = "Value";
         String title = "Time series";
@@ -139,8 +139,9 @@ public class GetTimeSeriesResponse extends Response {
         }
         XYDataset dataset = new TimeSeriesCollection(series);
 
-        JFreeChart chart = ChartFactory.createTimeSeriesChart(title, timeaxisLabel, valueAxisLabel,
-                dataset, false, false, false);
+        JFreeChart chart =
+                ChartFactory.createTimeSeriesChart(
+                        title, timeaxisLabel, valueAxisLabel, dataset, false, false, false);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setRenderer(new XYLineAndShapeRenderer());
         if (mimeType.startsWith("image/png")) {
@@ -151,16 +152,20 @@ public class GetTimeSeriesResponse extends Response {
     }
 
     @SuppressWarnings("rawtypes")
-    private void writeCsv(GetFeatureInfoRequest request, FeatureCollectionType results,
-            OutputStream output) {
+    private void writeCsv(
+            GetFeatureInfoRequest request, FeatureCollectionType results, OutputStream output) {
         Charset charSet = wms.getCharSet();
         OutputStreamWriter osw = new OutputStreamWriter(output, charSet);
         PrintWriter writer = new PrintWriter(osw);
 
         CoordinateReferenceSystem crs = request.getGetMapRequest().getCrs();
-        final Coordinate middle = WMS.pixelToWorld(request.getXPixel(), request.getYPixel(),
-                new ReferencedEnvelope(request.getGetMapRequest().getBbox(), crs),
-                request.getGetMapRequest().getWidth(), request.getGetMapRequest().getHeight());
+        final Coordinate middle =
+                WMS.pixelToWorld(
+                        request.getXPixel(),
+                        request.getYPixel(),
+                        new ReferencedEnvelope(request.getGetMapRequest().getBbox(), crs),
+                        request.getGetMapRequest().getWidth(),
+                        request.getGetMapRequest().getHeight());
 
         if (crs instanceof ProjectedCRS) {
             writer.println("# X: " + middle.y);
@@ -191,7 +196,8 @@ public class GetTimeSeriesResponse extends Response {
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         Request request = Dispatcher.REQUEST.get();
-        if (request != null && request.getRawKvp() != null
+        if (request != null
+                && request.getRawKvp() != null
                 && request.getRawKvp().get("QUERY_LAYERS") != null
                 && request.getRawKvp().get("INFO_FORMAT") != null) {
             String filename = null;
@@ -205,12 +211,10 @@ public class GetTimeSeriesResponse extends Response {
                     filename = filename += "." + splitted[1];
                 }
                 return filename;
-
             }
         }
 
         // fallback on the default behavior otherwise
         return super.getAttachmentFileName(value, operation);
     }
-
 }

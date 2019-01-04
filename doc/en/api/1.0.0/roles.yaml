@@ -1,0 +1,133 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Roles
+  description: Organisation of security roles
+
+paths:
+  /roles/roles/:
+    get:
+      operationId: rolesDefaultGet
+      summary: Query all roles
+      description: Query all roles in the default role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"              
+  /roles/service/{serviceName}/roles/:
+    get:
+      operationId: rolesGet
+      summary: Query all roles
+      description: Query all roles in a particular role service.
+      produces:
+        - text/html
+        - application/xml
+        - application/json        
+      parameters:
+        - name: serviceName
+          description: the name of the role role service
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Roles"   
+  /roles/roles/{role}:
+    post:
+      operationId: roleDefaultPost
+      summary: Add a role
+      description: Add a role in the default role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDefaultDelete
+      summary: Delete a role
+      description: Delete a role in the default role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:  
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /roles/service/{serviceName}/roles/{role}:
+    post:
+      operationId: rolePost
+      summary: Add a role
+      description: Add a role in a particular role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string    
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: roleDelete
+      summary: Delete a role
+      description: Delete a role in a particular role service.
+      consumes: 
+        - application/json
+        - application/xml
+      parameters:
+        - name: serviceName
+          description: the name of the role service
+          in: path
+          required: true
+          type: string    
+        - name: role
+          description: the name of the role
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+           
+definitions:
+    Roles:
+       title: roles
+       xml: 
+         name: roles
+       type: array
+       items:
+          $ref: "#/definitions/Role"
+    Role:
+       title: role
+       xml: 
+         name: role
+       type: string
+

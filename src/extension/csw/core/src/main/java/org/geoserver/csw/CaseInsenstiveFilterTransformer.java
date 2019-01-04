@@ -11,7 +11,7 @@ import org.opengis.filter.expression.Expression;
 
 /**
  * Transforms like filters from case sensitive to case insensitive
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class CaseInsenstiveFilterTransformer extends DuplicatingFilterVisitor {

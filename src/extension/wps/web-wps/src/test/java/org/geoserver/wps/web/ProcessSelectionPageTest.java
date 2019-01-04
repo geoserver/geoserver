@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -42,10 +41,14 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         buffer.setEnabled(true);
         buffer.setName(new NameImpl("geo", "buffer"));
         buffer.getValidators().put("geom", new MaxSizeValidator(1));
-        buffer.getValidators().put("distance",
-                new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
-        buffer.getValidators().put("quadrantSegments",
-                new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
+        buffer.getValidators()
+                .put(
+                        "distance",
+                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
+        buffer.getValidators()
+                .put(
+                        "quadrantSegments",
+                        new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // save
@@ -59,17 +62,20 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         ProcessGroupInfo pgi = getGeoGroup(wps.getProcessGroups());
 
         // start the page
-        WPSAccessRulePage accessRulePage = (WPSAccessRulePage) tester
-                .startPage(new WPSAccessRulePage());
-        ProcessSelectionPage selectionPage = (ProcessSelectionPage) tester
-                .startPage(new ProcessSelectionPage(accessRulePage, pgi));
+        WPSAccessRulePage accessRulePage =
+                (WPSAccessRulePage) tester.startPage(new WPSAccessRulePage());
+        ProcessSelectionPage selectionPage =
+                (ProcessSelectionPage)
+                        tester.startPage(new ProcessSelectionPage(accessRulePage, pgi));
 
         // print(selectionPage, true, true);
 
         // grab the table and check its contents
-        DataView datas = (DataView) tester
-                .getComponentFromLastRenderedPage("form:selectionTable:listContainer:items");
-        for (Iterator it = datas.getItems(); it.hasNext();) {
+        DataView datas =
+                (DataView)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:selectionTable:listContainer:items");
+        for (Iterator it = datas.getItems(); it.hasNext(); ) {
             OddEvenItem item = (OddEvenItem) it.next();
             FilteredProcess fp = (FilteredProcess) item.getDefaultModelObject();
 
@@ -79,7 +85,6 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
             } else {
                 assertEquals("", validatedLabel.getDefaultModelObject());
             }
-
         }
     }
 
@@ -92,5 +97,4 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
 
         return null;
     }
-
 }

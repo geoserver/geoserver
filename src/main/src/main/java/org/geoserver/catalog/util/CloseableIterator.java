@@ -13,11 +13,9 @@ public interface CloseableIterator<T> extends Iterator<T>, Closeable {
     /**
      * Closes this stream and releases any system resources associated with it. This method is
      * idempotent, if the stream is already closed then invoking this method has no effect.
-     * 
-     * @throws RuntimeException
-     *             if an I/O error occurs
+     *
+     * @throws RuntimeException if an I/O error occurs
      */
     @Override
     public void close();
-
 }

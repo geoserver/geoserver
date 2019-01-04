@@ -9,31 +9,27 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.GeoServerApplication;
 
-/**
- * Model for layer groups
- */
+/** Model for layer groups */
 public class LayerGroupDetachableModel extends LoadableDetachableModel<LayerGroupInfo> {
 
     private static final long serialVersionUID = 1945014162826151239L;
-	
+
     String id;
     LayerGroupInfo layerGroup;
-    
+
     public LayerGroupDetachableModel(LayerGroupInfo layerGroup) {
         this.id = layerGroup.getId();
-        if(id == null) {
+        if (id == null) {
             this.layerGroup = layerGroup;
         }
     }
-    
+
     @Override
     protected LayerGroupInfo load() {
-        if(id != null) {
-            return GeoServerApplication.get().getCatalog().getLayerGroup( id );
+        if (id != null) {
+            return GeoServerApplication.get().getCatalog().getLayerGroup(id);
         } else {
             return layerGroup;
         }
-        
     }
-
 }

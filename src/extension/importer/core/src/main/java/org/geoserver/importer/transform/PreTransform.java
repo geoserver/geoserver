@@ -10,7 +10,7 @@ import org.geoserver.importer.ImportTask;
 
 /**
  * Transform that is performed before input occurs.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public interface PreTransform extends ImportTransform {

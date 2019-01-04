@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -32,9 +31,9 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Utility to work with compressed files
- * 
- * Based on Importer {@link VFSWorker} by Gabriel Roldan
- * 
+ *
+ * <p>Based on Importer {@link VFSWorker} by Gabriel Roldan
+ *
  * @author groldan
  * @autho Alessio Fabiani, GeoSolutions
  */
@@ -44,7 +43,7 @@ public class BackupUtils {
 
     /**
      * Returns a random temp folder Resource inside the System Temp Directory.
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -56,11 +55,13 @@ public class BackupUtils {
                 tempPath = IOUtils.createTempDirectory("backuputils").getAbsolutePath();
                 LOGGER.warning(
                         "It was not possible to create a temporary folder into the System 'java.io.tmpdir'. Falling back to default TEMP ["
-                                + tempPath + "].");
+                                + tempPath
+                                + "].");
             }
         } catch (Exception e) {
             tempPath = null;
-            LOGGER.log(Level.SEVERE,
+            LOGGER.log(
+                    Level.SEVERE,
                     "It was not possible to create a temporary folder! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.",
                     e);
             throw new IOException(
@@ -69,25 +70,27 @@ public class BackupUtils {
         }
 
         if (tempPath == null) {
-            LOGGER.log(Level.SEVERE,
+            LOGGER.log(
+                    Level.SEVERE,
                     "It was not possible to create or find a suitable temporary folder. 'tempPath' is NULL! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.");
             throw new IOException(
                     "It was not possible to create or find a suitable temporary folder. 'tempPath' is NULL! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.");
         }
-        
+
         return createRandomResource(tempPath);
     }
 
     /**
      * Returns a random temp folder Resource inside the GeoServer Temp Directory.
-     * 
+     *
      * @param geoServerDataDirectory
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
-    public static Resource geoServerTmpDir(GeoServerDataDirectory geoServerDataDirectory) throws IOException {
+    public static Resource geoServerTmpDir(GeoServerDataDirectory geoServerDataDirectory)
+            throws IOException {
         String tempPath = geoServerDataDirectory.findOrCreateDir("temp").getAbsolutePath();
-        
+
         return createRandomResource(tempPath);
     }
 
@@ -108,9 +111,10 @@ public class BackupUtils {
 
         return Files.asResource(directory.dir());
     }
-    
+
     /**
-     * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously exist.
+     * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously
+     * exist.
      *
      * @param archiveFile
      * @param targetFolder
@@ -124,16 +128,19 @@ public class BackupUtils {
         if (manager.canCreateFileSystem(source)) {
             source = manager.createFileSystem(source);
         }
-        FileObject target = manager
-                .createVirtualFileSystem(manager.resolveFile(targetFolder.dir().getAbsolutePath()));
+        FileObject target =
+                manager.createVirtualFileSystem(
+                        manager.resolveFile(targetFolder.dir().getAbsolutePath()));
 
-        FileSelector selector = new AllFileSelector() {
-            @Override
-            public boolean includeFile(FileSelectInfo fileInfo) {
-                LOGGER.fine("Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
-                return true;
-            }
-        };
+        FileSelector selector =
+                new AllFileSelector() {
+                    @Override
+                    public boolean includeFile(FileSelectInfo fileInfo) {
+                        LOGGER.fine(
+                                "Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
+                        return true;
+                    }
+                };
         target.copyFrom(source, selector);
         source.close();
         target.close();
@@ -141,8 +148,9 @@ public class BackupUtils {
     }
 
     /**
-     * Compress {@code sourceFolder} to the archive file {@code archiveFile}; both shall previously exist.
-     * 
+     * Compress {@code sourceFolder} to the archive file {@code archiveFile}; both shall previously
+     * exist.
+     *
      * @param sourceFolder
      * @param archiveFile
      * @throws IOException
@@ -153,8 +161,9 @@ public class BackupUtils {
 
         FileSystemManager manager = VFS.getManager();
 
-        FileObject sourceDir = manager
-                .createVirtualFileSystem(manager.resolveFile(sourceFolder.dir().getAbsolutePath()));
+        FileObject sourceDir =
+                manager.createVirtualFileSystem(
+                        manager.resolveFile(sourceFolder.dir().getAbsolutePath()));
 
         try {
             if ("zip".equalsIgnoreCase(FileUtils.getExtension(archiveFile.path()))) {
@@ -210,16 +219,17 @@ public class BackupUtils {
                 writeEntry(zos, file, Paths.path(baseDir, sourceFile.getName().getBaseName()));
             }
         } else {
-            String fileName = (baseDir != null
-                    ? Paths.path(baseDir, sourceFile.getName().getBaseName())
-                    : sourceFile.getName().getBaseName());
+            String fileName =
+                    (baseDir != null
+                            ? Paths.path(baseDir, sourceFile.getName().getBaseName())
+                            : sourceFile.getName().getBaseName());
             ZipEntry zipEntry = new ZipEntry(fileName);
             InputStream is = sourceFile.getContent().getInputStream();
 
             // Write to zip.
             byte[] buf = new byte[1024];
             zos.putNextEntry(zipEntry);
-            for (int readNum; (readNum = is.read(buf)) != -1;) {
+            for (int readNum; (readNum = is.read(buf)) != -1; ) {
                 zos.write(buf, 0, readNum);
             }
             zos.closeEntry();
@@ -228,7 +238,6 @@ public class BackupUtils {
     }
 
     /**
-     * 
      * @param archiveFile
      * @return
      */
@@ -239,7 +248,6 @@ public class BackupUtils {
     }
 
     /**
-     * 
      * @param file
      * @return
      */
@@ -273,7 +281,6 @@ public class BackupUtils {
     }
 
     /**
-     * 
      * @param baseDir
      * @param subDir
      * @return
@@ -283,5 +290,4 @@ public class BackupUtils {
         return Resources.fromPath(
                 Resources.directory(targetPath, !Resources.exists(targetPath)).getAbsolutePath());
     }
-
 }

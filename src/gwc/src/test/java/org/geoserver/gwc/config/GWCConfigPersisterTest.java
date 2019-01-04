@@ -14,7 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
@@ -29,9 +28,8 @@ public class GWCConfigPersisterTest {
     private GeoServerResourceLoader resourceLoader;
 
     private GWCConfigPersister persister;
-    
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -62,7 +60,8 @@ public class GWCConfigPersisterTest {
         }
 
         when(resourceLoader.get(Paths.BASE)).thenReturn(Files.asResource(baseDirectory));
-        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(Files.asResource(configFile));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
+                .thenReturn(Files.asResource(configFile));
 
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
@@ -76,8 +75,8 @@ public class GWCConfigPersisterTest {
         assertEquals(config, persister.getConfig());
 
         // provoque a IOException
-        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
-                Files.asResource(tempFolder.newFile("shall_not_exist")));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
+                .thenReturn(Files.asResource(tempFolder.newFile("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
 
         GWCConfig expected = new GWCConfig();

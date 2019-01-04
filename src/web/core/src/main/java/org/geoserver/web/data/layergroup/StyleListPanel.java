@@ -7,7 +7,6 @@ package org.geoserver.web.data.layergroup;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -19,9 +18,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
-/**
- * Base class for style listing table with clickable style names
- */
+/** Base class for style listing table with clickable style names */
 public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     protected static class StyleListProvider extends GeoServerDataProvider<StyleInfo> {
@@ -44,25 +41,24 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     private static final long serialVersionUID = -811883647153309626L;
 
-    static Property<StyleInfo> NAME = 
-        new BeanProperty<StyleInfo>("name", "name");
-    
+    static Property<StyleInfo> NAME = new BeanProperty<StyleInfo>("name", "name");
+
     public StyleListPanel(String id, StyleListProvider styleProvider) {
         super(id, styleProvider);
         getTopPager().setVisible(false);
     }
-    
+
     public StyleListPanel(String id) {
         this(id, new StyleListProvider());
     }
-    
+
     @SuppressWarnings("unchecked")
-	@Override
-    protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
-            Property<StyleInfo> property) {
+    @Override
+    protected Component getComponentForProperty(
+            String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
         final StyleInfo style = (StyleInfo) itemModel.getObject();
         if (property == NAME) {
-            return new SimpleAjaxLink<String>( id, (IModel<String>) NAME.getModel(itemModel) ) {
+            return new SimpleAjaxLink<String>(id, (IModel<String>) NAME.getModel(itemModel)) {
                 private static final long serialVersionUID = -2537227506881638001L;
 
                 @Override
@@ -71,10 +67,9 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
                 }
             };
         }
-        
+
         return null;
     }
-    
-    protected abstract void handleStyle( StyleInfo style, AjaxRequestTarget target );
 
+    protected abstract void handleStyle(StyleInfo style, AjaxRequestTarget target);
 }

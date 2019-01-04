@@ -8,12 +8,10 @@ import org.geoserver.security.GeoServerRestRoleService;
 import org.geoserver.security.GeoServerRestRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanelInfo;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
-public class GeoServerRestRoleServicePanelInfo extends
-        RoleServicePanelInfo<GeoServerRestRoleServiceConfig, GeoServerRestRoleServicePanel> {
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
+public class GeoServerRestRoleServicePanelInfo
+        extends RoleServicePanelInfo<
+                GeoServerRestRoleServiceConfig, GeoServerRestRoleServicePanel> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1804560200750315834L;
@@ -23,5 +21,4 @@ public class GeoServerRestRoleServicePanelInfo extends
         setServiceClass(GeoServerRestRoleService.class);
         setServiceConfigClass(GeoServerRestRoleServiceConfig.class);
     }
-
 }

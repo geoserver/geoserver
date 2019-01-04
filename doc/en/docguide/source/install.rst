@@ -7,7 +7,7 @@ In order to work with Sphinx and generate the HTML/PDF documentation you'll need
 
 * `Python <http://www.python.org/download/>`_
 * :command:`easy_install` (included with Python `setuptools <http://pypi.python.org/pypi/setuptools>`_)
-* `LaTeX <http://www.latex-project.org/>`_ installation with full extensions (in order to build PDF documentation)
+* `LaTeX <http://www.latex-project.org/>`_ installation with full extensions (in order to build PDF documentation). For more details, see :ref:`install_latex`.
 
 Windows
 -------

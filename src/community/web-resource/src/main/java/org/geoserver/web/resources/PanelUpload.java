@@ -13,9 +13,8 @@ import org.apache.wicket.model.Model;
 
 /**
  * Panel for uploading.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class PanelUpload extends Panel {
 
@@ -23,22 +22,21 @@ public class PanelUpload extends Panel {
 
     public PanelUpload(String id, String directory) {
         super(id);
-        
+
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(new TextField<String>("directory", new Model<String>(directory)));
         add(new FileUploadField("file"));
     }
-    
+
     public String getDirectory() {
         return get("directory").getDefaultModelObjectAsString();
     }
-    
+
     public FileUpload getFileUpload() {
         return ((FileUploadField) get("file")).getFileUpload();
     }
-    
+
     public FeedbackPanel getFeedbackPanel() {
         return (FeedbackPanel) get("feedback");
     }
-
 }

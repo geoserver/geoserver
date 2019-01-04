@@ -5,25 +5,24 @@
  */
 package org.geoserver.security;
 
-import org.springframework.security.core.Authentication;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.springframework.security.core.Authentication;
 
 /**
  * Abstract class for wrappers around an existing data access manager.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public abstract class DataAccessManagerWrapper implements DataAccessManager {
 
     protected DataAccessManager delegate;
-  
+
     public void setDelegate(DataAccessManager delegate) {
         this.delegate = delegate;
     }
-    
+
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
         return delegate.canAccess(user, workspace, mode);
     }
@@ -39,5 +38,4 @@ public abstract class DataAccessManagerWrapper implements DataAccessManager {
     public CatalogMode getMode() {
         return delegate.getMode();
     }
-
 }

@@ -10,9 +10,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.transform.TransformerException;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.responses.BaseCoverageResponseDelegate;
@@ -23,12 +21,11 @@ import org.vfny.geoserver.wcs.WcsException;
 
 /**
  * Encoding a {@link GridCoverage2D} as per WCS 2.0 GML format.
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
- * 
  */
-public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
-        CoverageResponseDelegate {
+public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
+        implements CoverageResponseDelegate {
 
     /** FILE_EXTENSION */
     private static final String FILE_EXTENSION = "gml";
@@ -40,15 +37,18 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     @SuppressWarnings("serial")
-    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
-            GeoServer geoserver) {
-        super(geoserver, Arrays.asList(FILE_EXTENSION, MIME_TYPE), // output formats
+    public GMLCoverageResponseDelegate(
+            EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList(FILE_EXTENSION, MIME_TYPE), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
                         put(MIME_TYPE, FILE_EXTENSION);
                         put(FILE_EXTENSION, FILE_EXTENSION);
                     }
-                }, new HashMap<String, String>() { // mime types
+                },
+                new HashMap<String, String>() { // mime types
                     {
                         put(MIME_TYPE, MIME_TYPE);
                         put(FILE_EXTENSION, MIME_TYPE);
@@ -58,9 +58,12 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate im
     }
 
     @Override
-    public void encode(GridCoverage2D coverage, String outputFormat,
-            Map<String, String> econdingParameters, OutputStream output) throws ServiceException,
-            IOException {
+    public void encode(
+            GridCoverage2D coverage,
+            String outputFormat,
+            Map<String, String> econdingParameters,
+            OutputStream output)
+            throws ServiceException, IOException {
         final GMLTransformer transformer = new GMLTransformer(envelopeDimensionsMapper);
         transformer.setIndentation(4);
         try {
@@ -68,7 +71,5 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate im
         } catch (TransformerException e) {
             new WcsException(e);
         }
-
     }
-
 }

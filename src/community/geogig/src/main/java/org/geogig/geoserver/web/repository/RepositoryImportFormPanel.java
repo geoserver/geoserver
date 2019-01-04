@@ -45,35 +45,37 @@ public abstract class RepositoryImportFormPanel extends Panel {
         FeedbackPanel feedback = new FeedbackPanel("feedback");
         form.add(feedback);
 
-        form.add(new AjaxLink<Void>("cancel") {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxLink<Void>("cancel") {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                cancelled(target);
-            }
-        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        cancelled(target);
+                    }
+                });
 
-        form.add(new AjaxSubmitLink("import", form) {
-            private static final long serialVersionUID = 1L;
+        form.add(
+                new AjaxSubmitLink("import", form) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
-                target.add(form);
-            }
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        super.onError(target, form);
+                        target.add(form);
+                    }
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                try {
-                    RepositoryInfo repoInfo = (RepositoryInfo) form.getModelObject();
-                    onSave(repoInfo, target);
-                } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
-                }
-            }
-        });
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        try {
+                            RepositoryInfo repoInfo = (RepositoryInfo) form.getModelObject();
+                            onSave(repoInfo, target);
+                        } catch (IllegalArgumentException e) {
+                            form.error(e.getMessage());
+                            target.add(form);
+                        }
+                    }
+                });
     }
 
     private void onSave(RepositoryInfo repoInfo, AjaxRequestTarget target) {

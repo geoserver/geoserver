@@ -5,25 +5,25 @@ OneLogin Authentication Filter
 
 This plugin adds to GeoServer the support for SAML based Single Sign On (SSO), a process that 
 allows users to authenticate themselves against an external Identity Provider (such as OneLogin) 
-rather than obtaining and using a separate username and password handled by Geoserver.
+rather than obtaining and using a separate username and password handled by GeoServer.
 
 What you will need is an account in OneLogin: https://www.onelogin.com/ that will handle the sign-in
-process and will eventually provide the authentication credentials of your users to Geoserver.
+process and will eventually provide the authentication credentials of your users to GeoServer.
 
-Geoserver users authenticated through OneLogin are handled from OneLogin and any change performed on the
-account is used by Geoserver. The only user data that is necessary for Geoserver is a unique identifier for each user.
+GeoServer users authenticated through OneLogin are handled from OneLogin and any change performed on the
+account is used by GeoServer. The only user data that is necessary for GeoServer is a unique identifier for each user.
 
-User's email is used by default as a unique identifier for each user. Geoserver does not store passwords.
+User's email is used by default as a unique identifier for each user. GeoServer does not store passwords.
 
 OneLogin Configuration
 ----------------------
 
-Actually Geoserver is not present within the OneLogin application catalog so we can use the OneLogin SAML test connector.
+Actually GeoServer is not present within the OneLogin application catalog so we can use the OneLogin SAML test connector.
 For more details about configuring the SAML Test Connector follow the guide at:
 
     https://support.onelogin.com/hc/en-us/articles/202673944-How-to-Use-the-OneLogin-SAML-Test-Connector
     
-In the example we assume that Geoserver URL is http://localhost:8080/geoserver, if you have a specific domain 
+In the example we assume that GeoServer URL is http://localhost:8080/geoserver, if you have a specific domain 
 for geoserver use it instead.
 
 On the SAML Test Connector (IdP) configuration page, use the following values as parameters:
@@ -73,8 +73,8 @@ Configuring the OneLogin Authentication Filter
    :align: center
    
 
-5. Fill in the fields of the settings form as follows; you can use Geoserver role sources to assign
-a specific group or role to OneLogin user. OneLogin user email must be mapped to Geoserver user name.
+5. Fill in the fields of the settings form as follows; you can use GeoServer role sources to assign
+a specific group or role to OneLogin user. OneLogin user email must be mapped to GeoServer user name.
 
 .. list-table::
    :header-rows: 1

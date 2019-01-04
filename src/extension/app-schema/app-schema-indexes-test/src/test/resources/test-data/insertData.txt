@@ -1,0 +1,59 @@
+
+[
+	{
+    	"station_id": "7",
+        "station_name": "Bologna",
+        "stations_comments": "The probability of precipitation (POP), is defined as the likelihood of occurrence (expressed as a percent) of a measurable amount of liquid precipitation",
+        "observation_id": "3",
+    	"observation_description": "temperature, wind"
+	},
+    {
+    	"station_id": "7",
+        "station_name": "Bologna",
+        "stations_comments": "The probability of precipitation (POP), is defined as the likelihood of occurrence (expressed as a percent) of a measurable amount of liquid precipitation",
+        "observation_id": "4",
+    	"observation_description": "precipitation on a routine basis"
+	},
+    {
+    	"station_id": "7",
+        "station_name": "Bologna",
+        "stations_comments": "The probability of precipitation (POP), is defined as the likelihood of occurrence (expressed as a percent) of a measurable amount of liquid precipitation",
+        "observation_id": "5"
+	},
+    {
+    	"station_id": "13",
+        "station_name": "Alessandria",
+        "stations_comments": "No risk of severe thunderstorms.",
+        "observation_id": "1",
+    	"observation_description": " sky condition"
+	},
+    {
+    	"station_id": "13",
+        "station_name": "Alessandria",
+        "stations_comments": "No risk of severe thunderstorms.",
+        "observation_id": "2",
+    	"observation_description": " We know that some users may have experienced difficulty accessing OneDrive for Business on Linux"
+	},
+	{
+    	"station_id": "21",
+        "station_name": "Rovereto2",
+        "stations_comments": "Kennedy North",
+        "observation_id": "8",
+    	"observation_description": "its ok testing on production"
+	},
+    {
+    	"station_id": "21",
+        "station_name": "Rovereto2",
+        "stations_comments": "Kennedy North",
+        "observation_id": "9",
+    	"observation_description": "wing it, wind"
+	},
+    {
+    	"station_id": "22",
+        "station_name": "London",
+        "stations_comments": "Park avenue",
+        "observation_id": "10",
+        "observation_description": "past verbs, wind"
+	}
+]
+

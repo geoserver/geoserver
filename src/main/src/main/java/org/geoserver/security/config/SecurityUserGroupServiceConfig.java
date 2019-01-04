@@ -15,23 +15,15 @@ import org.geoserver.security.GeoServerUserGroupService;
  */
 public interface SecurityUserGroupServiceConfig extends SecurityNamedServiceConfig {
 
-    /**
-     * The name of the {@link GeoServerPasswordEncoder} used by the service.
-     */
+    /** The name of the {@link GeoServerPasswordEncoder} used by the service. */
     String getPasswordEncoderName();
 
-    /**
-     * Sets the name of the {@link GeoServerPasswordEncoder} used by the service.
-     */
+    /** Sets the name of the {@link GeoServerPasswordEncoder} used by the service. */
     void setPasswordEncoderName(String passwordEncoderName);
 
-    /**
-     * The name of the {@link PasswordValidator} used by the service.
-     */
+    /** The name of the {@link PasswordValidator} used by the service. */
     String getPasswordPolicyName();
 
-    /**
-     * Sets the name of the {@link PasswordValidator} used by the service.
-     */
+    /** Sets the name of the {@link PasswordValidator} used by the service. */
     void setPasswordPolicyName(String passwordPolicyName);
 }

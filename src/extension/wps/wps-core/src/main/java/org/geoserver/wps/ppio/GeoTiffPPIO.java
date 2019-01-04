@@ -5,61 +5,65 @@
  */
 package org.geoserver.wps.ppio;
 
-import java.awt.Dimension;
-import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.media.jai.JAI;
-import javax.media.jai.OpImage;
-import javax.media.jai.RenderedOp;
-
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageWriteParam;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.wcs.responses.GeoTiffWriterHelper;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridCoverageWriter;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
-import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
-import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.image.ImageWorker;
 import org.geotools.process.ProcessException;
-import org.geotools.resources.image.ImageUtilities;
-import org.opengis.geometry.Envelope;
-import org.opengis.parameter.GeneralParameterValue;
+import org.geotools.util.logging.Logging;
 import org.opengis.parameter.ParameterValueGroup;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.EngineeringCRS;
 
 /**
  * Decodes/encodes a GeoTIFF file
- * 
+ *
  * @author Andrea Aime - OpenGeo
  * @author Simone Giannecchini, GeoSolutions
- * 
+ * @author Daniele Romagnoli, GeoSolutions
  */
 public class GeoTiffPPIO extends BinaryPPIO {
 
-    private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
+    protected static final String TILE_WIDTH_KEY = "tilewidth";
+    protected static final String TILE_HEIGHT_KEY = "tileheight";
+    protected static final String COMPRESSION_KEY = "compression";
+    protected static final String WRITENODATA_KEY = "writenodata";
 
-    private final static GeoTiffFormat TIFF_FORMAT = new GeoTiffFormat();    
+    private static final Set<String> SUPPORTED_PARAMS = new HashSet<String>();
+
+    private static final String SUPPORTED_PARAMS_LIST;
 
     static {
-        // setting the write parameters (write out using tiling)
-        DEFAULT_WRITE_PARAMS = new GeoTiffWriteParams();
-        DEFAULT_WRITE_PARAMS.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
-        final Dimension defaultTileSize = JAI.getDefaultTileSize();
-        DEFAULT_WRITE_PARAMS.setTiling(defaultTileSize.width, defaultTileSize.height);
+        SUPPORTED_PARAMS.add(TILE_WIDTH_KEY);
+        SUPPORTED_PARAMS.add(TILE_HEIGHT_KEY);
+        SUPPORTED_PARAMS.add(COMPRESSION_KEY);
+        SUPPORTED_PARAMS.add(QUALITY_KEY);
+        SUPPORTED_PARAMS.add(WRITENODATA_KEY);
+
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        for (String param : SUPPORTED_PARAMS) {
+            sb.append(prefix).append(param);
+            prefix = " / ";
+        }
+        SUPPORTED_PARAMS_LIST = sb.toString();
     }
+
+    private static final Logger LOGGER = Logging.getLogger(GeoTiffPPIO.class);
 
     protected GeoTiffPPIO() {
         super(GridCoverage2D.class, GridCoverage2D.class, "image/tiff");
@@ -89,109 +93,92 @@ public class GeoTiffPPIO extends BinaryPPIO {
 
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
+        encode(value, null, os);
+    }
+
+    @Override
+    public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os)
+            throws Exception {
         GridCoverage2D coverage = (GridCoverage2D) value;
-                
-        CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
-        boolean unreferenced = crs == null || crs instanceof EngineeringCRS;    
-                
-        // did we get lucky and all we need to do is to copy a file over?
-        final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
-        if (fileSource != null && fileSource instanceof String && isUnprocessed(coverage)) {
-            File file = new File((String) fileSource);
-            if(file.exists()) {
-                GeoTiffReader reader = null;
-                FileInputStream fis = null;
-                try {
-                    reader = new GeoTiffReader(file);
-                    GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
-                    Envelope envelope = coverage.getEnvelope();
-                    if(originalEnvelope.equals(envelope, 1e-9, false)) {  
-                        GridCoverage2D test = reader.read(null);
-                        ImageUtilities.disposeImage(test.getRenderedImage());
-                        // ooh, a geotiff already!
-                        fis = new FileInputStream(file);
-                        IOUtils.copyLarge(fis, os);
-                        return;
-                    }
-                } catch(Exception e) {
-                    // ok, not a geotiff!
-                } finally {
-                    if(reader != null) {
-                        reader.dispose();
-                    } 
-                    if(fis != null) {
-                        fis.close();
-                    }
-                }
-            }
-        }
+        GeoTiffWriterHelper helper = new GeoTiffWriterHelper(coverage);
+        setEncodingParams(helper, encodingParameters);
 
-        // tiling
-        final RenderedImage renderedImage = coverage.getRenderedImage();
-        final int tileWidth=renderedImage.getTileWidth();
-        final int tileHeight=renderedImage.getTileHeight();
-        final boolean tiled= tileWidth!=renderedImage.getWidth()&& tileHeight!=renderedImage.getHeight();
-        
-        // ok, encode in geotiff
-        if(unreferenced) {
-            if(tiled){
-                new ImageWorker(renderedImage).writeTIFF(os, null, 0.75f, tileWidth, tileHeight);
-            } else {
-
-                final Dimension defaultTileSize = JAI.getDefaultTileSize();
-                new ImageWorker(renderedImage).writeTIFF(os, null, 0.75f, defaultTileSize.width,  defaultTileSize.height);
-            }
-        } else {
-            GeoTiffFormat format = new GeoTiffFormat();
-            final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-
-            // tiling 
-            wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
-            if(tiled){
-                wp.setTiling(tileWidth, tileHeight);
-            } else {
-
-                final Dimension defaultTileSize = JAI.getDefaultTileSize();
-                wp.setTiling(defaultTileSize.width, defaultTileSize.height);
-            }
-            
-            final ParameterValueGroup wparams = TIFF_FORMAT.getWriteParameters();
-            wparams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
-            final GeneralParameterValue[] wps = (GeneralParameterValue[]) wparams.values().toArray(new GeneralParameterValue[1]);
-            // write out the coverage
-            AbstractGridCoverageWriter writer = (AbstractGridCoverageWriter) format.getWriter(os);
-            if (writer == null)
-                throw new WPSException(
-                        "Could not find the GeoTIFF writer, please check it's in the classpath");
-            try {
-                writer.write(coverage, wps);
-            } catch(IOException e) {
-                throw new ProcessException(e);
-            } finally {
-                try {
-                    writer.dispose();
-                } catch (Exception e) {
-                    // swallow
-                }
-            }
+        try {
+            helper.write(os);
+        } catch (IOException e) {
+            throw new ProcessException(e);
         }
     }
-    
-    /**
-     * Returns true if the coverage has not been processed in any way since it has been read
-     * 
-     * @param coverage
-     *
-     */
-    private boolean isUnprocessed(GridCoverage2D coverage) {
-        RenderedImage ri = coverage.getRenderedImage();
-        if(ri instanceof RenderedOp) {
-            RenderedOp op = (RenderedOp) ri;
-            return op.getOperationName().startsWith("ImageRead");
-        } else if(ri instanceof OpImage) {
-            return ri.getClass().getSimpleName().startsWith("ImageRead");
-        } else {
-            return true;
+
+    private void setEncodingParams(
+            GeoTiffWriterHelper helper, Map<String, Object> encodingParameters) {
+        if (encodingParameters != null && !encodingParameters.isEmpty()) {
+            for (String encodingParam : encodingParameters.keySet()) {
+                if (!SUPPORTED_PARAMS.contains(encodingParam)) {
+                    if (LOGGER.isLoggable(Level.WARNING)) {
+                        LOGGER.warning(
+                                "The specified parameter will be ignored: "
+                                        + encodingParam
+                                        + " Supported parameters are in the list: "
+                                        + SUPPORTED_PARAMS_LIST);
+                    }
+                }
+            }
+
+            GeoTiffWriteParams writeParams = helper.getImageIoWriteParams();
+            if (writeParams != null) {
+
+                // Inner Tiling Settings
+                if (encodingParameters.containsKey(TILE_WIDTH_KEY)
+                        && encodingParameters.containsKey(TILE_HEIGHT_KEY)) {
+                    String tileWidth = (String) encodingParameters.get(TILE_WIDTH_KEY);
+                    String tileHeight = (String) encodingParameters.get(TILE_HEIGHT_KEY);
+                    try {
+                        int tw = Integer.parseInt(tileWidth);
+                        int th = Integer.parseInt(tileHeight);
+                        writeParams.setTilingMode(ImageWriteParam.MODE_EXPLICIT);
+                        writeParams.setTiling(tw, th);
+
+                    } catch (NumberFormatException nfe) {
+                        if (LOGGER.isLoggable(Level.INFO)) {
+                            LOGGER.info(
+                                    "Specified tiling parameters are not valid. tileWidth = "
+                                            + tileWidth
+                                            + " tileHeight = "
+                                            + tileHeight);
+                        }
+                    }
+                }
+
+                // COMPRESSION Settings
+                if (encodingParameters.containsKey(COMPRESSION_KEY)) {
+                    String compressionType = (String) encodingParameters.get(COMPRESSION_KEY);
+                    writeParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    writeParams.setCompressionType(compressionType);
+                    if (encodingParameters.containsKey(QUALITY_KEY)) {
+                        String compressionQuality = (String) encodingParameters.get(QUALITY_KEY);
+                        try {
+                            writeParams.setCompressionQuality(Float.parseFloat(compressionQuality));
+
+                        } catch (NumberFormatException nfe) {
+                            if (LOGGER.isLoggable(Level.INFO)) {
+                                LOGGER.info(
+                                        "Specified quality is not valid (it should be in the range [0,1])."
+                                                + " compressionQuality = "
+                                                + compressionQuality);
+                            }
+                        }
+                    }
+                }
+            }
+            ParameterValueGroup geotoolsWriteParams = helper.getGeotoolsWriteParams();
+            if (geotoolsWriteParams != null && encodingParameters.containsKey(WRITENODATA_KEY)) {
+                geotoolsWriteParams
+                        .parameter(GeoTiffFormat.WRITE_NODATA.getName().toString())
+                        .setValue(
+                                Boolean.parseBoolean(
+                                        (String) encodingParameters.get(WRITENODATA_KEY)));
+            }
         }
     }
 
@@ -199,5 +186,4 @@ public class GeoTiffPPIO extends BinaryPPIO {
     public String getFileExtension() {
         return "tiff";
     }
-
 }

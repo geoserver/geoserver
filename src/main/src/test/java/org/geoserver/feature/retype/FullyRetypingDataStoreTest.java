@@ -17,19 +17,14 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.Query;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLockFactory;
 import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.property.PropertyDataStore;
@@ -46,6 +41,10 @@ import org.geotools.filter.identity.FeatureIdImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -53,16 +52,11 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.io.WKTReader;
-
 public class FullyRetypingDataStoreTest {
 
     SimpleFeatureType primitive;
-    
-    final static String RENAMED = "primitive";
+
+    static final String RENAMED = "primitive";
 
     RetypingDataStore rts;
 
@@ -74,7 +68,7 @@ public class FullyRetypingDataStoreTest {
 
     @Before
     public void setUp() throws Exception {
-    	// setup property file
+        // setup property file
         data = File.createTempFile("retype", "data", new File("./target"));
         data.delete();
         data.mkdir();
@@ -91,28 +85,27 @@ public class FullyRetypingDataStoreTest {
         ftb.add("newProperty", String.class); // new property
         ftb.setName(RENAMED); // rename type
         primitive = ftb.buildFeatureType();
-        
+
         PropertyDataStore pds = new PropertyDataStore(data);
-        rts = new RetypingDataStore(pds) {
-        	
-        	@Override
-        	protected SimpleFeatureType transformFeatureType(
-        			SimpleFeatureType original) throws IOException {
-        		if (original.getTypeName().equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
-                    return primitive;
-                else
-                    return super.transformFeatureType(original);
-        	}
-        	
-        	@Override
-        	protected String transformFeatureTypeName(String originalName) {
-        		if (originalName.equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
-                    return primitive.getTypeName();
-                else
-                    return super.transformFeatureTypeName(originalName);
-        	}
-        	
-        };
+        rts =
+                new RetypingDataStore(pds) {
+
+                    @Override
+                    protected SimpleFeatureType transformFeatureType(SimpleFeatureType original)
+                            throws IOException {
+                        if (original.getTypeName()
+                                .equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
+                            return primitive;
+                        else return super.transformFeatureType(original);
+                    }
+
+                    @Override
+                    protected String transformFeatureTypeName(String originalName) {
+                        if (originalName.equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
+                            return primitive.getTypeName();
+                        else return super.transformFeatureTypeName(originalName);
+                    }
+                };
 
         // build a filter that will retrieve one feature only
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -125,7 +118,7 @@ public class FullyRetypingDataStoreTest {
         IOUtils.delete(data);
     }
 
-    @Test 
+    @Test
     public void testLookupFeatureType() throws Exception {
         try {
             rts.getSchema(MockData.GENERICENTITY.getLocalPart());
@@ -149,20 +142,23 @@ public class FullyRetypingDataStoreTest {
         assertTrue(fc.size() > 0);
 
         // make sure the feature schema is good as well
-        FeatureIterator <SimpleFeature> it = fc.features();
+        FeatureIterator<SimpleFeature> it = fc.features();
         SimpleFeature sf = it.next();
         it.close();
 
         assertEquals(primitive, sf.getFeatureType());
 
         // check the feature ids have been renamed as well
-        assertTrue("Feature id has not been renamed, it's still " + sf.getID(), sf.getID()
-                .startsWith(RENAMED));
-        
+        assertTrue(
+                "Feature id has not been renamed, it's still " + sf.getID(),
+                sf.getID().startsWith(RENAMED));
+
         // check mappings occurred
         assertEquals("description-f001", sf.getAttribute("description"));
-        assertTrue(new WKTReader().read("MULTIPOINT(39.73245 2.00342)").equalsExact(
-        		(Geometry) sf.getAttribute("pointProperty")));
+        assertTrue(
+                new WKTReader()
+                        .read("MULTIPOINT(39.73245 2.00342)")
+                        .equalsExact((Geometry) sf.getAttribute("pointProperty")));
         assertEquals(new Long(155), sf.getAttribute("intProperty"));
         assertNull(sf.getAttribute("newProperty"));
     }
@@ -177,8 +173,9 @@ public class FullyRetypingDataStoreTest {
         assertEquals(primitive, sf.getFeatureType());
 
         // check the feature ids have been renamed as well
-        assertTrue("Feature id has not been renamed, it's still " + sf.getID(), sf.getID()
-                .startsWith(RENAMED));
+        assertTrue(
+                "Feature id has not been renamed, it's still " + sf.getID(),
+                sf.getID().startsWith(RENAMED));
     }
 
     @Test
@@ -194,7 +191,7 @@ public class FullyRetypingDataStoreTest {
         SimpleFeatureCollection fc = fs.getFeatures(new Query(RENAMED, fidFilter));
         assertEquals(RENAMED, fc.getSchema().getName().getLocalPart());
         assertEquals(1, fc.size());
-        FeatureIterator <SimpleFeature> it = fc.features();
+        FeatureIterator<SimpleFeature> it = fc.features();
         assertTrue(it.hasNext());
         SimpleFeature sf = it.next();
         assertFalse(it.hasNext());
@@ -236,48 +233,49 @@ public class FullyRetypingDataStoreTest {
 
         // test a non mapped attribute
         String newDescription = ((String) original.getAttribute("description")) + " xxx";
-        store.modifyFeatures(original.getFeatureType().getDescriptor("description"), newDescription,
-                fidFilter);
+        store.modifyFeatures(
+                original.getFeatureType().getDescriptor("description"), newDescription, fidFilter);
         SimpleFeature modified = store.getFeatures(fidFilter).features().next();
         assertEquals(newDescription, modified.getAttribute("description"));
-        
+
         // test a mapped attribute
         MultiPoint mpo = (MultiPoint) original.getAttribute("pointProperty");
-        MultiPoint mpm = mpo.getFactory().createMultiPoint(new Coordinate[] {new Coordinate(10, 12)});
-        store.modifyFeatures(original.getFeatureType().getDescriptor("pointProperty"), mpm,
-                fidFilter);
+        MultiPoint mpm =
+                mpo.getFactory().createMultiPoint(new Coordinate[] {new Coordinate(10, 12)});
+        store.modifyFeatures(
+                original.getFeatureType().getDescriptor("pointProperty"), mpm, fidFilter);
         modified = store.getFeatures(fidFilter).features().next();
         assertTrue(mpm.equalsExact((Geometry) modified.getAttribute("pointProperty")));
     }
 
     /**
-     * This test is made with mock objects because the property data store does
-     * not generate fids in the <type>.<id> form
-     * 
+     * This test is made with mock objects because the property data store does not generate fids in
+     * the <type>.<id> form
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testAppend() throws Exception {
-        SimpleFeatureType type = DataUtilities.createType("trees",
-                "the_geom:Point,FID:String,NAME:String");
+        SimpleFeatureType type =
+                DataUtilities.createType("trees", "the_geom:Point,FID:String,NAME:String");
 
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
-        expect(fs.addFeatures(isA(FeatureCollection.class))).andReturn(
-                Collections.singletonList((FeatureId)(new FeatureIdImpl("trees.105"))));
+        expect(fs.addFeatures(isA(FeatureCollection.class)))
+                .andReturn(Collections.singletonList((FeatureId) (new FeatureIdImpl("trees.105"))));
         replay(fs);
 
         DataStore ds = createMock(DataStore.class);
-        expect(ds.getTypeNames()).andReturn(new String[] { "trees" }).anyTimes();
+        expect(ds.getTypeNames()).andReturn(new String[] {"trees"}).anyTimes();
         expect(ds.getSchema("trees")).andReturn(type).anyTimes();
         expect(ds.getFeatureSource("trees")).andReturn(fs);
         replay(ds);
 
-        RetypingDataStore rts = new RetypingDataStore(ds) {
-            @Override
-            protected String transformFeatureTypeName(String originalName) {
-                return "oaks";
-            }
-        };
+        RetypingDataStore rts =
+                new RetypingDataStore(ds) {
+                    @Override
+                    protected String transformFeatureTypeName(String originalName) {
+                        return "oaks";
+                    }
+                };
 
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(type);
         WKTReader reader = new WKTReader();
@@ -315,7 +313,7 @@ public class FullyRetypingDataStoreTest {
         fl.unLockFeatures(fidFilter);
         assertEquals(1, fl2.lockFeatures(fidFilter));
     }
-    
+
     @Test
     public void testLockUnlockQuery() throws Exception {
         SimpleFeatureLocking fl;
@@ -338,5 +336,4 @@ public class FullyRetypingDataStoreTest {
         fl.unLockFeatures(q);
         assertEquals(1, fl2.lockFeatures(q));
     }
-
 }

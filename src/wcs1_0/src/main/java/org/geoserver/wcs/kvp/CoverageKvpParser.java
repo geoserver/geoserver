@@ -10,7 +10,6 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
@@ -20,10 +19,8 @@ import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 /**
- * <p>
  * The parser validates the coverage requested on a WCS 1.0.0 GetCoverage request.
- * </p>
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
  */
 public class CoverageKvpParser extends KvpParser {
@@ -37,23 +34,27 @@ public class CoverageKvpParser extends KvpParser {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public Object parse(String value) throws Exception {
-    	final List<String> coverages = new ArrayList<String>();
+        final List<String> coverages = new ArrayList<String>();
         final List<String> identifiers = KvpUtils.readFlat(value);
         if (identifiers == null || identifiers.size() == 0) {
-            throw new WcsException("Required paramer, coverage, missing",
-                    WcsExceptionCode.MissingParameterValue, "coverage");
+            throw new WcsException(
+                    "Required paramer, coverage, missing",
+                    WcsExceptionCode.MissingParameterValue,
+                    "coverage");
         }
 
         for (String coverage : identifiers) {
             final LayerInfo layer = catalog.getLayerByName(coverage);
             if (layer == null || layer.getType() != PublishedType.RASTER)
-                throw new WcsException("Could not find coverage '" + coverage + "'",InvalidParameterValue, "coverage");
+                throw new WcsException(
+                        "Could not find coverage '" + coverage + "'",
+                        InvalidParameterValue,
+                        "coverage");
             coverages.add(coverage);
         }
 
         return coverages;
     }
-
 }

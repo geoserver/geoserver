@@ -255,11 +255,11 @@ The key properties **mark** and **label** are required to label Point locations.
    
    GeoServer provides a vendor specific parameter to allow symbols to take part in label conflict resolution, preventing labels from overlapping any symbols. This severely limits the area available for labeling and is best used in conjunction with a large maximum displacement vendor option.
 
-   **-gt-mark-label-obstacle** vendor parameter asks the rendering engine to avoid drawing labels over top of the indicated symbol.
+   **mark-label-obstacle** vendor parameter asks the rendering engine to avoid drawing labels over top of the indicated symbol.
    
-   **-gt-label-max-displacement** vendor parameter provides the rendering engine a maximum distance it is allowed to move labels during conflict resolution.
+   **label-max-displacement** vendor parameter provides the rendering engine a maximum distance it is allowed to move labels during conflict resolution.
 
-   **-gt-label-padding** vendor parameter tells the rendering engine to provide a minimum distance between the labels on the map, ensuring they do not overlap.
+   **label-padding** vendor parameter tells the rendering engine to provide a minimum distance between the labels on the map, ensuring they do not overlap.
    
    Update our example to use these settings:
 
@@ -275,9 +275,9 @@ The key properties **mark** and **label** are required to label Point locations.
 
         font-fill: black;
 
-        -gt-mark-label-obstacle: true;
-        -gt-label-max-displacement: 100;
-        -gt-label-padding: 2;
+        mark-label-obstacle: true;
+        label-max-displacement: 100;
+        label-padding: 2;
       }
 
 #. Resulting in a considerably cleaner image:
@@ -411,9 +411,9 @@ Dynamic Styling
         label-anchor: 0.5 0;
         label-offset: 0 6;
 
-        -gt-mark-label-obstacle: true;
-        -gt-label-max-displacement: 90;
-        -gt-label-padding: 2;
+        mark-label-obstacle: true;
+        label-max-displacement: 90;
+        label-padding: 2;
       }
 
    .. image:: ../style/img/point_06_relocate.png
@@ -442,7 +442,7 @@ Dynamic Styling
    
       [10 - LABELRANK]
    
-   This expression will result in values between 0 and 10 and will be used for the **-gt-label-priority**.
+   This expression will result in values between 0 and 10 and will be used for the **label-priority**.
 
    .. code-block:: css
       :emphasize-lines: 2,9
@@ -457,10 +457,10 @@ Dynamic Styling
         label-anchor: 0.5 0;
         label-offset: 0 [10-(SCALERANK/2)];
 
-        -gt-mark-label-obstacle: true;
-        -gt-label-max-displacement: 90;
-        -gt-label-padding: 2;
-        -gt-label-priority: [10 - LABELRANK];
+        mark-label-obstacle: true;
+        label-max-displacement: 90;
+        label-padding: 2;
+        label-priority: [10 - LABELRANK];
       }
    
    .. image:: ../style/img/point_07_expression.png

@@ -23,16 +23,6 @@
 	<!-- OAuth2 Security Extension -->
 	<bean id="githubOAuth2TokenServices"
 		class="org.geoserver.security.oauth2.services.GitHubTokenServices">
-		<property name="accessTokenConverter">
-			<bean
-				class="org.geoserver.security.oauth2.services.GitHubAccessTokenConverter">
-				<property name="userTokenConverter">
-					<bean
-						class="org.geoserver.security.oauth2.services.GitHubUserAuthenticationConverter">
-					</bean>
-				</property>
-			</bean>
-		</property>
 	</bean>
 
 	<bean id="githubOAuth2AuthenticationProvider"
@@ -60,6 +50,7 @@
  		<property name="componentClass" value="org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanel" />
  		<property name="name" value="github" />
  		<property name="icon" value="github.png" />
+ 		<property name="filterClass" value="org.geoserver.security.oauth2.GitHubOAuthAuthenticationFilter" />
  		<property name="loginPath" value="web/j_spring_oauth2_github_login" />
  	</bean>
 

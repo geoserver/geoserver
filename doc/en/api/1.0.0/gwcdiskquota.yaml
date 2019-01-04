@@ -1,0 +1,127 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache DiskQuota
+  description: The REST API for Disk Quota management provides a RESTful interface through which clients can configure the disk usage limits and expiration policies for a GeoWebCache instance through simple HTTP calls.  Since disk usage increases geometrically by zoom level, one single seeding task could fill up an entire storage device. Because of this, GeoWebCache employs a disk quota system where one can specify the maximum amount of disk space to use for a particular layer, as well as logic on how to proceed when that quota is reached. There are two different policies for managing the disk quotas - Least Frequently Used (LFU) and Least Recently Used (LRU).
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /diskquota:
+    get:
+      produces:
+        - application/xml
+        - application/json
+      operationId: diskQuotaGet
+      summary: Returns the gwc Quota configuration
+      description: Returns the GeoWebCache DiskQuota configurations which include disk usage limits and expritation policies for a gwc instance.
+      responses:
+        200:
+          description: OK
+          examples:
+            application/xml: |
+              <gwcQuotaConfiguration>
+                <enabled>true</enabled>
+                <diskBlockSize>2048</diskBlockSize>
+                <cacheCleanUpFrequency>5</cacheCleanUpFrequency>
+                <cacheCleanUpUnits>SECONDS</cacheCleanUpUnits>
+                <maxConcurrentCleanUps>5</maxConcurrentCleanUps>
+                <globalExpirationPolicyName>LRU</globalExpirationPolicyName>
+                <globalQuota>
+                  <value>100</value>
+                  <units>MiB</units>
+                </globalQuota>
+                <layerQuotas/>
+              </gwcQuotaConfiguration>
+            appliction/json: |
+               {
+                 "org.geowebcache.diskquota.DiskQuotaConfig": {
+                   "enabled": false,
+                   "cacheCleanUpFrequency": 10,
+                   "cacheCleanUpUnits": "SECONDS",
+                   "maxConcurrentCleanUps": 2,
+                   "globalExpirationPolicyName": "LFU",
+                   "globalQuota": {
+                     "id": 0,
+                     "bytes": 524288000
+                   }
+                 }
+               }
+    put:
+      consumes:
+        - application/xml
+        - application/json
+      operationId: diskQuotaPut
+      summary: Modify properties of a gwc instance disk quota configuration.
+      description:  The request body for PUT should contain desired properties to be modified.
+      parameters:
+        - name: requestBody
+          in: body
+          description: The diskquota configuration with modified property values.
+          schema:
+            $ref: "#/definitions/DiskQuota"
+      responses:
+        200:
+          description: OK
+
+
+definitions:
+  DiskQuota:
+    title: gwcQuotaConfiguration
+    type: object
+    properties:
+        enabled:
+          type: boolean
+          description: Determines if Disk Quota is to be used.
+        diskBlockSize:
+          type: number
+          description: The number of bytes allocated to Disk Quota.
+        cacheCleanUpFrequency:
+          type: number
+          description: GeoWebCache will not truncate the cache as soon as the disk quota is exceeded. Instead, it polls the store at given intervals, with this time interval set.
+        cacheCleanUpUnits:
+          type: string
+          enum: [SECONDS, MINUTES, HOURS, DAYS]
+          description: The time unit used to describe the number in cacheCleanUpFrequency.
+        maxConcurrentCleanUps:
+          type: number
+          description: The amount of threads to use when processing the disk quota.
+        globalExpirationPolicyName:
+          type: string
+          enum: [LRU, LSU]
+          description: When a disk quota is reached, further tiles will be saved at the expense of other tiles which will be truncated. The Least Frequently Used (LFU) policy will analyze the disk quota page store and delete the pages of tiles that have been accessed the least often. The Least Recently Used (LRU) policy will analyze the diskquota page store and delete the tiles that haven’t been accessed in the longest amount of time.
+        globalQuota:
+          type: object
+          description: When the global quota is exceeded, first any explicitly configured quota is enforced, and then the global quota is enforced acting upon all the remaining layers until the global quota is reached back.
+          properties:
+            value:
+              type: number
+              description: Numeric value for global quota.
+            units:
+              type: string
+              enum: [B, KiB, MiB, GiB, TiB]
+              description: The type of unit quantified by value.
+        layerQuota:
+          type: object
+          description: When a layer's disk quota is reached, further tiles will be saved at the expense of other tiles which will be truncated.
+          properties:
+            layer:
+              type: string
+              description: The layer name.
+            expirationPolicyName:
+              type: string
+              enum: [LRU, LSU]
+              description: When a disk quota is reached, further tiles will be saved at the expense of other tiles which will be truncated. The Least Frequently Used (LFU) policy will analyze the disk quota page store and delete the pages of tiles that have been accessed the least often. The Least Recently Used (LRU) policy will analyze the diskquota page store and delete the tiles that haven’t been accessed in the longest amount of time.
+            quota:
+              type: object
+              description: Container for quota value and units
+              properties:
+                value:
+                  type: number
+                  description: Numeric value for global quota.
+                units:
+                  type: string
+                  enum: [B, KiB, MiB, GiB, TiB]
+                  description: The type of unit quantified by value.

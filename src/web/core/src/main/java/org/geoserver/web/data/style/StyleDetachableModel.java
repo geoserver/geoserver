@@ -12,16 +12,16 @@ import org.geoserver.web.GeoServerApplication;
 public class StyleDetachableModel extends LoadableDetachableModel<StyleInfo> {
 
     private static final long serialVersionUID = 1429186780251933703L;
-	
+
     String id;
-    
+
     public StyleDetachableModel(StyleInfo style) {
         this.id = style.getId();
     }
-    
+
     @Override
     protected StyleInfo load() {
-        StyleInfo style = GeoServerApplication.get().getCatalog().getStyle( id );
+        StyleInfo style = GeoServerApplication.get().getCatalog().getStyle(id);
 
         // Make sure the legend object isn't null
         if (null == style.getLegend()) {
@@ -34,5 +34,4 @@ public class StyleDetachableModel extends LoadableDetachableModel<StyleInfo> {
     protected void onDetach() {
         super.onDetach();
     }
-
 }

@@ -8,20 +8,15 @@ package org.vfny.geoserver.servlets;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.ows.DispatcherOutputStream;
 import org.geoserver.ows.ServiceStrategy;
-
 
 /**
  * A safe Service strategy that buffers output until writeTo completes.
  *
- * <p>
- * This strategy wastes memory, for saftey. It represents a middle ground
- * between SpeedStrategy and FileStrategy
- * </p>
+ * <p>This strategy wastes memory, for saftey. It represents a middle ground between SpeedStrategy
+ * and FileStrategy
  *
  * @author jgarnett
  */
@@ -30,20 +25,17 @@ public class BufferStrategy implements ServiceStrategy {
         return "BUFFER";
     }
 
-    /** DOCUMENT ME!  */
+    /** DOCUMENT ME! */
     ByteArrayOutputStream buffer = null;
 
     /**
      * Provides a ByteArrayOutputStream for writeTo.
      *
      * @param response Response being processed.
-     *
      * @return A ByteArrayOutputStream for writeTo opperation.
-     *
      * @throws IOException DOCUMENT ME!
      */
-    public DispatcherOutputStream getDestination(HttpServletResponse response)
-        throws IOException {
+    public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         buffer = new ByteArrayOutputStream(1024 * 1024);
 
         return new DispatcherOutputStream(buffer);

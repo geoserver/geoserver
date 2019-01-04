@@ -7,7 +7,6 @@ package org.geoserver.web.data.workspace;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -15,34 +14,35 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
-/**
- * {@link GeoServerDataProvider} for the list of workspaces available in the {@link Catalog}
- */
+/** {@link GeoServerDataProvider} for the list of workspaces available in the {@link Catalog} */
 public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
     private static final long serialVersionUID = -2464073552094977958L;
 
-    public static Property<WorkspaceInfo> NAME = 
-        new BeanProperty<WorkspaceInfo>( "name", "name" );
-    
-    public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<WorkspaceInfo>("default") {
+    public static Property<WorkspaceInfo> NAME = new BeanProperty<WorkspaceInfo>("name", "name");
 
-        private static final long serialVersionUID = 7732697329315316826L;
+    public static Property<WorkspaceInfo> DEFAULT =
+            new AbstractProperty<WorkspaceInfo>("default") {
 
-        @Override
-        public Object getPropertyValue(WorkspaceInfo item) {
-            Catalog catalog = GeoServerApplication.get().getCatalog();
-            WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
-            return Boolean.valueOf(defaultWorkspace != null && defaultWorkspace.equals(item));
-        }
-    };
+                private static final long serialVersionUID = 7732697329315316826L;
 
-    static List<Property<WorkspaceInfo>> PROPERTIES = Arrays.asList(NAME, DEFAULT);
-    
+                @Override
+                public Object getPropertyValue(WorkspaceInfo item) {
+                    Catalog catalog = GeoServerApplication.get().getCatalog();
+                    WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
+                    return Boolean.valueOf(
+                            defaultWorkspace != null && defaultWorkspace.equals(item));
+                }
+            };
+
+    public static Property<WorkspaceInfo> ISOLATED = new BeanProperty<>("isolated", "isolated");
+
+    static List<Property<WorkspaceInfo>> PROPERTIES = Arrays.asList(NAME, DEFAULT, ISOLATED);
+
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);
     }
-   
+
     @Override
     protected List<WorkspaceInfo> getItems() {
         return getCatalog().getWorkspaces();
@@ -56,5 +56,4 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     protected IModel<WorkspaceInfo> newModel(WorkspaceInfo object) {
         return new WorkspaceDetachableModel(object);
     }
-
 }

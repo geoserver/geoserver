@@ -12,18 +12,15 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import javax.crypto.SecretKey;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.KeyStoreProvider;
 
 /**
  * Locking wrapper for {@link KeyStoreProviderImpl}
- * 
- * @author christian
  *
+ * @author christian
  */
 public class LockingKeyStoreProvider implements KeyStoreProvider {
 
@@ -31,37 +28,29 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
     protected final Lock readLock = readWriteLock.readLock();
     protected final Lock writeLock = readWriteLock.writeLock();
     protected KeyStoreProvider provider;
-    
-    /**
-     *  get a read lock
-     */
-    protected void  readLock() {
+
+    /** get a read lock */
+    protected void readLock() {
         readLock.lock();
     }
 
-    /**
-     *  free read lock
-     */
-    protected void  readUnLock() {
+    /** free read lock */
+    protected void readUnLock() {
         readLock.unlock();
     }
 
-    /**
-     *  get a write lock
-     */
-    protected void  writeLock() {
+    /** get a write lock */
+    protected void writeLock() {
         writeLock.lock();
     }
 
-    /**
-     *  free write lock
-     */
-    protected void  writeUnLock() {
+    /** free write lock */
+    protected void writeUnLock() {
         writeLock.unlock();
     }
 
     public LockingKeyStoreProvider(KeyStoreProvider prov) {
-        this.provider=prov;
+        this.provider = prov;
     }
 
     @Override
@@ -89,7 +78,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             return provider.getKey(alias);
         } finally {
             readUnLock();
-        }        
+        }
     }
 
     public byte[] getConfigPasswordKey() throws IOException {
@@ -108,9 +97,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         } finally {
             readUnLock();
         }
-        
     }
-
 
     public boolean containsAlias(String alias) throws IOException {
         readLock();
@@ -119,8 +106,6 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         } finally {
             readUnLock();
         }
-
-        
     }
 
     public byte[] getUserGroupKey(String serviceName) throws IOException {
@@ -129,7 +114,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             return provider.getUserGroupKey(serviceName);
         } finally {
             readUnLock();
-        }        
+        }
     }
 
     public boolean hasUserGroupKey(String serviceName) throws IOException {
@@ -139,7 +124,6 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         } finally {
             readUnLock();
         }
-        
     }
 
     public SecretKey getSecretKey(String name) throws IOException {
@@ -148,7 +132,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             return provider.getSecretKey(name);
         } finally {
             readUnLock();
-        }        
+        }
     }
 
     public PublicKey getPublicKey(String name) throws IOException {
@@ -167,11 +151,10 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         } finally {
             readUnLock();
         }
-        
     }
 
     public String aliasForGroupService(String serviceName) {
-            return provider.aliasForGroupService(serviceName);        
+        return provider.aliasForGroupService(serviceName);
     }
 
     public boolean isKeyStorePassword(char[] password) throws IOException {
@@ -180,10 +163,10 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             return provider.isKeyStorePassword(password);
         } finally {
             readUnLock();
-        }        
+        }
     }
 
-    public void setSecretKey(String alias, char[] key) throws IOException {        
+    public void setSecretKey(String alias, char[] key) throws IOException {
         writeLock();
         try {
             provider.setSecretKey(alias, key);
@@ -198,7 +181,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             provider.setUserGroupKey(serviceName, password);
         } finally {
             writeUnLock();
-        }        
+        }
     }
 
     public void removeKey(String alias) throws IOException {
@@ -208,7 +191,6 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         } finally {
             writeUnLock();
         }
-        
     }
 
     public void storeKeyStore() throws IOException {
@@ -217,17 +199,17 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             provider.storeKeyStore();
         } finally {
             writeUnLock();
-        }        
+        }
     }
 
-    public void prepareForMasterPasswordChange(char[] oldPassword , char[] newPassword)
+    public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword)
             throws IOException {
         writeLock();
         try {
             provider.prepareForMasterPasswordChange(oldPassword, newPassword);
         } finally {
             writeUnLock();
-        }        
+        }
     }
 
     public void abortMasterPasswordChange() {
@@ -236,7 +218,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             provider.abortMasterPasswordChange();
         } finally {
             writeUnLock();
-        }        
+        }
     }
 
     public void commitMasterPasswordChange() throws IOException {
@@ -245,6 +227,6 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
             provider.commitMasterPasswordChange();
         } finally {
             writeUnLock();
-        }        
-    }    
+        }
+    }
 }

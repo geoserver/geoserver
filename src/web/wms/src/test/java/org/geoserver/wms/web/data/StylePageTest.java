@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -19,14 +20,14 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 
 public class StylePageTest extends GeoServerWicketTestSupport {
-    
+
     @Test
     public void testPageLoad() {
         login();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
     }
-    
+
     @Test
     public void testStyleProvider() {
         login();
@@ -35,8 +36,8 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         // Get the StyleProvider
 
-        DataView dv = (DataView) tester
-                .getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         Catalog catalog = getCatalog();
         assertEquals(dv.size(), catalog.getStyles().size());
         IDataProvider dataProvider = dv.getDataProvider();
@@ -59,8 +60,9 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StyleInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StyleInfo> list = catalog.list(StyleInfo.class, Filter.INCLUDE, 0, 1,
-                Predicates.sortBy("name", true));
+        CloseableIterator<StyleInfo> list =
+                catalog.list(
+                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
         assertTrue(list.hasNext());
         StyleInfo expected = list.next();
 
@@ -74,5 +76,18 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         }
         // Ensure equality
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testIsDefaultStyle() {
+        Catalog cat = getCatalog();
+        assertTrue(StylePage.isDefaultStyle(cat.getStyleByName("line")));
+
+        StyleInfo s = cat.getFactory().createStyle();
+        s.setName("line");
+        s.setFilename("line.sld");
+        s.setWorkspace(cat.getDefaultWorkspace());
+
+        assertFalse(StylePage.isDefaultStyle(s));
     }
 }

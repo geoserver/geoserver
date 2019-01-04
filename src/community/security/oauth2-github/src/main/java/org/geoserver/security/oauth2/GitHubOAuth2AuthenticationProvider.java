@@ -9,21 +9,19 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 
-/**
- * @author Alessio Fabiani, GeoSolutions S.A.S.
- *
- */
+/** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GitHubOAuth2AuthenticationProvider extends GeoServerOAuthAuthenticationProvider {
 
     public GitHubOAuth2AuthenticationProvider(
-            GeoServerSecurityManager securityManager, 
-            String tokenServices, String oauth2SecurityConfiguration, String geoServerOauth2RestTemplate) {
-        super(securityManager, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
-    }
-    
-    @Override
-    public void handlePostChanged(GeoServerSecurityManager securityManager) {
-        // Nothing to do
+            GeoServerSecurityManager securityManager,
+            String tokenServices,
+            String oauth2SecurityConfiguration,
+            String geoServerOauth2RestTemplate) {
+        super(
+                securityManager,
+                tokenServices,
+                oauth2SecurityConfiguration,
+                geoServerOauth2RestTemplate);
     }
 
     @Override
@@ -35,10 +33,10 @@ public class GitHubOAuth2AuthenticationProvider extends GeoServerOAuthAuthentica
     public Class<? extends GeoServerSecurityFilter> getFilterClass() {
         return GitHubOAuthAuthenticationFilter.class;
     }
-    
+
     @Override
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
-        return new GitHubOAuthAuthenticationFilter(config, tokenServices,
-                oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
+        return new GitHubOAuthAuthenticationFilter(
+                config, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
     }
 }

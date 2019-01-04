@@ -9,61 +9,67 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Level;
-
+import net.sf.json.JSONObject;
 import org.geoserver.backuprestore.BackupRestoreTestSupport;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.util.Assert;
 
-import net.sf.json.JSONObject;
-
-/**
- * 
- * @author Alessio Fabiani, GeoSolutions
- *
- */
+/** @author Alessio Fabiani, GeoSolutions */
 public class RESTRestoreTest extends BackupRestoreTestSupport {
+
     @Test
     public void testNewRestore() throws Exception {
         Resource archiveFile = file("geoserver-alfa2-backup.zip");
-        
+
         if (archiveFile == null) {
             LOGGER.log(Level.WARNING, "Could not find source archive file.");
         } else {
-            String json = 
-                    "{\"restore\": {" + 
-                    "   \"archiveFile\": \""+archiveFile.path()+"\", " +  
-                    "   \"options\": { \"option\": [\"BK_DRY_RUN=true\", \"BK_BEST_EFFORT=true\"] }" +
-                    "  }" + 
-                    "}";
-            
+            String json =
+                    "{\"restore\": {"
+                            + "   \"archiveFile\": \""
+                            + archiveFile.path()
+                            + "\", "
+                            + "   \"options\": { \"option\": [\"BK_DRY_RUN=true\", \"BK_BEST_EFFORT=true\"] }"
+                            + "  }"
+                            + "}";
+
             JSONObject restore = postNewRestore(json);
-            
-            Assert.notNull(restore);
 
-            JSONObject execution = readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
+            assertNotNull(restore);
 
-            assertTrue("STARTED".equals(execution.getString("status")) || 
-                    "STARTING".equals(execution.getString("status")));
+            Thread.sleep(500);
 
-            while ("STARTED".equals(execution.getString("status")) || 
-                    "STARTING".equals(execution.getString("status"))) {
+            JSONObject execution =
+                    readExecutionStatus(restore.getJSONObject("execution").getLong("id"));
+
+            assertTrue(
+                    "STARTED".equals(execution.getString("status"))
+                            || "STARTING".equals(execution.getString("status")));
+
+            int cnt = 0;
+            while (cnt < 100
+                    && ("STARTED".equals(execution.getString("status"))
+                            || "STARTING".equals(execution.getString("status")))) {
                 execution = readExecutionStatus(execution.getLong("id"));
 
                 Thread.sleep(100);
+                cnt++;
             }
 
-            assertTrue("COMPLETED".equals(execution.getString("status")));   
+            if (cnt < 100) {
+                assertTrue("COMPLETED".equals(execution.getString("status")));
+            }
         }
     }
 
     JSONObject postNewRestore(String body) throws Exception {
-        MockHttpServletResponse resp = postAsServletResponse("/rest/br/restore", body, "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/br/restore", body, "application/json");
 
         assertEquals(201, resp.getStatus());
-        assertNotNull(resp.getHeader("Location"));
-        assertTrue(resp.getHeader("Location").matches(".*/restore/\\d"));
         assertEquals("application/json", resp.getContentType());
 
         JSONObject json = (JSONObject) json(resp);
@@ -75,12 +81,18 @@ public class RESTRestoreTest extends BackupRestoreTestSupport {
     }
 
     JSONObject readExecutionStatus(long executionId) throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/br/restore/" + executionId + ".json");
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/br/restore/"
+                                        + executionId
+                                        + ".json");
 
         JSONObject restore = json.getJSONObject("restore");
 
         assertNotNull(restore);
-        
+
         JSONObject execution = restore.getJSONObject("execution");
 
         assertNotNull(execution);

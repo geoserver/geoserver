@@ -8,18 +8,18 @@ package org.geoserver.test;
 
 /**
  * Mock data for Substitution Group Test
- * 
+ *
  * @author Niels Charlier, Curtin University Of Technology
  */
 public class SubstitutionGroupMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureSubstitutionGroup.xml",
-                "MappedFeaturePropertyfile.properties");        
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeatureSubstitutionGroup.xml",
+                "MappedFeaturePropertyfile.properties");
     }
-
 }

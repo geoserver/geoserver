@@ -4,13 +4,10 @@
  */
 package org.geoserver.backuprestore;
 
-/**
- * @author Alessio Fabiani, GeoSolutions
- *
- */
+/** @author Alessio Fabiani, GeoSolutions */
 public interface BackupRestoreCallback {
 
     public void onBeginRequest(String requestedType);
-    
+
     public void onEndRequest();
 }

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.exec.CommandLine;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportData;
@@ -18,22 +17,19 @@ import org.geoserver.importer.ValidationException;
 
 /**
  * Runs gdaladdo on a input raster file
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
-
-public class GdalAddoTransform extends AbstractCommandLineTransform implements RasterTransform {
+public class GdalAddoTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
     /**
      * Checks if gdaladdo is available
-     * 
      *
      * @throws IOException
      */
     public static boolean isAvailable() throws IOException {
-        return new GdalAddoTransform(new ArrayList<String>(), Arrays.asList(2))
-                .checkAvailable();
+        return new GdalAddoTransform(new ArrayList<String>(), Arrays.asList(2)).checkAvailable();
     }
 
     private List<Integer> levels;
@@ -61,7 +57,11 @@ public class GdalAddoTransform extends AbstractCommandLineTransform implements R
                 if (curr <= previous) {
                     throw new ValidationException(
                             "Invalid levels order, they must be provided in increasing order, but we have "
-                                    + curr + " after " + previous + " in " + levels);
+                                    + curr
+                                    + " after "
+                                    + previous
+                                    + " in "
+                                    + levels);
                 }
             }
         }
@@ -106,11 +106,8 @@ public class GdalAddoTransform extends AbstractCommandLineTransform implements R
         return Collections.singletonList("--version");
     }
 
-    /**
-     * @return the levels
-     */
+    /** @return the levels */
     public List<Integer> getLevels() {
         return levels;
     }
-
 }

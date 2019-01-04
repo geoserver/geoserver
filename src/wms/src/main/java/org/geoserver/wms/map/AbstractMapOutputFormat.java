@@ -6,19 +6,16 @@
 package org.geoserver.wms.map;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.geoserver.wms.GetMapOutputFormat;
-import org.geoserver.wms.MapProducerCapabilities;
 import org.springframework.util.Assert;
 
 /**
  * Base class for formats that do actually draw a map
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions
  * @author Gabriel Roldan
  */
@@ -29,13 +26,16 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     private final Set<String> outputFormatNames;
 
     protected AbstractMapOutputFormat(final String mime) {
-        this(mime, new String[] { mime });
+        this(mime, new String[] {mime});
     }
 
     @SuppressWarnings("unchecked")
     protected AbstractMapOutputFormat(final String mime, final String... outputFormats) {
-        this(mime, outputFormats == null ? Collections.EMPTY_SET : new HashSet<String>(
-                Arrays.asList(outputFormats)));
+        this(
+                mime,
+                outputFormats == null
+                        ? Collections.EMPTY_SET
+                        : new HashSet<String>(Arrays.asList(outputFormats)));
     }
 
     protected AbstractMapOutputFormat(final String mime, Set<String> outputFormats) {
@@ -60,20 +60,13 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
         this(null, (String[]) null);
     }
 
-    /**
-     * @see GetMapOutputFormat#getMimeType()
-     */
+    /** @see GetMapOutputFormat#getMimeType() */
     public String getMimeType() {
         return mime;
     }
 
-    /**
-     * @see GetMapOutputFormat#getOutputFormatNames()
-     */
+    /** @see GetMapOutputFormat#getOutputFormatNames() */
     public Set<String> getOutputFormatNames() {
         return outputFormatNames;
     }
-    
-    
-
 }

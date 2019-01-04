@@ -10,9 +10,6 @@ import static org.junit.Assert.*;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.opengis.parameter.ParameterDescriptor;
@@ -30,7 +27,7 @@ public class CoverageUtilsTest {
         assertTrue(value instanceof Color);
         assertEquals(Color.WHITE, value);
     }
-    
+
     @Test
     public void testMaxTiles() {
         ParameterDescriptor<Integer> pdescriptor = ImageMosaicFormat.MAX_ALLOWED_TILES;
@@ -40,6 +37,5 @@ public class CoverageUtilsTest {
         Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
         assertTrue(value instanceof Integer);
         assertEquals(new Integer(1), value);
-        
     }
 }

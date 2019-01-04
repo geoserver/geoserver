@@ -7,86 +7,75 @@ package org.geoserver.wms;
 
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.catalog.AuthorityURLInfo;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.ServiceInfo;
 
 /**
  * Configuration object for Web Map Service.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public interface WMSInfo extends ServiceInfo {
 
     enum WMSInterpolation {
-        Nearest, Bilinear, Bicubic
+        Nearest,
+        Bilinear,
+        Bicubic
     }
 
-    /**
-     * The watermarking configuration.
-     */
+    /** The watermarking configuration. */
     WatermarkInfo getWatermark();
 
-    /**
-     * Sets the watermarking configuration.
-     */
+    /** Sets the watermarking configuration. */
     void setWatermark(WatermarkInfo watermark);
 
     WMSInterpolation getInterpolation();
 
     void setInterpolation(WMSInterpolation interpolation);
 
-    /**
-     * The srs's that the wms service supports.
-     */
+    /** The srs's that the wms service supports. */
     List<String> getSRS();
-    
+
     /**
-     * A set of mime types allowed for a getMap request. Active
-     * if {@link #isGetMapMimeTypeCheckingEnabled()} returns <code>true</code>
-     * 
+     * A set of mime types allowed for a getMap request. Active if {@link
+     * #isGetMapMimeTypeCheckingEnabled()} returns <code>true</code>
      */
     Set<String> getGetMapMimeTypes();
 
     boolean isGetMapMimeTypeCheckingEnabled();
 
     void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled);
-    
-            
+
     /**
-     * A set of mime types allowed for a getFeatureInfo request. Active
-     * if {@link #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
-     * 
+     * A set of mime types allowed for a getFeatureInfo request. Active if {@link
+     * #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
      */
     Set<String> getGetFeatureInfoMimeTypes();
-    
+
     boolean isGetFeatureInfoMimeTypeCheckingEnabled();
-    
+
     void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled);
-    
+
     /**
-     * Flag controlling whether the WMS service, for each layer, should declare a bounding box 
-     * for every CRS supported, in it's capabilities document. 
-     * <p>
-     * By default the number of CRS's supported is huge which does not make this option practical.
-     * This flag is only respected in cases there {@link #getSRS()} is non empty.
-     * </p>
+     * Flag controlling whether the WMS service, for each layer, should declare a bounding box for
+     * every CRS supported, in it's capabilities document.
+     *
+     * <p>By default the number of CRS's supported is huge which does not make this option
+     * practical. This flag is only respected in cases there {@link #getSRS()} is non empty.
      */
     Boolean isBBOXForEachCRS();
 
     /**
-     * Sets flag controlling whether the WMS service, for each layer, should declare a bounding box 
+     * Sets flag controlling whether the WMS service, for each layer, should declare a bounding box
      * for every CRS supported.
-     * 
+     *
      * @see #isBBOXForEachCRS()
      */
     void setBBOXForEachCRS(Boolean bboxForEachCRS);
 
-    /**
-     * The maximum search radius for GetFeatureInfo
-     */
+    /** The maximum search radius for GetFeatureInfo */
     int getMaxBuffer();
 
     /**
@@ -97,7 +86,7 @@ public interface WMSInfo extends ServiceInfo {
     /**
      * Returns the max amount of memory, in kilobytes, that each WMS request can allocate (each
      * output format will make a best effort attempt to respect it, but there are no guarantees)
-     * 
+     *
      * @return the limit, or 0 if no limit
      */
     int getMaxRequestMemory();
@@ -117,7 +106,7 @@ public interface WMSInfo extends ServiceInfo {
 
     /**
      * Sets the max allowed rendering time, in seconds
-     * 
+     *
      * @param maxRenderingTime
      */
     void setMaxRenderingTime(int maxRenderingTime);
@@ -130,20 +119,103 @@ public interface WMSInfo extends ServiceInfo {
 
     /**
      * Sets the max number of rendering errors tolerated
-     * 
+     *
      * @param maxRenderingTime
      */
     void setMaxRenderingErrors(int maxRenderingTime);
-    
+
     /**
      * Defines the list of authority URLs for the root WMS layer
-     * 
+     *
      * @return the list of WMS root layer's authority URLs
      */
     List<AuthorityURLInfo> getAuthorityURLs();
 
-    /**
-     * @return the list of identifiers for the WMS root layer
-     */
+    /** @return the list of identifiers for the WMS root layer */
     List<LayerIdentifierInfo> getIdentifiers();
+
+    /** @return the title of the root layer */
+    String getRootLayerTitle();
+
+    /**
+     * Sets the title of the root layer
+     *
+     * @param rootLayerTitle
+     */
+    void setRootLayerTitle(String rootLayerTitle);
+
+    /** @return the abstract of the root layer */
+    public String getRootLayerAbstract();
+
+    /**
+     * Sets the abstract of the root layer
+     *
+     * @param rootLayerAbstract
+     */
+    public void setRootLayerAbstract(String rootLayerAbstract);
+
+    /**
+     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
+     *
+     * @param dynamicStylesEnabled
+     */
+    void setDynamicStylingDisabled(Boolean dynamicStylesDisabled);
+
+    /** @return the status of dynamic styling (SLD and SLD_BODY params) allowance */
+    Boolean isDynamicStylingDisabled();
+
+    /**
+     * If set to TRUE GetFeatureInfo results will NOT be reprojected.
+     *
+     * @param featuresReprojectionDisabled features reprojection allowance
+     */
+    default void setFeaturesReprojectionDisabled(boolean featuresReprojectionDisabled) {
+        // if not implemented nothing is done
+    }
+
+    /**
+     * Flag that controls if GetFeatureInfo results should NOT be reprojected to the map coordinate
+     * reference system.
+     *
+     * @return GetFeatureInfo features reprojection allowance
+     */
+    default boolean isFeaturesReprojectionDisabled() {
+        // deactivate features reprojection by default
+        return true;
+    }
+
+    /**
+     * Returns the maximum number of dimension items that can be requested by a client without
+     * getting a service exception. The default is
+     * {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
+     *
+     * @return
+     */
+    default int getMaxRequestedDimensionValues() {
+        return DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES;
+    }
+
+    /**
+     * Sets the maximum number of dimension items that can be requested by a client without. Zero or
+     * negative will disable the limit.
+     *
+     * @param maxRequestedDimensionValues Any integer number
+     */
+    default void setMaxRequestedDimensionValues(int maxRequestedDimensionValues) {
+        // if not implemented nothing is done
+    }
+
+    /**
+     * Returns WMS cache configuration for remote resources.
+     *
+     * @return
+     */
+    CacheConfiguration getCacheConfiguration();
+
+    /**
+     * Set current WMS cache configuration for remote resources.
+     *
+     * @return
+     */
+    void setCacheConfiguration(CacheConfiguration cacheCfg);
 }

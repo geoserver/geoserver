@@ -4,23 +4,6 @@
  */
 package org.geoserver.wms.topojson;
 
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
-import org.geoserver.wms.topojson.TopoGeom.LineString;
-import org.geoserver.wms.topojson.TopoGeom.MultiLineString;
-import org.geoserver.wms.topojson.TopoGeom.MultiPoint;
-import org.geoserver.wms.topojson.TopoGeom.MultiPolygon;
-import org.geoserver.wms.topojson.TopoGeom.Point;
-import org.geoserver.wms.topojson.TopoGeom.Polygon;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -32,9 +15,23 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.geoserver.wms.topojson.TopoGeom.GeometryColleciton;
+import org.geoserver.wms.topojson.TopoGeom.LineString;
+import org.geoserver.wms.topojson.TopoGeom.MultiLineString;
+import org.geoserver.wms.topojson.TopoGeom.MultiPoint;
+import org.geoserver.wms.topojson.TopoGeom.MultiPolygon;
+import org.geoserver.wms.topojson.TopoGeom.Point;
+import org.geoserver.wms.topojson.TopoGeom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
@@ -42,8 +39,8 @@ public class TopoJSONEncoder {
             implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
 
         @Override
-        public JsonElement serialize(Topology topology, Type typeOfSrc,
-                JsonSerializationContext context) {
+        public JsonElement serialize(
+                Topology topology, Type typeOfSrc, JsonSerializationContext context) {
 
             JsonObject root = new JsonObject();
             root.addProperty("type", "Topology");
@@ -95,17 +92,18 @@ public class TopoJSONEncoder {
             JsonArray arcs = new JsonArray();
 
             JsonArray jsonArc;
-            for (com.vividsolutions.jts.geom.LineString arc : topology.getArcs()) {
+            for (org.locationtech.jts.geom.LineString arc : topology.getArcs()) {
                 if (topology.getScreenToWorldTransform().isIdentity()) {
                     jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
                 } else {
-                    jsonArc = TopoJSONEncoder.quantize(arc.getCoordinateSequence(),
-                            arc.getFactory().getPrecisionModel());
+                    jsonArc =
+                            TopoJSONEncoder.quantize(
+                                    arc.getCoordinateSequence(),
+                                    arc.getFactory().getPrecisionModel());
                 }
                 arcs.add(jsonArc);
             }
             root.add("arcs", arcs);
-
         }
 
         @Override
@@ -125,14 +123,14 @@ public class TopoJSONEncoder {
 
     public void encode(Topology topology, Writer writer) throws IOException {
 
-        Gson gson = gsonBuilder/* .setPrettyPrinting() */.create();
+        Gson gson = gsonBuilder /* .setPrettyPrinting() */.create();
 
         // gson.fromjson
         gson.toJson(topology, writer);
         writer.flush();
     }
 
-    private static abstract class TopologyEncoder {
+    private abstract static class TopologyEncoder {
         private static Map<String, TopologyEncoder> encoders = new HashMap<>();
 
         static {
@@ -198,7 +196,6 @@ public class TopoJSONEncoder {
             }
             return props;
         }
-
     }
 
     private static class GeometryCollecitonEncoder extends TopologyEncoder {
@@ -212,9 +209,7 @@ public class TopoJSONEncoder {
             for (TopoGeom obj : coll.getGeometries()) {
                 geoms.add(TopologyEncoder.encode(obj));
             }
-
         }
-
     }
 
     private static class PointEncoder extends TopologyEncoder {
@@ -305,7 +300,6 @@ public class TopoJSONEncoder {
                 polygons.add(PolygonEncoder.indexes(p));
             }
         }
-
     }
 
     public static JsonArray serialize(final CoordinateSequence coords) {
@@ -316,9 +310,9 @@ public class TopoJSONEncoder {
             Coordinate buff = new Coordinate();
 
             coords.getCoordinate(0, buff);
-            addCoordinate(arc, buff);// first coordinate as-is
+            addCoordinate(arc, buff); // first coordinate as-is
 
-            for (int i = 0; i < size; i++) {// subsequent coordinates delta encoded
+            for (int i = 0; i < size; i++) { // subsequent coordinates delta encoded
                 coords.getCoordinate(i, buff);
                 addCoordinate(arc, buff);
             }
@@ -326,8 +320,8 @@ public class TopoJSONEncoder {
         return arc;
     }
 
-    public static JsonArray quantize(final CoordinateSequence coords,
-            PrecisionModel precisionModel) {
+    public static JsonArray quantize(
+            final CoordinateSequence coords, PrecisionModel precisionModel) {
         JsonArray arc = new JsonArray();
         final int size = coords.size();
 
@@ -336,7 +330,7 @@ public class TopoJSONEncoder {
 
             coords.getCoordinate(0, buff);
             precisionModel.makePrecise(buff);
-            addCoordinate(arc, buff);// first coordinate as-is
+            addCoordinate(arc, buff); // first coordinate as-is
 
             double lastX;
             double lastY;
@@ -344,7 +338,7 @@ public class TopoJSONEncoder {
             lastX = buff.x;
             lastY = buff.y;
 
-            for (int i = 1; i < size; i++) {// subsequent coordinates delta encoded
+            for (int i = 1; i < size; i++) { // subsequent coordinates delta encoded
                 coords.getCoordinate(i, buff);
                 precisionModel.makePrecise(buff);
                 double deltaX = buff.x - lastX;
@@ -384,5 +378,4 @@ public class TopoJSONEncoder {
         coord.add(new JsonPrimitive(Y));
         arc.add(coord);
     }
-
 }

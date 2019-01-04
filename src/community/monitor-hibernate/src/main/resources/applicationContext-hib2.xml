@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" default-autowire="byName">
+ 
+   <bean id="monitoring-hibPropertyConfigurer" class="org.geoserver.config.GeoServerPropertyConfigurer">
+
+        <property name="order" value="100"/>
+        
+        <constructor-arg ref="dataDirectory"/>
+
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+
+        <!-- This location is relative to the datadir -->
+      	<property name="location" value="file:monitoring/hibernate.properties"/>
+      	
+      	<!-- default properties -->
+		<property name="properties">
+			<props>
+				<prop key="database">H2</prop>
+				<prop key="databasePlatform">org.geoserver.monitor.hib.H2Dialect</prop>
+				<prop key="showSql">false</prop>
+				<prop key="generateDdl">true</prop>
+	
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.generate_statistics">true</prop>
+				<prop key="hibernate.session_factory_name">SessionFactory</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.use_sql_comments">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<!--prop key="hibernate.jdbc.use_streams_for_binary">true</prop -->
+			</props>
+		</property>
+    </bean>
+    
+    
+ <bean id="hibSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="dataSource" ref="monitorDataSource"/>
+    <property name="mappingResources">
+      <list>
+        <value>mappings.hbm.xml</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+       <props>
+          <prop key="hibernate.dialect">${databasePlatform}</prop>
+          <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+          <prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
+          <prop key="hibernate.session_factory_name">${hibernate.session_factory_name}</prop>
+          <prop key="hibernate.bytecode.use_reflection_optimizer">${hibernate.bytecode.use_reflection_optimizer}</prop>
+          <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+          <prop key="hibernate.use_sql_comments">${hibernate.use_sql_comments}</prop>
+          <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="hibMonitorDAO" class="org.geoserver.monitor.hib.HibernateMonitorDAO2">
+    <property name="sessionFactory" ref="hibSessionFactory"/>
+  </bean>
+  
+ </beans>

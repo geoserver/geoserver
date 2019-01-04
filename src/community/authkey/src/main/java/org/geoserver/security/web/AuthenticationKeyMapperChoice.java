@@ -1,5 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,35 +6,36 @@ package org.geoserver.security.web;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AuthenticationKeyMapper;
-import org.geoserver.security.web.auth.AuthenticationFilterPanel;
 
 /**
  * Drop down choice widget for {@link AuthenticationKeyMapper} configurations.
- * 
- * @author mcr
  *
+ * @author mcr
  */
 public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyMapperChoice(String id) {
-        super(id,new AuthenticationKeyMapperNamesModel(), new AuthenticationKeyMapperChoiceRenderer());
+        super(
+                id,
+                new AuthenticationKeyMapperNamesModel(),
+                new AuthenticationKeyMapperChoiceRenderer());
     }
 
     public AuthenticationKeyMapperChoice(String id, IModel<String> model) {
-        super(id, model, new AuthenticationKeyMapperNamesModel(), new AuthenticationKeyMapperChoiceRenderer()); 
+        super(
+                id,
+                model,
+                new AuthenticationKeyMapperNamesModel(),
+                new AuthenticationKeyMapperChoiceRenderer());
     }
 
     static class AuthenticationKeyMapperNamesModel implements IModel<List<String>> {
@@ -44,8 +44,8 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
         List<String> mapperNames;
 
         AuthenticationKeyMapperNamesModel() {
-            List<AuthenticationKeyMapper> mappers = 
-                        GeoServerExtensions.extensions(AuthenticationKeyMapper.class);
+            List<AuthenticationKeyMapper> mappers =
+                    GeoServerExtensions.extensions(AuthenticationKeyMapper.class);
             this.mapperNames = new ArrayList<String>();
             for (AuthenticationKeyMapper mapper : mappers) {
                 this.mapperNames.add(mapper.getBeanName());
@@ -63,7 +63,7 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
         @Override
         public void detach() {
-            //do nothing
+            // do nothing
         }
 
         @Override
@@ -74,12 +74,16 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
     static class AuthenticationKeyMapperChoiceRenderer extends ChoiceRenderer<String> {
         private static final long serialVersionUID = 1L;
+
         @Override
         public Object getDisplayValue(String object) {
-            //do a resource lookup
-            return new StringResourceModel(AuthenticationKeyFilterPanel.class.getSimpleName()+
-                    "." + object).setParameters(object).getObject();
+            // do a resource lookup
+            return new StringResourceModel(
+                            AuthenticationKeyFilterPanel.class.getSimpleName() + "." + object)
+                    .setParameters(object)
+                    .getObject();
         }
+
         @Override
         public String getIdValue(String object, int index) {
             return object;

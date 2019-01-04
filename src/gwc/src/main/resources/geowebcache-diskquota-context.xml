@@ -37,6 +37,7 @@
 
   <bean id="gwcTilePageCalculator" class="org.geowebcache.diskquota.storage.TilePageCalculator">
     <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="gwcStorageBroker" />
   </bean>
 
   <bean id="gwcCacheCleaner" class="org.geowebcache.diskquota.CacheCleaner">
@@ -46,28 +47,6 @@
   <!--bean id="mockWMSSource" class="org.geowebcache.util.MockWMSLayerSource"> <description>REMOVE THIS, it's a fake WMS 
     source for all layers!!!</description> <constructor-arg ref="gwcTLDispatcher" /> </bean -->
 
-  <bean id="gwdDiskQuotaResourceFinder" class="org.geowebcache.diskquota.rest.DiskQuotaFinder">
-    <constructor-arg ref="DiskQuotaMonitor" />
-  </bean>
-  
-  <bean id="gwcDiskQuotaRestDispatcher" class="org.geowebcache.rest.RESTMapping">
-    <property name="routes">
-      <map>
-        <entry>
-          <key>
-            <value>/diskquota/{layer}.{extension}"</value>
-          </key>
-          <ref bean="gwdDiskQuotaResourceFinder" />
-        </entry>
-        <entry>
-          <key>
-            <value>/diskquota.{extension}</value>
-          </key>
-          <ref bean="gwdDiskQuotaResourceFinder" />
-        </entry>
-      </map>
-    </property>
-  </bean>
 
   <bean id="jdbcQuotaStoreFactory" class="org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory">
    <constructor-arg ref="jdbcDiskQuotaConfigResourceProvider" />

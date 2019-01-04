@@ -10,12 +10,16 @@ import org.geoserver.platform.ServiceException;
 
 public class TestDispatcherCallback implements DispatcherCallback {
     public enum Status {
-        INIT, SERVICE_DISPATCHED, OPERATION_DISPATCHED, OPERATION_EXECUTED, RESPONSE_DISPATCHED, FINISHED
+        INIT,
+        SERVICE_DISPATCHED,
+        OPERATION_DISPATCHED,
+        OPERATION_EXECUTED,
+        RESPONSE_DISPATCHED,
+        FINISHED
     }
-    
+
     public ThreadLocal<Status> dispatcherStatus = new ThreadLocal<Status>();
-    
-    
+
     @Override
     public Request init(Request request) {
         dispatcherStatus.set(Status.INIT);
@@ -41,7 +45,8 @@ public class TestDispatcherCallback implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
         return response;
     }
@@ -50,5 +55,4 @@ public class TestDispatcherCallback implements DispatcherCallback {
     public void finished(Request request) {
         dispatcherStatus.set(Status.FINISHED);
     }
-
 }

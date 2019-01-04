@@ -9,95 +9,73 @@ import java.util.List;
 
 /**
  * Interface for publishable entities contained in a Layer Group.
- * 
+ *
  * @author Davide Savazzi - geo-solutions.it
  */
 public interface PublishedInfo extends CatalogInfo {
 
-    /**
-     * Returns the name.
-     */
+    /** Returns the name. */
     String getName();
-    
-    /**
-     * Sets the name.
-     */    
+
+    /** Sets the name. */
     void setName(String name);
 
-    /**
-     * @see prefixedName
-     */
+    /** @see prefixedName */
     @Deprecated
     public String getPrefixedName();
 
     /**
      * The derived prefixed name.
-     * <p>
-     * If a workspace is set this method returns:
+     *
+     * <p>If a workspace is set this method returns:
+     *
      * <pre>
      *   getWorkspace().getName() + ":" + getName();
      * </pre>
-     * Otherwise it simply returns: <pre>getName()</pre>
-     * </p>
+     *
+     * Otherwise it simply returns:
+     *
+     * <pre>getName()</pre>
      */
     String prefixedName();
 
-    /**
-     * Returns the title.
-     */
+    /** Returns the title. */
     String getTitle();
-    
-    /**
-     * Sets the title.
-     */
+
+    /** Sets the title. */
     void setTitle(String title);
 
-    /**
-     * Returns the abstract.
-     */
+    /** Returns the abstract. */
     String getAbstract();
-    
-    /**
-     * Sets the abstract.
-     */
+
+    /** Sets the abstract. */
     void setAbstract(String abstractTxt);
 
-    /**
-     * A persistent map of metadata.
-     */
+    /** A persistent map of metadata. */
     MetadataMap getMetadata();
 
-    /**
-     * Returns the list of authority URLs
-     */
+    /** Returns the list of authority URLs */
     List<AuthorityURLInfo> getAuthorityURLs();
 
-    /**
-     * Returns the list of identifiers
-     */
+    /** Returns the list of identifiers */
     List<LayerIdentifierInfo> getIdentifiers();
-    
-    /**
-     * The type of the layer.
-     */
+
+    /** The type of the layer. */
     PublishedType getType();
-    
+
     /**
-     * Gets the attribution information for this layer.  
+     * Gets the attribution information for this layer.
      *
      * @return an AttributionInfo instance with the layer's attribution information.
-     *
      * @see AttributionInfo
      */
     AttributionInfo getAttribution();
 
     /**
-     * Sets the attribution information for this layer.  
+     * Sets the attribution information for this layer.
      *
      * @param attribution an AttributionInfo instance with the new attribution information.
-     *
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
-
 }

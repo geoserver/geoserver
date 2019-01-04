@@ -8,50 +8,36 @@ package org.geoserver.wms.featureinfo;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Tests for {@link RasterLayerIdentifier}.
- *
- */
+/** Tests for {@link RasterLayerIdentifier}. */
 public class RasterLayerIdentifierTest {
 
-    /**
-     * Test that a null description is converted to "Unknown".
-     */
+    /** Test that a null description is converted to "Unknown". */
     @Test
     public void testNullDescriptionToNcCame() {
         Assert.assertEquals("Unknown", RasterLayerIdentifier.descriptionToNcName(null));
     }
 
-    /**
-     * Test that an empty description is converted to "Unknown".
-     */
+    /** Test that an empty description is converted to "Unknown". */
     @Test
     public void testEmptyDescriptionToNcCame() {
         Assert.assertEquals("Unknown", RasterLayerIdentifier.descriptionToNcName(""));
     }
 
-    /**
-     * Test that a description that is already a valid NCName is unchanged.
-     */
+    /** Test that a description that is already a valid NCName is unchanged. */
     @Test
     public void testUnchangedDescriptionToNcCame() {
         Assert.assertEquals("Band", RasterLayerIdentifier.descriptionToNcName("Band"));
     }
 
-    /**
-     * Test that a space (not permitted in an NCName) is replaced with an underscore.
-     */
+    /** Test that a space (not permitted in an NCName) is replaced with an underscore. */
     @Test
     public void testSpaceDescriptionToNcCame() {
         Assert.assertEquals("Band_1", RasterLayerIdentifier.descriptionToNcName("Band 1"));
     }
 
-    /**
-     * Test that a leading digit (not permitted in an NCName) is replaced with an underscore.
-     */
+    /** Test that a leading digit (not permitted in an NCName) is replaced with an underscore. */
     @Test
     public void testLeadingDigitDescriptionToNcCame() {
         Assert.assertEquals("_Band", RasterLayerIdentifier.descriptionToNcName("1Band"));
     }
-
 }

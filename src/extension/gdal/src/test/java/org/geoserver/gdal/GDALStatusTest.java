@@ -5,6 +5,7 @@
 package org.geoserver.gdal;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 public class GDALStatusTest {
@@ -25,5 +26,4 @@ public class GDALStatusTest {
         assertTrue(status.getVersion().isPresent());
         assertTrue(status.getMessage().get().contains("Build Info"));
     }
-
 }

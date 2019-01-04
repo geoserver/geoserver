@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -29,6 +28,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
+import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -49,8 +49,8 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.xml.styling.SLDParser;
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
@@ -91,8 +91,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
                         + " from style "
                         + multipleRulesStyle.getName());
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -135,8 +134,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
 
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -181,8 +179,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         Style style = getCatalog().getStyleByName("rainfall").getStyle();
         assertNotNull(style);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setStrict(false);
         req.setLayer(null);
         req.setStyle(style);
@@ -204,8 +201,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
     /** Tests that the legend graphic is produced for multiple layers */
     @org.junit.Test
     public void testMultipleLayers() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);
 
@@ -225,7 +221,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),req.getWms());
         legend.setStyle(
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
@@ -266,8 +262,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
     public void testForceTitlesOff() throws Exception {
         Catalog cat = getCatalog();
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         Map<String, String> options = new HashMap<String, String>();
         options.put("forceTitles", "off");
         req.setLegendOptions(options);
@@ -289,7 +284,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),WMS.get());
         legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
 
@@ -323,8 +318,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithDifferentStyles() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);
 
@@ -368,8 +362,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndCoverage() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);
 
@@ -431,8 +424,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setScale(1000);
         int titleHeight = getTitleHeight(req);
 
@@ -494,8 +486,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleVector() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         req.setScale(1000);
         int titleHeight = getTitleHeight(req);
 
@@ -520,13 +511,41 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         this.legendProducer.buildLegendGraphic(req);
 
         BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+
+        // vector layer
+        assertPixel(image, 10, 10 + titleHeight, new Color(192, 160, 0));
+
+        assertPixel(image, 10, 30 + titleHeight, new Color(0, 0, 0));
+
+        assertPixel(image, 10, 50 + titleHeight, new Color(224, 64, 0));
+
+        // no second vector layer
+        assertTrue(image.getHeight() < 70 + titleHeight * 2);
     }
 
     @Test
     public void testMixedGeometry() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("MIXEDGEOMETRY");
+        builder.setNamespaceURI("test");
+        builder.setDefaultGeometry("GEOMETRY");
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        builder.setCRS(crs);
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        AttributeType at =
+                new AttributeTypeImpl(
+                        new NameImpl("ID"),
+                        String.class,
+                        false,
+                        false,
+                        Collections.EMPTY_LIST,
+                        null,
+                        null);
+        builder.add(new AttributeDescriptorImpl(at, new NameImpl("ID"), 0, 1, false, null));
 
         GeometryType gt =
                 new GeometryTypeImpl(
@@ -571,8 +590,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
     /** Tests that symbols are not bigger than the requested icon size. */
     @org.junit.Test
     public void testSymbolContainedInIcon() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -600,8 +618,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
      */
     @org.junit.Test
     public void testSymbolContainedInIconUsingExpression() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        ;
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()

@@ -246,7 +246,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private String styleName = "";
     private String layerName = "";
     private String baseURL = "";
-    
+
     private WMS wms;
 
     /**
@@ -271,7 +271,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             miniStyle = MiniRule.minify(gt2Style);
             Name layerName2 = legend.getLayerName();
             layerName = layerName2.getLocalPart();
-            
+
             baseURL = request.getBaseUrl();
 
             styleName = legend.getStyleName();

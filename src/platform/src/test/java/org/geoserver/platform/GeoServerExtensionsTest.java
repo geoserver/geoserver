@@ -261,22 +261,6 @@ public class GeoServerExtensionsTest {
         verify(appContext);
     }
 
-    public void _testBeanClassOfT() {
-        fail("Not yet implemented");
-    }
-
-    public void _testBeanClassOfTApplicationContext() {
-        fail("Not yet implemented");
-    }
-
-    public void _testOnApplicationEvent() {
-        fail("Not yet implemented");
-    }
-
-    public void _testCheckContext() {
-        fail("Not yet implemented");
-    }
-
     @Test
     public void testSystemProperty() {
         // check for a property we did set up in the setUp

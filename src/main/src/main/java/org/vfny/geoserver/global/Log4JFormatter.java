@@ -129,7 +129,7 @@ public class Log4JFormatter extends Formatter {
         try {
             buffer.setLength(1);
 
-            final Long millis = new Long(record.getMillis() - startMillis);
+            final Long millis = Long.valueOf(record.getMillis() - startMillis);
             writer.write(millis.toString());
             writer.write(" ");
             writer.write(PREFIX);

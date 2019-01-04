@@ -104,7 +104,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
         // render everything in vector form if possible
         rendererParams.put(StreamingRenderer.VECTOR_RENDERING_KEY, Boolean.TRUE);
-        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+        rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }

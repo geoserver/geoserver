@@ -292,7 +292,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         result = prime * result + ((clientProperties == null) ? 0 : clientProperties.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
-        result = prime * result + new Long(updateSequence).hashCode();
+        result = prime * result + Long.valueOf(updateSequence).hashCode();
         result = prime * result + (globalServices ? 1231 : 1237);
         result = prime * result + xmlPostRequestLogBufferSize;
         result =

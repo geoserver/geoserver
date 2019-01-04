@@ -407,6 +407,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertNotNull(request.getStyles());
     }
 
+    @Test
     public void testResolveLayersForStyleGroup() throws Exception {
         WMS wms = new WMS(getGeoServer());
         GetMapXmlReader reader = new GetMapXmlReader(wms);

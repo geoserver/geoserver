@@ -134,6 +134,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertXpathExists("/dataStore/connectionParameters/entry[@key='foo']", dom);
     }
 
+    @Test
     public void testChangeDataStoreWorkspace() throws Exception {
         testAddDataStore();
         File f1 =
@@ -166,6 +167,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertFalse(f.exists());
     }
 
+    @Test
     public void testAddFeatureType() throws Exception {
         testAddDataStore();
 
@@ -584,6 +586,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertFalse(f.exists());
     }
 
+    @Test
     public void testAddStyle() throws Exception {
 
         File f = new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml");

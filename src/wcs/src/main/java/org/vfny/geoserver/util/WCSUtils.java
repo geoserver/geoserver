@@ -148,7 +148,7 @@ public class WCSUtils {
                         (int) Math.round(padRange.getSpan(1)));
         GridEnvelope2D sourceRange = gg.getGridRange2D();
         if (sourceRange.x == targetRange.x
-                && sourceRange.y == sourceRange.y
+                && sourceRange.y == targetRange.y
                 && sourceRange.width == targetRange.width
                 && sourceRange.height == targetRange.height) {
             return coverage;
@@ -233,7 +233,7 @@ public class WCSUtils {
         final ArrayList selectedBands = new ArrayList();
 
         for (int d = 0; d < numDimensions; d++) {
-            dims.put("band" + (d + 1), new Integer(d));
+            dims.put("band" + (d + 1), Integer.valueOf(d));
         }
 
         if ((params != null) && !params.isEmpty()) {

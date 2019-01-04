@@ -1402,7 +1402,7 @@ public class GetFeature {
     static Integer traverseXlinkDepth(String raw) {
         Integer traverseXlinkDepth = null;
         try {
-            traverseXlinkDepth = new Integer(raw);
+            traverseXlinkDepth = Integer.valueOf(raw);
         } catch (NumberFormatException nfe) {
             // try handling *
             if ("*".equals(raw)) {
@@ -1410,7 +1410,7 @@ public class GetFeature {
                 // might be reported in teh acapabilitis document, using
                 // INteger.MAX_VALUE will result in stack overflow... for now
                 // we just use 10
-                traverseXlinkDepth = new Integer(2);
+                traverseXlinkDepth = Integer.valueOf(2);
             } else {
                 // not wildcard case, throw original exception
                 throw nfe;

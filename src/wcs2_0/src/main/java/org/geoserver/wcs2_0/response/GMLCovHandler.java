@@ -48,7 +48,7 @@ public class GMLCovHandler implements DataContentHandler {
         try {
             transformer.transform(data.coverage, os);
         } catch (TransformerException e) {
-            new WcsException(e);
+            throw new WcsException(e);
         }
     }
 

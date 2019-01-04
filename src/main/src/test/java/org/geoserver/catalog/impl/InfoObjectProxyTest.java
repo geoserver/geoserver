@@ -39,16 +39,16 @@ public class InfoObjectProxyTest {
         proxy.getScratch().add("y");
 
         assertEquals("one", bean.getFoo());
-        assertEquals(new Integer(1), bean.getBar());
+        assertEquals(Integer.valueOf(1), bean.getBar());
         assertTrue(bean.getScratch().isEmpty());
 
         assertEquals("two", proxy.getFoo());
-        assertEquals(new Integer(2), proxy.getBar());
+        assertEquals(Integer.valueOf(2), proxy.getBar());
         assertEquals(2, proxy.getScratch().size());
 
         handler.commit();
         assertEquals("two", bean.getFoo());
-        assertEquals(new Integer(2), bean.getBar());
+        assertEquals(Integer.valueOf(2), bean.getBar());
         assertEquals(2, bean.getScratch().size());
     }
 

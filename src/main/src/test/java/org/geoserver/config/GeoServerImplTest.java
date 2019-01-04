@@ -47,15 +47,15 @@ public class GeoServerImplTest {
         // GEOS-7890
         GeoServerInfo global1 = geoServer.getFactory().createGlobal();
         GeoServerInfo global2 = geoServer.getFactory().createGlobal();
-        global1.setGlobalServices(new Boolean(true));
-        global1.setXmlExternalEntitiesEnabled(new Boolean(false));
-        global1.setVerbose(new Boolean(false));
-        global1.setVerboseExceptions(new Boolean(false));
+        global1.setGlobalServices(Boolean.valueOf(true));
+        global1.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
+        global1.setVerbose(Boolean.valueOf(false));
+        global1.setVerboseExceptions(Boolean.valueOf(false));
 
-        global2.setGlobalServices(new Boolean(true));
-        global2.setXmlExternalEntitiesEnabled(new Boolean(false));
-        global2.setVerbose(new Boolean(false));
-        global2.setVerboseExceptions(new Boolean(false));
+        global2.setGlobalServices(Boolean.valueOf(true));
+        global2.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
+        global2.setVerbose(Boolean.valueOf(false));
+        global2.setVerboseExceptions(Boolean.valueOf(false));
         assertEquals(global1, global2);
     }
 

@@ -1478,7 +1478,7 @@
    <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
-     <version>2.3.2</version>
+     <version>3.8.0</version>
      <configuration>
        <source>1.8</source>
        <target>1.8</target>
@@ -1757,6 +1757,24 @@
        </execution>
      </executions>
    </plugin>
+   
+   <plugin>
+    <groupId>org.commonjava.maven.plugins</groupId>
+    <artifactId>directory-maven-plugin</artifactId>
+    <version>0.3.1</version>
+    <executions>
+      <execution>
+        <id>directories</id>
+        <goals>
+          <goal>highest-basedir</goal>
+        </goals>
+        <phase>initialize</phase>
+        <configuration>
+          <property>geoserverBaseDir</property>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
 
   </plugins>
 
@@ -1962,8 +1980,8 @@
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
-  <fork.javac>true</fork.javac>
-  <javac.maxHeapSize>256m</javac.maxHeapSize>
+  <fork.javac>false</fork.javac>
+  <javac.maxHeapSize>256M</javac.maxHeapSize>
   <image.tests>true</image.tests>
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
@@ -1991,6 +2009,9 @@
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
+  <errorProneFlags></errorProneFlags>
+  <errorProne.version>2.3.2</errorProne.version>
+  <javac.version>9+181-r4173-1</javac.version>
  </properties>
 
  <profiles>
@@ -2194,23 +2215,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.commonjava.maven.plugins</groupId>
-            <artifactId>directory-maven-plugin</artifactId>
-            <version>0.3.1</version>
-            <executions>
-              <execution>
-                <id>directories</id>
-                <goals>
-                  <goal>highest-basedir</goal>
-                </goals>
-                <phase>initialize</phase>
-                <configuration>
-                  <property>geoserverBaseDir</property>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
             <version>3.2.1</version>
@@ -2225,6 +2229,95 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>pmd</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+              <rulesets>
+                <ruleset>${geoserverBaseDir}/pmd-ruleset.xml</ruleset>
+              </rulesets>
+              <failurePriority>2</failurePriority>
+              <minimumPriority>2</minimumPriority>
+              <verbose>true</verbose>
+              <printFailingErrors>true</printFailingErrors>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- for those using JDK 11 -->
+    <profile>
+      <id>errorprone</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>false</fork>
+              <compilerArgs>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${errorProne.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- using github.com/google/error-prone-javac is required when running on JDK 8 -->
+    <profile>
+      <id>errorprone8</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>true</fork>
+              <compilerArgs combine.children="append">
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.3.2</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
           </plugin>
         </plugins>
       </build>

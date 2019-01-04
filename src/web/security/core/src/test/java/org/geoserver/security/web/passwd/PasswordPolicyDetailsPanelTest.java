@@ -86,7 +86,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
     }
 
     protected void setMinLength(int value) {
-        formTester.setValue("panel:content:minLength", new Integer(value).toString());
+        formTester.setValue("panel:content:minLength", Integer.valueOf(value).toString());
     }
 
     protected int getMinLength(int value) {
@@ -95,7 +95,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
     }
 
     protected void setMaxLength(int value) {
-        formTester.setValue("panel:content:maxLength:maxLength", new Integer(value).toString());
+        formTester.setValue("panel:content:maxLength:maxLength", Integer.valueOf(value).toString());
     }
 
     protected int getMaxLength(int value) {

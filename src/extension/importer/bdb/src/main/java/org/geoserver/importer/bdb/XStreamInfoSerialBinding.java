@@ -18,11 +18,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.geoserver.config.util.XStreamPersister;
+import org.geotools.util.logging.Logging;
 
 /** @param <T> */
 public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBinding<T> {
+
+    private static final Logger LOGGER = Logging.getLogger(XStreamInfoSerialBinding.class);
 
     private final XStreamPersister xstreamPersister;
     private boolean compress = true;
@@ -62,8 +66,7 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
             if (DEBUG) {
                 ByteArrayOutputStream tmp = new ByteArrayOutputStream();
                 ByteStreams.copy(in, tmp);
-                System.err.println("Read: " + tmp.toString());
-                System.err.flush();
+                LOGGER.fine("Read: " + tmp.toString());
                 in = new ByteArrayInputStream(tmp.toByteArray());
             }
             info = xstreamPersister.load(in, target);

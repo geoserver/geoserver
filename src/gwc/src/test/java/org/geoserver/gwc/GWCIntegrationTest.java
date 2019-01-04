@@ -934,7 +934,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             if (now - start > MAX_WAIT_SECS * 1000) {
                 String message =
                         format(
-                                "Waited for tile breeder to finish its tasks for more than % seconds",
+                                "Waited for tile breeder to finish its tasks for more than %d seconds",
                                 MAX_WAIT_SECS);
                 fail(message);
             }

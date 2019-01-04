@@ -172,7 +172,7 @@ public class BDBImportStore implements ImportStore {
         // if not an advance, error
         long current = importIdSeq.getStats(StatsConfig.DEFAULT).getCurrent();
         if (id.longValue() < current) {
-            id = new Long(current);
+            id = Long.valueOf(current);
         }
 
         // reserve the spot now (the delta must have one added to it)

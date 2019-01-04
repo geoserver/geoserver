@@ -77,7 +77,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
                         .get("details:config.checkInterval")
                         .getDefaultModelObjectAsString();
         if (temp == null || temp.length() == 0) return 0;
-        return new Integer(temp);
+        return Integer.valueOf(temp);
     }
 
     protected void setValidating(Boolean flag) {

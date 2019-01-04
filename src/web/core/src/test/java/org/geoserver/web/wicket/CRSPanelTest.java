@@ -95,15 +95,17 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:3005"), crsPanel.getCRS()));
     }
 
+    @Test
     public void testStandaloneChanged2() throws Exception {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
         // write down the text, submit the form
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("form:crs:srs", "EPSG:3005");
+        ft.setValue("crs:srs", "EPSG:3005");
         ft.submit();
+        tester.assertNoErrorMessage();
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage("form:crs");
-        assertEquals(CRS.decode("EPSG:3005"), crsPanel.getCRS());
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:3005"), crsPanel.getCRS()));
     }
 
     @Test

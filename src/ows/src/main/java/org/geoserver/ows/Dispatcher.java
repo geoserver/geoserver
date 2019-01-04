@@ -621,11 +621,13 @@ public class Dispatcher extends AbstractController {
         }
 
         if (v.getMinor() == null) {
-            return String.format("%d.0.0", v.getMajor());
+            return String.format("%d.0.0", ((Number) v.getMajor()).intValue());
         }
 
         if (v.getRevision() == null) {
-            return String.format("%d.%d.0", v.getMajor(), v.getMinor());
+            return String.format(
+                    "%d.%d.0",
+                    ((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
         }
 
         // version ok

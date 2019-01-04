@@ -63,7 +63,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
     }
 
     @Override
-    @SuppressWarnings("deprecated")
+    @SuppressWarnings("deprecation")
     protected void onTearDown(SystemTestData testData) throws Exception {
         super.onTearDown(testData);
         DataAccessRegistry.unregisterAll();

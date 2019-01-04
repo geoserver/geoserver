@@ -44,9 +44,9 @@ public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
             String op = req.getOperation().toLowerCase();
             Integer count = data.get(op);
             if (count == null) {
-                count = new Integer(1);
+                count = Integer.valueOf(1);
             } else {
-                count = new Integer(count + 1);
+                count = Integer.valueOf(count + 1);
             }
 
             data.put(op, count);

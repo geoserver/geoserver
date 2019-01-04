@@ -1205,7 +1205,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-         System.out.println(result.toString(2));
+        System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);

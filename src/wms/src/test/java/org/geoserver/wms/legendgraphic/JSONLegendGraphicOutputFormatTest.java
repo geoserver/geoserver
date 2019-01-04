@@ -995,6 +995,43 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
     }
 
     @org.junit.Test
+    public void testElseFilter() throws Exception {
+        GetLegendGraphicRequest req = getRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        Style style = readSLD("PopulationElse.sld");
+        req.setStyle(style);
+        // printStyle(style);
+        JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
+        assertNotEmpty(result);
+
+        // blue 2px wide line
+        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertNotNull(legend);
+        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertNotNull(rules);
+        assertFalse(rules.isEmpty());
+        JSONArray symbolizers =
+                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
+        assertNotNull(symbolizers);
+        assertFalse(symbolizers.isEmpty());
+
+        JSONObject pointSymb =
+                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+        JSONObject rule = rules.getJSONObject(2);
+        assertEquals("true", rule.get(JSONLegendGraphicBuilder.ELSE_FILTER));
+    }
+
+    @org.junit.Test
     public void testFullPoint() throws Exception {
         GetLegendGraphicRequest req = getRequest();
         req.setWidth(20);
@@ -1085,7 +1122,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+        System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1168,7 +1205,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+         System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1213,7 +1250,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest {
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = (JSONObject) this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+        System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);

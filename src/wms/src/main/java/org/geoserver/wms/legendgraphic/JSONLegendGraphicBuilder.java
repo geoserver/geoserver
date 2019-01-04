@@ -87,6 +87,8 @@ import org.opengis.util.InternationalString;
 /** @author Ian Turton */
 public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
+    /** ELSE_FILTER */
+    public static final String ELSE_FILTER = "ElseFilter";
     /** VENDOR_OPTIONS */
     public static final String VENDOR_OPTIONS = "vendor-options";
     /** COLORMAP_TYPE */
@@ -244,7 +246,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private String styleName = "";
     private String layerName = "";
     private String baseURL = "";
-    private String workspace = "";
+    
     private WMS wms;
 
     /**
@@ -269,7 +271,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             miniStyle = MiniRule.minify(gt2Style);
             Name layerName2 = legend.getLayerName();
             layerName = layerName2.getLocalPart();
-            workspace = layerName2.getNamespaceURI();
+            
             baseURL = request.getBaseUrl();
 
             styleName = legend.getStyleName();
@@ -277,8 +279,6 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             // get rule corresponding to the layer index
             // normalize to null for NO RULE
             String ruleName = legend.getRule(); // was null
-
-            boolean strict = request.isStrict();
 
             gt2Style = resizeForDPI(request, gt2Style);
 
@@ -316,6 +316,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 Filter filter = rule.getFilter();
                 if (filter != null) {
                     jRule.element(FILTER, "[" + CQL.toCQL(filter) + "]");
+                }
+                if (rule.isElseFilter()) {
+                    jRule.element(ELSE_FILTER, "true");
                 }
                 JSONArray jSymbolizers = new JSONArray();
                 if (layer != null) {

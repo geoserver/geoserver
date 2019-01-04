@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -222,7 +223,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),req.getWms());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), req.getWms());
         legend.setStyle(
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
@@ -285,7 +286,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height = image.getHeight();
 
-        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(),WMS.get());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType(), WMS.get());
         legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
 
@@ -562,15 +563,10 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         builder.add(new GeometryDescriptorImpl(gt, new NameImpl("GEOMETRY"), 0, 1, false, null));
 
         FeatureType fType = builder.buildFeatureType();
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(fType);
 
-        req.setLayers(layers);
+        req.setLayer(fType);
 
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-
-        styles.add(readSLD("MixedGeometry.sld"));
+        req.setStyle(readSLD("MixedGeometry.sld"));
 
         this.legendProducer.buildLegendGraphic(req);
 

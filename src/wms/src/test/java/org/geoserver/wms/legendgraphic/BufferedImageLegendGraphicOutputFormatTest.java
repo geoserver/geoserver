@@ -520,6 +520,7 @@ public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest {
         this.legendProducer.buildLegendGraphic(req);
 
         BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+    }
 
     @Test
     public void testMixedGeometry() throws Exception {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import com.sun.media.imageioimpl.common.BogusColorSpace;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import it.geosolutions.jaiext.JAIExt;
@@ -22,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.jai.ColorModelFactory;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
@@ -476,6 +479,32 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 param.parameter("coverage_idx").setValue(transformationChoice);
             }
             param.parameter("sources").setValue(coverages);
+            localHints.put(
+                    JAI.KEY_COLOR_MODEL_FACTORY,
+                    new ColorModelFactory() {
+                        @Override
+                        public ColorModel createColorModel(
+                                SampleModel sampleModel, List sources, Map configuration) {
+                            final int dataType = sampleModel.getDataType();
+                            final int numBands = sampleModel.getNumBands();
+
+                            ColorSpace cs;
+                            switch (numBands) {
+                                case 1:
+                                case 2:
+                                    cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+                                    break;
+                                case 3:
+                                    cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+                                    break;
+                                default:
+                                    cs = new BogusColorSpace(numBands);
+                            }
+
+                            return RasterFactory.createComponentColorModel(
+                                    dataType, cs, false, false, Transparency.OPAQUE);
+                        }
+                    });
             result = (GridCoverage2D) PROCESSOR.doOperation(param, localHints);
         } else {
             // optimize out, no need to do a band merge

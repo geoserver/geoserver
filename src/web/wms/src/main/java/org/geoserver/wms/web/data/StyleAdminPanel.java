@@ -61,7 +61,6 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
-import org.geoserver.wms.legendgraphic.LegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StyleTypeChoiceRenderer;
 import org.geoserver.wms.web.publish.StyleTypeModel;
@@ -405,7 +404,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                             legendOptions.put("forceLabels", "on");
                             legendOptions.put("fontAntiAliasing", "true");
                             request.setLegendOptions(legendOptions);
-                            BufferedImageLegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
+                            BufferedImageLegendGraphicBuilder builder =
+                                    new BufferedImageLegendGraphicBuilder();
                             legendImage = builder.buildLegendGraphic(request);
                             legendImg.setVisible(true);
                         }

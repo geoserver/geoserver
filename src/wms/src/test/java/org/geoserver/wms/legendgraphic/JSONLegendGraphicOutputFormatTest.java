@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -26,6 +27,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
@@ -496,7 +498,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     @org.junit.Test
     public void testProportionalSymbolSize() throws Exception {
         GetLegendGraphicRequest req = getRequest();
-
+        //TODO Generate data with the required attributes.
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -1009,6 +1011,41 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
 
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("hospital.sld");
+        req.setStyle(style);
+        // printStyle(style);
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+        //System.out.println(result.toString(2));
+        assertNotNull(result);
+        // blue 2px wide line
+        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertNotNull(legend);
+        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertNotNull(rules);
+        assertFalse(rules.isEmpty());
+        JSONArray symbolizers =
+                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
+        assertNotNull(symbolizers);
+        assertFalse(symbolizers.isEmpty());
+
+        JSONObject pointSymb =
+                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+        assertEquals("http://local-test:8080/geoserver/kml/icon/hospital?0.0.0=&0.0.1=", pointSymb.getString("url"));
+    }
+    @org.junit.Test
+    public void testTrickyGraphic() throws Exception {
+        GetLegendGraphicRequest req = getRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        Style style = readSLD("tricky_point.sld");
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);

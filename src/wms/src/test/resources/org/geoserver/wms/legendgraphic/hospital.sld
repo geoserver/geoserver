@@ -2,7 +2,7 @@
   <sld:NamedLayer>
     <sld:Name/>
     <sld:UserStyle>
-      <sld:Name>Default Styler</sld:Name>
+      <sld:Name>Hospital</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
           <sld:PointSymbolizer>

@@ -996,6 +996,41 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     }
 
     @org.junit.Test
+    public void testHospitalPoint() throws Exception {
+        GetLegendGraphicRequest req = getRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        Style style = readSLD("hospital.sld");
+        req.setStyle(style);
+        // printStyle(style);
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+        System.out.println(result.toString(2));
+        assertNotNull(result);
+        // blue 2px wide line
+        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertNotNull(legend);
+        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertNotNull(rules);
+        assertFalse(rules.isEmpty());
+        JSONArray symbolizers =
+                rules.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
+        assertNotNull(symbolizers);
+        assertFalse(symbolizers.isEmpty());
+
+        JSONObject pointSymb =
+                symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+    }
+
+    @org.junit.Test
     public void testElseFilter() throws Exception {
         GetLegendGraphicRequest req = getRequest();
         req.setWidth(20);

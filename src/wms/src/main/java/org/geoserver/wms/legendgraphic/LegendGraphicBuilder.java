@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2018, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.legendgraphic;
 
@@ -90,8 +78,8 @@ public abstract class LegendGraphicBuilder {
      */
     protected final double MINIMUM_SYMBOL_SIZE = 3.0;
 
-    private int w;
-    private int h;
+    protected int w;
+    protected int h;
     boolean forceLabelsOn = false;
     boolean forceLabelsOff = false;
     boolean forceTitlesOff = false;
@@ -162,8 +150,8 @@ public abstract class LegendGraphicBuilder {
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         if (dpi != standardDpi) {
             double scaleFactor = dpi / standardDpi;
-            setW((int) Math.round(getW() * scaleFactor));
-            setH((int) Math.round(getH() * scaleFactor));
+            w = ((int) Math.round(w * scaleFactor));
+            h = ((int) Math.round(h * scaleFactor));
             DpiRescaleStyleVisitor dpiVisitor = new DpiRescaleStyleVisitor(scaleFactor);
             dpiVisitor.visit(gt2Style);
             gt2Style = (Style) dpiVisitor.getCopy();
@@ -506,16 +494,6 @@ public abstract class LegendGraphicBuilder {
     /** @param w the w to set */
     public void setW(int w) {
         this.w = w;
-    }
-
-    /** @return the h */
-    public int getH() {
-        return h;
-    }
-
-    /** @param h the h to set */
-    public void setH(int h) {
-        this.h = h;
     }
 
     /**

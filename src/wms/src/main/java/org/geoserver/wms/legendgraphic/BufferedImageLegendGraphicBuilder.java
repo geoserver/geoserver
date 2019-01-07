@@ -149,7 +149,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             RenderedImage titleImage = null;
             // if we have more than one layer, we put a title on top of each layer legend
             if (layers.size() > 1 && !forceTitlesOff) {
-                titleImage = getLayerTitle(legend, getW(), getH(), transparent, request);
+                titleImage = getLayerTitle(legend, w, h, transparent, request);
             }
 
             checkForRenderingTransformations(gt2Style);
@@ -164,7 +164,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
             RenderedImage legendImage = null;
             if (useProvidedLegend) {
-                legendImage = getLayerLegend(legend, getW(), getH(), transparent, request);
+                legendImage = getLayerLegend(legend, w, h, transparent, request);
             }
 
             if (useProvidedLegend && legendImage != null) {
@@ -236,7 +236,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
                 // calculate the symbols rescaling factor necessary for them to be
                 // drawn inside the icon box
-                int defaultSize = Math.min(getW(), getH());
+                int defaultSize = Math.min(w, h);
                 double[] minMax =
                         calcSymbolSize(
                                 defaultSize,
@@ -338,7 +338,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         for (int i = 0; i < ruleCount; i++) {
 
             final RenderedImage image =
-                    ImageUtils.createImage(getW(), getH(), (IndexColorModel) null, transparent);
+                    ImageUtils.createImage(w, h, (IndexColorModel) null, transparent);
             final Map<RenderingHints.Key, Object> hintsMap =
                     new HashMap<RenderingHints.Key, Object>();
             final Graphics2D graphics =
@@ -355,7 +355,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
             // If this rule has a legend graphic defined in the SLD, use it
             if (graphic != null) {
                 if (this.samplePoint == null) {
-                    Coordinate coord = new Coordinate(getW() / 2, getH() / 2);
+                    Coordinate coord = new Coordinate(w / 2, h / 2);
 
                     try {
                         this.samplePoint =
@@ -374,14 +374,12 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                         // skip it
                     } else {
                         // rescale symbols if needed
-                        LiteShape2 shape =
-                                getSampleShape(symbolizer, getW(), getH(), getW(), getH());
+                        LiteShape2 shape = getSampleShape(symbolizer, w, h, w, h);
                         if (rescalingRequired
                                 && (symbolizer instanceof PointSymbolizer
                                         || symbolizer instanceof LineSymbolizer)) {
                             double size =
-                                    getSymbolizerSize(
-                                            estimator, symbolizer, Math.min(getW(), getH()) - 4);
+                                    getSymbolizerSize(estimator, symbolizer, Math.min(w, h) - 4);
                             double newSize = rescaler.apply(size);
                             symbolizer = rescaleSymbolizer(symbolizer, size, newSize);
                         } else if (symbolizer instanceof PolygonSymbolizer) {
@@ -392,24 +390,15 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                                     (int)
                                             Math.ceil(
                                                     Math.max(
-                                                            minimumSymbolSize,
-                                                            getW() - symbolizerSize));
+                                                            minimumSymbolSize, w - symbolizerSize));
                             int rescaledHeight =
                                     (int)
                                             Math.ceil(
                                                     Math.max(
-                                                            minimumSymbolSize,
-                                                            getH() - symbolizerSize));
-                            shape =
-                                    getSampleShape(
-                                            symbolizer,
-                                            rescaledWidth,
-                                            rescaledHeight,
-                                            getW(),
-                                            getH());
+                                                            minimumSymbolSize, h - symbolizerSize));
+                            shape = getSampleShape(symbolizer, rescaledWidth, rescaledHeight, w, h);
 
-                            symbolizer =
-                                    rescaleSymbolizer(symbolizer, getW(), (double) rescaledWidth);
+                            symbolizer = rescaleSymbolizer(symbolizer, w, (double) rescaledWidth);
                         }
 
                         Style2D style2d = styleFactory.createStyle(sample, symbolizer, scaleRange);

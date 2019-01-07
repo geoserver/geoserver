@@ -405,8 +405,8 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                             legendOptions.put("forceLabels", "on");
                             legendOptions.put("fontAntiAliasing", "true");
                             request.setLegendOptions(legendOptions);
-                            LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
-                            legendImage = (BufferedImage) builder.buildLegendGraphic(request);
+                            BufferedImageLegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
+                            legendImage = builder.buildLegendGraphic(request);
                             legendImg.setVisible(true);
                         }
                     } catch (IOException e) {

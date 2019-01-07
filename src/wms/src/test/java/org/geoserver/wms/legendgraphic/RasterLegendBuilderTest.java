@@ -26,7 +26,7 @@ public class RasterLegendBuilderTest {
 
     @Before
     public void setup() {
-        request = new GetLegendGraphicRequest(null);
+        request = new GetLegendGraphicRequest();
     }
 
     @Test

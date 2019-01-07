@@ -45,7 +45,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -97,7 +97,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -148,7 +148,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -201,7 +201,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         assertNotNull(multipleRulesStyle);
 
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
@@ -247,7 +247,7 @@ public class LegendLayoutTest extends BaseLegendTest {
     /** Tests horizontal layout for vector */
     @org.junit.Test
     public void testVectorLayersHorizontal() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -276,7 +276,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
     @Test
     public void testLayerGroupTitles() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
                 getCatalog()
@@ -344,7 +344,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
     @Test
     public void testLayerGroupLabels() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
                 getCatalog()
@@ -410,7 +410,7 @@ public class LegendLayoutTest extends BaseLegendTest {
 
     @Test
     public void testLayerGroupLayout() throws Exception {
-        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
                 getCatalog()

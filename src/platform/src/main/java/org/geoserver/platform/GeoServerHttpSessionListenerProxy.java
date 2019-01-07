@@ -52,7 +52,7 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
 
     protected Set<HttpSessionListener> listeners() {
         if (listeners == null) {
-            synchronized (listeners) {
+            synchronized (this) {
                 if (listeners == null) {
                     listeners =
                             new LinkedHashSet<HttpSessionListener>(

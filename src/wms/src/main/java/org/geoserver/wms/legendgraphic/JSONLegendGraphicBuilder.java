@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2018, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.legendgraphic;
 
@@ -38,7 +26,8 @@ import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.icons.IconPropertyExtractor;
 import org.geoserver.wms.icons.MiniRule;
-import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.FilterAttributeExtractor;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
@@ -71,12 +60,12 @@ import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
+import org.geotools.styling.TextSymbolizer2;
 import org.geotools.styling.TextSymbolizerImpl;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.metadata.citation.OnLineResource;
@@ -87,6 +76,18 @@ import org.opengis.util.InternationalString;
 /** @author Ian Turton */
 public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
+    /** ANCHOR_POINT */
+    public static final String ANCHOR_POINT = "anchor-point";
+    /** ANCHOR_Y */
+    public static final String ANCHOR_Y = "anchor-y";
+    /** ANCHOR_X */
+    public static final String ANCHOR_X = "anchor-x";
+    /** DISPLACEMENT */
+    public static final String DISPLACEMENT = "displacement";
+    /** DISPLACEMENT_Y */
+    public static final String DISPLACEMENT_Y = "displacement-y";
+    /** DISPLACEMENT_X */
+    public static final String DISPLACEMENT_X = "displacement-x";
     /** ELSE_FILTER */
     public static final String ELSE_FILTER = "ElseFilter";
     /** VENDOR_OPTIONS */
@@ -269,8 +270,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             // style and rule to use for the current layer
             miniStyle = MiniRule.minify(gt2Style);
-            Name layerName2 = legend.getLayerName();
-            layerName = layerName2.getLocalPart();
+
+            layerName = legend.getLayerName().getLocalPart();
 
             baseURL = request.getBaseUrl();
 
@@ -315,7 +316,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
                 Filter filter = rule.getFilter();
                 if (filter != null) {
-                    jRule.element(FILTER, "[" + CQL.toCQL(filter) + "]");
+                    jRule.element(FILTER, "[" + ECQL.toCQL(filter) + "]");
                 }
                 if (rule.isElseFilter()) {
                     jRule.element(ELSE_FILTER, "true");
@@ -326,8 +327,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 } else {
                     feature = null;
                 }
-                List<Symbolizer> symbolizers2 = rule.symbolizers();
-                for (Symbolizer symbolizer : symbolizers2) {
+                List<Symbolizer> symbolizers = rule.symbolizers();
+                for (Symbolizer symbolizer : symbolizers) {
                     JSONObject jSymb = new JSONObject();
                     JSONObject symb = processSymbolizer(symbolizer);
                     jSymb.element(symbolizerNames.get(symbolizer.getClass()), symb);
@@ -382,22 +383,26 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
      * @param symbolizer
      * @return
      */
-    private String printExpression(Expression exp, Class<?> type) {
+    private String toJSONValue(Expression exp, Class<?> type) {
+        FilterAttributeExtractor extractor = new FilterAttributeExtractor();
+        exp.accept(extractor, null);
+        if (extractor.isConstantExpression()) {
+            Object value = exp.evaluate(feature, type);
+            if (value != null && type.equals(Color.class)) {
+                Color c = (Color) value;
+                return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+            } else if (value != null && type.isAssignableFrom(Number.class)) {
+                Number n = (Number) value;
+                if (!Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
+                    return n.toString();
+                }
 
-        Object value = exp.evaluate(feature, type);
-        if (value != null && type.equals(Color.class)) {
-            Color c = (Color) value;
-            return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
-        } else if (value != null && type.isAssignableFrom(Number.class)) {
-            Number n = (Number) value;
-            if (!Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
-                // probably not a function
-                return n.toString();
+            } else if (value != null) {
+                return value.toString();
             }
-        } else if (value != null) {
-            return value.toString();
         }
-        return "'[" + exp + "]'";
+
+        return "'[" + ECQL.toCQL(exp) + "]'";
     }
 
     /**
@@ -419,13 +424,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
             first = false;
             ent.element(LABEL, entry.getLabel());
-            ent.element(QUANTITY, printExpression(entry.getQuantity(), Number.class));
+            ent.element(QUANTITY, toJSONValue(entry.getQuantity(), Number.class));
 
-            ent.element(COLOR, printExpression(entry.getColor(), Color.class));
+            ent.element(COLOR, toJSONValue(entry.getColor(), Color.class));
 
             Expression opac = entry.getOpacity();
             if (opac != null) {
-                ent.element(OPACITY, printExpression(opac, Double.class));
+                ent.element(OPACITY, toJSONValue(opac, Double.class));
             }
             entries.add(ent);
         }
@@ -468,8 +473,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ret.element(GRAPHIC_FILL, jGraphic);
         }
         if (!filled) {
-            ret.element(FILL, printExpression(fill.getColor(), Color.class));
-            ret.element(FILL_OPACITY, printExpression(fill.getOpacity(), Number.class));
+            ret.element(FILL, toJSONValue(fill.getColor(), Color.class));
+            ret.element(FILL_OPACITY, toJSONValue(fill.getOpacity(), Number.class));
         }
         return ret;
     }
@@ -480,7 +485,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
      * @return
      */
     private JSONObject processGraphic(JSONObject ret, Graphic graphic) {
-
+        if (graphic == null) {
+            return ret;
+        }
         Catalog catalog = wms.getCatalog();
         StyleInfo styleByName = catalog.getStyleByName(styleName);
         String wsName = null;
@@ -500,17 +507,31 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             jGraphics.add(jGraphic);
         }
 
-        Expression size2 = graphic.getSize();
-        if (size2 != null) {
-            ret.element(SIZE, printExpression(size2, Number.class));
+        Expression size = graphic.getSize();
+        if (size != null) {
+            ret.element(SIZE, toJSONValue(size, Number.class));
         }
         Expression opacity = graphic.getOpacity();
         if (opacity != null) {
-            ret.element(OPACITY, printExpression(opacity, Number.class));
+            ret.element(OPACITY, toJSONValue(opacity, Number.class));
         }
         Expression rotation = graphic.getRotation();
         if (rotation != null) {
-            ret.element(ROTATION, printExpression(rotation, Number.class));
+            ret.element(ROTATION, toJSONValue(rotation, Number.class));
+        }
+        Displacement disp = graphic.getDisplacement();
+        if (disp != null) {
+            JSONObject displacement = new JSONObject();
+            displacement.element(DISPLACEMENT_X, disp.getDisplacementX());
+            displacement.element(DISPLACEMENT_Y, disp.getDisplacementY());
+            ret.element(DISPLACEMENT, displacement);
+        }
+        AnchorPoint anc = graphic.getAnchorPoint();
+        if (anc != null) {
+            JSONObject anchor = new JSONObject();
+            anchor.element(ANCHOR_X, anc.getAnchorPointX());
+            anchor.element(ANCHOR_Y, anc.getAnchorPointY());
+            ret.element(ANCHOR_POINT, anchor);
         }
         ret.element(GRAPHICS, jGraphics);
         return ret;
@@ -527,7 +548,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             Mark m = ((Mark) g);
             Expression wkn = m.getWellKnownName();
             if (wkn != null) {
-                jGraphic.element(MARK, printExpression(wkn, String.class));
+                jGraphic.element(MARK, toJSONValue(wkn, String.class));
             }
             jGraphic = processFill(jGraphic, m.getFill());
             jGraphic = processStroke(jGraphic, m.getStroke());
@@ -571,7 +592,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (symbolizer.getPerpendicularOffset() != null) {
             ret.element(
                     PERPENDICULAR_OFFSET,
-                    printExpression(symbolizer.getPerpendicularOffset(), Number.class));
+                    toJSONValue(symbolizer.getPerpendicularOffset(), Number.class));
         }
         return ret;
     }
@@ -604,7 +625,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         ret = processColorMap(symbolizer.getColorMap(), ret);
         Expression op = symbolizer.getOpacity();
         if (op != null) {
-            ret.element(OPACITY, printExpression(op, Double.class));
+            ret.element(OPACITY, toJSONValue(op, Double.class));
         }
         ret = processChannelSelection(ret, symbolizer.getChannelSelection());
         ret = processContrastEnhancement(ret, symbolizer.getContrastEnhancement());
@@ -620,12 +641,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (contrastEnhancement != null) {
             JSONObject ce = new JSONObject();
             Expression gammaValue = contrastEnhancement.getGammaValue();
-            if (gammaValue != null)
-                ce.element(GAMMA_VALUE, printExpression(gammaValue, Number.class));
+            if (gammaValue != null) ce.element(GAMMA_VALUE, toJSONValue(gammaValue, Number.class));
             ContrastMethod method = contrastEnhancement.getMethod();
             if (ContrastMethod.NORMALIZE == method) {
                 JSONObject norm = new JSONObject();
-                // TODO handle vendor option
                 ce.element(NORMALIZE, "true");
             } else if (ContrastMethod.HISTOGRAM == method) {
                 ce.element(HISTOGRAM, "true");
@@ -634,6 +653,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             } else if (ContrastMethod.LOGARITHMIC == method) {
                 ce.element(LOGARITHMIC, "true");
             }
+
+            ce = processVendorOptions(ce, contrastEnhancement.getOptions());
             if (!ce.isEmpty()) ret.element(CONTRAST_ENHANCEMENT, ce);
         }
 
@@ -651,19 +672,16 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             SelectedChannelType[] rgbChannels = channelSelection.getRGBChannels();
             if (rgbChannels != null) {
                 if (rgbChannels[0] != null)
-                    chs.element(
-                            RED, printExpression(rgbChannels[0].getChannelName(), String.class));
+                    chs.element(RED, toJSONValue(rgbChannels[0].getChannelName(), String.class));
                 if (rgbChannels[1] != null)
-                    chs.element(
-                            GREEN, printExpression(rgbChannels[1].getChannelName(), String.class));
+                    chs.element(GREEN, toJSONValue(rgbChannels[1].getChannelName(), String.class));
                 if (rgbChannels[2] != null)
-                    chs.element(
-                            BLUE, printExpression(rgbChannels[2].getChannelName(), String.class));
+                    chs.element(BLUE, toJSONValue(rgbChannels[2].getChannelName(), String.class));
             }
 
             SelectedChannelType grayChannel = channelSelection.getGrayChannel();
             if (grayChannel != null) {
-                chs.element(GRAY, printExpression(grayChannel.getChannelName(), String.class));
+                chs.element(GRAY, toJSONValue(grayChannel.getChannelName(), String.class));
             }
         }
         return ret;
@@ -696,24 +714,24 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ret.element(STROKE_WIDTH, stroke.getWidth().evaluate(feature));
         }
         if (stroke.getOpacity() != null) {
-            ret.element(STROKE_OPACITY, printExpression(stroke.getOpacity(), Number.class));
+            ret.element(STROKE_OPACITY, toJSONValue(stroke.getOpacity(), Number.class));
         }
         if (stroke.getLineCap() != null) {
-            ret.element(STROKE_LINECAP, printExpression(stroke.getLineCap(), String.class));
+            ret.element(STROKE_LINECAP, toJSONValue(stroke.getLineCap(), String.class));
         }
         if (stroke.getLineJoin() != null) {
-            ret.element(STROKE_LINEJOIN, printExpression(stroke.getLineJoin(), String.class));
+            ret.element(STROKE_LINEJOIN, toJSONValue(stroke.getLineJoin(), String.class));
         }
         List<Expression> dashArray = stroke.dashArray();
         if (dashArray != null && !dashArray.isEmpty()) {
             JSONArray dArray = new JSONArray();
             for (Expression e : dashArray) {
-                dArray.add(e.evaluate(feature));
+                dArray.add(toJSONValue(e, Double.class));
             }
             ret.element(STROKE_DASHARRAY, dArray);
             Expression dashOffset = stroke.getDashOffset();
             if (dashOffset != null) {
-                ret.element(STROKE_DASHOFFSET, dashOffset.evaluate(feature));
+                ret.element(STROKE_DASHOFFSET, toJSONValue(dashOffset, Double.class));
             }
         }
         return ret;
@@ -746,7 +764,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         Expression geometry = symbolizer.getGeometry();
         if (geometry != null) {
-            ret.element(GEOMETRY, printExpression(geometry, Geometry.class));
+            ret.element(GEOMETRY, toJSONValue(geometry, Geometry.class));
         }
         if (symbolizer instanceof PointSymbolizer) {
             ret = processPointSymbolizer(ret, (PointSymbolizer) symbolizer);
@@ -758,6 +776,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ret = processRasterSymbolizer(ret, (RasterSymbolizer) symbolizer);
         } else if (symbolizer instanceof TextSymbolizer) {
             ret = processTextSymbolizer(ret, (TextSymbolizer) symbolizer);
+        } else {
+            LOGGER.warning("unknown symbolizer type " + symbolizer.getClass().getName());
         }
 
         Map<String, String> opts = symbolizer.getOptions();
@@ -767,14 +787,19 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     /**
      * @param ret
-     * @param opts
+     * @param map
      */
-    private JSONObject processVendorOptions(JSONObject ret, Map<String, String> opts) {
-        if (!opts.isEmpty()) {
+    private JSONObject processVendorOptions(JSONObject ret, Map<String, ?> map) {
+        if (!map.isEmpty()) {
             JSONObject vendorOpts = new JSONObject();
 
-            for (Entry<String, String> opt : opts.entrySet()) {
-                vendorOpts.element(opt.getKey(), opt.getValue());
+            for (Entry<String, ?> opt : map.entrySet()) {
+                if (opt.getValue() instanceof Expression) {
+                    vendorOpts.element(
+                            opt.getKey(), toJSONValue((Expression) opt.getValue(), Object.class));
+                } else {
+                    vendorOpts.element(opt.getKey(), opt.getValue());
+                }
             }
             ret.element(VENDOR_OPTIONS, vendorOpts);
         }
@@ -787,21 +812,27 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
      * @return
      */
     private JSONObject processTextSymbolizer(JSONObject ret, TextSymbolizer symbolizer) {
-        ret.element(LABEL, printExpression(symbolizer.getLabel(), String.class));
+        ret.element(LABEL, toJSONValue(symbolizer.getLabel(), String.class));
         JSONArray fonts = new JSONArray();
         for (Font font : symbolizer.fonts()) {
             JSONObject jFont = new JSONObject();
             JSONArray jFam = new JSONArray();
             for (Expression family : font.getFamily()) {
-                jFam.add(printExpression(family, String.class));
+                jFam.add(toJSONValue(family, String.class));
             }
             jFont.element(FONT_FAMILY, jFam);
-            jFont.element(FONT_STYLE, printExpression(font.getStyle(), String.class));
-            jFont.element(FONT_WEIGHT, printExpression(font.getWeight(), String.class));
-            jFont.element(FONT_SIZE, printExpression(font.getSize(), Number.class));
+            jFont.element(FONT_STYLE, toJSONValue(font.getStyle(), String.class));
+            jFont.element(FONT_WEIGHT, toJSONValue(font.getWeight(), String.class));
+            jFont.element(FONT_SIZE, toJSONValue(font.getSize(), Number.class));
             fonts.add(jFont);
         }
         ret.element(FONTS, fonts);
+        ret = processFill(ret, symbolizer.getFill());
+        if (symbolizer instanceof TextSymbolizer2) {
+            // handle font graphic
+            TextSymbolizer2 tSymb = (TextSymbolizer2) symbolizer;
+            ret = processGraphic(ret, tSymb.getGraphic());
+        }
         JSONObject jPlacement = new JSONObject();
         LabelPlacement placement = symbolizer.getLabelPlacement();
         if (placement instanceof PointPlacement) {
@@ -809,31 +840,29 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             AnchorPoint ap = pplacement.getAnchorPoint();
             if (ap != null) {
-                jPlacement.element(X_ANCHOR, printExpression(ap.getAnchorPointX(), Number.class));
-                jPlacement.element(Y_ANCHOR, printExpression(ap.getAnchorPointY(), Number.class));
+                jPlacement.element(X_ANCHOR, toJSONValue(ap.getAnchorPointX(), Number.class));
+                jPlacement.element(Y_ANCHOR, toJSONValue(ap.getAnchorPointY(), Number.class));
             }
-            jPlacement.element(ROTATION, printExpression(pplacement.getRotation(), Number.class));
+            jPlacement.element(ROTATION, toJSONValue(pplacement.getRotation(), Number.class));
             Displacement displacement = pplacement.getDisplacement();
             if (displacement != null) {
                 jPlacement.element(
-                        X_DISPLACEMENT,
-                        printExpression(displacement.getDisplacementX(), Number.class));
+                        X_DISPLACEMENT, toJSONValue(displacement.getDisplacementX(), Number.class));
                 jPlacement.element(
-                        Y_DISPLACEMENT,
-                        printExpression(displacement.getDisplacementY(), Number.class));
+                        Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
             }
         }
         if (placement instanceof LinePlacement) {
             LinePlacement lPlacement = (LinePlacement) placement;
             jPlacement.element(
                     PERPENDICULAR_OFFSET,
-                    printExpression(lPlacement.getPerpendicularOffset(), String.class));
+                    toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
         }
         ret.element(LABEL_PLACEMENT, jPlacement);
         Halo halo = symbolizer.getHalo();
         if (halo != null) {
             JSONObject jHalo = new JSONObject();
-            jHalo.element(RADIUS, printExpression(halo.getRadius(), Number.class));
+            jHalo.element(RADIUS, toJSONValue(halo.getRadius(), Number.class));
             jHalo = processFill(jHalo, halo.getFill());
             ret.element(HALO, jHalo);
         }

@@ -21,12 +21,12 @@ import org.geoserver.wms.map.ImageUtils;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
 
-public class BaseLegendTest extends WMSTestSupport {
+public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSupport {
 
     protected static final Logger LOGGER =
             Logging.getLogger(BufferedImageLegendGraphicOutputFormatTest.class);
 
-    protected LegendGraphicBuilder legendProducer;
+    protected T legendProducer;
 
     protected GetLegendGraphic service;
 

@@ -31,7 +31,6 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
-import org.geoserver.wms.legendgraphic.LegendGraphicBuilder;
 import org.geoserver.wms.legendgraphic.LegendUtils;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.map.Layer;
@@ -92,8 +91,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 continue;
             }
 
-            LegendGraphicBuilder legendGraphicBuilder = new BufferedImageLegendGraphicBuilder();
-            GetLegendGraphicRequest request = new GetLegendGraphicRequest(WMS.get());
+            BufferedImageLegendGraphicBuilder legendGraphicBuilder =
+                    new BufferedImageLegendGraphicBuilder();
+            GetLegendGraphicRequest request = new GetLegendGraphicRequest();
             request.setLayer(layer.getFeatureSource().getSchema());
             request.setTransparent(true);
             request.setScale(scaleDenominator);
@@ -140,8 +140,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 legend.title = titleImage;
             }
 
-            BufferedImage legendImage =
-                    (BufferedImage) legendGraphicBuilder.buildLegendGraphic(request);
+            BufferedImage legendImage = legendGraphicBuilder.buildLegendGraphic(request);
             legend.legend = legendImage;
 
             layerLegends.add(legend);

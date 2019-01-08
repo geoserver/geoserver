@@ -28,7 +28,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
-import org.geoserver.wms.WMS;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.GridCoverage2D;

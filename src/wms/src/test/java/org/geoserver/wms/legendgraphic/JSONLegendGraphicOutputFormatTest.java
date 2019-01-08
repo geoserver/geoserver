@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -27,7 +26,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.TestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
@@ -498,7 +496,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     @org.junit.Test
     public void testProportionalSymbolSize() throws Exception {
         GetLegendGraphicRequest req = getRequest();
-        //TODO Generate data with the required attributes.
+        // TODO Generate data with the required attributes.
         FeatureTypeInfo ftInfo =
                 getCatalog()
                         .getFeatureTypeByName(
@@ -1014,7 +1012,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1030,8 +1028,11 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject pointSymb =
                 symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
-        assertEquals("http://local-test:8080/geoserver/kml/icon/hospital?0.0.0=&0.0.1=", pointSymb.getString("url"));
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/Hospital?0.0.0=&0.0.1=",
+                pointSymb.getString("url"));
     }
+
     @org.junit.Test
     public void testTrickyGraphic() throws Exception {
         GetLegendGraphicRequest req = getRequest();

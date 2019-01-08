@@ -83,3 +83,27 @@ Much like joining support, native encoding of nested filters is turned on by def
 Or, alternatively, by setting the value of the Java System Property "app-schema.encodeNestedFilters" to "false", for example ::
 
      java -DGEOSERVER_DATA_DIR=... -Dapp-schema.encodeNestedFilters=false Start
+
+UNION performance improvement for OR conditions
+-----------------------------------------------
+
+OR conditions are difficult to optimize for postgresql and are usually slow.  App-Schema improves OR condition performance using UNION clauses instead OR for nested filter subqueries.
+
+With UNION improvement enabled main OR binary operator on nested filter subquery will rebuild normal OR query like::
+
+     SELECT id, name FROM table WHERE name = "A" OR name = "B"
+
+to::
+
+     SELECT id, name FROM table WHERE name = "A" UNION SELECT id, name FROM table WHERE name = "B"
+
+UNION improvement is enabled by default, and it is disabled by adding to your app-schema.properties file the line ::
+
+     app-schema.orUnionReplace = false
+	 
+Or, alternatively, by setting the value of the Java System Property "app-schema.orUnionReplace" to "false", for example ::
+
+     java -DGEOSERVER_DATA_DIR=... -Dapp-schema.orUnionReplace=false Start
+	
+.. note::
+    This optimization will only be applied when a PostgresSQL database is being used.

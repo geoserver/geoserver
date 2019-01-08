@@ -24,6 +24,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.icons.IconProperties;
 import org.geoserver.wms.icons.IconPropertyExtractor;
 import org.geoserver.wms.icons.MiniRule;
 import org.geotools.filter.FilterAttributeExtractor;
@@ -495,10 +496,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             WorkspaceInfo ws = styleByName.getWorkspace();
             if (ws != null) wsName = ws.getName();
         }
-        ret.element(
-                "url",
-                IconPropertyExtractor.extractProperties(miniStyle, (SimpleFeature) feature)
-                        .href(baseURL, wsName, styleName));
+        IconProperties props = IconPropertyExtractor.extractProperties(miniStyle, (SimpleFeature) feature);
+        if(!props.getProperties().isEmpty()) {
+          ret.element("url", props.href(baseURL, wsName, styleName));
+        }
         JSONArray jGraphics = new JSONArray();
         List<GraphicalSymbol> gSymbols = graphic.graphicalSymbols();
         for (GraphicalSymbol g : gSymbols) {
@@ -509,7 +510,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
         Expression size = graphic.getSize();
         if (size != null) {
-            ret.element(SIZE, toJSONValue(size, Number.class));
+            String jSize = toJSONValue(size, Number.class);
+            if(!jSize.equalsIgnoreCase("'[\"\"]'"))
+              ret.element(SIZE, jSize);
         }
         Expression opacity = graphic.getOpacity();
         if (opacity != null) {

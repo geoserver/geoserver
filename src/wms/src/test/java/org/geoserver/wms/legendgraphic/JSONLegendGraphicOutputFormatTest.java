@@ -361,7 +361,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
 
         assertNotNull(resp);
-        System.out.println(resp.toString(3));
+        //System.out.println(resp.toString(3));
         JSONArray legends = resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertEquals(1, legends.size());
         // vector layer
@@ -419,7 +419,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject resp = this.legendProducer.buildLegendGraphic(req);
 
         assertNotNull(resp);
-        System.out.println(resp.toString(3));
+        //System.out.println(resp.toString(3));
         JSONArray legends = resp.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertEquals(1, legends.size());
         // vector layer
@@ -465,7 +465,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         JSONArray rules =
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
                         .getJSONObject(0)
@@ -595,7 +595,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         JSONArray rules =
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
                         .getJSONObject(0)
@@ -647,7 +647,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
 
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         JSONArray rules =
                 result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
                         .getJSONObject(0)
@@ -1050,7 +1050,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1066,6 +1066,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject pointSymb =
                 symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
+        //Currently we choose not to produce URLs for this
+        assertTrue(pointSymb.getJSONObject("url").isNullObject());
     }
 
     @org.junit.Test
@@ -1196,7 +1198,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1279,7 +1281,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1324,7 +1326,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         // printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        System.out.println(result.toString(2));
+        //System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);

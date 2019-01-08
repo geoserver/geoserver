@@ -28,7 +28,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
               </ogc:PropertyIsLike>
             </ogc:And>
           </ogc:Filter>
-          <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator>
+        <!--   <sld:MaxScaleDenominator>100000</sld:MaxScaleDenominator> -->
           <sld:PointSymbolizer>
             <sld:Graphic>
               <sld:ExternalGraphic>

@@ -202,12 +202,12 @@ public abstract class IconProperties {
 
             @Override
             public Style inject(Style base) {
-                throw new RuntimeException("An implementation is missing");
+                return IconPropertyInjector.injectProperties(base, null);
             }
 
             @Override
             public Map<String, String> getProperties() {
-                throw new RuntimeException("An implementation is missing");
+                return Collections.emptyMap();
             }
 
             @Override

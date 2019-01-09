@@ -172,6 +172,14 @@ xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
             </sld:Graphic>
             <VendorOption name="labelObstacle">true</VendorOption>
           </sld:PointSymbolizer>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:ExternalGraphic>
+                <sld:OnlineResource xlink:type="simple" xlink:href="./img/landmarks/school.png" />
+                <sld:Format>image/png</sld:Format>
+              </sld:ExternalGraphic>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
           <sld:TextSymbolizer>
             <sld:Label>
               <ogc:PropertyName>FULLNAME</ogc:PropertyName>

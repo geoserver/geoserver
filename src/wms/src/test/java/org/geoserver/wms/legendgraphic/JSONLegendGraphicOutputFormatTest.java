@@ -22,10 +22,12 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
@@ -69,6 +71,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegendGraphicBuilder> {
 
     static final String JSONFormat = "application/json";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle("tricky_point", this.getClass(), catalog);
+    }
 
     @Before
     public void setLegendProducer() throws Exception {
@@ -1033,18 +1043,20 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setWidth(20);
         req.setHeight(20);
 
+        org.geoserver.catalog.Catalog catalog = getCatalog();
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                catalog.getFeatureTypeByName(
+                        MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        Style style = readSLD("tricky_point.sld");
+
+        // we need this to be in the "styles" directory to test the legend icon code!
+        StyleInfo styleinfo = catalog.getStyleByName("tricky_point");
+        Style style = styleinfo.getStyle();
         req.setStyle(style);
-        // printStyle(style);
+        printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        //System.out.println(result.toString(2));
+        // System.out.println(result.toString(2));
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1060,8 +1072,16 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject pointSymb =
                 symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
-        //Currently we choose not to produce URLs for this
-        assertTrue(pointSymb.getJSONObject("url").isNullObject());
+        assertEquals(
+                "http://local-test:8080/geoserver/styles/img/landmarks/shop_supermarket.p.16.png",
+                pointSymb.getString("url"));
+        symbolizers = rules.getJSONObject(2).getJSONArray(JSONLegendGraphicBuilder.SYMBOLIZERS);
+        assertNotNull(symbolizers);
+        pointSymb = symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.0.0=&0.0.1=",
+                pointSymb.getString("url"));
     }
 
     @org.junit.Test

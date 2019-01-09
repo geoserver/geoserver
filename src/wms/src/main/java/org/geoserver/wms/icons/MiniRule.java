@@ -24,6 +24,7 @@ public class MiniRule {
     public final Filter filter;
     public final boolean isElseFilter;
     public final List<PointSymbolizer> symbolizers;
+    private String name;
 
     public MiniRule(Filter filter, boolean isElseFilter, List<PointSymbolizer> symbolizers) {
         this.filter = filter;
@@ -42,9 +43,12 @@ public class MiniRule {
                         pointSymbolizers.add((PointSymbolizer) symbolizer);
                     }
                 }
-                if (!pointSymbolizers.isEmpty())
-                    rules.add(
-                            new MiniRule(rule.getFilter(), rule.isElseFilter(), pointSymbolizers));
+                if (!pointSymbolizers.isEmpty()) {
+                    MiniRule miniRule =
+                            new MiniRule(rule.getFilter(), rule.isElseFilter(), pointSymbolizers);
+                    miniRule.setName(rule.getName());
+                    rules.add(miniRule);
+                }
             }
             if (!rules.isEmpty()) {
                 ftStyles.add(rules);
@@ -69,5 +73,15 @@ public class MiniRule {
             style.featureTypeStyles().add(ftStyle);
         }
         return style;
+    }
+
+    /** @return the name */
+    public String getName() {
+        return name;
+    }
+
+    /** @param name the name to set */
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -6,6 +6,7 @@ package org.geoserver.wms.legendgraphic;
 
 import java.awt.Color;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -250,6 +251,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private String baseURL = "";
 
     private WMS wms;
+    private String ruleName;
 
     /**
      * @param request
@@ -280,7 +282,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             // get rule corresponding to the layer index
             // normalize to null for NO RULE
-            String ruleName = legend.getRule(); // was null
+            ruleName = legend.getRule(); // was null
 
             gt2Style = resizeForDPI(request, gt2Style);
 
@@ -302,6 +304,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             ArrayList<JSONObject> jRules = new ArrayList<>();
             for (Rule rule : applicableRules) {
+                ruleName = rule.getName();
                 JSONObject jRule = new JSONObject();
                 String name = rule.getName();
                 if (name != null && !name.isEmpty()) {
@@ -338,7 +341,6 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 org.opengis.style.GraphicLegend l = rule.getLegend();
                 if (l != null) {
                     for (GraphicalSymbol g : l.graphicalSymbols()) {
-                        JSONObject jGraphicSymb = processGraphicalSymbol(g);
                         String href =
                                 IconPropertyExtractor.extractProperties(
                                                 gt2Style, (SimpleFeature) feature)
@@ -347,6 +349,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                                                 legend.getLayer(),
                                                 legend.getStyleName());
 
+                        JSONObject jGraphicSymb = processGraphicalSymbol(g, href);
                         jGraphicSymb.element("url", href);
                         jRule.element(LEGEND_GRAPHIC, jGraphicSymb);
                     }
@@ -496,14 +499,30 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             WorkspaceInfo ws = styleByName.getWorkspace();
             if (ws != null) wsName = ws.getName();
         }
-        IconProperties props = IconPropertyExtractor.extractProperties(miniStyle, (SimpleFeature) feature);
-        if(!props.getProperties().isEmpty()) {
-          ret.element("url", props.href(baseURL, wsName, styleName));
+        List<List<MiniRule>> newStyle = new ArrayList<>();
+        for (List<MiniRule> m : miniStyle) {
+            List<MiniRule> newRules = new ArrayList<>(m.size());
+            for (MiniRule r : m) {
+                String rName = r.getName();
+                if (rName != null && !rName.equalsIgnoreCase(ruleName)) {
+                    continue;
+                }
+                MiniRule n = new MiniRule(Filter.INCLUDE, r.isElseFilter, r.symbolizers);
+                newRules.add(n);
+            }
+            newStyle.add(newRules);
         }
+
+        IconProperties props =
+                IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
+
+        String iconUrl = props.href(baseURL, wsName, styleName);
+        ret.element("url", iconUrl);
+
         JSONArray jGraphics = new JSONArray();
         List<GraphicalSymbol> gSymbols = graphic.graphicalSymbols();
         for (GraphicalSymbol g : gSymbols) {
-            JSONObject jGraphic = processGraphicalSymbol(g);
+            JSONObject jGraphic = processGraphicalSymbol(g, iconUrl);
 
             jGraphics.add(jGraphic);
         }
@@ -511,8 +530,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         Expression size = graphic.getSize();
         if (size != null) {
             String jSize = toJSONValue(size, Number.class);
-            if(!jSize.equalsIgnoreCase("'[\"\"]'"))
-              ret.element(SIZE, jSize);
+            if (!jSize.equalsIgnoreCase("'[\"\"]'")) ret.element(SIZE, jSize);
         }
         Expression opacity = graphic.getOpacity();
         if (opacity != null) {
@@ -542,9 +560,10 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     /**
      * @param g
+     * @param iconUrl
      * @return
      */
-    private JSONObject processGraphicalSymbol(GraphicalSymbol g) {
+    private JSONObject processGraphicalSymbol(GraphicalSymbol g, String iconUrl) {
         JSONObject jGraphic = new JSONObject();
 
         if (g instanceof Mark) {
@@ -560,7 +579,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 OnLineResource or = em.getOnlineResource();
                 if (or != null) {
                     try {
-                        jGraphic.element(EXTERNAL_GRAPHIC_URL, or.getLinkage().toURL().toString());
+                        URL url = or.getLinkage().toURL();
+                        if (url.getProtocol().equals("file")) {
+                            // no point in adding a local file.
+                            jGraphic.element(EXTERNAL_GRAPHIC_URL, iconUrl);
+                        } else {
+                            jGraphic.element(EXTERNAL_GRAPHIC_URL, url.toString());
+                        }
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
@@ -574,9 +599,14 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         } else if (g instanceof ExternalGraphic) {
             ExternalGraphic eg = (ExternalGraphic) g;
             try {
-                jGraphic.element(
-                        EXTERNAL_GRAPHIC_URL,
-                        eg.getOnlineResource().getLinkage().toURL().toString());
+                URL url = eg.getOnlineResource().getLinkage().toURL();
+                if (url.getProtocol().equals("file")) {
+                    // no point in adding a local file.
+                    jGraphic.element(EXTERNAL_GRAPHIC_URL, iconUrl);
+                } else {
+                    jGraphic.element(EXTERNAL_GRAPHIC_URL, url.toString());
+                }
+
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

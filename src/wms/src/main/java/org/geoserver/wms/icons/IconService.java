@@ -49,7 +49,7 @@ public class IconService extends AbstractController {
                     400, "Bad request, path must be of form: /icons/[<workspace>/]<style>");
             return null;
         }
-//this is wrong - matches 2 even when no workspace in url!
+        // this is wrong - matches 2 even when no workspace in url!
         String workspace = null, styleName = null;
         if (m.groupCount() == 2) {
             workspace = m.group(1);

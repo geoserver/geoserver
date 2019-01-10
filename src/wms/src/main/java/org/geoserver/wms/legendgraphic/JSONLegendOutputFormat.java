@@ -1,44 +1,43 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.image.BufferedImage;
+import net.sf.json.JSONObject;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
 
 /**
- * PNG output format for the WMS {@link GetLegendGraphic} operation.
+ * JSON output format for the WMS {@link GetLegendGraphic} operation.
  *
  * @author Gabriel Roldan
  * @author Justin Deoliveira
- * @version $Id: PNGLegendGraphicProducer.java 4776 2006-07-24 14:43:05Z afabiani $
+ * @author Ian Turton
  */
-public class PNGLegendOutputFormat implements GetLegendGraphicOutputFormat {
+public class JSONLegendOutputFormat implements GetLegendGraphicOutputFormat {
 
-    public static final String MIME_TYPE = "image/png";
+    public static final String MIME_TYPE = "application/json";
 
     /**
      * Creates a new JAI based legend producer for creating <code>outputFormat</code> type images.
      */
-    public PNGLegendOutputFormat() {
+    public JSONLegendOutputFormat() {
         //
     }
 
     /**
-     * Builds and returns a {@link BufferedImageLegendGraphic} appropriate to be encoded as PNG
+     * Builds and returns a {@link JSONLegendGraphic} appropriate to be encoded as JSON
      *
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      */
-    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
+    public JSONLegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
-        LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
-        BufferedImage legendGraphic = (BufferedImage) builder.buildLegendGraphic(request);
-        LegendGraphic legend = new BufferedImageLegendGraphic(legendGraphic);
+        LegendGraphicBuilder builder = new JSONLegendGraphicBuilder();
+        JSONObject legendGraphic = (JSONObject) builder.buildLegendGraphic(request);
+        JSONLegendGraphic legend = new JSONLegendGraphic(legendGraphic);
         return legend;
     }
 

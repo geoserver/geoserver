@@ -3,12 +3,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.Graphic;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -20,31 +20,41 @@ import org.opengis.filter.Filter;
  *
  * @author David Winslow, OpenGeo
  */
-class MiniRule {
+public class MiniRule {
     public final Filter filter;
     public final boolean isElseFilter;
-    public final List<PointSymbolizer> symbolizers;
+    public final List<Symbolizer> symbolizers;
+    private String name;
 
-    public MiniRule(Filter filter, boolean isElseFilter, List<PointSymbolizer> symbolizers) {
+    public MiniRule(Filter filter, boolean isElseFilter, List<Symbolizer> symbolizers) {
         this.filter = filter;
         this.isElseFilter = isElseFilter;
         this.symbolizers = symbolizers;
     }
 
-    static List<List<MiniRule>> minify(Style style) {
-        List<List<MiniRule>> ftStyles = new ArrayList<List<MiniRule>>();
+    public static List<List<MiniRule>> minify(Style style) {
+        return minify(style, false);
+    }
+
+    public static List<List<MiniRule>> minify(Style style, boolean includeNonPointGraphics) {
+        List<List<MiniRule>> ftStyles = new ArrayList<>();
         for (FeatureTypeStyle ftStyle : style.featureTypeStyles()) {
-            List<MiniRule> rules = new ArrayList<MiniRule>();
+            List<MiniRule> rules = new ArrayList<>();
             for (Rule rule : ftStyle.rules()) {
-                List<PointSymbolizer> pointSymbolizers = new ArrayList<PointSymbolizer>();
+                List<Symbolizer> graphicSymbolizers = new ArrayList<>();
                 for (Symbolizer symbolizer : rule.symbolizers()) {
-                    if (symbolizer instanceof PointSymbolizer) {
-                        pointSymbolizers.add((PointSymbolizer) symbolizer);
+                    Graphic graphic =
+                            IconPropertyExtractor.getGraphic(symbolizer, includeNonPointGraphics);
+                    if (graphic != null) {
+                        graphicSymbolizers.add(symbolizer);
                     }
                 }
-                if (!pointSymbolizers.isEmpty())
-                    rules.add(
-                            new MiniRule(rule.getFilter(), rule.isElseFilter(), pointSymbolizers));
+                if (!graphicSymbolizers.isEmpty()) {
+                    MiniRule miniRule =
+                            new MiniRule(rule.getFilter(), rule.isElseFilter(), graphicSymbolizers);
+                    miniRule.setName(rule.getName());
+                    rules.add(miniRule);
+                }
             }
             if (!rules.isEmpty()) {
                 ftStyles.add(rules);
@@ -69,5 +79,15 @@ class MiniRule {
             style.featureTypeStyles().add(ftStyle);
         }
         return style;
+    }
+
+    /** @return the name */
+    public String getName() {
+        return name;
+    }
+
+    /** @param name the name to set */
+    public void setName(String name) {
+        this.name = name;
     }
 }

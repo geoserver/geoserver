@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿
 <!-- 
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
@@ -398,7 +398,13 @@
 	</bean>
 	
 	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
-	
+
+	<!-- icon service -->
+	<bean id="kmlIconService"
+		class="org.geoserver.wms.icons.IconService">
+		<constructor-arg ref="catalog" />
+	</bean>
+  
 	<!-- http url mapping -->
 	<bean id="wmsURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -406,6 +412,7 @@
 		<property name="alwaysUseFullPath" value="true"/>
 		<property name="mappings">
 			<props>
+			    <prop key="/kml/icon/**/*">kmlIconService</prop>
 				<prop key="/wms">dispatcher</prop>
 				<prop key="/wms/*">dispatcher</prop>
 			</props>
@@ -431,6 +438,12 @@
 	</bean>
     <bean id="wmsPNGLegendGraphicResponse" 
         class="org.geoserver.wms.legendgraphic.PNGLegendGraphicResponse">
+    </bean>
+    <bean id="wmsJSONLegendOutputFormat" 
+		class="org.geoserver.wms.legendgraphic.JSONLegendOutputFormat">
+	</bean>
+    <bean id="wmsJSONLegendGraphicResponse" 
+        class="org.geoserver.wms.legendgraphic.JSONLegendGraphicResponse">
     </bean>
 	
 	<!--  

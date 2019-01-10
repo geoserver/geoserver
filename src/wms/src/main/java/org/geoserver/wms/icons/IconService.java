@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class IconService extends AbstractController {
     }
 
     @Override
-    protected ModelAndView handleRequestInternal(
+    public ModelAndView handleRequestInternal(
             HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String path = request.getPathInfo();
@@ -49,7 +49,7 @@ public class IconService extends AbstractController {
                     400, "Bad request, path must be of form: /icons/[<workspace>/]<style>");
             return null;
         }
-
+        // this is wrong - matches 2 even when no workspace in url!
         String workspace = null, styleName = null;
         if (m.groupCount() == 2) {
             workspace = m.group(1);

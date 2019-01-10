@@ -1000,9 +1000,22 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
             // was the legend painted?
             assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+            int fixedWidth = image.getWidth();
+
+            // "-49 - -20 mm"
+            String fixedLabel = entries[2].getLabel();
+            entries[2].setLabel(
+                    "${Concatenate('-', '4', '9', ' ', '-', ' ', '-', '2', '0', ' ', 'm', 'm')}");
+            assertEquals(fixedLabel, LegendUtils.getLabel(entries[2]));
+
+            image = this.legendProducer.buildLegendGraphic(req);
 
             // was the legend painted?
             assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+
+            // check that the legend images with the fixed label string and the
+            // expression that generates the label string have the same widths.
+            assertEquals(fixedWidth, image.getWidth());
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             if (coverage instanceof GridCoverage2D) {

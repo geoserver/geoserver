@@ -1080,7 +1080,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         pointSymb = symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
         assertEquals(
-                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.0.0=&0.0.1=",
+                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.2.0=&0.2.1=",
                 pointSymb.getString("url"));
     }
 

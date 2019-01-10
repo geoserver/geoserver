@@ -500,15 +500,20 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             if (ws != null) wsName = ws.getName();
         }
         List<List<MiniRule>> newStyle = new ArrayList<>();
+        List<Integer> origRuleNo = new ArrayList<>();
+        int ruleCount = 0;
         for (List<MiniRule> m : miniStyle) {
             List<MiniRule> newRules = new ArrayList<>(m.size());
             for (MiniRule r : m) {
                 String rName = r.getName();
                 if (rName != null && !rName.equalsIgnoreCase(ruleName)) {
+                    ruleCount++;
                     continue;
                 }
                 MiniRule n = new MiniRule(Filter.INCLUDE, r.isElseFilter, r.symbolizers);
                 newRules.add(n);
+                origRuleNo.add(ruleCount);
+                ruleCount++;
             }
             newStyle.add(newRules);
         }
@@ -517,6 +522,21 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
 
         String iconUrl = props.href(baseURL, wsName, styleName);
+        int index = iconUrl.indexOf('?');
+        if (index >= 0) {
+            String base = iconUrl.substring(0, index + 1);
+            String[] refs = iconUrl.substring(index + 1).split("&");
+            for (int i = 0; i < refs.length; i++) {
+                String ref =
+                        refs[i].replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                base += ref + "&";
+            }
+            if (base.endsWith("&")) {
+                iconUrl = base.substring(0, base.length() - 1);
+            } else {
+                iconUrl = base;
+            }
+        }
         ret.element("url", iconUrl);
 
         JSONArray jGraphics = new JSONArray();

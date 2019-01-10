@@ -23,6 +23,7 @@ import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.Symbol;
+import org.geotools.styling.Symbolizer;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.style.GraphicalSymbol;
@@ -51,12 +52,12 @@ public final class IconPropertyInjector {
             List<MiniRule> resultRules = new ArrayList<MiniRule>();
             for (int ruleIdx = 0; ruleIdx < origRules.size(); ruleIdx++) {
                 MiniRule origRule = origRules.get(ruleIdx);
-                List<PointSymbolizer> resultSymbolizers = new ArrayList<PointSymbolizer>();
+                List<Symbolizer> resultSymbolizers = new ArrayList<>();
                 for (int symbIdx = 0; symbIdx < origRule.symbolizers.size(); symbIdx++) {
                     String key = ftIdx + "." + ruleIdx + "." + symbIdx;
                     if (properties.containsKey(key)) {
-                        PointSymbolizer ptSym = origRule.symbolizers.get(symbIdx);
-                        resultSymbolizers.add(injectPointSymbolizer(key, ptSym));
+                        Symbolizer sym = origRule.symbolizers.get(symbIdx);
+                        resultSymbolizers.add(injectPointSymbolizer(key, sym));
                     }
                 }
                 resultRules.add(new MiniRule(null, false, resultSymbolizers));
@@ -78,10 +79,11 @@ public final class IconPropertyInjector {
         return filterFactory.literal(properties.get(key));
     }
 
-    private PointSymbolizer injectPointSymbolizer(String key, PointSymbolizer original) {
+    private PointSymbolizer injectPointSymbolizer(String key, Symbolizer original) {
         PointSymbolizer copy = styleFactory.createPointSymbolizer();
-        if (original.getGraphic() != null) {
-            copy.setGraphic(injectGraphic(key, original.getGraphic()));
+        Graphic graphic = IconPropertyExtractor.getGraphic(original, true);
+        if (graphic != null) {
+            copy.setGraphic(injectGraphic(key, graphic));
         }
         return copy;
     }
@@ -281,7 +283,11 @@ public final class IconPropertyInjector {
     }
 
     public static Style injectProperties(Style style, Map<String, String> properties) {
-        List<List<MiniRule>> ftStyles = MiniRule.minify(style);
+        boolean includeNonPointGraphics =
+                Boolean.valueOf(
+                        properties.getOrDefault(
+                                IconPropertyExtractor.NON_POINT_GRAPHIC_KEY, "false"));
+        List<List<MiniRule>> ftStyles = MiniRule.minify(style, includeNonPointGraphics);
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         return MiniRule.makeStyle(
                 factory, new IconPropertyInjector(properties).injectProperties(ftStyles));

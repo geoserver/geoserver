@@ -14,10 +14,14 @@ import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
+import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
+import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer2;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.expression.Expression;
 import org.opengis.style.GraphicalSymbol;
@@ -30,6 +34,7 @@ import org.opengis.style.GraphicalSymbol;
  * @author David Winslow, OpenGeo
  */
 public final class IconPropertyExtractor {
+    public static final String NON_POINT_GRAPHIC_KEY = "npg";
     private List<List<MiniRule>> style;
 
     private IconPropertyExtractor(List<List<MiniRule>> style) {
@@ -47,6 +52,37 @@ public final class IconPropertyExtractor {
 
     public static IconProperties extractProperties(Style style, SimpleFeature feature) {
         return new IconPropertyExtractor(MiniRule.minify(style)).propertiesFor(feature);
+    }
+
+    /** Extracts a Graphic object from the given symbolizer */
+    public static Graphic getGraphic(Symbolizer symbolizer, boolean includeNonPointGraphics) {
+        // try point first
+        if (symbolizer instanceof PointSymbolizer) {
+            return ((PointSymbolizer) symbolizer).getGraphic();
+        }
+        if (!includeNonPointGraphics) {
+            return null;
+        }
+        // try in other symbolizers
+        if (symbolizer instanceof PolygonSymbolizer) {
+            final Fill fill = ((PolygonSymbolizer) symbolizer).getFill();
+            if (fill != null && fill.getGraphicFill() != null) {
+                return fill.getGraphicFill();
+            }
+            final Stroke stroke = ((PolygonSymbolizer) symbolizer).getStroke();
+            if (stroke != null) {
+                return stroke.getGraphicStroke();
+            }
+        } else if (symbolizer instanceof LineSymbolizer) {
+            final Stroke stroke = ((LineSymbolizer) symbolizer).getStroke();
+            if (stroke != null) {
+                return stroke.getGraphicStroke();
+            }
+        } else if (symbolizer instanceof TextSymbolizer2) {
+            return ((TextSymbolizer2) symbolizer).getGraphic();
+        }
+
+        return null;
     }
 
     private class FeatureProperties {
@@ -126,7 +162,7 @@ public final class IconPropertyExtractor {
             if (rule.symbolizers.size() != 1) {
                 return null;
             }
-            Graphic g = rule.symbolizers.get(0).getGraphic();
+            Graphic g = getGraphic(rule.symbolizers.get(0), true);
             if (g == null) {
                 return null;
             }
@@ -154,9 +190,10 @@ public final class IconPropertyExtractor {
         }
 
         public IconProperties embeddedIconProperties() {
-            Map<String, String> props = new TreeMap<String, String>();
+            Map<String, String> props = new TreeMap<>();
             Double size = null;
             boolean allRotated = true;
+            boolean nonPointGraphic = false;
             for (int i = 0; i < style.size(); i++) {
                 List<MiniRule> rules = style.get(i);
                 for (int j = 0; j < rules.size(); j++) {
@@ -171,15 +208,18 @@ public final class IconPropertyExtractor {
                     if (matches) {
                         for (int k = 0; k < rule.symbolizers.size(); k++) {
                             props.put(i + "." + j + "." + k, "");
-                            PointSymbolizer sym = rule.symbolizers.get(k);
-                            if (sym.getGraphic() != null) {
-                                addGraphicProperties(
-                                        i + "." + j + "." + k, sym.getGraphic(), props);
-                                final Double gRotation = graphicRotation(sym.getGraphic());
+                            Symbolizer sym = rule.symbolizers.get(k);
+                            Graphic graphic = getGraphic(sym, false);
+                            if (graphic == null) {
+                                graphic = getGraphic(sym, true);
+                                nonPointGraphic |= graphic != null;
+                            }
+                            if (graphic != null) {
+                                addGraphicProperties(i + "." + j + "." + k, graphic, props);
+                                final Double gRotation = graphicRotation(graphic);
                                 allRotated &= gRotation != null;
 
-                                final Double gSize =
-                                        Icons.graphicSize(sym.getGraphic(), gRotation, feature);
+                                final Double gSize = Icons.graphicSize(graphic, gRotation, feature);
                                 if (size == null || (gSize != null && gSize > size)) {
                                     size = gSize;
                                 }
@@ -188,6 +228,11 @@ public final class IconPropertyExtractor {
                     }
                 }
             }
+
+            if (nonPointGraphic) {
+                props.put(NON_POINT_GRAPHIC_KEY, "true");
+            }
+
             if (size != null) size = size / 16d;
             // If all the symbols in the stack were rotated, force it to be oriented to a bearing.
             final Double rotation = allRotated ? 0d : null;

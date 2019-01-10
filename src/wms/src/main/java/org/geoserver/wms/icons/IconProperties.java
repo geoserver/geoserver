@@ -73,11 +73,20 @@ public abstract class IconProperties {
 
             @Override
             public String href(String baseURL, String workspace, String styleName) {
+                String stylePathFragment;
                 if (workspace != null) {
-                    styleName = workspace + "/" + styleName;
+                    stylePathFragment =
+                            ResponseUtils.urlEncode(workspace)
+                                    + "/"
+                                    + ResponseUtils.urlEncode(styleName);
+                } else {
+                    stylePathFragment = ResponseUtils.urlEncode(styleName);
                 }
                 return ResponseUtils.buildURL(
-                        baseURL, "kml/icon/" + styleName, styleProperties, URLType.RESOURCE);
+                        baseURL,
+                        "kml/icon/" + stylePathFragment,
+                        styleProperties,
+                        URLType.RESOURCE);
             }
 
             @Override

@@ -229,6 +229,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     public static final String STROKE_LINECAP = "stroke-linecap";
 
+    public static final String GRAPHIC = "graphic";
+
     static Map<Class, String> symbolizerNames = new HashMap<>();
 
     static {
@@ -272,7 +274,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
 
             // style and rule to use for the current layer
-            miniStyle = MiniRule.minify(gt2Style);
+            miniStyle = MiniRule.minify(gt2Style, true);
 
             layerName = legend.getLayerName().getLocalPart();
 
@@ -884,7 +886,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (symbolizer instanceof TextSymbolizer2) {
             // handle font graphic
             TextSymbolizer2 tSymb = (TextSymbolizer2) symbolizer;
-            ret = processGraphic(ret, tSymb.getGraphic());
+            JSONObject graphic = new JSONObject();
+            graphic = processGraphic(graphic, tSymb.getGraphic());
+            ret.element(GRAPHIC, graphic);
         }
         JSONObject jPlacement = new JSONObject();
         LabelPlacement placement = symbolizer.getLabelPlacement();

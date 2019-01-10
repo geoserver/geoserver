@@ -8,7 +8,6 @@ package org.geoserver.wms.icons;
 import static org.geotools.filter.text.ecql.ECQL.toExpression;
 import static org.geotools.filter.text.ecql.ECQL.toFilter;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -101,10 +100,10 @@ public class IconPropertiesTest extends IconTestSupport {
 
         final Style s = styleFromRules(catchAllRule(symbolizer));
         assertEquals(
-                "0.0.0=&0.0.0.fill.color=%238080C0&0.0.0.name=&0.0.0.stroke.color=%238080C0",
+                "0.0.0=&0.0.0.fill.color=%238080C0&0.0.0.name=square&0.0.0.stroke.color=%238080C0",
                 encode(s, fieldIs1));
         assertEquals(
-                "0.0.0=&0.0.0.fill.color=%23CC8030&0.0.0.name=&0.0.0.stroke.color=%23CC8030",
+                "0.0.0=&0.0.0.fill.color=%23CC8030&0.0.0.name=square&0.0.0.stroke.color=%23CC8030",
                 encode(s, fieldIs2));
     }
 
@@ -212,7 +211,7 @@ public class IconPropertiesTest extends IconTestSupport {
         assertEquals(
                 "http://127.0.0.1/kml/icon/test?0.0.0=&0.0.0.rotation=45.0&0.0.1=",
                 prop.href("http://127.0.0.1/", null, "test"));
-        assertNull(prop.getHeading());
+        assertEquals(0, prop.getHeading(), 0d);
     }
 
     @Test

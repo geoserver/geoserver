@@ -80,6 +80,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         testData.addStyle("tricky_point", this.getClass(), catalog);
         testData.addStyle("arealandmarks", this.getClass(), catalog);
         testData.addStyle("fixedArrows", this.getClass(), catalog);
+        testData.addStyle("dynamicArrows", this.getClass(), catalog);
     }
 
     @Before
@@ -1186,6 +1187,48 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     }
 
     @org.junit.Test
+    public void testTextSymbolizerDynamicGraphic() throws Exception {
+        GetLegendGraphicRequest req = getRequest();
+        req.setWidth(20);
+        req.setHeight(20);
+
+        org.geoserver.catalog.Catalog catalog = getCatalog();
+        FeatureTypeInfo ftInfo =
+                catalog.getFeatureTypeByName(
+                        MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+
+        // we need this to be in the "styles" directory to test the legend icon code!
+        StyleInfo styleinfo = catalog.getStyleByName("dynamicArrows");
+        Style style = styleinfo.getStyle();
+        req.setStyle(style);
+        printStyle(style);
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+        print(result);
+        assertNotNull(result);
+        // extract the basics
+        JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
+        assertNotNull(legend);
+        JSONArray rules = legend.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+        assertNotNull(rules);
+        assertEquals(1, rules.size());
+
+        // check the link
+        final JSONObject r1 = rules.getJSONObject(0);
+        final JSONArray symbolizers1 = r1.getJSONArray("symbolizers");
+        assertEquals(1, symbolizers1.size());
+        final JSONObject s1 = symbolizers1.getJSONObject(0);
+        final JSONObject graphic =
+                s1.getJSONObject(JSONLegendGraphicBuilder.TEXT)
+                        .getJSONObject(JSONLegendGraphicBuilder.GRAPHIC);
+
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/dynamicArrows?0.0.0=&0.0.0.rotation=0.0&0.0.0.size=16.0&npg=true",
+                graphic.getString("url"));
+    }
+
+    @org.junit.Test
     public void testElseFilter() throws Exception {
         GetLegendGraphicRequest req = getRequest();
         req.setWidth(20);
@@ -1337,7 +1380,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 lineSymb1.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_STROKE);
         assertFalse(graphicStroke1.isNullObject());
         assertEquals(
-                "http://local-test:8080/geoserver/kml/icon/Default%20Styler?0.0.0=&0.0.0.rotation=NaN&npg=true",
+                "http://local-test:8080/geoserver/kml/icon/Default%20Styler?0.0.0=&0.0.0.rotation=0.0&npg=true",
                 graphicStroke1.getString("url"));
 
         JSONObject lineSymb2 =

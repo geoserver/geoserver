@@ -86,7 +86,8 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
                                     && srs2.length > 1) {
                                 try {
                                     // in case of same authority, compare numbers
-                                    return new Integer(srs1[1]).compareTo(new Integer(srs2[1]));
+                                    return Integer.valueOf(srs1[1])
+                                            .compareTo(Integer.valueOf(srs2[1]));
                                 } catch (NumberFormatException e) {
                                     // a handful of codes are not numeric,
                                     // handle the general case as well

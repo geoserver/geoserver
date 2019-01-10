@@ -31,6 +31,7 @@ import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.mock.web.MockFilterChain;
@@ -1769,7 +1770,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
     }
 
-    // @Test disabled, builds locally but not onmaster
+    @Test
+    @Ignore // disabled, builds locally but not onmaster
     public void testSSL() throws Exception {
 
         prepareFilterChain(pattern, GeoServerSecurityFilterChain.ANONYMOUS_FILTER);

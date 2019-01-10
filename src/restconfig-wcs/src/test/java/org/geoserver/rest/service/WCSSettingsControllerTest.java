@@ -26,14 +26,15 @@ public class WCSSettingsControllerTest extends CatalogRESTTestSupport {
         revertService(WCSInfo.class, null);
     }
 
+    @Test
     public void testGetASJSON() throws Exception {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wcsinfo = (JSONObject) jsonObject.get("wcs");
-        assertEquals("wcs", wcsinfo.get("id"));
+        print(wcsinfo);
+        assertEquals("WCS", wcsinfo.get("name"));
         assertEquals("true", wcsinfo.get("enabled").toString().trim());
-        assertEquals("My GeoServer WCS", wcsinfo.get("name"));
         assertEquals("false", wcsinfo.get("verbose").toString().trim());
     }
 

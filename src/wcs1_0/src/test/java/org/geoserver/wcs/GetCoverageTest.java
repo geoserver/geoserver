@@ -671,6 +671,11 @@ public class GetCoverageTest extends WCSTestSupport {
 
         // same result as time first
         checkPixelValue(response, 10, 10, 18.2849999185419);
+
+        request = request.replace("ELEVATION", "elevation");
+        response = postAsServletResponse("wcs", request);
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 18.2849999185419);
     }
 
     @Test
@@ -688,6 +693,11 @@ public class GetCoverageTest extends WCSTestSupport {
           Value: 13.337999683572
         */
 
+        checkPixelValue(response, 10, 10, 13.337999683572);
+
+        request = request.replace("ELEVATION", "elevation");
+        response = postAsServletResponse("wcs", request);
+        assertEquals("image/tiff", response.getContentType());
         checkPixelValue(response, 10, 10, 13.337999683572);
     }
 

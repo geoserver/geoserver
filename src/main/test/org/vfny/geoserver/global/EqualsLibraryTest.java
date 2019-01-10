@@ -81,38 +81,38 @@ public class EqualsLibraryTest extends TestCase {
         Map b;
         a = new HashMap();
         b = new HashMap();
-        a.put("0", new Integer(0));
-        b.put("0", new Integer(0));
-        a.put("1", new Integer(1));
-        b.put("1", new Integer(1));
-        a.put("2", new Integer(2));
-        b.put("2", new Integer(2));
+        a.put("0", Integer.valueOf(0));
+        b.put("0", Integer.valueOf(0));
+        a.put("1", Integer.valueOf(1));
+        b.put("1", Integer.valueOf(1));
+        a.put("2", Integer.valueOf(2));
+        b.put("2", Integer.valueOf(2));
 
         assertTrue(EqualsLibrary.equals(a, b));
 
-        a.put("3", new Integer(3));
-        b.put("4", new Integer(4));
-        a.put("4", new Integer(4));
-        b.put("3", new Integer(3));
+        a.put("3", Integer.valueOf(3));
+        b.put("4", Integer.valueOf(4));
+        a.put("4", Integer.valueOf(4));
+        b.put("3", Integer.valueOf(3));
 
         assertTrue(EqualsLibrary.equals(a, b));
 
-        a.put("5", new Integer(5));
-        b.put("6", new Integer(5));
+        a.put("5", Integer.valueOf(5));
+        b.put("6", Integer.valueOf(5));
 
         assertTrue(!EqualsLibrary.equals(a, b));
 
-        a.put("5", new Integer(5));
-        b.put("5", new Integer(5));
+        a.put("5", Integer.valueOf(5));
+        b.put("5", Integer.valueOf(5));
         b.remove("6");
 
         assertTrue(EqualsLibrary.equals(a, b));
 
-        a.put("5", new Integer(6));
+        a.put("5", Integer.valueOf(6));
 
         assertTrue(!EqualsLibrary.equals(a, b));
 
-        a.put("5", new Integer(5));
+        a.put("5", Integer.valueOf(5));
 
         assertTrue(EqualsLibrary.equals(a, b));
     }

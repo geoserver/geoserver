@@ -66,6 +66,7 @@ public class OgrConfiguration extends ToolConfiguration {
         }
     }
 
+    @SuppressWarnings("PMD.SystemPrintln")
     public static void main(String[] args) {
         // generates the default configuration xml and prints it to the output
         XStream xstream = new XStream();

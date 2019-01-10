@@ -177,6 +177,7 @@ public class ConnectionUsageTest extends AbstractAppSchemaTestSupport {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("TryFailThrowable")
     public void testNoConnectionLeakIfExceptionThrown() throws Exception {
         FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
         ff.setNamepaceContext(mappingFs.getMapping().getNamespaces());

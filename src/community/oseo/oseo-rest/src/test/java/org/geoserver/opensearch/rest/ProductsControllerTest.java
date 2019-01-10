@@ -744,7 +744,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/granules",
                         200);
         assertEquals("FeatureCollection", json.read("$.type"));
-        assertEquals(new Integer(2), json.read("$.features.length()"));
+        assertEquals(Integer.valueOf(2), json.read("$.features.length()"));
         assertEquals("Feature", json.read("$.features[0].type"));
         assertEquals("Polygon", json.read("$.features[0].geometry.type"));
         assertEquals(firstGranulePath, json.read("$.features[0].properties.location"));
@@ -774,7 +774,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPM_N02.01/granules",
                         200);
         assertEquals("FeatureCollection", json.read("$.type"));
-        assertEquals(new Integer(4), json.read("$.features.length()"));
+        assertEquals(Integer.valueOf(4), json.read("$.features.length()"));
         assertEquals("Feature", json.read("$.features[0].type"));
         assertEquals("Polygon", json.read("$.features[0].geometry.type"));
         assertEquals(
@@ -799,7 +799,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         200);
         assertEquals(200, response.getStatus());
         assertEquals("FeatureCollection", json.read("$.type"));
-        assertEquals(new Integer(0), json.read("$.features.length()"));
+        assertEquals(Integer.valueOf(0), json.read("$.features.length()"));
     }
 
     @Test

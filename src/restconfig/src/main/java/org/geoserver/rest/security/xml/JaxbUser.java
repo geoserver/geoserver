@@ -21,7 +21,7 @@ public class JaxbUser {
 
     public JaxbUser(GeoServerUser user) {
         this.userName = user.getUsername();
-        this.enabled = new Boolean(user.isEnabled());
+        this.enabled = Boolean.valueOf(user.isEnabled());
     }
 
     @XmlElement

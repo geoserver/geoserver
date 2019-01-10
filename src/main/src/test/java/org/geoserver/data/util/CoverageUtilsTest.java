@@ -36,6 +36,6 @@ public class CoverageUtilsTest {
         Map values = Collections.singletonMap(key, "1");
         Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
         assertTrue(value instanceof Integer);
-        assertEquals(new Integer(1), value);
+        assertEquals(Integer.valueOf(1), value);
     }
 }

@@ -9,12 +9,7 @@ import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -431,8 +426,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // setup the renderer hints
         Map<Object, Object> rendererParams = new HashMap<Object, Object>();
-        rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+        rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
+        rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(
                 StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
@@ -994,7 +989,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Band selection
         //
         final int[] bandIndices =
-                ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(symbolizer);
+                transformation == null
+                        ? ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(
+                                symbolizer)
+                        : null;
 
         // actual read
         final ReadingContext context = new ReadingContext();

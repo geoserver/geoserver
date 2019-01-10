@@ -416,22 +416,6 @@ public class ReaderUtils {
         return elem.getAttribute(attName);
     }
 
-    public static boolean getChildAttributeAsBoolean(
-            Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Boolean.parseBoolean(value) : null;
-    }
-
-    public static int getChildAttributeAsInt(Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Integer.parseInt(value) : null;
-    }
-
-    public static double getChildAttributeAsDouble(Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Double.parseDouble(value) : null;
-    }
-
     /**
      * getChildText purpose.
      *

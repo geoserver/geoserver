@@ -42,10 +42,7 @@
     <constructor-arg ref="geoServer"/>
   </bean>
 
-  <!--  icon service -->
-  <bean id="kmlIconService" class="org.geoserver.kml.icons.IconService">
-    <constructor-arg ref="catalog"/>
-  </bean>
+ 
 
   <!-- http url mapping -->
   <bean id="kmlURLMapping" class="org.geoserver.ows.OWSHandlerMapping">

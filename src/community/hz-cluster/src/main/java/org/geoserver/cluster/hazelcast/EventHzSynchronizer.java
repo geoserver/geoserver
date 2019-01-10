@@ -16,13 +16,13 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
-import com.yammer.metrics.Metrics;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.annotation.Nullable;
@@ -93,7 +93,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         e.setSource(localAddress(cluster.getHz()));
         topic.publish(e);
 
-        Metrics.newCounter(getClass(), "dispatched").inc();
+        incCounter(getClass(), "dispatched");
         waitForAck(e);
     }
 
@@ -157,10 +157,10 @@ public class EventHzSynchronizer extends HzSynchronizer {
     }
 
     @Override
-    protected void processEvent(Event event) throws Exception {
+    protected Future<?> processEvent(Event event) {
         Preconditions.checkState(isStarted());
         if (!(event instanceof ConfigChangeEvent)) {
-            return;
+            return null;
         }
         try {
             LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
@@ -176,6 +176,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         } finally {
             ack(event);
         }
+        return null;
     }
 
     private void processCatalogEvent(final ConfigChangeEvent event)

@@ -448,9 +448,15 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     AxisSubsetType axis = (AxisSubsetType) axisSubset.get(i);
                     String axisName = axis.getName();
                     if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
+                        String key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName;
                         Object dimInfo =
                                 meta.getMetadata()
-                                        .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName);
+                                        .entrySet()
+                                        .stream()
+                                        .filter(e -> e.getKey().equalsIgnoreCase(key))
+                                        .findFirst()
+                                        .map(e -> e.getValue())
+                                        .orElse(null);
                         axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();

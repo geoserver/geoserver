@@ -130,6 +130,7 @@ public class TurboImageWorkerTest extends Assert {
         new ImageWorker(output).getBufferedImage().flush();
     }
 
+    @Test
     public void testWriterBandSelect() throws IOException {
         if (SKIP_TESTS) {
             LOGGER.warning(ERROR_LIB_MESSAGE);

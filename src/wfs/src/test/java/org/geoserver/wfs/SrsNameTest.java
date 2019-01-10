@@ -81,6 +81,7 @@ public class SrsNameTest extends WFSTestSupport {
         }
     }
 
+    @Test
     public void testSrsNameSyntax11() throws Exception {
         doTestSrsNameSyntax11(SrsNameStyle.URN, false);
         doTestSrsNameSyntax11(SrsNameStyle.URN2, true);

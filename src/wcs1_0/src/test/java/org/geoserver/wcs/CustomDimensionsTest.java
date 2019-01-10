@@ -49,6 +49,11 @@ public class CustomDimensionsTest extends CoverageTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertNull(image);
+
+        request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toLowerCase());
+        response = postAsServletResponse("wcs", request);
+        image = ImageIO.read(getBinaryInputStream(response));
+        assertNull(image);
     }
 
     @Test
@@ -57,6 +62,12 @@ public class CustomDimensionsTest extends CoverageTestSupport {
         String request = getWaterTempRequest("CustomDimValueA");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotNull(image);
+        assertEquals("image/tiff", response.getContentType());
+
+        request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toLowerCase());
+        response = postAsServletResponse("wcs", request);
+        image = ImageIO.read(getBinaryInputStream(response));
         assertNotNull(image);
         assertEquals("image/tiff", response.getContentType());
     }

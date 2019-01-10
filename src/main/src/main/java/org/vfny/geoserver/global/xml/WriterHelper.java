@@ -252,10 +252,8 @@ public class WriterHelper {
      * @param text
      */
     private String escape(String text) {
-        String s = new String(text);
-
         // All redundant carriage returns should already have been stripped.
-        s = s.replaceAll("\r\n", "\n");
+        String s = text.replaceAll("\r\n", "\n");
 
         if (XML_ENTITIES.matcher(s).matches()) {
             s = s.replaceAll("&", "&amp;");

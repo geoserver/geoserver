@@ -57,12 +57,10 @@ ALTER TABLE object_property ADD CONSTRAINT
   fk_object_property_property_type FOREIGN KEY (property_type) REFERENCES property_type (oid);
 
 -- indexes
-CREATE UNIQUE INDEX object_oid_idx ON object (oid);
 CREATE INDEX object_type_id_idx ON object (type_id);
 CREATE UNIQUE INDEX object_id_idx ON object (id);
 
 CREATE INDEX object_property_value_upper_idx ON object_property (UPPER(value));
-CREATE INDEX object_property_oid_idx ON object_property (OID);
 CREATE INDEX object_property_property_type_idx ON object_property (property_type);
 CREATE INDEX object_property_id_idx ON object_property (id);
 CREATE INDEX object_property_related_oid_idx ON object_property (related_oid);
@@ -70,10 +68,8 @@ CREATE INDEX object_property_related_property_type_idx ON object_property (relat
 CREATE INDEX object_property_colindex_idx ON object_property (colindex);
 CREATE INDEX object_property_value_idx ON object_property (value);
 
-CREATE UNIQUE INDEX type_oid_idx ON type (oid);
 CREATE UNIQUE INDEX type_typename_idx ON type (typename);
 
-CREATE UNIQUE INDEX property_type_oid_idx ON property_type (oid);
 CREATE INDEX property_type_target_property_idx ON property_type (target_property);
 CREATE INDEX property_type_type_id_idx ON property_type (type_id);
 CREATE INDEX property_type_name_idx ON property_type (name);

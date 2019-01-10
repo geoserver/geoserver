@@ -863,6 +863,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
                 equalTo("application/xml"));
     }
 
+    @Test
     public void testLayersStylesInWorkspace() throws Exception {
         testPostToWorkspace();
 
@@ -924,14 +925,13 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
                 getAsDOM(
                         RestBaseController.ROOT_PATH
                                 + "/workspaces/sf/layergroups/workspaceLayerGroup.xml");
-
         assertXpathEvaluatesTo(
-                RestBaseController.ROOT_PATH + "/workspaces/sf/styles/s1.xml",
-                "//style[name = 's1']/atom:link/@href",
+                "http://localhost:8080/geoserver/rest/workspaces/sf/styles/s1.xml",
+                "//style[name = 'sf:s1']/atom:link/@href",
                 dom);
         assertXpathEvaluatesTo(
-                RestBaseController.ROOT_PATH + "/workspaces/sf/styles/s2.xml",
-                "//style[name = 's2']/atom:link/@href",
+                "http://localhost:8080/geoserver/rest/workspaces/sf/styles/s2.xml",
+                "//style[name = 'sf:s2']/atom:link/@href",
                 dom);
     }
 }

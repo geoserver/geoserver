@@ -105,6 +105,7 @@ public class FileDataViewTest {
                         .size());
     }
 
+    @Test
     public void testSortByName() throws Exception {
 
         // order by inverse name

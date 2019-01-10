@@ -87,7 +87,7 @@ public class GetFeatureRequestStorageTest extends WFS20TestSupport {
                         })
                 .start();
         done1.await(10, TimeUnit.SECONDS);
-        assertEquals(new Long(1), ic.getTimeToLiveInSec());
+        assertEquals(Long.valueOf(1), ic.getTimeToLiveInSec());
         // Check that feature not used is deleted
         final CountDownLatch done2 = new CountDownLatch(1);
         new Thread(

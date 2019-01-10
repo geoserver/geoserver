@@ -139,12 +139,12 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
     private static final ArrayList<Property<SRS>> PROPERTIES =
             new ArrayList<Property<SRS>>(Arrays.asList(CODE, DESCRIPTION));
 
-    private List<SRS> items;
+    private volatile List<SRS> items;
 
     @Override
     protected List<SRS> getItems() {
         if (items == null) {
-            synchronized (SRSProvider.class) {
+            synchronized (this) {
                 if (items == null) {
                     items = buildCodeList();
                 }

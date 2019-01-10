@@ -439,7 +439,7 @@ public class FeatureTypeController extends AbstractCatalogController {
                     "Trying to create new feature type inside the store, "
                             + "but no feature type name was specified",
                     HttpStatus.BAD_REQUEST);
-        } else if (fti.getAttributes() == null || fti.getAttributes() == null) {
+        } else if (fti.getAttributes() == null || fti.getAttributes().isEmpty()) {
             throw new RestException(
                     "Trying to create new feature type inside the store, "
                             + "but no attributes were specified",

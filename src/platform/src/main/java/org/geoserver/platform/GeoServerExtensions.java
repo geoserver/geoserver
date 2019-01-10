@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -162,21 +161,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         filter(spiExtensions, filters, result);
 
         // sort the results based on ExtensionPriority
-        Collections.sort(
-                result,
-                new Comparator<Object>() {
-                    public int compare(Object o1, Object o2) {
-                        int p1 = ExtensionPriority.LOWEST;
-                        if (o1 instanceof ExtensionPriority) {
-                            p1 = ((ExtensionPriority) o1).getPriority();
-                        }
-                        int p2 = ExtensionPriority.LOWEST;
-                        if (o2 instanceof ExtensionPriority) {
-                            p2 = ((ExtensionPriority) o2).getPriority();
-                        }
-                        return p1 - p2;
-                    }
-                });
+        Collections.sort(result, ExtensionPriority.COMPARATOR);
 
         return result;
     }

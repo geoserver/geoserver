@@ -64,7 +64,7 @@ public class RandomPasswordProvider {
     public void getRandomPassword(char[] buff) {
         SecureRandom random = new SecureRandom();
         for (int i = 0; i < buff.length; i++) {
-            int index = random.nextInt() % PRINTABLE_ALPHABET.length;
+            int index = random.nextInt(Integer.MAX_VALUE) % PRINTABLE_ALPHABET.length;
             if (index < 0) index += PRINTABLE_ALPHABET.length;
             buff[i] = PRINTABLE_ALPHABET[index];
         }
@@ -73,7 +73,7 @@ public class RandomPasswordProvider {
     public void getRandomPassword(byte[] buff) {
         SecureRandom random = new SecureRandom();
         for (int i = 0; i < buff.length; i++) {
-            int index = random.nextInt() % PRINTABLE_ALPHABET.length;
+            int index = random.nextInt(Integer.MAX_VALUE) % PRINTABLE_ALPHABET.length;
             if (index < 0) index += PRINTABLE_ALPHABET.length;
             buff[i] = (byte) PRINTABLE_ALPHABET[index];
         }

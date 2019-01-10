@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.net.MalformedURLException;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import org.opengis.style.Stroke;
  * @author Kevin Smith, OpenGeo
  */
 public class Icons {
-    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.kml.icons");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.icons");
 
     /**
      * Render symbols this much bigger than they should be then shrink them down in the KML. This

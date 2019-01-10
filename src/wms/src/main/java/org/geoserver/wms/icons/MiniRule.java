@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +20,11 @@ import org.opengis.filter.Filter;
  *
  * @author David Winslow, OpenGeo
  */
-class MiniRule {
+public class MiniRule {
     public final Filter filter;
     public final boolean isElseFilter;
     public final List<PointSymbolizer> symbolizers;
+    private String name;
 
     public MiniRule(Filter filter, boolean isElseFilter, List<PointSymbolizer> symbolizers) {
         this.filter = filter;
@@ -31,7 +32,7 @@ class MiniRule {
         this.symbolizers = symbolizers;
     }
 
-    static List<List<MiniRule>> minify(Style style) {
+    public static List<List<MiniRule>> minify(Style style) {
         List<List<MiniRule>> ftStyles = new ArrayList<List<MiniRule>>();
         for (FeatureTypeStyle ftStyle : style.featureTypeStyles()) {
             List<MiniRule> rules = new ArrayList<MiniRule>();
@@ -42,9 +43,12 @@ class MiniRule {
                         pointSymbolizers.add((PointSymbolizer) symbolizer);
                     }
                 }
-                if (!pointSymbolizers.isEmpty())
-                    rules.add(
-                            new MiniRule(rule.getFilter(), rule.isElseFilter(), pointSymbolizers));
+                if (!pointSymbolizers.isEmpty()) {
+                    MiniRule miniRule =
+                            new MiniRule(rule.getFilter(), rule.isElseFilter(), pointSymbolizers);
+                    miniRule.setName(rule.getName());
+                    rules.add(miniRule);
+                }
             }
             if (!rules.isEmpty()) {
                 ftStyles.add(rules);
@@ -69,5 +73,15 @@ class MiniRule {
             style.featureTypeStyles().add(ftStyle);
         }
         return style;
+    }
+
+    /** @return the name */
+    public String getName() {
+        return name;
+    }
+
+    /** @param name the name to set */
+    public void setName(String name) {
+        this.name = name;
     }
 }

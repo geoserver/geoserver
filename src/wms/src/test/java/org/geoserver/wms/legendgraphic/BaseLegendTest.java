@@ -20,14 +20,13 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
-import org.junit.Before;
 
-public class BaseLegendTest extends WMSTestSupport {
+public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSupport {
 
     protected static final Logger LOGGER =
-            Logging.getLogger(AbstractLegendGraphicOutputFormatTest.class);
+            Logging.getLogger(BufferedImageLegendGraphicOutputFormatTest.class);
 
-    protected BufferedImageLegendGraphicBuilder legendProducer;
+    protected T legendProducer;
 
     protected GetLegendGraphic service;
 
@@ -59,18 +58,6 @@ public class BaseLegendTest extends WMSTestSupport {
         ge.registerFont(
                 Font.createFont(
                         Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
-    }
-
-    @Before
-    public void setLegendProducer() throws Exception {
-        this.legendProducer =
-                new BufferedImageLegendGraphicBuilder() {
-                    public String getContentType() {
-                        return "image/png";
-                    }
-                };
-
-        service = new GetLegendGraphic(getWMS());
     }
 
     @After

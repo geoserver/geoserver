@@ -25,11 +25,11 @@ public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      * @see BufferedImageLegendGraphicBuilder
      */
-    public BufferedImageLegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
+    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
-        BufferedImageLegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
-        BufferedImage legendGraphic = builder.buildLegendGraphic(request);
-        BufferedImageLegendGraphic legend = new BufferedImageLegendGraphic(legendGraphic);
+        LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
+        BufferedImage legendGraphic = (BufferedImage) builder.buildLegendGraphic(request);
+        LegendGraphic legend = new BufferedImageLegendGraphic(legendGraphic);
         return legend;
     }
 

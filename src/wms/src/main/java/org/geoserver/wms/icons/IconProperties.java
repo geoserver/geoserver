@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.icons;
+package org.geoserver.wms.icons;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -202,12 +202,12 @@ public abstract class IconProperties {
 
             @Override
             public Style inject(Style base) {
-                throw new RuntimeException("An implementation is missing");
+                return IconPropertyInjector.injectProperties(base, null);
             }
 
             @Override
             public Map<String, String> getProperties() {
-                throw new RuntimeException("An implementation is missing");
+                return Collections.emptyMap();
             }
 
             @Override

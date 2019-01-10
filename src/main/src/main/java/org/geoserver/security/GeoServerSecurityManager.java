@@ -1714,15 +1714,26 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     /** Checks the specified password against the master password. */
     public boolean checkMasterPassword(String passwd) {
-        return checkMasterPassword(passwd.toCharArray());
+        return checkMasterPassword(passwd.toCharArray(), true);
+    }
+
+    /** Checks the specified password against the master password. */
+    public boolean checkMasterPassword(String passwd, boolean forLogin) {
+        return checkMasterPassword(passwd.toCharArray(), forLogin);
     }
 
     /** Checks the specified password against the master password. */
     public boolean checkMasterPassword(char[] passwd) {
+        return checkMasterPassword(passwd, true);
+    }
+
+    /** Checks the specified password against the master password. */
+    public boolean checkMasterPassword(char[] passwd, boolean forLogin) {
         try {
-            if (!this.masterPasswordProviderHelper
-                    .loadConfig(this.masterPasswordConfig.getProviderName())
-                    .isLoginEnabled()) {
+            if (forLogin
+                    && !this.masterPasswordProviderHelper
+                            .loadConfig(this.masterPasswordConfig.getProviderName())
+                            .isLoginEnabled()) {
                 return false;
             }
         } catch (IOException e) {

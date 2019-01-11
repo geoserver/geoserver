@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.kvp.GetExecutionsKvpFilterBuilder;
@@ -21,7 +22,6 @@ import org.opengis.filter.sort.SortOrder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Retrieves the list of available executions from the ProcessStore accordingly to the request
@@ -71,14 +71,6 @@ public class Executions {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final Object principal =
                 auth != null && auth.getPrincipal() != null ? auth.getPrincipal() : null;
-        String username = null;
-        if (principal != null) {
-            if (principal instanceof UserDetails) {
-                username = ((UserDetails) principal).getUsername();
-            } else {
-                username = principal.toString();
-            }
-        }
         boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
         if (!isAdmin) {
             // Anonymous users cannot access the list of executions at all
@@ -89,7 +81,7 @@ public class Executions {
             // Non-admins are not allowed to fetch executions from other users
             else if (request.owner != null
                     && !request.owner.isEmpty()
-                    && !username.equalsIgnoreCase(request.owner)) {
+                    && !SecurityUtils.getUsername(principal).equalsIgnoreCase(request.owner)) {
                 throw new WPSException(
                         Executions.NO_SUCH_PARAMETER_CODE, "Invalid parameter 'owner' specified.");
             }
@@ -105,7 +97,7 @@ public class Executions {
             builder.appendUserNameFilter(request.owner);
         } else if (!isAdmin) {
             // not an admin? The list should be filtered to your own processes
-            builder.appendUserNameFilter(username);
+            builder.appendUserNameFilter(SecurityUtils.getUsername(principal));
         } // Otherwise you are an admin asking for all the processes
 
         // Filter by the Process Name (Identifier)

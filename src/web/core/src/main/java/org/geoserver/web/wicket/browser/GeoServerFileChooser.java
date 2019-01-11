@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket.browser;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -278,7 +279,7 @@ public class GeoServerFileChooser extends Panel {
                     return displayName.trim();
                 }
                 return FilenameUtils.getPrefix(f.getAbsolutePath());
-            } catch (Exception e) {
+            } catch (Exception | AWTError e ) {
                 LOGGER.log(
                         Level.FINE,
                         "Failed to get file display name, "

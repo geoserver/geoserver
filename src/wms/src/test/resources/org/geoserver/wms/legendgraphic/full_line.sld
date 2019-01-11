@@ -54,7 +54,7 @@
 							<GraphicFill>
 								<Graphic>
 									<Mark>
-										<WellKnownName>square</WellKnownName>
+										<WellKnownName>circle</WellKnownName>
 										<Fill>
 											<CssParameter name="fill">#ffff00</CssParameter>
 										</Fill>

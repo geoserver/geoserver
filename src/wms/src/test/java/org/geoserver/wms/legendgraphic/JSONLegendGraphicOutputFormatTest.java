@@ -880,14 +880,14 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
 
-        // printStyle(externalGraphicStyle);
+        printStyle(externalGraphicStyle);
         req.setStyle(externalGraphicStyle);
 
         req.setScale(1.0);
 
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         assertNotEmpty(result);
-        // System.out.println(result.toString(2) );
+        print(result);
         JSONArray lx = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertEquals(1, lx.size());
         // rule 1 is a mark
@@ -932,12 +932,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("ThickBorder.sld");
         req.setStyle(style);
-        // printStyle(style);
+        printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        // System.out.println(result.toString(2));
+        print(result);
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
         assertNotNull(legend);
         assertFalse(legend.isEmpty());
@@ -982,9 +982,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("point.sld");
         req.setStyle(style);
-        // printStyle(style);
+        printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+        print(result);
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1017,9 +1017,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setLayer(ftInfo.getFeatureType());
         Style style = readSLD("hospital.sld");
         req.setStyle(style);
-        // printStyle(style);
+        printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+        print(result);
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1036,7 +1036,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
         assertEquals(
-                "http://local-test:8080/geoserver/kml/icon/Hospital?0.0.0=&0.0.1=",
+                "http://local-test:8080/geoserver/kml/icon/Hospital?0.0.0=",
+                pointSymb.getString("url"));
+        pointSymb = symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/Hospital?0.0.1=",
                 pointSymb.getString("url"));
     }
 
@@ -1059,7 +1064,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setStyle(style);
         printStyle(style);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
-        // System.out.println(result.toString(2));
+        print(result);
         assertNotNull(result);
         // blue 2px wide line
         JSONArray legend = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
@@ -1083,7 +1088,12 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         pointSymb = symbolizers.getJSONObject(0).getJSONObject(JSONLegendGraphicBuilder.POINT);
         assertNotNull(pointSymb);
         assertEquals(
-                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.2.0=&0.2.1=",
+                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.2.0=",
+                pointSymb.getString("url"));
+        pointSymb = symbolizers.getJSONObject(1).getJSONObject(JSONLegendGraphicBuilder.POINT);
+        assertNotNull(pointSymb);
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/tricky_point?0.2.1=",
                 pointSymb.getString("url"));
     }
 
@@ -1386,9 +1396,13 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONObject lineSymb2 =
                 symbolizers.getJSONObject(2).getJSONObject(JSONLegendGraphicBuilder.LINE);
         assertFalse(lineSymb2.isNullObject());
-        assertFalse(lineSymb2.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL).isNullObject());
-        assertEquals("#0000FF", lineSymb.get(JSONLegendGraphicBuilder.STROKE));
-        assertEquals("2", lineSymb.get(JSONLegendGraphicBuilder.STROKE_WIDTH));
+        final JSONObject graphicFill2 =
+                lineSymb2.getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL);
+
+        assertFalse(graphicFill2.isNullObject());
+        assertEquals(
+                "http://local-test:8080/geoserver/kml/icon/Default%20Styler?0.0.1=&0.0.1.rotation=0.0&npg=true",
+                graphicFill2.getString("url"));
     }
 
     @org.junit.Test
@@ -1630,12 +1644,6 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertEquals("0.5", ce.getString(JSONLegendGraphicBuilder.GAMMA_VALUE));
         assertEquals("true", ce.get(JSONLegendGraphicBuilder.NORMALIZE));
     }
-    /** @param result */
-    private void assertNotEmpty(JSONObject result) {
-        assertNotNull(result);
-        assertFalse(result.isNullObject());
-        assertFalse(result.isEmpty());
-    }
 
     @org.junit.Test
     public void testDescreteRaster() throws Exception {
@@ -1679,6 +1687,13 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
 
         assertEquals("intervals", colormap.get(JSONLegendGraphicBuilder.COLORMAP_TYPE));
     }
+    /** @param result */
+    private void assertNotEmpty(JSONObject result) {
+        assertNotNull(result);
+        assertFalse(result.isNullObject());
+        assertFalse(result.isEmpty());
+    }
+
     /**
      * @param sldName
      * @throws IOException

@@ -584,7 +584,7 @@ class GMLTransformer extends TransformerBase {
             if (intervalUnit != null && intervalValue != null) {
                 atts = new AttributesImpl();
                 atts.addAttribute("", "unit", "unit", "", intervalUnit);
-                element("gml:TimeInterval", intervalValue.toString(), atts);
+                element("gml:timeInterval", intervalValue.toString(), atts);
             }
             end("gml:TimePeriod");
         }

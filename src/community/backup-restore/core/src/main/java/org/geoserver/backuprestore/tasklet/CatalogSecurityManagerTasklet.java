@@ -10,7 +10,6 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -37,9 +36,8 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
     public static final String SECURITY_RESOURCE_NAME = "security";
     private boolean skipSecuritySettings = false;
 
-    public CatalogSecurityManagerTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public CatalogSecurityManagerTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                                 .getJobParameters()
                                 .getString(Backup.PARAM_SKIP_SECURITY_SETTINGS));
 
-        this.skipSecuritySettings = skipSettings || skipSecurity;
+        this.skipSecuritySettings = skipSettings || skipSecurity || filterIsValid();
     }
 
     @Override

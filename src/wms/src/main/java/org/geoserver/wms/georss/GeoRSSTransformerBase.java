@@ -277,6 +277,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                         }
 
                         // build the mixed query
+                        Query mixed = new Query(query);
                         Filter original = query.getFilter();
                         Filter bbox =
                                 ff.bbox(
@@ -286,10 +287,10 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                                         env.getMaxX(),
                                         env.getMaxY(),
                                         null);
-                        query.setFilter(ff.and(original, bbox));
+                        mixed.setFilter(ff.and(original, bbox));
 
                         // query and eventually reproject
-                        features = source.getFeatures(query);
+                        features = source.getFeatures(mixed);
                         if (sourceCRS != null && !CRS.equalsIgnoreMetadata(wgs84, sourceCRS)) {
                             ReprojectingFeatureCollection coll =
                                     new ReprojectingFeatureCollection(features, wgs84);

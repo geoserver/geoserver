@@ -55,6 +55,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("TryFailThrowable")
     public void testNoInspireSettingsWMS() {
         final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
         final MetadataMap metadata = serviceInfo.getMetadata();
@@ -142,6 +143,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("TryFailThrowable")
     public void testWithFullSettingsWMS() {
         final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
         final MetadataMap metadata = serviceInfo.getMetadata();

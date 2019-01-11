@@ -278,3 +278,293 @@ The same can be achieved using a stand-alone GetLegendGraphic request::
    :align: center 
 
    *Direct legend request*
+
+
+JSON Output Format
+------------------
+
+Since version 2.15.0 it has been possible to use **application/json**
+as an output format in GetLegendGraphic requests. This allows a JSON
+aware client to receive a JSON representation of the legend graphic to
+use for its own rendering requirements.
+
+A simple http request can be used::
+
+  http://localhost:9000/geoserver/wms?service=WMS&version=1.1.0&request=GetLegendGraphic&layer=topp:states&format=application/json
+
+Which returns a JSON response:
+
+.. code:: javascript 
+
+  {"Legend": [{
+    "layerName": "states",
+    "title": "USA Population",
+    "rules":   [
+          {
+        "title": "< 2M",
+        "filter": "[PERSONS < '2000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#4DFF4D",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "2M - 4M",
+        "filter": "[PERSONS BETWEEN '2000000' AND '4000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#FF4D4D",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "> 4M",
+        "filter": "[PERSONS > '4000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#4D4DFF",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "Boundary",
+        "symbolizers":       [
+          {"Line":         {
+            "stroke": "#000000",
+            "stroke-width": "0.2",
+            "stroke-opacity": "1",
+            "stroke-linecap": "butt",
+            "stroke-linejoin": "miter"
+          }},
+          {"Text":         {
+            "label": "[STATE_ABBR]",
+            "fonts": [          {
+              "font-family": ["Times New Roman"],
+              "font-style": "Normal",
+              "font-weight": "normal",
+              "font-size": "14"
+            }],
+            "label-placement":           {
+              "x-anchor": "0.5",
+              "y-anchor": "0.5",
+              "rotation": "0.0"
+            }
+          }}
+        ]
+      }
+    ]
+  }]}
+
+This JSON contains an array of Legends (one for each layer requested) and 
+each legend contains some metadata about the legend and an array of ``rule`` 
+objects for each rule with in the feature type of the style. Each ``rule`` 
+contains the metadata associated with the rule, any ``filter`` element and an array
+of ``symbolizer`` objects. 
+
+Filters and Expressions
+'''''''''''''''''''''''
+
+Filters are encoded using :ref:`ECQL <filter_ecql_reference>`, a rule with an
+ElseFilter has an element "ElseFilter" set to the value "true". Expressions are 
+also encoded in ECQL (wrapped in []) when encountered in the style. 
+
+Symbolizers
+'''''''''''
+
++ PointSymbolizer
+
+  A point symbolizer will be represented as a series of elements containing
+  metadata and an array of ``graphics`` symbols (see :ref:`here <sld_reference_graphic>`) , these can be well known ``marks`` or
+  external graphics. The point symbolizer also provides an "url" element which
+  allows a client to make a request back to GeoServer to fetch a png image of
+  the point symbol.
+
+
+  .. code:: javascript
+
+    {"Point":     {
+        "title": "title",
+        "abstract": "abstract",
+        "url": "http://localhost:9000/geoserver/kml/icon/capitals?0.0.0=",
+        "size": "6",
+        "opacity": "1.0",
+        "rotation": "0.0",
+        "graphics": [      {
+          "mark": "circle",
+          "fill": "#FFFFFF",
+          "fill-opacity": "1.0",
+          "stroke": "#000000",
+          "stroke-width": "2",
+          "stroke-opacity": "1",
+          "stroke-linecap": "butt",
+          "stroke-linejoin": "miter"
+        }]}}
+
++ LineSymbolizer
+
+  A line symbolizer is represented as a list of metadata elements and the :ref:`stroke
+  parameters <sld_reference_linesymbolizer_css>`, it is possible for there to be a :ref:`graphic-stroke <sld_reference_linesymbolizer_graphicstroke>` element too.
+
+  .. code:: javascript
+
+    {"Line":     {
+      "stroke": "#AA3333",
+      "stroke-width": "2",
+      "stroke-opacity": "1",
+      "stroke-linecap": "butt",
+      "stroke-linejoin": "miter"
+    }}
+
+
+    {"Line":       {
+        "graphic-stroke":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "6",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "square",
+            "fill": "#FFFF00",
+            "fill-opacity": "1.0"
+          }]
+        },
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "perpendicular-offset": "10"
+      }}  
+
++ PolygonSymbolizer
+
+  A polygon symbolizer contains :ref:`stroke
+  parameters <sld_reference_linesymbolizer_css>` and :ref:`fill 
+  parameters <sld_reference_fill>`. 
+
+  .. code:: javascript
+
+      {"Polygon":       {
+        "stroke": "#000000",
+        "stroke-width": "0.5",
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "fill": "#0099CC",
+        "fill-opacity": "1.0"
+      }}
+
+  Or a graphic stroke and/or a graphic fill (as described above).
+
+  .. code:: javascript
+
+      {"Polygon":       {
+        "graphic-stroke":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "6",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "square",
+            "fill": "#FFFF00",
+            "fill-opacity": "1.0"
+          }]
+        },
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "graphic-fill":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "4",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "circle",
+            "fill": "#FFFFFF",
+            "fill-opacity": "1.0"
+          }]
+        }}}
+
+
++ RasterSymbolizer
+
+  Raster symbolizers contain a ``colormap`` with an array of ``entries``, each entry
+  contains a ``label``, ``quantity`` and ``color`` element.
+
+  .. code:: javascript 
+
+    {"Raster":   {
+      "colormap":     {
+        "entries":       [
+                  {
+            "label": "values",
+            "quantity": "0",
+            "color": "#AAFFAA"
+          },
+                  {
+            "quantity": "1000",
+            "color": "#00FF00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1200",
+            "color": "#FFFF00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1400",
+            "color": "#FF7F00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1600",
+            "color": "#BF7F3F"
+          },
+                  {
+            "label": "values",
+            "quantity": "2000",
+            "color": "#000000"
+          }
+        ],
+        "type": "ramp"
+      },
+      "opacity": "1.0"
+    }}
+
++ TextSymbolizer
+
+  A text symbolizer contains a ``label`` expression, followed by an array of ``fonts``
+  and a ``label-placement`` object containing details of how the label is
+  placed.
+
+  .. code:: javascript
+
+		{"Text":         {
+			"label": "[STATE_ABBR]",
+			"fonts": [          {
+				"font-family": ["Times New Roman"],
+				"font-style": "Normal",
+				"font-weight": "normal",
+				"font-size": "14"
+			}],
+			"label-placement":           {
+				"x-anchor": "0.5",
+				"y-anchor": "0.5",
+				"rotation": "0.0"
+			}
+		}}
+
+
+Vendor Options
+''''''''''''''
+
+In any case where one or more vendor options is included in the symbolizer there
+will be a ``vendor-options`` element included in the output. This object will
+include one line for each vendor option.
+
+.. code:: javascript
+
+  "vendor-options": {
+    "labelAllGroup": "true",
+    "spaceAround": "10",
+    "followLine": "true",
+    "autoWrap": "50"
+  }
+
+

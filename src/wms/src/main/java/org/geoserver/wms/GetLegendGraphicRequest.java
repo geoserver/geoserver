@@ -101,7 +101,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
         /** Optional rule used to refine presentation of style */
         private String rule;
 
-        /** Style deterimed from a review of request parameters */
+        /** Style determined from a review of request parameters */
         private Style style;
 
         /** Optional legend info (from layer info or style info) */
@@ -112,6 +112,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
 
         /** Optional layer group info (if available ) */
         private LayerGroupInfo layerGroupInfo;
+        /** link back to the WMS */
+        private WMS wms;
 
         /** LegendRequest for a style, no associated featureType. */
         public LegendRequest() {
@@ -126,12 +128,13 @@ public class GetLegendGraphicRequest extends WMSRequest {
          *
          * @param featureType
          */
-        public LegendRequest(FeatureType featureType) {
+        public LegendRequest(FeatureType featureType, WMS wms) {
             if (featureType == null) {
                 throw new NullPointerException("FeatureType required for LegendRequest");
             }
             this.featureType = featureType;
             this.layerName = featureType.getName();
+            this.wms = wms;
         }
 
         /**
@@ -140,13 +143,15 @@ public class GetLegendGraphicRequest extends WMSRequest {
          *
          * @param featureType
          * @param layerName layerName distinct to featureType name
+         * @param wms
          */
-        public LegendRequest(FeatureType featureType, Name layerName) {
+        public LegendRequest(FeatureType featureType, Name layerName, WMS wms) {
             if (featureType == null) {
                 throw new NullPointerException("FeatureType required for LegendRequest");
             }
             this.featureType = featureType;
             this.layerName = layerName;
+            this.wms = wms;
         }
 
         public String getLayer() {
@@ -248,6 +253,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
 
         public void setStyle(Style style) {
             this.style = style;
+            if (style != null) this.styleName = style.getName();
         }
 
         public LegendInfo getLegendInfo() {
@@ -343,13 +349,18 @@ public class GetLegendGraphicRequest extends WMSRequest {
 
     private WMS wms;
 
+    public GetLegendGraphicRequest() {
+        super("GetLegendGraphic");
+        this.wms = WMS.get();
+    }
     /**
      * Creates a new GetLegendGraphicRequest object.
      *
      * @param wms The WMS configuration object.
      */
-    public GetLegendGraphicRequest() {
+    public GetLegendGraphicRequest(WMS wms) {
         super("GetLegendGraphic");
+        this.wms = wms;
     }
 
     public String getExceptions() {
@@ -415,7 +426,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public void setLayers(List<FeatureType> layers) {
         List<LegendRequest> list = new ArrayList<LegendRequest>(layers.size());
         for (FeatureType type : layers) {
-            LegendRequest legendRequest = new LegendRequest(type);
+            LegendRequest legendRequest = new LegendRequest(type, wms);
             list.add(legendRequest);
         }
         this.legends = list;
@@ -470,7 +481,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
         if (layer == null) {
             this.legends.add(new LegendRequest());
         } else {
-            this.legends.add(new LegendRequest(layer));
+            this.legends.add(new LegendRequest(layer, wms));
         }
     }
 

@@ -767,7 +767,7 @@ public class KvpUtils {
             return (String) o;
         } else {
             String[] values = (String[]) o;
-            if (values.length >= 0) {
+            if (values.length > 0) {
                 return values[0];
             } else {
                 return null;

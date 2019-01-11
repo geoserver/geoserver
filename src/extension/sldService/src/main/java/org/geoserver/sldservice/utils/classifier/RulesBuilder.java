@@ -6,7 +6,7 @@
  */
 package org.geoserver.sldservice.utils.classifier;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,9 +43,11 @@ public class RulesBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
 
-    private FilterFactory2 ff;
+    private static FilterFactory2 FF =
+            CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
-    private StyleFactory styleFactory;
+    private static StyleFactory SF =
+            CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 
     private StyleBuilder sb;
 
@@ -55,9 +57,7 @@ public class RulesBuilder {
     private boolean includeStrokeForPoints = false;
 
     public RulesBuilder() {
-        ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
-        styleFactory = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
-        sb = new StyleBuilder();
+        sb = new StyleBuilder(SF, FF);
     }
 
     public void setStrokeWeight(double strokeWeight) {
@@ -88,7 +88,7 @@ public class RulesBuilder {
             String functionName) {
         try {
             final Function classify =
-                    ff.function(functionName, ff.property(property), ff.literal(classNumber));
+                    FF.function(functionName, FF.property(property), FF.literal(classNumber));
             Classifier groups = (Classifier) classify.evaluate(features);
             if (groups instanceof RangedClassifier)
                 if (open)
@@ -337,7 +337,7 @@ public class RulesBuilder {
     }
 
     public StyleFactory getStyleFactory() {
-        return this.styleFactory;
+        return this.SF;
     }
 
     /**
@@ -352,63 +352,41 @@ public class RulesBuilder {
         Rule r;
         Filter f;
         List<Rule> list = new ArrayList();
-        Expression att = normalizeProperty(ff.property(property), propertyType, normalize);
+        Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
 
         try {
             /* First class */
-            r = styleFactory.createRule();
-            /*if (groups.getMin(0).equals(groups.getMax(0))) {
-                f = ff.equals(att, ff.literal(groups.getMax(0)));
-                r.setFilter(f);
-                r.setTitle(ff.literal(groups.getMax(0)).toString());
-                list.add(r);
-            } else {
-                f = ff.lessOrEqual(att, ff.literal(groups.getMax(0)));
-                r.setFilter(f);
-                r.setTitle(" <= " + ff.literal(groups.getMax(0)));
-                list.add(r);
-            }*/
-            f = ff.lessOrEqual(att, ff.literal(groups.getMax(0)));
+            r = SF.createRule();
+            f = FF.less(att, FF.literal(groups.getMax(0)));
             r.setFilter(f);
-            r.setTitle(" <= " + ff.literal(groups.getMax(0)));
+            r.setTitle(" < " + FF.literal(groups.getMax(0)));
             list.add(r);
             for (int i = 1; i < groups.getSize() - 1; i++) {
-                r = styleFactory.createRule();
+                r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
-                    f = ff.equals(att, ff.literal(groups.getMax(i)));
-                    r.setTitle(ff.literal(groups.getMin(i)).toString());
+                    f = FF.equals(att, FF.literal(groups.getMax(i)));
+                    r.setTitle(FF.literal(groups.getMin(i)).toString());
                     r.setFilter(f);
                     list.add(r);
                 } else {
                     f =
-                            ff.and(
-                                    ff.greater(att, ff.literal(groups.getMin(i))),
-                                    ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
+                            FF.and(
+                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    FF.less(att, FF.literal(groups.getMax(i))));
                     r.setTitle(
-                            " > "
-                                    + ff.literal(groups.getMin(i))
-                                    + " AND <= "
-                                    + ff.literal(groups.getMax(i)));
+                            " >= "
+                                    + FF.literal(groups.getMin(i))
+                                    + " AND < "
+                                    + FF.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);
                 }
             }
             /* Last class */
-            r = styleFactory.createRule();
-            /*if (groups.getMin(groups.getSize() - 1).equals(groups.getMax(groups.getSize() - 1))) {
-                f = ff.equals(att, ff.literal(groups.getMin(groups.getSize() - 1)));
-                r.setFilter(f);
-                r.setTitle(ff.literal(groups.getMin(groups.getSize() - 1)).toString());
-                list.add(r);
-            } else {
-                f = ff.greater(att, ff.literal(groups.getMin(groups.getSize() - 1)));
-                r.setFilter(f);
-                r.setTitle(" > " + ff.literal(groups.getMin(groups.getSize() - 1)));
-                list.add(r);
-            }*/
-            f = ff.greater(att, ff.literal(groups.getMin(groups.getSize() - 1)));
+            r = SF.createRule();
+            f = FF.greaterOrEqual(att, FF.literal(groups.getMin(groups.getSize() - 1)));
             r.setFilter(f);
-            r.setTitle(" > " + ff.literal(groups.getMin(groups.getSize() - 1)));
+            r.setTitle(" >= " + FF.literal(groups.getMin(groups.getSize() - 1)));
             list.add(r);
             return list;
         } catch (Exception e) {
@@ -426,7 +404,7 @@ public class RulesBuilder {
         if (normalize
                 && (Integer.class.isAssignableFrom(propertyType)
                         || Long.class.isAssignableFrom(propertyType))) {
-            return ff.function("parseDouble", property);
+            return FF.function("parseDouble", property);
         }
         return property;
     }
@@ -443,30 +421,31 @@ public class RulesBuilder {
         Rule r;
         Filter f;
         List<Rule> list = new ArrayList();
-        Expression att = normalizeProperty(ff.property(property), propertyType, normalize);
+        Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
         try {
             /* First class */
-            r = styleFactory.createRule();
+            r = SF.createRule();
             for (int i = 0; i < groups.getSize(); i++) {
-                r = styleFactory.createRule();
-                if (i > 0 && groups.getMax(i).equals(groups.getMax(i - 1))) continue;
+                r = SF.createRule();
                 if (groups.getMin(i).equals(groups.getMax(i))) {
-                    f = ff.equals(att, ff.literal(groups.getMin(i)));
-                    r.setTitle(ff.literal(groups.getMin(i)).toString());
+                    f = FF.equals(att, FF.literal(groups.getMin(i)));
+                    r.setTitle(FF.literal(groups.getMin(i)).toString());
                     r.setFilter(f);
                     list.add(r);
                 } else {
                     f =
-                            ff.and(
-                                    i == 0
-                                            ? ff.greaterOrEqual(att, ff.literal(groups.getMin(i)))
-                                            : ff.greater(att, ff.literal(groups.getMin(i))),
-                                    ff.lessOrEqual(att, ff.literal(groups.getMax(i))));
+                            FF.and(
+                                    FF.greaterOrEqual(att, FF.literal(groups.getMin(i))),
+                                    i == (groups.getSize() - 1)
+                                            ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
+                                            : FF.less(att, FF.literal(groups.getMax(i))));
+
                     r.setTitle(
                             " >= "
-                                    + ff.literal(groups.getMin(i))
-                                    + " AND <= "
-                                    + ff.literal(groups.getMax(i)));
+                                    + FF.literal(groups.getMin(i))
+                                    + " AND "
+                                    + (i == (groups.getSize() - 1) ? "<=" : "<")
+                                    + FF.literal(groups.getMax(i)));
                     r.setFilter(f);
                     list.add(r);
                 }
@@ -494,22 +473,22 @@ public class RulesBuilder {
         Rule r;
         Filter f;
         List<Rule> list = new ArrayList();
-        PropertyName att = ff.property(property);
+        PropertyName att = FF.property(property);
         String szFilter = "";
         String szTitle = "";
         Literal val;
 
         try {
             for (int i = 0; i < groups.getSize(); i++) {
-                r = styleFactory.createRule();
+                r = SF.createRule();
                 Set ls = groups.getValues(i);
                 Iterator it = ls.iterator();
-                val = ff.literal(it.next());
+                val = FF.literal(it.next());
                 szFilter = att + "=\'" + val + "\'";
                 szTitle = "" + val;
 
                 while (it.hasNext()) {
-                    val = ff.literal(it.next());
+                    val = FF.literal(it.next());
                     szFilter += " OR " + att + "=\'" + val + "\'";
                     szTitle += " OR " + val;
                 }

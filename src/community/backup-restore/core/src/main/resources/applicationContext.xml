@@ -30,14 +30,14 @@
 	<!-- Definition of the Backup/Restore Tasklets: those are specific tasklets which can be invoked as additional steps of the main Job -->
 		<bean id="catalogBackupTasklet" class="org.geoserver.backuprestore.tasklet.CatalogBackupRestoreTasklet">
 			<constructor-arg ref="backupFacade" />
-			<constructor-arg ref="xstreamPersisterFactory" />
+			
 			<!-- milliseconds: 10 minutes timeout for the tasklet -->
 			<property name="timeout" value="600000"/>
 		</bean>
 		
 		<bean id="catalogSecurityManagerTasklet" class="org.geoserver.backuprestore.tasklet.CatalogSecurityManagerTasklet">
 			<constructor-arg ref="backupFacade" />
-			<constructor-arg ref="xstreamPersisterFactory" />
+			
 			<!-- milliseconds: 10 minutes timeout for the tasklet -->
 			<property name="timeout" value="600000"/>
 		</bean>
@@ -50,7 +50,7 @@
   <!-- extension point for generic backup / restore tasklets -->
   <bean id="genericTasklet" class="org.geoserver.backuprestore.tasklet.GenericTasklet">
     <constructor-arg ref="backupFacade" />
-    <constructor-arg ref="xstreamPersisterFactory" />
+    
     <property name="timeout" value="600000"/>
   </bean>
 
@@ -73,13 +73,13 @@
 	<bean id="resourceInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.ResourceInfoAdditionalResourceWriter" />
 	<bean id="finalizeBackupTasklet" class="org.geoserver.backuprestore.tasklet.FinalizeBackupTasklet">
 		<constructor-arg ref="backupFacade" />
-		<constructor-arg ref="xstreamPersisterFactory" />
+		
 		<property name="timeout" value="600000"/>
 	</bean>
 
 	<bean id="finalizeRestoreTasklet" class="org.geoserver.backuprestore.tasklet.FinalizeRestoreTasklet">
 		<constructor-arg ref="backupFacade" />
-		<constructor-arg ref="xstreamPersisterFactory" />
+		
 		<property name="timeout" value="600000"/>
 	</bean>
 	
@@ -129,7 +129,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -137,7 +137,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -145,12 +145,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -174,7 +174,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -182,7 +182,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -190,12 +190,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -219,7 +219,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -227,7 +227,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -235,12 +235,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -264,7 +264,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -272,7 +272,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -280,12 +280,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -309,7 +309,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -317,7 +317,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -325,12 +325,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -354,7 +354,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -362,7 +362,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -370,12 +370,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -399,7 +399,7 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:reader>
 					
@@ -407,7 +407,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -415,12 +415,12 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogMultiResourceItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.writer.CatalogFileWriter" scope="step">
 									<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
@@ -483,12 +483,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="false" />
         							<property name="fragmentRootElementName" value="namespace"/>
 								</bean>
@@ -501,7 +501,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -509,7 +509,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.NamespaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -533,12 +533,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementName" value="workspace"/>
 								</bean>
@@ -551,7 +551,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -559,7 +559,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.WorkspaceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -583,12 +583,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementNames">
         								 <list>
@@ -606,7 +606,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -614,7 +614,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StoreInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -638,12 +638,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementNames">
         								 <list>
@@ -661,7 +661,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -669,7 +669,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.ResourceInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -693,12 +693,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementNames" value="style"/>
 								</bean>
@@ -711,7 +711,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -719,7 +719,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.StyleInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -743,12 +743,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementNames" value="layer"/>
 								</bean>
@@ -761,7 +761,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -769,7 +769,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>
@@ -793,12 +793,12 @@
 						<bean class="org.geoserver.backuprestore.reader.CatalogMultiResourceItemReader" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 							<property name="delegate">
 								<bean class="org.geoserver.backuprestore.reader.CatalogFileReader" scope="step">
 									<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 									<constructor-arg ref="backupFacade"/>
-									<constructor-arg ref="xstreamPersisterFactory" />
+									
         							<property name="strict" value="true" />
         							<property name="fragmentRootElementNames" value="layerGroup"/>
 								</bean>
@@ -811,7 +811,7 @@
 						<bean class="org.geoserver.backuprestore.processor.CatalogItemProcessor" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:processor>
 					
@@ -819,7 +819,7 @@
 						<bean class="org.geoserver.backuprestore.writer.CatalogItemWriter" scope="step">
 							<constructor-arg value="org.geoserver.catalog.LayerGroupInfo" />
 							<constructor-arg ref="backupFacade"/>
-							<constructor-arg ref="xstreamPersisterFactory" />
+							
 						</bean>
 					</batch:writer>
 				</batch:chunk>

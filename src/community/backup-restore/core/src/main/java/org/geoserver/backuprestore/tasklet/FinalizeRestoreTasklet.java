@@ -1,7 +1,9 @@
 package org.geoserver.backuprestore.tasklet;
 
+import java.util.logging.Level;
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServer;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -17,9 +19,8 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
 
     private boolean dryRun;
 
-    public FinalizeRestoreTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public FinalizeRestoreTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override
@@ -28,11 +29,27 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
             throws Exception {
         // Reload GeoServer Catalog
         if (jobExecution.getStatus() != BatchStatus.STOPPED) {
+
+            GeoServer geoserver = backupFacade.getGeoServer();
+            Catalog catalog = geoserver.getCatalog();
+
             if (!dryRun) {
-                backupFacade.getGeoServer().reload();
+                try {
+                    // TODO: add option 'cleanUpGeoServerDataDir'
+                    // TODO: purge/preserve GEOSERVER_DATA_DIR
+                    catalog.getResourcePool().dispose();
+                    catalog.dispose();
+                    geoserver.dispose();
+                    geoserver.reload(getCatalog());
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Error occurred while trying to Reload the GeoServer Catalog: ",
+                            e);
+                }
             }
 
-            backupFacade.getGeoServer().reset();
+            geoserver.reload();
         }
 
         return RepeatStatus.FINISHED;

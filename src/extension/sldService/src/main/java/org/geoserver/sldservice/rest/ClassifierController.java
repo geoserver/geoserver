@@ -13,24 +13,25 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.awt.*;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.media.jai.PlanarImage;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.xml.XMLSerializer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -41,6 +42,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
+import org.geoserver.sldservice.utils.classifier.RasterSymbolizerBuilder;
 import org.geoserver.sldservice.utils.classifier.RulesBuilder;
 import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
@@ -50,15 +52,25 @@ import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
 import org.geotools.data.Query;
 import org.geotools.data.util.NullProgressListener;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.CalcResult;
+import org.geotools.feature.visitor.StandardDeviationVisitor;
 import org.geotools.filter.function.RangedClassifier;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.util.ImageUtilities;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ColorMap;
+import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Converters;
+import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.styling.SLDTransformer;
@@ -69,7 +81,13 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.PropertyIsBetween;
+import org.opengis.filter.spatial.BBOX;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.CacheControl;
@@ -88,7 +106,9 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
 public class ClassifierController extends BaseSLDServiceController {
+    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     private static final Logger LOGGER = Logging.getLogger(ClassifierController.class);
+    private static final int FIRST_BAND = 1;
 
     @Autowired
     public ClassifierController(@Qualifier("catalog") Catalog catalog) {
@@ -117,11 +137,12 @@ public class ClassifierController extends BaseSLDServiceController {
             @RequestParam(value = "method", required = false, defaultValue = "equalInterval")
                     String method,
             @RequestParam(value = "intervals", required = false, defaultValue = "2")
-                    String intervals,
+                    Integer intervals,
             @RequestParam(value = "intervalsForUnique", required = false, defaultValue = "-1")
-                    String intervalsForUnique,
-            @RequestParam(value = "open", required = false, defaultValue = "false") String open,
-            @RequestParam(value = "ramp", required = false, defaultValue = "red") String colorRamp,
+                    Integer intervalsForUnique,
+            @RequestParam(value = "open", required = false, defaultValue = "false") boolean open,
+            @RequestParam(value = "ramp", required = false, defaultValue = "red")
+                    String customColors,
             @RequestParam(value = "startColor", required = false) String startColor,
             @RequestParam(value = "endColor", required = false) String endColor,
             @RequestParam(value = "midColor", required = false) String midColor,
@@ -143,118 +164,118 @@ public class ClassifierController extends BaseSLDServiceController {
             @RequestParam(value = "fullSLD", required = false, defaultValue = "false")
                     Boolean fullSLD,
             @RequestParam(value = "cache", required = false, defaultValue = "600") long cachingTime,
-            final HttpServletResponse response) {
+            @RequestParam(value = "continuous", required = false, defaultValue = "false")
+                    boolean continuous,
+            @RequestParam(value = "bbox", required = false) ReferencedEnvelope bbox,
+            @RequestParam(value = "stddevs", required = false) Double stddevs,
+            final HttpServletResponse response)
+            throws Exception {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
         if (layerInfo == null) {
             throw new ResourceNotFoundException("No such layer: " + layerName);
         }
-        if (layerInfo != null && layerInfo.getResource() instanceof FeatureTypeInfo) {
-            String color = null;
-            if (!strokeColor.equals("")) {
-                try {
-                    color = URLDecoder.decode(strokeColor, "UTF-8");
-                } catch (UnsupportedEncodingException e1) {
-                    throw new RuntimeException("strokeColor is not correct: " + strokeColor, e1);
-                }
-            }
-            try {
-                viewParams = URLDecoder.decode(viewParams, "UTF-8");
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("viewParams are not correct: " + viewParams, e1);
-            }
-            try {
-                customClasses = URLDecoder.decode(customClasses, "UTF-8");
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("customClasses are not correct: " + customClasses, e1);
-            }
-            try {
-                if (startColor != null) {
-                    startColor = URLDecoder.decode(startColor, "UTF-8");
-                }
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("startColor is not correct: " + startColor, e1);
-            }
-            try {
-                if (endColor != null) {
-                    endColor = URLDecoder.decode(endColor, "UTF-8");
-                }
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("endColor is not correct: " + endColor, e1);
-            }
-            try {
-                if (midColor != null) {
-                    midColor = URLDecoder.decode(midColor, "UTF-8");
-                }
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("midColor is not correct: " + midColor, e1);
-            }
-            try {
-                if (colors != null) {
-                    colors = URLDecoder.decode(colors, "UTF-8");
-                }
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException("colors are not correct: " + colors, e1);
-            }
-            if (cachingTime > 0) {
-                response.setHeader(
-                        "cache-control",
-                        CacheControl.maxAge(cachingTime, TimeUnit.SECONDS)
-                                .cachePublic()
-                                .getHeaderValue());
-            }
-            final List<Rule> rules =
-                    this.generateClassifiedSLD(
-                            layerName,
-                            property,
-                            method,
-                            intervals,
-                            intervalsForUnique,
-                            open,
-                            customClasses,
-                            colorRamp,
-                            startColor,
-                            endColor,
-                            midColor,
-                            colors,
-                            reverse,
-                            normalize,
-                            viewParams,
-                            strokeWeight,
-                            color != null ? Color.decode(color) : null,
-                            pointSize);
-            if (fullSLD) {
-
-                StyleBuilder sb = new StyleBuilder();
-                StyledLayerDescriptor sld = SF.createStyledLayerDescriptor();
-                NamedLayer namedLayer = SF.createNamedLayer();
-                namedLayer.setName(layerName);
-                Style userStyle = SF.createStyle();
-                FeatureTypeStyle fts = SF.createFeatureTypeStyle();
-                fts.rules().addAll(rules);
-                userStyle.featureTypeStyles().add(fts);
-                namedLayer.addStyle(userStyle);
-                sld.addStyledLayer(namedLayer);
-
-                try {
-                    return sldAsString(sld);
-                } catch (TransformerException e) {
-                    if (LOGGER.isLoggable(Level.FINE))
-                        LOGGER.log(
-                                Level.FINE,
-                                "Exception occurred while transforming the style "
-                                        + e.getLocalizedMessage(),
-                                e);
-                }
-
+        // default to the layer own CRS if not provided as 5th parameter
+        if (bbox != null && bbox.getCoordinateReferenceSystem() == null) {
+            bbox = new ReferencedEnvelope(bbox, layerInfo.getResource().getCRS());
+        }
+        if (stddevs != null && stddevs <= 0) {
+            throw new RestException(
+                    "stddevs must be a positive floating point number", HttpStatus.BAD_REQUEST);
+        }
+        if (cachingTime > 0) {
+            response.setHeader(
+                    "cache-control",
+                    CacheControl.maxAge(cachingTime, TimeUnit.SECONDS)
+                            .cachePublic()
+                            .getHeaderValue());
+        }
+        ColorRamp ramp =
+                this.getColorRamp(
+                        customClasses, customColors, startColor, endColor, midColor, colors);
+        final List<Rule> rules;
+        try {
+            ResourceInfo obj = layerInfo.getResource();
+            /* Check if it's feature type or coverage */
+            if (obj instanceof FeatureTypeInfo) {
+                Color stroke =
+                        (strokeColor != null && !strokeColor.isEmpty())
+                                ? Color.decode(strokeColor)
+                                : null;
+                rules =
+                        getVectorRules(
+                                property,
+                                method,
+                                intervals,
+                                intervalsForUnique,
+                                open,
+                                customClasses,
+                                reverse,
+                                normalize,
+                                viewParams,
+                                strokeWeight,
+                                stroke,
+                                pointSize,
+                                (FeatureTypeInfo) obj,
+                                ramp,
+                                bbox,
+                                stddevs);
+            } else if (obj instanceof CoverageInfo) {
+                rules =
+                        getRasterRules(
+                                property,
+                                method,
+                                intervals,
+                                intervalsForUnique,
+                                open,
+                                customClasses,
+                                reverse,
+                                normalize,
+                                (CoverageInfo) obj,
+                                ramp,
+                                continuous,
+                                bbox,
+                                stddevs);
             } else {
-                RulesList jsonRules = null;
-                if (rules != null) jsonRules = generateRulesList(layerName, rules);
+                throw new RestException(
+                        "The classifier can only work against vector or raster data, "
+                                + layerInfo.prefixedName()
+                                + " is neither",
+                        HttpStatus.BAD_REQUEST);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST, e);
+        }
 
-                if (jsonRules != null) {
-                    return wrapObject(jsonRules, RulesList.class);
-                } else {
-                    throw new InvalidRules();
-                }
+        if (fullSLD) {
+            StyledLayerDescriptor sld = SF.createStyledLayerDescriptor();
+            NamedLayer namedLayer = SF.createNamedLayer();
+            namedLayer.setName(layerName);
+            Style userStyle = SF.createStyle();
+            FeatureTypeStyle fts = SF.createFeatureTypeStyle();
+            fts.rules().addAll(rules);
+            userStyle.featureTypeStyles().add(fts);
+            namedLayer.addStyle(userStyle);
+            sld.addStyledLayer(namedLayer);
+
+            try {
+                return sldAsString(sld);
+            } catch (TransformerException e) {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.log(
+                            Level.FINE,
+                            "Exception occurred while transforming the style "
+                                    + e.getLocalizedMessage(),
+                            e);
+            }
+
+        } else {
+            RulesList jsonRules = null;
+            if (rules != null) jsonRules = generateRulesList(layerName, rules);
+
+            if (jsonRules != null) {
+                return wrapObject(jsonRules, RulesList.class);
+            } else {
+                throw new InvalidRules();
             }
         }
         return wrapObject(new RulesList(layerName), RulesList.class);
@@ -347,231 +368,341 @@ public class ClassifierController extends BaseSLDServiceController {
         return jsonObj;
     }
 
-    /**
-     * @param layerName
-     * @param property
-     * @param method
-     * @param intervals
-     * @param intervalsForUnique
-     * @param open
-     * @param colorRamp
-     * @param reverse
-     * @param normalize
-     * @return
-     */
-    private List<Rule> generateClassifiedSLD(
-            String layerName,
+    private List<Rule> getRasterRules(
             String property,
             String method,
-            String intervals,
-            String intervalsForUnique,
-            String open,
+            Integer intervals,
+            Integer intervalsForUnique,
+            boolean open,
             String customClasses,
-            String colorRamp,
-            String startColor,
-            String endColor,
-            String midColor,
-            String colors,
+            Boolean reverse,
+            Boolean normalize,
+            CoverageInfo coverageInfo,
+            ColorRamp ramp,
+            boolean continuous,
+            ReferencedEnvelope bbox,
+            Double stddevs)
+            throws Exception {
+        int selectedBand = getRequestedBand(property); // one based band name
+        // read the image to be classified
+        ImageReader imageReader =
+                new ImageReader(
+                                coverageInfo,
+                                selectedBand,
+                                RasterSymbolizerBuilder.DEFAULT_MAX_PIXELS,
+                                bbox)
+                        .invoke();
+        boolean bandSelected = imageReader.isBandSelected();
+        RenderedImage image = imageReader.getImage();
+
+        RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+        builder.setStandardDeviations(stddevs);
+        ColorMap colorMap;
+        try {
+            if (customClasses.isEmpty()) {
+                if ("equalInterval".equals(method)) {
+                    colorMap =
+                            builder.equalIntervalClassification(image, intervals, open, continuous);
+                } else if ("uniqueInterval".equals(method)) {
+                    colorMap = builder.uniqueIntervalClassification(image, intervalsForUnique);
+                } else if ("quantile".equals(method) || "equalArea".equals(method)) {
+                    colorMap = builder.quantileClassification(image, intervals, open, continuous);
+                } else if ("jenks".equals(method)) {
+                    colorMap = builder.jenksClassification(image, intervals, open, continuous);
+                } else {
+                    throw new RestException(
+                            "Unknown classification method " + method, HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                RangedClassifier classifier =
+                        getCustomClassifier(customClasses, Double.class, normalize);
+                colorMap = builder.createCustomColorMap(classifier, open, continuous);
+            }
+        } finally {
+            cleanImage(image);
+        }
+
+        // apply the color ramp
+        boolean skipFirstEntry = !"uniqueInterval".equals(method) && !open && !continuous;
+        builder.applyColorRamp(colorMap, ramp, skipFirstEntry, reverse);
+
+        // wrap the colormap into a raster symbolizer and rule
+        RasterSymbolizer rasterSymbolizer = SF.createRasterSymbolizer();
+        rasterSymbolizer.setColorMap(colorMap);
+        if (bandSelected) {
+            SelectedChannelType grayChannel =
+                    SF.createSelectedChannelType(
+                            String.valueOf(selectedBand), (ContrastEnhancement) null);
+            ChannelSelection channelSelection =
+                    SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
+            rasterSymbolizer.setChannelSelection(channelSelection);
+        }
+
+        Rule rule = SF.createRule();
+        rule.symbolizers().add(rasterSymbolizer);
+        return Collections.singletonList(rule);
+    }
+
+    /**
+     * Returns the selected band
+     *
+     * @param property
+     * @return
+     */
+    private int getRequestedBand(String property) {
+        // if no selection is provided, the code picks the first band
+        if (property == null) {
+            return FIRST_BAND;
+        }
+        Integer selectedBand = Converters.convert(property, Integer.class);
+        if (selectedBand == null) {
+            throw new RestException(
+                    "Invalid property value for raster layer, it should be a band number, but was "
+                            + property,
+                    HttpStatus.BAD_REQUEST);
+        }
+        return selectedBand;
+    }
+
+    /**
+     * Performs a full disposal of the coverage in question
+     *
+     * @param coverage
+     */
+    private void cleanImage(RenderedImage image) {
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    private List<Rule> getVectorRules(
+            String property,
+            String method,
+            Integer intervals,
+            Integer intervalsForUnique,
+            boolean open,
+            String customClasses,
             Boolean reverse,
             Boolean normalize,
             String viewParams,
             double strokeWeight,
             Color strokeColor,
-            int pointSize) {
+            int pointSize,
+            FeatureTypeInfo obj,
+            ColorRamp ramp,
+            ReferencedEnvelope bbox,
+            Double stddevs)
+            throws IOException, TransformException, FactoryException {
+        if (property == null || property.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Vector classification requires a classification property to be specified");
+        }
+
         RulesBuilder builder = new RulesBuilder();
         builder.setStrokeColor(strokeColor);
         builder.setStrokeWeight(strokeWeight);
         builder.setPointSize(pointSize);
-        /* Looks in attribute map if there is the featureType param */
-        if (property != null && property.length() > 0) {
-            /* First try to find as a FeatureType */
-            try {
-                LayerInfo layerInfo = catalog.getLayerByName(layerName);
-                if (layerInfo != null) {
-                    ResourceInfo obj = layerInfo.getResource();
-                    /* Check if it's feature type or coverage */
-                    if (obj instanceof FeatureTypeInfo) {
-                        final FeatureType ftType = ((FeatureTypeInfo) obj).getFeatureType();
-                        FeatureCollection ftCollection = null;
-                        if (customClasses.isEmpty()) {
-                            Query query =
-                                    new Query(ftType.getName().getLocalPart(), Filter.INCLUDE);
-                            query.setHints(getQueryHints(viewParams));
-                            ftCollection =
-                                    ((FeatureTypeInfo) obj)
-                                            .getFeatureSource(new NullProgressListener(), null)
-                                            .getFeatures(query);
-                        }
 
-                        List<Rule> rules = null;
-                        Class<?> propertyType =
-                                ftType.getDescriptor(property).getType().getBinding();
+        final FeatureType ftType = obj.getFeatureType();
+        FeatureCollection ftCollection = null;
+        if (customClasses.isEmpty()) {
+            Query query = new Query(ftType.getName().getLocalPart(), Filter.INCLUDE);
+            if (bbox != null) {
+                ReferencedEnvelope nativeBBOX =
+                        bbox.transform(ftType.getCoordinateReferenceSystem(), true);
+                BBOX filter = FF.bbox(FF.property(""), nativeBBOX);
+                query.setFilter(filter);
+            }
+            query.setHints(getQueryHints(viewParams));
+            ftCollection =
+                    obj.getFeatureSource(new NullProgressListener(), null).getFeatures(query);
 
-                        if (customClasses.isEmpty()) {
-                            if ("equalInterval".equals(method)) {
-                                rules =
-                                        builder.equalIntervalClassification(
-                                                ftCollection,
-                                                property,
-                                                propertyType,
-                                                Integer.parseInt(intervals),
-                                                Boolean.parseBoolean(open),
-                                                normalize);
-                            } else if ("uniqueInterval".equals(method)) {
-                                rules =
-                                        builder.uniqueIntervalClassification(
-                                                ftCollection,
-                                                property,
-                                                propertyType,
-                                                Integer.parseInt(intervalsForUnique),
-                                                normalize);
-                            } else if ("quantile".equals(method)) {
-                                rules =
-                                        builder.quantileClassification(
-                                                ftCollection,
-                                                property,
-                                                propertyType,
-                                                Integer.parseInt(intervals),
-                                                Boolean.parseBoolean(open),
-                                                normalize);
-                            } else if ("jenks".equals(method)) {
-                                rules =
-                                        builder.jenksClassification(
-                                                ftCollection,
-                                                property,
-                                                propertyType,
-                                                Integer.parseInt(intervals),
-                                                Boolean.parseBoolean(open),
-                                                normalize);
-                            } else if ("equalArea".equals(method)) {
-                                rules =
-                                        builder.equalAreaClassification(
-                                                ftCollection,
-                                                property,
-                                                propertyType,
-                                                Integer.parseInt(intervals),
-                                                Boolean.parseBoolean(open),
-                                                normalize);
-                            } else {
-                                throw new RestException(
-                                        "Unknown classification method " + method,
-                                        HttpStatus.BAD_REQUEST);
-                            }
-                        } else {
-                            RangedClassifier groups =
-                                    getCustomClassifier(customClasses, propertyType, normalize);
-                            rules =
-                                    Boolean.parseBoolean(open)
-                                            ? builder.openRangedRules(
-                                                    groups, property, propertyType, normalize)
-                                            : builder.closedRangedRules(
-                                                    groups, property, propertyType, normalize);
-                        }
-
-                        final Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
-                        if (geomT.isAssignableFrom(Point.class) && strokeColor != null) {
-                            builder.setIncludeStrokeForPoints(true);
-                        }
-                        ColorRamp ramp = null;
-                        if (customClasses.isEmpty()
-                                && colorRamp != null
-                                && colorRamp.length() > 0) {
-                            if (colorRamp.equalsIgnoreCase("random")) ramp = new RandomColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("red")) ramp = new RedColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("blue")) ramp = new BlueColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("jet")) ramp = new JetColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("gray")) ramp = new GrayColorRamp();
-                            else if (colorRamp.equalsIgnoreCase("custom")) {
-                                Color startColorDecoded =
-                                        (startColor != null ? Color.decode(startColor) : null);
-                                Color endColorDecoded =
-                                        (endColor != null ? Color.decode(endColor) : null);
-                                Color midColorDecoded =
-                                        (midColor != null ? Color.decode(midColor) : null);
-                                List<Color> colorsDecoded = null;
-                                if (colors != null) {
-                                    Stream<String> colorsStream = Stream.of(colors.split(","));
-                                    colorsDecoded =
-                                            colorsStream
-                                                    .map(c -> Color.decode(c))
-                                                    .collect(Collectors.toList());
-                                }
-                                if (colorsDecoded != null) {
-                                    CustomColorRamp tramp = new CustomColorRamp();
-                                    tramp.setInputColors(colorsDecoded);
-                                    ramp = tramp;
-                                } else if (startColorDecoded != null && endColorDecoded != null) {
-                                    CustomColorRamp tramp = new CustomColorRamp();
-                                    tramp.setStartColor(startColorDecoded);
-                                    tramp.setEndColor(endColorDecoded);
-                                    if (midColorDecoded != null) tramp.setMid(midColorDecoded);
-                                    ramp = tramp;
-                                }
-                            }
-                        } else {
-                            final List<Color> customColors = getCustomColors(customClasses);
-                            ramp =
-                                    new ColorRamp() {
-
-                                        @Override
-                                        public void setNumClasses(int numClass) {}
-
-                                        @Override
-                                        public int getNumClasses() {
-                                            return customColors.size();
-                                        }
-
-                                        @Override
-                                        public List<Color> getRamp() throws Exception {
-                                            return customColors;
-                                        }
-
-                                        @Override
-                                        public void revert() {}
-                                    };
-                        }
-                        if (ramp != null) {
-                            /*
-                             * Line Symbolizer
-                             */
-                            if (geomT == LineString.class || geomT == MultiLineString.class) {
-                                builder.lineStyle(rules, ramp, reverse);
-                            }
-
-                            /*
-                             * Point Symbolizer
-                             */
-                            else if (geomT == Point.class || geomT == MultiPoint.class) {
-                                builder.pointStyle(rules, ramp, reverse);
-                            }
-
-                            /*
-                             * Polygon Symbolyzer
-                             */
-                            else if (geomT == MultiPolygon.class || geomT == Polygon.class) {
-                                builder.polygonStyle(rules, ramp, reverse);
-                            }
-                        }
-
-                        return rules;
-                    }
+            if (stddevs != null) {
+                NumberRange stdDevRange =
+                        getStandardDeviationsRange(property, ftCollection, stddevs);
+                PropertyIsBetween between =
+                        FF.between(
+                                FF.property(property),
+                                FF.literal(stdDevRange.getMinimum()),
+                                FF.literal(stdDevRange.getMaximum()));
+                if (query.getFilter() == Filter.INCLUDE) {
+                    query.setFilter(between);
+                } else {
+                    query.setFilter(FF.and(query.getFilter(), between));
                 }
-            } catch (NoSuchElementException e) {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(
-                            Level.FINE,
-                            "The following exception has occurred " + e.getLocalizedMessage(),
-                            e);
-            } catch (IOException e) {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(
-                            Level.FINE,
-                            "The following exception has occurred " + e.getLocalizedMessage(),
-                            e);
+
+                // re-query
+                ftCollection =
+                        obj.getFeatureSource(new NullProgressListener(), null).getFeatures(query);
             }
         }
 
-        return null;
+        List<Rule> rules = null;
+        final PropertyDescriptor pd = ftType.getDescriptor(property);
+        if (pd == null) {
+            throw new RestException(
+                    "Could not find property "
+                            + property
+                            + ", available attributes are: "
+                            + ftType.getDescriptors()
+                                    .stream()
+                                    .map(p -> p.getName().getLocalPart())
+                                    .collect(Collectors.joining(", ")),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Class<?> propertyType = pd.getType().getBinding();
+
+        if (customClasses.isEmpty()) {
+            if ("equalInterval".equals(method)) {
+                rules =
+                        builder.equalIntervalClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
+            } else if ("uniqueInterval".equals(method)) {
+                rules =
+                        builder.uniqueIntervalClassification(
+                                ftCollection,
+                                property,
+                                propertyType,
+                                intervalsForUnique,
+                                normalize);
+            } else if ("quantile".equals(method)) {
+                rules =
+                        builder.quantileClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
+            } else if ("jenks".equals(method)) {
+                rules =
+                        builder.jenksClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
+            } else if ("equalArea".equals(method)) {
+                rules =
+                        builder.equalAreaClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
+            } else {
+                throw new RestException(
+                        "Unknown classification method " + method, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            RangedClassifier groups = getCustomClassifier(customClasses, propertyType, normalize);
+            rules =
+                    open
+                            ? builder.openRangedRules(groups, property, propertyType, normalize)
+                            : builder.closedRangedRules(groups, property, propertyType, normalize);
+        }
+
+        final Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
+        if (geomT.isAssignableFrom(Point.class) && strokeColor != null) {
+            builder.setIncludeStrokeForPoints(true);
+        }
+        if (ramp != null) {
+            /*
+             * Line Symbolizer
+             */
+            if (geomT == LineString.class || geomT == MultiLineString.class) {
+                builder.lineStyle(rules, ramp, reverse);
+            }
+
+            /*
+             * Point Symbolizer
+             */
+            else if (geomT == Point.class || geomT == MultiPoint.class) {
+                builder.pointStyle(rules, ramp, reverse);
+            }
+
+            /*
+             * Polygon Symbolyzer
+             */
+            else if (geomT == MultiPolygon.class || geomT == Polygon.class) {
+                builder.polygonStyle(rules, ramp, reverse);
+            }
+        }
+
+        return rules;
+    }
+
+    /**
+     * Returns a range of N standard deviations around the mean for the given attribute and
+     * collection
+     */
+    private NumberRange getStandardDeviationsRange(
+            String property, FeatureCollection features, double numStandardDeviations)
+            throws IOException {
+        final StandardDeviationVisitor standardDeviationVisitor =
+                new StandardDeviationVisitor(FF.property(property));
+        features.accepts(standardDeviationVisitor, null);
+        final double mean = standardDeviationVisitor.getMean();
+        final CalcResult result = standardDeviationVisitor.getResult();
+        if (result.getValue() == null) {
+            throw new RestException(
+                    "The standard deviation visit did not find any value, the dataset is empty or previous filters removed all values",
+                    HttpStatus.BAD_REQUEST);
+        }
+        final double standardDeviation = standardDeviationVisitor.getResult().toDouble();
+
+        return new NumberRange(
+                Double.class,
+                mean - standardDeviation * numStandardDeviations,
+                mean + standardDeviation * numStandardDeviations);
+    }
+
+    private ColorRamp getColorRamp(
+            String customClasses,
+            String colorRamp,
+            String startColor,
+            String endColor,
+            String midColor,
+            String colors) {
+        ColorRamp ramp = null;
+        if (customClasses.isEmpty() && colorRamp != null && colorRamp.length() > 0) {
+            if (colorRamp.equalsIgnoreCase("random")) ramp = new RandomColorRamp();
+            else if (colorRamp.equalsIgnoreCase("red")) ramp = new RedColorRamp();
+            else if (colorRamp.equalsIgnoreCase("blue")) ramp = new BlueColorRamp();
+            else if (colorRamp.equalsIgnoreCase("jet")) ramp = new JetColorRamp();
+            else if (colorRamp.equalsIgnoreCase("gray")) ramp = new GrayColorRamp();
+            else if (colorRamp.equalsIgnoreCase("custom")) {
+                Color startColorDecoded = (startColor != null ? Color.decode(startColor) : null);
+                Color endColorDecoded = (endColor != null ? Color.decode(endColor) : null);
+                Color midColorDecoded = (midColor != null ? Color.decode(midColor) : null);
+                List<Color> colorsDecoded = null;
+                if (colors != null) {
+                    Stream<String> colorsStream = Stream.of(colors.split(","));
+                    colorsDecoded =
+                            colorsStream.map(c -> Color.decode(c)).collect(Collectors.toList());
+                }
+                if (colorsDecoded != null) {
+                    CustomColorRamp tramp = new CustomColorRamp();
+                    tramp.setInputColors(colorsDecoded);
+                    ramp = tramp;
+                } else if (startColorDecoded != null && endColorDecoded != null) {
+                    CustomColorRamp tramp = new CustomColorRamp();
+                    tramp.setStartColor(startColorDecoded);
+                    tramp.setEndColor(endColorDecoded);
+                    if (midColorDecoded != null) tramp.setMid(midColorDecoded);
+                    ramp = tramp;
+                }
+            }
+        } else {
+            final List<Color> customColors = getCustomColors(customClasses);
+            ramp =
+                    new ColorRamp() {
+
+                        @Override
+                        public void setNumClasses(int numClass) {}
+
+                        @Override
+                        public int getNumClasses() {
+                            return customColors.size();
+                        }
+
+                        @Override
+                        public List<Color> getRamp() throws Exception {
+                            return customColors;
+                        }
+
+                        @Override
+                        public void revert() {}
+                    };
+        }
+        return ramp;
     }
 
     private Hints getQueryHints(String viewParams) {

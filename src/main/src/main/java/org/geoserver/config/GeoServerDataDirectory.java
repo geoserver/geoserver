@@ -1269,7 +1269,12 @@ public class GeoServerDataDirectory {
     public @Nonnull StyledLayerDescriptor parsedSld(final StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if (styleResource.getType() == Type.UNDEFINED) {
-            throw new IOException("No such resource: " + s.getFilename());
+            throw new IOException(
+                    "No such resource: "
+                            + s.getFilename()
+                            + (s.getWorkspace() != null
+                                    ? " in workspace " + s.getWorkspace()
+                                    : ""));
         }
         File input = styleResource.file();
 

@@ -18,3 +18,4 @@ For production use, it is recommended to define an *external* data directory (ou
    setting
    structure
    migrating
+   configtemplate

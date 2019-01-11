@@ -137,8 +137,4 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
             return delegate.toString();
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println(Math.log(-0.3201613498354639));
-    }
 }

@@ -85,6 +85,7 @@
         <constructor-arg ref="advertisedCatalog" />
     </bean>
     <bean id="disabledResourceFilter" class="org.geoserver.security.DisabledResourceFilter"/>
+    <bean id="disabledServiceResourceFilter" class="org.geoserver.security.DisabledServiceResourceFilter"/>
     
     <!-- Switch this when you want to enable the secure catalog by default -->
     <!--alias name="secureCatalog" alias="catalog"/-->
@@ -229,7 +230,7 @@
   <bean id="owsDispatcherLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
     <constructor-arg value="ows"/>
   </bean>
-  
+
   <!-- xstream persister factory -->
   <bean id="xstreamPersisterFactory" class="org.geoserver.config.util.XStreamPersisterFactory"/>
 
@@ -292,4 +293,9 @@
   <bean id="capabilitiesCachingHeadersCallback" class="org.geoserver.config.CapabilitiesCacheHeadersCallback">
     <constructor-arg ref="geoServer"/>
   </bean>
+  
+  <bean id="serviceResourceProvider" class="org.geoserver.catalog.ServiceResourceProvider">
+  	<constructor-arg ref="geoServer"/>
+  </bean>
+  
 </beans>

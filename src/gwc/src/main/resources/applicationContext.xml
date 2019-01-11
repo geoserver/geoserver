@@ -151,5 +151,6 @@
     <property name="alwaysUseFullPath" value="true" />
     <property name="order" value="10" />
   </bean>
-
+  
+  <bean id="gwcResourceServiceVoter" class="org.geoserver.gwc.wmts.GWCResourceServiceVoter"/>
 </beans>

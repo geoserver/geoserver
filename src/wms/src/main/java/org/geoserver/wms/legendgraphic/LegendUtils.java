@@ -528,6 +528,22 @@ public class LegendUtils {
     }
 
     /**
+     * Extracts the label part from the provided {@link ColorMapEntry}.
+     *
+     * @param entry the provided {@link ColorMapEntry} from which we should extract the label part.
+     * @return the label part for the provided {@link ColorMapEntry}.
+     */
+    public static String getLabel(final ColorMapEntry entry) {
+        ensureNotNull(entry, "entry");
+        String labelString = entry.getLabel();
+        if (labelString != null && labelString.startsWith("${")) {
+            Expression label = ExpressionExtractor.extractCqlExpressions(labelString);
+            labelString = label.evaluate(null, String.class);
+        }
+        return labelString;
+    }
+
+    /**
      * Finds the applicable Rules for the given scale denominator.
      *
      * @param ftStyles
@@ -577,10 +593,9 @@ public class LegendUtils {
      */
     public static boolean isWithInScale(final Rule r, final double scaleDenominator) {
         return (scaleDenominator == -1)
-                || (((r.getMinScaleDenominator() - BufferedImageLegendGraphicBuilder.TOLERANCE)
+                || (((r.getMinScaleDenominator() - LegendGraphicBuilder.TOLERANCE)
                                 <= scaleDenominator)
-                        && ((r.getMaxScaleDenominator()
-                                        + BufferedImageLegendGraphicBuilder.TOLERANCE)
+                        && ((r.getMaxScaleDenominator() + LegendGraphicBuilder.TOLERANCE)
                                 > scaleDenominator));
     }
 

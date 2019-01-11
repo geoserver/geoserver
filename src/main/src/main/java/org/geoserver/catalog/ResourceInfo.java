@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2018 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -367,4 +367,16 @@ public interface ResourceInfo extends CatalogInfo {
      * @param advertised
      */
     void setAdvertised(boolean advertised);
+
+    /** Returns true if the resource will configure services access, false otherwise */
+    boolean isServiceConfiguration();
+
+    /** Set to true if the resource will configure services access, false otherwise */
+    void setServiceConfiguration(boolean serviceConfiguration);
+
+    /** Returns a list of disabled services names for this resource */
+    List<String> getDisabledServices();
+
+    /** Set the list of disabled services names for this resource */
+    void setDisabledServices(List<String> disabledServices);
 }

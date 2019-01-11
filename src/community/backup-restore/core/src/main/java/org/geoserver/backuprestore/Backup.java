@@ -26,6 +26,7 @@ import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -53,6 +54,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Primary controller/facade of the backup and restore subsystem.
@@ -98,6 +102,8 @@ public class Backup extends JobExecutionListenerSupport
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
     public static final String RESTORE_CATALOG_KEY = "restore.catalog";
+
+    private Authentication auth;
 
     /** catalog */
     Catalog catalog;
@@ -185,7 +191,6 @@ public class Backup extends JobExecutionListenerSupport
             this.jobOperator = (JobOperator) context.getBean("jobOperator");
             this.jobLauncher = (JobLauncher) context.getBean("jobLauncherAsync");
             this.jobRepository = (JobRepository) context.getBean("jobRepository");
-
             this.backupJob = (Job) context.getBean(BACKUP_JOB_NAME);
             this.restoreJob = (Job) context.getBean(RESTORE_JOB_NAME);
         }
@@ -215,6 +220,16 @@ public class Backup extends JobExecutionListenerSupport
             }
             return runningExecutions;
         }
+    }
+
+    /** @return the auth */
+    public Authentication getAuth() {
+        return auth;
+    }
+
+    /** @param auth the auth to set */
+    public void setAuth(Authentication auth) {
+        this.auth = auth;
     }
 
     public Catalog getCatalog() {
@@ -289,6 +304,24 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
+    /**
+     * Authenticate a user
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public Authentication authenticate() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null && getAuth() != null) {
+            authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            this.auth.getName(), null, this.auth.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        return authentication;
+    }
+
     protected String getItemName(XStreamPersister xp, Class clazz) {
         return xp.getClassAliasingMapper().serializedClass(clazz);
     }
@@ -296,38 +329,54 @@ public class Backup extends JobExecutionListenerSupport
     public BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
             final boolean overwrite,
-            final Filter filter,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
             final Map<String, String> params)
             throws IOException {
 
         JobParametersBuilder builder = new JobParametersBuilder();
         params.forEach(builder::addString);
 
-        return runBackupAsync(archiveFile, overwrite, filter, builder);
+        return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
     public BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
             final boolean overwrite,
-            final Filter filter,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
             final Hints hints)
             throws IOException {
 
         JobParametersBuilder builder = new JobParametersBuilder();
         parseParams(hints, builder);
-        return runBackupAsync(archiveFile, overwrite, filter, builder);
+        return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
     /**
      * @return
      * @throws IOException
      */
-    public BackupExecutionAdapter runBackupAsync(
+    private BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
             final boolean overwrite,
-            final Filter filter,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
             final JobParametersBuilder paramsBuilder)
             throws IOException {
+
+        // Check whether the user is authenticated or not and, in the second case, if it is an
+        // Administrator or not
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
+
+        if (!isAdmin) {
+            throw new IllegalStateException("Not enough privileges to run a Restore process!");
+        }
+
         // Check if archiveFile exists
         if (archiveFile.file().exists()) {
             if (!overwrite && FileUtils.sizeOf(archiveFile.file()) > 0) {
@@ -357,8 +406,14 @@ public class Backup extends JobExecutionListenerSupport
         // Write flat files into a temporary folder
         Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
 
-        if (filter != null) {
-            paramsBuilder.addString("filter", ECQL.toCQL(filter));
+        if (wsFilter != null) {
+            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
+        }
+        if (siFilter != null) {
+            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
+        }
+        if (liFilter != null) {
+            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
         }
 
         paramsBuilder
@@ -385,7 +440,9 @@ public class Backup extends JobExecutionListenerSupport
 
                     backupExecution.setArchiveFile(archiveFile);
                     backupExecution.setOverwrite(overwrite);
-                    backupExecution.setFilter(filter);
+                    backupExecution.setWsFilter(wsFilter);
+                    backupExecution.setSiFilter(siFilter);
+                    backupExecution.setLiFilter(liFilter);
 
                     backupExecution.getOptions().add("OVERWRITE=" + overwrite);
                     for (Entry jobParam : jobParameters.toProperties().entrySet()) {
@@ -414,12 +471,16 @@ public class Backup extends JobExecutionListenerSupport
     }
 
     public RestoreExecutionAdapter runRestoreAsync(
-            final Resource archiveFile, final Filter filter, final Map<String, String> params)
+            final Resource archiveFile,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
+            final Map<String, String> params)
             throws IOException {
 
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
         params.forEach(paramsBuilder::addString);
-        return runRestoreAsync(archiveFile, filter, paramsBuilder);
+        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
     }
 
     /**
@@ -428,25 +489,48 @@ public class Backup extends JobExecutionListenerSupport
      * @throws IOException
      */
     public RestoreExecutionAdapter runRestoreAsync(
-            final Resource archiveFile, final Filter filter, final Hints params)
+            final Resource archiveFile,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
+            final Hints params)
             throws IOException {
         // Fill Job Parameters
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
         parseParams(params, paramsBuilder);
 
-        return runRestoreAsync(archiveFile, filter, paramsBuilder);
+        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
     }
 
     private RestoreExecutionAdapter runRestoreAsync(
-            Resource archiveFile, Filter filter, JobParametersBuilder paramsBuilder)
+            Resource archiveFile,
+            final Filter wsFilter,
+            final Filter siFilter,
+            final Filter liFilter,
+            JobParametersBuilder paramsBuilder)
             throws IOException {
+
+        // Check whether the user is authenticated or not and, in the second case, if it is an
+        // Administrator or not
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
+
+        if (!isAdmin) {
+            throw new IllegalStateException("Not enough privileges to run a Restore process!");
+        }
 
         Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
         BackupUtils.extractTo(archiveFile, tmpDir);
         RestoreExecutionAdapter restoreExecution;
 
-        if (filter != null) {
-            paramsBuilder.addString("filter", ECQL.toCQL(filter));
+        if (wsFilter != null) {
+            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
+        }
+        if (siFilter != null) {
+            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
+        }
+        if (liFilter != null) {
+            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
         }
 
         paramsBuilder
@@ -467,7 +551,9 @@ public class Backup extends JobExecutionListenerSupport
                             new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
                     restoreExecutions.put(restoreExecution.getId(), restoreExecution);
                     restoreExecution.setArchiveFile(archiveFile);
-                    restoreExecution.setFilter(filter);
+                    restoreExecution.setWsFilter(wsFilter);
+                    restoreExecution.setSiFilter(siFilter);
+                    restoreExecution.setLiFilter(liFilter);
 
                     for (Entry jobParam : jobParameters.toProperties().entrySet()) {
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
@@ -658,7 +744,6 @@ public class Backup extends JobExecutionListenerSupport
 
     public XStreamPersister initXStreamPersister(XStreamPersister xp) {
         xp.setCatalog(catalog);
-        // xp.setReferenceByName(true);
 
         XStream xs = xp.getXStream();
 
@@ -670,5 +755,10 @@ public class Backup extends JobExecutionListenerSupport
         xs.allowTypeHierarchy(Resource.class);
 
         return xp;
+    }
+
+    /** @return */
+    private GeoServerSecurityManager getSecurityManager() {
+        return context.getBean(GeoServerSecurityManager.class);
     }
 }

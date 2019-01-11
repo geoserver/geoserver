@@ -119,7 +119,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         // nothing to do
-        System.out.println(event);
+        // System.out.println(event);
     }
 
     @Override

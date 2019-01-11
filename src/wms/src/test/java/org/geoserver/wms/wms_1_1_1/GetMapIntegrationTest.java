@@ -182,6 +182,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle(
+                "jiffleBandSelect", "jiffleBandSelect.sld", GetMapIntegrationTest.class, catalog);
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
                 Collections.EMPTY_MAP,
@@ -1318,6 +1320,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         }
     }
 
+    @Test
     public void testRssMime() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(
@@ -1697,5 +1700,20 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, oldValue);
             gs.save(wms);
         }
+    }
+
+    @Test
+    public void testRTAndBandSelection() throws Exception {
+        String url =
+                "wms?LAYERS=mosaic_shuffle&styles=jiffleBandSelect"
+                        + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                        + "&BBOX=7,37,11,41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+        // used to go NPE
+        BufferedImage jiffleBandSelected = getAsImage(url, "image/png");
+        ImageAssert.assertEquals(
+                new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/jiffleBandSelected.png"),
+                jiffleBandSelected,
+                300);
     }
 }

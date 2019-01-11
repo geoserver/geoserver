@@ -8,12 +8,8 @@ package org.geoserver.wms.map;
 import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import it.geosolutions.jaiext.vectorbin.ROIGeometry;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -430,8 +426,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // setup the renderer hints
         Map<Object, Object> rendererParams = new HashMap<Object, Object>();
-        rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+        rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
+        rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(
                 StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
@@ -993,7 +989,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Band selection
         //
         final int[] bandIndices =
-                ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(symbolizer);
+                transformation == null
+                        ? ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(
+                                symbolizer)
+                        : null;
 
         // actual read
         final ReadingContext context = new ReadingContext();
@@ -1440,7 +1439,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
         ImageWorker iw = new ImageWorker(image);
-        Object roiCandidate = image.getProperty("roi");
+        Object roiCandidate = image.getProperty("ROI");
         if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null
@@ -1486,7 +1485,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (roiCandidate instanceof ROI) {
             ROI imageROI = (ROI) roiCandidate;
             try {
-                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+                roi = imageROI.intersect(new ROIGeometry(mapRasterArea));
             } catch (IllegalArgumentException e) {
                 // in the unlikely event that the ROI does not intersect the target map
                 // area an exception will be thrown. Catching the exception instead of checking

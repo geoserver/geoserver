@@ -1,6 +1,6 @@
 package org.geoserver.test;
 
-import static org.geotools.data.complex.ComplexFeatureConstants.DEFAULT_GEOMETRY_LOCAL_NAME;
+import static org.geotools.data.complex.util.ComplexFeatureConstants.DEFAULT_GEOMETRY_LOCAL_NAME;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;

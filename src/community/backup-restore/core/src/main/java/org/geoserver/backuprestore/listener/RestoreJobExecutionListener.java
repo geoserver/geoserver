@@ -12,13 +12,12 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.Wrapper;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -77,7 +76,6 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                 Resource archiveFile = rst.getArchiveFile();
                 Catalog restoreCatalog = rst.getRestoreCatalog();
                 List<String> options = rst.getOptions();
-                Filter filter = rst.getFilter();
 
                 this.backupFacade.getRestoreExecutions().remove(id);
 
@@ -86,7 +84,10 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                                 jobExecution, backupFacade.getTotalNumberOfRestoreSteps());
                 this.restoreExecution.setArchiveFile(archiveFile);
                 this.restoreExecution.setRestoreCatalog(restoreCatalog);
-                this.restoreExecution.setFilter(filter);
+                this.restoreExecution.setWsFilter(rst.getWsFilter());
+                this.restoreExecution.setSiFilter(rst.getSiFilter());
+                this.restoreExecution.setLiFilter(rst.getLiFilter());
+
                 this.restoreExecution.getOptions().addAll(options);
 
                 this.backupFacade

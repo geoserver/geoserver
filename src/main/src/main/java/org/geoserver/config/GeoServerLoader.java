@@ -320,6 +320,10 @@ public abstract class GeoServerLoader {
      * around.
      */
     protected void initializeStyles(Catalog catalog, XStreamPersister xp) throws IOException {
+        initializeDefaultStyles(catalog);
+    }
+
+    protected void initializeDefaultStyles(Catalog catalog) throws IOException {
         if (catalog.getStyleByName(StyleInfo.DEFAULT_POINT) == null) {
             initializeStyle(catalog, StyleInfo.DEFAULT_POINT, "default_point.sld");
         }

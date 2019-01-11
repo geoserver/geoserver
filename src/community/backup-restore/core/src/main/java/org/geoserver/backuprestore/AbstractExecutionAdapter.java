@@ -40,7 +40,11 @@ public abstract class AbstractExecutionAdapter {
 
     private Resource archiveFile;
 
-    private Filter filter;
+    private Filter wsFilter;
+
+    private Filter siFilter;
+
+    private Filter liFilter;
 
     /**
      * Default Constructor
@@ -250,13 +254,33 @@ public abstract class AbstractExecutionAdapter {
         this.archiveFile = archiveFile;
     }
 
-    /** @return the filter */
-    public Filter getFilter() {
-        return filter;
+    /** @return the wsFilter */
+    public Filter getWsFilter() {
+        return wsFilter;
     }
 
-    /** @param filter the filter to set */
-    public void setFilter(Filter filter) {
-        this.filter = filter;
+    /** @param wsFilter the wsFilter to set */
+    public void setWsFilter(Filter wsFilter) {
+        this.wsFilter = wsFilter;
+    }
+
+    /** @return the siFilter */
+    public Filter getSiFilter() {
+        return siFilter;
+    }
+
+    /** @param siFilter the siFilter to set */
+    public void setSiFilter(Filter siFilter) {
+        this.siFilter = siFilter;
+    }
+
+    /** @return the liFilter */
+    public Filter getLiFilter() {
+        return liFilter;
+    }
+
+    /** @param liFilter the liFilter to set */
+    public void setLiFilter(Filter liFilter) {
+        this.liFilter = liFilter;
     }
 }

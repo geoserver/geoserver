@@ -7,7 +7,7 @@ package org.geoserver.gwc.web.blob;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -19,6 +19,7 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.FileBlobStoreInfo;
 import org.geowebcache.layer.TileLayer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +33,11 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
     @Before
     public void loginBefore() {
         super.login();
+    }
+
+    @After
+    public void cleanup() throws Exception {
+        GWC.get().removeBlobStores(Arrays.asList("myblobstore", "yourblobstore"));
     }
 
     @Test
@@ -61,7 +67,7 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testNew() throws ConfigurationException {
+    public void testNew() {
         BlobStorePage page = new BlobStorePage();
 
         tester.startPage(page);
@@ -74,14 +80,14 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
                 "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
+        tester.assertNoErrorMessage();
+
         List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
         BlobStoreInfo config = blobStores.get(0);
         assertTrue(config instanceof FileBlobStoreInfo);
         assertEquals("myblobstore", config.getName());
         assertEquals("/mydir", ((FileBlobStoreInfo) config).getBaseDirectory());
         assertEquals(4096, ((FileBlobStoreInfo) config).getFileSystemBlockSize());
-
-        GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
 
     @Test
@@ -108,6 +114,8 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         formTester.submit();
         tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
 
+        tester.assertNoErrorMessage();
+
         BlobStoreInfo config = GWC.get().getBlobStores().get(0);
         assertTrue(config instanceof FileBlobStoreInfo);
         assertEquals("yourblobstore", config.getName());
@@ -116,7 +124,75 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
         // test updated id!
         layer = GWC.get().getTileLayerByName("cite:Lakes");
         assertEquals("yourblobstore", layer.getBlobStoreId());
+    }
 
-        GWC.get().removeBlobStores(Collections.singleton("yourblobstore"));
+    @Test
+    public void testNewDuplicate() throws ConfigurationException {
+        // create blobstore
+        FileBlobStoreInfo fconfig = new FileBlobStoreInfo("myblobstore");
+        fconfig.setFileSystemBlockSize(1024);
+        fconfig.setBaseDirectory("/mydir");
+        GWC.get().addBlobStore(fconfig);
+        TileLayer layer = GWC.get().getTileLayerByName("cite:Lakes");
+        layer.setBlobStoreId("myblobstore");
+        GWC.get().save(layer);
+
+        BlobStorePage page = new BlobStorePage();
+
+        tester.startPage(page);
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "myblobstore");
+        formTester.setValue("enabled", false);
+        formTester.setValue(
+                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/mydir");
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+
+        tester.assertErrorMessages(
+                "This identifier is already in use, please choose a unique one.");
+
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
+        BlobStoreInfo config = blobStores.get(0);
+        assertTrue(config instanceof FileBlobStoreInfo);
+        assertEquals("myblobstore", config.getName());
+        assertEquals("/mydir", ((FileBlobStoreInfo) config).getBaseDirectory());
+        assertEquals(1024, ((FileBlobStoreInfo) config).getFileSystemBlockSize());
+    }
+
+    @Test
+    public void testModifyWithoutRename() throws ConfigurationException {
+        FileBlobStoreInfo fconfig = new FileBlobStoreInfo("myblobstore");
+        fconfig.setFileSystemBlockSize(1024);
+        fconfig.setBaseDirectory("/mydir");
+        GWC.get().addBlobStore(fconfig);
+        TileLayer layer = GWC.get().getTileLayerByName("cite:Lakes");
+        layer.setBlobStoreId("myblobstore");
+        GWC.get().save(layer);
+
+        BlobStorePage page = new BlobStorePage(fconfig);
+
+        tester.startPage(page);
+        tester.assertVisible("blobConfigContainer:blobStoreForm");
+        tester.assertComponent(
+                "blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "myblobstore");
+        formTester.setValue(
+                "blobSpecificPanel:baseDirectory:border:border_body:paramValue", "/yourdir");
+        formTester.submit();
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+
+        tester.assertNoErrorMessage();
+
+        BlobStoreInfo config = GWC.get().getBlobStores().get(0);
+        assertTrue(config instanceof FileBlobStoreInfo);
+        assertEquals("myblobstore", config.getName());
+        assertEquals("/yourdir", ((FileBlobStoreInfo) config).getBaseDirectory());
+
+        // test updated id!
+        layer = GWC.get().getTileLayerByName("cite:Lakes");
+        assertEquals("myblobstore", layer.getBlobStoreId());
     }
 }

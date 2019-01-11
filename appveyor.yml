@@ -7,4 +7,4 @@ cache:
 build_script:
   - cmd: |
       cd src
-      mvn install -Prelease -fae -U
+      mvn install -T1C -Prelease -fae -U

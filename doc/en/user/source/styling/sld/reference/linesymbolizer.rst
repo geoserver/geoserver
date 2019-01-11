@@ -78,6 +78,9 @@ with a repeating graphic image or symbol.
 The graphic is specified by a ``<Graphic>`` sub-element,  
 which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` section.
 
+
+.. _sld_reference_linesymbolizer_graphicstroke:
+
 GraphicStroke
 ^^^^^^^^^^^^^
 
@@ -88,6 +91,8 @@ which is described in the ``PointSymbolizer`` :ref:`sld_reference_graphic` secti
 
 The spacing of the graphic symbol can be specified using the ``<Size>`` element in the ``<Graphic>`` element,
 or the ``<CSSParameter name="stroke-dasharray">`` in the ``Stroke`` element.
+
+.. _sld_reference_linesymbolizer_css:
 
 CssParameter
 ^^^^^^^^^^^^

@@ -7,7 +7,6 @@ package org.geoserver.backuprestore.tasklet;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
@@ -21,8 +20,8 @@ public final class GenericTasklet extends AbstractCatalogBackupRestoreTasklet {
     // key used to register in the job context the handlers that need to run again
     private static final String GENERIC_CONTINUABLE_HANDLERS_KEY = "GENERIC_CONTINUABLE_HANDLERS";
 
-    public GenericTasklet(Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public GenericTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override

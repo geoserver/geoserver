@@ -213,7 +213,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public ImportTask getCurrentlyProcessingTask(long contextId) {
-        return currentlyProcessing.get(new Long(contextId));
+        return currentlyProcessing.get(Long.valueOf(contextId));
     }
 
     @Override

@@ -26,7 +26,6 @@ import java.util.Comparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -72,9 +71,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
     private boolean strict = false;
 
-    public CatalogMultiResourceItemReader(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogMultiResourceItemReader(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     protected void initialize(StepExecution stepExecution) {

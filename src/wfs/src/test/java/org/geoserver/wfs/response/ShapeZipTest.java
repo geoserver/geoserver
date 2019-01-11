@@ -270,6 +270,7 @@ public class ShapeZipTest extends WFSTestSupport {
         assertEquals("VERYLONGN0", schema.getDescriptor(3).getName().getLocalPart());
     }
 
+    @Test
     public void testDots() throws Exception {
         byte[] zip = writeOut(getFeatureSource(DOTS).getFeatures());
 

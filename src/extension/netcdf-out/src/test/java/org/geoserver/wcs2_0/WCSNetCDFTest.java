@@ -10,10 +10,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import net.opengis.wcs20.GetCoverageType;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
@@ -21,8 +24,11 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
+import org.geoserver.web.netcdf.DataPacking;
+import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -39,6 +45,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     public static QName POLYPHEMUS =
             new QName(CiteTestData.WCS_URI, "polyphemus", CiteTestData.WCS_PREFIX);
     public static QName NO2 = new QName(CiteTestData.WCS_URI, "NO2", CiteTestData.WCS_PREFIX);
+    public static QName O3 = new QName(CiteTestData.WCS_URI, "O3", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE_NETCDF =
             new QName(CiteTestData.WCS_URI, "Temperature_surface_NetCDF", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE_GRIB =
@@ -70,6 +77,9 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         setupRasterDimension(getLayerId(NO2), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(
                 getLayerId(NO2), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(O3), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(
+                getLayerId(O3), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         testData.addRasterLayer(
                 TEMPERATURE_SURFACE_NETCDF,
                 "rotated-pole.nc",
@@ -435,6 +445,67 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                     (float) DELTA);
         } finally {
             FileUtils.deleteQuietly(file);
+        }
+    }
+
+    @Test
+    public void testDataPacking() throws Exception {
+        // setup data packing
+        CoverageInfo info = getCatalog().getCoverageByName(getLayerId(O3));
+        NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
+        container.setCompressionLevel(0);
+        container.setShuffle(true);
+        container.setDataPacking(DataPacking.SHORT);
+        String key = "NetCDFOutput.Key";
+        info.getMetadata().put(key, container);
+        getCatalog().save(info);
+
+        try {
+            MockHttpServletResponse response =
+                    getAsServletResponse(
+                            "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                                    + "&coverageId=wcs__O3&format=application/x-netcdf");
+            // The status code should be correct
+            assertEquals(200, response.getStatus());
+            // The output format should be netcdf
+            assertEquals("application/x-netcdf", response.getContentType());
+
+            byte[] responseBytes = getBinary(response);
+            File file = File.createTempFile("polyphemus-O3", ".nc", new File("./target"));
+            FileUtils.writeByteArrayToFile(file, responseBytes);
+
+            // read non enhanced to check the data type
+            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+                assertNotNull(dataset);
+                final Variable variable = dataset.findVariable("O3");
+                // has been packed
+                assertEquals(DataType.SHORT, variable.getDataType());
+            }
+
+            // read enhanced to validate scaling
+            EnumSet<NetcdfDataset.Enhance> enhanceMode =
+                    EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
+            enhanceMode.add(NetcdfDataset.Enhance.ScaleMissing);
+            try (NetcdfDataset dataset =
+                    NetcdfDataset.openDataset(
+                            file.getAbsolutePath(), enhanceMode, 4096, null, null)) {
+                assertNotNull(dataset);
+                final Variable variable = dataset.findVariable("O3");
+                // not read as packed this time
+                assertEquals(DataType.DOUBLE, variable.getDataType());
+
+                // compute min and max and compare to the ones Panoply returned for 03
+                double[] data = (double[]) variable.read().copyTo1DJavaArray();
+                Arrays.sort(data);
+                assertEquals(0.8663844, data[0], 1e-1);
+                assertEquals(175.7672, data[data.length - 1], 1e-1);
+            }
+
+        } finally {
+            // revert
+            info = getCatalog().getCoverageByName(getLayerId(O3));
+            info.getMetadata().remove(key);
+            getCatalog().save(info);
         }
     }
 }

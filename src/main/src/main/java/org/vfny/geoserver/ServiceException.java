@@ -62,10 +62,10 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses");
 
     /** message inserted by GeoServer as to what it thinks happened */
-    protected String preMessage = new String();
+    protected String preMessage = "";
 
     /** full classpath of originating GeoServer class */
-    protected String locator = new String();
+    protected String locator = "";
 
     /** Empty constructor. */
     public ServiceException() {

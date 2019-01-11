@@ -118,5 +118,7 @@
       </props>
     </property>
   </bean>
+  
+  <bean id="oseoServiceVoter" class="org.geoserver.opensearch.eo.OpenSearchServiceVoter"/>
 
 </beans>

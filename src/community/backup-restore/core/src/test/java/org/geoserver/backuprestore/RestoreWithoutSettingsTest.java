@@ -1,6 +1,8 @@
 package org.geoserver.backuprestore;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,11 +10,22 @@ import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.wms.WMSInfo;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
+
+    protected static Backup backupFacade;
+
+    @Before
+    public void beforeTest() throws InterruptedException {
+        backupFacade = (Backup) applicationContext.getBean("backupFacade");
+        ensureCleanedQueues();
+
+        // Authenticate as Administrator
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -33,7 +46,8 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
         assertNotNull(getCatalog().getWorkspaceByName("shouldNotBeDeleted"));
 
         RestoreExecutionAdapter restoreExecution =
-                backupFacade.runRestoreAsync(file("settings-modified-restore.zip"), null, params);
+                backupFacade.runRestoreAsync(
+                        file("settings-modified-restore.zip"), null, null, null, params);
 
         // Wait a bit
         Thread.sleep(100);
@@ -48,8 +62,12 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
         final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
         assertNotNull(restoreCatalog);
 
-        while (restoreExecution.getStatus() != BatchStatus.COMPLETED) {
+        int cnt = 0;
+        while (cnt < 100
+                && (restoreExecution.getStatus() != BatchStatus.COMPLETED
+                        || !restoreExecution.isRunning())) {
             Thread.sleep(100);
+            cnt++;
 
             if (restoreExecution.getStatus() == BatchStatus.ABANDONED
                     || restoreExecution.getStatus() == BatchStatus.FAILED
@@ -63,20 +81,25 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
             }
         }
 
-        GeoServer geoServer = getGeoServer();
-        assertEquals(null, geoServer.getLogging().getLocation());
+        if (restoreExecution.getStatus() != BatchStatus.COMPLETED
+                && !restoreExecution.isRunning()) {
+            backupFacade.stopExecution(restoreExecution.getId());
+        }
 
-        assertEquals(
-                "Andrea Aime", geoServer.getGlobal().getSettings().getContact().getContactPerson());
+        if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
+            GeoServer geoServer = getGeoServer();
+            assertEquals(null, geoServer.getLogging().getLocation());
 
-        WMSInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
-        assertEquals(null, serviceInfo.getFees());
+            assertEquals(
+                    "Andrea Aime",
+                    geoServer.getGlobal().getSettings().getContact().getContactPerson());
 
-        String configPasswordEncrypterName =
-                getSecurityManager().getSecurityConfig().getConfigPasswordEncrypterName();
-        assertEquals("pbePasswordEncoder", configPasswordEncrypterName);
+            String configPasswordEncrypterName =
+                    getSecurityManager().getSecurityConfig().getConfigPasswordEncrypterName();
+            assertEquals("pbePasswordEncoder", configPasswordEncrypterName);
 
-        Catalog catalog = geoServer.getCatalog();
-        assertNotNull(catalog.getWorkspaceByName("shouldNotBeDeleted"));
+            Catalog catalog = geoServer.getCatalog();
+            assertNotNull(catalog.getWorkspaceByName("shouldNotBeDeleted"));
+        }
     }
 }

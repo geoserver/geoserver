@@ -16,10 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.wfs.response.dxf.util.JulianDate;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 
 /**
  * Basic, abstract implementation of DXFWriter. Implements a common base of export functions useful
@@ -28,6 +30,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
  * @author Mauro Bartolomeoli, mbarto@infosia.it
  */
 public abstract class AbstractDXFWriter implements DXFWriter {
+
+    private static final Logger LOGGER = Logging.getLogger(AbstractDXFWriter.class);
+
     // physical writer onto which the dxf will be written
     protected Writer writer = null;
 
@@ -596,7 +601,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
         } else if (optionName.equalsIgnoreCase("writeattributes")) {
             setWriteAttributes((Boolean) optionValue);
         } else {
-            System.err.println("unknown option " + optionName);
+            LOGGER.severe("unknown option " + optionName);
         }
     }
     /**

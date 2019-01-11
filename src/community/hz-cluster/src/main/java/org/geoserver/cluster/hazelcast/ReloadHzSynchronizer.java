@@ -9,10 +9,10 @@ import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.yammer.metrics.Metrics;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
     /** lock during reload */
     protected AtomicBoolean eventLock = new AtomicBoolean();
 
-    final ExecutorService reloadService;
+    final ThreadPoolExecutor reloadService;
 
     public ReloadHzSynchronizer(HzCluster cluster, GeoServer gs) {
         super(cluster, gs);
@@ -43,28 +43,24 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
                         .setDaemon(true)
                         .setNameFormat("Hz-GeoServer-Reload-%d")
                         .build();
-        RejectedExecutionHandler rejectionHandler = new ThreadPoolExecutor.DiscardPolicy();
         // a thread pool executor operating out of a blocking queue with maximum of 1 element, which
         // discards execute requests if the queue is full
         reloadService =
                 new ThreadPoolExecutor(
-                        1,
-                        1,
-                        0L,
-                        TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>(1),
-                        threadFactory,
-                        rejectionHandler);
+                        1, 1, 0L, TimeUnit.MILLISECONDS, getWorkQueue(), threadFactory);
+    }
+
+    BlockingQueue<Runnable> getWorkQueue() {
+        return new LinkedBlockingQueue<>(1);
     }
 
     @Override
-    protected void processEvent(Event event) throws Exception {
+    protected Future<?> processEvent(Event event) {
         // submit task and return immediately. The task will be ignored if another one is already
         // scheduled
-        reloadService.submit(
-                new Runnable() {
-                    @Override
-                    public void run() {
+        try {
+            return reloadService.submit(
+                    () -> {
                         // lock during event processing
                         eventLock.set(true);
                         try {
@@ -74,8 +70,14 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
                         } finally {
                             eventLock.set(false);
                         }
-                    }
-                });
+                    });
+        } catch (RejectedExecutionException e) {
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest(
+                        format("%s - Reload in progress. Ignoring event %s", nodeId(), event));
+            }
+            return null;
+        }
     }
 
     @Override
@@ -90,6 +92,6 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
         e.setSource(localAddress(cluster.getHz()));
         topic.publish(e);
 
-        Metrics.newCounter(getClass(), "dispatched").inc();
+        incCounter(getClass(), "dispatched");
     }
 }

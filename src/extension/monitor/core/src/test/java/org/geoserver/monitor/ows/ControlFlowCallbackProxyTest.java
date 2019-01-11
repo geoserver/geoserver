@@ -78,46 +78,9 @@ public class ControlFlowCallbackProxyTest {
         assertEquals(Status.RUNNING, data.getStatus());
     }
 
+    @Test
     public void testGetRunningAndBlockedRequests() throws Exception {
-        DispatcherCallback callback =
-                new DispatcherCallback() {
-
-                    public long getRunningRequests() {
-                        return 10;
-                    }
-
-                    public long getBlockedRequests() {
-                        return 2;
-                    }
-
-                    public Service serviceDispatched(Request request, Service service)
-                            throws ServiceException {
-                        return null;
-                    }
-
-                    public Response responseDispatched(
-                            Request request,
-                            Operation operation,
-                            Object result,
-                            Response response) {
-                        return null;
-                    }
-
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        return null;
-                    }
-
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        return null;
-                    }
-
-                    public Request init(Request request) {
-                        return null;
-                    }
-
-                    public void finished(Request request) {}
-                };
+        DispatcherCallback callback = new MyDispatcherCallback();
         callback = createProxy(callback);
         ControlFlowCallbackProxy proxy =
                 (ControlFlowCallbackProxy) Proxy.getInvocationHandler(callback);
@@ -131,5 +94,39 @@ public class ControlFlowCallbackProxyTest {
         return (DispatcherCallback)
                 Proxy.newProxyInstance(
                         getClass().getClassLoader(), new Class[] {DispatcherCallback.class}, proxy);
+    }
+
+    public static class MyDispatcherCallback implements DispatcherCallback {
+
+        public long getRunningRequests() {
+            return 10;
+        }
+
+        public long getBlockedRequests() {
+            return 2;
+        }
+
+        public Service serviceDispatched(Request request, Service service) throws ServiceException {
+            return null;
+        }
+
+        public Response responseDispatched(
+                Request request, Operation operation, Object result, Response response) {
+            return null;
+        }
+
+        public Object operationExecuted(Request request, Operation operation, Object result) {
+            return null;
+        }
+
+        public Operation operationDispatched(Request request, Operation operation) {
+            return null;
+        }
+
+        public Request init(Request request) {
+            return null;
+        }
+
+        public void finished(Request request) {}
     }
 }

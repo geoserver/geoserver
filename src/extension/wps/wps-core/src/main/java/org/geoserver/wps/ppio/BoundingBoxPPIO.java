@@ -7,6 +7,7 @@ package org.geoserver.wps.ppio;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
 import org.geoserver.wps.WPSException;
@@ -109,8 +110,8 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         } else if (org.opengis.geometry.Envelope.class.isAssignableFrom(getType())) {
             org.opengis.geometry.Envelope env = (org.opengis.geometry.Envelope) object;
             crs = env.getCoordinateReferenceSystem();
-            bbox.setLowerCorner(Arrays.asList(env.getLowerCorner().getCoordinate()));
-            bbox.setUpperCorner(Arrays.asList(env.getUpperCorner().getCoordinate()));
+            bbox.setLowerCorner(doubleArrayToList(env.getLowerCorner().getCoordinate()));
+            bbox.setUpperCorner(doubleArrayToList(env.getUpperCorner().getCoordinate()));
         } else {
             throw new WPSException(
                     "Failed to convert from " + object + " to an OWS 1.1 Bounding box type");
@@ -129,5 +130,9 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         }
 
         return bbox;
+    }
+
+    private List<Double> doubleArrayToList(double[] coordinate) {
+        return Arrays.stream(coordinate).boxed().collect(Collectors.toList());
     }
 }

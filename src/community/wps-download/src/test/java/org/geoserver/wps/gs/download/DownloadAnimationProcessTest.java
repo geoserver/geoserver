@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.image.test.ImageAssert;
 import org.hamcrest.CoreMatchers;
@@ -103,7 +104,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         try {
             String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"));
             Document dom = postAsDOM("wps", xml);
-            print(dom);
+            // print(dom);
             XMLAssert.assertXpathExists("//wps:ProcessFailed", dom);
             String message = XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom);
             assertThat(
@@ -111,6 +112,10 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
                     CoreMatchers.containsString("More than 1 times specified in the request"));
         } finally {
             assertTrue("Failed to remove download configuration file", config.delete());
+            // force reset of default configuration
+            final DownloadServiceConfigurationWatcher watcher =
+                    GeoServerExtensions.bean(DownloadServiceConfigurationWatcher.class);
+            watcher.loadConfiguration();
         }
     }
 

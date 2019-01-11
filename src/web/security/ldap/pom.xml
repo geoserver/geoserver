@@ -69,6 +69,16 @@
       <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+          <exclusion>
+              <groupId>org.springframework.batch</groupId>
+              <artifactId>spring-batch-infrastructure</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>org.springframework.batch</groupId>
+              <artifactId>spring-batch-core</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>

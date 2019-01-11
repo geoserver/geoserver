@@ -5,6 +5,8 @@
  */
 package org.geoserver.security;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 import org.geoserver.security.password.RandomPasswordProvider;
@@ -40,7 +42,7 @@ public class KeyStoreProviderTest extends GeoServerSystemTestSupport {
         char[] urlKey2 = rpp.getRandomPasswordWithDefaultLength();
         // System.out.printf("Random password with length %d : %s\n",urlKey2.length,new
         // String(urlKey2));
-        assertFalse(urlKey.equals(urlKey2));
+        assertThat(urlKey, not(equalTo(urlKey2)));
 
         ksp.setSecretKey(
                 KeyStoreProviderImpl.USERGROUP_PREFIX

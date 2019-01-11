@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.springframework.batch.core.BatchStatus;
@@ -19,9 +18,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 /** Final step of the backup: creating the final zip file */
 public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
 
-    public FinalizeBackupTasklet(
-            Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public FinalizeBackupTasklet(Backup backupFacade) {
+        super(backupFacade);
     }
 
     @Override
@@ -49,6 +47,9 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
                 JobParameters jobParameters = backupExecution.getJobParameters();
                 Resource sourceFolder =
                         Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
+
+                dumpBackupIndex(sourceFolder);
+
                 BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
             } catch (IOException e) {
                 LOGGER.severe("Backup failed while creating final ");

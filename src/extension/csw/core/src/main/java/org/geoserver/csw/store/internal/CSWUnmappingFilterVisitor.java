@@ -8,7 +8,7 @@ package org.geoserver.csw.store.internal;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
 import org.geoserver.csw.util.QNameResolver;
-import org.geotools.data.complex.filter.XPathUtil;
+import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.FilterFactory2;

@@ -10,7 +10,6 @@ import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.springframework.batch.item.ExecutionContext;
@@ -44,9 +43,8 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
 
     protected Class clazz;
 
-    public CatalogReader(
-            Class<T> clazz, Backup backupFacade, XStreamPersisterFactory xStreamPersisterFactory) {
-        super(backupFacade, xStreamPersisterFactory);
+    public CatalogReader(Class<T> clazz, Backup backupFacade) {
+        super(backupFacade);
         this.clazz = clazz;
 
         this.setExecutionContextName(ClassUtils.getShortName(clazz));
@@ -179,7 +177,7 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
         try {
             doOpen();
         } catch (Exception e) {
-            throw new ItemStreamException("Failed to initialize the reader", e);
+            return;
         }
         if (!isSaveState()) {
             return;

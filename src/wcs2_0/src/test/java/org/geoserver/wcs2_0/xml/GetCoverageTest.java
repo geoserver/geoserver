@@ -851,6 +851,9 @@ public class GetCoverageTest extends WCSTestSupport {
         request = request.replace("${slicePointCustom}", "20");
         // timeranges is really just an expanded watertemp
         checkWaterTempValue(request, 18.478999927756377);
+
+        request = request.replace("WAVELENGTH", "wavelength");
+        checkWaterTempValue(request, 18.478999927756377);
     }
 
     @Test
@@ -868,6 +871,9 @@ public class GetCoverageTest extends WCSTestSupport {
         request = request.replace("${Custom}", "WAVELENGTH");
         request = request.replace("${slicePointCustom}", "80");
         // timeranges is really just an expanded watertemp
+        checkWaterTempValue(request, 14.52999974018894136);
+
+        request = request.replace("WAVELENGTH", "wavelength");
         checkWaterTempValue(request, 14.52999974018894136);
     }
 
@@ -892,6 +898,9 @@ public class GetCoverageTest extends WCSTestSupport {
         request = request.replace("${CustomTwo}", "CUSTOM");
         request = request.replace("${slicePointCustomTwo}", "99");
         // timeranges is really just an expanded watertemp
+        checkWaterTempValue(request, 14.52999974018894136);
+
+        request = request.replace("WAVELENGTH", "wavelength").replace("CUSTOM", "custom");
         checkWaterTempValue(request, 14.52999974018894136);
     }
 
@@ -1242,6 +1251,14 @@ public class GetCoverageTest extends WCSTestSupport {
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         String errorMessage =
+                checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
+        assertEquals(
+                "Requested WAVELENGTH subset does not intersect the available values [12/24, 25/80]",
+                errorMessage);
+
+        request = request.replace("WAVELENGTH", "wavelength");
+        response = postAsServletResponse("wcs", request);
+        errorMessage =
                 checkOws20Exception(response, 404, InvalidSubsetting.getExceptionCode(), "subset");
         assertEquals(
                 "Requested WAVELENGTH subset does not intersect the available values [12/24, 25/80]",

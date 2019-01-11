@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.SecurityUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public class MonitorFilter implements GeoServerFilter {
 
@@ -112,13 +112,9 @@ public class MonitorFilter implements GeoServerFilter {
         if (SecurityContextHolder.getContext() != null
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Object principal = auth.getPrincipal();
-            if (principal != null) {
-                if (principal instanceof UserDetails) {
-                    data.setRemoteUser(((UserDetails) principal).getUsername());
-                } else if (principal instanceof String) {
-                    data.setRemoteUser((String) principal);
-                }
+            String username = SecurityUtils.getUsername(auth.getPrincipal());
+            if (username != null) {
+                data.setRemoteUser(username);
             }
         }
 

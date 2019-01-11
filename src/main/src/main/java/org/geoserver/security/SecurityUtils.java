@@ -8,10 +8,12 @@ package org.geoserver.security;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.security.Principal;
 import java.util.Arrays;
 import org.geoserver.security.password.RandomPasswordProvider;
 import org.geotools.data.Query;
 import org.opengis.filter.Filter;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Common security utility methods.
@@ -156,5 +158,27 @@ public class SecurityUtils {
         Arrays.fill(working[0], '0');
         Arrays.fill(working[1], '0');
         return result;
+    }
+
+    /**
+     * Extracts the username from auth principal or returns null. A static method that simply checks
+     * for concrete principal class, casts to it and invokes the correct method to extract the
+     * username.
+     *
+     * @param principal auth principal
+     */
+    public static String getUsername(Object principal) {
+        String username = null;
+        if (principal != null) {
+            if (principal instanceof UserDetails) {
+                username = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof Principal) {
+                username = ((Principal) principal).getName();
+            } else {
+                username = principal.toString();
+            }
+        }
+
+        return username;
     }
 }

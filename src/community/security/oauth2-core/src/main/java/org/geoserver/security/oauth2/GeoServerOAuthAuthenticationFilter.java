@@ -21,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
@@ -184,8 +185,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     protected String getBearerToken(ServletRequest request) {
         if (request instanceof HttpServletRequest) {
             Authentication auth = new BearerTokenExtractor().extract((HttpServletRequest) request);
-            if (auth != null && auth.getPrincipal() instanceof String)
-                return (String) auth.getPrincipal();
+            if (auth != null) return SecurityUtils.getUsername(auth.getPrincipal());
         }
 
         return null;
@@ -443,17 +443,20 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        String principal = (authentication != null ? (String) authentication.getPrincipal() : null);
-        if (principal != null && principal.trim().length() == 0) principal = null;
+        String username =
+                (authentication != null
+                        ? SecurityUtils.getUsername(authentication.getPrincipal())
+                        : null);
+        if (username != null && username.trim().length() == 0) username = null;
         try {
-            if (principal != null
+            if (username != null
                     && PreAuthenticatedUserNameRoleSource.UserGroupService.equals(
                             getRoleSource())) {
                 GeoServerUserGroupService service =
                         getSecurityManager().loadUserGroupService(getUserGroupServiceName());
-                GeoServerUser u = service.getUserByUsername(principal);
+                GeoServerUser u = service.getUserByUsername(username);
                 if (u != null && u.isEnabled() == false) {
-                    principal = null;
+                    username = null;
                     handleDisabledUser(u, req);
                 }
             }
@@ -461,8 +464,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
             throw new RuntimeException(ex);
         }
         req.setAttribute(UserNameAlreadyRetrieved, Boolean.TRUE);
-        if (principal != null) req.setAttribute(UserName, principal);
-        return principal;
+        if (username != null) req.setAttribute(UserName, username);
+        return username;
     }
 
     protected void configureRestTemplate() {

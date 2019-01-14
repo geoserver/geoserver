@@ -1058,8 +1058,9 @@ public class XMPPClient extends RemoteProcessClient {
      *
      * @param service name
      * @param candidateServiceJID
+     * @throws Exception 
      */
-    private String getFlattestMachine(Name serviceName) {
+    private String getFlattestMachine(Name serviceName) throws Exception {
         // The candidate remote processing node
         RemoteMachineDescriptor candidateNode = null;
 
@@ -1082,9 +1083,12 @@ public class XMPPClient extends RemoteProcessClient {
                     Boolean.valueOf(getConfiguration().get("xmpp_force_execution"));
         }
 
+        LOGGER.info(
+                "XMPPClient::getFlattestMachine - scanning the connected remote services...");
+
+        getEndpointsLoadAverages();
+
         synchronized (registeredProcessingMachines) {
-            LOGGER.info(
-                    "XMPPClient::getFlattestMachine - scanning the connected remote services...");
 
             for (RemoteMachineDescriptor node : registeredProcessingMachines) {
                 if (node.getAvailable() && node.getServiceName().equals(serviceName)) {

@@ -246,3 +246,66 @@ It is possible to place the files in three different locations:
 * If the above are missing the root of the GeoServer data directory will be searched
 * If none of the above provide a file, then the built-in configuration will be used
 
+Migrating mosaics with H2 NetCDF index files to a centralized index
+-------------------------------------------------------------------
+
+By default the NetCDF reader creates a hidden directory, either as a sidecar or in the NetCDF data dir, containing a low level
+index file to speed up slices lookups, as well as a H2 database containing information about slice indexes and dimensions associated to them.
+This H2 store is opened and closed every time the associated NetCDF is read, causing less than optimal performance in map rendering.
+
+As an alternative, it's possible to store all slice metadata from H2 to a centralized database, and have GeoServer manage the store
+connecting to it, thus keeping it always open. Some work is in order to make that happen thought.
+
+First, the image mosaic needs a ``indexer.xml`` and a NetCDF auxiliary file, describing the coverages structure.
+These two files can be generated using a tool available in the GeoServer classpath, that one has to invoke from 
+the command line.
+
+Given a sample NetCDF file, you can get into the mosaic directory and run the **CreateIndexer** tool (for the NetCDF projection files, see above)::
+
+  java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.CreateIndexer <path-to-sample-nc-file> -p <path-to-netcdf-projections> [<path-to-output-directory>]
+  
+This will generate the files and it's going to be good enough if each NetCDF contains the same coverages.
+If instead there are different NetCDF files containing different coverages in the same mosaic, you'll have to:
+
+    * run the above command using a different sample NetCDF file for each coverage, generating the output in different folders,
+    * manually merge them into a unified ``indexer.xml`` and ``_auxiliary.xml`` that will be placed in the mosaic directory.
+
+Once those files are in position, a second tool can be run in order to migrate all H2 files to a centralized datatabase.
+First, prepare a property file with connection parameters to the target index database.
+For example, it could be a ``netcdf_index.properties`` file with the following contents::
+
+    SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+    host=localhost
+    port=5432
+    database=netcdfidx
+    schema=public
+    user=user
+    passwd=pwd
+    Loose\ bbox=true
+    Estimated\ extends=false
+    validate\ connections=true
+    Connection\ timeout=10
+    preparedStatements=true
+    max\ connections=20
+
+Then, in order to migrate a specific mosaic, run the **H2Migrate** tool::
+
+    java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -isn <storeNameForIndex> -v
+
+This will connect to the target store using the information in indexPropertyFile, locate the granules to be migrated inspecting the mosaic contents, create a ``netcdf_index.properties``
+file with ``StoreName=storeNameForIndex`` and update the mosaic to use it (basically, update the indexer.xml and all coverage property files to have a ``AuxiliaryDatastoreFile`` property
+pointing to ``netcdf_indexer.properties``, as well ensure that there is a ``AuxiliaryFile`` property pointing to ``_auxiliary.xml``).
+
+It will also generate two files, ``migrated.txt`` and ``h2.txt``:
+
+  * ``migrated.txt`` contains the list of files successfully migrated, for audit purposes
+  * ``h2.txt`` the list of H2 database files that can now be removed. The tool won't do it automatically to ensure that the migration, but with this one one could automate removal, e.g., on Linux a simple ``cat h2.txt | rm`` would do the trick (the ``<name>.log.db`` files change name often, it's likely that they will have to be hunted down and removed with other means, e.g. if on Linux, using the "find").
+
+If the mosaic to be migrated is backed by a **OpenSearch** index, then the tool won't be able to open the mosaic (it would require running inside GeoServer), so the connection
+parameters will have to be provided in a second property file, along with the list of tables containing the granules paths in the "location" attribute, e.g.:
+
+    java -cp <path-to-geoserver>/WEB-INF/lib/\*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -ms <mosaicStorePropertyFile> -mit granule -is <indexPropertyFile> -isn <storeNameForIndex> -v
+
+The tool supports other options as well, they can be discovered by running the tool without any parameter::
+
+  java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -isn <storeNameForIndex> -v

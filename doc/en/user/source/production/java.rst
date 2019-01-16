@@ -39,16 +39,83 @@ Running GeoServer under Java 11 on other Application Servers may require some ad
 
 * **WebLogic** do not yet support Java 11.
 
-Install native JAI and ImageIO extensions
------------------------------------------
+ 
+GeoServer cleanup
+`````````````````
 
-The `Java Advanced Imaging API <http://www.oracle.com/technetwork/java/javase/tech/jai-142803.html>`_ (JAI) is an advanced image processing library built by Oracle.  GeoServer requires JAI to work with coverages and leverages it for WMS output generation. JAI performance is important for all raster processing, which is used heavily in both WMS and WCS to rescale, cut and reproject rasters.
+Once the installation is complete, you may optionally remove the original JAI files from the GeoServer ``WEB-INF/lib`` folder::
 
-The `Java Image I/O Technology <http://docs.oracle.com/javase/6/docs/technotes/guides/imageio/index.html>`__ (ImageIO) is used for  raster reading and writing. ImageIO affects both WMS and WCS for reading raster data, and is very useful (even if there is no raster data involved) for WMS output as encoding is required when writing PNG/GIF/JPEG images.
+   jai_core-x.y.z.jar
+   jai_imageio-x.y.jar 
+   jai_codec-x.y.z.jar
+   
 
-By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**. 
+where ``x``, ``y``, and ``z`` refer to specific version numbers.
 
-However, native JAI does not support the concept of "NoData" pixels. In case you have those in input better avoid installing native JAI, and instead go and enable JAI-EXT.
+.. _java_policyfiles:
+
+Installing Unlimited Strength Jurisdiction Policy Files
+-------------------------------------------------------
+These policy files are needed for unlimited cryptography. As an example, Java does not support AES
+with a key length of 256 bit. Installing the policy files removes these restrictions.
+
+Open JDK
+````````
+
+Since Open JDK is Open Source, the policy files are already installed.   
+
+Oracle Java
+```````````
+
+The policy files are available at   
+
+* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`_ 
+* `Java 7 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html>`_
+* `Java 6 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_
+
+The download contains two files, **local_policy.jar** and  **US_export_policy.jar**. The default
+versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the
+versions from the download. 
+
+
+Test if unlimited key length is available
+"""""""""""""""""""""""""""""""""""""""""
+
+Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
+
+.. figure:: ../security/webadmin/images/unlimitedkey.png
+
+Additionally, the GeoServer log file should contain the following line::
+
+   "Strong cryptography is available"
+
+.. note::
+
+   The replacement has to be done for each update of the Java runtime. 
+
+IBM Java
+````````
+
+The policy files are available at
+
+* `IBM JCE policy jars <https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk>`_ 
+
+An IBM ID is needed to log in. The installation is identical to Oracle.
+
+ 
+Outdated: install native JAI and ImageIO extensions
+---------------------------------------------------
+
+The `Java Advanced Imaging API <http://www.oracle.com/technetwork/java/javase/tech/jai-142803.html>`_ (JAI) is an advanced image processing library built by Oracle.  GeoServer uses JAI-EXT, a set
+of replacement operations with bug fixes and NODATA support, for  all image processing. 
+
+In case there is no interest in NODATA support, one can disable JAI-EXT and install the native JAI extensions to improve raster processing performance.
+
+.. warning:: Users should take care that *JAI* native libraries remove support for NODATA pixels, provided instead by the pure Java JAI-EXT libraries.
+
+Before installing native JAI, JAI-EXT can be disabled adding the following system variable to the JVM running GeoServer::
+
+	-Dorg.geotools.coverage.jaiext.enabled=false
 
 Native JAI and ImageIO extensions are available for:
 
@@ -126,68 +193,3 @@ Installing native JAI manually
 You can install the native JAI manually if you encounter problems using the above installers, or if you wish to install the native JAI for more than one JDK/JRE.
 
 Please refer to the `GeoTools page on JAI installation <http://docs.geotools.org/latest/userguide/build/install/jdk.html#java-extensions-optional>`_ for details.
-
- 
-GeoServer cleanup
-`````````````````
-
-Once the installation is complete, you may optionally remove the original JAI files from the GeoServer ``WEB-INF/lib`` folder::
-
-   jai_core-x.y.z.jar
-   jai_imageio-x.y.jar 
-   jai_codec-x.y.z.jar
-   
-
-where ``x``, ``y``, and ``z`` refer to specific version numbers.
-
-.. _java_policyfiles:
-
-Installing Unlimited Strength Jurisdiction Policy Files
--------------------------------------------------------
-These policy files are needed for unlimited cryptography. As an example, Java does not support AES
-with a key length of 256 bit. Installing the policy files removes these restrictions.
-
-Open JDK
-````````
-
-Since Open JDK is Open Source, the policy files are already installed.   
-
-Oracle Java
-```````````
-
-The policy files are available at   
-
-* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`_ 
-* `Java 7 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html>`_
-* `Java 6 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_
-
-The download contains two files, **local_policy.jar** and  **US_export_policy.jar**. The default
-versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the
-versions from the download. 
-
-
-Test if unlimited key length is available
-"""""""""""""""""""""""""""""""""""""""""
-
-Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
-
-.. figure:: ../security/webadmin/images/unlimitedkey.png
-
-Additionally, the GeoServer log file should contain the following line::
-
-   "Strong cryptography is available"
-
-.. note::
-
-   The replacement has to be done for each update of the Java runtime. 
-
-IBM Java
-````````
-
-The policy files are available at
-
-* `IBM JCE policy jars <https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk>`_ 
-
-An IBM ID is needed to log in. The installation is identical to Oracle.
-
- 

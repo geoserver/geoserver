@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionPresentation;
@@ -26,6 +27,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -123,15 +125,26 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     /** Same as above, but obtained via sorting instead of using dimensions */
     @Test
     public void testSortElevationDescending() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        BASE_PNG_URL + "&bgcolor=0xFF0000&sortBy=elevation D,ingestion D",
-                        "image/png");
+        // dataset has no data, avoid interference from lower layers
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(WATTEMP));
+        ci.getParameters().put(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().getCode(), "1");
+        getCatalog().save(ci);
 
-        // at this elevation the pixel is black
-        assertPixel(image, 36, 31, new Color(255, 0, 0));
-        // and this one a light blue
-        assertPixel(image, 68, 72, new Color(246, 246, 255));
+        try {
+            BufferedImage image =
+                    getAsImage(
+                            BASE_PNG_URL + "&bgcolor=0xFF0000&sortBy=elevation D,ingestion D",
+                            "image/png");
+
+            // at this elevation the pixel is black
+            assertPixel(image, 36, 31, new Color(255, 0, 0));
+            // and this one a light blue
+            assertPixel(image, 68, 72, new Color(246, 246, 255));
+        } finally {
+            ci = getCatalog().getCoverageByName(getLayerId(WATTEMP));
+            ci.getParameters().remove(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().getCode());
+            getCatalog().save(ci);
+        }
     }
 
     @Test

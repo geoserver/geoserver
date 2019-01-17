@@ -43,9 +43,9 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
     public static final ThreadLocal<String> GWC_OPERATION = new ThreadLocal<>();
 
     private static final Pattern GWC_WS_VIRTUAL_SERVICE_PATTERN =
-            Pattern.compile("([^/]+)/gwc/service");
+            Pattern.compile("([^/]+)/gwc/service.*");
     private static final Pattern GWC_LAYER_VIRTUAL_SERVICE_PATTERN =
-            Pattern.compile("([^/]+)/([^/]+)/gwc/service");
+            Pattern.compile("([^/]+)/([^/]+)/gwc/service.*");
 
     private final Catalog catalog;
 

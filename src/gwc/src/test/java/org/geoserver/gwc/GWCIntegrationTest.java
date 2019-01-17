@@ -1774,6 +1774,51 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testGetCapabilitiesWithRestEndpointsWorkspaceService() throws Exception {
+        MockHttpServletRequest request =
+                createRequest(
+                        MockData.CITE_PREFIX
+                                + "/gwc"
+                                + WMTSService.REST_PATH
+                                + "/WMTSCapabilities.xml");
+        request.setMethod("GET");
+
+        Request mockRequest = mock(Request.class);
+        when(mockRequest.getHttpRequest()).thenReturn(request);
+        Dispatcher.REQUEST.set(mockRequest);
+
+        MockHttpServletResponse response = dispatch(request, null);
+
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsByteArray()), true);
+        print(doc);
+
+        // check legend backlink and that it has the workspace specification
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=cite%3ABasicPolygons",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:Style/wmts:LegendURL/@xlink:href",
+                        doc));
+        // check tile resources
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/cite:BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format=image/png",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='image/png' and @resourceType='tile']/@template",
+                        doc));
+        // check featureinfo resource
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/cite:BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}?format=text/plain",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='text/plain' and @resourceType='FeatureInfo']/@template",
+                        doc));
+        // check backlink too
+        assertEquals(
+                "1",
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:Capabilities/wmts:ServiceMetadataURL[@xlink:href='http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml'])",
+                        doc));
+    }
+
+    @Test
     public void testGetTileWithRestEndpoints() throws Exception {
 
         MockHttpServletRequest request =

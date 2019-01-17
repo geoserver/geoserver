@@ -1384,7 +1384,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                                         baseUrl,
                                         legendInfo.getOnlineResource(),
                                         null,
-                                        URLMangler.URLType.RESOURCE));
+                                        URLMangler.URLType.SERVICE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             } else {
                 int finalWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;

@@ -29,8 +29,6 @@ public class WatermarkDecoration implements MapDecoration {
 
     public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
 
-    private static final int TRANSPARENT_CODE = (255 << 16) | (255 << 8) | 255;
-
     private String imageURL;
 
     private float opacity = 1.0f;

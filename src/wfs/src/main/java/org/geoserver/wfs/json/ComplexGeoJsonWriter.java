@@ -140,7 +140,7 @@ class ComplexGeoJsonWriter {
             Property geometryAttribute, Collection<Property> properties) {
         Map<PropertyType, List<Property>> index = new HashMap<>();
         for (Property property : properties) {
-            if (geometryAttribute != null && property.equals(geometryAttribute)) {
+            if (geometryAttribute != null && geometryAttribute.equals(property)) {
                 // ignore the geometry attribute that should have been encoded already
                 continue;
             }

@@ -158,7 +158,6 @@ public class ImportTaskController extends ImportBaseController {
 
         LOGGER.info("Handling POST of " + request.getContentType());
         // file posted from form
-        MediaType mimeType = MediaType.valueOf(request.getContentType());
         if (request.getContentType().startsWith(MediaType.MULTIPART_FORM_DATA_VALUE)) {
             data = handleMultiPartFormUpload(request, context(id));
         } else if (request.getContentType()

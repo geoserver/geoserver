@@ -146,9 +146,6 @@ public class RasterizerController extends BaseSLDServiceController {
             ResourceInfo obj = layerInfo.getResource();
             /* Check if it's feature type or coverage */
             if (obj instanceof CoverageInfo) {
-                CoverageInfo cvInfo;
-                cvInfo = (CoverageInfo) obj;
-
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
                 RasterSymbolizer rasterSymbolizer = getRasterSymbolizer(defaultStyle);
 
@@ -229,10 +226,7 @@ public class RasterizerController extends BaseSLDServiceController {
             throws Exception {
         StyleBuilder sb = new StyleBuilder();
 
-        ColorMap originalColorMap = rasterSymbolizer.getColorMap();
         ColorMap resampledColorMap = null;
-
-        int numClasses = originalColorMap.getColorMapEntries().length;
 
         if (classes > 0) {
             final String[] labels = new String[classes + 1];

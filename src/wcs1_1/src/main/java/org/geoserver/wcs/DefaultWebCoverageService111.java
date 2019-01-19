@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
@@ -858,9 +857,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             gridCRS.setGridCS(GridCS.GCSGrid2dSquare.getXmlConstant());
 
             // check the grid origin and set defaults
-            CoordinateReferenceSystem crs = null;
             try {
-                crs = CRS.decode(gridCRS.getGridBaseCRS());
+                CRS.decode(gridCRS.getGridBaseCRS());
             } catch (Exception e) {
                 throw new WcsException(
                         "Could not understand crs " + gridCRS.getGridBaseCRS(),
@@ -1054,25 +1052,5 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                         "RangeSubset");
             else keys.set(j, parsedKey);
         }
-    }
-
-    /** @param date */
-    private static Date cvtToGmt(Date date) {
-        TimeZone tz = TimeZone.getDefault();
-        Date ret = new Date(date.getTime() - tz.getRawOffset());
-
-        // if we are now in DST, back off by the delta. Note that we are checking the GMT date, this
-        // is the KEY.
-        if (tz.inDaylightTime(ret)) {
-            Date dstDate = new Date(ret.getTime() - tz.getDSTSavings());
-
-            // check to make sure we have not crossed back into standard time
-            // this happens when we are on the cusp of DST (7pm the day before the change for PDT)
-            if (tz.inDaylightTime(dstDate)) {
-                ret = dstDate;
-            }
-        }
-
-        return ret;
     }
 }

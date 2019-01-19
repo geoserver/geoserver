@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -145,15 +144,5 @@ public final class AtomUtils {
             description.setLength(description.length() - 1);
             return description.toString();
         }
-    }
-
-    private static String commaSeparatedLayers(WMSMapContent con) {
-        StringBuilder layers = new StringBuilder();
-        List<Layer> mapLayers = con.layers();
-        for (int i = 0; i < mapLayers.size(); i++) {
-            layers.append(mapLayers.get(i).getTitle());
-            if (i < mapLayers.size() - 1) layers.append(",");
-        }
-        return layers.toString();
     }
 }

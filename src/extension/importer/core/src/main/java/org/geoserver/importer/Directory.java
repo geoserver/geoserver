@@ -450,14 +450,12 @@ public class Directory extends FileData {
         }
         ZipOutputStream zout =
                 new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
-        Exception error = null;
 
         // don't call zout.close in finally block, if an error occurs and the zip
         // file is empty by chance, the second error will mask the first
         try {
             IOUtils.zipDirectory(file, zout, null);
         } catch (Exception ex) {
-            error = ex;
             try {
                 zout.close();
             } catch (Exception ex2) {

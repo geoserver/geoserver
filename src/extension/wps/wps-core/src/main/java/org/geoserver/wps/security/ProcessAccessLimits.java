@@ -5,20 +5,16 @@
 
 package org.geoserver.wps.security;
 
-import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLimits;
 import org.geoserver.security.CatalogMode;
-import org.geotools.util.logging.Logging;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ProcessAccessLimits extends AccessLimits {
-    private static final Logger LOGGER = Logging.getLogger(ProcessAccessLimits.class);
-
     private static final long serialVersionUID = -3253977289877833644L;
 
     private boolean allowed;
@@ -60,9 +56,7 @@ public class ProcessAccessLimits extends AccessLimits {
             CatalogMode mode = getMode();
             if (mode == CatalogMode.MIXED) {
                 // In MIXED mode the process stay hidden
-                if (request != null && "GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-                    // And throw unauthorized access in other case
-                } else {
+                if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
                     throw unauthorizedAccess(resource);
                 }
             } else if (mode == CatalogMode.CHALLENGE) {

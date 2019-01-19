@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -17,12 +16,9 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.Converters;
-import org.geotools.util.logging.Logging;
 
 /** @see RawMapResponse */
 public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
-    /** A logger for this class. */
-    private static final Logger LOGGER = Logging.getLogger(OpenLayersMapOutputFormat.class);
 
     /** The mime type for the response header */
     public static final String MIME_TYPE = "text/html; subtype=openlayers";

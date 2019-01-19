@@ -48,7 +48,6 @@ import org.geotools.renderer.style.IconStyle2D;
 import org.geotools.renderer.style.MarkStyle2D;
 import org.geotools.renderer.style.Style2D;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.referencing.FactoryException;
@@ -198,8 +197,6 @@ public class PDFMapResponse extends AbstractMapResponse {
                     mapContent.getRendererScaleMethod());
 
             renderer.setRendererHints(rendererParams);
-
-            Envelope dataArea = mapContent.getRenderingArea();
 
             // enforce no more than x rendering errors
             int maxErrors = wms.getMaxRenderingErrors();

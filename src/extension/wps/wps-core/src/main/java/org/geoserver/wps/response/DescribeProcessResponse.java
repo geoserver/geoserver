@@ -41,7 +41,5 @@ public class DescribeProcessResponse extends Response {
         } catch (TransformerException e) {
             throw (IOException) new IOException().initCause(e);
         }
-
-        return;
     }
 }

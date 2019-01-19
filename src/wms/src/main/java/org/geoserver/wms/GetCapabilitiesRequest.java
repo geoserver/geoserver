@@ -31,17 +31,6 @@ public class GetCapabilitiesRequest extends WMSRequest {
         return "GetCapabilities [service: WMS, version: " + version + "]";
     }
 
-    /**
-     * Override of equals. Just calls super.equals, since there are no extra fields here that aren't
-     * in Request. `
-     *
-     * @param o the object to test against.
-     * @return <tt>true</tt> if o is equal to this request.
-     */
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
     /** @return the updateSequence */
     public String getUpdateSequence() {
         return updateSequence;

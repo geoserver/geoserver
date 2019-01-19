@@ -6,7 +6,6 @@ package org.geoserver.rest.security;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
@@ -14,7 +13,6 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/masterpw")
 public class MasterPasswordController extends RestBaseController {
-
-    private static final Logger LOGGER = Logging.getLogger(MasterPasswordController.class);
 
     static final String MP_CURRENT_KEY = "oldMasterPassword";
 

@@ -14,7 +14,6 @@ import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.quantity.Angle;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.measure.Units;
 import org.geotools.referencing.CRS;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
@@ -239,7 +238,6 @@ class GridSetInfo implements Serializable {
     static Double metersPerUnit(final Unit<?> unit) {
         double meters;
         final Unit<Angle> degree = NonSI.DEGREE_ANGLE;
-        final Unit<Angle> dms = Units.DEGREE_MINUTE_SECOND;
 
         if (degree.equals(unit)) {
             meters = GridSetFactory.EPSG4326_TO_METERS;

@@ -43,14 +43,12 @@ public class NewUserPage extends AbstractUserPage {
                 ugStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         } catch (PasswordPolicyException ex) {
             try {
                 ugStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
 
@@ -69,7 +67,6 @@ public class NewUserPage extends AbstractUserPage {
                 gaStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

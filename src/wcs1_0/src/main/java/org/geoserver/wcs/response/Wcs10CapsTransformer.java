@@ -71,8 +71,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private GeoServer geoServer;
-
     private WCSInfo wcs;
 
     private Catalog catalog;
@@ -82,7 +80,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
     /** Creates a new WFSCapsTransformer object. */
     public Wcs10CapsTransformer(GeoServer geoServer) {
         super();
-        this.geoServer = geoServer;
         this.wcs = geoServer.getService(WCSInfo.class);
         this.catalog = geoServer.getCatalog();
         setNamespaceDeclarationEnabled(false);

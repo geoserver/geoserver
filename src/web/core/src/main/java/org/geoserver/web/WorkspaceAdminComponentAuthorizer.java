@@ -5,13 +5,11 @@
  */
 package org.geoserver.web;
 
-import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
-import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -20,8 +18,6 @@ import org.springframework.security.core.Authentication;
  * @author Justin Deoliveira, OpenGeo
  */
 public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer {
-    private static final Logger LOGGER = Logging.getLogger(WorkspaceAdminComponentAuthorizer.class);
-
     @Override
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
 

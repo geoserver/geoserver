@@ -36,7 +36,6 @@ public class NewGroupPage extends AbstractGroupPage {
                 store.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
 
@@ -56,7 +55,6 @@ public class NewGroupPage extends AbstractGroupPage {
                 gaStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

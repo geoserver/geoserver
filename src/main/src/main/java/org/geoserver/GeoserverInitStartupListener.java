@@ -70,8 +70,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     boolean relinquishLoggingControl;
 
-    private Iterator<Class<?>> products;
-
     private static final String COMPARISON_TOLERANCE_PROPERTY = "COMPARISON_TOLERANCE";
 
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
@@ -274,7 +272,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                     // the
                     // sun.jdbc.odbc.JdbcOdbcDriver
                     ClassLoader driverClassLoader = driver.getClass().getClassLoader();
-                    if (driverClassLoader != null && webappClassLoader.equals(driverClassLoader)) {
+                    if (driverClassLoader != null && driverClassLoader.equals(webappClassLoader)) {
                         driversToUnload.add(driver);
                     }
                 } catch (Throwable t) {
@@ -288,10 +286,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Could now unload driver " + driver.getClass(), e);
                 }
-            }
-            drivers = DriverManager.getDrivers();
-            while (drivers.hasMoreElements()) {
-                Driver driver = drivers.nextElement();
             }
             try {
                 Class h2Driver = Class.forName("org.h2.Driver");
@@ -341,11 +335,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 try {
                     executor.shutdown();
                 } finally {
-                    try {
-                        executor.shutdownNow();
-                    } finally {
-
-                    }
+                    executor.shutdownNow();
                 }
             }
 

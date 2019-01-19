@@ -132,7 +132,6 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
             Integer timeToLiveSeconds) {
 
         timeToIdleSeconds = timeToIdleSeconds != null ? timeToIdleSeconds : this.timeToIdleSeconds;
-        ;
         timeToLiveSeconds = timeToLiveSeconds != null ? timeToLiveSeconds : this.timeToLiveSeconds;
 
         writeLock.lock();

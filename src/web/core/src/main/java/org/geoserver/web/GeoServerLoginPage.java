@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.Request;
-import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.security.ConcurrentAuthenticationException;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -31,9 +30,6 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         }
 
         TextField field = new TextField("username");
-        HttpSession session =
-                ((HttpServletRequest) ((WebRequest) getRequest()).getContainerRequest())
-                        .getSession();
 
         // TODO: (from the spring security sources):  @deprecated If you want to retain the
         // username, cache it in a customized {@code AuthenticationFailureHandler}

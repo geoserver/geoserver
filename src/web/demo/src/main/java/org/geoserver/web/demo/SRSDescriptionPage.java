@@ -129,9 +129,6 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         try {
             crs = CRS.decode(code);
             wkt = crs.toString();
-            String epsgOrderCode = WMS.toInternalSRS(code, new Version("1.3.0"));
-            CoordinateReferenceSystem epsgCrs = CRS.decode(epsgOrderCode);
-
         } catch (Exception e) {
             wkt = "Error decoding CRS: " + e.getMessage();
         }

@@ -11,7 +11,6 @@ import static org.geotools.data.shapefile.ShapefileDataStoreFactory.DBFCHARSET;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.MEMORY_MAPPED;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
-import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -24,7 +23,6 @@ import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.ExtensionFileFilter;
-import org.geotools.util.logging.Logging;
 
 /**
  * Provides the form components for the shapefile datastore
@@ -33,8 +31,6 @@ import org.geotools.util.logging.Logging;
  */
 @SuppressWarnings("serial")
 public class ShapefileStoreEditPanel extends StoreEditPanel {
-
-    private static final Logger LOGGER = Logging.getLogger(ShapefileStoreEditPanel.class);
 
     public ShapefileStoreEditPanel(final String componentId, final Form storeEditForm) {
         super(componentId, storeEditForm);

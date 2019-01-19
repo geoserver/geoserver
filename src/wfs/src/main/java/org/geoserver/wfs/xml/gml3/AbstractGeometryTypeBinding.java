@@ -78,10 +78,11 @@ public class AbstractGeometryTypeBinding
                 // no crs set for the geometry, did we inherit one from a parent?
                 if (crs != null) {
                     geometry.setUserData(crs);
-                } else {
-                    // for the moment we don't do anything since we miss the information
-                    // to infer the CRS from the feature type
                 }
+                // else {
+                // for the moment we don't do anything since we miss the information
+                // to infer the CRS from the feature type
+                // }
             }
 
             // 2. ensure the coordinates of the geometry fall into valid space defined by crs

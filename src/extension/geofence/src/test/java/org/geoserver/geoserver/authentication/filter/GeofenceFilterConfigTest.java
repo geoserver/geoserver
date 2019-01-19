@@ -46,7 +46,6 @@ public class GeofenceFilterConfigTest extends GeofenceBaseTest {
         geofenceAuth.setSecurityManager(getSecurityManager());
         geofenceAuth.setRuleReaderService(geofenceService);
         filter.setGeofenceAuth(geofenceAuth);
-        filter.setRuleReaderService(geofenceService);
 
         filter.initializeFromConfig(config);
     }

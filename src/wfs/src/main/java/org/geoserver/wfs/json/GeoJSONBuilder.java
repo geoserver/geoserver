@@ -9,7 +9,6 @@ import java.io.Writer;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
 import org.geotools.referencing.CRS;
@@ -33,8 +32,6 @@ import org.locationtech.jts.geom.Polygon;
  * @version $Id$
  */
 public class GeoJSONBuilder extends JSONBuilder {
-
-    private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
@@ -160,14 +157,6 @@ public class GeoJSONBuilder extends JSONBuilder {
         }
         // we are done with the array
         return this.endArray();
-    }
-
-    private JSONBuilder writeCoordinate(double x, double y) {
-        return writeCoordinate(x, y, Double.NaN);
-    }
-
-    private JSONBuilder writeCoordinate(double x, double y, double z) {
-        return writeCoordinate(x, y, z, Double.NaN);
     }
 
     /**

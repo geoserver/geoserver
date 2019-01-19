@@ -9,7 +9,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -17,7 +16,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
-import org.geotools.util.logging.Logging;
 
 /**
  * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to seed a (meta)tile
@@ -31,8 +29,6 @@ import org.geotools.util.logging.Logging;
  * @author Gabriel Roldan
  */
 public class CacheSeedingWebMapService implements MethodInterceptor {
-
-    private static final Logger LOGGER = Logging.getLogger(CacheSeedingWebMapService.class);
 
     public CacheSeedingWebMapService() {}
 

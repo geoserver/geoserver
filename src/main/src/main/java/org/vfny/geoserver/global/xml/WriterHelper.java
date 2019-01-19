@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.vfny.geoserver.global.ConfigurationException;
 
@@ -25,10 +24,6 @@ import org.vfny.geoserver.global.ConfigurationException;
  * @version $Id$
  */
 public class WriterHelper {
-    /** Used internally to create log information to detect errors. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
-
     /**
      * Will find out if a string contains chars that need to be turned into an xml entity, even if
      * the string has lineends inside of it (thus the DOTALL flag)

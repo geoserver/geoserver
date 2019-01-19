@@ -730,7 +730,6 @@ public class GetCoverage {
                 }
             }
         }
-        ;
         return dimensions.toArray(new GridSampleDimension[dimensions.size()]);
     }
 

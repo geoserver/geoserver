@@ -63,8 +63,6 @@ public class WMSMapContent extends MapContent {
 
     private Map<String, Object> metadata = new HashMap<>();
 
-    private Integer maxRenderingTime;
-
     public int getTileSize() {
         return tileSize;
     }

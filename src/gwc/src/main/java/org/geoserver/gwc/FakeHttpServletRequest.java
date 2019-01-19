@@ -311,6 +311,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
         throw new ServletDebugException();
     }
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public String getRemoteAddr() {
         return original.map(r -> r.getRemoteAddr()).orElse("127.0.0.1");
     }

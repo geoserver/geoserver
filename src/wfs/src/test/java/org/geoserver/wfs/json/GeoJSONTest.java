@@ -787,7 +787,7 @@ public class GeoJSONTest extends WFSTestSupport {
                                         + getLayerId(MULTI_GEOMETRIES_WITH_NULL)
                                         + "&outputformat="
                                         + JSONType.json);
-        print(collection);
+        // print(collection);
         assertEquals(3, collection.getInt("totalFeatures"));
 
         JSONArray features = collection.getJSONArray("features");

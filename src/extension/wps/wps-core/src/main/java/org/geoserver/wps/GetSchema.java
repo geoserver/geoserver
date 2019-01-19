@@ -77,7 +77,5 @@ public class GetSchema {
         } catch (Exception e) {
             throw new WPSException("NoApplicableCode", "Could not write schema to output.");
         }
-
-        return;
     }
 }

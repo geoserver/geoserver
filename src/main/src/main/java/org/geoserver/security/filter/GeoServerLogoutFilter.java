@@ -76,7 +76,6 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
             }
         }
         if (doLogout) doLogout(request, response);
-        return;
     }
 
     public void doLogout(

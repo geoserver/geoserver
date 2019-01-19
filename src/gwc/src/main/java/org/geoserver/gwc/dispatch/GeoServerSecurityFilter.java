@@ -6,12 +6,10 @@
 package org.geoserver.gwc.dispatch;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 import org.geoserver.gwc.GWC;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
-import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.filter.security.SecurityFilter;
 import org.geowebcache.grid.BoundingBox;
@@ -26,8 +24,6 @@ import org.opengis.referencing.FactoryException;
  * @author Kevin Smith, Boundless
  */
 public class GeoServerSecurityFilter implements SecurityFilter {
-
-    private static final Logger log = Logging.getLogger(GWC.class);
 
     @Override
     public void checkSecurity(TileLayer layer, BoundingBox extent, SRS srs)

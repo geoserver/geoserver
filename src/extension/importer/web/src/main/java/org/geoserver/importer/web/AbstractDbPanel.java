@@ -88,7 +88,6 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
 
         // build up the store connection param map
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        DataStoreFactorySpi factory = fillStoreParams(params);
 
         return new Database(params);
 
@@ -131,7 +130,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
         //          LOGGER.log(Level.SEVERE, "Error while setting up mass import", e);
         //      }
         //        return new DataStoreSource()
-    };
+    }
 
     /** Switches between the types of param panels */
     Component connectionTypeChoice(final Map<String, Component> paramPanelMap) {

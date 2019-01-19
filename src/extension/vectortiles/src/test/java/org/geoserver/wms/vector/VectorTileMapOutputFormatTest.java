@@ -102,7 +102,7 @@ public class VectorTileMapOutputFormatTest {
         when(tileBuilderFactory.newBuilder(any(Rectangle.class), any(ReferencedEnvelope.class)))
                 .thenReturn(tileBuilderMock);
 
-        outputFormat = new VectorTileMapOutputFormat(wmsMock, tileBuilderFactory);
+        outputFormat = new VectorTileMapOutputFormat(tileBuilderFactory);
         outputFormat.setClipToMapBounds(true);
 
         MemoryDataStore ds = new MemoryDataStore();

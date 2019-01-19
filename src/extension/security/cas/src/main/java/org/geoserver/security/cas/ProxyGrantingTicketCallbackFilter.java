@@ -55,7 +55,6 @@ public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware 
             throws IOException, ServletException {
         CommonUtils.readAndRespondToProxyReceptorRequest(
                 (HttpServletRequest) request, (HttpServletResponse) response, pgtStorageFilter);
-        return;
     }
 
     @Override

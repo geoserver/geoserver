@@ -104,7 +104,6 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                                         ugStore.load();
                                     } catch (IOException ex2) {
                                     }
-                                    ;
                                     throw new RuntimeException(ex);
                                 }
 
@@ -133,7 +132,6 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                                             gaStore.load();
                                         } catch (IOException ex2) {
                                         }
-                                        ;
                                         throw new RuntimeException(ex);
                                     }
                                 }

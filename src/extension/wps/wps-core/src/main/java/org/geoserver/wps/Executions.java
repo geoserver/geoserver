@@ -10,7 +10,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
-import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.kvp.GetExecutionsKvpFilterBuilder;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Query;
@@ -54,17 +53,12 @@ public class Executions {
     /** Used by the response builder */
     private ApplicationContext ctx;
 
-    /** Used to cancel the progress of a certain process */
-    private WPSExecutionManager executionManager;
-
     public Executions(
             GeoServer gs,
-            WPSExecutionManager executionManager,
             ProcessStatusTracker statusTracker,
             WPSResourceManager resources,
             ApplicationContext ctx) {
         this.gs = gs;
-        this.executionManager = executionManager;
         this.statusTracker = statusTracker;
         this.resources = resources;
         this.ctx = ctx;
@@ -163,8 +157,6 @@ public class Executions {
         GetExecutionsTransformer executionsTransformer =
                 new GetExecutionsTransformer(
                         gs.getService(WPSInfo.class),
-                        executionManager,
-                        statusTracker,
                         resources,
                         ctx,
                         request,

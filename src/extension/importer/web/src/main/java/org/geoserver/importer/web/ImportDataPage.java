@@ -225,9 +225,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                             try {
                                                 if (t.getError() != null) {
                                                     error(t.getError());
-                                                } else if (t.isCancelled()) {
-                                                    // do nothing
-                                                } else {
+                                                } else if (!t.isCancelled()) {
                                                     ImportContext imp = t.get();
 
                                                     // check the import for actual things to do

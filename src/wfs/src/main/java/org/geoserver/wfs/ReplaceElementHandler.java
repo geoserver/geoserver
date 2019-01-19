@@ -23,7 +23,6 @@ import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureStore;
-import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
@@ -99,15 +98,10 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
             throw new WFSException(element, "Could not obtain feature store");
         }
 
-        // check the supplied filter matches the number of supplied features
-        String featureTypeName = featureStore.getSchema().getTypeName();
-
         // ids of replaced features
         Collection<FeatureId> replaced = new ArrayList();
 
         try {
-            Query query = new Query(featureTypeName, replace.getFilter());
-
             SimpleFeatureCollection features = featureStore.getFeatures(replace.getFilter());
             if (newFeatures.size() != features.size()) {
                 throw new WFSException(

@@ -1440,6 +1440,7 @@ public class GetFeature {
         return meta;
     }
 
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     List<List<String>> parsePropertyNames(Query query, List<FeatureTypeInfo> featureTypes) {
         List<List<String>> propNames = new ArrayList();
         for (FeatureTypeInfo featureType : featureTypes) {

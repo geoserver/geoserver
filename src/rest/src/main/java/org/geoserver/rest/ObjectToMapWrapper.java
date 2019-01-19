@@ -169,23 +169,6 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         return null;
     }
 
-    private static Set<Class<?>> getValueTypes() {
-        Set<Class<?>> ret = new HashSet<>();
-        // primitives
-        ret.add(Boolean.class);
-        ret.add(Character.class);
-        ret.add(Byte.class);
-        ret.add(Short.class);
-        ret.add(Integer.class);
-        ret.add(Long.class);
-        ret.add(Float.class);
-        ret.add(Double.class);
-        ret.add(Void.class);
-        // other values
-        ret.add(String.class);
-        return ret;
-    }
-
     /**
      * Add {@link RequestInfo} to the freemarker model
      *

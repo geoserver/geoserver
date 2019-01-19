@@ -9,7 +9,6 @@ import ar.com.hjg.pngj.FilterType;
 import it.geosolutions.imageio.plugins.png.PNGWriter;
 import java.awt.image.RenderedImage;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
@@ -17,7 +16,6 @@ import org.geotools.map.Layer;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.Style;
-import org.geotools.util.logging.Logging;
 
 /**
  * Encodes the image in PNG using the PNGJ library
@@ -25,8 +23,6 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  */
 public class PNGJWriter {
-
-    private static final Logger LOGGER = Logging.getLogger(PNGJWriter.class);
 
     public RenderedImage writePNG(
             RenderedImage image, OutputStream outStream, float quality, WMSMapContent mapContent) {

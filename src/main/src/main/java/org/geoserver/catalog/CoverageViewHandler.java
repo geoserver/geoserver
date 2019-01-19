@@ -255,7 +255,6 @@ class CoverageViewHandler {
             GridEnvelope gridRange = reader.getOriginalGridRange();
             CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
             String[] metadataNames = reader.getMetadataNames();
-            Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
 
             // Checking envelope equality
             if (!envelope.equals(this.envelope, DELTA, true)) {

@@ -83,8 +83,6 @@ class SVGWriter extends OutputStreamWriter {
 
     private double minCoordDistance;
 
-    private String attributeStyle;
-
     private boolean pointsAsCircles;
 
     /** Creates a new SVGWriter object. */
@@ -106,10 +104,6 @@ class SVGWriter extends OutputStreamWriter {
         writers.put(MultiPoint.class, new MultiPointWriter());
         writers.put(MultiLineString.class, new MultiLineStringWriter());
         writers.put(MultiPolygon.class, new MultiPolygonWriter());
-    }
-
-    public void setAttributeStyle(String attributeName) {
-        this.attributeStyle = attributeName;
     }
 
     public void setPointsAsCircles(boolean asCircles) {
@@ -225,8 +219,6 @@ class SVGWriter extends OutputStreamWriter {
                 style = null;
             }
 
-            setAttributeStyle(style);
-
             setUpWriterHandler(featureType, doCollect);
 
             if (doCollect) {
@@ -259,8 +251,6 @@ class SVGWriter extends OutputStreamWriter {
             LOGGER.finer("Established a collecting features writer handler");
         } else {
             this.writerHandler = new SVGFeatureWriterHandler();
-
-            String typeName = featureType.getTypeName();
 
             /*
              * REVISIT: get rid of all this attribute stuff, since if attributes are needed it fits
@@ -405,7 +395,6 @@ class SVGWriter extends OutputStreamWriter {
 
             SimpleFeatureType type = ft.getFeatureType();
             int numAtts = type.getAttributeCount();
-            String name;
             Object value;
 
             for (int i = 0; i < numAtts; i++) {

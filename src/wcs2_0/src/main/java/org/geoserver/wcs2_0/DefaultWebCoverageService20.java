@@ -131,8 +131,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         WCSInfo wcs = getServiceInfo();
 
         WCS20DescribeCoverageTransformer describeTransformer =
-                new WCS20DescribeCoverageTransformer(
-                        wcs, catalog, responseFactory, envelopeAxesMapper, mimeMapper);
+                new WCS20DescribeCoverageTransformer(catalog, envelopeAxesMapper, mimeMapper);
         describeTransformer.setEncoding(
                 Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
         return describeTransformer;

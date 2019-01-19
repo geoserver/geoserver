@@ -47,7 +47,6 @@ public class ScaleLineDecoration implements MapDecoration {
 
     private float fontSize = 10;
     private float dpi = 25.4f / 0.28f; // / OGC Spec for SLD
-    private float strokeWidth = 2;
 
     private Color bgcolor = Color.WHITE;
     private Color fgcolor = Color.BLACK;
@@ -89,14 +88,6 @@ public class ScaleLineDecoration implements MapDecoration {
                 this.dpi = Float.parseFloat(options.get("dpi"));
             } catch (Exception e) {
                 this.LOGGER.log(Level.WARNING, "'dpi' must be a float.", e);
-            }
-        }
-
-        if (options.get("strokewidth") != null) {
-            try {
-                this.strokeWidth = Float.parseFloat(options.get("strokeWidth"));
-            } catch (Exception e) {
-                this.LOGGER.log(Level.WARNING, "'strokewidth' must be a float.", e);
             }
         }
 

@@ -276,7 +276,6 @@ public abstract class AbstractUserGroupStore implements GeoServerUserGroupStore 
      */
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
         Collection<GeoServerUser> users = helper.group_userMap.get(group);
-        ;
         if (users != null) {
             Collection<GeoServerUser> toBeRemoved = new ArrayList<GeoServerUser>();
             toBeRemoved.addAll(users);

@@ -242,7 +242,6 @@ public class GMLFileFormat extends VectorFormat {
                         continue;
                     }
                     String tag = parser.getName();
-                    String ns = parser.getNamespace();
                     if ("outerBoundaryIs".equals(tag) || "innerBoundaryIs".equals(tag)) {
                         version = GMLVersion.GML2;
                         break;

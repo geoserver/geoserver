@@ -136,9 +136,6 @@ public class LegendUtils {
     /** default legend graphic layout is vertical */
     private static final LegendLayout DEFAULT_LAYOUT = LegendLayout.VERTICAL;
 
-    /** default group legend graphic layout is vertical */
-    private static final LegendLayout DEFAULT_GROUPLAYOUT = LegendLayout.VERTICAL;
-
     /** default column height is not limited */
     private static final int DEFAULT_COLUMN_HEIGHT = 0;
 

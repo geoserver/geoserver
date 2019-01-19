@@ -152,7 +152,7 @@ public class WPSExecutionManager
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);
-        LazyInputMap inputs = request.getProcessInputs(WPSExecutionManager.this);
+        LazyInputMap inputs = request.getProcessInputs(this);
         request.validateOutputs(inputs);
         ExecutionStatus status =
                 new ExecutionStatus(processName, executionId, request.isAsynchronous());

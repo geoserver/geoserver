@@ -114,7 +114,7 @@ public class SLDHandler extends StyleHandler {
 
     @Override
     public String mimeType(Version version) {
-        if (version != null && VERSION_11.equals(version)) {
+        if (version != null && version.equals(VERSION_11)) {
             return MIMETYPE_11;
         }
         return MIMETYPE_10;

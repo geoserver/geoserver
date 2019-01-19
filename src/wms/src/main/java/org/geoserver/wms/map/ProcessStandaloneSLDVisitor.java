@@ -82,9 +82,6 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
             request.setFilter(new ArrayList());
         }
         for (int i = 0; i < featureConstraints.length; i++) {
-            // make sure the layer is there
-            String name = featureConstraints[i].getFeatureTypeName();
-
             // grab the filter
             Filter filter = featureConstraints[i].getFilter();
             if (filter == null) {

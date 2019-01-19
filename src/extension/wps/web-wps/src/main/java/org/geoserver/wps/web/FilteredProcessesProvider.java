@@ -118,15 +118,9 @@ public class FilteredProcessesProvider
         }
     }
 
-    private ProcessGroupInfo pfi;
-
-    private Locale locale;
-
     private List<FilteredProcess> selectableProcesses;
 
     public FilteredProcessesProvider(ProcessGroupInfo pfi, Locale locale) {
-        this.pfi = pfi;
-        this.locale = locale;
         ProcessFactory pf = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false);
         Set<Name> names = pf.getNames();
         selectableProcesses = new ArrayList<FilteredProcess>();

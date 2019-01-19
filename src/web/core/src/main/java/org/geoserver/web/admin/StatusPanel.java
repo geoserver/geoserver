@@ -6,7 +6,7 @@ package org.geoserver.web.admin;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
 import com.sun.media.jai.util.CacheDiagnostics;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +30,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
-import org.geotools.data.LockingManager;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
@@ -322,7 +319,7 @@ public class StatusPanel extends Panel {
 
         CloseableIterator<DataStoreInfo> i = getDataStores();
         try {
-            for (; i.hasNext(); ) {
+            while (i.hasNext()) {
                 DataStoreInfo meta = (DataStoreInfo) i.next();
 
                 if (!meta.isEnabled()) {
@@ -330,20 +327,20 @@ public class StatusPanel extends Panel {
                     continue;
                 }
 
-                try {
-                    DataAccess store = meta.getDataStore(null);
-                    if (store instanceof DataStore) {
-                        LockingManager lockingManager = ((DataStore) store).getLockingManager();
-                        if (lockingManager != null) {
-                            // we can't actually *count* locks right now?
-                            // count += lockingManager.getLockSet().size();
-                        }
-                    }
-                } catch (IllegalStateException notAvailable) {
-                    continue;
-                } catch (Throwable huh) {
-                    continue;
-                }
+                // try {
+                // DataAccess store = meta.getDataStore(null);
+                // if (store instanceof DataStore) {
+                //    LockingManager lockingManager = ((DataStore) store).getLockingManager();
+                //    if (lockingManager != null) {
+                //        // we can't actually *count* locks right now?
+                //        count += lockingManager.getLockSet().size();
+                //    }
+                // }
+                // } catch (IllegalStateException notAvailable) {
+                //      continue;
+                // } catch (Throwable huh) {
+                //    continue;
+                // }
             }
         } finally {
             i.close();
@@ -356,7 +353,7 @@ public class StatusPanel extends Panel {
 
         CloseableIterator<DataStoreInfo> i = getDataStores();
         try {
-            for (; i.hasNext(); ) {
+            while (i.hasNext()) {
                 DataStoreInfo meta = i.next();
 
                 if (!meta.isEnabled()) {

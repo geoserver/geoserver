@@ -315,8 +315,6 @@ public class LockFeature {
      */
     public void release(String lockId) throws WFSException {
         try {
-            boolean refresh = false;
-
             List dataStores = catalog.getDataStores();
 
             for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
@@ -346,10 +344,8 @@ public class LockFeature {
 
                 try {
                     t.addAuthorization(lockId);
+                    lockingManager.release(lockId, t);
 
-                    if (lockingManager.release(lockId, t)) {
-                        refresh = true;
-                    }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 } finally {
@@ -359,10 +355,6 @@ public class LockFeature {
                         LOGGER.log(Level.FINEST, closeException.getMessage(), closeException);
                     }
                 }
-            }
-
-            if (!refresh) {
-                // throw exception? or ignore...
             }
         } catch (Exception e) {
             throw new WFSException(e);

@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
@@ -70,9 +69,6 @@ import org.xml.sax.XMLReader;
  * @author groldan
  */
 public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
-
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(GetCapabilitiesResponse.class);
 
     private WMS wms;
 

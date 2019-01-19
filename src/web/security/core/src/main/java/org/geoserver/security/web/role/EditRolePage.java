@@ -62,7 +62,6 @@ public class EditRolePage extends AbstractRolePage {
                 store.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

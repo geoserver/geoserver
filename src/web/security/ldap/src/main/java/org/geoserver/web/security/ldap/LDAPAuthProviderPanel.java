@@ -233,8 +233,6 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                             } catch (Exception e) {
                                 error(e);
                                 LOGGER.log(Level.WARNING, e.getMessage(), e);
-                            } finally {
-
                             }
                         }
                     }.setDefaultFormProcessing(false));

@@ -907,7 +907,6 @@ public class GetMap {
                         FeatureTypeConstraint featureTypeConstraint = featureTypeConstraints[j];
                         filters.add(featureTypeConstraint.getFilter());
                     }
-                    ;
                     combined = ff.and(combined, ff.and(filters));
                 }
                 combinedList[i] = combined;

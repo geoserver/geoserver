@@ -84,8 +84,6 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         REQUEST_CONTROLLERS.remove();
     }
 
-    private ApplicationContext applicationContext;
-
     /** Returns the current number of blocked/queued requests. */
     public long getBlockedRequests() {
         return blockedRequests.get();
@@ -203,7 +201,6 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
         if (applicationContext instanceof ConfigurableApplicationContext) {
             // register default beans if needed
             registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);

@@ -157,9 +157,6 @@ public class ResourcePool {
     /** Default number of hard references */
     static int FEATURETYPE_CACHE_SIZE_DEFAULT = 100;
 
-    private static final String IMAGE_PYRAMID = "ImagePyramid";
-    private static final String IMAGE_MOSAIC = "ImageMosaic";
-
     Catalog catalog;
     Map<String, CoordinateReferenceSystem> crsCache;
     DataStoreCache dataStoreCache;

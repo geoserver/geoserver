@@ -400,13 +400,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
      * @see org.geoserver.security.password.KeystoreProvider#abortMasterPasswordChange()
      */
     @Override
-    public void abortMasterPasswordChange() {
-        Resource dir = getResource().parent();
-        Resource newKSFile = dir.get(PREPARED_FILE_NAME);
-        if (newKSFile.getType() != Type.UNDEFINED) {
-            // newKSFile.delete();
-        }
-    }
+    public void abortMasterPasswordChange() {}
 
     /* (non-Javadoc)
      * @see org.geoserver.security.password.KeystoreProvider#commitMasterPasswordChange()

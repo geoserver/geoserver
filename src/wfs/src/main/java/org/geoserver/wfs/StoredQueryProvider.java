@@ -152,9 +152,9 @@ public class StoredQueryProvider {
         try {
             Resource dir = storedQueryDir();
             Resource f = dir.get(toFilename(query.getName()));
-            if (f.getType() != Type.UNDEFINED) {
-                // TODO: back up the old file in case there is an error during encoding
-            }
+            // if (f.getType() != Type.UNDEFINED) {
+            // TODO: back up the old file in case there is an error during encoding
+            // }
 
             BufferedOutputStream bout = new BufferedOutputStream(f.out());
             try {

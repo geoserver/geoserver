@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
-import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
@@ -46,9 +45,6 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
     /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(VectorTileMapOutputFormat.class);
 
-    /** WMS Service configuration * */
-    private final WMS wms;
-
     private final VectorTileBuilderFactory tileBuilderFactory;
 
     private boolean clipToMapBounds;
@@ -58,9 +54,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
     private boolean transformToScreenCoordinates;
 
-    public VectorTileMapOutputFormat(WMS wms, VectorTileBuilderFactory tileBuilderFactory) {
+    public VectorTileMapOutputFormat(VectorTileBuilderFactory tileBuilderFactory) {
         super(tileBuilderFactory.getMimeType(), tileBuilderFactory.getOutputFormats());
-        this.wms = wms;
         this.tileBuilderFactory = tileBuilderFactory;
     }
 

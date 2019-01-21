@@ -36,14 +36,13 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("ows", OWS.NAMESPACE);
         namespaces.put("ogc", OGC.NAMESPACE);
-        namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("xlink", XLINK.NAMESPACE);
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
         namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
         namespaces.put("gmd", MetaDataDescriptor.NAMESPACE_GMD);
         namespaces.put("gco", MetaDataDescriptor.NAMESPACE_GCO);
-        namespaces.put("dc", MetaDataDescriptor.NAMESPACE_GCO);
+        namespaces.put("gml", MetaDataDescriptor.NAMESPACE_GML);
         namespaces.put("dc", DC.NAMESPACE);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));

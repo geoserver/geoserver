@@ -6,11 +6,14 @@ package org.geoserver.wfs3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.MapEntry;
 import org.geotools.util.logging.Logging;
 
@@ -30,6 +33,10 @@ public class NCNameResourceCodec {
     }
 
     public static String encode(String workspaceName, String resourceName) {
+        final WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace != null && workspace.getName().equalsIgnoreCase(workspaceName)) {
+            return resourceName;
+        }
         return workspaceName + DELIMITER + resourceName;
     }
 
@@ -42,6 +49,11 @@ public class NCNameResourceCodec {
      *     decoded.
      */
     public static List<LayerInfo> getLayers(Catalog catalog, String encodedResourceId) {
+        final WorkspaceInfo workspace = LocalWorkspace.get();
+        if (workspace != null) {
+            encodedResourceId = workspace.getName() + DELIMITER + encodedResourceId;
+        }
+
         List<MapEntry<String, String>> decodedList = decode(encodedResourceId);
         if (decodedList.isEmpty()) {
             LOGGER.info("Could not decode id '" + encodedResourceId + "'");
@@ -55,31 +67,31 @@ public class NCNameResourceCodec {
         for (MapEntry<String, String> mapEntry : decodedList) {
 
             String namespace = mapEntry.getKey();
-            String covName = mapEntry.getValue();
+            String localName = mapEntry.getValue();
 
             if (namespace == null || namespace.isEmpty()) {
-                LOGGER.info(" Checking coverage name " + covName);
+                LOGGER.log(Level.FINE, " Checking coverage name {0}", localName);
 
-                LayerInfo layer = catalog.getLayerByName(covName);
+                LayerInfo layer = catalog.getLayerByName(localName);
                 if (layer != null) {
-                    LOGGER.info(" - Collecting layer " + layer.prefixedName());
+                    LOGGER.log(Level.FINE, " - Collecting layer {0}", layer.prefixedName());
                     ret.add(layer);
                 } else {
-                    LOGGER.info(" - Ignoring layer " + covName);
+                    LOGGER.log(Level.FINE, " - Ignoring layer {0}", localName);
                 }
             } else {
-                LOGGER.info(" Checking pair " + namespace + " : " + covName);
+                LOGGER.info(" Checking pair " + namespace + " : " + localName);
 
-                String fullName = namespace + ":" + covName;
+                String fullName = namespace + ":" + localName;
                 NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
                 if (nsInfo != null) {
-                    LOGGER.info(" - Namespace found " + namespace);
+                    LOGGER.log(Level.FINE, " - Namespace found {0}", namespace);
                     LayerInfo layer = catalog.getLayerByName(fullName);
                     if (layer != null) {
-                        LOGGER.info(" - Collecting layer " + layer.prefixedName());
+                        LOGGER.log(Level.FINE, " - Collecting layer {0} ", layer.prefixedName());
                         ret.add(layer);
                     } else {
-                        LOGGER.info(" - Ignoring layer " + fullName);
+                        LOGGER.log(Level.FINE, " - Ignoring layer {0} " + fullName);
                     }
                 } else {
                     LOGGER.info(" - Namespace not found " + namespace);

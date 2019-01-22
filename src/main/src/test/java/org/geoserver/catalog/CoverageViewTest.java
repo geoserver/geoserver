@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +46,7 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -73,16 +70,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     public void cleanupCatalog() {
         // attempt to solve intermittend build failure
         getGeoServer().reset();
-    }
-
-    @BeforeClass
-    public static void setupJaiExt() {
-        JAIExt.initJAIEXT(true, true);
-    }
-
-    @AfterClass
-    public static void tearDownJaiExt() {
-        JAIExt.initJAIEXT(false, false);
     }
 
     static CoordinateReferenceSystem UTM32N;

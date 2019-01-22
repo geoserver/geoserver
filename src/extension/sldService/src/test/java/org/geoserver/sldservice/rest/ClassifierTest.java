@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -69,8 +68,6 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsLessThan;
@@ -111,16 +108,6 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     private static final double EPS = 1e-6;
     public static final String MULTIBAND_VIEW = "multiband_select";
-
-    @BeforeClass
-    public static void setupJaiExt() {
-        JAIExt.initJAIEXT(true, true);
-    }
-
-    @AfterClass
-    public static void cleanupJaiExt() {
-        JAIExt.initJAIEXT(false, true);
-    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

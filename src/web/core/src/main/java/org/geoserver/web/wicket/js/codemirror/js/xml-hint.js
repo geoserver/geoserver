@@ -2406,7 +2406,7 @@
   function getVersion(style) {
     var styleHeader = style.match(/<.*StyledLayerDescriptor[^]+?>/);
     if (styleHeader != null && styleHeader[0] != null) {
-        var version = styleHeader[0].match(/version="(.*)"/);
+        var version = styleHeader[0].match(/version="(.*?)"/);
         if (version != null && version[1] != null) {
             return version[1];
         } else {

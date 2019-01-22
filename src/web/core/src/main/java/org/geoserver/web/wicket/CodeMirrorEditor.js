@@ -54,14 +54,6 @@ var editor = CodeMirror.fromTextArea(textarea, {
 });
 editor.getWrapperElement().style.fontSize = "12px"; 
 editor.refresh();
-CodeMirror.on(window, 'keyup', function(event) {
-  var blacklist = [
-      27 // Esc
-  ];
-  if (!blacklist.includes(event.keyCode)) {
-    completeIfValidPos(document.gsEditors.editor);
-  }
-});
 
 if(!document.gsEditors) {
     document.gsEditors = {};

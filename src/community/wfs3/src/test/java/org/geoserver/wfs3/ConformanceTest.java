@@ -25,6 +25,6 @@ public class ConformanceTest extends WFS3TestSupport {
     @Test
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("wfs3/conformance/?f=application/x-yaml");
-        System.out.println(yaml);
+        // System.out.println(yaml);
     }
 }

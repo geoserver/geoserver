@@ -29,7 +29,7 @@ public class CollectionsTest extends WFS3TestSupport {
     public static final String BASIC_POLYGONS_DESCRIPTION = "I love basic polygons!";
 
     @Override
-    protected void onSetUp(SystemTestData testData) {
+    protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         FeatureTypeInfo basicPolygons =

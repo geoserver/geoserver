@@ -6,7 +6,6 @@
  */
 package org.geoserver.wfs3.response;
 
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateMethodModel;
@@ -24,14 +23,11 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.template.TemplateUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs3.BaseRequest;
 import org.geotools.util.Converters;
 
 public abstract class AbstractHTMLResponse extends Response {
-
-    private static Configuration templateConfig = TemplateUtils.getSafeConfiguration();
 
     protected final GeoServer geoServer;
     private FreemarkerTemplateSupport templateSupport;
@@ -40,7 +36,7 @@ public abstract class AbstractHTMLResponse extends Response {
             Class<?> binding, GeoServerResourceLoader loader, GeoServer geoServer) {
         super(binding, BaseRequest.HTML_MIME);
         this.geoServer = geoServer;
-        this.templateSupport = new FreemarkerTemplateSupport(loader, geoServer);
+        this.templateSupport = new FreemarkerTemplateSupport(loader);
     }
 
     @Override

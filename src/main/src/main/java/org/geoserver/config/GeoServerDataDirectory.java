@@ -61,6 +61,8 @@ public class GeoServerDataDirectory {
     GeoServerResourceLoader resourceLoader;
 
     EntityResolverProvider entityResolverProvider;
+    
+    GeoServerResourceLocator resourceLocator;
 
     /** Creates the data directory specifying the resource loader. */
     public GeoServerDataDirectory(GeoServerResourceLoader resourceLoader) {
@@ -1279,66 +1281,7 @@ public class GeoServerDataDirectory {
         File input = styleResource.file();
 
         DefaultResourceLocator locator =
-                new DefaultResourceLocator() {
-
-                    @Override
-                    public URL locateResource(String uri) {
-                        URL url = super.locateResource(uri);
-                        if (url != null && url.getProtocol().equalsIgnoreCase("resource")) {
-                            Resource resource = resourceLoader.fromURL(url);
-                            File file;
-                            if (Resources.exists(resource)) {
-                                // GEOS-7741: cache resource as file, otherwise it can't be found
-                                file = resource.file();
-                            } else {
-                                // GEOS-7025: Just get the path; don't try to create the file
-                                file = Paths.toFile(root(), resource.path());
-                            }
-
-                            URL u = fileToUrlPreservingCqlTemplates(file);
-
-                            if (url.getQuery() != null) {
-                                try {
-                                    u = new URL(u.toString() + "?" + url.getQuery());
-                                } catch (MalformedURLException ex) {
-                                    GeoServerConfigPersister.LOGGER.log(
-                                            Level.WARNING,
-                                            "Error processing query string for resource with uri: "
-                                                    + uri,
-                                            ex);
-                                    return null;
-                                }
-                            }
-
-                            if (url.getRef() != null) {
-                                try {
-                                    u = new URL(u.toString() + "#" + url.getRef());
-                                } catch (MalformedURLException ex) {
-                                    GeoServerConfigPersister.LOGGER.log(
-                                            Level.WARNING,
-                                            "Error processing # fragment for resource with uri: "
-                                                    + uri,
-                                            ex);
-                                    return null;
-                                }
-                            }
-
-                            return u;
-                        } else {
-                            return url;
-                        }
-                    }
-
-                    @Override
-                    protected URL validateRelativeURL(URL relativeUrl) {
-                        // the resource:/ thing does not make for a valid url, so don't validate it
-                        if (relativeUrl.getProtocol().equalsIgnoreCase("resource")) {
-                            return relativeUrl;
-                        } else {
-                            return super.validateRelativeURL(relativeUrl);
-                        }
-                    }
-                };
+                new GeoServerResourceLocator();
         locator.setSourceUrl(Resources.toURL(styleResource));
         EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
@@ -1503,5 +1446,72 @@ public class GeoServerDataDirectory {
 
     public ResourceStore getResourceStore() {
         return resourceLoader.getResourceStore();
+    }
+    
+    public ResourceLocator getResourceLocator() {
+        GeoServerResourceLocator locator = new GeoServerResourceLocator();
+        locator.setSourceUrl(URLs.fileToUrl(getStyles().dir()));
+        return locator;
+    }
+
+    private class GeoServerResourceLocator extends DefaultResourceLocator {
+
+        @Override
+        public URL locateResource(String uri) {
+            URL url = super.locateResource(uri);
+            if (url != null && url.getProtocol().equalsIgnoreCase("resource")) {
+                Resource resource = resourceLoader.fromURL(url);
+                File file;
+                if (Resources.exists(resource)) {
+                    // GEOS-7741: cache resource as file, otherwise it can't be found
+                    file = resource.file();
+                } else {
+                    // GEOS-7025: Just get the path; don't try to create the file
+                    file = Paths.toFile(root(), resource.path());
+                }
+
+                URL u = fileToUrlPreservingCqlTemplates(file);
+
+                if (url.getQuery() != null) {
+                    try {
+                        u = new URL(u.toString() + "?" + url.getQuery());
+                    } catch (MalformedURLException ex) {
+                        GeoServerConfigPersister.LOGGER.log(
+                                Level.WARNING,
+                                "Error processing query string for resource with uri: "
+                                        + uri,
+                                ex);
+                        return null;
+                    }
+                }
+
+                if (url.getRef() != null) {
+                    try {
+                        u = new URL(u.toString() + "#" + url.getRef());
+                    } catch (MalformedURLException ex) {
+                        GeoServerConfigPersister.LOGGER.log(
+                                Level.WARNING,
+                                "Error processing # fragment for resource with uri: "
+                                        + uri,
+                                ex);
+                        return null;
+                    }
+                }
+
+                return u;
+            } else {
+                return url;
+            }
+        }
+
+        @Override
+        protected URL validateRelativeURL(URL relativeUrl) {
+            // the resource:/ thing does not make for a valid url, so don't validate it
+            if (relativeUrl.getProtocol().equalsIgnoreCase("resource")) {
+                return relativeUrl;
+            } else {
+                return super.validateRelativeURL(relativeUrl);
+            }
+        }
     }
 }

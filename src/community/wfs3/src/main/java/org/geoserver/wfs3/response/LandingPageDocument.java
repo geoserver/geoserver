@@ -25,14 +25,7 @@ import org.geoserver.wfs3.LandingPageRequest;
 @JacksonXmlRootElement(localName = "LandingPage")
 public class LandingPageDocument extends AbstractDocument {
 
-    private final Catalog catalog;
-    private final WFSInfo wfs;
-    private final LandingPageRequest request;
-
     public LandingPageDocument(LandingPageRequest request, WFSInfo wfs, Catalog catalog) {
-        this.wfs = wfs;
-        this.catalog = catalog;
-        this.request = request;
         String baseUrl = request.getBaseUrl();
 
         // self and alternate representations of landing page

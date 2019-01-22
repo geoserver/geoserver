@@ -9,4 +9,6 @@ WFS 3.0 hackaton first, and then further developed to match Draft 1 spec and con
 Implementation wise:
 * The module basically acts as an internal proxy around WFS 2.0, using a  servlet filter to adapt protocols. The long term approach would likely be to have a new MVCDispatcher that allows usage of Spring annotations instead (TBD).
  
-
+This implementation contains the following prototype WFS3 extensions:
+* Tiles extension, returning MapBOX/JSON/TopoJSON tiles
+* Styles extension, with the ability to get/put/delete styles (must be secured using service security)

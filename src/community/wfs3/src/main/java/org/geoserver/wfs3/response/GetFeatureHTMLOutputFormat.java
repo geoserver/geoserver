@@ -37,7 +37,7 @@ public class GetFeatureHTMLOutputFormat extends WFSGetFeatureOutputFormat {
     public GetFeatureHTMLOutputFormat(GeoServerResourceLoader loader, GeoServer geoServer) {
         super(geoServer, BaseRequest.HTML_MIME);
         this.geoServer = geoServer;
-        this.templateSupport = new FreemarkerTemplateSupport(loader, geoServer);
+        this.templateSupport = new FreemarkerTemplateSupport(loader);
     }
 
     @Override

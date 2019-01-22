@@ -95,7 +95,6 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                         new ArrayList<GeneralParameterValue>(Arrays.asList(parameters));
                 for (GeneralParameterValue lparam : limitParams) {
                     // remove the overwritten param, if any
-                    final GeneralParameterDescriptor ldescriptor = lparam.getDescriptor();
                     for (Iterator it = params.iterator(); it.hasNext(); ) {
                         GeneralParameterValue param = (GeneralParameterValue) it.next();
                         if (param.getDescriptor().equals(lparam.getDescriptor())) {

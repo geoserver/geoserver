@@ -121,7 +121,7 @@ public class RequestUtils {
                 Iterator<Version> v = provided.iterator();
                 Version last = v.next();
 
-                for (; v.hasNext(); ) {
+                while (v.hasNext()) {
                     Version current = v.next();
 
                     if (current.compareTo(accepted.last()) > 0) {

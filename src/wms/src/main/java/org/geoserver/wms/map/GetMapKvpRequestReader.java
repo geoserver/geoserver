@@ -67,7 +67,6 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.NamedStyle;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
@@ -95,9 +94,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader
         interpolationMethods.put("BILINEAR", Interpolation.INTERP_BILINEAR);
         interpolationMethods.put("BICUBIC", Interpolation.INTERP_BICUBIC);
     }
-
-    /** style factory */
-    private StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
 
     /** filter factory */
     private FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
@@ -206,10 +202,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader
      */
     public void setHttpRequest(HttpServletRequest httpRequest) {
         LocalHttpServletRequest.set(httpRequest);
-    }
-
-    public void setStyleFactory(StyleFactory styleFactory) {
-        this.styleFactory = styleFactory;
     }
 
     public void setFilterFactory(FilterFactory filterFactory) {
@@ -761,9 +753,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader
                 interpolations.add(interpolation);
             } else if (o instanceof LayerGroupInfo) {
                 List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
-                for (LayerInfo layer : subLayers) {
-                    interpolations.add(interpolation);
-                }
+                interpolations.addAll(Collections.nCopies(subLayers.size(), interpolation));
             } else {
                 throw new IllegalArgumentException("Unknown layer info type: " + o);
             }

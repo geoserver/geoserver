@@ -59,8 +59,6 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     int maxRenderingErrors;
 
-    private String capabilitiesErrorHandling;
-
     private String rootLayerTitle;
 
     private String rootLayerAbstract;

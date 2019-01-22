@@ -101,7 +101,6 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             label.setEscapeModelStrings(false);
             add(label);
             Link link = null;
-            ;
             add(
                     link =
                             new Link("mplink") {

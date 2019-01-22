@@ -19,7 +19,6 @@
   </bean>
   
   <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
-    <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
     <property name="clipToMapBounds" value="true">
       <description>Use geometries clipped to tile bounds
@@ -39,7 +38,6 @@
   </bean>
 
   <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
-    <constructor-arg ref="wms" />
     <constructor-arg ref="wmsGeoJsonBuilderFactory" />
     <property name="clipToMapBounds" value="true"/>
     <property name="transformToScreenCoordinates" value="false">
@@ -54,7 +52,6 @@
   </bean>
 
   <bean id="wmsMapBoxMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
-    <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsMapBoxBuilderFactory"/>
     <property name="clipToMapBounds" value="true" />
     <property name="transformToScreenCoordinates" value="true" />

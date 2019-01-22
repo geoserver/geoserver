@@ -26,7 +26,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -129,8 +128,7 @@ public class WCSGetCoverageStoreResponse extends Response {
                         URLType.RESOURCE);
 
         // build the response
-        WCSInfo wcs = geoServer.getService(WCSInfo.class);
-        CoveragesTransformer tx = new CoveragesTransformer(wcs, request, coverageLocation);
+        CoveragesTransformer tx = new CoveragesTransformer(request, coverageLocation);
         try {
             tx.transform(coverageInfo, output);
         } catch (TransformerException e) {

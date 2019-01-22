@@ -237,10 +237,9 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     protected void handleSubmit(T info) {
         if (info.getId() != null) {
             getGeoServer().save(info);
-        } else {
-            // means a non attached instance was passed to us, do nothing, up to caller to add it
-            // to configuration
         }
+        // else means a non attached instance was passed to us, do nothing, up to caller to add it
+        // to configuration
     }
 
     /** The string to use when representing this service to users. Subclasses must override. */

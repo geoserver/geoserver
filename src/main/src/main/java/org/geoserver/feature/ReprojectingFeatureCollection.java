@@ -203,7 +203,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
                 bounds = new ReferencedEnvelope(first.getBounds());
             }
 
-            for (; i.hasNext(); ) {
+            while (i.hasNext()) {
                 SimpleFeature f = (SimpleFeature) i.next();
                 bounds.include(f.getBounds());
             }

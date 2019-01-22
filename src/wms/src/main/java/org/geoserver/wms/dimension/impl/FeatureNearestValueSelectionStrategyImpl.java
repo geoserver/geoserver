@@ -5,9 +5,6 @@
  */
 package org.geoserver.wms.dimension.impl;
 
-import java.io.IOException;
-import java.util.List;
-import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -45,22 +42,6 @@ public class FeatureNearestValueSelectionStrategyImpl
     @Override
     public Object getDefaultValue(
             ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class clz) {
-        String attrName = dimension.getAttribute();
-        Class<?> attrType = String.class;
-        if (resource instanceof FeatureTypeInfo) {
-            List<AttributeTypeInfo> attrTypes;
-            try {
-                attrTypes = ((FeatureTypeInfo) resource).attributes();
-                for (AttributeTypeInfo attr : attrTypes) {
-                    if (attr.getName().equals(attrName)) {
-                        attrType = attr.getBinding();
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-            }
-        }
-
         final FeatureCalc nearest =
                 new NearestVisitor(ff.property(dimension.getAttribute()), this.toMatch);
 

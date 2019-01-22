@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -21,7 +20,6 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -32,8 +30,6 @@ import org.opengis.filter.Filter;
  * @author Gabriel Roldan
  */
 public class GetFeatureInfo {
-
-    private static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public FeatureCollectionType run(final GetFeatureInfoRequest request) throws ServiceException {

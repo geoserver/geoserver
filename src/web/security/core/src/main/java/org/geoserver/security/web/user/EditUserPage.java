@@ -54,14 +54,12 @@ public class EditUserPage extends AbstractUserPage {
                 ugStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         } catch (PasswordPolicyException ex) {
             try {
                 ugStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
 
@@ -89,7 +87,6 @@ public class EditUserPage extends AbstractUserPage {
                 roleStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

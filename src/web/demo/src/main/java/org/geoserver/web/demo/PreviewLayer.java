@@ -289,8 +289,6 @@ public class PreviewLayer {
                             }
                         }
                         // TODO: do other data stores have any special needs?
-                        else {
-                        }
                     }
                 }
             }

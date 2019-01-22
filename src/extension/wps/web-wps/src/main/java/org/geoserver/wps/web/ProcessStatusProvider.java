@@ -116,14 +116,12 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
         final String[] keywords = getKeywords();
         Filter filter = acceptAll();
         if (null != keywords) {
-            for (String keyword : keywords) {
-                Filter propContains = getFullSearch(keywords);
-                // chain the filters together
-                if (Filter.INCLUDE == filter) {
-                    filter = propContains;
-                } else {
-                    filter = or(filter, propContains);
-                }
+            Filter propContains = getFullSearch(keywords);
+            // chain the filters together
+            if (Filter.INCLUDE == filter) {
+                filter = propContains;
+            } else {
+                filter = or(filter, propContains);
             }
         }
 

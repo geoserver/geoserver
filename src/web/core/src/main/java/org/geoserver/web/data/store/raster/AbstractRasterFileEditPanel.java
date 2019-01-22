@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.store.raster;
 
-import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,7 +15,6 @@ import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.data.store.panel.FileParamPanel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.browser.ExtensionFileFilter;
-import org.geotools.util.logging.Logging;
 
 /**
  * Abstract edit component for file based rasters
@@ -25,8 +23,6 @@ import org.geotools.util.logging.Logging;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractRasterFileEditPanel extends StoreEditPanel {
-
-    private static final Logger LOGGER = Logging.getLogger(AbstractRasterFileEditPanel.class);
 
     public AbstractRasterFileEditPanel(
             final String componentId, final Form storeEditForm, String... fileExtensions) {
@@ -42,8 +38,6 @@ public abstract class AbstractRasterFileEditPanel extends StoreEditPanel {
 
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
-
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
 
         FileParamPanel file;
         if (useDirectoryChooser) {

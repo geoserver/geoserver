@@ -218,7 +218,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             List<String> wmsOutputFormats,
             List<String> wfsOutputFormats,
             PreviewLayer layer) {
-        Fragment f = new Fragment(id, "menuFragment", MapPreviewPage.this);
+        Fragment f = new Fragment(id, "menuFragment", this);
         WebMarkupContainer menu = new WebMarkupContainer("menu");
 
         WebMarkupContainer wmsFormatsGroup = new WebMarkupContainer("wms");

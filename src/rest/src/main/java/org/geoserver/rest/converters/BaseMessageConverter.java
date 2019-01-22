@@ -6,13 +6,11 @@ package org.geoserver.rest.converters;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -28,8 +26,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
  */
 public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConverter<T>
         implements HttpMessageConverter<T>, ExtensionPriority {
-
-    private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest.converters");
 
     protected final Catalog catalog;
 

@@ -117,9 +117,6 @@ public class StreamingSVGMap extends WebMap {
         List<Layer> layers = mapContent.layers();
         int nLayers = layers.size();
 
-        // FeatureTypeInfo layerInfo = null;
-        int defMaxDecimals = writer.getMaximunFractionDigits();
-
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         for (int i = 0; i < nLayers; i++) {

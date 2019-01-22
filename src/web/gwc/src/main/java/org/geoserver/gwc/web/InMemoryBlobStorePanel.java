@@ -79,11 +79,6 @@ public class InMemoryBlobStorePanel extends Panel {
         // Initialize the map
         values = new HashMap<String, String>();
 
-        // get the CacheConfigurations Model
-        IModel<Map<String, CacheConfiguration>> cacheConfigurations =
-                new PropertyModel<Map<String, CacheConfiguration>>(
-                        gwcConfigModel, "cacheConfigurations");
-
         // Creation of the Checbox for enabling disabling inmemory caching
         IModel<Boolean> innerCachingEnabled =
                 new PropertyModel<Boolean>(gwcConfigModel, "innerCachingEnabled");

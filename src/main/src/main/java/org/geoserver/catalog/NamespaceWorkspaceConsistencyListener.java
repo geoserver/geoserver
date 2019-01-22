@@ -69,7 +69,6 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
         } else if (event.getSource() instanceof WorkspaceInfo
                 && !editing
                 && properties.contains("name")) {
-            WorkspaceInfo ws = (WorkspaceInfo) event.getSource();
             int nameIdx = properties.indexOf("name");
             String oldName = (String) event.getOldValues().get(nameIdx);
             String newName = (String) event.getNewValues().get(nameIdx);

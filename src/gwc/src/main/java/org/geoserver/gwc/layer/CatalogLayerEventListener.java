@@ -634,8 +634,6 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         // notify the mediator of the rename so it changes the name of the layer in GWC without
         // affecting its caches
-        GridSetBroker gridSetBroker = mediator.getGridSetBroker();
-
         final GeoServerTileLayer oldTileLayer =
                 (GeoServerTileLayer) mediator.getTileLayerByName(oldLayerName);
 
@@ -646,8 +644,6 @@ public class CatalogLayerEventListener implements CatalogListener {
                         + "'. New name: '"
                         + newLayerName
                         + "'");
-
-        final GeoServerTileLayer modifiedTileLayer;
 
         mediator.rename(oldLayerName, newLayerName);
     }

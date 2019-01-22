@@ -980,11 +980,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle DataURLs
             handleDataList(layer.getResource().getDataLinks());
 
-            if (layer.getResource() instanceof WMSLayerInfo
-                    || layer.getResource() instanceof WMTSLayerInfo) {
-                // do nothing for the moment, we may want to list the set of cascaded named styles
-                // in the future (when we add support for that)
-            } else {
+            // if WMSLayer or WMTS layer do nothing for the moment, we may want to list the set of
+            // cascaded named styles
+            // in the future (when we add support for that)
+            if (!(layer.getResource() instanceof WMSLayerInfo)
+                    && !(layer.getResource() instanceof WMTSLayerInfo)) {
                 // add the layer style
                 start("Style");
 
@@ -1518,7 +1518,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 // output bounding box for each supported service srs
                 for (String crs : serviceInfo.getSRS()) {
                     crs = qualifySRS(crs);
-                    if (srs != null && crs.equals(srs)) {
+                    if (srs != null && srs.equals(crs)) {
                         continue; // already did this one
                     }
 

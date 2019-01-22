@@ -225,9 +225,6 @@ public class ManifestLoader {
             throw new IllegalArgumentException("Unable to run with null classLoader");
         }
 
-        // load metadata
-        Map<String, Manifest> manifests = ManifestLoader.loadManifest(classLoader);
-
         // start building the model
         AboutModel model = new AboutModel();
         try {

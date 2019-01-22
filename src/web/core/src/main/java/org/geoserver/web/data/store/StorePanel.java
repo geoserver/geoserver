@@ -72,7 +72,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
             PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
-            Fragment f = new Fragment(id, "iconFragment", StorePanel.this);
+            Fragment f = new Fragment(id, "iconFragment", this);
             f.add(new Image("storeIcon", storeIcon));
 
             return f;
@@ -88,7 +88,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             } else {
                 enabledIcon = icons.getDisabledIcon();
             }
-            Fragment f = new Fragment(id, "iconFragment", StorePanel.this);
+            Fragment f = new Fragment(id, "iconFragment", this);
             f.add(new Image("storeIcon", enabledIcon));
             return f;
         }

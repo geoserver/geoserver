@@ -174,7 +174,6 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      *     it faster.
      */
     public String getXmlMessage(boolean printStackTrace) {
-        String indent = "   ";
         StringBuffer mesg = new StringBuffer();
 
         // this distinction no longer so much applies, as we don't always

@@ -1075,10 +1075,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void handleStyles(final LayerInfo layer) {
-            if (layer.getResource() instanceof WMSLayerInfo) {
-                // do nothing for the moment, we may want to list the set of cascaded named styles
-                // in the future (when we add support for that)
-            } else {
+            // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
+            // named styles
+            // in the future (when we add support for that)
+            if (!(layer.getResource() instanceof WMSLayerInfo)) {
                 // add the layer style
                 start("Style");
 
@@ -1555,7 +1555,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // output bounding box for each supported service srs
                 for (String srs : serviceInfo.getSRS()) {
                     srs = qualifySRS(srs);
-                    if (crs != null && srs.equals(crs)) {
+                    if (crs != null && crs.equals(srs)) {
                         continue; // already did this one
                     }
 

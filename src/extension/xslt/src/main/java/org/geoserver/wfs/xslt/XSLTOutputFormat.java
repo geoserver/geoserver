@@ -280,7 +280,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         // locate the transformation, and make sure it's the same for all feature types
         Set<FeatureType> featureTypes = getFeatureTypes(collections);
         TransformInfo result = null;
-        FeatureType reference = null;
         for (FeatureType ft : featureTypes) {
             TransformInfo curr = locateTransform(outputFormat, ft);
             if (curr == null) {
@@ -292,7 +291,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
                         ServiceException.INVALID_PARAMETER_VALUE,
                         "typeName");
             } else if (result == null) {
-                reference = ft;
                 result = curr;
             } else if (!result.equals(curr)) {
                 throw new WFSException(

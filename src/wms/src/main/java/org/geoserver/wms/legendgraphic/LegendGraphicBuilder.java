@@ -287,7 +287,6 @@ public abstract class LegendGraphicBuilder {
                 (areaWidth * LegendUtils.hpaddingFactor) + (areaWidth - legendWidth) / 2f;
         final float vpad =
                 (areaHeight * LegendUtils.vpaddingFactor) + (areaHeight - legendHeight) / 2f;
-        ;
 
         if (symbolizer instanceof LineSymbolizer) {
             if (this.sampleLine == null) {

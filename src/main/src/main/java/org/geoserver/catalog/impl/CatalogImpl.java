@@ -501,8 +501,6 @@ public class CatalogImpl implements Catalog {
     }
 
     public <T extends ResourceInfo> T getResourceByName(String name, Class<T> clazz) {
-        ResourceInfo resource;
-
         // check is the name is a fully qualified one
         int colon = name.indexOf(':');
         if (colon != -1) {
@@ -819,6 +817,7 @@ public class CatalogImpl implements Catalog {
         return facade.getMaps();
     }
 
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     public void add(LayerGroupInfo layerGroup) {
         layerGroup = resolve(layerGroup);
         validate(layerGroup, true);

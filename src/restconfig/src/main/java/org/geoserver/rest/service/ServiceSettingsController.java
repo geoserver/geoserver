@@ -7,7 +7,6 @@ package org.geoserver.rest.service;
 
 import freemarker.template.ObjectWrapper;
 import java.util.Collections;
-import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -16,7 +15,6 @@ import org.geoserver.rest.AbstractGeoServerController;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 /** Service Settings controller */
 public abstract class ServiceSettingsController extends AbstractGeoServerController {
-    private static final Logger LOGGER = Logging.getLogger(ServiceSettingsController.class);
     private Class clazz;
 
     @Autowired

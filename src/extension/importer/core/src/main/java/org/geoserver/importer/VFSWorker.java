@@ -131,8 +131,6 @@ public class VFSWorker {
             return names;
         } catch (FileSystemException e) {
             e.printStackTrace();
-        } finally {
-            // fsManager.closeFileSystem(fileSystem.getFileSystem());
         }
         return Collections.emptyList();
     }

@@ -698,7 +698,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // the coverage crs or the request bbox can be reprojected to that
             // crs
             //
-            MathTransform destinationToSourceTransform = null;
             // STEP 1: reproject requested BBox to native CRS if needed
             if (!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
                 retVal = CRS.transform(getHorizontalEnvelope(requestedEnvelope), nativeCRS);

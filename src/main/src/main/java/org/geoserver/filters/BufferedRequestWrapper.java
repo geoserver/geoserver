@@ -116,11 +116,9 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
             for (Object key : myParameterMap.keySet()) {
                 Object value = myParameterMap.get(key);
-                if (value instanceof List) {
-                    // ok, nothing to do
-                } else if (value instanceof String[]) {
+                if (value instanceof String[]) {
                     myParameterMap.put(key, Arrays.asList(((String[]) value)));
-                } else {
+                } else if (!(value instanceof List)) {
                     myParameterMap.put(key, Converters.convert(value, List.class));
                 }
             }
@@ -154,7 +152,6 @@ public class BufferedRequestWrapper extends HttpServletRequestWrapper {
     }
 
     protected void parsePair(String pair) {
-        int index = 0;
         String[] split = pair.split("=", 2);
         try {
             String key = URLDecoder.decode(split[0], "UTF-8");

@@ -6,11 +6,9 @@
 package org.geoserver.wfs;
 
 import java.net.URI;
-import java.util.List;
 import net.opengis.wfs20.DescribeStoredQueriesResponseType;
 import net.opengis.wfs20.DescribeStoredQueriesType;
 import net.opengis.wfs20.Wfs20Factory;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -38,9 +36,6 @@ public class DescribeStoredQueries {
         Wfs20Factory factory = Wfs20Factory.eINSTANCE;
         DescribeStoredQueriesResponseType response =
                 factory.createDescribeStoredQueriesResponseType();
-
-        List<StoredQueryProvider> providers =
-                GeoServerExtensions.extensions(StoredQueryProvider.class);
 
         if (request.getStoredQueryId().isEmpty()) {
             for (StoredQuery query : storedQueryProvider.listStoredQueries()) {

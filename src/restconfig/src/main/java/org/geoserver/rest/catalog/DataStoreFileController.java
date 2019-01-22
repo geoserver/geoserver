@@ -56,7 +56,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -216,8 +215,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         if (directory == null || !directory.exists() || !directory.isDirectory()) {
             throw new RestException("No files for datastore " + storeName, HttpStatus.NOT_FOUND);
         }
-
-        FileSystemResource resource = new FileSystemResource(directory.getPath());
 
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
@@ -74,9 +73,6 @@ public class TimeParser {
 
     /** UTC timezone to serve as reference */
     static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
-
-    /** pattern used to match back parameter */
-    private static final Pattern pattern = Pattern.compile("(back)(\\d+)([hdw])");
 
     /** Amount of milliseconds in a day. */
     static final long MILLIS_IN_DAY = 24 * 60 * 60 * 1000;

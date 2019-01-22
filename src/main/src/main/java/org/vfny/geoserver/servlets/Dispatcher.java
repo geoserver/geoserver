@@ -7,7 +7,6 @@ package org.vfny.geoserver.servlets;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,9 +34,6 @@ import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
 
 // JD: kill this class
 public class Dispatcher extends HttpServlet {
-    /** Class logger */
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
     /** Map metadata request type */
     public static String META_REQUEST = "GetMeta";
@@ -104,18 +100,11 @@ public class Dispatcher extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int targetRequest = 0;
-
         // Examine the incoming request and create appropriate server objects
         //  to deal with each request
-        //              try {
         if (request.getQueryString() != null) {
             Map kvPairs = KvpRequestReader.parseKvpSet(request.getQueryString());
-            targetRequest = DispatcherKvpReader.getRequestType(kvPairs);
-        } else {
-            targetRequest = UNKNOWN;
-
-            // throw exception
+            DispatcherKvpReader.getRequestType(kvPairs);
         }
     }
 }

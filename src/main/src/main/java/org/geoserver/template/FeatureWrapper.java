@@ -401,6 +401,7 @@ public class FeatureWrapper extends BeansWrapper {
          * Override so asking for the hashCode does not implies traversing the whole map and thus
          * calling entrySet() prematurely
          */
+        @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public int hashCode() {
             return attributeName.hashCode();
         }

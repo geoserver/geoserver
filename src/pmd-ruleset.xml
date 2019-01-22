@@ -35,7 +35,7 @@ under the License.
     <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
     <rule ref="category/java/bestpractices.xml/CheckResultSet" />
     <rule ref="category/java/bestpractices.xml/UnusedImports" />
-    <rule ref="category/java/bestpractices.xml/UnusedFormalParameter" />
+    <!--rule ref="category/java/bestpractices.xml/UnusedFormalParameter" /-->
     <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
@@ -45,16 +45,16 @@ under the License.
     <rule ref="category/java/codestyle.xml/DuplicateImports" />
     <rule ref="category/java/codestyle.xml/ExtendsObject" />
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
-    <rule ref="category/java/codestyle.xml/TooManyStaticImports" />
+    <!--rule ref="category/java/codestyle.xml/TooManyStaticImports" / -->
     <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
-    <rule ref="category/java/codestyle.xml/UnnecessaryModifier" />
+    <!-- rule ref="category/java/codestyle.xml/UnnecessaryModifier" / -->
     <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
     <rule ref="category/java/codestyle.xml/UselessParentheses" />
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
 
-    <rule ref="category/java/design.xml/CollapsibleIfStatements" />
-    <rule ref="category/java/design.xml/SimplifiedTernary" />
-    <rule ref="category/java/design.xml/UselessOverridingMethod" />
+    <!-- rule ref="category/java/design.xml/CollapsibleIfStatements" / -->
+    <!-- rule ref="category/java/design.xml/SimplifiedTernary" / -->
+    <!-- rule ref="category/java/design.xml/UselessOverridingMethod" / -->
 
     <!--
     <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
@@ -66,7 +66,7 @@ under the License.
     <rule ref="category/java/errorprone.xml/CheckSkipResult" />
     <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray" />
     <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices" />
-    <rule ref="category/java/errorprone.xml/EmptyCatchBlock" />
+    <!-- rule ref="category/java/errorprone.xml/EmptyCatchBlock" /-->
     <rule ref="category/java/errorprone.xml/EmptyFinallyBlock" />
     <rule ref="category/java/errorprone.xml/EmptyIfStmt" />
     <rule ref="category/java/errorprone.xml/EmptyInitializer" />

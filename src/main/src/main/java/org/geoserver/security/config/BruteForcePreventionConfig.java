@@ -42,6 +42,7 @@ public class BruteForcePreventionConfig implements SecurityConfig {
     transient List<IpAddressMatcher> whitelistedAddressMatchers;
 
     /** Configuration based on defaults */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public BruteForcePreventionConfig() {
         this.enabled = true;
         this.minDelaySeconds = 1;

@@ -8,11 +8,8 @@ package org.geoserver.gwc.dispatch;
 import com.google.common.collect.ImmutableList;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,8 +23,6 @@ import org.geoserver.ows.Response;
 import org.geotools.util.Version;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheExtensions;
-import org.geowebcache.service.tms.TMSDocumentFactory;
-import org.geowebcache.util.ServletUtils;
 
 /**
  * Service bean used as service implementation for the GeoServer {@link Dispatcher} when processing
@@ -40,11 +35,6 @@ public class GwcServiceProxy {
     private final ServiceInfoImpl serviceInfo;
 
     private final GeoWebCacheDispatcher gwcDispatcher;
-
-    private final Pattern kmlPattern = Pattern.compile("/service/kml/", Pattern.CASE_INSENSITIVE);
-    private final Pattern kmlXyzPattern =
-            Pattern.compile(
-                    ".*x(?<x>[0-9]+)y(?<y>[0-9]+)z(?<z>[0-9]+).*?", Pattern.CASE_INSENSITIVE);
 
     public GwcServiceProxy() {
         serviceInfo = new ServiceInfoImpl();
@@ -96,42 +86,6 @@ public class GwcServiceProxy {
         final byte[] bytes = responseWrapper.out.getBytes();
 
         return new GwcOperationProxy(contentType, headers, bytes);
-    }
-
-    private static Map<String, String> splitTMSParams(HttpServletRequest request) {
-
-        // get all elements of the pathInfo after the leading "/tms/1.0.0/" part.
-        String pathInfo = request.getPathInfo();
-        pathInfo =
-                pathInfo.substring(pathInfo.indexOf(TMSDocumentFactory.TILEMAPSERVICE_LEADINGPATH));
-        String[] params = pathInfo.split("/");
-        // {"tms", "1.0.0", "img states@EPSG:4326", ... }
-
-        int paramsLength = params.length;
-
-        Map<String, String> parsed = new HashMap<>();
-
-        if (params.length < 4) {
-            return Collections.emptyMap();
-        }
-
-        String[] yExt = params[paramsLength - 1].split("\\.");
-
-        parsed.put("x", params[paramsLength - 2]);
-        parsed.put("y", yExt[0]);
-        parsed.put("z", params[paramsLength - 3]);
-
-        String layerNameAndSRS = params[2];
-        String[] lsf =
-                ServletUtils.URLDecode(layerNameAndSRS, request.getCharacterEncoding()).split("@");
-        parsed.put("layerId", lsf[0]);
-        if (lsf.length >= 3) {
-            parsed.put("gridSetId", lsf[1]);
-        }
-
-        parsed.put("fileExtension", yExt[1]);
-
-        return parsed;
     }
 
     /** */

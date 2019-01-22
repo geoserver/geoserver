@@ -44,7 +44,6 @@ public abstract class XmlRequestReader {
      */
     public XmlRequestReader(ServiceInfo service) {
         this.serviceConfig = service;
-        ;
     }
 
     public ServiceInfo getService() {

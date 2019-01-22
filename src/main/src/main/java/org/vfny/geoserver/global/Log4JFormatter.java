@@ -69,22 +69,6 @@ public class Log4JFormatter extends Formatter {
     private String bodyLineSeparator = lineSeparator;
 
     /**
-     * The minimum amount of spaces to use for writting level and module name before the message.
-     * For example if this value is 12, then a message from module "org.geotools.core" with level
-     * FINE would be formatted as "<code>[core&nbsp;&nbsp;FINE]</code><cite>the message</cite>"
-     * (i.e. the whole <code>[&nbsp;]</code> part is 12 characters wide).
-     */
-    private final int margin;
-
-    /**
-     * The base logger name. This is used for shortening the logger name when formatting message.
-     * For example, if the base logger name is "org.geotools" and a log record come from the
-     * "org.geotools.core" logger, it will be formatted as "[LEVEL core]" (i.e. the "org.geotools"
-     * part is ommited).
-     */
-    private final String base;
-
-    /**
      * Buffer for formatting messages. We will reuse this buffer in order to reduce memory
      * allocations.
      */
@@ -105,8 +89,6 @@ public class Log4JFormatter extends Formatter {
      *     "org.geotools" part is ommited).
      */
     public Log4JFormatter(final String base) {
-        this.base = base.trim();
-        this.margin = getHeaderWidth();
         Log4JFormatter.startMillis = System.currentTimeMillis();
 
         final StringWriter str = new StringWriter();
@@ -122,8 +104,6 @@ public class Log4JFormatter extends Formatter {
      * @throws AssertionError Should never occur.
      */
     public synchronized String format(final LogRecord record) {
-        String logger = record.getLoggerName();
-
         final String recordLevel = record.getLevel().getLocalizedName();
 
         try {
@@ -292,16 +272,6 @@ public class Log4JFormatter extends Formatter {
      */
     private static void unexpectedException(final Exception e) {
         Logging.unexpectedException("org.geotools.resources", Log4JFormatter.class, "init", e);
-    }
-
-    /**
-     * Returns the header width. This is the default value to use for {@link #margin}, if no value
-     * has been explicitely set. This value can be set in user's preferences.
-     *
-     * @return The header width.
-     */
-    private static int getHeaderWidth() {
-        return Preferences.userNodeForPackage(Log4JFormatter.class).getInt("logging.header", 15);
     }
 
     /**

@@ -709,7 +709,6 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             if (gammaValue != null) ce.element(GAMMA_VALUE, toJSONValue(gammaValue, Number.class));
             ContrastMethod method = contrastEnhancement.getMethod();
             if (ContrastMethod.NORMALIZE == method) {
-                JSONObject norm = new JSONObject();
                 ce.element(NORMALIZE, "true");
             } else if (ContrastMethod.HISTOGRAM == method) {
                 ce.element(HISTOGRAM, "true");

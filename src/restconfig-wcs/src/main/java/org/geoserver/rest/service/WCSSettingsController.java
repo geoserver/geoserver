@@ -7,7 +7,6 @@ package org.geoserver.rest.service;
 
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -17,7 +16,6 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSXStreamLoader;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -39,7 +37,6 @@ import org.springframework.web.servlet.HandlerMapping;
     }
 )
 public class WCSSettingsController extends ServiceSettingsController {
-    private static final Logger LOGGER = Logging.getLogger(WCSSettingsController.class);
 
     @Autowired
     public WCSSettingsController(GeoServer geoServer) {

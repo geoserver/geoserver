@@ -45,11 +45,9 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.ows.wms.Layer;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
-import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
@@ -1496,32 +1494,6 @@ public class CatalogBuilder {
         }
 
         return wli;
-    }
-
-    private boolean axisFlipped(Version version, String srsName) {
-        if (version.compareTo(new Version("1.3.0")) < 0) {
-            // aah, sheer simplicity
-            return false;
-        } else {
-            // gah, hell gates breaking loose
-            if (srsName.startsWith("EPSG:")) {
-                try {
-                    String epsgNative = "urn:x-ogc:def:crs:EPSG:".concat(srsName.substring(5));
-                    return CRS.getAxisOrder(CRS.decode(epsgNative)) == AxisOrder.NORTH_EAST;
-                } catch (Exception e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Failed to determine axis order for "
-                                    + srsName
-                                    + ", assuming east/north",
-                            e);
-                    return false;
-                }
-            } else {
-                // CRS or AUTO, none of them is flipped so far
-                return false;
-            }
-        }
     }
 
     void formatUOM(StringBuilder label, Unit uom) {

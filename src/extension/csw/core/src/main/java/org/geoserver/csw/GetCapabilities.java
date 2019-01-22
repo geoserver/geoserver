@@ -922,4 +922,4 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
             }
         };
     }
-};
+}

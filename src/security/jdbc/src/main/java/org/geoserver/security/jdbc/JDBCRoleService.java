@@ -464,7 +464,9 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             con = getConnection();
             ps = getDMLStatement("roles.count", con);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("Count query did not return any record");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);

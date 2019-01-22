@@ -149,14 +149,14 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new DropDownChoice<>(
                         "envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));
         envelopePolicy.setModel(envelopeCompositionType);
-        envelopePolicy.setChoiceRenderer(new EnumChoiceRenderer<>(CoverageViewEditor.this));
+        envelopePolicy.setChoiceRenderer(new EnumChoiceRenderer<>(this));
         heterogeneousControls.add(envelopePolicy);
 
         DropDownChoice<SelectedResolution> resolutionPolicy =
                 new DropDownChoice<>(
                         "selectedResolution", Arrays.asList(SelectedResolution.values()));
         resolutionPolicy.setModel(selectedResolution);
-        resolutionPolicy.setChoiceRenderer(new EnumChoiceRenderer<>(CoverageViewEditor.this));
+        resolutionPolicy.setChoiceRenderer(new EnumChoiceRenderer<>(this));
         heterogeneousControls.add(resolutionPolicy);
 
         add(addRemoveAllButton());

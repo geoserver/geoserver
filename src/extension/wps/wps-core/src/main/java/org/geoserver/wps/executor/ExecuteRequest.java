@@ -26,9 +26,7 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
-import org.geoserver.wps.validator.MultiplicityValidator;
 import org.geoserver.wps.validator.ProcessLimitsFilter;
-import org.geoserver.wps.validator.Validators;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.opengis.feature.type.Name;
@@ -139,8 +137,6 @@ public class ExecuteRequest {
             Collection<Validator> validators =
                     (Collection<Validator>) p.metadata.get(ProcessLimitsFilter.VALIDATORS_KEY);
             // we handle multiplicity validation here, before the parsing even starts
-            List<Validator> filteredValidators =
-                    Validators.filterOutClasses(validators, MultiplicityValidator.class);
 
             // build the provider
             try {

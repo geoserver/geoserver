@@ -86,14 +86,11 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         METHOD_NAME_MAP.put("bicubic", "cubic");
     }
 
-    private WCSInfo wcs;
-
     private Catalog catalog;
 
     /** Creates a new WFSCapsTransformer object. */
     public Wcs10DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog) {
         super();
-        this.wcs = wcs;
         this.catalog = catalog;
         this.skipMisconfigured =
                 ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
@@ -110,8 +107,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         public static final String SCHEMAS = "schemas";
 
         private DescribeCoverageType request;
-
-        private String proxifiedBaseUrl;
 
         /**
          * Creates a new WFSCapsTranslator object.
@@ -713,10 +708,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
             for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext(); ) {
                 String method = (String) it.next();
-                String converted = METHOD_NAME_MAP.get(method);
-                if (
-                /* converted */ method != null)
-                    element("wcs:interpolationMethod", /* converted */ method);
+                if (method != null) element("wcs:interpolationMethod", method);
             }
             end("wcs:supportedInterpolations");
         }

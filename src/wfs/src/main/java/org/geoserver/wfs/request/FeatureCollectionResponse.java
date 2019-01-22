@@ -24,8 +24,6 @@ public abstract class FeatureCollectionResponse extends RequestObject {
 
     private boolean getFeatureById = false;
 
-    private EObject request;
-
     public static FeatureCollectionResponse adapt(Object adaptee) {
         if (adaptee instanceof FeatureCollectionType) {
             return new WFS11((EObject) adaptee);

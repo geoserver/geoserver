@@ -47,10 +47,8 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private List<String> selectedRequestSRSs;
     private List<String> selectedResponseSRSs;
-    private List<String> selectedInterpolationMethods;
     private String newRequestSRS;
     private String newResponseSRS;
-    private String newInterpolationMethod;
 
     public WCSLayerConfig(String id, IModel<LayerInfo> model) {
         super(id, model);

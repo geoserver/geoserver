@@ -25,7 +25,7 @@ import org.geowebcache.diskquota.storage.TileSetVisitor;
 
 public class DummyQuotaStore implements QuotaStore {
 
-    private static final Quota EMPTY_QUOTA = new Quota(new BigInteger("0"));
+    private static final Quota EMPTY_QUOTA = new Quota(BigInteger.valueOf(0));
 
     TilePageCalculator calculator;
 

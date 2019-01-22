@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -67,6 +68,11 @@ public class CapabilitiesHomePagePanel extends Panel {
             return service.equals(ci.service)
                     && version.equals(ci.version)
                     && capsLink.equals(ci.capsLink);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(service, version, capsLink);
         }
     }
 

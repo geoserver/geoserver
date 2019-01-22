@@ -222,7 +222,6 @@ public class ImportPage extends GeoServerSecuredPage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        ImportContext imp = model.getObject();
                         if (!running.get()) {
                             // if (imp.getState() == ImportContext.State.COMPLETE) {
                             setResponsePage(ImportDataPage.class);

@@ -105,7 +105,7 @@ public class ModuleStatusPanel extends Panel {
 
     final Fragment getIcons(String id, boolean status) {
         PackageResourceReference icon = status ? icons.getEnabledIcon() : icons.getDisabledIcon();
-        Fragment f = new Fragment(id, "iconFragment", ModuleStatusPanel.this);
+        Fragment f = new Fragment(id, "iconFragment", this);
         f.add(new Image("statusIcon", icon));
         return f;
     };

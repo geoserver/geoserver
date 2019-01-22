@@ -45,15 +45,6 @@ public class SourceCoverageKvpParser extends KvpParser {
         }
 
         for (String coverage : identifiers) {
-            String coverageName =
-                    coverage.indexOf("@") > 0
-                            ? coverage.substring(0, coverage.indexOf("@"))
-                            : coverage;
-            String fieldName =
-                    coverage.indexOf("@") > 0
-                            ? coverage.substring(coverage.indexOf("@") + 1)
-                            : null;
-
             LayerInfo layer = catalog.getLayerByName(value);
             if (layer == null || layer.getType() != PublishedType.RASTER)
                 throw new WcsException(

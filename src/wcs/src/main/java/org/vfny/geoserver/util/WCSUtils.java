@@ -248,10 +248,6 @@ public class WCSUtils {
                             final String[] minMaxRes = values.split("/");
                             final int min = (int) Math.round(Double.parseDouble(minMaxRes[0]));
                             final int max = (int) Math.round(Double.parseDouble(minMaxRes[1]));
-                            final double res =
-                                    ((minMaxRes.length > 2)
-                                            ? Double.parseDouble(minMaxRes[2])
-                                            : 0.0);
 
                             for (int v = min; v <= max; v++) {
                                 final String key = param.toLowerCase() + v;

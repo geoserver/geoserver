@@ -7,15 +7,12 @@ package org.geoserver.importer.rest;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportFilter;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.ValidationException;
-import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,8 +161,6 @@ public class ImportController extends ImportBaseController {
             importer.init(context, false);
         }
 
-        Map<String, String[]> query = RequestInfo.get().getQueryMap();
-
         if (async) {
             importer.runAsync(context, ImportFilter.ALL, false);
         } else {
@@ -183,7 +178,6 @@ public class ImportController extends ImportBaseController {
             } else {
                 context = importer.createContext(id);
             }
-            ImportData data = null;
             if (newContext != null) {
                 WorkspaceInfo targetWorkspace = newContext.getTargetWorkspace();
                 StoreInfo targetStore = newContext.getTargetStore();

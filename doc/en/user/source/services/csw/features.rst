@@ -159,8 +159,12 @@ Below is an example of an ISO Metadata Profile Mapping File::
   $dateStamp.Date= if_then_else ( isNull("metadata.date") , 'Unknown', "metadata.date")
   hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
   $contact.CI_ResponsibleParty.individualName.CharacterString=
+  identificationInfo.MD_DataIdentification.resourceConstraints[0].MD_LegalConstraints.accessConstraints.MD_RestrictionCode=
+  identificationInfo.MD_DataIdentification.resourceConstraints[1].MD_SecurityConstraints.classification.MD_ClassificationCode=
 
 The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation.
+
+Indexes with square brackets can be used to avoid merging tags that shouldn't be merged, as demonstrated above for ``resourceConstaints``z.
 
 To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
 

@@ -61,7 +61,7 @@ public class GeoServerDataDirectory {
     GeoServerResourceLoader resourceLoader;
 
     EntityResolverProvider entityResolverProvider;
-    
+
     GeoServerResourceLocator resourceLocator;
 
     /** Creates the data directory specifying the resource loader. */
@@ -1280,8 +1280,7 @@ public class GeoServerDataDirectory {
         }
         File input = styleResource.file();
 
-        DefaultResourceLocator locator =
-                new GeoServerResourceLocator();
+        DefaultResourceLocator locator = new GeoServerResourceLocator();
         locator.setSourceUrl(Resources.toURL(styleResource));
         EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
@@ -1447,7 +1446,7 @@ public class GeoServerDataDirectory {
     public ResourceStore getResourceStore() {
         return resourceLoader.getResourceStore();
     }
-    
+
     public ResourceLocator getResourceLocator() {
         GeoServerResourceLocator locator = new GeoServerResourceLocator();
         locator.setSourceUrl(URLs.fileToUrl(getStyles().dir()));
@@ -1478,8 +1477,7 @@ public class GeoServerDataDirectory {
                     } catch (MalformedURLException ex) {
                         GeoServerConfigPersister.LOGGER.log(
                                 Level.WARNING,
-                                "Error processing query string for resource with uri: "
-                                        + uri,
+                                "Error processing query string for resource with uri: " + uri,
                                 ex);
                         return null;
                     }
@@ -1491,8 +1489,7 @@ public class GeoServerDataDirectory {
                     } catch (MalformedURLException ex) {
                         GeoServerConfigPersister.LOGGER.log(
                                 Level.WARNING,
-                                "Error processing # fragment for resource with uri: "
-                                        + uri,
+                                "Error processing # fragment for resource with uri: " + uri,
                                 ex);
                         return null;
                     }

@@ -84,7 +84,8 @@ public interface WebFeatureService30 {
 
     StyleInfo getStyle(GetStyleRequest request) throws IOException;
 
-    void postStyles(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void postStyles(HttpServletRequest request, HttpServletResponse response, PostStyleRequest post)
+            throws IOException;
 
     void putStyle(
             HttpServletRequest request, HttpServletResponse response, PutStyleRequest putStyle)

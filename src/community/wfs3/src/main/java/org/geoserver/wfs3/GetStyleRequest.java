@@ -9,7 +9,7 @@ public class GetStyleRequest extends BaseRequest {
 
     String styleId;
 
-    String collectionId;
+    String layerName;
 
     public String getStyleId() {
         return styleId;
@@ -19,11 +19,11 @@ public class GetStyleRequest extends BaseRequest {
         this.styleId = styleId;
     }
 
-    public String getCollectionId() {
-        return collectionId;
+    public String getLayerName() {
+        return layerName;
     }
 
-    public void setCollectionId(String collectionId) {
-        this.collectionId = collectionId;
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
     }
 }

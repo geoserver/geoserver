@@ -5,7 +5,11 @@
 package org.geoserver.wfs3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.data.test.MockData.ROAD_SEGMENTS;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -30,6 +34,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -52,12 +57,21 @@ public class StyleTest extends WFS3TestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addStyle("dashed", "dashedline.sld", StyleTest.class, getCatalog());
+        final Catalog catalog = getCatalog();
+        testData.addStyle("dashed", "dashedline.sld", StyleTest.class, catalog);
+        final LayerInfo roadSegments = catalog.getLayerByName(getLayerId(ROAD_SEGMENTS));
+        catalog.save(roadSegments);
     }
 
     @Before
-    public void cleanNewStyles() {
+    public void cleanup() {
         final Catalog catalog = getCatalog();
+        final LayerInfo roadSegments = catalog.getLayerByName(getLayerId(ROAD_SEGMENTS));
+        roadSegments.getStyles().clear();
+        StyleInfo line = catalog.getStyleByName("line");
+        roadSegments.getStyles().add(line);
+        catalog.save(roadSegments);
+
         Optional.ofNullable(catalog.getStyleByName("simplePoint"))
                 .ifPresent(s -> catalog.remove(s));
         Optional.ofNullable(catalog.getStyleByName("testPoint")).ifPresent(s -> catalog.remove(s));
@@ -80,6 +94,29 @@ public class StyleTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testGetCollectionStyles() throws Exception {
+        String roadSegments = getEncodedName(ROAD_SEGMENTS);
+        final DocumentContext doc =
+                getAsJSONPath("wfs3/collections/" + roadSegments + "/styles", 200);
+        // two stiles, the native one, and the line associated one
+        assertEquals(Integer.valueOf(2), doc.read("styles.length()", Integer.class));
+        assertEquals("RoadSegments", doc.read("styles..id", List.class).get(0));
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/styles/RoadSegments?f=application%2Fvnd.ogc.sld%2Bxml",
+                doc.read(
+                                "styles..links[?(@.rel=='style' && @.type=='application/vnd.ogc.sld+xml')].href",
+                                List.class)
+                        .get(0));
+        assertEquals("line", doc.read("styles..id", List.class).get(1));
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/styles/line?f=application%2Fvnd.ogc.sld%2Bxml",
+                doc.read(
+                                "styles..links[?(@.rel=='style' && @.type=='application/vnd.ogc.sld+xml')].href",
+                                List.class)
+                        .get(1));
+    }
+
+    @Test
     public void testGetStyle() throws Exception {
         final MockHttpServletResponse response = getAsServletResponse("wfs3/styles/dashed?f=sld");
         assertEquals(OK.value(), response.getStatus());
@@ -95,6 +132,28 @@ public class StyleTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testGetCollectionStyle() throws Exception {
+        final MockHttpServletResponse response =
+                getAsServletResponse("wfs3/collections/cite__RoadSegments/styles/line");
+        assertEquals(OK.value(), response.getStatus());
+        assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
+        final Document dom = dom(response, true);
+        // print(dom);
+        assertXpathEvaluatesTo("A boring default style", "//sld:UserStyle/sld:Title", dom);
+        assertXpathEvaluatesTo("1", "count(//sld:Rule)", dom);
+        assertXpathEvaluatesTo("1", "count(//sld:LineSymbolizer)", dom);
+        assertXpathEvaluatesTo(
+                "#0000FF", "//sld:LineSymbolizer/sld:Stroke/sld:CssParameter[@name='stroke']", dom);
+    }
+
+    @Test
+    public void testGetCollectionNonAssociatedStyle() throws Exception {
+        final MockHttpServletResponse response =
+                getAsServletResponse("wfs3/collections/cite__RoadSegments/styles/polygon");
+        assertEquals(NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
     public void testPostSLDStyleGlobal() throws Exception {
         String styleBody = loadStyle("simplePoint.sld");
         final MockHttpServletResponse response =
@@ -107,6 +166,28 @@ public class StyleTest extends WFS3TestSupport {
         // check style creation
         final StyleInfo styleInfo = getCatalog().getStyleByName("simplePoint");
         checkSimplePoint(styleInfo, Color.RED);
+    }
+
+    @Test
+    public void testPostSLDStyleCollection() throws Exception {
+        String styleBody = loadStyle("simplePoint.sld");
+        final MockHttpServletResponse response =
+                postAsServletResponse(
+                        "wfs3/collections/cite__RoadSegments/styles",
+                        styleBody,
+                        SLDHandler.MIMETYPE_10);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/wfs3/collections/cite__RoadSegments/styles/simplePoint",
+                response.getHeader(HttpHeaders.LOCATION));
+
+        // check style creation
+        final StyleInfo styleInfo = getCatalog().getStyleByName("simplePoint");
+        checkSimplePoint(styleInfo, Color.RED);
+
+        // check layer association
+        final LayerInfo layer = getCatalog().getLayerByName(getLayerId(ROAD_SEGMENTS));
+        assertThat(layer.getStyles(), hasItem(hasProperty("name", equalTo("simplePoint"))));
     }
 
     public void checkSimplePoint(StyleInfo styleInfo, Color expectedColor) throws IOException {
@@ -154,6 +235,26 @@ public class StyleTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testPutSLDStyleCollection() throws Exception {
+        String styleBody = loadStyle("simplePoint.sld");
+        // use a name not found in the style body
+        final MockHttpServletResponse response =
+                putAsServletResponse(
+                        "wfs3/collections/cite__RoadSegments/styles/testPoint",
+                        styleBody,
+                        SLDHandler.MIMETYPE_10);
+        assertEquals(NO_CONTENT.value(), response.getStatus());
+
+        // check style creation
+        final StyleInfo styleInfo = getCatalog().getStyleByName("testPoint");
+        checkSimplePoint(styleInfo, Color.RED);
+
+        // check layer association
+        final LayerInfo layer = getCatalog().getLayerByName(getLayerId(ROAD_SEGMENTS));
+        assertThat(layer.getStyles(), hasItem(hasProperty("name", equalTo("testPoint"))));
+    }
+
+    @Test
     public void testPutSLDStyleModify() throws Exception {
         testPutSLDStyleGlobal();
 
@@ -183,6 +284,40 @@ public class StyleTest extends WFS3TestSupport {
         assertEquals(NO_CONTENT.value(), response.getStatus());
 
         assertNull(getCatalog().getStyleByName("simplePoint"));
+    }
+
+    @Test
+    public void testDeleteNonAssociatedBuiltInStyle() throws Exception {
+        // add testPoint, but not associated to the road segments layer
+        testPostSLDStyleGlobal();
+        MockHttpServletResponse response =
+                deleteAsServletResponse("wfs3/collections/cite__RoadSegments/styles/polygon");
+        assertEquals(NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
+    public void testDeleteNonAssociatedStyle() throws Exception {
+        // add testPoint, but not associated to the road segments layer
+        testPostSLDStyleGlobal();
+        MockHttpServletResponse response =
+                deleteAsServletResponse("wfs3/collections/cite__RoadSegments/styles/simplePoint");
+        assertEquals(NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
+    public void testDeleteAssociatedStyle() throws Exception {
+        // add testPoint, but not associated to the road segments layer
+        testPostSLDStyleCollection();
+        MockHttpServletResponse response =
+                deleteAsServletResponse("wfs3/collections/cite__RoadSegments/styles/simplePoint");
+        assertEquals(NO_CONTENT.value(), response.getStatus());
+
+        // check the style is gone and the association too
+        assertNull(getCatalog().getStyleByName("simplePoint"));
+        final LayerInfo layer = getCatalog().getLayerByName(getLayerId(ROAD_SEGMENTS));
+        System.out.println(layer.getStyles());
+        assertEquals(1, layer.getStyles().size());
+        assertThat(layer.getStyles(), hasItems(hasProperty("name", equalTo("line"))));
     }
 
     @Test

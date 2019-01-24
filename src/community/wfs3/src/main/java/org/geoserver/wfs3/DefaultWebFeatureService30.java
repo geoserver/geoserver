@@ -25,12 +25,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -229,7 +232,8 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
     }
 
     @Override
-    public void postStyles(HttpServletRequest request, HttpServletResponse response)
+    public void postStyles(
+            HttpServletRequest request, HttpServletResponse response, PostStyleRequest post)
             throws IOException {
         final String mimeType = request.getContentType();
         final StyleHandler handler = Styles.handler(mimeType);
@@ -276,13 +280,28 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
 
         catalog.add(sinfo);
 
+        // do we need to associate with a layer?
+        LayerInfo layer = null;
+        if (post.getLayerName() != null) {
+            // layer existence already checked in WFS3Filter
+            layer = getCatalog().getLayerByName(post.getLayerName());
+            layer.getStyles().add(sinfo);
+            getCatalog().save(layer);
+        }
+
         // build and return the new path
         ResponseUtils.appendPath(request.getContextPath());
         final String baseURL = ResponseUtils.baseURL(request);
-        final String url =
-                ResponseUtils.buildURL(
-                        // URLType.SERVICE is important here, otherwise no ws localization
-                        baseURL, "wfs3/styles/" + name, null, SERVICE);
+        final String path =
+                layer == null
+                        ? "wfs3/styles/" + name
+                        : "wfs3/collections/"
+                                + NCNameResourceCodec.encode(layer.getResource())
+                                + "/styles/"
+                                + name;
+        // URLType.SERVICE is important here, otherwise no ws localization
+        final String url = ResponseUtils.buildURL(baseURL, path, null, SERVICE);
+
         response.setStatus(HttpStatus.CREATED.value());
         response.addHeader(HttpHeaders.LOCATION, url);
     }
@@ -300,32 +319,53 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
     public StylesDocument getStyles(GetStylesRequest request) throws IOException {
         List<StyleDocument> styles = new ArrayList<>();
 
-        // return only styles that are not associated to a layer, those will show up
-        // in the layer association instead
-        final Set<StyleInfo> blacklist = getLayerAssociatedStyles();
-        addBuiltInStyles(blacklist);
-        for (StyleInfo style : getCatalog().getStyles()) {
-            if (blacklist.contains(style)) {
-                continue;
-            }
-            StyleDocument sd = StyleDocument.build(style);
-            String styleFormat = style.getFormat();
-            if (styleFormat == null) {
-                styleFormat = "SLD";
-            }
-            // canonicalize
-            styleFormat = Styles.handler(styleFormat).mimeType(null);
-            // add link for native format
-            sd.addLink(buildLink(request, sd, styleFormat));
-            if (!SLDHandler.MIMETYPE_10.equalsIgnoreCase(styleFormat)) {
-                // add link for SLD 1.0 translation
-                sd.addLink(buildLink(request, sd, SLDHandler.MIMETYPE_10));
-            }
+        if (request.getLayerName() == null) {
+            // return only styles that are not associated to a layer, those will show up
+            // in the layer association instead
+            final Set<StyleInfo> blacklist = getLayerAssociatedStyles();
+            addBuiltInStyles(blacklist);
+            for (StyleInfo style : getCatalog().getStyles()) {
+                if (blacklist.contains(style)) {
+                    continue;
+                }
+                StyleDocument sd = buildStyleDocument(request, style);
 
-            styles.add(sd);
+                styles.add(sd);
+            }
+        } else {
+            final LayerInfo layer = getCatalog().getLayerByName(request.getLayerName());
+            if (layer.getDefaultStyle() != null) {
+                StyleDocument sd = buildStyleDocument(request, layer.getDefaultStyle());
+                styles.add(sd);
+            }
+            if (layer.getStyles() != null) {
+                for (StyleInfo style : layer.getStyles()) {
+                    if (style != null) {
+                        StyleDocument sd = buildStyleDocument(request, style);
+                        styles.add(sd);
+                    }
+                }
+            }
         }
 
         return new StylesDocument(styles);
+    }
+
+    public StyleDocument buildStyleDocument(GetStylesRequest request, StyleInfo style) {
+        StyleDocument sd = StyleDocument.build(style);
+        String styleFormat = style.getFormat();
+        if (styleFormat == null) {
+            styleFormat = "SLD";
+        }
+        // canonicalize
+        styleFormat = Styles.handler(styleFormat).mimeType(null);
+        // add link for native format
+        sd.addLink(buildLink(request, sd, styleFormat));
+        if (!SLDHandler.MIMETYPE_10.equalsIgnoreCase(styleFormat)) {
+            // add link for SLD 1.0 translation
+            sd.addLink(buildLink(request, sd, SLDHandler.MIMETYPE_10));
+        }
+        return sd;
     }
 
     public void addBuiltInStyles(Set<StyleInfo> blacklist) {
@@ -337,10 +377,18 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
     }
 
     public Link buildLink(GetStylesRequest request, StyleDocument sd, String styleFormat) {
+        String path;
+        if (request.getLayerName() != null) {
+            FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(request.getLayerName());
+            String collectionId = NCNameResourceCodec.encode(featureType);
+            path = "wfs3/collections/" + collectionId + "/styles/" + sd.getId();
+        } else {
+            path = "wfs3/styles/" + sd.getId();
+        }
         String href =
                 ResponseUtils.buildURL(
                         request.getBaseUrl(),
-                        "wfs3/styles/" + sd.getId(),
+                        path,
                         Collections.singletonMap("f", styleFormat),
                         SERVICE);
         return new Link(href, "style", styleFormat, null);
@@ -373,10 +421,32 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
 
     @Override
     public StyleInfo getStyle(GetStyleRequest request) throws IOException {
-        final StyleInfo style = getCatalog().getStyleByName(request.getStyleId());
+        StyleInfo style = null;
+        LayerInfo layer = null;
+        if (request.getLayerName() != null) {
+            // layer existence already checked in WFSFilter
+            layer = getCatalog().getLayerByName(request.getLayerName());
+            if (layer.getDefaultStyle() != null
+                    && layer.getDefaultStyle().getName().equals(request.getStyleId())) {
+                style = layer.getDefaultStyle();
+            } else {
+                Predicate<StyleInfo> styleFilter =
+                        s -> s != null && s.getName().equalsIgnoreCase(request.getStyleId());
+                Optional<StyleInfo> first =
+                        layer.getStyles().stream().filter(styleFilter).findFirst();
+                if (first.isPresent()) {
+                    style = first.get();
+                }
+            }
+        } else {
+            style = getCatalog().getStyleByName(request.getStyleId());
+        }
         if (style == null) {
-            throw new HttpErrorCodeException(
-                    NOT_FOUND.value(), "Style " + request.getStyleId() + " could not be found");
+            String message = "Style " + request.getStyleId() + " could not be found";
+            if (layer != null) {
+                message += " in collection " + NCNameResourceCodec.encode(layer.getResource());
+            }
+            throw new HttpErrorCodeException(NOT_FOUND.value(), message);
         }
 
         return style;
@@ -397,13 +467,13 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         final String styleBody = IOUtils.toString(request.getReader());
 
         final WorkspaceInfo wsInfo = LocalWorkspace.get();
-        String name = putStyle.getStyleId();
-        StyleInfo sinfo = catalog.getStyleByName(wsInfo, name);
+        String styleName = putStyle.getStyleId();
+        StyleInfo sinfo = catalog.getStyleByName(wsInfo, styleName);
         boolean newStyle = sinfo == null;
         if (newStyle) {
             sinfo = catalog.getFactory().createStyle();
-            sinfo.setName(name);
-            sinfo.setFilename(name + "." + handler.getFileExtension());
+            sinfo.setName(styleName);
+            sinfo.setFilename(styleName + "." + handler.getFileExtension());
         }
 
         sinfo.setFormat(handler.getFormat());
@@ -425,6 +495,17 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
             catalog.save(sinfo);
         }
 
+        final String layerName = putStyle.getLayerName();
+        if (layerName != null) {
+            final LayerInfo layer = catalog.getLayerByName(layerName);
+            if (!layer.getStyles()
+                    .stream()
+                    .anyMatch(s -> s != null && s.getName().equalsIgnoreCase(styleName))) {
+                layer.getStyles().add(sinfo);
+                catalog.save(layer);
+            }
+        }
+
         response.setStatus(NO_CONTENT.value());
     }
 
@@ -433,12 +514,33 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
             throws IOException {
         String name = request.getStyleId();
         WorkspaceInfo ws = LocalWorkspace.get();
-        StyleInfo sinfo = getCatalog().getStyleByName(ws, name);
+        final Catalog catalog = getCatalog();
+        StyleInfo sinfo = catalog.getStyleByName(ws, name);
         if (sinfo == null) {
             throw new HttpErrorCodeException(
                     NOT_FOUND.value(), "Could not find style with id: " + name);
         }
-        getCatalog().remove(sinfo);
+
+        if (request.getLayerName() != null) {
+            LayerInfo layer = catalog.getLayerByName(request.getLayerName());
+            if (sinfo.equals(layer.getDefaultStyle())) {
+                StyleInfo newDefault =
+                        new CatalogBuilder(catalog).getDefaultStyle(layer.getResource());
+                layer.setDefaultStyle(newDefault);
+            } else {
+                if (!(layer.getStyles().remove(sinfo))) {
+                    throw new HttpErrorCodeException(
+                            NOT_FOUND.value(),
+                            "Style with id: "
+                                    + name
+                                    + " is not associated to collection "
+                                    + NCNameResourceCodec.encode(layer.getResource()));
+                }
+            }
+            catalog.save(layer);
+        }
+
+        catalog.remove(sinfo);
 
         response.setStatus(NO_CONTENT.value());
     }

@@ -5,4 +5,15 @@
 package org.geoserver.wfs3;
 
 /** Request for the server contents */
-public class GetStylesRequest extends BaseRequest {}
+public class GetStylesRequest extends BaseRequest {
+
+    String layerName;
+
+    public String getLayerName() {
+        return layerName;
+    }
+
+    public void setLayerName(String layerName) {
+        this.layerName = layerName;
+    }
+}

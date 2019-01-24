@@ -124,13 +124,19 @@ public class WFS3Filter implements GeoServerFilter {
                         Pattern.compile("/collections/([^/]+)/tiles/([^/]+)/?").matcher(pathInfo);
                 matcher.matches();
                 this.tilingScheme = matcher.group(2);
+            } else if (pathInfo.matches("/collections/([^/]+)/styles/?")) {
+                request = wrapped.getMethod().toLowerCase() + "Styles";
+                Matcher matcher =
+                        Pattern.compile("/collections/([^/]+)/styles/?").matcher(pathInfo);
+                matcher.matches();
+                setLayerName(matcher.group(1));
             } else if (pathInfo.matches("/collections/([^/]+)/styles/([^/]+)/?")) {
                 request = wrapped.getMethod().toLowerCase() + "Style";
                 Matcher matcher =
-                        Pattern.compile("/collections/([^/]+)/tiles/([^/]+)/?").matcher(pathInfo);
+                        Pattern.compile("/collections/([^/]+)/styles/([^/]+)/?").matcher(pathInfo);
                 matcher.matches();
-                this.typeName = matcher.group(1);
-                this.tilingScheme = matcher.group(2);
+                setLayerName(matcher.group(1));
+                this.styleId = matcher.group(2);
             } else if (pathInfo.startsWith("/collections")) {
                 List<Function<String, Boolean>> matchers = new ArrayList<>();
                 matchers.add(
@@ -345,8 +351,12 @@ public class WFS3Filter implements GeoServerFilter {
                 }
             }
             if (typeName != null) {
-                filtered.put("typeName", new String[] {typeName});
-                filtered.put("typeNames", new String[] {typeName});
+                if (request.toLowerCase().contains("style")) {
+                    filtered.put("layerName", new String[] {typeName});
+                } else {
+                    filtered.put("typeName", new String[] {typeName});
+                    filtered.put("typeNames", new String[] {typeName});
+                }
             }
             if (outputFormat != null) {
                 filtered.put("outputFormat", new String[] {outputFormat});

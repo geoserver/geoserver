@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -66,6 +68,7 @@ import org.geoserver.wfs3.response.TilingSchemeDescriptionDocument;
 import org.geoserver.wfs3.response.TilingSchemesDocument;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.config.DefaultGridsets;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.BeansException;
@@ -76,6 +79,7 @@ import org.springframework.http.HttpStatus;
 
 /** WFS 3.0 implementation */
 public class DefaultWebFeatureService30 implements WebFeatureService30, ApplicationContextAware {
+    private static final Logger LOGGER = Logging.getLogger(DefaultWebFeatureService30.class);
 
     private final GeoServerDataDirectory dataDirectory;
     private FilterFactory2 filterFactory;
@@ -153,7 +157,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
             request.setStartIndex(BigInteger.ZERO);
         }
 
-        WFS3GetFeature gf = new WFS3GetFeature(getServiceInfo(), getCatalog());
+        WFS3GetFeature gf = new WFS3GetFeature(getService(), getCatalog());
         gf.setFilterFactory(filterFactory);
         gf.setStoredQueryProvider(getStoredQueryProvider());
         FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
@@ -201,10 +205,6 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return new OpenAPIBuilder().build(request, getService(), extensions);
     }
 
-    public WFSInfo getServiceInfo() {
-        return geoServer.getService(WFSInfo.class);
-    }
-
     @Override
     public TilingSchemesDocument tilingSchemes(TilingSchemesRequest request) {
         return new TilingSchemesDocument(gridSets);
@@ -213,7 +213,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
     @Override
     public FeatureCollectionResponse getTile(org.geoserver.wfs3.GetFeatureType request) {
 
-        WFS3GetFeature gf = new WFS3GetFeature(getServiceInfo(), getCatalog());
+        WFS3GetFeature gf = new WFS3GetFeature(getService(), getCatalog());
         gf.setFilterFactory(filterFactory);
         gf.setStoredQueryProvider(getStoredQueryProvider());
         FeatureCollectionResponse response = gf.run(new GetFeatureRequest.WFS20(request));
@@ -306,7 +306,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         response.addHeader(HttpHeaders.LOCATION, url);
     }
 
-    public String getStyleName(StyledLayerDescriptor sld) {
+    private String getStyleName(StyledLayerDescriptor sld) {
         String name = sld.getName();
         if (name == null) {
             Style style = Styles.style(sld);
@@ -322,28 +322,22 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         if (request.getLayerName() == null) {
             // return only styles that are not associated to a layer, those will show up
             // in the layer association instead
-            final Set<StyleInfo> blacklist = getLayerAssociatedStyles();
-            addBuiltInStyles(blacklist);
+            final Set<StyleInfo> layerAssociatedStyles = getLayerAssociatedStyles();
+            addBuiltInStyles(layerAssociatedStyles);
             for (StyleInfo style : getCatalog().getStyles()) {
-                if (blacklist.contains(style)) {
+                if (layerAssociatedStyles.contains(style)) {
                     continue;
                 }
-                StyleDocument sd = buildStyleDocument(request, style);
-
-                styles.add(sd);
+                addStyleDocument(request, styles, style);
             }
         } else {
             final LayerInfo layer = getCatalog().getLayerByName(request.getLayerName());
             if (layer.getDefaultStyle() != null) {
-                StyleDocument sd = buildStyleDocument(request, layer.getDefaultStyle());
-                styles.add(sd);
+                addStyleDocument(request, styles, layer.getDefaultStyle());
             }
             if (layer.getStyles() != null) {
                 for (StyleInfo style : layer.getStyles()) {
-                    if (style != null) {
-                        StyleDocument sd = buildStyleDocument(request, style);
-                        styles.add(sd);
-                    }
+                    addStyleDocument(request, styles, style);
                 }
             }
         }
@@ -351,7 +345,17 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return new StylesDocument(styles);
     }
 
-    public StyleDocument buildStyleDocument(GetStylesRequest request, StyleInfo style) {
+    private void addStyleDocument(
+            GetStylesRequest request, List<StyleDocument> styles, StyleInfo style) {
+        try {
+            StyleDocument sd = buildStyleDocument(request, style);
+            styles.add(sd);
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Failed to process style " + style.getName(), e);
+        }
+    }
+
+    private StyleDocument buildStyleDocument(GetStylesRequest request, StyleInfo style) {
         StyleDocument sd = StyleDocument.build(style);
         String styleFormat = style.getFormat();
         if (styleFormat == null) {
@@ -368,7 +372,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return sd;
     }
 
-    public void addBuiltInStyles(Set<StyleInfo> blacklist) {
+    private void addBuiltInStyles(Set<StyleInfo> blacklist) {
         accumulateStyle(blacklist, getCatalog().getStyleByName(StyleInfo.DEFAULT_POINT));
         accumulateStyle(blacklist, getCatalog().getStyleByName(StyleInfo.DEFAULT_LINE));
         accumulateStyle(blacklist, getCatalog().getStyleByName(StyleInfo.DEFAULT_POLYGON));
@@ -376,7 +380,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         accumulateStyle(blacklist, getCatalog().getStyleByName(StyleInfo.DEFAULT_RASTER));
     }
 
-    public Link buildLink(GetStylesRequest request, StyleDocument sd, String styleFormat) {
+    private Link buildLink(GetStylesRequest request, StyleDocument sd, String styleFormat) {
         String path;
         if (request.getLayerName() != null) {
             FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(request.getLayerName());

@@ -11,6 +11,7 @@ import java.io.IOException;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
 
 public class LandingPageHTMLResponse extends AbstractHTMLResponse {
 
@@ -27,5 +28,10 @@ public class LandingPageHTMLResponse extends AbstractHTMLResponse {
     @Override
     protected ResourceInfo getResource(Object value) {
         return null;
+    }
+
+    @Override
+    protected String getFileName(Object value, Operation operation) {
+        return "landingPage";
     }
 }

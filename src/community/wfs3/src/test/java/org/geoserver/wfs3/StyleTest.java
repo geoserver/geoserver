@@ -121,6 +121,7 @@ public class StyleTest extends WFS3TestSupport {
         final MockHttpServletResponse response = getAsServletResponse("wfs3/styles/dashed?f=sld");
         assertEquals(OK.value(), response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
+        assertEquals("inline; filename=dashed.sld", response.getHeader("Content-Disposition"));
         final Document dom = dom(response, true);
         assertXpathEvaluatesTo("SLD Cook Book: Dashed line", "//sld:UserStyle/sld:Title", dom);
         assertXpathEvaluatesTo("1", "count(//sld:Rule)", dom);
@@ -324,7 +325,7 @@ public class StyleTest extends WFS3TestSupport {
     public void testMBStyle() throws Exception {
         String styleBody = loadStyle("mbcircle.json");
         // use a name not found in the style body
-        final MockHttpServletResponse response =
+        MockHttpServletResponse response =
                 postAsServletResponse("wfs3/styles", styleBody, MBStyleHandler.MIME_TYPE);
         assertEquals(CREATED.value(), response.getStatus());
         assertEquals(
@@ -363,9 +364,11 @@ public class StyleTest extends WFS3TestSupport {
                 "circle", "//sld:PointSymbolizer/sld:Graphic/sld:Mark/sld:WellKnownName", dom);
 
         // .. then MBStyle
-        DocumentContext mbstyle =
-                getAsJSONPath(
+        response =
+                getAsMockHttpServletResponse(
                         "wfs3/styles/circles?f=application%2Fvnd.geoserver.mbstyle%2Bjson", 200);
+        assertEquals("inline; filename=circles.mbstyle", response.getHeader("Content-Disposition"));
+        DocumentContext mbstyle = getAsJSONPath(response);
         assertEquals("circles", mbstyle.read("$.name"));
     }
 
@@ -413,6 +416,7 @@ public class StyleTest extends WFS3TestSupport {
                 getAsServletResponse(
                         "wfs3/styles/cssline?f=application%2Fvnd.geoserver.geocss%2Bcss");
         assertEquals(200, response.getStatus());
+        assertEquals("inline; filename=cssline.css", response.getHeader("Content-Disposition"));
         assertEqualsIgnoreNewLineStyle(
                 "* {\n" + "   stroke: black;\n" + "   stroke-width: 3;\n" + "}",
                 response.getContentAsString());

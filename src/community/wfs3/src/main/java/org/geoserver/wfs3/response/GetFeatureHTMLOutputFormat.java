@@ -144,4 +144,9 @@ public class GetFeatureHTMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         return info;
     }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "html";
+    }
 }

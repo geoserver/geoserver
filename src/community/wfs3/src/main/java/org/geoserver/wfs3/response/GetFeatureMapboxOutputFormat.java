@@ -244,4 +244,9 @@ public class GetFeatureMapboxOutputFormat extends WFSGetFeatureOutputFormat {
     public void setGridSets(DefaultGridsets gridSets) {
         this.gridSets = gridSets;
     }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "mbtile";
+    }
 }

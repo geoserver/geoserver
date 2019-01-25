@@ -96,4 +96,10 @@ public class StyleDocumentResponse extends Response {
         }
         return requestedFormat;
     }
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        StyleInfo style = (StyleInfo) value;
+        return style.getName() + "." + (style.getFormat() == null ? ".style" : style.getFormat());
+    }
 }

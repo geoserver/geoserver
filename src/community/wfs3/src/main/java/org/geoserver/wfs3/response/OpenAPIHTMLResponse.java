@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
 
 /** Returns a swagger-UI HTML wrapper for the JSON response */
 public class OpenAPIHTMLResponse extends AbstractHTMLResponse {
@@ -24,5 +25,10 @@ public class OpenAPIHTMLResponse extends AbstractHTMLResponse {
     @Override
     protected ResourceInfo getResource(Object value) {
         return null;
+    }
+
+    @Override
+    protected String getFileName(Object value, Operation operation) {
+        return "api";
     }
 }

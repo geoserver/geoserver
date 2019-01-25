@@ -138,4 +138,12 @@ public abstract class AbstractHTMLResponse extends Response {
      * @return
      */
     protected abstract ResourceInfo getResource(Object value);
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        return getFileName(value, operation) + ".html";
+    }
+
+    /** The name of the file for the response */
+    protected abstract String getFileName(Object value, Operation operation);
 }

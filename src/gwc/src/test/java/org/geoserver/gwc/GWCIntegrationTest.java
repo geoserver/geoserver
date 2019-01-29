@@ -52,6 +52,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -188,6 +189,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 "BasicPolygonsNoCrs.properties",
                 this.getClass(),
                 catalog);
+
+        // add a style group (any caps request would fail without the fix in GEOS-9111)
+        testData.addStyle("stylegroup", "stylegroup.sld", GWCIntegrationTest.class, catalog);
+        final LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.getLayers().add(null);
+        group.getStyles().add(catalog.getStyleByName("stylegroup"));
+        group.setName("stylegroup");
+        new LayerGroupHelper(group).calculateBounds();
+        catalog.add(group);
 
         // clean up the recorded http requests
         HttpRequestRecorderCallback.reset();
@@ -1652,6 +1662,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(response.getStatus(), is(200));
         // parse XML response content
         Document document = dom(response, false);
+        print(document);
         // check that default styles are advertised
         String result =
                 WMTS_XPATH_10.evaluate(
@@ -1685,6 +1696,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "wmts:LegendURL[@minScaleDenominator='100000.0'][@maxScaleDenominator='300000.0'])",
                         document);
         assertThat(Integer.parseInt(result), greaterThan(0));
+        // check the style group is reported
+        result =
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='stylegroup'])", document);
+        assertThat(Integer.parseInt(result), equalTo(1));
+
         // check that legend URI are correctly encoded in the context of a local workspace
         WorkspaceInfo workspace = getCatalog().getWorkspaceByName(TEST_WORKSPACE_NAME);
         assertThat(workspace, notNullValue());
@@ -1711,7 +1728,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesRequestRestEndpoints() throws Exception {
 
-        int totLayers = getCatalog().getLayers().size();
+        int totLayers = getCatalog().getLayers().size() + 1; // one cached layer group
 
         // getting capabilities document for CITE workspace
         Document doc = getAsDOM("/gwc/service/wmts?request=GetCapabilities");

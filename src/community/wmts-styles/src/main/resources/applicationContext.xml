@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean id="wmtsStylesExtension" class="org.geoserver.gwc.wmts.StylesExtension" lazy-init="false">
+        <constructor-arg ref="catalog"/>
+        <constructor-arg ref="dispatcher"/>
+        <constructor-arg ref="geowebcacheDispatcher"/>
+    </bean>
+    
+    <bean id="wmtsStyleResourceFactory" class="org.geoserver.gwc.wmts.StyleResourceFactory">
+        <constructor-arg ref="catalog"/>
+    </bean>
+
+</beans>

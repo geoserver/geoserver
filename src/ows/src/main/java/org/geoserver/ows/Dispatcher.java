@@ -503,7 +503,7 @@ public class Dispatcher extends AbstractController {
             req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
         }
         // check the body
-        if (req.getInput() != null) {
+        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
             Map xml = readOpPost(req.getInput());
             if (xml.get("service") != null) {
                 req.setService(normalize((String) xml.get("service")));

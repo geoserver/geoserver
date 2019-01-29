@@ -77,6 +77,53 @@ public class LayerGroupHelper {
     }
 
     /**
+     * Returns top level PublishedInfo, eventually expanding style groups
+     *
+     * @return
+     */
+    public List<PublishedInfo> allPublished() {
+        List<PublishedInfo> publisheds = new ArrayList<>();
+        allPublished(group, publisheds);
+        return publisheds;
+    }
+
+    private List<PublishedInfo> allPublished(LayerGroupInfo group, List<PublishedInfo> publisheds) {
+        if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
+            publisheds.add(group.getRootLayer());
+        }
+        int size = group.getLayers().size();
+        for (int i = 0; i < size; i++) {
+            PublishedInfo p = group.getLayers().get(i);
+            StyleInfo s;
+            // Handle incomplete layer groups, especially those constructed by the XStreamPersister
+            if (group.getStyles() == null || group.getStyles().size() == 0) {
+                s = null;
+            } else {
+                s = group.getStyles().get(i);
+            }
+
+            if (p instanceof LayerInfo) {
+                LayerInfo l = (LayerInfo) p;
+                publisheds.add(l);
+            } else if (p instanceof LayerGroupInfo) {
+                publisheds.add(p);
+            } else if (p == null && s != null) {
+                List<LayerInfo> layers = new ArrayList<>();
+                expandStyleGroup(
+                        s,
+                        group.getBounds() == null
+                                ? null
+                                : group.getBounds().getCoordinateReferenceSystem(),
+                        layers,
+                        null);
+                publisheds.addAll(layers);
+            }
+        }
+
+        return publisheds;
+    }
+
+    /**
      * Returns all the groups contained in this group (including the group itself)
      *
      * @return

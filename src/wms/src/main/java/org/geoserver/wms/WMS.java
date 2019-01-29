@@ -31,6 +31,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -991,7 +992,7 @@ public class WMS implements ApplicationContextAware {
         for (PublishedInfo published : layers) {
             if (published instanceof LayerInfo) {
                 queryable |= isQueryable((LayerInfo) published);
-            } else {
+            } else if (published instanceof LayerGroupInfo) {
                 queryable |= isQueryable((LayerGroupInfo) published);
             }
         }
@@ -1010,12 +1011,11 @@ public class WMS implements ApplicationContextAware {
      * @return a list of {@link PublishedInfo} contained in the layer (queryable or not)
      */
     private List<PublishedInfo> getLayersForQueryableChecks(LayerGroupInfo layerGroup) {
-        List<PublishedInfo> layers = layerGroup.getLayers();
         // direct wrapper?
         if (layerGroup instanceof AdvertisedCatalog.AdvertisedLayerGroup) {
             AdvertisedCatalog.AdvertisedLayerGroup wrapper =
                     (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
-            layers = wrapper.getOriginalLayers();
+            layerGroup = wrapper.unwrap();
         } else if (layerGroup instanceof Wrapper) {
             // hidden inside some other wrapper?
             Wrapper wrapper = (Wrapper) layerGroup;
@@ -1023,10 +1023,12 @@ public class WMS implements ApplicationContextAware {
                 wrapper.unwrap(AdvertisedCatalog.AdvertisedLayerGroup.class);
                 AdvertisedCatalog.AdvertisedLayerGroup alg =
                         (AdvertisedCatalog.AdvertisedLayerGroup) layerGroup;
-                layers = alg.getOriginalLayers();
+                layerGroup = alg.unwrap();
             }
         }
-        return layers;
+
+        // get the full list of layers and groups
+        return new LayerGroupHelper(layerGroup).allPublished();
     }
 
     /**

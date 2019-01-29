@@ -16,7 +16,23 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.*;
+import org.apache.commons.lang3.SystemUtils;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -26,8 +42,18 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
-import org.geotools.styling.*;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.DefaultResourceLocator;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.Mark;
+import org.geotools.styling.ResourceLocator;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.URLs;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -1251,7 +1277,7 @@ public class GeoServerDataDirectory {
         if (styleResource.getType() == Type.UNDEFINED) {
             throw new FileNotFoundException("No such resource: " + s.getFilename());
         }
-        final DefaultResourceLocator locator = new DefaultResourceLocator();
+        final DefaultResourceLocator locator = new ResourceAwareResourceLocator();
         locator.setSourceUrl(Resources.toURL(styleResource));
         StyledLayerDescriptor sld =
                 Styles.handler(s.getFormat())
@@ -1392,16 +1418,39 @@ public class GeoServerDataDirectory {
                                 return;
                             }
                             try {
-                                Resource r = resourceLoader.fromURL(exgr.getLocation());
+                                final String location = exgr.getURI();
+                                Resource r = resourceLoader.fromURL(location);
 
                                 if (r != null && r.getType() != Type.UNDEFINED) {
                                     resources.add(r);
                                 }
-                            } catch (IllegalArgumentException | MalformedURLException e) {
+                            } catch (IllegalArgumentException e) {
                                 GeoServerConfigPersister.LOGGER.log(
                                         Level.WARNING,
                                         "Error attemping to process SLD resource",
                                         e);
+                            }
+                        }
+
+                        @Override
+                        public void visit(Mark mark) {
+                            final Expression wellKnownName = mark.getWellKnownName();
+                            if (wellKnownName instanceof Literal) {
+                                final String name = wellKnownName.evaluate(null, String.class);
+                                if (name.startsWith("resource:/")) {
+                                    try {
+                                        Resource r = resourceLoader.fromURL(name);
+
+                                        if (r != null && r.getType() != Type.UNDEFINED) {
+                                            resources.add(r);
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        GeoServerConfigPersister.LOGGER.log(
+                                                Level.WARNING,
+                                                "Error attemping to process SLD resource",
+                                                e);
+                                    }
+                                }
                             }
                         }
 
@@ -1453,7 +1502,31 @@ public class GeoServerDataDirectory {
         return locator;
     }
 
-    private class GeoServerResourceLocator extends DefaultResourceLocator {
+    private class ResourceAwareResourceLocator extends DefaultResourceLocator {
+        @Override
+        protected URL validateRelativeURL(URL relativeUrl) {
+            if (relativeUrl.getProtocol().equalsIgnoreCase("resource")) {
+                String path = relativeUrl.getPath();
+                if (resourceLoader.get(path).getType() != Type.UNDEFINED) {
+                    return relativeUrl;
+                } else {
+                    return null;
+                }
+            } else {
+                return super.validateRelativeURL(relativeUrl);
+            }
+        }
+
+        @Override
+        protected URL makeRelativeURL(String uri, String query) {
+            if (SystemUtils.IS_OS_WINDOWS && uri.contains("\\")) {
+                uri = uri.replace('\\', '/');
+            }
+            return super.makeRelativeURL(uri, query);
+        }
+    }
+
+    private class GeoServerResourceLocator extends ResourceAwareResourceLocator {
 
         @Override
         public URL locateResource(String uri) {
@@ -1498,16 +1571,6 @@ public class GeoServerDataDirectory {
                 return u;
             } else {
                 return url;
-            }
-        }
-
-        @Override
-        protected URL validateRelativeURL(URL relativeUrl) {
-            // the resource:/ thing does not make for a valid url, so don't validate it
-            if (relativeUrl.getProtocol().equalsIgnoreCase("resource")) {
-                return relativeUrl;
-            } else {
-                return super.validateRelativeURL(relativeUrl);
             }
         }
     }

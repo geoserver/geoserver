@@ -173,7 +173,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
    *PNG + custom palette (using the png8 output as the palette).*
 
-**Parameters**:``FORMAT=image/png``& ``palette=safe`` Size: 17KB | Map generation time: 0.15s
+**Parameters**:``FORMAT=image/png`` & ``palette=safe`` Size: 17KB | Map generation time: 0.15s
 
 .. figure:: dem-png-safe-palette.png
    :align: center

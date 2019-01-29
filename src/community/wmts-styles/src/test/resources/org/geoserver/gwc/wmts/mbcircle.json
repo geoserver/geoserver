@@ -1,0 +1,53 @@
+{
+  "version": 8,
+  "name": "circles",
+  "metadata": {
+    "mapbox:autocomposite": true,
+    "mapbox:type": "template"
+  },
+  "center": [
+    -349.3130614537612,
+    46.25811573431122
+  ],
+  "zoom": 4.169248639484669,
+  "bearing": 0,
+  "pitch": 0,
+  "sources": {
+    "composite": {
+      "url": "mapbox://mapbox.mapbox-streets-v7",
+      "type": "vector"
+    }
+  },
+  "sprite": "mapbox://sprites/test/ciz06c19m000a2spr9s5h0nx2",
+  "glyphs": "mapbox://fonts/test/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "place-label",
+      "type": "circle",
+      "source": "test-source",
+      "source-layer": "place_label",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "circle-color": "#FF0000",
+        "circle-opacity": 0.5,
+        "circle-radius": 15,
+        "circle-blur": 1,
+        "circle-translate": [
+          10,
+          10
+        ],
+        "circle-stroke-opacity": 0.75,
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#00FF00"
+      }
+    }
+  ],
+  "created": "2017-02-10T18:56:14.990Z",
+  "id": "ciz06c19m000a2spr9s5h0nx2",
+  "modified": "2017-02-10T19:08:34.562Z",
+  "owner": "test",
+  "visibility": "private",
+  "draft": false
+}

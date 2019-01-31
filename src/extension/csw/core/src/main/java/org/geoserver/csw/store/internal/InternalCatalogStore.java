@@ -80,6 +80,11 @@ public class InternalCatalogStore extends AbstractCatalogStore {
                     "url.wfs", ResponseUtils.buildURL(baseUrl, "wfs", null, URLType.SERVICE));
             interpolationProperties.put(
                     "url.wms", ResponseUtils.buildURL(baseUrl, "wms", null, URLType.SERVICE));
+            interpolationProperties.put(
+                    "url.wcs", ResponseUtils.buildURL(baseUrl, "wcs", null, URLType.SERVICE));
+            interpolationProperties.put(
+                    "url.wmts",
+                    ResponseUtils.buildURL(baseUrl, "gwc/service/wmts", null, URLType.SERVICE));
         }
 
         CatalogStoreMapping mapping = getMapping(q.getTypeName());

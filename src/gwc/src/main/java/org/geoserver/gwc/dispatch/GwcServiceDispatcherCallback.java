@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.dispatch;
 
+import com.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -47,6 +48,15 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
     private static final Pattern GWC_LAYER_VIRTUAL_SERVICE_PATTERN =
             Pattern.compile("([^/]+)/([^/]+)/gwc/service.*");
 
+    static final String buildRestPattern(int numPathElements) {
+        return ".*/service/wmts/rest" + Strings.repeat("/([^/]+)", numPathElements);
+    }
+
+    private static final Pattern TILE_1 = Pattern.compile(buildRestPattern(5));
+    private static final Pattern TILE_2 = Pattern.compile(buildRestPattern(6));
+    private static final Pattern FEATUREINFO_1 = Pattern.compile(buildRestPattern(7));
+    private static final Pattern FEATUREINFO_2 = Pattern.compile(buildRestPattern(8));
+
     private final Catalog catalog;
 
     public GwcServiceDispatcherCallback(Catalog catalog) {
@@ -66,8 +76,23 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
             return null;
         }
 
-        // storing the current operation
-        GWC_OPERATION.set((String) request.getKvp().get("REQUEST"));
+        // storing the current operation (bridge the RESTful bindings that do not have a
+        // REQUEST parameter by matching their paths)
+        String requestName = (String) request.getKvp().get("REQUEST");
+        final String pathInfo = request.getHttpRequest().getPathInfo();
+        if (requestName == null
+                && pathInfo != null
+                && pathInfo.contains("gwc/service/wmts/rest/")) {
+            if (pathInfo.endsWith("WMTSCapabilities.xml")) {
+                requestName = "GetCapabilities";
+            } else if (TILE_1.matcher(pathInfo).matches() || TILE_2.matcher(pathInfo).matches()) {
+                requestName = "GetTile";
+            } else if (FEATUREINFO_1.matcher(pathInfo).matches()
+                    || FEATUREINFO_2.matcher(pathInfo).matches()) {
+                requestName = "GetFeatureInfo";
+            }
+        }
+        GWC_OPERATION.set(requestName);
 
         Map<String, String> kvp = new HashMap<>();
         kvp.put("service", "gwc");

@@ -1826,13 +1826,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         doc));
         // check tile resources
         assertEquals(
-                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/cite:BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format=image/png",
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format=image/png",
                 WMTS_XPATH_10.evaluate(
                         "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='image/png' and @resourceType='tile']/@template",
                         doc));
         // check featureinfo resource
         assertEquals(
-                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/cite:BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}?format=text/plain",
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}?format=text/plain",
                 WMTS_XPATH_10.evaluate(
                         "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='text/plain' and @resourceType='FeatureInfo']/@template",
                         doc));
@@ -1878,8 +1878,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "/gwc"
                                 + WMTSService.REST_PATH
                                 + "/"
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
                                 + MockData.BASIC_POLYGONS.getLocalPart()
                                 + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
         request.setMethod("GET");

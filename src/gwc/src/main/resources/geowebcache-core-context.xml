@@ -78,6 +78,7 @@
   <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
     <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
   </bean>
   

@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+	<legend>
+		<wicket:message key="panelTitle"/>
+	</legend>
+	<wicket:container wicket:id="content"/>
+	
+	<wicket:fragment wicket:id="main">
+		<fieldset>
+			<ul class="selfclear">
+				<li>
+					<label for="methodologyDropDown">
+						<wicket:message key="selectGenerationMethodology"/>
+					</label>
+					<select id="methodologyDropDown" wicket:id="methodologyDropDown"></select>
+				</li>
+				<li id="methodologyConfiguration" wicket:id="methodologyConfiguration">
+					<wicket:container wicket:id="configurations">
+						<wicket:container wicket:id="configuration"/>
+					</wicket:container>
+				</li>
+				<li>
+					<a wicket:id="createGeometryLink"><wicket:message key="createGeometryLink"/></a>
+				</li>
+			</ul>
+		</fieldset>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="incorrectFeatureType">
+		<wicket:message key="incorrectFeatureType"/>
+	</wicket:fragment>
+</wicket:panel>
+</body>
+</html>

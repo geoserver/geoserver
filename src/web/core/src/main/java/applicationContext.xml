@@ -255,6 +255,17 @@
       </list>
     </property>
   </bean>
+  <bean id="generatedGeometryConfigPanel"
+        class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <property name="id" value="generatedGeometry"/>
+    <property name="titleKey" value="data.resource.config.generated-geometry"/>
+    <property name="componentClass"
+              value="org.geoserver.web.data.resource.generatedGeometries.GeneratedGeometryConfigurationPanel"/>
+  </bean>
+
+  <bean id="longLatMethodology" class="org.geoserver.web.data.resource.generatedGeometries.methodology.LongLatGeometryGenerationMethodology"/>
+  <bean id="dummyMethodology" class="org.geoserver.web.data.resource.generatedGeometries.methodology.DummyGeometryGenerationMethodology"/>
+
   <bean id="coverageResourceConfigPanel"
     class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
     <property name="id" value="coverage" />

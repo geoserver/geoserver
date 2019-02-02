@@ -1,0 +1,36 @@
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  -->
+
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <div>
+        <fieldset>
+            <ul class="selfclear">
+                <li class="leftwise">
+                    <label for="attrInput" wicket:id="attrLabel">attribute name</label>
+                    <input wicket:id="geometryAttributeName" id="attrInput" type="text" class="text" style="width: 100px;"/>
+                </li>
+                <li class="leftwise">
+                    <label for="lonAttributesDropDown">
+                        <wicket:message key="selectLonAttribute"/>
+                    </label>
+                    <select id="lonAttributesDropDown" wicket:id="lonAttributesDropDown"></select>
+                </li>
+                <li class="leftwise">
+                    <label for="latAttributesDropDown">
+                        <wicket:message key="selectLatAttribute"/>
+                    </label>
+                    <select id="latAttributesDropDown" wicket:id="latAttributesDropDown"></select>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+</wicket:panel>
+
+</body>
+</html>

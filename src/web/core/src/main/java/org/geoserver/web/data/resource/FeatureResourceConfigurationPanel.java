@@ -5,13 +5,6 @@
  */
 package org.geoserver.web.data.resource;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
@@ -55,6 +48,14 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @SuppressWarnings("serial")
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
@@ -67,6 +68,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
+        setOutputMarkupId(true);
 
         CheckBox circularArcs = new CheckBox("circularArcPresent");
         add(circularArcs);

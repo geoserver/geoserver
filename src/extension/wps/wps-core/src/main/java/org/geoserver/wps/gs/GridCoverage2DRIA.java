@@ -208,9 +208,9 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     private void initIterator() {
 
         // --- check interpolation
-        kwidth = interp.getWidth();
-        kheight = interp.getHeight();
         if (interp != null) {
+            kwidth = interp.getWidth();
+            kheight = interp.getHeight();
             lpad = interp.getLeftPadding();
             rpad = interp.getRightPadding();
             tpad = interp.getTopPadding();

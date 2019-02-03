@@ -2322,6 +2322,34 @@
         </plugins>
       </build>
     </profile>
+    
+        <profile>
+      <id>spotbugs</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>3.1.10</version>
+            <configuration>
+              <effort>More</effort>
+              <threshold>High</threshold>
+              <xmlOutput>true</xmlOutput>
+              <maxRank>10</maxRank>
+              <excludeFilterFile>${geoserverBaseDir}/spotbugs-exclude.xml</excludeFilterFile>
+              <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 </project>

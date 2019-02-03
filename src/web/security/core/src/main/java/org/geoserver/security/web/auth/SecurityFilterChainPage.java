@@ -49,9 +49,6 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
     protected RequestFilterChainWrapper chainWrapper;
     SecurityManagerConfig secMgrConfig;
 
-    /** pop-up dialog */
-    protected GeoServerDialog dialog;
-
     Form<? extends RequestFilterChainWrapper> form;
     CheckBox methodList[] = new CheckBox[7];;
 

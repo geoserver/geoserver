@@ -329,7 +329,7 @@ public enum JSONType {
             JSONBuilder json = new JSONBuilder(outWriter);
             json.object()
                     .key("version")
-                    .value(request.getVersion())
+                    .value(request != null ? request.getVersion() : "")
                     .key("exceptions")
                     .array()
                     .object()

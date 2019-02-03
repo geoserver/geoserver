@@ -38,7 +38,7 @@ public abstract class BaseCapabilitiesResponse extends Response {
     public String getMimeType(final Object value, final Operation operation)
             throws ServiceException {
 
-        if (value.getClass().isAssignableFrom(super.getBinding())) {
+        if (value != null && value.getClass().isAssignableFrom(super.getBinding())) {
             return mime;
         }
 

@@ -12,6 +12,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
@@ -52,6 +53,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
     }
 
     @Override
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
         Object h = super.lookupHandler(urlPath, request);
         if (h == null /*&& AdvancedDispatch.isSet(getApplicationContext())*/) {

@@ -129,18 +129,16 @@ public class ExecuteResponseBuilder {
 
         // status
         response.setStatus(f.createStatusType());
-        XMLGregorianCalendar gc =
-                Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
-        response.getStatus().setCreationTime(gc);
         if (status == null) {
-            if (status.getException() != null) {
-                setResponseFailed(response, getException(ProcessState.FAILED));
-            } else if (outputs == null) {
+            if (outputs == null) {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else {
                 response.getStatus().setProcessSucceeded("Process succeeded.");
             }
         } else {
+            XMLGregorianCalendar gc =
+                    Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
+            response.getStatus().setCreationTime(gc);
             if (status.getPhase() == ProcessState.QUEUED) {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else if (status.getPhase() == ProcessState.RUNNING) {

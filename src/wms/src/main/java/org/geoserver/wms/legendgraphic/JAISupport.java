@@ -80,7 +80,7 @@ public final class JAISupport {
                 LOGGER.info("Jai not found? Should be always there");
                 supportedFormats = Collections.EMPTY_SET;
             } else {
-                supportedFormats = new HashSet();
+                Set result = new HashSet();
 
                 List formatsList = Arrays.asList(mimeTypes);
 
@@ -90,7 +90,7 @@ public final class JAISupport {
                     if (!curFormat.equals("")) {
                         // DJB: check to see if the JAI format has been tested to work!
                         if (testedFormats.contains(curFormat)) {
-                            supportedFormats.add(curFormat);
+                            result.add(curFormat);
                         }
                     }
                 }
@@ -98,7 +98,7 @@ public final class JAISupport {
                 if (LOGGER.isLoggable(Level.CONFIG)) {
                     StringBuffer sb = new StringBuffer("Supported JAIMapResponse's MIME Types: [");
 
-                    for (Iterator it = supportedFormats.iterator(); it.hasNext(); ) {
+                    for (Iterator it = result.iterator(); it.hasNext(); ) {
                         sb.append(it.next());
 
                         if (it.hasNext()) {
@@ -109,6 +109,8 @@ public final class JAISupport {
                     sb.append("]");
                     LOGGER.config(sb.toString());
                 }
+
+                supportedFormats = result;
             }
         }
 

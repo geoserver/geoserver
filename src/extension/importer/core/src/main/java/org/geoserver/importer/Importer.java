@@ -1278,7 +1278,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
             task.setOriginalLayerName(featureType.getTypeName());
             String nativeName = task.getLayer().getResource().getNativeName();
-            if (!featureType.getName().equals(nativeName)) {
+            if (!featureType.getTypeName().equals(nativeName)) {
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(featureType);
                 tb.setName(nativeName);

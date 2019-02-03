@@ -2012,6 +2012,7 @@
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.2</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>
+  <pmd.version>6.11.0</pmd.version>
  </properties>
 
  <profiles>
@@ -2242,6 +2243,28 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
             <version>3.11.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-core</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-java</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-javascript</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-jsp</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+            </dependencies>
             <configuration>
               <rulesets>
                 <ruleset>${geoserverBaseDir}/pmd-ruleset.xml</ruleset>

@@ -85,6 +85,18 @@ public class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttri
             "stored");
 
     /**
+     * Order of the field
+     */
+    protected static final Property<ElasticAttribute> ORDER = new BeanProperty<ElasticAttribute>("order",
+            "order");
+
+    /**
+     * Custom name of the field
+     */
+    protected static final Property<ElasticAttribute> CUSTOM_NAME = new BeanProperty<ElasticAttribute>("customName",
+            "customName");
+ 
+    /**
      * Build attribute provider
      * 
      * @param attributes list to use as source for provider
@@ -95,7 +107,7 @@ public class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttri
 
     @Override
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ElasticAttribute>> getProperties() {
-        return Arrays.asList(USE, NAME, TYPE, DEFAULT_GEOMETRY, STORED, ANALYZED, SRID, DATE_FORMAT);
+        return Arrays.asList(USE, NAME, TYPE, ORDER, CUSTOM_NAME, DEFAULT_GEOMETRY, STORED, ANALYZED, SRID, DATE_FORMAT);
     }
 
     @Override

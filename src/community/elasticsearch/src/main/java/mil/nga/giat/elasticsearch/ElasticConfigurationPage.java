@@ -7,6 +7,7 @@ package mil.nga.giat.elasticsearch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -252,6 +254,7 @@ public abstract class ElasticConfigurationPage extends Panel {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+        Collections.sort(layerConfig.getAttributes());        
         return layerConfig;
     }
 
@@ -330,7 +333,17 @@ public abstract class ElasticConfigurationPage extends Panel {
                     } else {
                         Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
                         return f;
-                    }
+                    } 
+                } else if (property == ElasticAttributeProvider.ORDER) {
+                    TextField<Integer> order = new TextField<Integer>("order", new PropertyModel<Integer>(itemModel, "order"));
+                    Fragment f = new Fragment(id, "textOrderValue", ElasticConfigurationPage.this);
+                    f.add(order);
+                    return f;
+                } else if (property == ElasticAttributeProvider.CUSTOM_NAME) {
+                    TextField<String> customName = new TextField<String>("customName", new PropertyModel<String>(itemModel, "customName"));
+                    Fragment f = new Fragment(id, "textCustomNameValue", ElasticConfigurationPage.this);
+                    f.add(customName);
+                    return f;
                 }
                 return null;
             }
@@ -365,7 +378,6 @@ public abstract class ElasticConfigurationPage extends Panel {
             return (String) getDisplayValue(object);
         }
 
-        @Override
         public Object getObject(String id, IModel choices) {
             for (Class<? extends Geometry> c : GEOMETRY_TYPES) {
                 if (id.equals(getDisplayValue(c))) {

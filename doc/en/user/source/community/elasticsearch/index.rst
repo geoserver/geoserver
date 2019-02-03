@@ -162,6 +162,10 @@ The initial layer configuration panel for an Elasticsearch layer will include an
      - Name of the field
    * - ``Type``
      - Type of the field, as derived from the Elasticsearch schema. For geometry types, you have the option to provide a more specific data type.
+   * - ``Order``
+     - Integer order values are used to sort fields, where fields with smaller order are returned first
+   * - ``Custom Name``
+     - Provides the option to give the field a custom name
    * - ``Default Geometry``
      - Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field, as SLDs and spatial filters will hit the default geometry field unless otherwise specified
    * - ``Stored``

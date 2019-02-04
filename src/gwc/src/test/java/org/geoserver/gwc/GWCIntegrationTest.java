@@ -58,7 +58,9 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -95,6 +97,7 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -146,6 +149,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("gwc-integration-test.xml");
+    }
+
+    @After
+    public void cleanupDispatcherRequest() {
+        // some test set the dispatcher request manually, avoid cross test contamination
+        Dispatcher.REQUEST.remove();
     }
 
     private void prepareDataDirectory(SystemTestData testData) throws Exception {
@@ -1490,6 +1499,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetCapabilitiesWithLocalWorkspace() throws Exception {
+        final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+        // print(doc);
+        assertThat(
+                WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
+                equalTo(
+                        "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+    }
+
+    public Document assertGetCapabilitiesWithLocalWorkspace() throws Exception {
         // getting capabilities document for CITE workspace
         Document document =
                 getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
@@ -1510,6 +1528,31 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "'])",
                         document),
                 is("1"));
+        return document;
+    }
+
+    @Test
+    public void testGetCapabilitiesWithLocalWorkspaceAndProxyBase() throws Exception {
+        final GeoServer gs = getGeoServer();
+        try {
+            setProxyBase(gs, "http://fooBar/geoserver");
+
+            final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+            // print(doc);
+            assertThat(
+                    WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
+                    equalTo(
+                            "http://fooBar/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+
+        } finally {
+            setProxyBase(gs, null);
+        }
+    }
+
+    public void setProxyBase(GeoServer gs, String s) {
+        final GeoServerInfo global = gs.getGlobal();
+        global.getSettings().setProxyBaseUrl(s);
+        gs.save(global);
     }
 
     @Test

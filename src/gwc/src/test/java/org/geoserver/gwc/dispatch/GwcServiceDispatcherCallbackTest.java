@@ -33,7 +33,7 @@ public final class GwcServiceDispatcherCallbackTest {
     @Test
     public void testThatGwcServiceRequestsAreAccepted() {
         // creating some mocks needed for the test and instantiating the dispatcher call back
-        HttpServletRequest httpRequest = mock(HttpServletRequest.class);
+        HttpServletRequest httpRequest = newMockHttpRequest();
         when(httpRequest.getParameterMap()).thenReturn(Collections.emptyMap());
         Request request = mock(Request.class);
         when(request.getHttpRequest()).thenReturn(httpRequest);
@@ -61,10 +61,19 @@ public final class GwcServiceDispatcherCallbackTest {
         }
     }
 
+    public HttpServletRequest newMockHttpRequest() {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("http");
+        when(request.getServerName()).thenReturn("http");
+        when(request.getServerPort()).thenReturn(8080);
+        when(request.getContextPath()).thenReturn("/geoserver/gwc");
+        return request;
+    }
+
     @Test
     public void testGwcVirtualServiceRequestWrapper() {
         // we create a mock for the http request
-        HttpServletRequest httpRequest = mock(HttpServletRequest.class);
+        HttpServletRequest httpRequest = newMockHttpRequest();
         when(httpRequest.getParameterMap()).thenReturn(new HashMap<>());
         when(httpRequest.getContextPath()).thenReturn("geoserver");
         // we create a mock for the geoserver request
@@ -98,7 +107,7 @@ public final class GwcServiceDispatcherCallbackTest {
     @Test
     public void testThatGwcOperationIsStored() {
         // creating some mocks needed for the test and instantiating the dispatcher call back
-        HttpServletRequest httpRequest = mock(HttpServletRequest.class);
+        HttpServletRequest httpRequest = newMockHttpRequest();
         when(httpRequest.getParameterMap()).thenReturn(Collections.emptyMap());
         Request request = new Request();
         request.setKvp(Collections.singletonMap("REQUEST", "GetCapabilities"));

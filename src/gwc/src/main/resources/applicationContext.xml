@@ -153,4 +153,9 @@
   </bean>
   
   <bean id="gwcResourceServiceVoter" class="org.geoserver.gwc.wmts.GWCResourceServiceVoter"/>
+
+  <bean id="gwcLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="gwc"/>
+  </bean>
+
 </beans>

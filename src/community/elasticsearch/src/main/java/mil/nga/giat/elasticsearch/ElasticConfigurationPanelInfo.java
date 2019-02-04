@@ -13,11 +13,11 @@ import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
  * 
  * Implements ResourceConfigurationPanelInfo extension point to add Elasticsearch 
  * attribute configuration link on resource page. <br>
- * Priority is reduced under standard {@link ExtensionPriority.LOWEST} to shows 
+ * Priority is reduced under standard {@link ExtensionPriority#LOWEST} to shows
  * the Elasticsearch link after other panels.
  * 
  */
-public class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
+class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
 
     private static final long serialVersionUID = 1485404586629946126L;
 

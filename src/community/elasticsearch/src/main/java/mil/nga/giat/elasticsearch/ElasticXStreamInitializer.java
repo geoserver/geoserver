@@ -19,7 +19,7 @@ import com.thoughtworks.xstream.XStream;
  * Implementation of XStreamPersisterInitializer extension point to serialize ElasticLayerConfiguration
  *
  */
-public class ElasticXStreamInitializer implements XStreamPersisterInitializer {
+class ElasticXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {

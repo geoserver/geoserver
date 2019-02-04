@@ -48,8 +48,8 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
-import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -66,13 +66,11 @@ import org.opengis.feature.type.Name;
  * the user to choice which Elasticsearch attributes include in layers, selects 
  * attribute to use as GEOMETRY.
  */
-public abstract class ElasticConfigurationPage extends Panel {
+abstract class ElasticConfigurationPage extends Panel {
 
     private static final long serialVersionUID = 5615867383881988931L;
 
     private static final Logger LOGGER = Logging.getLogger(ElasticConfigurationPage.class);
-
-    private FeedbackPanel feedbackPanel;
 
     private final String useAllMarkupId;
 
@@ -84,16 +82,17 @@ public abstract class ElasticConfigurationPage extends Panel {
      * Constructs the dialog to set Elasticsearch attributes and configuration 
      * options.
      * 
-     * @see {@link ElasticAttributeProvider}
-     * @see {@link ElasticAttribute}
+     * @see ElasticAttributeProvider
+     * @see ElasticAttribute
      * 
      */
-    public ElasticConfigurationPage(String panelId, final IModel model) {
+    public ElasticConfigurationPage(String panelId, final IModel<?> model) {
         super(panelId, model);
 
         ResourceInfo ri = (ResourceInfo) model.getObject();
 
-        final Form elastic_form = new Form("es_form", new CompoundPropertyModel(this));
+        @SuppressWarnings("unchecked")
+        final Form<?> elastic_form = new Form("es_form", new CompoundPropertyModel(this));
         add(elastic_form);
 
         List<ElasticAttribute> attributes;
@@ -146,12 +145,12 @@ public abstract class ElasticConfigurationPage extends Panel {
         elastic_form.add(checkBox);
 
         elastic_form.add(new AjaxButton("es_save") {
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 onSave(target);
             }
         });
 
-        feedbackPanel = new FeedbackPanel("es_feedback");
+        FeedbackPanel feedbackPanel = new FeedbackPanel("es_feedback");
         feedbackPanel.setOutputMarkupId(true);
         elastic_form.add(feedbackPanel);
     }
@@ -159,6 +158,7 @@ public abstract class ElasticConfigurationPage extends Panel {
     /**
      * Do nothing
      */
+    @SuppressWarnings("unused")
     protected void onCancel(AjaxRequestTarget target) {
         done(target, null, null);
     }
@@ -169,14 +169,14 @@ public abstract class ElasticConfigurationPage extends Panel {
      * {@link ElasticLayerConfiguration#KEY} <br>
      * Validation include the follow rules <li>One attribute must be a GEOMETRY.
      * 
-     * @see {@link ElasticLayerConfiguration}
-     * @see {@link FeatureTypeInfo#getMetadata}
+     * @see ElasticLayerConfiguration
+     * @see FeatureTypeInfo#getMetadata
      */
-    protected void onSave(AjaxRequestTarget target) {
+    private void onSave(AjaxRequestTarget target) {
         try {
             ResourceInfo ri = (ResourceInfo) getDefaultModel().getObject();
             ElasticLayerConfiguration layerConfig = fillElasticAttributes(ri);
-            Boolean geomSet = false;
+            boolean geomSet = false;
             // Validate configuration
             for (ElasticAttribute att : layerConfig.getAttributes()) {
                 if (Geometry.class.isAssignableFrom(att.getType()) && att.isUse()) {
@@ -226,17 +226,11 @@ public abstract class ElasticConfigurationPage extends Panel {
             ElasticDataStore dataStore = (ElasticDataStore) ((DataStoreInfo) ri.getStore())
                     .getDataStore(new NullProgressListener());
 
-            ArrayList<ElasticAttribute> result = new ArrayList<ElasticAttribute>();
-            Map<String, ElasticAttribute> tempMap = new HashMap<String, ElasticAttribute>();
-            final List<ElasticAttribute> attributes;
-            if (layerConfig.getAttributes() != null) {
-                attributes = layerConfig.getAttributes();
-                for (ElasticAttribute att : attributes) {
-                    tempMap.put(att.getName(), att);
-                }
-            } else {
-                attributes = new ArrayList<>();
-                layerConfig.getAttributes().addAll(attributes);
+            ArrayList<ElasticAttribute> result = new ArrayList<>();
+            Map<String, ElasticAttribute> tempMap = new HashMap<>();
+            final List<ElasticAttribute> attributes = layerConfig.getAttributes();
+            for (ElasticAttribute att : attributes) {
+                tempMap.put(att.getName(), att);
             }
 
             final String docType = layerConfig.getDocType();
@@ -244,8 +238,7 @@ public abstract class ElasticConfigurationPage extends Panel {
             dataStore.getDocTypes().put(layerName, docType);
             for (ElasticAttribute at : dataStore.getElasticAttributes(layerName)) {
                 if (tempMap.containsKey(at.getName())) {
-                    ElasticAttribute prev = tempMap.get(at.getName());
-                    at = prev;
+                    at = tempMap.get(at.getName());
                 }
                 result.add(at);
             }
@@ -254,7 +247,7 @@ public abstract class ElasticConfigurationPage extends Panel {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-        Collections.sort(layerConfig.getAttributes());        
+        Collections.sort(layerConfig.getAttributes());
         return layerConfig;
     }
 
@@ -268,7 +261,7 @@ public abstract class ElasticConfigurationPage extends Panel {
             @Override
             protected Component getComponentForProperty(String id, IModel<ElasticAttribute> itemModel,
                     Property<ElasticAttribute> property) {
-                ElasticAttribute att = (ElasticAttribute) itemModel.getObject();
+                ElasticAttribute att = itemModel.getObject();
                 boolean isGeometry = att.getType() != null
                         && Geometry.class.isAssignableFrom(att.getType());
                 if (property == ElasticAttributeProvider.NAME && isGeometry) {
@@ -277,13 +270,14 @@ public abstract class ElasticConfigurationPage extends Panel {
                     return f;
                 } else if (property == ElasticAttributeProvider.TYPE && isGeometry) {
                     Fragment f = new Fragment(id, "geometry", ElasticConfigurationPage.this);
+                    //noinspection unchecked
                     f.add(new DropDownChoice("geometry", new PropertyModel(itemModel, "type"),
                             GEOMETRY_TYPES, new GeometryTypeRenderer()));
                     return f;
                 } else if (property == ElasticAttributeProvider.USE) {
-                    CheckBox checkBox = new CheckBox("use", new PropertyModel<Boolean>(itemModel, "use"));
+                    CheckBox checkBox = new CheckBox("use", new PropertyModel<>(itemModel, "use"));
                     final String onclick = "document.getElementById(\"" + useAllMarkupId + "\").checked = false;";
-                    checkBox.add(new AttributeAppender("onclick", new Model<String>(onclick), ";"));
+                    checkBox.add(new AttributeAppender("onclick", new Model<>(onclick), ";"));
                     Fragment f = new Fragment(id, "checkboxUse", ElasticConfigurationPage.this);
                     f.add(checkBox);
                     return f;
@@ -291,12 +285,11 @@ public abstract class ElasticConfigurationPage extends Panel {
                     if (isGeometry) {
                         Fragment f = new Fragment(id, "checkboxDefaultGeometry",
                                 ElasticConfigurationPage.this);
-                        f.add(new CheckBox("defaultGeometry", new PropertyModel<Boolean>(itemModel,
+                        f.add(new CheckBox("defaultGeometry", new PropertyModel<>(itemModel,
                                 "defaultGeometry")));
                         return f;
                     } else {
-                        Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
-                        return f;
+                        return new Fragment(id, "empty", ElasticConfigurationPage.this);
                     }
                 } else if (property == ElasticAttributeProvider.SRID) {
                     if (isGeometry) {
@@ -304,8 +297,7 @@ public abstract class ElasticConfigurationPage extends Panel {
                         f.add(new Label("label", String.valueOf(att.getSrid())));
                         return f;
                     } else {
-                        Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
-                        return f;
+                        return new Fragment(id, "empty", ElasticConfigurationPage.this);
                     }
                 } else if (property == ElasticAttributeProvider.DATE_FORMAT) {
                     if (att.getDateFormat() != null) {
@@ -313,8 +305,7 @@ public abstract class ElasticConfigurationPage extends Panel {
                         f.add(new Label("label", String.valueOf(att.getDateFormat())));
                         return f;
                     } else {
-                        Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
-                        return f;
+                        return new Fragment(id, "empty", ElasticConfigurationPage.this);
                     }
                 } else if (property == ElasticAttributeProvider.ANALYZED) {
                     if (att.getAnalyzed() != null && att.getAnalyzed()) {
@@ -322,8 +313,7 @@ public abstract class ElasticConfigurationPage extends Panel {
                         f.add(new Label("label", "x"));
                         return f;
                     } else {
-                        Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
-                        return f;
+                        return new Fragment(id, "empty", ElasticConfigurationPage.this);
                     }
                 } else if (property == ElasticAttributeProvider.STORED) {
                     if (att.isStored()) {
@@ -331,16 +321,15 @@ public abstract class ElasticConfigurationPage extends Panel {
                         f.add(new Label("label", "x"));
                         return f;
                     } else {
-                        Fragment f = new Fragment(id, "empty", ElasticConfigurationPage.this);
-                        return f;
+                        return new Fragment(id, "empty", ElasticConfigurationPage.this);
                     } 
                 } else if (property == ElasticAttributeProvider.ORDER) {
-                    TextField<Integer> order = new TextField<Integer>("order", new PropertyModel<Integer>(itemModel, "order"));
+                    TextField<Integer> order = new TextField<>("order", new PropertyModel<>(itemModel, "order"));
                     Fragment f = new Fragment(id, "textOrderValue", ElasticConfigurationPage.this);
                     f.add(order);
                     return f;
                 } else if (property == ElasticAttributeProvider.CUSTOM_NAME) {
-                    TextField<String> customName = new TextField<String>("customName", new PropertyModel<String>(itemModel, "customName"));
+                    TextField<String> customName = new TextField<>("customName", new PropertyModel<>(itemModel, "customName"));
                     Fragment f = new Fragment(id, "textCustomNameValue", ElasticConfigurationPage.this);
                     f.add(customName);
                     return f;
@@ -368,17 +357,18 @@ public abstract class ElasticConfigurationPage extends Panel {
     /*
      * Render geometry type select
      */
-    private static class GeometryTypeRenderer implements IChoiceRenderer {
+    private static class GeometryTypeRenderer implements IChoiceRenderer<Object> {
 
         public Object getDisplayValue(Object object) {
-            return ((Class) object).getSimpleName();
+            return ((Class<?>) object).getSimpleName();
         }
 
         public String getIdValue(Object object, int index) {
             return (String) getDisplayValue(object);
         }
 
-        public Object getObject(String id, IModel choices) {
+        @Override
+        public Object getObject(String id, IModel<? extends List<?>> choices) {
             for (Class<? extends Geometry> c : GEOMETRY_TYPES) {
                 if (id.equals(getDisplayValue(c))) {
                     return c;
@@ -396,8 +386,8 @@ public abstract class ElasticConfigurationPage extends Panel {
      * @param layerInfo GeoServer layer configuration
      * @param layerConfig Elasticsearch layer configuration
      * 
-     * @see {@link #onSave}
-     * @see {@link #onCancel}
+     * @see #onSave
+     * @see #onCancel
      * 
      */
     abstract void done(AjaxRequestTarget target, LayerInfo layerInfo, 

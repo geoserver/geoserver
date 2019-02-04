@@ -44,6 +44,7 @@ import org.opengis.feature.type.Name;
  * reloaded and feature configuration table updated
  * 
  */
+@SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = 3382530429105288433L;
@@ -56,10 +57,10 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
      * Adds Elasticsearch configuration panel link, configure modal dialog and 
      * implements modal callback.
      * 
-     * @see {@link ElasticConfigurationPage#done}
+     * @see ElasticConfigurationPage#done
      */
 
-    public ElasticConfigurationPanel(final String panelId, final IModel model) {
+    public ElasticConfigurationPanel(final String panelId, final IModel<?> model) {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
 
@@ -90,9 +91,9 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                     parent = parent.getParent();
                 }
 
-                if (parent != null && parent instanceof ResourceConfigurationPage) {
+                if (parent != null) {
                     ResourceInfo ri = ElasticConfigurationPanel.this.getResourceInfo();
-                    ((ResourceConfigurationPage)parent).updateResource(ri, target);
+                    ((ResourceConfigurationPage) parent).updateResource(ri, target);
                 }
 
                 modal.close(target);
@@ -100,7 +101,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         });
         add(modal);
 
-        AjaxLink findLink = new AjaxLink("edit") {
+        AjaxLink<?> findLink = new AjaxLink("edit") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 modal.show(target);

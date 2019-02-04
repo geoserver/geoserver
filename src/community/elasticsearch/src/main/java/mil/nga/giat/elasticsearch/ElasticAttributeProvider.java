@@ -5,7 +5,6 @@
 
 package mil.nga.giat.elasticsearch;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,22 +17,22 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  * Provide attributes from Elasticsearch fields.
  * 
  */
-public class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
+class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
 
     private static final long serialVersionUID = -1021780286733349153L;
 
-    private List<ElasticAttribute> attributes = new ArrayList<ElasticAttribute>();
+    private final List<ElasticAttribute> attributes;
 
     /**
      * Name of field
      */
-    protected static final Property<ElasticAttribute> NAME = new BeanProperty<ElasticAttribute>("name",
+    static final Property<ElasticAttribute> NAME = new BeanProperty<>("name",
             "displayName");
 
     /**
      * Class type of field
      */
-    protected static final Property<ElasticAttribute> TYPE = new AbstractProperty<ElasticAttribute>(
+    static final Property<ElasticAttribute> TYPE = new AbstractProperty<ElasticAttribute>(
             "type") {
 
         private static final long serialVersionUID = 4454312983828267130L;
@@ -51,50 +50,43 @@ public class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttri
     /**
      * Mark as the default geometry
      */
-    protected static final Property<ElasticAttribute> DEFAULT_GEOMETRY = new BeanProperty<ElasticAttribute>(
+    static final Property<ElasticAttribute> DEFAULT_GEOMETRY = new BeanProperty<>(
             "defaultGeometry", "defaultGeometry");
 
     /**
      * SRID of geometric field
      */
-    protected static final Property<ElasticAttribute> SRID = new BeanProperty<ElasticAttribute>("srid",
-            "srid");
+    static final Property<ElasticAttribute> SRID = new BeanProperty<>("srid", "srid");
 
     /**
      * Use field in datastore
      */
-    protected static final Property<ElasticAttribute> USE = new BeanProperty<ElasticAttribute>("use",
-            "use");
+    static final Property<ElasticAttribute> USE = new BeanProperty<>("use", "use");
 
     /**
      * Store if the field is in use in datastore
      */
-    protected static final Property<ElasticAttribute> DATE_FORMAT = new BeanProperty<ElasticAttribute>("dateFormat",
-            "dateFormat");
+    static final Property<ElasticAttribute> DATE_FORMAT = new BeanProperty<>("dateFormat", "dateFormat");
 
     /**
      * If field is analyzed
      */
-    protected static final Property<ElasticAttribute> ANALYZED = new BeanProperty<ElasticAttribute>("analyzed",
-            "analyzed");
+    static final Property<ElasticAttribute> ANALYZED = new BeanProperty<>("analyzed", "analyzed");
 
     /**
      * If field is stored
      */
-    protected static final Property<ElasticAttribute> STORED = new BeanProperty<ElasticAttribute>("stored",
-            "stored");
+    static final Property<ElasticAttribute> STORED = new BeanProperty<>("stored", "stored");
 
     /**
      * Order of the field
      */
-    protected static final Property<ElasticAttribute> ORDER = new BeanProperty<ElasticAttribute>("order",
-            "order");
+    static final Property<ElasticAttribute> ORDER = new BeanProperty<>("order", "order");
 
     /**
      * Custom name of the field
      */
-    protected static final Property<ElasticAttribute> CUSTOM_NAME = new BeanProperty<ElasticAttribute>("customName",
-            "customName");
+    static final Property<ElasticAttribute> CUSTOM_NAME = new BeanProperty<>("customName", "customName");
  
     /**
      * Build attribute provider

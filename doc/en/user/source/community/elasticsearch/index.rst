@@ -11,8 +11,8 @@ Compatibility
 -------------
 
 * Java: 1.8
-* GeoServer: 2.14.x
-* Elasticsearch: 2.4.x, 5.x, 6.x
+* GeoServer: 2.16.x
+* Elasticsearch: 2.4.x, 5.x, 6.x, 7.x
 
 Downloads
 ---------
@@ -67,11 +67,11 @@ Once the Elasticsearch GeoServer extension is installed, ``Elasticsearch index``
 
 .. _config_elasticsearch:
 
-The Elasticsearch data store configuration panel includes standard connection parameters and search settings.
+The Elasticsearch data store configuration panel includes connection parameters and search settings.
 
-.. |store_config| image:: images/elasticsearch_configuration.png
-   :scale: 100%
-   :align: middle
+.. |store_config| raw:: html
+
+    <img src="images/elasticsearch_configuration.png" align="left" height="800px">
 
 +----------------+
 | |store_config| |
@@ -95,15 +95,18 @@ Available data store configuration parameters are summarized in the following ta
          https://somehost.somedomain:9200,https://anotherhost.somedomain:9200
    * - elasticsearch_port
      - Default HTTP port for connecting to Elasticsearch. Ignored if the hostname includes the port.
+   * - user
+     - Elasticsearch user. Must have superuser privilege on index.
+   * - passwd
+     - Elasticsearch user password
+   * - runas_geoserver_user
+     - Whether to submit requests on behalf of the authenticated GeoServer user
+   * - proxy_user
+     - Elasticsearch user for document queries. If not provided then admin user credentials are used for all requests.
+   * - proxy_passwd
+     - Elasticsearch proxy user password
    * - index_name
      - Index name or alias (wildcards supported)
-   * - ssl_enabled
-     - Use https instead of http scheme by default. Ignored if the hostname includes the HTTP scheme. Use system properties to configure the SSL connection::
-
-         javax.net.ssl.trustStore
-         javax.net.ssl.trustStorePassword
-         javax.net.ssl.keyStore
-         javax.net.ssl.keyStorePassword
    * - reject_unauthorized
      - Whether to validate the server certificate during the SSL handshake for https connections
    * - default_max_features
@@ -123,10 +126,41 @@ Available data store configuration parameters are summarized in the following ta
    * - grid_threshold
      - Geohash grid aggregation precision will be the minimum necessary so that actual_grid_size/grid_size > grid_threshold
 
-Configuring SSL/TLS
-^^^^^^^^^^^^^^^^^^^
+Configuring authentication
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-System properties are supported for SSL/TLS configuration. See `HttpClientBuilder <https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/client/HttpClientBuilder.html>`_  documentation for available properties.
+Basic authentication is supported through the ``user`` and ``passwd`` credential parameters. The provided user must have
+superuser privilege on the index to enable the mapping and alias requests performed during store initialization. Optional
+``proxy_user`` and ``proxy_passwd`` parameters can be used to specify an alternate user for document search (OGC service)
+requests. The proxy user can have restricted privileges on the index through document level security. If not provided
+the default user is used for all requests.
+
+The ``runas_geoserver_user`` flag can be used to enable Elasticsearch requests to be submitted on behalf of the
+authenticated GeoServer user. When the run-as mechanism is configured the plugin will add the ``es-security-runas-user``
+header with the authenticated GeoServer username. See `X-Pack run-as documentation
+<https://www.elastic.co/guide/en/x-pack/current/run-as-privilege.html>`_ for more information. Note the run-as mechanism
+is applied only to document search requests.
+
+For added security it is recommended to define ``proxy_user`` and ``proxy_passwd`` when using the run-as mechanism. The
+proxy user will be used when submitting requests on behalf of the GeoServer user and can have restricted privileges
+enabling access only to documents that all users can have access to. The plugin can optionally be deployed to
+require user credentials and proxy credentials and to force the use of ``runas_geoserver_user`` by setting the
+environment variable ``org.geoserver.elasticsearch.xpack.force-runas``::
+
+    $ export JAVA_OPTS="-Dorg.geoserver.elasticsearch.xpack.force-runas $JAVA_OPTS"
+
+
+Configuring HTTPS/SSL
+~~~~~~~~~~~~~~~~~~~~~
+
+System properties are supported for SSL/TLS configuration::
+
+    javax.net.ssl.trustStore
+    javax.net.ssl.trustStorePassword
+    javax.net.ssl.keyStore
+    javax.net.ssl.keyStorePassword
+
+See `HttpClientBuilder <https://hc.apache.org/httpcomponents-userClient-ga/httpclient/apidocs/org/apache/http/impl/userClient/HttpClientBuilder.html>`_  documentation for available properties.
 
 For example use ``javax.net.ssl.trustStore[Password]`` to validate server certificate::
 
@@ -578,5 +612,5 @@ FAQ
   - When referencing fields with path elements using ``cql_filter``, it may be necessary to quote the name (e.g. ``cql_filter="parent.child.field_name"='value'``)
 
 - Filtering on Elasticsearch ``nested`` types is supported only for non-geospatial fields.
-- Circle geometries are not currently supported
+- Circle geometries are approximate and may not be fully consistent with the implementation in Elasticsearch, especially at extreme latitudes (see `#86 <https://github.com/ngageoint/elasticgeo/issues/86>`_).
 - The ``joda-shaded`` module may need to be excluded when importing the project into Eclipse. Otherwise modules may have build errors of the form ``DateTimeFormatter cannot be resolved to a type``.

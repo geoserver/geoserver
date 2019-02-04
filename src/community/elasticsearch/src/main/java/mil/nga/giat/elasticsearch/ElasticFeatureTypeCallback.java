@@ -4,8 +4,6 @@
  */
 package mil.nga.giat.elasticsearch;
 
-import java.io.IOException;
-
 import mil.nga.giat.data.elasticsearch.ElasticDataStore;
 import mil.nga.giat.data.elasticsearch.ElasticLayerConfiguration;
 import static mil.nga.giat.data.elasticsearch.ElasticLayerConfiguration.KEY;
@@ -22,25 +20,20 @@ import org.opengis.feature.type.Name;
  * Implementation of FeatureTypeInitializer extension point to initialize 
  * Elasticsearch datastore.
  * 
- * @see {@link FeatureTypeCallback}
+ * @see FeatureTypeCallback
  * 
  */
-public class ElasticFeatureTypeCallback implements FeatureTypeCallback {
+class ElasticFeatureTypeCallback implements FeatureTypeCallback {
 
     @Override
     public boolean canHandle(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
-        if (dataAccess instanceof ElasticDataStore) {
-            return true;
-        } else {
-            return false;
-        }
+        return dataAccess instanceof ElasticDataStore;
     }
 
     @Override
     public boolean initialize(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
-                    throws IOException {
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
 
         ElasticLayerConfiguration layerConfig;
         layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
@@ -55,19 +48,20 @@ public class ElasticFeatureTypeCallback implements FeatureTypeCallback {
 
     @Override
     public void dispose(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
-                    throws IOException {
-        ElasticLayerConfiguration layerConfig;
-        layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
+        final ElasticLayerConfiguration layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
         if (layerConfig != null) {
-            layerConfig.getAttributes().remove(info.getName());
+            layerConfig.getAttributes().stream()
+                    .filter(attr -> attr.getName().equals(info.getName()))
+                    .findFirst()
+                    .ifPresent(attribute -> layerConfig.getAttributes().remove(attribute));
             ((ElasticDataStore) dataAccess).getDocTypes().remove(info.getQualifiedName());
         }
     }
 
     @Override
     public void flush(FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) throws IOException {
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         // nothing to do
     }
 

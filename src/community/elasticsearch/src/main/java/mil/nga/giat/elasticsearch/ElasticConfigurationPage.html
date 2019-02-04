@@ -1,10 +1,11 @@
+<!--suppress ALL -->
 <html xmlns:wicket="http://wicket.apache.org/">
 <head>
 <title><wicket:message key="title">Elasticsearch fields configuration</wicket:message></title>
 </head>
 <body>
 	<wicket:panel>
-		<form wicket:id="es_form">	
+		<form wicket:id="es_form">
             <input type="checkbox" wicket:id="useAll"/>
             <wicket:message key="useAll">Use All</wicket:message>
             <input type="checkbox" wicket:id="useShortName"/>
@@ -22,11 +23,11 @@
 	</wicket:panel>
     
     <wicket:fragment wicket:id="checkboxDefaultGeometry">
-        <input type="checkbox" wicket:id="defaultGeometry"></input>
+        <input type="checkbox" wicket:id="defaultGeometry"/>
     </wicket:fragment>
     
 	<wicket:fragment wicket:id="checkboxUse">
-		<input type="checkbox" wicket:id="use"></input>
+		<input type="checkbox" wicket:id="use"/>
 	</wicket:fragment>
     
 	<wicket:fragment wicket:id="empty"></wicket:fragment>
@@ -40,11 +41,11 @@
 	</wicket:fragment>
 	
 	<wicket:fragment wicket:id="textOrderValue">
-		<input type="text" wicket:id="order" size="2"></input>
+		<input type="text" wicket:id="order" size="2"/>
 	</wicket:fragment>
 	
 	<wicket:fragment wicket:id="textCustomNameValue">
-		<input type="text" wicket:id="customName" size="25"></input>
-	</wicket:fragment>	
+		<input type="text" wicket:id="customName" size="25"/>
+	</wicket:fragment>
 </body>
 </html>

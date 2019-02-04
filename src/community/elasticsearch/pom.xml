@@ -7,10 +7,10 @@
   <parent>
     <artifactId>elasticgeo</artifactId>
     <groupId>mil.nga.giat</groupId>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.16-SNAPSHOT</version>
   </parent>
   <artifactId>gs-web-elasticsearch</artifactId>
-  <version>2.14-SNAPSHOT</version>
+  <version>2.16-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>GeoServer Elasticsearch Module</name>
   <dependencies>
@@ -39,8 +39,9 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-api</artifactId>
+      <artifactId>gt-main</artifactId>
       <version>${geotools.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>

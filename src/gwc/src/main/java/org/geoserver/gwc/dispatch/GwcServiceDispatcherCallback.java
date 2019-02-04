@@ -23,6 +23,7 @@ import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -42,6 +43,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
 
     // contains the current gwc operation
     public static final ThreadLocal<String> GWC_OPERATION = new ThreadLocal<>();
+    public static final ThreadLocal<String> GWC_ORIGINAL_BASEURL = new ThreadLocal<>();
 
     private static final Pattern GWC_WS_VIRTUAL_SERVICE_PATTERN =
             Pattern.compile("([^/]+)/gwc/service.*");
@@ -67,6 +69,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
     public void finished(Request request) {
         // cleaning the current thread local operation
         GWC_OPERATION.remove();
+        GWC_ORIGINAL_BASEURL.remove();
     }
 
     @Override
@@ -93,6 +96,7 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback
             }
         }
         GWC_OPERATION.set(requestName);
+        GWC_ORIGINAL_BASEURL.set(ResponseUtils.baseURL(request.getHttpRequest()));
 
         Map<String, String> kvp = new HashMap<>();
         kvp.put("service", "gwc");

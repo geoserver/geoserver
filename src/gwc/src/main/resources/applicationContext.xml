@@ -152,4 +152,8 @@
     <property name="order" value="10" />
   </bean>
 
+  <bean id="gwcLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+    <constructor-arg value="gwc"/>
+  </bean>
+
 </beans>

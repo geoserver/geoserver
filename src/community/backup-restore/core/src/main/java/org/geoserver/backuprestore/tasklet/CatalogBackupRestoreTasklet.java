@@ -1202,7 +1202,6 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
 
                 if (layerGroupInfo != null) {
-
                     WorkspaceInfo ws =
                             layerGroupInfo.getWorkspace() != null
                                     ? getCatalog()
@@ -1236,6 +1235,9 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             GeoServerTileLayerInfo gwcLayerInfo,
             String layerID)
             throws IllegalArgumentException {
+        if (filterIsValid() && gwcCatalog.getLayerByName(layerName) == null) {
+            return;
+        }
         if (!isDryRun()) {
             // - Depersist the GWC Layer Info into the restore folder
             GeoServerTileLayerInfo oldValue = gwcCatalog.getLayerByName(layerName);

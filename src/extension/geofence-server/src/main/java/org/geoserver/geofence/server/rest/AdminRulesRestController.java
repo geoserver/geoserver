@@ -187,7 +187,7 @@ public class AdminRulesRestController extends RestBaseController {
         // let's find the rules that need to be moved
         List<AdminRule> rules = findRules(rulesIds);
         if (rules.isEmpty()) {
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok().build();
         }
         // shift priorities of rules with a priority equal or lower than the target priority
         adminService.shift(targetPriority, rules.size());

@@ -260,9 +260,9 @@ public class RasterSymbolizerBuilderTest {
     public void testSubsampling() {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder(10000);
         assertSubsampling(builder, 100, 1, 1);
-        assertSubsampling(builder, 150, 1, 2);
+        assertSubsampling(builder, 150, 2, 2);
         assertSubsampling(builder, 200, 2, 2);
-        assertSubsampling(builder, 250, 2, 3);
+        assertSubsampling(builder, 250, 3, 3);
         assertSubsampling(builder, 300, 3, 3);
     }
 

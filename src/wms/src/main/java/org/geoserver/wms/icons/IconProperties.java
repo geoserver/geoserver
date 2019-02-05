@@ -211,7 +211,7 @@ public abstract class IconProperties {
 
             @Override
             public Style inject(Style base) {
-                return IconPropertyInjector.injectProperties(base, null);
+                return IconPropertyInjector.injectProperties(base, Collections.emptyMap());
             }
 
             @Override

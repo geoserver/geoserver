@@ -112,8 +112,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     public static void updateFormats(Set<String> newFormats) {
-        if (!formats.equals(newFormats)) {
-            Map<String, String> replacement = new HashMap<String, String>();
+        if (!formats.keySet().equals(newFormats)) {
+            Map<String, String> replacement = new HashMap<>();
             for (String format : newFormats) {
                 replacement.put(format, format);
             }

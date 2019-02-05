@@ -27,10 +27,21 @@ import java.util.Collection;
 import org.easymock.Capture;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
@@ -149,6 +160,38 @@ public class ConfigDatabaseTest {
         return ws;
     }
 
+    private LayerInfo addLayer() {
+        WorkspaceInfoImpl ws = new WorkspaceInfoImpl();
+        ws.setId("wsid");
+        ws.setName("ws1");
+        database.add(ws);
+
+        Catalog catalog = database.getCatalog();
+        DataStoreInfoImpl ds = new DataStoreInfoImpl(catalog);
+        ds.setWorkspace(ws);
+        ds.setId("ds1");
+        ds.getConnectionParameters().put("param1", "value1");
+        ds.getConnectionParameters().put("param2", "value2");
+        ds.setName("data store one");
+        ds.setDescription("data store description one");
+        ds.setEnabled(true);
+        ds.setType("Foo");
+        database.add(ds);
+
+        ResourceInfo ri = new FeatureTypeInfoImpl(catalog);
+        ((FeatureTypeInfoImpl) ri).setId("resourceid");
+        ri.setName("ri1");
+        ri.setStore(ds);
+        ri = database.add(ri);
+
+        LayerInfo li = new LayerInfoImpl();
+        ((LayerInfoImpl) li).setId("layerid");
+        li.setResource(ri);
+        li = database.add(li);
+
+        return li;
+    }
+
     /** @param info */
     private void testSaved(Info info) {
         Info saved = database.save(info);
@@ -171,6 +214,9 @@ public class ConfigDatabaseTest {
         // can cause remove to actually be called twice on the workspace.
         database.remove(ws);
         database.remove(ws);
+        // Notify of update
+        database.getCatalog().fireRemoved(ws);
+
         assertNull(database.getById(ws.getId(), WorkspaceInfo.class));
     }
 
@@ -198,6 +244,9 @@ public class ConfigDatabaseTest {
         WorkspaceInfo ws = addWorkspace();
         ws.setName("name1");
         testSaved(ws);
+        // test identity cache
+        ws = database.getByIdentity(WorkspaceInfo.class, "name", "name1");
+        assertNotNull(ws);
 
         // Change the stored configuration
         // KS: sorry, this is an utter kludge
@@ -227,12 +276,74 @@ public class ConfigDatabaseTest {
         // Notify of update
         testSupport
                 .getCatalog()
+                .fireModified(
+                        ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
+        ws2.setName("name2");
+        ModificationProxy.handler(ws2).commit();
+        testSupport
+                .getCatalog()
                 .firePostModified(
                         ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
 
         // Should show the new value
         WorkspaceInfo ws3 = database.getById(ws.getId(), WorkspaceInfo.class);
         assertEquals("name2", ws3.getName());
+        // test identity cache update
+        ws3 = database.getByIdentity(WorkspaceInfo.class, "name", "name1");
+        assertNull(ws3);
+        ws3 = database.getByIdentity(WorkspaceInfo.class, "name", "name2");
+        assertNotNull(ws3);
+    }
+
+    @Test
+    public void testCacheResourceLayer() throws Exception {
+        // check that saving a resource updates the layer cache
+        LayerInfo layer = addLayer();
+        ResourceInfo resourceInfo =
+                database.getById(layer.getResource().getId(), ResourceInfo.class);
+        resourceInfo.setName("rs2");
+        testSaved(resourceInfo);
+        layer = database.getById(layer.getId(), LayerInfo.class);
+        assertEquals("rs2", layer.getResource().getName());
+    }
+
+    @Test
+    public void testCacheResourceLayerLocked() throws Exception {
+        // check that saving a resource updates the layer cache
+        LayerInfo layer = addLayer();
+        ResourceInfo resourceInfo =
+                database.getById(layer.getResource().getId(), ResourceInfo.class);
+        resourceInfo.setName("rs2");
+        testSupport
+                .getCatalog()
+                .addListener(
+                        new CatalogListener() {
+
+                            @Override
+                            public void handleAddEvent(CatalogAddEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void handleRemoveEvent(CatalogRemoveEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void handleModifyEvent(CatalogModifyEvent event)
+                                    throws CatalogException {
+                                // this shouldn't cause re-caching because of lock
+                                database.getById(layer.getId(), LayerInfo.class);
+                            }
+
+                            @Override
+                            public void handlePostModifyEvent(CatalogPostModifyEvent event)
+                                    throws CatalogException {}
+
+                            @Override
+                            public void reloaded() {}
+                        });
+        testSupport.getFacade().save(resourceInfo);
+        LayerInfo layer2 = database.getById(layer.getId(), LayerInfo.class);
+        assertEquals("rs2", layer2.getResource().getName());
     }
 
     @Test
@@ -272,6 +383,11 @@ public class ConfigDatabaseTest {
         assertEquals("Foo", service.getMaintainer());
 
         // Notify of update
+        service.setMaintainer("Bar");
+        for (ConfigurationListener l : database.getGeoServer().getListeners()) {
+            l.handleServiceChange(service, null, null, null);
+        }
+        ModificationProxy.handler(service).commit();
         for (ConfigurationListener l : database.getGeoServer().getListeners()) {
             l.handlePostServiceChange(service);
         }
@@ -289,7 +405,7 @@ public class ConfigDatabaseTest {
         service.setMaintainer("Foo");
 
         service = database.add(service);
-        database.clear(service);
+        database.clearCache(service);
 
         service = database.getAll(WMSInfo.class).iterator().next();
         assertNotNull(service.getGeoServer());

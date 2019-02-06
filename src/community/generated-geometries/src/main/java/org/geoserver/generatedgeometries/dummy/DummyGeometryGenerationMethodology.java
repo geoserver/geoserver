@@ -4,11 +4,11 @@
  *  application directory.
  */
 
-package org.geoserver.web.data.resource.generatedGeometries.methodology;
+package org.geoserver.generatedgeometries.dummy;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
-import org.geoserver.web.data.resource.generatedGeometries.GeometryGenerationMethodology;
+import org.geoserver.generatedgeometries.GeometryGenerationMethodology;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -39,5 +39,4 @@ public class DummyGeometryGenerationMethodology implements GeometryGenerationMet
     public Component createUI(String id, IModel model) {
         return new DummyGGMPanel(id, model);
     }
-
 }

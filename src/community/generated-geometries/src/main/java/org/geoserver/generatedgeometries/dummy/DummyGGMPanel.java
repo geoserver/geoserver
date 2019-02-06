@@ -4,14 +4,14 @@
  *  application directory.
  */
 
-package org.geoserver.web.data.resource.generatedGeometries.methodology;
+package org.geoserver.generatedgeometries.dummy;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-public class DummyGGMPanel extends Panel {
-    
-    public DummyGGMPanel(String id, IModel<?> model) {
+class DummyGGMPanel extends Panel {
+
+    DummyGGMPanel(String id, IModel<?> model) {
         super(id, model);
         setOutputMarkupId(true);
     }

@@ -70,7 +70,7 @@
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-	  <!--descriptor>release/ext-geogig.xml</descriptor>-->
+	      <!-- descriptor>release/ext-geogig.xml</descriptor> -->
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
@@ -96,6 +96,7 @@
           <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
           <descriptor>release/ext-wmts-styles.xml</descriptor>
+          <descriptor>release/ext-generated-geometries.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -264,6 +265,7 @@
         <module>wfs3</module>
         <!-- <module>monitor-hibernate</module> -->
         <module>qos</module>
+        <module>generated-geometries</module>
       </modules>
     </profile>
     <profile>
@@ -601,5 +603,11 @@
         <module>monitor-hibernate</module>
       </modules>
     </profile>
-  </profiles>  
+    <profile>
+      <id>generated-geometries</id>
+      <modules>
+        <module>generated-geometries</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

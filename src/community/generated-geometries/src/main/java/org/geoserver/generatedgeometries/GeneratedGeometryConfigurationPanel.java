@@ -4,7 +4,7 @@
  *  application directory.
  */
 
-package org.geoserver.web.data.resource.generatedGeometries;
+package org.geoserver.generatedgeometries;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,13 +35,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 
 /**
  * Resource configuration section for generated geometry on-the-fly.
  *
- * Activates only when working on {@link SimpleFeatureType}.
+ * <p>Activates only when working on {@link SimpleFeatureType}.
  */
 public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPanel {
 
@@ -49,12 +51,15 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
 
     private Fragment content;
     private final Map<String, Component> componentMap = new HashMap<>();
-    private ChoiceRenderer<GeometryGenerationMethodology> choiceRenderer = new ChoiceRenderer<GeometryGenerationMethodology>() {
-        @Override
-        public Object getDisplayValue(GeometryGenerationMethodology ggm) {
-            return new StringResourceModel(format("geometryGenerationMethodology.%s", ggm.getName())).getString();
-        }
-    };
+    private ChoiceRenderer<GeometryGenerationMethodology> choiceRenderer =
+            new ChoiceRenderer<GeometryGenerationMethodology>() {
+                @Override
+                public Object getDisplayValue(GeometryGenerationMethodology ggm) {
+                    return new StringResourceModel(
+                                    format("geometryGenerationMethodology.%s", ggm.getName()))
+                            .getString();
+                }
+            };
     private GeometryGenerationMethodology selectedMethodology;
     private WebMarkupContainer methodologyConfiguration;
 
@@ -66,7 +71,8 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private void init(IModel model) {
         if (isSimpleFeatureType(model)) {
             initMainPanel();
-            List<GeometryGenerationMethodology> methodologies = GeoServerExtensions.extensions(GeometryGenerationMethodology.class);
+            List<GeometryGenerationMethodology> methodologies =
+                    GeoServerExtensions.extensions(GeometryGenerationMethodology.class);
             initMethodologyDropdown(methodologies, model);
             initActionLink(model);
         } else {
@@ -78,13 +84,14 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
         add(content = new Fragment("content", "main", this));
     }
 
-    private void initMethodologyDropdown(List<GeometryGenerationMethodology> methodologies, IModel model) {
-        DropDownChoice<GeometryGenerationMethodology> methodologyDropDown = new DropDownChoice<>(
-                "methodologyDropDown",
-                new PropertyModel<>(this, "selectedMethodology"),
-                methodologies,
-                choiceRenderer
-        );
+    private void initMethodologyDropdown(
+            List<GeometryGenerationMethodology> methodologies, IModel model) {
+        DropDownChoice<GeometryGenerationMethodology> methodologyDropDown =
+                new DropDownChoice<>(
+                        "methodologyDropDown",
+                        new PropertyModel<>(this, "selectedMethodology"),
+                        methodologies,
+                        choiceRenderer);
         content.add(methodologyDropDown);
         methodologyConfiguration = new WebMarkupContainer("methodologyConfiguration");
         methodologyConfiguration.setOutputMarkupId(true);
@@ -96,22 +103,25 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
             configuration.setVisible(false);
         }
 
-        methodologyConfiguration.add(new ListView<Component>("configurations", new ArrayList<>(componentMap.values())) {
-            @Override
-            protected void populateItem(ListItem<Component> item) {
-                item.add(item.getModelObject());
-            }
-        });
+        methodologyConfiguration.add(
+                new ListView<Component>("configurations", new ArrayList<>(componentMap.values())) {
+                    @Override
+                    protected void populateItem(ListItem<Component> item) {
+                        item.add(item.getModelObject());
+                    }
+                });
 
-        methodologyDropDown.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = 1L;
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                componentMap.values().forEach(component -> component.setVisible(false));
-                getCurrentUIComponent().setVisible(true);
-                target.add(methodologyConfiguration);
-            }
-        });
+        methodologyDropDown.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        componentMap.values().forEach(component -> component.setVisible(false));
+                        getCurrentUIComponent().ifPresent(c -> c.setVisible(true));
+                        target.add(methodologyConfiguration);
+                    }
+                });
     }
 
     private void initActionLink(IModel model) {
@@ -121,10 +131,11 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
                     protected void onClick(AjaxRequestTarget target, Form form) {
                         if (selectedMethodology != null) {
                             try {
-                                selectedMethodology.defineGeometryAttributeFor(getSimpleFeatureType(model));
+                                selectedMethodology.defineGeometryAttributeFor(
+                                        getSimpleFeatureType(model));
                             } catch (IOException | ConfigurationException e) {
                                 e.printStackTrace();
-                                getCurrentUIComponent().error(i18n("invalidConfiguration"));
+                                getCurrentUIComponent().ifPresent(c -> error(i18n("invalidConfiguration")));
                             }
                         } else {
                             error(i18n("configurationNotSelected"));
@@ -157,12 +168,13 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
         return resourcePool.getFeatureType((FeatureTypeInfo) model.getObject());
     }
 
-    private Component getCurrentUIComponent() {
-        return componentMap.get(selectedMethodology.getName());
+    private Optional<Component> getCurrentUIComponent() {
+        return ofNullable(componentMap.get(selectedMethodology.getName()));
     }
 
     private String i18n(String invalidConfiguration) {
-        return new StringResourceModel(invalidConfiguration, GeneratedGeometryConfigurationPanel.this, null).getString();
+        return new StringResourceModel(
+                        invalidConfiguration, GeneratedGeometryConfigurationPanel.this, null)
+                .getString();
     }
-
 }

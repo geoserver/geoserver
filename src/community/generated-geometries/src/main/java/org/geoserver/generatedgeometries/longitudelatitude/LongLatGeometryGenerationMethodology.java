@@ -4,12 +4,12 @@
  *  application directory.
  */
 
-package org.geoserver.web.data.resource.generatedGeometries.methodology;
+package org.geoserver.generatedgeometries.longitudelatitude;
 
 import com.google.common.base.Preconditions;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
-import org.geoserver.web.data.resource.generatedGeometries.GeometryGenerationMethodology;
+import org.geoserver.generatedgeometries.GeometryGenerationMethodology;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -23,7 +23,7 @@ import org.vfny.geoserver.global.ConfigurationException;
 public class LongLatGeometryGenerationMethodology implements GeometryGenerationMethodology {
 
     private static final long serialVersionUID = 1L;
-    
+
     private static final String NAME = "longLat";
 
     private LongLatGeometryConfigurationPanel ui;
@@ -33,7 +33,10 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
         final AttributeDescriptor longAttributeDescriptor;
         final AttributeDescriptor latAttributeDescriptor;
 
-        LongLatConfiguration(String attributeName, AttributeDescriptor longAttributeDescriptor, AttributeDescriptor latAttributeDescriptor) {
+        LongLatConfiguration(
+                String attributeName,
+                AttributeDescriptor longAttributeDescriptor,
+                AttributeDescriptor latAttributeDescriptor) {
             this.attributeName = attributeName;
             this.longAttributeDescriptor = longAttributeDescriptor;
             this.latAttributeDescriptor = latAttributeDescriptor;
@@ -46,19 +49,29 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
     }
 
     @Override
-    public SimpleFeatureType defineGeometryAttributeFor(SimpleFeatureType src) throws ConfigurationException {
-        Preconditions.checkNotNull(ui, "configuration cannot be null; createUI() method has not been called");
+    public SimpleFeatureType defineGeometryAttributeFor(SimpleFeatureType src)
+            throws ConfigurationException {
+        Preconditions.checkNotNull(
+                ui, "configuration cannot be null; createUI() method has not been called");
         SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
         for (AttributeDescriptor ad : src.getAttributeDescriptors()) {
             sftb.add(ad);
         }
 
         LongLatConfiguration configuration = ui.getLongLatConfiguration();
-        createGeometry(sftb, configuration.attributeName, configuration.longAttributeDescriptor, configuration.latAttributeDescriptor);
+        createGeometry(
+                sftb,
+                configuration.attributeName,
+                configuration.longAttributeDescriptor,
+                configuration.latAttributeDescriptor);
         return sftb.buildFeatureType();
     }
 
-    private void createGeometry(SimpleFeatureTypeBuilder sftb, String generatedGeometryAttrName, AttributeDescriptor longAttr, AttributeDescriptor latAttr) {
+    private void createGeometry(
+            SimpleFeatureTypeBuilder sftb,
+            String generatedGeometryAttrName,
+            AttributeDescriptor longAttr,
+            AttributeDescriptor latAttr) {
         // TODO: implement geometry attribute definition
     }
 
@@ -70,7 +83,7 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
 
     @Override
     public Filter convertFilter(Filter filter) throws RuntimeException {
-        // TODO: implement 
+        // TODO: implement
         return filter;
     }
 
@@ -78,5 +91,4 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
     public Component createUI(String id, IModel model) {
         return ui = new LongLatGeometryConfigurationPanel(id, model);
     }
-
 }

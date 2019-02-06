@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -169,12 +170,14 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     }
 
     private Optional<Component> getCurrentUIComponent() {
+        if (selectedMethodology == null) {
+            return empty();
+        }
         return ofNullable(componentMap.get(selectedMethodology.getName()));
     }
 
-    private String i18n(String invalidConfiguration) {
-        return new StringResourceModel(
-                        invalidConfiguration, GeneratedGeometryConfigurationPanel.this, null)
+    private String i18n(String messageKey) {
+        return new StringResourceModel(messageKey, GeneratedGeometryConfigurationPanel.this, null)
                 .getString();
     }
 }

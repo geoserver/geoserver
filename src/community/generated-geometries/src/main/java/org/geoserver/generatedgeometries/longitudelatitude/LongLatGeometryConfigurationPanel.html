@@ -11,21 +11,21 @@
     <div>
         <fieldset>
             <ul class="selfclear">
-                <li class="leftwise">
+                <li class="leftwise default-margin">
                     <label for="attrInput" wicket:id="attrLabel">attribute name</label>
-                    <input wicket:id="geometryAttributeName" id="attrInput" type="text" class="text" style="width: 100px;"/>
+                    <input wicket:id="geometryAttributeName" id="attrInput" type="text" />
                 </li>
-                <li class="leftwise">
+                <li class="leftwise default-margin">
                     <label for="lonAttributesDropDown">
                         <wicket:message key="selectLonAttribute"/>
                     </label>
-                    <select id="lonAttributesDropDown" wicket:id="lonAttributesDropDown"></select>
+                    <select id="lonAttributesDropDown" wicket:id="lonAttributesDropDown" class="select min-width"></select>
                 </li>
-                <li class="leftwise">
+                <li class="leftwise default-margin">
                     <label for="latAttributesDropDown">
                         <wicket:message key="selectLatAttribute"/>
                     </label>
-                    <select id="latAttributesDropDown" wicket:id="latAttributesDropDown"></select>
+                    <select id="latAttributesDropDown" wicket:id="latAttributesDropDown" class="select min-width"></select>
                 </li>
             </ul>
         </fieldset>

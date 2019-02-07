@@ -4,8 +4,8 @@
  */
 package org.geoserver.web.admin;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -51,19 +51,14 @@ public class ModuleStatusPanel extends Panel {
         add(popup);
 
         // get the list of ModuleStatuses
-        GeoServerExtensions gse = new GeoServerExtensions();
         List<ModuleStatus> applicationStatus =
-                gse.extensions(ModuleStatus.class)
+                GeoServerExtensions.extensions(ModuleStatus.class)
                         .stream()
+                        .filter(status -> !status.getModule().matches("\\A[system-](.*)"))
                         .map(ModuleStatusImpl::new)
+                        .sorted(Comparator.comparing(ModuleStatus::getModule))
                         .collect(Collectors.toList());
 
-        ListIterator<ModuleStatus> iter = applicationStatus.listIterator();
-        while (iter.hasNext()) {
-            if (iter.next().getModule().toString().matches("\\A[system-](.*)")) {
-                iter.remove();
-            }
-        }
         final ListView<ModuleStatus> moduleView =
                 new ListView<ModuleStatus>("modules", applicationStatus) {
                     private static final long serialVersionUID = 235576083712961710L;

@@ -30,16 +30,16 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
 
     static class LongLatConfiguration {
         final String attributeName;
-        final AttributeDescriptor longAttributeDescriptor;
-        final AttributeDescriptor latAttributeDescriptor;
+        final String longAttributeName;
+        final String latAttributeName;
 
         LongLatConfiguration(
                 String attributeName,
-                AttributeDescriptor longAttributeDescriptor,
-                AttributeDescriptor latAttributeDescriptor) {
+                String longAttributeName,
+                String latAttributeName) {
             this.attributeName = attributeName;
-            this.longAttributeDescriptor = longAttributeDescriptor;
-            this.latAttributeDescriptor = latAttributeDescriptor;
+            this.longAttributeName = longAttributeName;
+            this.latAttributeName = latAttributeName;
         }
     }
 
@@ -59,15 +59,17 @@ public class LongLatGeometryGenerationMethodology implements GeometryGenerationM
         }
 
         LongLatConfiguration configuration = ui.getLongLatConfiguration();
-        createGeometry(
+        createGeometryAttributeDescriptor(
                 sftb,
                 configuration.attributeName,
-                configuration.longAttributeDescriptor,
-                configuration.latAttributeDescriptor);
-        return sftb.buildFeatureType();
+                src.getDescriptor(configuration.longAttributeName),
+                src.getDescriptor(configuration.latAttributeName));
+//        SimpleFeatureType simpleFeatureType = sftb.buildFeatureType();
+        // TODO: return src for now, builder throws NPE for some reason
+        return src;
     }
 
-    private void createGeometry(
+    private void createGeometryAttributeDescriptor(
             SimpleFeatureTypeBuilder sftb,
             String generatedGeometryAttrName,
             AttributeDescriptor longAttr,

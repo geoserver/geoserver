@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-
+    var fullscreen = false;
     var editorDefault = 300;
     var previewDefault = 300;
 
@@ -47,7 +47,13 @@ $( document ).ready(function() {
         var img = $("#fullscreen-img");
         var page = $("#page");
         var pagePane = $("#page-pane");
-        document.documentElement.style.overflow = "hidden";
+        fullscreen = !fullscreen;
+        if (!fullscreen) {
+          document.documentElement.style.overflow = "unset";
+        } else {
+          document.documentElement.style.overflow = "hidden";
+        }
+        
         img.toggleClass("fullscreen-image-in")
         page.toggleClass("fullscreen");
         pagePane.toggleClass("page-pane-fullscreen");

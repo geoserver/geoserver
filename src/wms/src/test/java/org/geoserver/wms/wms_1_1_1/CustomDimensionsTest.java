@@ -9,6 +9,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.catalog.ResourceInfo.CUSTOM_DIMENSION_PREFIX;
+import static org.geoserver.catalog.testreader.CustomFormat.CUSTOM_DIMENSION_NAME;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -24,9 +26,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -46,7 +46,6 @@ public class CustomDimensionsTest extends WMSTestSupport {
             new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
 
     private static final String CAPABILITIES_REQUEST = "wms?request=getCapabilities&version=1.1.1";
-    private static final String DIMENSION_NAME = CustomFormat.CUSTOM_DIMENSION_NAME;
     private static final String BBOX = "0,40,15,45";
     private static final String LAYERS = "gs:watertemp";
 
@@ -86,7 +85,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
     @After
     public void removeRasterDimensions() {
         CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
-        info.getMetadata().remove(ResourceInfo.CUSTOM_DIMENSION_PREFIX + DIMENSION_NAME);
+        info.getMetadata().remove(CUSTOM_DIMENSION_PREFIX + CUSTOM_DIMENSION_NAME);
         getCatalog().save(info);
     }
 
@@ -102,7 +101,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
 
     @Test
     public void testCapabilities() throws Exception {
-        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, null, null);
+        setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, null, null);
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
 
@@ -110,7 +109,26 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
 
         // check we have the extent
-        assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(
+                "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testInvalidCustomCapabilities() throws Exception {
+        setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, null, null);
+        // poison with one dimension that does not exist, used to throw a
+        // ConcurrentModificationException
+        setupRasterDimension("foobar", DimensionPresentation.LIST, null, null);
+        Document dom = dom(get(CAPABILITIES_REQUEST), false);
+        // print(dom);
+
+        // check dimension has been declared
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+
+        // check we have the extent
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo(
                 "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
@@ -118,7 +136,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
 
     @Test
     public void testCapabilitiesUnits() throws Exception {
-        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(
+                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
 
@@ -128,7 +147,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo("nm", "//Layer/Dimension/@unitSymbol", dom);
 
         // check we have the extent
-        assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo(
                 "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
@@ -138,7 +157,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
     public void testGetMap() throws Exception {
         ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
 
-        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(
+                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get no data when requesting an incorrect value for custom dimension
         MockHttpServletResponse response =
@@ -155,7 +175,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326"
                                 + "&VALIDATESCHEMA=true"
                                 + "&DIM_"
-                                + DIMENSION_NAME
+                                + CUSTOM_DIMENSION_NAME
                                 + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertTrue(isEmpty(image));
@@ -175,7 +195,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326"
                                 + "&VALIDATESCHEMA=true"
                                 + "&DIM_"
-                                + DIMENSION_NAME
+                                + CUSTOM_DIMENSION_NAME
                                 + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
@@ -206,7 +226,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                     + "&srs=EPSG:4326"
                                     + "&VALIDATESCHEMA=true"
                                     + "&DIM_"
-                                    + DIMENSION_NAME
+                                    + CUSTOM_DIMENSION_NAME
                                     + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
             assertEquals("text/xml", response.getContentType());
             Document dom = dom(response, true);
@@ -215,7 +235,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                     checkLegacyException(
                             dom,
                             org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE,
-                            "DIM_" + DIMENSION_NAME);
+                            "DIM_" + CUSTOM_DIMENSION_NAME);
             assertThat(text, containsString("More than 2 dimension values"));
         } finally {
             wms.setMaxRequestedDimensionValues(
@@ -226,7 +246,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
 
     @Test
     public void testGetMapCaseInsesitiveKey() throws Exception {
-        setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(
+                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get data when requesting a correct value for custom dimension
         MockHttpServletResponse response =
@@ -243,7 +264,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326"
                                 + "&VALIDATESCHEMA=true"
                                 + "&DIM_"
-                                + DIMENSION_NAME.toLowerCase()
+                                + CUSTOM_DIMENSION_NAME.toLowerCase()
                                 + "=CustomDimValueB");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
@@ -257,7 +278,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         di.setPresentation(presentation);
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
-        info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
+        info.getMetadata().put(CUSTOM_DIMENSION_PREFIX + metadata, di);
         getCatalog().save(info);
     }
 

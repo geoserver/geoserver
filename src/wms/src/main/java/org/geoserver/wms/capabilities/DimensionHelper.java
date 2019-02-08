@@ -217,7 +217,8 @@ abstract class DimensionHelper {
 
         // Process only custom dimensions supported by the reader
         if (hasCustomDimensions) {
-            for (String key : customDimensions.keySet()) {
+            // loop on a new keyset to avoid ConcurrentModificationException
+            for (String key : new HashSet<>(customDimensions.keySet())) {
                 if (!dimensions.hasDomain(key)) customDimensions.remove(key);
             }
         }

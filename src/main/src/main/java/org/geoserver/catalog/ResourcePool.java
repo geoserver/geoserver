@@ -1928,7 +1928,7 @@ public class ResourcePool {
 
         WMSCapabilities caps = info.getStore().getWebMapServer(null).getCapabilities();
         for (Layer layer : caps.getLayerList()) {
-            if (name.equals(layer.getName())) {
+            if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }
         }
@@ -1955,7 +1955,7 @@ public class ResourcePool {
         caps = info.getStore().getWebMapTileServer(null).getCapabilities();
 
         for (Layer layer : caps.getLayerList()) {
-            if (name.equals(layer.getName())) {
+            if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }
         }

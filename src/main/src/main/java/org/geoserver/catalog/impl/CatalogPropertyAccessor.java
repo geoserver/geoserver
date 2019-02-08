@@ -18,6 +18,7 @@ import com.google.common.io.Closeables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
@@ -203,24 +205,38 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         }
 
         Collection<Object> col = getCollectionProperty(input, colPropName);
+        Object indexedValue;
         if (col == null) {
-            return false;
+            try {
+                indexedValue = PropertyUtils.getIndexedProperty(input, colPropName, index - 1);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                indexedValue = null;
+            }
+        } else {
+            if (!(col instanceof List)) {
+                throw new RuntimeException(
+                        "Indexed property access is not valid for property " + colPropName);
+            }
+            List<Object> list = (List<Object>) col;
+            if (index > list.size()) {
+                return null;
+            }
+            indexedValue = list.get(index - 1);
         }
-        if (!(col instanceof List)) {
-            throw new RuntimeException(
-                    "Indexed property access is not valid for property " + colPropName);
-        }
-        List<Object> list = (List<Object>) col;
-        if (index > list.size()) {
-            return null;
-        }
-        Object indexedValue = list.get(index - 1);
-        return getProperty(indexedValue, propertyNames, offset + 1);
+        return indexedValue == null ? false : getProperty(indexedValue, propertyNames, offset + 1);
     }
 
     private Collection<Object> getCollectionProperty(Object input, String colPropName) {
-
-        Object colProp = OwsUtils.get(input, colPropName);
+        Object colProp;
+        if (input instanceof Map) {
+            colProp = ((Map<?, ?>) input).get(colPropName);
+        } else {
+            try {
+                colProp = OwsUtils.get(input, colPropName);
+            } catch (Exception e) {
+                return null;
+            }
+        }
         if (null == colProp) {
             return null;
         }

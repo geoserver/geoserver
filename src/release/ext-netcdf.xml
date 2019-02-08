@@ -25,6 +25,7 @@
         <include>jdom2*.jar</include>
         <include>jcommander*.jar</include>
         <include>opendap*.jar</include>
+        <include>jna*.jar</include>
       </includes>
       <excludes>
         <exclude>gs-netcdf-out*.jar</exclude>

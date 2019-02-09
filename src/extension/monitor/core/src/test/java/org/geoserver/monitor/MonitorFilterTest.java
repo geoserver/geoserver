@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -250,16 +251,24 @@ public class MonitorFilterTest {
     }
 
     private void testRemoteUser(Object principal) throws Exception {
-        Authentication authentication = new TestingAuthenticationToken(principal, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            Authentication authentication = new TestingAuthenticationToken(principal, null);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            final CompletableFuture<Authentication> authFuture = new CompletableFuture<>();
+            filter.setExecutionAudit(
+                    (data, auth) -> {
+                        authFuture.complete(auth);
+                    });
+            HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+            filter.doFilter(req, response(), chain);
 
-        HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
-        filter.doFilter(req, response(), chain);
-
-        RequestData data = dao.getLast();
-        assertEquals("username", data.getRemoteUser());
-
-        SecurityContextHolder.getContext().setAuthentication(null);
+            RequestData data = dao.getLast();
+            assertEquals("username", data.getRemoteUser());
+            assertEquals(authentication, authFuture.get());
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
+            filter.setExecutionAudit(null);
+        }
     }
 
     MockHttpServletRequest request(

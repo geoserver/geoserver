@@ -247,7 +247,7 @@ public class MonitorFilter implements GeoServerFilter {
      * Audit consumer function to be executed on the underlying PostProcessTask thread. Will receive
      * {@link RequestData} and {@link Authentication} from thread execution.
      */
-    public void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
+    void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
         this.executionAudit = executionAudit;
     }
 
@@ -306,7 +306,7 @@ public class MonitorFilter implements GeoServerFilter {
          * Audit consumer function. Will receive post processed {@link RequestData} and run time
          * {@link Authentication}.
          */
-        public void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
+        void setExecutionAudit(BiConsumer<RequestData, Authentication> executionAudit) {
             this.executionAudit = executionAudit;
         }
     }

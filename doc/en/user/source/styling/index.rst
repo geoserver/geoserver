@@ -10,6 +10,7 @@ This section discusses the styling of geospatial data served through GeoServer.
 
    webadmin/index
    sld/index
+   qgis/index
    css/index
    ysld/index
    mbstyle/index

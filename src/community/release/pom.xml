@@ -33,12 +33,13 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
-   <!--
+   
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <!--
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-js</artifactId>

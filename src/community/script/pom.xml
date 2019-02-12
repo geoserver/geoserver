@@ -54,6 +54,11 @@
    <version>${gt.version}</version>
   </dependency>
   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-metadata</artifactId>
+    <version>${gt.version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
@@ -123,7 +128,7 @@
    <profile>
      <id>script-groovy</id>
      <activation>
-       <activeByDefault>true</activeByDefault>
+       <activeByDefault>false</activeByDefault>
      </activation>
      <modules>
        <module>groovy</module>
@@ -141,7 +146,7 @@
    <profile>
      <id>script-js</id>
      <activation>
-       <activeByDefault>true</activeByDefault>
+       <activeByDefault>false</activeByDefault>
      </activation>
      <modules>
        <module>js</module>
@@ -150,7 +155,7 @@
    <profile>
      <id>script-rb</id>
      <activation>
-       <activeByDefault>true</activeByDefault>
+       <activeByDefault>false</activeByDefault>
      </activation>
      <modules>
        <module>rb</module>

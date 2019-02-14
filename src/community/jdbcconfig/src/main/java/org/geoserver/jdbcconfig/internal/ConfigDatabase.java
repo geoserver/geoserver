@@ -49,7 +49,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
@@ -119,6 +120,8 @@ public class ConfigDatabase {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
 
+    private static final int LOCK_TIMEOUT_SECONDS = 60;
+
     private Dialect dialect;
 
     private DataSource dataSource;
@@ -145,7 +148,7 @@ public class ConfigDatabase {
 
     private ConfigClearingListener configListener;
 
-    private ConcurrentMap<String, ReentrantLock> locks;
+    private ConcurrentMap<String, Semaphore> locks;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
     protected ConfigDatabase() {
@@ -1003,20 +1006,16 @@ public class ConfigDatabase {
                 valueLoader = new ConfigLoader(id);
             }
 
-            ReentrantLock lock = locks.get(id);
-            if (lock == null) {
-                lock = new ReentrantLock();
-                locks.put(id, lock);
-            }
+            Semaphore lock = locks.computeIfAbsent(id, x -> new Semaphore(1));
 
             info = cache.getIfPresent(id);
             if (info == null) {
                 // we try the write lock
-                if (!lock.isHeldByCurrentThread() && lock.tryLock()) {
+                if (lock.tryAcquire()) {
                     try {
                         info = cache.get(id, valueLoader);
                     } finally {
-                        lock.unlock();
+                        lock.release();
                     }
                 }
             }
@@ -1537,16 +1536,21 @@ public class ConfigDatabase {
     }
 
     private void acquireWriteLock(String id) {
-        ReentrantLock lock = locks.get(id);
-        if (lock == null) {
-            lock = new ReentrantLock();
-            locks.put(id, lock);
+        Semaphore lock = locks.computeIfAbsent(id, x -> new Semaphore(1));
+        try {
+            if (!lock.tryAcquire(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                LOGGER.severe(
+                        "Time-out waiting for lock on "
+                                + id
+                                + ", assuming it was abandoned and moving on. This shouldn't happen!");
+            }
+        } catch (InterruptedException e) {
+
         }
-        lock.lock();
     }
 
     private void releaseWriteLock(String id) {
-        locks.get(id).unlock();
+        locks.get(id).release();
     }
 
     /** Listens to catalog events clearing cache entires when resources are modified. */

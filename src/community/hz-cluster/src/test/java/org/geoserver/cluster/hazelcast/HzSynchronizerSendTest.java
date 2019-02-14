@@ -61,6 +61,13 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
 
             expectEvent(
                     localAddress, layerName, layerWorkspace, layerId, LayerInfo.class, Type.MODIFY);
+            expectEvent(
+                    localAddress,
+                    layerName,
+                    layerWorkspace,
+                    layerId,
+                    LayerInfo.class,
+                    Type.POST_MODIFY);
         }
         replay(info);
         {
@@ -156,6 +163,13 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
                     globalId,
                     GeoServerInfo.class,
                     Type.MODIFY);
+            expectEvent(
+                    localAddress,
+                    globalName,
+                    globalWorkspace,
+                    globalId,
+                    GeoServerInfo.class,
+                    Type.POST_MODIFY);
         }
         replay(info);
         {

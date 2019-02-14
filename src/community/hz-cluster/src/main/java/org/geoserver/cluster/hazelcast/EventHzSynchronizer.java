@@ -38,10 +38,12 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogEventImpl;
+import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
@@ -205,6 +207,13 @@ public class EventHzSynchronizer extends HzSynchronizer {
                 subj = getCatalogInfo(cat, id, clazz);
                 notifyMethod =
                         CatalogListener.class.getMethod(
+                                "handleModifyEvent", CatalogModifyEvent.class);
+                evt = new CatalogModifyEventImpl();
+                break;
+            case POST_MODIFY:
+                subj = getCatalogInfo(cat, id, clazz);
+                notifyMethod =
+                        CatalogListener.class.getMethod(
                                 "handlePostModifyEvent", CatalogPostModifyEvent.class);
                 evt = new CatalogPostModifyEventImpl();
                 break;
@@ -245,7 +254,11 @@ public class EventHzSynchronizer extends HzSynchronizer {
             for (CatalogListener l : ImmutableList.copyOf(cat.getListeners())) {
                 // Don't notify self otherwise the event bounces back out into the
                 // cluster.
-                if (l != this && isStarted()) {
+                if (l != this
+                        && isStarted()
+                        && // HACK-HACK-HACK -- prevent infinite loop with update sequence listener
+                        !"org.geoserver.config.UpdateSequenceListener"
+                                .equals(l.getClass().getCanonicalName())) {
                     notifyMethod.invoke(l, evt);
                 }
             }
@@ -293,7 +306,12 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
         for (ConfigurationListener l : gs.getListeners()) {
             try {
-                if (l != this) notifyMethod.invoke(l, subj);
+                if (l != this
+                        && // HACK-HACK-HACK -- prevent infinite loop with update sequence listener
+                        !"org.geoserver.config.UpdateSequenceListener"
+                                .equals(l.getClass().getCanonicalName())) {
+                    notifyMethod.invoke(l, subj);
+                }
             } catch (Exception ex) {
                 LOGGER.log(
                         Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), ce), ex);

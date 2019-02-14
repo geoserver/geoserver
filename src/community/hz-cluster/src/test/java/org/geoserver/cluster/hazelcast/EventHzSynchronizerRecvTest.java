@@ -28,6 +28,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
@@ -307,6 +308,9 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
                 catListener.handleAddEvent((CatalogAddEvent) catEvent(info));
                 break;
             case MODIFY:
+                catListener.handleModifyEvent((CatalogModifyEvent) catEvent(info));
+                break;
+            case POST_MODIFY:
                 catListener.handlePostModifyEvent((CatalogPostModifyEvent) catEvent(info));
                 break;
             case REMOVE:

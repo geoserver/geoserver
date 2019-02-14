@@ -285,4 +285,12 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         test.setUp();
         test.testOrderBy();
     }
+
+    // not supported
+    @Test
+    public void testAddIsolatedWorkspace() {}
+
+    // not supported
+    @Test
+    public void testAddIsolatedNamespace() {}
 }

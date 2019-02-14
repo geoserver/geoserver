@@ -46,7 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
@@ -55,22 +59,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CatalogVisitorAdapter;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -124,6 +120,8 @@ public class ConfigDatabase {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
 
+    private static final int LOCK_TIMEOUT_SECONDS = 60;
+
     private Dialect dialect;
 
     private DataSource dataSource;
@@ -148,8 +146,9 @@ public class ConfigDatabase {
 
     private InfoRowMapper<Info> configRowMapper;
 
-    private CatalogClearingListener catalogListener;
     private ConfigClearingListener configListener;
+
+    private ConcurrentMap<String, Semaphore> locks;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
     protected ConfigDatabase() {
@@ -180,6 +179,7 @@ public class ConfigDatabase {
         cache = cacheProvider.getCache("catalog");
         identityCache = cacheProvider.getCache("catalogNames");
         serviceCache = cacheProvider.getCache("services");
+        locks = new ConcurrentHashMap<>();
     }
 
     private Dialect dialect() {
@@ -315,7 +315,6 @@ public class ConfigDatabase {
         final Filter simplifiedFilter =
                 (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
         if (simplifiedFilter instanceof PropertyIsEqualTo) {
-            String id = null;
             PropertyIsEqualTo isEqualTo = (PropertyIsEqualTo) simplifiedFilter;
             if (isEqualTo.getExpression1() instanceof PropertyName
                     && isEqualTo.getExpression2() instanceof Literal
@@ -535,17 +534,6 @@ public class ConfigDatabase {
         }
         addAttributes(info, key);
 
-        cache.put(id, info);
-
-        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
-            if (identityCache.getIfPresent(identity) == null) {
-                identityCache.put(identity, id);
-            } else {
-                // not a unique identity
-                identityCache.invalidate(identity);
-            }
-        }
-
         return getById(id, interf);
     }
 
@@ -761,12 +749,6 @@ public class ConfigDatabase {
             return;
         }
 
-        if (info instanceof ServiceInfo) {
-            disposeServiceCache();
-        }
-        identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
-        cache.invalidate(info.getId());
-
         String deleteObject = "delete from object where id = :id";
         String deleteRelatedProperties = "delete from object_property where related_oid = :oid";
 
@@ -804,12 +786,6 @@ public class ConfigDatabase {
         Preconditions.checkNotNull(modificationProxy, "Not a modification proxy: ", info);
 
         final Info oldObject = (Info) modificationProxy.getProxyObject();
-
-        if (info instanceof ServiceInfo) {
-            disposeServiceCache();
-        }
-        identityCache.invalidateAll(InfoIdentities.get().getIdentities(oldObject));
-        cache.invalidate(id);
 
         // get changed properties before h.commit()s
         final Iterable<Property> changedProperties = dbMappings.changedProperties(oldObject, info);
@@ -849,7 +825,6 @@ public class ConfigDatabase {
 
         updateQueryableProperties(oldObject, objectId, changedProperties);
 
-        cache.invalidate(id);
         Class<T> clazz = ClassMappings.fromImpl(oldObject.getClass()).getInterface();
 
         // / <HACK>
@@ -877,15 +852,6 @@ public class ConfigDatabase {
             }
         }
         // / </HACK>
-
-        for (InfoIdentity identity : InfoIdentities.get().getIdentities(info)) {
-            if (identityCache.getIfPresent(identity) == null) {
-                identityCache.put(identity, id);
-            } else {
-                // not a unique identity
-                identityCache.invalidate(identity);
-            }
-        }
 
         return getById(id, clazz);
     }
@@ -1040,7 +1006,29 @@ public class ConfigDatabase {
                 valueLoader = new ConfigLoader(id);
             }
 
-            info = cache.get(id, valueLoader);
+            Semaphore lock = locks.computeIfAbsent(id, x -> new Semaphore(1));
+
+            info = cache.getIfPresent(id);
+            if (info == null) {
+                // we try the write lock
+                if (lock.tryAcquire()) {
+                    try {
+                        info = cache.get(id, valueLoader);
+                    } finally {
+                        lock.release();
+                    }
+                }
+            }
+
+            if (info == null) {
+                // if the write lock was locked, we fall back
+                // to a read-only method
+                try {
+                    info = valueLoader.call();
+                } catch (Exception e) {
+                    throw new ExecutionException(e);
+                }
+            }
 
         } catch (CacheLoader.InvalidCacheLoadException notFound) {
             return null;
@@ -1477,7 +1465,7 @@ public class ConfigDatabase {
         return !propertyTypes.isEmpty();
     }
 
-    void clear(Info info) {
+    void clearCache(Info info) {
         if (info instanceof ServiceInfo) {
             // need to figure out how to remove only the relevant cache
             // entries for the service info, like with InfoIdenties below,
@@ -1486,6 +1474,27 @@ public class ConfigDatabase {
         }
         identityCache.invalidateAll(InfoIdentities.get().getIdentities(info));
         cache.invalidate(info.getId());
+    }
+
+    void clearCacheIfPresent(String id) {
+        Info info = cache.getIfPresent(id);
+        if (info != null) {
+            clearCache(info);
+        }
+    }
+
+    void updateCache(Info info) {
+        info = ModificationProxy.unwrap(info);
+        cache.put(info.getId(), info);
+        List<InfoIdentity> identities = InfoIdentities.get().getIdentities(info);
+        for (InfoIdentity identity : identities) {
+            if (identityCache.getIfPresent(identity) == null) {
+                identityCache.put(identity, info.getId());
+            } else {
+                // not a unique identity
+                identityCache.invalidate(identity);
+            }
+        }
     }
 
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
@@ -1526,110 +1535,144 @@ public class ConfigDatabase {
         return result;
     }
 
+    private void acquireWriteLock(String id) {
+        Semaphore lock = locks.computeIfAbsent(id, x -> new Semaphore(1));
+        try {
+            if (!lock.tryAcquire(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                LOGGER.severe(
+                        "Time-out waiting for lock on "
+                                + id
+                                + ", assuming it was abandoned and moving on. This shouldn't happen!");
+            }
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+    private void releaseWriteLock(String id) {
+        locks.get(id).release();
+    }
+
     /** Listens to catalog events clearing cache entires when resources are modified. */
     // Copied from org.geoserver.catalog.ResourcePool
-    public class CatalogClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+    public class CatalogClearingListener implements CatalogListener {
 
-        public void handleAddEvent(CatalogAddEvent event) {}
+        public void handleAddEvent(CatalogAddEvent event) {
+            updateCache(event.getSource());
+        }
 
-        public void handleModifyEvent(CatalogModifyEvent event) {}
+        public void handleModifyEvent(CatalogModifyEvent event) {
+            // make sure that cache is not refilled before commit
+            if (event.getSource() instanceof ResourceInfo) {
+                String liId =
+                        getIdByIdentity(LayerInfo.class, "resource.id", event.getSource().getId());
+                acquireWriteLock(liId);
+                clearCacheIfPresent(liId);
+            }
+            acquireWriteLock(event.getSource().getId());
+            clearCache(event.getSource());
+        }
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
-            event.getSource().accept(this);
+            updateCache(event.getSource());
+            releaseWriteLock(event.getSource().getId());
+            if (event.getSource() instanceof ResourceInfo) {
+                String liId =
+                        getIdByIdentity(LayerInfo.class, "resource.id", event.getSource().getId());
+                releaseWriteLock(liId);
+            }
         }
 
         public void handleRemoveEvent(CatalogRemoveEvent event) {
-            event.getSource().accept(this);
+            clearCache(event.getSource());
         }
 
         public void reloaded() {}
-
-        @Override
-        public void visit(DataStoreInfo dataStore) {
-            clear(dataStore);
-        }
-
-        @Override
-        public void visit(CoverageStoreInfo coverageStore) {
-            clear(coverageStore);
-        }
-
-        @Override
-        public void visit(FeatureTypeInfo featureType) {
-            clear(featureType);
-        }
-
-        @Override
-        public void visit(WMSStoreInfo wmsStore) {
-            clear(wmsStore);
-        }
-
-        @Override
-        public void visit(StyleInfo style) {
-            clear(style);
-        }
-
-        @Override
-        public void visit(WorkspaceInfo workspace) {
-            clear(workspace);
-        }
-
-        @Override
-        public void visit(NamespaceInfo workspace) {
-            clear(workspace);
-        }
-
-        @Override
-        public void visit(CoverageInfo coverage) {
-            clear(coverage);
-        }
-
-        @Override
-        public void visit(LayerInfo layer) {
-            clear(layer);
-        }
-
-        @Override
-        public void visit(LayerGroupInfo layerGroup) {
-            clear(layerGroup);
-        }
-
-        @Override
-        public void visit(WMSLayerInfo wmsLayerInfoImpl) {
-            clear(wmsLayerInfoImpl);
-        }
     }
     /** Listens to configuration events clearing cache entires when resources are modified. */
     public class ConfigClearingListener extends ConfigurationListenerAdapter {
 
         @Override
-        public void handlePostGlobalChange(GeoServerInfo global) {
-            clear(global);
-        }
-
-        @Override
-        public void handleSettingsPostModified(SettingsInfo settings) {
-            clear(settings);
-        }
-
-        @Override
         public void handleSettingsRemoved(SettingsInfo settings) {
-            clear(settings);
-        }
-
-        @Override
-        public void handlePostLoggingChange(LoggingInfo logging) {
-            clear(logging);
-        }
-
-        @Override
-        public void handlePostServiceChange(ServiceInfo service) {
-            clear(service);
+            clearCache(settings);
         }
 
         @Override
         public void handleServiceRemove(ServiceInfo service) {
-            clear(service);
+            clearCache(service);
+        }
+
+        @Override
+        public void handleGlobalChange(
+                GeoServerInfo global,
+                List<String> propertyNames,
+                List<Object> oldValues,
+                List<Object> newValues) {
+            // make sure that cache is not refilled before commit
+            acquireWriteLock(global.getId());
+            clearCache(global);
+        }
+
+        @Override
+        public void handlePostGlobalChange(GeoServerInfo global) {
+            updateCache(global);
+            releaseWriteLock(global.getId());
+        }
+
+        @Override
+        public void handleSettingsModified(
+                SettingsInfo settings,
+                List<String> propertyNames,
+                List<Object> oldValues,
+                List<Object> newValues) {
+            // make sure that cache is not refilled before commit
+            acquireWriteLock(settings.getId());
+            clearCache(settings);
+        }
+
+        @Override
+        public void handleSettingsPostModified(SettingsInfo settings) {
+            updateCache(settings);
+            releaseWriteLock(settings.getId());
+        }
+
+        @Override
+        public void handleLoggingChange(
+                LoggingInfo logging,
+                List<String> propertyNames,
+                List<Object> oldValues,
+                List<Object> newValues) {
+            // make sure that cache is not refilled before commit
+            acquireWriteLock(logging.getId());
+            clearCache(logging);
+        }
+
+        @Override
+        public void handlePostLoggingChange(LoggingInfo logging) {
+            updateCache(logging);
+            releaseWriteLock(logging.getId());
+        }
+
+        @Override
+        public void handleServiceChange(
+                ServiceInfo service,
+                List<String> propertyNames,
+                List<Object> oldValues,
+                List<Object> newValues) {
+            // make sure that cache is not refilled before commit
+            acquireWriteLock(service.getId());
+            clearCache(service);
+        }
+
+        @Override
+        public void handlePostServiceChange(ServiceInfo service) {
+            updateCache(service);
+            releaseWriteLock(service.getId());
+        }
+
+        @Override
+        public void handleSettingsAdded(SettingsInfo settings) {
+            updateCache(settings);
         }
     }
 }

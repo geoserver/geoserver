@@ -21,10 +21,14 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.UnauthorizedPage;
+import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.wms.web.WMSAdminPage;
 import org.geoserver.wms.web.data.StyleEditPage;
 import org.geoserver.wms.web.data.StyleNewPage;
 import org.geoserver.wms.web.data.StylePage;
 import org.junit.Test;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
 
@@ -34,11 +38,13 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
 
         addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
         addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
+        
+        
 
         addLayerAccessRule("*", "*", AccessMode.READ, "*");
         addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
         addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
-        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");
+        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");//ROLE_CITE_ADMIN
         addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_SF_ADMIN");
 
         Catalog cat = getCatalog();
@@ -159,5 +165,23 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
                 tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy")
                         .isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("cancel").isEnabled());
+    }
+    
+    /*
+     * Unit test for GEOS-9108 https://osgeo-org.atlassian.net/browse/GEOS-9108
+     * Group Admin which is not System Admin was not able to access WMS/WFS/WCS/WMTS admin pages
+     * in WorkspaceEdit Page
+     * */
+    
+    @Test
+    public void testWmsAdminPage() throws Exception {
+
+        loginAsCite();
+
+        tester.startPage(WMSAdminPage.class, new PageParameters().add("name", "cite"));
+        tester.assertRenderedPage(WMSAdminPage.class);
+        tester.assertNoErrorMessage();        
+        logout();
+        
     }
 }

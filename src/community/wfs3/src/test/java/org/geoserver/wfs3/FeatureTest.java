@@ -56,7 +56,7 @@ public class FeatureTest extends WFS3TestSupport {
 
     @Test
     public void testWorkspaceQualified() throws Exception {
-        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
                 getAsJSONPath(
                         MockData.ROAD_SEGMENTS.getPrefix()
@@ -75,6 +75,15 @@ public class FeatureTest extends WFS3TestSupport {
         assertEquals(2, alternatefRels.size());
         assertEquals("alternate", alternatefRels.get(0));
         assertEquals("collection", alternatefRels.get(1));
+        // check collection link
+        List selfLink = json.read("links[?(@.rel == 'collection')].href");
+        assertThat(selfLink.size(), greaterThan(0));
+        assertThat(
+                (String) selfLink.get(0),
+                startsWith(
+                        "http://localhost:8080/geoserver/cite/wfs3/collections/"
+                                + roadSegments
+                                + "?"));
     }
 
     @Test

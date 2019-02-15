@@ -112,8 +112,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     Map clone = ModificationProxyCloner.cloneMap(real, false);
                     oldCollectionValues().put(property, clone);
                     return wrap;
-                } else {
-                    // proceed with the invocation
                 }
             }
         }
@@ -147,8 +145,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
                     // cache the proxy, in case it is modified itself
                     properties().put(property, result);
-                } else {
-                    // result was already proxied, leave as is
                 }
             }
             return result;

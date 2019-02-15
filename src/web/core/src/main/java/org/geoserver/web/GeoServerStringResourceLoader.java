@@ -8,7 +8,6 @@ package org.geoserver.web;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -21,7 +20,6 @@ import org.apache.wicket.resource.IPropertiesFactory;
 import org.apache.wicket.resource.Properties;
 import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
-import org.geotools.util.logging.Logging;
 
 /**
  * A custom localizer, heavily inspired by {@link ComponentStringResourceLoader}, which considers
@@ -35,8 +33,6 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveria - OpenGeo
  */
 public class GeoServerStringResourceLoader implements IStringResourceLoader {
-    /** Log. */
-    private static final Logger log = Logging.getLogger(GeoServerStringResourceLoader.class);
 
     /** Create and initialize the resource loader. */
     public GeoServerStringResourceLoader() {}

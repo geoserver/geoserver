@@ -29,7 +29,6 @@
   <bean id="wcs20ServiceInterceptor-describeEOCoverageSet"
     class="org.geoserver.wcs2_0.eo.DescribeEOCoverageSetInterceptor">
     <constructor-arg ref="geoServer" />
-    <constructor-arg ref="coverageResponseDelegateFactory" />
     <constructor-arg ref="envelopeDimensionsMapper" />
     <constructor-arg ref="MIMETYPEMapper" />
     <constructor-arg ref="wcsEoCoverageResourceCodec" />

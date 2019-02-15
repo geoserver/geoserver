@@ -1176,7 +1176,6 @@ public class WCSDimensionsSubsetHelper {
 
         // spatial subset
         Filter filter = filterSpatial(gcr, reader, source);
-        ;
 
         // temporal subset
         filter = filterTime(filter, gcr, coverageName, reader);

@@ -7,11 +7,8 @@ package org.geoserver.wcs.response;
 
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
-import java.util.logging.Logger;
 import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.wcs.WCSInfo;
-import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
@@ -24,8 +21,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Andrea Aime, TOPP
  */
 public class CoveragesTransformer extends TransformerBase {
-    private static final Logger LOGGER =
-            Logging.getLogger(CoveragesTransformer.class.getPackage().getName());
 
     private static final String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
 
@@ -33,19 +28,16 @@ public class CoveragesTransformer extends TransformerBase {
 
     private static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private WCSInfo wcs;
-
     private GetCoverageType request;
 
     private String coverageLocation;
 
     /** Creates a new WFSCapsTransformer object to be used when encoding the multipart output */
-    public CoveragesTransformer(WCSInfo wcs, GetCoverageType request) {
-        this(wcs, request, "cid:theCoverage");
+    public CoveragesTransformer(GetCoverageType request) {
+        this(request, "cid:theCoverage");
     }
 
-    public CoveragesTransformer(WCSInfo wcs, GetCoverageType request, String coverageLocation) {
-        this.wcs = wcs;
+    public CoveragesTransformer(GetCoverageType request, String coverageLocation) {
         this.request = request;
         this.coverageLocation = coverageLocation;
         setNamespaceDeclarationEnabled(false);

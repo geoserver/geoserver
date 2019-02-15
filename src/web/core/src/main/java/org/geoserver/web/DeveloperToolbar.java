@@ -22,7 +22,6 @@ import org.geoserver.config.GeoServerLoader;
 public class DeveloperToolbar extends Panel {
 
     private AjaxCheckBox wicketIds;
-    private AjaxCheckBox xhtml;
 
     public DeveloperToolbar(String id) {
         super(id);

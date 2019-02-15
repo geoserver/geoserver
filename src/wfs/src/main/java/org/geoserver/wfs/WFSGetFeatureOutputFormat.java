@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -314,4 +315,50 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected abstract void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException;
+
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        FeatureCollectionResponse response;
+        if (value instanceof FeatureCollectionResponse) {
+            response = (FeatureCollectionResponse) value;
+        } else {
+            response = FeatureCollectionResponse.adapt(value);
+        }
+        final String fileName;
+        if (response.getTypeNames() != null) {
+            fileName =
+                    response.getTypeNames()
+                            .stream()
+                            .map(tn -> tn.getLocalPart())
+                            .collect(Collectors.joining("_"));
+        } else if (response.getTypeName() != null) {
+            fileName = response.getTypeName().getLocalPart();
+        } else {
+            fileName = "features";
+        }
+        return fileName + "." + getExtension(response);
+    }
+
+    /**
+     * Sets the rigth extension for the response
+     *
+     * @param response
+     * @return
+     */
+    protected String getExtension(FeatureCollectionResponse response) {
+        String mimeType = getMimeType(null, null);
+        if (mimeType != null) {
+            // guesswork
+            if (mimeType.contains("gml")) {
+                return "xml";
+            } else if (mimeType.contains("json")) {
+                return "json";
+            }
+            // otehrwise use the default
+            String[] typeParts = mimeType.split(";");
+            return typeParts[0].split("/")[0];
+        } else {
+            return "bin";
+        }
+    }
 }

@@ -369,9 +369,7 @@ public class Dispatcher extends AbstractController {
                     request.setInput(null);
                 } else if (read < xmlPostRequestLogBufferSize) {
                     logger.fine("Raw XML request: " + new String(req));
-                } else if (xmlPostRequestLogBufferSize == 0) {
-                    // logging disabled --> do nothing
-                } else {
+                } else if (xmlPostRequestLogBufferSize != 0) {
                     logger.fine("Raw XML request starts with: " + new String(req) + "...");
                 }
             }
@@ -505,7 +503,7 @@ public class Dispatcher extends AbstractController {
             req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
         }
         // check the body
-        if (req.getInput() != null) {
+        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
             Map xml = readOpPost(req.getInput());
             if (xml.get("service") != null) {
                 req.setService(normalize((String) xml.get("service")));
@@ -971,9 +969,6 @@ public class Dispatcher extends AbstractController {
                                     return 1;
                                 }
 
-                                if (c2.isAssignableFrom(c1)) {;
-                                }
-
                                 return -1;
                             }
                         });
@@ -1207,10 +1202,9 @@ public class Dispatcher extends AbstractController {
                 for (Iterator itr = nmatches.iterator(); itr.hasNext(); ) {
                     Service s = (Service) itr.next();
                     if (s.getNamespace() != null && !s.getNamespace().equals(namespace)) {
-                        // service declares namespace, kick it out if there is no match
+                        // service declares namespace, kick it out if there is no match, otherwise
+                        // leave it along
                         itr.remove();
-                    } else {
-                        // service does not declare namespace, leave it along
                     }
                 }
 

@@ -50,8 +50,6 @@ public abstract class GetFeatureRequest extends RequestObject {
         List l = eGet(adaptee, "viewParams", List.class);
         l.clear();
         l.addAll(viewParams);
-
-        List check = eGet(adaptee, "viewParams", List.class);
     }
 
     public abstract List<Query> getQueries();

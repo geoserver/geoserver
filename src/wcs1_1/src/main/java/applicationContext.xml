@@ -118,7 +118,6 @@
 
   <bean id="wcs111DescribeCoverageKvpReader"
     class="org.geoserver.wcs.kvp.DescribeCoverageKvpRequestReader">
-    <constructor-arg index="0" ref="catalog" />
   </bean>
 
   <bean id="wcs111GetCoverageRequestReader"

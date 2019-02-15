@@ -300,11 +300,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         Resource masterpw = security().get(MASTER_PASSWD_CONFIG_FILENAME);
         if (masterpw.getType() == Type.RESOURCE) {
             init(loadMasterPasswordConfig());
-        } else {
-            // if it doesn't exist this must be a migration startup... and this case should be
-            // handled during migration where all the datastore passwords are processed
-            // explicitly
         }
+        // if it doesn't exist this must be a migration startup... and this case should be
+        // handled during migration where all the datastore passwords are processed
+        // explicitly
 
         configPasswordEncryptionHelper = new ConfigurationPasswordEncryptionHelper(this);
     }
@@ -1688,10 +1687,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 // commit the password change to the keystore
                 ksProvider.commitMasterPasswordChange();
 
-                if (!config.getProviderName().equals(oldConfig.getProviderName())) {
-                    // TODO: reencrypt the keystore? restart the server?
-                    // updateConfigurationFilesWithEncryptedFields();
-                }
+                // if (!config.getProviderName().equals(oldConfig.getProviderName())) {
+                // TODO: reencrypt the keystore? restart the server?
+                // updateConfigurationFilesWithEncryptedFields();
+                // }
             } catch (IOException e) {
                 // error occured, roll back
                 ksProvider.abortMasterPasswordChange();

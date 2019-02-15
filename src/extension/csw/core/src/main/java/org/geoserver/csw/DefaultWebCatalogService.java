@@ -36,8 +36,6 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class DefaultWebCatalogService implements WebCatalogService, ApplicationContextAware {
 
-    private CSWInfo csw;
-
     private GeoServer gs;
 
     private CatalogStore store;
@@ -45,7 +43,6 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     protected ApplicationContext context;
 
     public DefaultWebCatalogService(GeoServer gs) {
-        this.csw = gs.getService(CSWInfo.class);
         this.gs = gs;
     }
 

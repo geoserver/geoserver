@@ -200,6 +200,7 @@ public class NetCDFSettingsContainer implements Serializable {
 
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
+        @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public boolean equals(Object other) {
             return other instanceof GlobalAttribute && super.equals(other);
         }
@@ -214,6 +215,7 @@ public class NetCDFSettingsContainer implements Serializable {
 
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
+        @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public boolean equals(Object other) {
             return other instanceof VariableAttribute && super.equals(other);
         }

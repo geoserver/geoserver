@@ -8,7 +8,6 @@ package org.geoserver.kml;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
@@ -26,8 +25,6 @@ import org.geoserver.wms.WebMapService;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class KMLReflector {
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.wms.responses.map.kml");
 
     /** default 'format' value */
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;

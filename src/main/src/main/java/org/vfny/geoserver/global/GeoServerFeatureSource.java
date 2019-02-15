@@ -474,18 +474,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // we need to reproject all bbox and geometries to a target crs, which is
             // the native one usually, but it's the declared on in the force case (since in
             // that case we completely ignore the native one)
-            CoordinateReferenceSystem targetCRS = null;
             CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
             if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
                 defaultCRS = declaredCRS;
-                targetCRS = declaredCRS;
                 nativeFeatureType = FeatureTypes.transform(nativeFeatureType, declaredCRS);
             } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 defaultCRS = declaredCRS;
-                targetCRS = nativeCRS;
             } else { // FeatureTypeInfo.LEAVE
                 defaultCRS = nativeCRS;
-                targetCRS = nativeCRS;
             }
 
             // now we apply a default to all geometries and bbox in the filter

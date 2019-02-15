@@ -82,7 +82,10 @@ public final class IconPropertyExtractor {
         } else if (symbolizer instanceof LineSymbolizer) {
             final Stroke stroke = ((LineSymbolizer) symbolizer).getStroke();
             if (stroke != null) {
-                return stroke.getGraphicStroke();
+                if (stroke.getGraphicStroke() != null) return stroke.getGraphicStroke();
+                if (stroke.getGraphicFill() != null) {
+                    return stroke.getGraphicFill();
+                }
             }
         } else if (symbolizer instanceof TextSymbolizer2) {
             return ((TextSymbolizer2) symbolizer).getGraphic();

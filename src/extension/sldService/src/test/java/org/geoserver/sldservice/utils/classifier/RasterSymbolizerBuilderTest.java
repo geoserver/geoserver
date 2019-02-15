@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.geosolutions.jaiext.JAIExt;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
@@ -28,23 +27,11 @@ import org.geotools.image.util.ImageUtilities;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 
 public class RasterSymbolizerBuilderTest {
-
-    @BeforeClass
-    public static void setupJaiExt() {
-        JAIExt.initJAIEXT(true, true);
-    }
-
-    @AfterClass
-    public static void cleanupJaiExt() {
-        JAIExt.initJAIEXT(false, true);
-    }
 
     @Test
     public void testUniqueBinary() throws IOException {
@@ -273,9 +260,9 @@ public class RasterSymbolizerBuilderTest {
     public void testSubsampling() {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder(10000);
         assertSubsampling(builder, 100, 1, 1);
-        assertSubsampling(builder, 150, 1, 2);
+        assertSubsampling(builder, 150, 2, 2);
         assertSubsampling(builder, 200, 2, 2);
-        assertSubsampling(builder, 250, 2, 3);
+        assertSubsampling(builder, 250, 3, 3);
         assertSubsampling(builder, 300, 3, 3);
     }
 

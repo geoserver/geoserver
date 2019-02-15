@@ -291,4 +291,4 @@ components:
       description: Column index of the tile on the selected zoom level
       required: true
       schema:
-        type: string          
+        type: string

@@ -69,6 +69,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -195,6 +196,7 @@ public class CatalogImpl implements Catalog {
         return postValidate(store, isNew);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION") // setDefaultDataStore allows for null store
     public void remove(StoreInfo store) {
         if (!getResourcesByStore(store, ResourceInfo.class).isEmpty()) {
             throw new IllegalArgumentException("Unable to delete non-empty store.");
@@ -239,10 +241,12 @@ public class CatalogImpl implements Catalog {
         return facade.getStore(id, clazz);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends StoreInfo> T getStoreByName(String name, Class<T> clazz) {
         return getStoreByName((WorkspaceInfo) null, name, clazz);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends StoreInfo> T getStoreByName(
             WorkspaceInfo workspace, String name, Class<T> clazz) {
 
@@ -461,6 +465,7 @@ public class CatalogImpl implements Catalog {
         return facade.getResource(id, clazz);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends ResourceInfo> T getResourceByName(String ns, String name, Class<T> clazz) {
         if ("".equals(ns)) {
             ns = null;
@@ -482,6 +487,7 @@ public class CatalogImpl implements Catalog {
         return getResourceByName((NamespaceInfo) null, name, clazz);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends ResourceInfo> T getResourceByName(
             NamespaceInfo ns, String name, Class<T> clazz) {
 
@@ -500,9 +506,8 @@ public class CatalogImpl implements Catalog {
         return getResourceByName(name.getNamespaceURI(), name.getLocalPart(), clazz);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public <T extends ResourceInfo> T getResourceByName(String name, Class<T> clazz) {
-        ResourceInfo resource;
-
         // check is the name is a fully qualified one
         int colon = name.indexOf(':');
         if (colon != -1) {
@@ -656,6 +661,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public ValidationResult validate(LayerInfo layer, boolean isNew) {
         // TODO: bring back when the layer/publishing split is in act
         //        if ( isNull(layer.getName()) ) {
@@ -819,6 +825,7 @@ public class CatalogImpl implements Catalog {
         return facade.getMaps();
     }
 
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     public void add(LayerGroupInfo layerGroup) {
         layerGroup = resolve(layerGroup);
         validate(layerGroup, true);
@@ -834,6 +841,7 @@ public class CatalogImpl implements Catalog {
         added(added);
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         if (isNull(layerGroup.getName())) {
             throw new NullPointerException("Layer group name must not be null");
@@ -1049,6 +1057,7 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public LayerGroupInfo getLayerGroupByName(String name) {
 
         final LayerGroupInfo layerGroup = getLayerGroupByName((String) null, name);

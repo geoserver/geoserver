@@ -5,7 +5,6 @@
 package org.geoserver.gwc.controller;
 
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.ows.LocalWorkspace;
-import org.geotools.util.logging.Logging;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,8 +27,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMapping
         implements HandlerInterceptor {
-
-    private static final Logger LOGGER = Logging.getLogger(GwcWmtsRestUrlHandlerMapping.class);
 
     private final Catalog catalog;
 
@@ -97,8 +93,6 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
             super(request);
             // remove the virtual service workspace from the URL
             requestUri = request.getRequestURI().replace(workspaceName + "/", "");
-            // prefix layers in the URI with the local workspace prefix
-            Matcher matcher = URI_LAYER_PATTERN.matcher(requestUri);
         }
 
         @Override

@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.response;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.geoserver.config.GeoServer;
@@ -16,7 +15,6 @@ import org.geoserver.config.GeoServer;
  * @author Shane StClair, Axiom Consulting, shane@axiomalaska.com
  */
 public class Excel97OutputFormat extends ExcelOutputFormat {
-    private static Logger log = Logger.getLogger(Excel97OutputFormat.class);
 
     /**
      * Constructor setting the format type as "excel" in addition to file extension, mime type, and

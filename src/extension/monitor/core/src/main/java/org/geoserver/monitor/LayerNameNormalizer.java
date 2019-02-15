@@ -55,8 +55,6 @@ public class LayerNameNormalizer implements RequestPostProcessor {
                         prefix = ns.getPrefix();
                     }
                     layers.set(i, prefix + ":" + local);
-                } else {
-                    // ok, property prefixed
                 }
             }
         }

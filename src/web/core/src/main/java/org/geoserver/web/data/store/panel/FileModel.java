@@ -82,9 +82,8 @@ public class FileModel implements IModel<String> {
                 location = "file:" + path;
             } else {
                 File dataFile = Files.url(rootDir, location);
-                if (dataFile != null && !dataFile.equals(file)) {
-                    // relative to the data directory, does not need fixing
-                } else {
+                if (dataFile == null || dataFile.equals(file)) {
+                    // not relative to the data directory, does not need fixing
                     location = "file://" + file.getAbsolutePath();
                 }
             }

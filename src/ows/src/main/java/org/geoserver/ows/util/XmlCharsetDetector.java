@@ -134,7 +134,9 @@ public class XmlCharsetDetector {
          */
         if (hasBOM && ENCODING.equals("UTF-8")) {
             // ignore first three bytes...
-            stream.skip(3);
+            if (stream.skip(3) < 3) {
+                return null;
+            }
         }
 
         /*
@@ -149,7 +151,9 @@ public class XmlCharsetDetector {
 
             if (((b0 == 0xFF) && (b1 == 0xFE)) || ((b0 == 0xFE) && (b1 == 0xFF))) {
                 // ignore first two bytes...
-                stream.skip(2);
+                if (stream.skip(2) < 2) {
+                    return null;
+                }
             }
         }
 

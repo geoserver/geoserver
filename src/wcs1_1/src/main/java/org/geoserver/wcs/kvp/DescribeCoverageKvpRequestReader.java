@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import net.opengis.wcs11.DescribeCoverageType;
 import net.opengis.wcs11.Wcs111Factory;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.vfny.geoserver.wcs.WcsException;
@@ -23,11 +22,9 @@ import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
  * @author Andrea Aime
  */
 public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
-    private Catalog catalog;
 
-    public DescribeCoverageKvpRequestReader(Catalog catalog) {
+    public DescribeCoverageKvpRequestReader() {
         super(DescribeCoverageType.class, Wcs111Factory.eINSTANCE);
-        this.catalog = catalog;
 
         // JD: we set a filter because the WCS 1.1 scheme people are crazy
         filter = new HashSet(Arrays.asList("service", "version", "identifiers"));

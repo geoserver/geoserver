@@ -193,7 +193,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
             try {
                 return URLDecoder.decode(source, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                return null;
+                throw new RuntimeException(e);
             }
         }
     }

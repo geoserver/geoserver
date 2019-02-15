@@ -4,25 +4,19 @@
  */
 package org.geoserver.wfs3;
 
-import io.swagger.v3.core.util.Yaml;
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Map;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs3.response.CollectionDocument;
 import org.geoserver.wfs3.response.Link;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
 
 /** WFS3 extension adding support for the vector tiling OpenAPI paths */
-public class VectorTilesExtension implements WFS3Extension {
+public class VectorTilesExtension extends AbstractWFS3Extension {
 
     private static final String TILING_SPECIFICATION;
     static final String TILING_SCHEMES_PATH = "/tilingSchemes";
@@ -42,7 +36,7 @@ public class VectorTilesExtension implements WFS3Extension {
     @Override
     public void extendAPI(OpenAPI api) {
         // load the pre-cooked building blocks
-        OpenAPI tileAPITemplate = readTemplate();
+        OpenAPI tileAPITemplate = readTemplate(TILING_SPECIFICATION);
 
         // customize paths
         Paths paths = api.getPaths();
@@ -58,13 +52,7 @@ public class VectorTilesExtension implements WFS3Extension {
                 COLLECTION_TILES_SCHEMES_PATH,
                 tileAPITemplate.getPaths().get(COLLECTION_TILES_SCHEMES_PATH));
 
-        // and add all schemas and parameters
-        Components apiComponents = api.getComponents();
-        Components tileComponents = tileAPITemplate.getComponents();
-        Map<String, Schema> tileSchemas = tileComponents.getSchemas();
-        apiComponents.getSchemas().putAll(tileSchemas);
-        Map<String, Parameter> tileParameters = tileComponents.getParameters();
-        apiComponents.getParameters().putAll(tileParameters);
+        addSchemasAndParameters(api, tileAPITemplate);
     }
 
     @Override
@@ -128,17 +116,5 @@ public class VectorTilesExtension implements WFS3Extension {
                                         + " associated tiling schemes. The link is a URI template \"\n"
                                         + "                                        + \"where {tilingSchemeId} is one of the schemes listed in the 'tilingSchemes' resource",
                                 "items"));
-    }
-
-    /**
-     * Reads the template to customize (each time, as the object tree is not thread safe nor
-     * cloneable not serializable)
-     */
-    private OpenAPI readTemplate() {
-        try {
-            return Yaml.mapper().readValue(TILING_SPECIFICATION, OpenAPI.class);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
     }
 }

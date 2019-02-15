@@ -51,13 +51,16 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -94,6 +97,7 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -147,6 +151,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         springContextLocations.add("gwc-integration-test.xml");
     }
 
+    @After
+    public void cleanupDispatcherRequest() {
+        // some test set the dispatcher request manually, avoid cross test contamination
+        Dispatcher.REQUEST.remove();
+    }
+
     private void prepareDataDirectory(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
         testData.addWorkspace(TEST_WORKSPACE_NAME, TEST_WORKSPACE_URI, catalog);
@@ -182,6 +192,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 "BasicPolygonsNoCrs.properties",
                 this.getClass(),
                 catalog);
+
+        // add a style group (any caps request would fail without the fix in GEOS-9111)
+        testData.addStyle("stylegroup", "stylegroup.sld", GWCIntegrationTest.class, catalog);
+        final LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.getLayers().add(null);
+        group.getStyles().add(catalog.getStyleByName("stylegroup"));
+        group.setName("stylegroup");
+        new LayerGroupHelper(group).calculateBounds();
+        catalog.add(group);
 
         // clean up the recorded http requests
         HttpRequestRecorderCallback.reset();
@@ -1480,6 +1499,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetCapabilitiesWithLocalWorkspace() throws Exception {
+        final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+        // print(doc);
+        assertThat(
+                WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
+                equalTo(
+                        "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+    }
+
+    public Document assertGetCapabilitiesWithLocalWorkspace() throws Exception {
         // getting capabilities document for CITE workspace
         Document document =
                 getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
@@ -1500,6 +1528,31 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "'])",
                         document),
                 is("1"));
+        return document;
+    }
+
+    @Test
+    public void testGetCapabilitiesWithLocalWorkspaceAndProxyBase() throws Exception {
+        final GeoServer gs = getGeoServer();
+        try {
+            setProxyBase(gs, "http://fooBar/geoserver");
+
+            final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+            // print(doc);
+            assertThat(
+                    WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
+                    equalTo(
+                            "http://fooBar/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+
+        } finally {
+            setProxyBase(gs, null);
+        }
+    }
+
+    public void setProxyBase(GeoServer gs, String s) {
+        final GeoServerInfo global = gs.getGlobal();
+        global.getSettings().setProxyBaseUrl(s);
+        gs.save(global);
     }
 
     @Test
@@ -1661,6 +1714,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(response.getStatus(), is(200));
         // parse XML response content
         Document document = dom(response, false);
+        print(document);
         // check that default styles are advertised
         String result =
                 WMTS_XPATH_10.evaluate(
@@ -1694,6 +1748,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "wmts:LegendURL[@minScaleDenominator='100000.0'][@maxScaleDenominator='300000.0'])",
                         document);
         assertThat(Integer.parseInt(result), greaterThan(0));
+        // check the style group is reported
+        result =
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='stylegroup'])", document);
+        assertThat(Integer.parseInt(result), equalTo(1));
+
         // check that legend URI are correctly encoded in the context of a local workspace
         WorkspaceInfo workspace = getCatalog().getWorkspaceByName(TEST_WORKSPACE_NAME);
         assertThat(workspace, notNullValue());
@@ -1720,7 +1780,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesRequestRestEndpoints() throws Exception {
 
-        int totLayers = getCatalog().getLayers().size();
+        int totLayers = getCatalog().getLayers().size() + 1; // one cached layer group
 
         // getting capabilities document for CITE workspace
         Document doc = getAsDOM("/gwc/service/wmts?request=GetCapabilities");
@@ -1783,6 +1843,51 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testGetCapabilitiesWithRestEndpointsWorkspaceService() throws Exception {
+        MockHttpServletRequest request =
+                createRequest(
+                        MockData.CITE_PREFIX
+                                + "/gwc"
+                                + WMTSService.REST_PATH
+                                + "/WMTSCapabilities.xml");
+        request.setMethod("GET");
+
+        Request mockRequest = mock(Request.class);
+        when(mockRequest.getHttpRequest()).thenReturn(request);
+        Dispatcher.REQUEST.set(mockRequest);
+
+        MockHttpServletResponse response = dispatch(request, null);
+
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsByteArray()), true);
+        print(doc);
+
+        // check legend backlink and that it has the workspace specification
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=cite%3ABasicPolygons",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:Style/wmts:LegendURL/@xlink:href",
+                        doc));
+        // check tile resources
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format=image/png",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='image/png' and @resourceType='tile']/@template",
+                        doc));
+        // check featureinfo resource
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/BasicPolygons/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{J}/{I}?format=text/plain",
+                WMTS_XPATH_10.evaluate(
+                        "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:ResourceURL[@format='text/plain' and @resourceType='FeatureInfo']/@template",
+                        doc));
+        // check backlink too
+        assertEquals(
+                "1",
+                WMTS_XPATH_10.evaluate(
+                        "count(//wmts:Capabilities/wmts:ServiceMetadataURL[@xlink:href='http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml'])",
+                        doc));
+    }
+
+    @Test
     public void testGetTileWithRestEndpoints() throws Exception {
 
         MockHttpServletRequest request =
@@ -1816,8 +1921,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "/gwc"
                                 + WMTSService.REST_PATH
                                 + "/"
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
                                 + MockData.BASIC_POLYGONS.getLocalPart()
                                 + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
         request.setMethod("GET");

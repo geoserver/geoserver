@@ -162,8 +162,6 @@ public class CatalogIconFactory implements Serializable {
      */
     public PackageResourceReference getStoreIcon(final StoreInfo storeInfo) {
 
-        Class<?> factoryClass = null;
-
         Catalog catalog = storeInfo.getCatalog();
         final ResourcePool resourcePool = catalog.getResourcePool();
 

@@ -249,6 +249,7 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
     }
 
     @Override
+    @SuppressWarnings("PMD.EmptyWhileStmt")
     public synchronized void destroy() {
         if (configured.getAndSet(false)) {
             // Avoid to call the While cycle before having started an operation
@@ -455,6 +456,7 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
         configureBlobStore(gwcConfig, initialization);
     }
 
+    @SuppressWarnings("PMD.EmptyWhileStmt")
     private void configureBlobStore(GWCConfig gwcConfig, boolean initialization) {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Configuring BlobStore");
@@ -585,7 +587,6 @@ public class ConfigurableBlobStore extends MemoryBlobStore implements BlobStore 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // Do nothing
-        return;
     }
 
     @Override

@@ -176,13 +176,11 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                     anySublayersVisible = true;
                     break;
                 }
-                ;
             } else if (subLayer instanceof LayerGroupInfo) {
                 if (!hideLayerGroup((LayerGroupInfo) subLayer)) {
                     anySublayersVisible = true;
                     break;
                 }
-                ;
             }
         }
 

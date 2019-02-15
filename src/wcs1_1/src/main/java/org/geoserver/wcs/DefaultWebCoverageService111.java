@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
@@ -222,12 +221,6 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 targetCRS = CRS.decode(gridCRS.getGridBaseCRS());
             }
 
-            //
-            // Raster destination size
-            //
-            int elevationLevels = 0;
-            double[] elevations = null;
-
             // grab the grid to world transformation
             MathTransform gridToCRS = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
 
@@ -297,10 +290,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     readParametersDescriptor.getDescriptor().descriptors();
             ParameterValue time = null;
             boolean hasTime = timeValues.size() > 0;
-            ParameterValue elevation = null;
-            boolean hasElevation = elevations != null && !Double.isNaN(elevations[0]);
 
-            if (hasElevation || hasTime) {
+            if (hasTime) {
                 for (GeneralParameterDescriptor pd : parameterDescriptors) {
 
                     final String code = pd.getName().getCode();
@@ -308,37 +299,25 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     //
                     // TIME
                     //
-                    if (code.equalsIgnoreCase("TIME")) {
+                    if (hasTime && code.equalsIgnoreCase("TIME")) {
                         time = (ParameterValue) pd.createValue();
                         time.setValue(timeValues);
                     }
 
-                    //
-                    // ELEVATION
-                    //
-                    if (code.equalsIgnoreCase("ELEVATION")) {
-                        elevation = (ParameterValue) pd.createValue();
-                        elevation.setValue(elevations[0]);
-                    }
-
                     // leave?
-                    if ((hasElevation && elevation != null && hasTime && time != null)
-                            || !hasElevation && hasTime && time != null
-                            || hasElevation && elevation != null && !hasTime) break;
+                    if ((hasTime && time != null) || hasTime && time != null) break;
                 }
             }
             //
             // add read parameters
             //
-            int addedParams = 1 + (hasTime ? 1 : 0) + (hasElevation ? 1 : 0);
+            int addedParams = 1 + (hasTime ? 1 : 0);
             // add to the list
             GeneralParameterValue[] readParametersClone =
                     new GeneralParameterValue[readParameters.length + addedParams--];
             System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
             readParametersClone[readParameters.length + addedParams--] = requestedGridGeometryParam;
             if (hasTime) readParametersClone[readParameters.length + addedParams--] = time;
-            if (hasElevation)
-                readParametersClone[readParameters.length + addedParams--] = elevation;
             readParameters = readParametersClone;
 
             // Check we're not being requested to read too much data from input (first check,
@@ -517,7 +496,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     //
 
                     // TODO: draft code ... it needs more study!
-                    elevationLevels =
+                    int elevationLevels =
                             (int)
                                     Math.round(
                                             requestedEnvelope.getUpperCorner().getOrdinate(2)
@@ -527,7 +506,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
                     // compute the elevation levels, we have elevationLevels values
                     if (elevationLevels > 0) {
-                        elevations = new double[elevationLevels];
+                        double[] elevations = new double[elevationLevels];
 
                         elevations[0] =
                                 requestedEnvelope
@@ -858,9 +837,8 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             gridCRS.setGridCS(GridCS.GCSGrid2dSquare.getXmlConstant());
 
             // check the grid origin and set defaults
-            CoordinateReferenceSystem crs = null;
             try {
-                crs = CRS.decode(gridCRS.getGridBaseCRS());
+                CRS.decode(gridCRS.getGridBaseCRS());
             } catch (Exception e) {
                 throw new WcsException(
                         "Could not understand crs " + gridCRS.getGridBaseCRS(),
@@ -1054,25 +1032,5 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                         "RangeSubset");
             else keys.set(j, parsedKey);
         }
-    }
-
-    /** @param date */
-    private static Date cvtToGmt(Date date) {
-        TimeZone tz = TimeZone.getDefault();
-        Date ret = new Date(date.getTime() - tz.getRawOffset());
-
-        // if we are now in DST, back off by the delta. Note that we are checking the GMT date, this
-        // is the KEY.
-        if (tz.inDaylightTime(ret)) {
-            Date dstDate = new Date(ret.getTime() - tz.getDSTSavings());
-
-            // check to make sure we have not crossed back into standard time
-            // this happens when we are on the cusp of DST (7pm the day before the change for PDT)
-            if (tz.inDaylightTime(dstDate)) {
-                ret = dstDate;
-            }
-        }
-
-        return ret;
     }
 }

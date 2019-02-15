@@ -253,7 +253,6 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                     new AjaxLink<ImportTask>("add", itemModel) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            ImportTask task = getModelObject();
                             remaps.add(new AttributeRemapTransform(null, null));
                             target.add(remapContainer);
                         }

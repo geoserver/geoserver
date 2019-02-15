@@ -517,7 +517,6 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
      * @param layer
      */
     protected String getDatabaseName(WMSMapContent con, Layer layer) throws Exception {
-        int index = con.layers().indexOf(layer);
         return getDatabaseName(featureType);
     }
 

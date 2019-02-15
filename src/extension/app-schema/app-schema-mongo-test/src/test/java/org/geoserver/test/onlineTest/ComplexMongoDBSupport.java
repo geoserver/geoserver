@@ -4,10 +4,6 @@
  */
 package org.geoserver.test.onlineTest;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -47,8 +43,11 @@ import org.geoserver.util.IOUtils;
 import org.geotools.feature.NameImpl;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
+import static org.hamcrest.CoreMatchers.is;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -147,6 +146,8 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         dataStore.setWorkspace(workspace);
         dataStore.setEnabled(true);
         catalog.add(dataStore);
+        // add the stations style and set it as the default one for stations layer
+        testData.addStyle("stations", "stations.sld", ComplexMongoDBSupport.class, catalog);
         // build the feature type for the root mapping (StationFeature)
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setStore(dataStore);
@@ -155,7 +156,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
                 builder.buildFeatureType(new NameImpl(nameSpace.getURI(), "StationFeature"));
         catalog.add(featureType);
         LayerInfo layer = builder.buildLayer(featureType);
-        layer.setDefaultStyle(catalog.getStyleByName("point"));
+        layer.setDefaultStyle(catalog.getStyleByName("stations"));
         catalog.add(layer);
     }
 

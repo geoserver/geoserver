@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wms.DefaultWebMapService;
@@ -39,10 +38,6 @@ import org.locationtech.jts.geom.Envelope;
  * @author Andrea Aime, GeoSolutions S.A.S., andrea.aime@geo-solutions.it
  */
 public class Animator {
-
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    "org.vfny.geoserver.wms.responses.map.anim");
 
     /** default 'format' value - used if no output format has been found on the GetMap request */
     public static final String GIF_ANIMATED_FORMAT = "image/gif;subtype=animated";

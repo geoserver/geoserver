@@ -7,7 +7,7 @@ package org.geoserver.wcs.responses;
 
 import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -44,8 +44,6 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
 
     /** DEFAULT_JPEG_COMPRESSION_QUALITY */
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
-
-    private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
 
     public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
 
@@ -137,16 +135,14 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         if (encondingParameters.containsKey("interleave")) {
             // ok, the interleaving has been specified, let's see what we got
             final String interleavingS = encondingParameters.get("interleave");
-            if (interleavingS.equals("pixel") || interleavingS.equals("Pixel")) {
-                // ok we want pixel interleaving, TIFF ImageWriter always writes
-                // with pixel interleaving hence, we are good!
-            } else if (interleavingS.equals("band") || interleavingS.equals("Band")) {
+            // TIFF ImageWriter always writes with pixel interleaving, so no settings needed for it
+            if (interleavingS.equals("band") || interleavingS.equals("Band")) {
                 // TODO implement this in TIFF Writer, as it is not supported right now
                 throw new OWS20Exception(
                         "Banded Interleaving not supported",
                         ows20Code(WcsExceptionCode.InterleavingNotSupported),
                         interleavingS);
-            } else {
+            } else if (!(interleavingS.equals("pixel") || interleavingS.equals("Pixel"))) {
                 throw new OWS20Exception(
                         "Invalid Interleaving type provided",
                         ows20Code(WcsExceptionCode.InterleavingInvalid),
@@ -301,9 +297,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                     // look for a predictor
                     String predictorS = econdingParameters.get("predictor");
                     if (predictorS != null) {
-                        if (predictorS.equals("None")) {
-
-                        } else if (predictorS.equals("Horizontal")) {
+                        if (predictorS.equals("Horizontal")) {
                             wp.setTIFFCompressor(
                                     new TIFFLZWCompressor(
                                             BaselineTIFFTagSet.PREDICTOR_HORIZONTAL_DIFFERENCING));
@@ -313,7 +307,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                                     "Floating Point predictor is not supported",
                                     ows20Code(WcsExceptionCode.PredictorNotSupported),
                                     predictorS);
-                        } else {
+                        } else if (!predictorS.equals("None")) {
                             // invalid predictor
                             throw new OWS20Exception(
                                     "Invalid Predictor provided",

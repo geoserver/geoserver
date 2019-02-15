@@ -94,7 +94,6 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
                                         gaStore.load();
                                     } catch (IOException ex2) {
                                     }
-                                    ;
                                     throw new RuntimeException(ex);
                                 }
                                 // the deletion will have changed what we see in the page

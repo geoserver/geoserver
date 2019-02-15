@@ -5,8 +5,6 @@
  */
 package org.vfny.geoserver.util.requests;
 
-import java.util.logging.Logger;
-import org.vfny.geoserver.servlets.Dispatcher;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -23,15 +21,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * @version $Id$
  */
 public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
-    /** Class logger */
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
-
-    /** Stores internal request type */
-    private int requestType = Dispatcher.UNKNOWN;
-
-    /** Stores internal service type. */
-    private int serviceType = Dispatcher.UNKNOWN;
 
     /** Stores the internal request type as string */
     private String request = null;

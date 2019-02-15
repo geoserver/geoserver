@@ -18,8 +18,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.CoverageCleanerCallback;
-import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -57,11 +55,8 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             Logging.getLogger(WCS20DescribeCoverageTransformer.class.getPackage().getName());
 
     private MIMETypeMapper mimemapper;
-    private WCSInfo wcs;
 
     private Catalog catalog;
-
-    private CoverageResponseDelegateFinder responseFactory;
 
     /** Available extension points for DescribeCoverage */
     private List<WCS20DescribeCoverageExtension> wcsDescribeCoverageExtensions;
@@ -78,15 +73,11 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
      * @param mimemapper
      */
     public WCS20DescribeCoverageTransformer(
-            WCSInfo wcs,
             Catalog catalog,
-            CoverageResponseDelegateFinder responseFactory,
             EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
             MIMETypeMapper mimemapper) {
         super(envelopeDimensionsMapper);
-        this.wcs = wcs;
         this.catalog = catalog;
-        this.responseFactory = responseFactory;
         this.mimemapper = mimemapper;
         setNamespaceDeclarationEnabled(false);
         setIndentation(2);
@@ -102,8 +93,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
     public class WCS20DescribeCoverageTranslator extends GMLTranslator {
         private DescribeCoverageType request;
-
-        private String proxifiedBaseUrl;
 
         public WCS20DescribeCoverageTranslator(ContentHandler handler) {
             super(handler);

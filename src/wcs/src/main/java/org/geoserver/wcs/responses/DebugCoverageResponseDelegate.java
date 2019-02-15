@@ -70,8 +70,9 @@ public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate
                     else if (raster.getTransferType() == DataBuffer.TYPE_FLOAT)
                         ps.print(raster.getSampleFloat(i, j, band));
                     else ps.print(raster.getSample(i, j, band));
-                    if (i < (raster.getMinX() + raster.getWidth() - 1)) ;
-                    ps.print(" ");
+                    if (i < (raster.getMinX() + raster.getWidth() - 1)) {
+                        ps.print(" ");
+                    }
                 }
                 ps.println();
             }

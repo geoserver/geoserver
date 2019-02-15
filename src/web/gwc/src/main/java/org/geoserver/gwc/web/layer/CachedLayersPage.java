@@ -179,7 +179,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 ResponseUtils.buildURL(baseURL, "gwc/rest/seed/" + name, null, URLType.EXTERNAL);
 
         // openlayers preview
-        Fragment f = new Fragment(id, "actionsFragment", CachedLayersPage.this);
+        Fragment f = new Fragment(id, "actionsFragment", this);
         f.add(
                 new ExternalLink(
                         "seedLink", href, new ResourceModel("CachedLayersPage.seed").getObject()));
@@ -274,7 +274,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     }
                 });
 
-        Fragment f = new Fragment(id, "menuFragment", CachedLayersPage.this);
+        Fragment f = new Fragment(id, "menuFragment", this);
 
         WebMarkupContainer menu = new WebMarkupContainer("menu");
 

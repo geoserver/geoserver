@@ -49,26 +49,21 @@ JAI-EXT
 
 The `JAI-EXT <https://github.com/geosolutions-it/jai-ext>`_ library is open-source project which aims to replace closed source JAI project provided by Sun. The main difference between *JAI* and *JAI-EXT* operations is the support for external **Region of Interests** (ROI) and image **NoData** in *JAI-EXT*.
 
-By default, **JAI-EXT** operations are disabled. Add the following java option to GeoServer startup script and restart GeoServer to have them enabled.
-
-    .. code-block:: xml
-	
-	-Dorg.geotools.coverage.jaiext.enabled=true
-   
-Once done, the following panel will be available at the bottom of the JAI Settings page.
+The following panel is be available at the bottom of the JAI Settings page
 
 .. figure:: img/JAIEXT.png
    
    JAI/JAIEXT Setup panel
 
-This panel can be used to chose which operations should be registered as *JAI* or *JAI-EXT* ones. Users can select the operations and move them from JAI-EXT to JAI list or viceversa. 
+This panel can be used to selectively enable/disable JAI-EXT operations in favor of JAI ones.
 
+By default, **JAI-EXT** operations are enabled. In case of misbehavior add the following java option to GeoServer startup script and restart GeoServer to disable them.
 
-.. figure:: img/JAIEXTops.png
+    .. code-block:: xml
+	
+	-Dorg.geotools.coverage.jaiext.enabled=false
    
-   JAI/JAIEXT Operations selection
-
-When clicking on *Save*, GeoServer internally will replace the *JAI/JAI-EXT* operations and the associated *GeoTools* ones. 
-
 .. warning:: Users should take care that *JAI* native libraries are not supported by *JAI-EXT*, since *JAI-EXT* is a pure Java API.
+
+
 

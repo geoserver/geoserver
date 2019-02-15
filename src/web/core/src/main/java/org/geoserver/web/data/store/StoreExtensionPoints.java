@@ -219,9 +219,6 @@ public class StoreExtensionPoints {
                                 return 1;
                             }
 
-                            if (c2.isAssignableFrom(c1)) {;
-                            }
-
                             return -1;
                         }
                     });

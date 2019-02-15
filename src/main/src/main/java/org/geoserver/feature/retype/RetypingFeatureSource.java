@@ -90,7 +90,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                     @Override
                     protected SimpleFeatureType transformFeatureType(SimpleFeatureType original)
                             throws IOException {
-                        if (typeMap.getOriginalName().equals(original)) {
+                        if (typeMap.getOriginalName().equals(original.getTypeName())) {
                             return typeMap.featureType;
                         } else {
                             return super.transformFeatureType(original);

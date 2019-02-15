@@ -157,9 +157,6 @@ public class ResourcePool {
     /** Default number of hard references */
     static int FEATURETYPE_CACHE_SIZE_DEFAULT = 100;
 
-    private static final String IMAGE_PYRAMID = "ImagePyramid";
-    private static final String IMAGE_MOSAIC = "ImageMosaic";
-
     Catalog catalog;
     Map<String, CoordinateReferenceSystem> crsCache;
     DataStoreCache dataStoreCache;
@@ -1893,7 +1890,7 @@ public class ResourcePool {
 
         WMSCapabilities caps = info.getStore().getWebMapServer(null).getCapabilities();
         for (Layer layer : caps.getLayerList()) {
-            if (name.equals(layer.getName())) {
+            if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }
         }
@@ -1920,7 +1917,7 @@ public class ResourcePool {
         caps = info.getStore().getWebMapTileServer(null).getCapabilities();
 
         for (Layer layer : caps.getLayerList()) {
-            if (name.equals(layer.getName())) {
+            if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }
         }

@@ -23,9 +23,6 @@ public class FreefsLog extends HttpServlet {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
-    /** Default name for configuration directory */
-    private static final String CONFIG_DIR = "data/";
-
     /**
      * Initializes logging and config.
      *

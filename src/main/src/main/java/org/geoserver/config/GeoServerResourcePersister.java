@@ -7,6 +7,8 @@ package org.geoserver.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -75,14 +77,20 @@ public class GeoServerResourcePersister implements CatalogListener {
             if (source instanceof StyleInfo) {
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
+                    WorkspaceInfo oldWorkspace = (WorkspaceInfo) event.getOldValues().get(i);
                     WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    Resource oldDir = dd.getStyles(oldWorkspace);
                     Resource newDir = dd.getStyles(newWorkspace);
+                    URI oldDirURI = new URI(oldDir.path());
 
                     // look for any resource files (image, etc...) and copy them over, don't move
                     // since they could be shared among other styles
                     for (Resource old : dd.additionalStyleResources((StyleInfo) source)) {
                         if (old.getType() != Type.UNDEFINED) {
-                            copyResToDir(old, newDir);
+                            URI oldURI = new URI(old.path());
+                            final URI relative = oldDirURI.relativize(oldURI);
+                            final Resource target = newDir.get(relative.getPath()).parent();
+                            copyResToDir(old, target);
                         }
                     }
 
@@ -94,7 +102,7 @@ public class GeoServerResourcePersister implements CatalogListener {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

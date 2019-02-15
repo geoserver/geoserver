@@ -10,6 +10,7 @@ import java.util.Set;
 import org.geoserver.wms.vector.VectorTileBuilderFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
+@SuppressWarnings("PMD")
 public class GeoJsonBuilderFactory implements VectorTileBuilderFactory {
     public static final String MIME_TYPE = "application/json;type=geojson";
 

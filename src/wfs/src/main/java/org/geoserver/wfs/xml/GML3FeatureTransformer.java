@@ -30,7 +30,7 @@ public class GML3FeatureTransformer extends FeatureTransformer {
         set.add("description");
     }
 
-    public static class GML3FeatureTranslator extends FeatureTranslator {
+    public class GML3FeatureTranslator extends FeatureTranslator {
         public GML3FeatureTranslator(
                 ContentHandler handler,
                 String prefix,

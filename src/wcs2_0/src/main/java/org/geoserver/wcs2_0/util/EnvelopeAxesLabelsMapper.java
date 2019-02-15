@@ -19,10 +19,8 @@ package org.geoserver.wcs2_0.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 import org.geotools.util.Utilities;
-import org.geotools.util.logging.Logging;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -36,9 +34,6 @@ import org.opengis.referencing.cs.CoordinateSystemAxis;
  *     CRS
  */
 public class EnvelopeAxesLabelsMapper {
-
-    /** Logger for this class */
-    private static final Logger LOGGER = Logging.getLogger(EnvelopeAxesLabelsMapper.class);
 
     public List<String> getAxesNames(Envelope envelope, boolean swapAxes) {
         Utilities.ensureNonNull("envelope", envelope);

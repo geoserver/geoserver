@@ -115,11 +115,7 @@ public class Wcs10GetCoverageResponse extends Response {
         // ImageIOUtilities.visualize(coverage.getRenderedImage());
 
         // write the coverage
-        try {
-            delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, output);
-            output.flush();
-        } finally {
-            // if(output != null) output.close();
-        }
+        delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, output);
+        output.flush();
     }
 }

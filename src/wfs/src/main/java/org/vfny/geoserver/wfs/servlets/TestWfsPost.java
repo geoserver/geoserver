@@ -180,9 +180,6 @@ public class TestWfsPost extends HttpServlet {
 
             BufferedReader xmlIn = null;
             PrintWriter xmlOut = null;
-            StringBuffer sbf = new StringBuffer();
-            String resp = null;
-
             try {
                 URL u = new URL(urlString);
                 validateURL(request, urlString, getProxyBaseURL());

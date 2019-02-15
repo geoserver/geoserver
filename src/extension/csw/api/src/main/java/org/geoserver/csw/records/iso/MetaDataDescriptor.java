@@ -162,14 +162,14 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         addQueryableMapping("Identifier", "gmd:fileIdentifier/gco:CharacterString");
         addQueryableMapping(
                 "Title",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
         addQueryableMapping("Type", "gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue");
         addQueryableMapping(
                 "BoundingBox",
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
         addQueryableMapping(
                 "GraphicOverview",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString");
         addQueryableMapping(
                 "ServiceType",
                 "gmd:identificationInfo/gmd:SV_ServiceIdentification/gmd:serviceType/gco:CharacterString");
@@ -179,16 +179,16 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         // :summary
         addQueryableMapping(
                 "Abstract",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:abstract/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
         addQueryableMapping(
                 "CharacterSet",
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue");
         addQueryableMapping(
                 "Creator",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’originator’]/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’originator’]/gco:CharacterString");
         addQueryableMapping(
                 "Contributor",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’author’]/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’author’]/gco:CharacterString");
         addQueryableMapping(
                 "CouplingType",
                 "gmd:identificationInfo/gmd:SV_ServiceIdentification/gmd:couplingType/gmd:SV_CouplingType/gmd:code/@codeListValue");
@@ -215,7 +215,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         addQueryableMapping("ParentIdentifier", "gmd:parentIdentifier/gco:CharacterString");
         addQueryableMapping(
                 "Publisher",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’publisher’]/gco:CharacterString");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName[role/gmd:CI_RoleCode/gmd:@codeListValue=’publisher’]/gco:CharacterString");
         addQueryableMapping(
                 "ResourceLanguage",
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gco:CharacterString");
@@ -224,10 +224,10 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
                 "gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gco:CharacterString");
         addQueryableMapping(
                 "RevisionDate",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[dateType/gmd:CI_DateTypeCode/gmd:@codeListValue='revision']/gmd:date/gmd:Date");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[dateType/gmd:CI_DateTypeCode/gmd:@codeListValue='revision']/gmd:date/gmd:Date");
         addQueryableMapping(
                 "Rights",
-                "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue");
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue");
         addQueryableMapping(
                 "ServiceOperation",
                 "gmd:identificationInfo/gmd:SV_ServiceIdentification/gmd:containsOperations/gmd:SV_OperationMetadata/gco:CharacterString");

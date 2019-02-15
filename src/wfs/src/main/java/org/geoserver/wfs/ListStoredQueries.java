@@ -21,17 +21,12 @@ import org.geoserver.catalog.Catalog;
  */
 public class ListStoredQueries {
 
-    /** service config */
-    private WFSInfo wfs;
-
     private Catalog catalog;
 
     /** stored query provider */
     StoredQueryProvider storedQueryProvider;
 
-    public ListStoredQueries(
-            WFSInfo wfs, Catalog catalog, StoredQueryProvider storedQueryProvider) {
-        this.wfs = wfs;
+    public ListStoredQueries(Catalog catalog, StoredQueryProvider storedQueryProvider) {
         this.storedQueryProvider = storedQueryProvider;
         this.catalog = catalog;
     }

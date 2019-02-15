@@ -254,6 +254,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     private WMS wms;
     private String ruleName;
+    private int symbolizerCount;
 
     /**
      * @param request
@@ -334,6 +335,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                     feature = null;
                 }
                 List<Symbolizer> symbolizers = rule.symbolizers();
+                symbolizerCount = 0;
                 for (Symbolizer symbolizer : symbolizers) {
                     JSONObject jSymb = new JSONObject();
                     JSONObject symb = processSymbolizer(symbolizer);
@@ -505,7 +507,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         List<Integer> origRuleNo = new ArrayList<>();
         int ruleCount = 0;
         for (List<MiniRule> m : miniStyle) {
-            List<MiniRule> newRules = new ArrayList<>(m.size());
+            List<MiniRule> newRules = new ArrayList<>(miniStyle.size());
             for (MiniRule r : m) {
                 String rName = r.getName();
                 if (rName != null && !rName.equalsIgnoreCase(ruleName)) {
@@ -529,9 +531,16 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             String base = iconUrl.substring(0, index + 1);
             String[] refs = iconUrl.substring(index + 1).split("&");
             for (int i = 0; i < refs.length; i++) {
-                String ref =
-                        refs[i].replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
-                base += ref + "&";
+                if (refs[i].matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
+                    String ref =
+                            refs[i].replaceAll(
+                                    "(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                    String[] split = refs[i].split("\\.");
+                    int symCount = Integer.parseInt(split[2].replaceAll("=", ""));
+                    if (symbolizerCount == symCount) base += ref + "&";
+                } else {
+                    base += refs[i] + "&";
+                }
             }
             if (base.endsWith("&")) {
                 iconUrl = base.substring(0, base.length() - 1);
@@ -577,6 +586,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ret.element(ANCHOR_POINT, anchor);
         }
         ret.element(GRAPHICS, jGraphics);
+        symbolizerCount++;
         return ret;
     }
 
@@ -699,7 +709,6 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             if (gammaValue != null) ce.element(GAMMA_VALUE, toJSONValue(gammaValue, Number.class));
             ContrastMethod method = contrastEnhancement.getMethod();
             if (ContrastMethod.NORMALIZE == method) {
-                JSONObject norm = new JSONObject();
                 ce.element(NORMALIZE, "true");
             } else if (ContrastMethod.HISTOGRAM == method) {
                 ce.element(HISTOGRAM, "true");

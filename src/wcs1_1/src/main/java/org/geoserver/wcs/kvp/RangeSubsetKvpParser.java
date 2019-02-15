@@ -52,7 +52,7 @@ public class RangeSubsetKvpParser extends KvpParser {
             String interpolationType = type.getInterpolationType();
             if (interpolationType != null) {
                 try {
-                    InterpolationMethod method = InterpolationMethod.valueOf(interpolationType);
+                    InterpolationMethod.valueOf(interpolationType);
                 } catch (IllegalArgumentException e) {
                     throw new WcsException(
                             "Unknown interpolation method " + interpolationType,

@@ -53,7 +53,6 @@ public class NewRolePage extends AbstractRolePage {
                 store.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

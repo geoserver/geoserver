@@ -46,12 +46,13 @@ abstract class FeatureCustomizer {
 
     static Map<String, FeatureCustomizer> getCustomizers() {
         if (CUSTOMIZERS == null) {
-            CUSTOMIZERS = new HashMap<String, FeatureCustomizer>();
+            Map<String, FeatureCustomizer> result = new HashMap<>();
             List<FeatureCustomizer> customizers =
                     GeoServerExtensions.extensions(FeatureCustomizer.class);
             for (FeatureCustomizer customizer : customizers) {
-                CUSTOMIZERS.put(customizer.getTypeName(), customizer);
+                result.put(customizer.getTypeName(), customizer);
             }
+            CUSTOMIZERS = result;
         }
         return CUSTOMIZERS;
     }

@@ -121,7 +121,6 @@ public class ExecuteProcessResponse extends Response {
         if (isStandardDocumentResponse(operation)) {
             return "execute.xml";
         } else {
-            ExecuteType execute = (ExecuteType) operation.getParameters()[0];
             ExecuteResponseType response = (ExecuteResponseType) value;
             if (response.getProcessOutputs() == null) {
                 // just a status report or a failure report

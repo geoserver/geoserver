@@ -193,7 +193,7 @@ public class GeoServerFileChooser extends Panel {
      */
     protected void directoryClicked(File file, AjaxRequestTarget target) {
         // explicitly change the root model, inform the other components the model has changed
-        GeoServerFileChooser.this.file.setObject(file);
+        this.file.setObject(file);
         fileTable.getProvider().setDirectory(new Model<File>(file));
         breadcrumbs.setSelection(file);
 

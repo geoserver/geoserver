@@ -10,6 +10,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
 import org.geoserver.wfs3.NCNameResourceCodec;
 
 public class CollectionHTMLResponse extends AbstractHTMLResponse {
@@ -32,5 +33,10 @@ public class CollectionHTMLResponse extends AbstractHTMLResponse {
             return layers.get(0).getResource();
         }
         return null;
+    }
+
+    @Override
+    protected String getFileName(Object value, Operation operation) {
+        return ((CollectionDocument) value).getName();
     }
 }

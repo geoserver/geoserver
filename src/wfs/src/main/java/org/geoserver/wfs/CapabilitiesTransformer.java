@@ -58,7 +58,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.Schema;
-import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;
 import org.vfny.geoserver.global.FeatureTypeInfoTitleComparator;
@@ -713,10 +712,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         </pre>
              */
             protected void handleFeatureTypes() {
-                if (!wfs.isEnabled()) {
-                    // should we return anything if we are disabled?
-                }
-
                 start("FeatureTypeList");
                 start("Operations");
 
@@ -911,8 +906,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * &lt;/xsd:complexType&gt;
              */
             protected void handleFunctions(String prefix) {
-                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-
                 start(prefix + "Functions");
                 start(prefix + "Function_Names");
 

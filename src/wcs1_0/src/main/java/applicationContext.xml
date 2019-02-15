@@ -104,11 +104,7 @@
 
 
   <bean id="wcs100DescribeCoverageKvpReader"
-
     class="org.geoserver.wcs.kvp.Wcs10DescribeCoverageKvpRequestReader">
-
-    <constructor-arg index="0" ref="catalog" />
-
   </bean>
 
 

@@ -369,9 +369,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             // File inputFile = new File(inputFileName);
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] fileBuffer = new byte[inputStream.available()];
-            int bytesRead;
 
-            while ((bytesRead = inputStream.read(fileBuffer)) != -1) {
+            while (inputStream.read(fileBuffer) != -1) {
                 String tempOutput = new String(fileBuffer);
                 finalOutput = finalOutput + tempOutput;
             }

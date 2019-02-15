@@ -113,7 +113,6 @@ public class WCS20GetCoverageResponse extends Response {
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
 
         // collect the name of the coverages that have been requested
-        String extension = delegate.getFileExtension(format);
         return delegate.getFileName((GridCoverage2D) value, getCoverage.getCoverageId(), format);
     }
 }

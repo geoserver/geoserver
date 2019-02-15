@@ -37,6 +37,7 @@ public class DataStoreInfoImpl extends StoreInfoImpl implements DataStoreInfo {
         visitor.visit(this);
     }
 
+    @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
     public boolean equals(Object obj) {
         if (!(obj instanceof DataStoreInfo)) {
             return false;

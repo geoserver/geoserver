@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import net.opengis.ows11.ExceptionReportType;
-import net.opengis.ows11.Ows11Factory;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.ows.v1_1.OWS;
@@ -66,8 +65,6 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Writes out an OWS ExceptionReport document. */
     public void handleServiceException(ServiceException exception, Request request) {
-        Ows11Factory factory = Ows11Factory.eINSTANCE;
-
         String version = null;
         if (useServiceVersion && request.getServiceDescriptor() != null) {
             version = request.getServiceDescriptor().getVersion().toString();

@@ -20,7 +20,6 @@ import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.eo.response.DescribeEOCoverageSetTransformer;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
@@ -41,21 +40,17 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
     private Catalog catalog;
 
-    private CoverageResponseDelegateFinder responseFactory;
-
     private EnvelopeAxesLabelsMapper envelopeAxesMapper;
 
     private MIMETypeMapper mimemapper;
 
     public DescribeEOCoverageSetInterceptor(
             GeoServer geoServer,
-            CoverageResponseDelegateFinder responseFactory,
             EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
             MIMETypeMapper mimemappe,
             EOCoverageResourceCodec resourceCodec) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
-        this.responseFactory = responseFactory;
         this.envelopeAxesMapper = envelopeDimensionsMapper;
         this.mimemapper = mimemappe;
         this.resourceCodec = resourceCodec;
@@ -120,8 +115,7 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
         }
 
         WCS20DescribeCoverageTransformer tx =
-                new WCS20DescribeCoverageTransformer(
-                        getServiceInfo(), catalog, responseFactory, envelopeAxesMapper, mimemapper);
+                new WCS20DescribeCoverageTransformer(catalog, envelopeAxesMapper, mimemapper);
         return new DescribeEOCoverageSetTransformer(
                 getServiceInfo(), resourceCodec, envelopeAxesMapper, tx);
     }

@@ -73,8 +73,6 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
                 if (name.startsWith(wsName + ":")) {
                     // good to go, just pass call through
                     return wrap(super.getLayerByName(name));
-                } else {
-                    // JD: perhaps strip of existing prefix?
                 }
             }
 
@@ -165,8 +163,6 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
                         return wrap(layerGroup);
                     }
                     // else fall back on unqualified lookup
-                } else {
-                    // JD: perhaps strip of existing prefix?
                 }
             }
             // prefix it explicitly

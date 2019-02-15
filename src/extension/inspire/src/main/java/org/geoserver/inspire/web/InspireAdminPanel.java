@@ -49,17 +49,13 @@ public class InspireAdminPanel extends AdminPagePanel {
         MetadataMap serviceMetadata = model.getObject().getMetadata();
 
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
-        String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
-        String language = (String) serviceMetadata.get(LANGUAGE.key);
         boolean isDownloadService =
                 model.getObject() instanceof WFSInfo || model.getObject() instanceof WCSInfo;
         UniqueResourceIdentifiers ids = null;
         if (isDownloadService) {
             ids =
-                    (UniqueResourceIdentifiers)
-                            serviceMetadata.get(
-                                    SPATIAL_DATASET_IDENTIFIER_TYPE.key,
-                                    UniqueResourceIdentifiers.class);
+                    serviceMetadata.get(
+                            SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         }
         if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
             if (metadataURL == null || isDownloadService && (ids == null || ids.isEmpty())) {

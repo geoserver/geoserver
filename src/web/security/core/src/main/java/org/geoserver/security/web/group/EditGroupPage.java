@@ -75,14 +75,12 @@ public class EditGroupPage extends AbstractGroupPage {
                 store.updateGroup(group);
                 store.store();
             }
-            ;
         } catch (IOException ex) {
             try {
                 // try to reload the store
                 store.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
 
@@ -108,7 +106,6 @@ public class EditGroupPage extends AbstractGroupPage {
                 gaStore.load();
             } catch (IOException ex2) {
             }
-            ;
             throw ex;
         }
     }

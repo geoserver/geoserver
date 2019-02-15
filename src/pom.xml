@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.15-SNAPSHOT</version>
+ <version>2.16-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1575,7 +1575,7 @@
       <descriptor>release/ext-geofence.xml</descriptor>
       <descriptor>release/ext-geofence-server.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.15-SNAPSHOT</finalName>
+     <finalName>geoserver-2.16-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1953,9 +1953,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.15-SNAPSHOT</gs.version>
-  <gt.version>21-SNAPSHOT</gt.version>
-  <gwc.version>1.15-SNAPSHOT</gwc.version>
+  <gs.version>2.16-SNAPSHOT</gs.version>
+  <gt.version>22-SNAPSHOT</gt.version>
+  <gwc.version>1.16-SNAPSHOT</gwc.version>
   <jts.version>1.16.0</jts.version>
   <spring.version>5.1.1.RELEASE</spring.version>
   <spring.security.version>5.1.1.RELEASE</spring.security.version>
@@ -1965,8 +1965,8 @@
   <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.2.0</imageio-ext.version>
-  <jaiext.version>1.1.6</jaiext.version>
+  <imageio-ext.version>1.2.1</imageio-ext.version>
+  <jaiext.version>1.1.7</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
@@ -2012,6 +2012,7 @@
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.2</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>
+  <pmd.version>6.11.0</pmd.version>
  </properties>
 
  <profiles>
@@ -2242,12 +2243,34 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
             <version>3.11.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-core</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-java</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-javascript</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-jsp</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+            </dependencies>
             <configuration>
               <rulesets>
                 <ruleset>${geoserverBaseDir}/pmd-ruleset.xml</ruleset>
               </rulesets>
-              <failurePriority>2</failurePriority>
-              <minimumPriority>2</minimumPriority>
+              <failurePriority>3</failurePriority>
+              <minimumPriority>3</minimumPriority>
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <excludeRoots>
@@ -2318,6 +2341,34 @@
                 </path>
               </annotationProcessorPaths>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+        <profile>
+      <id>spotbugs</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>3.1.10</version>
+            <configuration>
+              <effort>More</effort>
+              <threshold>High</threshold>
+              <xmlOutput>true</xmlOutput>
+              <maxRank>10</maxRank>
+              <excludeFilterFile>${geoserverBaseDir}/spotbugs-exclude.xml</excludeFilterFile>
+              <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

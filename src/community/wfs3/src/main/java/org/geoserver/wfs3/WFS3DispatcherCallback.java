@@ -76,7 +76,10 @@ public class WFS3DispatcherCallback extends AbstractDispatcherCallback {
                         } else if ("api".equals(request.getRequest())) {
                             defaultType = OpenAPIResponse.OPEN_API_MIME;
                         }
-                        setOutputFormat(request, parsedRequest, formatSetter, defaultType);
+                        // for getStyle we're going to use the "native" format if possible
+                        if (!"getStyle".equals(request.getRequest())) {
+                            setOutputFormat(request, parsedRequest, formatSetter, defaultType);
+                        }
                     }
                 }
             } catch (Exception e) {

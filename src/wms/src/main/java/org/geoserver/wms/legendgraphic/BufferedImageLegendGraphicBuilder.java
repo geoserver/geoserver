@@ -5,9 +5,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
@@ -87,11 +85,6 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
     /** used to create sample point shapes with LiteShape (not lines nor polygons) */
     private static final GeometryFactory geomFac = new GeometryFactory();
-
-    /**
-     * Just a holder to avoid creating many line shapes from inside <code>getSampleShape()</code>
-     */
-    private LiteShape2 sampleLine;
 
     /**
      * Just a holder to avoid creating many point shapes from inside <code>getSampleShape()</code>
@@ -370,9 +363,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
                     Symbolizer symbolizer = symbolizers[sIdx];
 
-                    if (symbolizer instanceof RasterSymbolizer) {
-                        // skip it
-                    } else {
+                    // skip raster symbolizers
+                    if (!(symbolizer instanceof RasterSymbolizer)) {
                         // rescale symbols if needed
                         LiteShape2 shape = getSampleShape(symbolizer, w, h, w, h);
                         if (rescalingRequired

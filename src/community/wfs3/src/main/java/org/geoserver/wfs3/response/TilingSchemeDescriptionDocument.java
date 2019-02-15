@@ -9,7 +9,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.geoserver.config.GeoServer;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
@@ -18,11 +17,9 @@ import org.geowebcache.grid.GridSet;
 @JacksonXmlRootElement(localName = "TilingSchemeDescription")
 public class TilingSchemeDescriptionDocument {
 
-    private final GeoServer geoServer;
     private final GridSet gridSet;
 
-    public TilingSchemeDescriptionDocument(GeoServer geoServer, GridSet gridSet) {
-        this.geoServer = geoServer;
+    public TilingSchemeDescriptionDocument(GridSet gridSet) {
         this.gridSet = gridSet;
     }
 

@@ -166,7 +166,7 @@ public class RasterSymbolizerBuilder {
             // try to get as many pixels as possible, don't jump from 1M to 250k. Prefer skipping
             // rows rather than cols (for the not so uncommon striped raster to be classified)
             int yPeriod = (int) Math.round(Math.sqrt(pixels / (double) maxPixels));
-            int xPeriod = (int) Math.ceil(pixels / (yPeriod * maxPixels));
+            int xPeriod = (int) Math.ceil(pixels / (yPeriod * (double) maxPixels));
             iw.setXPeriod(xPeriod).setYPeriod(yPeriod);
         }
 

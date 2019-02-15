@@ -239,7 +239,7 @@ public class Paths {
             split = path.indexOf('/', index);
         } while (split != -1);
         item = path.substring(index);
-        if (item != null && item.length() != 0 && item != "/") {
+        if (item != null && item.length() != 0 && !item.equals("/")) {
             names.add(item);
         }
 

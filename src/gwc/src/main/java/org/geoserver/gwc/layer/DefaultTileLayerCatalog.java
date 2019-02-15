@@ -26,7 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.SecureXStream;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -165,7 +167,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     @Override
     public GeoServerTileLayerInfo getLayerByName(String layerName) {
         checkInitialized();
-        String id = layersByName.get(layerName);
+        String id = getLayerId(layerName);
         if (id == null) {
             return null;
         }
@@ -416,6 +418,10 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     @Override
     public String getLayerId(String layerName) {
         checkInitialized();
+        final WorkspaceInfo ws = LocalWorkspace.get();
+        if (ws != null && !layerName.startsWith(ws.getName() + ":")) {
+            layerName = ws.getName() + ":" + layerName;
+        }
         return layersByName.get(layerName);
     }
 

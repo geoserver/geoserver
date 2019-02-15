@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.15-SNAPSHOT</version>
+    <version>2.16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -95,6 +95,7 @@
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
+          <descriptor>release/ext-wmts-styles.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -246,6 +247,7 @@
         <module>security/oauth2-openid-connect</module>
         <module>security/keycloak</module>
         <module>wmts-multi-dimensional</module>
+        <module>wmts-styles</module>
         <module>onelogin</module>
         <module>notification</module>
         <module>notification-common</module>
@@ -519,6 +521,12 @@
       <id>wmts-multi-dimensional</id>
       <modules>
         <module>wmts-multi-dimensional</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wmts-styles</id>
+      <modules>
+        <module>wmts-styles</module>
       </modules>
     </profile>
     <profile>

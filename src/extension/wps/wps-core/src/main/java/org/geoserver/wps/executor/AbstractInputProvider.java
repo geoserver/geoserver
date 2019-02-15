@@ -5,7 +5,6 @@
 package org.geoserver.wps.executor;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.opengis.wps10.InputReferenceType;
@@ -129,7 +128,6 @@ public abstract class AbstractInputProvider implements InputProvider {
         // hack to allow wcs filters to work... we should really upgrade the WCS models instead...
         Request r = Dispatcher.REQUEST.get();
         if (r != null) {
-            Map kvp = new HashMap(r.getKvp());
             r.setKvp(new CaseInsensitiveMap(parsed));
         }
 

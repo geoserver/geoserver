@@ -161,7 +161,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         SimpleFeatureIterator iter = null;
         try {
             SimpleFeatureType featureType = fColl.getSchema();
-            Class<?> gtype = featureType.getGeometryDescriptor().getType().getBinding();
 
             // iterates through the single features
             iter = fColl.features();

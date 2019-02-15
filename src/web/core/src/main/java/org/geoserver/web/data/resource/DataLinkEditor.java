@@ -120,7 +120,6 @@ public class DataLinkEditor extends Panel {
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
                         DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();
-                        ;
                         link.setType("text/plain");
                         ri.getDataLinks().add(link);
                         updateLinksVisibility();

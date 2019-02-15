@@ -480,10 +480,7 @@ public class DefaultWebMapService
         double mheight = getMap.getHeight();
         double mwidth = getMap.getWidth();
 
-        if (mheight > 0.5 && mwidth > 0.5 && specifiedBbox) {
-            // This person really doesnt want our help,
-            // we'll warp it any way they like it...
-        } else {
+        if (mheight <= 0.5 || mwidth <= 0.5 || !specifiedBbox) {
             if (mheight > 0.5 && mwidth > 0.5) {
                 // Fully specified, need to adjust bbox
                 double mratio = mwidth / mheight;

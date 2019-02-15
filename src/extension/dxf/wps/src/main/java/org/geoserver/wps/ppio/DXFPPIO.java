@@ -13,11 +13,9 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.util.logging.Logging;
 
 /**
  * Outputs feature collections in DXF format
@@ -25,8 +23,6 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo, Peter Hopfgartner - R3 GIS
  */
 public class DXFPPIO extends CDataPPIO {
-    private static final Logger LOGGER = Logging.getLogger(DXFPPIO.class);
-
     protected DXFPPIO() {
         super(FeatureCollection.class, FeatureCollection.class, "application/dxf");
     }

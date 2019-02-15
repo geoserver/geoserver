@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.AbstractDispatcherCallback;
@@ -39,8 +38,6 @@ import org.geotools.styling.FeatureTypeStyle;
 import org.opengis.style.Rule;
 
 public class LegendDecoration extends AbstractDispatcherCallback implements MapDecoration {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
     private static int TITLE_INDENT = 5;
     private static double BETWEEN_LEGENDS_PERCENT_INDENT = 0.05;
 

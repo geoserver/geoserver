@@ -181,7 +181,7 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         tester.startPage(WMSAdminPage.class, new PageParameters().add("name", "cite"));
         tester.assertRenderedPage(WMSAdminPage.class);
         tester.assertNoErrorMessage();        
-        logout();
+        //logout();
         
     }
 }

@@ -22,7 +22,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationMethodology.LongLatConfiguration;
+import org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy.LongLatConfiguration;
 import org.geoserver.web.GeoServerApplication;
 import org.vfny.geoserver.global.ConfigurationException;
 

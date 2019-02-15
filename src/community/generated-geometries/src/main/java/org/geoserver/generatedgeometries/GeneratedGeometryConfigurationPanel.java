@@ -22,13 +22,12 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static org.geoserver.platform.GeoServerExtensions.extensions;
 
 /**
  * Resource configuration section for generated geometry on-the-fly.
@@ -50,30 +50,37 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
 
     private static final long serialVersionUID = 1L;
 
+    private final GeneratedGeometryResourcePoolCallback resourcePoolCallback;
+
     private Fragment content;
     private final Map<String, Component> componentMap = new HashMap<>();
-    private ChoiceRenderer<GeometryGenerationMethodology> choiceRenderer =
-            new ChoiceRenderer<GeometryGenerationMethodology>() {
+    private ChoiceRenderer<GeometryGenerationStrategy> choiceRenderer =
+            new ChoiceRenderer<GeometryGenerationStrategy>() {
                 @Override
-                public Object getDisplayValue(GeometryGenerationMethodology ggm) {
+                public Object getDisplayValue(GeometryGenerationStrategy ggm) {
                     return new StringResourceModel(
                                     format("geometryGenerationMethodology.%s", ggm.getName()))
                             .getString();
                 }
             };
-    private GeometryGenerationMethodology selectedMethodology;
+    private GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> selectedStrategy;
     private WebMarkupContainer methodologyConfiguration;
 
     public GeneratedGeometryConfigurationPanel(String id, final IModel model) {
         super(id, model);
+        resourcePoolCallback = findResourcePoolCallback();
         init(model);
+    }
+
+    private GeneratedGeometryResourcePoolCallback findResourcePoolCallback() {
+        return extensions(GeneratedGeometryResourcePoolCallback.class).stream().findFirst().orElse(null);
     }
 
     private void init(IModel model) {
         if (isSimpleFeatureType(model)) {
             initMainPanel();
-            List<GeometryGenerationMethodology> methodologies =
-                    GeoServerExtensions.extensions(GeometryGenerationMethodology.class);
+            List<GeometryGenerationStrategy> methodologies =
+                    extensions(GeometryGenerationStrategy.class);
             initMethodologyDropdown(methodologies, model);
             initActionLink(model);
         } else {
@@ -86,19 +93,19 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     }
 
     private void initMethodologyDropdown(
-            List<GeometryGenerationMethodology> methodologies, IModel model) {
-        DropDownChoice<GeometryGenerationMethodology> methodologyDropDown =
+            List<GeometryGenerationStrategy> strategies, IModel model) {
+        DropDownChoice<GeometryGenerationStrategy> methodologyDropDown =
                 new DropDownChoice<>(
                         "methodologyDropDown",
-                        new PropertyModel<>(this, "selectedMethodology"),
-                        methodologies,
+                        new PropertyModel<>(this, "selectedStrategy"),
+                        strategies,
                         choiceRenderer);
         content.add(methodologyDropDown);
         methodologyConfiguration = new WebMarkupContainer("methodologyConfiguration");
         methodologyConfiguration.setOutputMarkupId(true);
         content.add(methodologyConfiguration);
 
-        for (GeometryGenerationMethodology ggm : methodologies) {
+        for (GeometryGenerationStrategy ggm : strategies) {
             Component configuration = ggm.createUI("configuration", model);
             componentMap.put(ggm.getName(), configuration);
             configuration.setVisible(false);
@@ -130,14 +137,8 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
                 new GeoServerAjaxFormLink("createGeometryLink") {
                     @Override
                     protected void onClick(AjaxRequestTarget target, Form form) {
-                        if (selectedMethodology != null) {
-                            try {
-                                selectedMethodology.defineGeometryAttributeFor(
-                                        getSimpleFeatureType(model));
-                            } catch (IOException | ConfigurationException e) {
-                                e.printStackTrace();
-                                getCurrentUIComponent().ifPresent(c -> error(i18n("invalidConfiguration")));
-                            }
+                        if (selectedStrategy != null) {
+                            resourcePoolCallback.setStrategy(selectedStrategy);
                         } else {
                             error(i18n("configurationNotSelected"));
                         }
@@ -158,22 +159,21 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
         }
     }
 
-    private SimpleFeatureType getSimpleFeatureType(IModel model) throws IOException {
-        FeatureType featureType = getFeatureType(model);
-        return (SimpleFeatureType) featureType;
-    }
-
     private FeatureType getFeatureType(IModel model) throws IOException {
-        Catalog catalog = GeoServerApplication.get().getCatalog();
-        final ResourcePool resourcePool = catalog.getResourcePool();
+        final ResourcePool resourcePool = getResourcePool();
         return resourcePool.getFeatureType((FeatureTypeInfo) model.getObject());
     }
 
+    private ResourcePool getResourcePool() {
+        Catalog catalog = GeoServerApplication.get().getCatalog();
+        return catalog.getResourcePool();
+    }
+
     private Optional<Component> getCurrentUIComponent() {
-        if (selectedMethodology == null) {
+        if (selectedStrategy == null) {
             return empty();
         }
-        return ofNullable(componentMap.get(selectedMethodology.getName()));
+        return ofNullable(componentMap.get(selectedStrategy.getName()));
     }
 
     private String i18n(String messageKey) {

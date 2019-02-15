@@ -5,23 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.measure.Unit;
-import javax.measure.UnitConverter;
-import javax.measure.quantity.Length;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +12,11 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
-import org.geoserver.catalog.event.*;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -47,8 +34,16 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.DataAccessFinder;
+import org.geotools.data.DataSourceException;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Join;
+import org.geotools.data.Repository;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -88,7 +83,11 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.*;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -101,6 +100,45 @@ import org.vfny.geoserver.util.DataStoreUtils;
 import org.xml.sax.EntityResolver;
 import si.uom.NonSI;
 import si.uom.SI;
+
+import javax.measure.Unit;
+import javax.measure.UnitConverter;
+import javax.measure.quantity.Length;
+import java.awt.RenderingHints;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.geoserver.platform.GeoServerExtensions.extensions;
 
 /**
  * Provides access to resources such as datastores, coverage readers, and feature types.
@@ -1005,7 +1043,7 @@ public class ResourcePool {
     FeatureTypeCallback getFeatureTypeInitializer(
             FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         List<FeatureTypeCallback> featureTypeInitializers =
-                GeoServerExtensions.extensions(FeatureTypeCallback.class);
+                extensions(FeatureTypeCallback.class);
         FeatureTypeCallback initializer = null;
         for (FeatureTypeCallback fti : featureTypeInitializers) {
             if (fti.canHandle(info, dataAccess)) {
@@ -1066,6 +1104,13 @@ public class ResourcePool {
             }
             ft = tb.buildFeatureType();
         } // end special case for SimpleFeatureType
+
+        for(ResourcePoolCallback callback : extensions(ResourcePoolCallback.class)) {
+            if (callback.canBuildFeatureType(info, ft)) {
+                ft = callback.buildFeatureType(info, ft);
+            }
+        }
+
         return ft;
     }
 
@@ -1197,6 +1242,17 @@ public class ResourcePool {
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             FeatureTypeInfo info, Hints hints) throws IOException {
+        FeatureSource<? extends FeatureType, ? extends Feature> featureSource = getFeatureSourceInternal(info, hints);
+
+        for(ResourcePoolCallback callback : extensions(ResourcePoolCallback.class)) {
+            if (callback.canWrapFeatureSource(info, featureSource)) {
+                featureSource = callback.wrapFeatureSource(info, featureSource);
+            }
+        }
+        return featureSource;
+    }
+
+    private FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSourceInternal(FeatureTypeInfo info, Hints hints) throws IOException {
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
                 getDataStore(info.getStore());
 
@@ -1426,7 +1482,7 @@ public class ResourcePool {
     /**
      * Returns a coverage reader, caching the result.
      *
-     * @param info The coverage metadata.
+     * @param storeInfo The coverage metadata.
      * @param hints Hints to use when loading the coverage, may be <code>null</code>.
      * @throws IOException Any errors that occur loading the reader.
      */
@@ -1606,7 +1662,7 @@ public class ResourcePool {
      * <p>
      *
      * @param info The grid coverage metadata.
-     * @param envelope The section of the coverage to load.
+     * @param env The section of the coverage to load.
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
@@ -1628,7 +1684,7 @@ public class ResourcePool {
      * <p>
      *
      * @param info The grid coverage metadata.
-     * @param envelope The section of the coverage to load.
+     * @param env The section of the coverage to load.
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
@@ -2140,7 +2196,7 @@ public class ResourcePool {
      * Deletes a style from the configuration.
      *
      * @param style The configuration for the style.
-     * @param purge Whether to delete the file from disk.
+     * @param purgeFile Whether to delete the file from disk.
      */
     public void deleteStyle(StyleInfo style, boolean purgeFile) throws IOException {
         synchronized (styleCache) {
@@ -2469,7 +2525,7 @@ public class ResourcePool {
      * <p>The DataStore is still active as the listeners are called allowing any required clean up
      * to occur.
      *
-     * @param dataStoreInfo
+     * @param dataStore
      * @param da Data access
      */
     void fireDisposed(DataStoreInfo dataStore, DataAccess da) {

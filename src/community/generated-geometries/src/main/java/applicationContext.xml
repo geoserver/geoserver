@@ -16,7 +16,9 @@
               value="org.geoserver.generatedgeometries.GeneratedGeometryConfigurationPanel"/>
   </bean>
 
-  <bean id="longLatMethodology" class="org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationMethodology"/>
-  <bean id="dummyMethodology" class="org.geoserver.generatedgeometries.dummy.DummyGeometryGenerationMethodology"/>
+  <bean id="longLatGeometryFeatureCallback" class="org.geoserver.generatedgeometries.GeneratedGeometryResourcePoolCallback"/>
+
+  <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy"/>
+  <bean id="dummyStrategy" class="org.geoserver.generatedgeometries.dummy.DummyGeometryGenerationStrategy"/>
 
 </beans>

@@ -109,7 +109,6 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      * Callback method called when the submit button have been hit and the parameters validation has
      * succeed.
      *
-     * @param paramsForm the form to report any error to
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
     protected final void onSaveDataStore(

@@ -173,8 +173,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @deprecated
      * @param featureSource
-     * @param schema DOCUMENT ME!
-     * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS
      * @param linearizationTolerance TODO
      * @param metadata Feature type metadata

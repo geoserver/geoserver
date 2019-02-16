@@ -34,7 +34,6 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
      *
      * <p>This method should parse the input stream into its "internal" representation.
      *
-     * @param input The input stream.
      * @return An object of type {@link #getType()}.
      */
     public Object decode(BoundingBoxType boundingBoxType) throws Exception {
@@ -84,7 +83,6 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
      * Encodes the internal representation of the object to an XML stream.
      *
      * @param object An object of type {@link #getType()}.
-     * @param handler An XML content handler.
      */
     public BoundingBoxType encode(Object object) throws WPSException {
         if (object == null) {

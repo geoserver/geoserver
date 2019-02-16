@@ -56,7 +56,6 @@ import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
@@ -108,11 +107,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
         private DescribeCoverageType request;
 
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public WCS100DescribeCoverageTranslator(ContentHandler handler) {
             super(handler, null, null);
         }
@@ -255,8 +250,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         /**
-         * DOCUMENT ME!
-         *
          * @param lonLatEnvelope
          * @throws IOException
          */
@@ -317,12 +310,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param kwords DOCUMENT ME!
-         * @throws SAXException DOCUMENT ME!
-         */
+        /** */
         private void handleKeywords(List kwords) {
             start("wcs:keywords");
 
@@ -373,8 +361,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         /**
-         * DOCUMENT ME!
-         *
          * @param referencedEnvelope
          * @param elevationMetadata
          * @param timeMetadata
@@ -422,8 +408,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         /**
-         * DOCUMENT ME!
-         *
          * @param ci
          * @param timeMetadata
          * @param elevationMetadata
@@ -632,11 +616,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:rangeSet");
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param ci
-         */
+        /** @param ci */
         private void handleSupportedCRSs(CoverageInfo ci) throws Exception {
             Set supportedCRSs = new LinkedHashSet();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
@@ -659,11 +639,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             return "urn:ogc:def:crs:EPSG::" + code;
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param ci
-         */
+        /** @param ci */
         private void handleSupportedFormats(CoverageInfo ci) throws Exception {
             final String nativeFormat =
                     (((ci.getNativeFormat() != null)
@@ -690,11 +666,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             end("wcs:supportedFormats");
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param ci
-         */
+        /** @param ci */
         private void handleSupportedInterpolations(CoverageInfo ci) {
             if (ci.getDefaultInterpolationMethod() != null) {
                 final AttributesImpl attributes = new AttributesImpl();

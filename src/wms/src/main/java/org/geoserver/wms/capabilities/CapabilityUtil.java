@@ -75,9 +75,6 @@ public final class CapabilityUtil {
      * Max Scale: infinity
      * </pre>
      *
-     * @param minScaleDenominator Min scale attribute (or element) name
-     * @param maxScaleDenominator Max scale attribute (or element) name
-     * @param layer
      * @return Max and Min denominator
      * @throws IOException
      */
@@ -127,9 +124,6 @@ public final class CapabilityUtil {
      * Max Scale: infinity
      * </pre>
      *
-     * @param minScaleDenominator Min scale attribute (or element) name
-     * @param maxScaleDenominator Max scale attribute (or element) name
-     * @param layerGroup
      * @return Max and Min denominator
      * @throws IOException
      */
@@ -153,9 +147,6 @@ public final class CapabilityUtil {
      * Max Scale: infinity
      * </pre>
      *
-     * @param minScaleDenominator Min scale attribute (or element) name
-     * @param maxScaleDenominator Max scale attribute (or element) name
-     * @param published
      * @return Max and Min denominator
      * @throws IOException
      */

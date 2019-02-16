@@ -15,7 +15,7 @@ import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -143,8 +143,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      * Creates a new WMSCapsTransformer object.
      *
      * @param wms
-     * @param schemaBaseUrl the base URL of the current request (usually
-     *     "http://host:port/geoserver")
+     * @param baseURL the base URL of the current request (usually "http://host:port/geoserver")
      * @param getMapFormats the list of supported output formats to state for the GetMap request
      * @param getLegendGraphicFormats the list of supported output formats to state for the
      *     GetLegendGraphic request
@@ -821,7 +820,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * coverages to summarize their LatLonBBox'es and write the aggregated bounds for the root
          * layer.
          *
-         * @param ftypes the collection of FeatureTypeInfo and CoverageInfo objects to traverse
+         * @param layers the collection of LayerInfo objects to traverse
          */
         private void handleRootBbox(Collection<LayerInfo> layers) {
 
@@ -1348,8 +1347,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * <p>It is common practice to supply a URL to a WMS accesible legend graphic when it is
          * difficult to create a dynamic legend for a layer.
          *
-         * @param ft The FeatureTypeInfo that holds the legendURL to write out, or<code>null</code>
-         *     if dynamically generated.
+         * @param layer The LayerInfo that holds the legendURL to write out, or<code>null</code> if
+         *     dynamically generated.
          * @task TODO: figure out how to unhack legend parameters such as WIDTH, HEIGHT and FORMAT
          */
         protected void handleLegendURL(

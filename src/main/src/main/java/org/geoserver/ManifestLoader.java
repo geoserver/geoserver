@@ -617,7 +617,7 @@ public class ManifestLoader {
              * A parser for {@link Manifest} bean which generates {@link ManifestModel}s
              *
              * @param name the name to assign to the generated model
-             * @param m the manifest bean to load
+             * @param manifest the manifest bean to load
              * @return the generated model
              */
             private static ManifestModel parseManifest(

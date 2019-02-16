@@ -116,7 +116,7 @@ public class RequestUtils {
      * valid.
      *
      * @param v the version number (in string format)
-     * @param the locator for the service exception (may be null)
+     * @param locator the locator for the service exception (may be null)
      */
     public static void checkVersionNumber20(String v, String locator) throws ServiceException {
         if (!v.matches("[0-9]{1,2}\\.[0-9]{1,2}(\\.[0-9]{1,2})?")) {

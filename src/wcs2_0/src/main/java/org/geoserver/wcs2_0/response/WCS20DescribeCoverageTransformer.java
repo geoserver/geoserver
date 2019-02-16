@@ -331,8 +331,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          *    </swe:DataRecord>
          * </gmlcov:rangeType>
          * }</pre>
-         *
-         * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
         public void handleRangeType(final List<CoverageDimensionInfo> bands) {
             start("gmlcov:rangeType");

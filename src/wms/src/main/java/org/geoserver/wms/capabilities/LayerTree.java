@@ -85,7 +85,6 @@ class LayerTree {
         }
     }
 
-    /** @param string */
     public LayerTree getNode(String name) {
         for (LayerTree tmpNode : this.childrens) {
             if (tmpNode.name.equals(name)) {

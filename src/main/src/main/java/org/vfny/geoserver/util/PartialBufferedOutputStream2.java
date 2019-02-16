@@ -211,7 +211,6 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * If that is true, then the buffer is cleared and closed. It does NOT close the response's
      * OutputStream
      *
-     * @return DOCUMENT ME!
      * @throws IOException
      */
     public boolean abort() throws IOException {

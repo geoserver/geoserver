@@ -14,7 +14,7 @@ public interface CatalogValidator {
     /**
      * Validate a resource.
      *
-     * @param store the Resourceinfo to be validated
+     * @param resource the Resourceinfo to be validated
      * @param isNew a boolean; if true then the resource is not expected to already exist in the
      *     catalog.
      * @throws RuntimeError if validation fails
@@ -34,7 +34,7 @@ public interface CatalogValidator {
     /**
      * Validate a workspace.
      *
-     * @param store the WorkspaceInfo to be validated
+     * @param workspace the WorkspaceInfo to be validated
      * @param isNew a boolean; if true then the workspace is not expected to already exist in the
      *     catalog.
      * @throws RuntimeError if validation fails

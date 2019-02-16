@@ -75,8 +75,6 @@ public class WcsException extends ServiceException {
     }
 
     /**
-     * DOCUMENT ME!
-     *
      * @param e The cause of failure
      * @param preMessage The message to tack on the front.
      * @param locator The java class that caused the problem

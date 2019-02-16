@@ -216,7 +216,7 @@ public class KMLFeatureAccessor {
      * Layer</code>'s feature source to return just the features for the target rendering extent
      *
      * @param schema the layer's feature source schema
-     * @param bbox the expression holding the target rendering bounding box
+     * @param aoi the target rendering bounding box
      * @throws IllegalFilterException if something goes wrong creating the filter
      */
     private Filter createBBoxFilter(SimpleFeatureType schema, ReferencedEnvelope aoi)

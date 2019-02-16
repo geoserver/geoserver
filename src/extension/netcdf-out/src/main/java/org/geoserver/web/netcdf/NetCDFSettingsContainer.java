@@ -243,9 +243,9 @@ public class NetCDFSettingsContainer implements Serializable {
          * @param output name of output variable
          * @param dimensions whitespace-separated list of output variable dimension names
          */
-        public ExtraVariable(String source, String target, String dimensions) {
+        public ExtraVariable(String source, String output, String dimensions) {
             this.source = source;
-            this.output = target;
+            this.output = output;
             this.dimensions = dimensions;
         }
 

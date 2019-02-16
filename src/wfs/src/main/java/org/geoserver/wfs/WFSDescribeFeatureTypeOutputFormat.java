@@ -41,7 +41,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
     /**
      * Constructor which sets multiple outputFormats.
      *
-     * @param outputFormat The well-known name of the format, not <code>null</code>
+     * @param outputFormats The well-known name of the format, not <code>null</code>
      */
     public WFSDescribeFeatureTypeOutputFormat(GeoServer gs, Set<String> outputFormats) {
         super(gs, FeatureTypeInfo[].class, outputFormats);
@@ -77,7 +77,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
      *
      * @param featureTypeInfos The feature type metadata objects to serialize
      * @param output The output stream to serialize to.
-     * @param getFeature The DescribeFeatureType operation descriptor.
+     * @param describeFeatureType The DescribeFeatureType operation descriptor.
      */
     protected abstract void write(
             FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)

@@ -29,10 +29,6 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
 
     private JPEGMapResponse jpegResponse;
 
-    /**
-     * @param format the format name as to be reported in the capabilities document
-     * @param wms
-     */
     public JpegPngMapResponse(WMS wms, JPEGMapResponse jpegResponse, PNGMapResponse pngResponse) {
         super(OUTPUT_FORMATS, wms);
         this.jpegResponse = jpegResponse;

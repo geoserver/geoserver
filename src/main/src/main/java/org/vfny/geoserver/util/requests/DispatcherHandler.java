@@ -69,7 +69,6 @@ public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
      * @param localName Local name of element.
      * @param rawName Raw name of element.
      * @param atts Element attributes.
-     * @throws SAXException DOCUMENT ME!
      */
     public void startElement(String namespaceURI, String localName, String rawName, Attributes atts)
             throws SAXException {

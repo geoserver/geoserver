@@ -1,6 +1,5 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
+ * (c) 2007-2008-2009 GeoSolutions S.A.S., http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -297,7 +296,6 @@ public class RasterizerController extends BaseSLDServiceController {
         return style;
     }
 
-    /** @param defaultStyle */
     private RasterSymbolizer getRasterSymbolizer(StyleInfo sInfo) {
         RasterSymbolizer rasterSymbolizer = null;
 

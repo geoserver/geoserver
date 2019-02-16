@@ -141,9 +141,8 @@ public class WPSExecutionManager
      * Process submission, not blocking. Returns an id that can be used to get the process status
      * and result later.
      *
-     * @param ExecuteType The request to be executed
-     * @param inputs The process inputs
-     * @return The execution id
+     * @param request The request to be executed
+     * @return The execution response
      * @throws ProcessException
      */
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)

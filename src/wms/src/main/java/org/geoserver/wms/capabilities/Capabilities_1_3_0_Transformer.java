@@ -1366,7 +1366,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * <p>It is common practice to supply a URL to a WMS accesible legend graphic when it is
          * difficult to create a dynamic legend for a layer.
          *
-         * @param layerName The name of the layer.
+         * @param layer The layer.
          * @param legend The user specified legend url. If null a default url pointing back to the
          *     GetLegendGraphic operation will be automatically created.
          * @param style The styel for the layer.

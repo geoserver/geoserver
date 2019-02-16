@@ -120,7 +120,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      *
      * <p>Notice that the Tiff ImageWriter supports only pixel interleaving.
      *
-     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to
+     * @param encondingParameters a {@link Map} of {@link String} keys with {@link String} values to
      *     hold the encoding parameters.
      * @param sourceCoverage an instance of {@link GeoTiffWriteParams} to be massaged as per the
      *     provided encoding parameters.
@@ -165,15 +165,13 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      *
      * <p>Notice that tile width and height must be positive and multiple of 16.
      *
-     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to
+     * @param encodingParameters a {@link Map} of {@link String} keys with {@link String} values to
      *     hold the encoding parameters.
-     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided
-     *     encoding parameters.
      * @param sourceCoverage the source {@link GridCoverage2D} to encode.
      * @throws WcsException in case there are invalid or unsupported options.
      */
     private void handleTiling(
-            Map<String, String> econdingParameters,
+            Map<String, String> encodingParameters,
             GridCoverage2D sourceCoverage,
             GeoTiffWriterHelper helper)
             throws WcsException {
@@ -202,14 +200,14 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         //
         // tiling
         //
-        if (econdingParameters.containsKey("tiling")) {
+        if (encodingParameters.containsKey("tiling")) {
 
-            final String tilingS = econdingParameters.get("tiling");
+            final String tilingS = encodingParameters.get("tiling");
             if (tilingS != null && Boolean.valueOf(tilingS)) {
 
                 // tileW
-                if (econdingParameters.containsKey("tilewidth")) {
-                    final String tileW_ = econdingParameters.get("tilewidth");
+                if (encodingParameters.containsKey("tilewidth")) {
+                    final String tileW_ = encodingParameters.get("tilewidth");
                     if (tileW_ != null) {
                         try {
                             final int tileW = Integer.valueOf(tileW_);
@@ -232,8 +230,8 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                     }
                 }
                 // tileH
-                if (econdingParameters.containsKey("tileheight")) {
-                    final String tileH_ = econdingParameters.get("tileheight");
+                if (encodingParameters.containsKey("tileheight")) {
+                    final String tileH_ = encodingParameters.get("tileheight");
                     if (tileH_ != null) {
                         try {
                             final int tileH = Integer.valueOf(tileH_);
@@ -274,28 +272,26 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      *   <li>Huffman is supported only for 1 bit images
      * </ol>
      *
-     * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to
+     * @param encodingParameters a {@link Map} of {@link String} keys with {@link String} values to
      *     hold the encoding parameters.
-     * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided
-     *     encoding parameters.
      * @throws WcsException in case there are invalid or unsupported options.
      */
     private void handleCompression(
-            Map<String, String> econdingParameters, GeoTiffWriterHelper helper)
+            Map<String, String> encodingParameters, GeoTiffWriterHelper helper)
             throws WcsException {
         // compression
-        if (econdingParameters.containsKey("compression")) {
+        if (encodingParameters.containsKey("compression")) {
             GeoTiffWriteParams wp = helper.getImageIoWriteParams();
             helper.disableSourceCopyOptimization();
 
-            String compressionS = econdingParameters.get("compression");
+            String compressionS = encodingParameters.get("compression");
             if (compressionS != null && !compressionS.equalsIgnoreCase("none")) {
                 if (compressionS.equals("LZW")) {
                     wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
                     wp.setCompressionType("LZW");
 
                     // look for a predictor
-                    String predictorS = econdingParameters.get("predictor");
+                    String predictorS = encodingParameters.get("predictor");
                     if (predictorS != null) {
                         if (predictorS.equals("Horizontal")) {
                             wp.setTIFFCompressor(
@@ -322,8 +318,8 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                     wp.setCompressionQuality(DEFAULT_JPEG_COMPRESSION_QUALITY);
 
                     // check quality
-                    if (econdingParameters.containsKey("jpeg_quality")) {
-                        final String quality_ = econdingParameters.get("jpeg_quality");
+                    if (encodingParameters.containsKey("jpeg_quality")) {
+                        final String quality_ = encodingParameters.get("jpeg_quality");
                         if (quality_ != null) {
                             try {
                                 final int quality = Integer.valueOf(quality_);

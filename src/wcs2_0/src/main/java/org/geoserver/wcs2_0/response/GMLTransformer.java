@@ -1034,10 +1034,6 @@ class GMLTransformer extends TransformerBase {
          *    </gml:Grid>
          * </gml:domainSet>
          * }</pre>
-         *
-         * @param gc2d the {@link GridCoverage2D} for which to encode the DomainSet.
-         * @param srsName
-         * @param axesSwap
          */
         public void handleDomainSet(
                 GridGeometry2D gg2D,

@@ -125,9 +125,7 @@ public class Transaction {
      * not require the use of PARTIAL success.
      *
      * @param transactionRequest
-     * @throws ServiceException DOCUMENT ME!
      * @throws WfsException
-     * @throws WfsTransactionException DOCUMENT ME!
      */
     protected TransactionResponse execute(TransactionRequest request) throws Exception {
         // some defaults

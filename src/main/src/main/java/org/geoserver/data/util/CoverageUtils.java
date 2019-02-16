@@ -31,8 +31,6 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
 /**
- * DOCUMENT ME!
- *
  * @author $Author: Alessio Fabiani (alessio.fabiani@geo-solutions.it)
  * @author $Author: Simone Giannecchini (simone.giannecchini@geo-solutions.it)
  */

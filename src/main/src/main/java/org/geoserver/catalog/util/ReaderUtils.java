@@ -263,7 +263,6 @@ public class ReaderUtils {
      *     exist.
      * @return The value if the attribute was found, the null otherwise.
      * @throws Exception When a child attribute is required and not found.
-     * @throws NullPointerException DOCUMENT ME!
      */
     public static String getAttribute(Element elem, String attName, boolean mandatory)
             throws Exception {

@@ -31,9 +31,8 @@ public class DispatcherKvpReader {
     /**
      * Constructor with raw request string. Calls parent.
      *
-     * @param reader A reader of the request from the http client.
+     * @param requestReader A reader of the request from the http client.
      * @param req The actual request made.
-     * @throws ServiceException DOCUMENT ME!
      * @throws IOException
      */
     public void read(BufferedReader requestReader, HttpServletRequest req)
@@ -54,7 +53,6 @@ public class DispatcherKvpReader {
     /**
      * Returns the request type for a given KVP set.
      *
-     * @param kvPairs DOCUMENT ME!
      * @return Request type.
      */
     public static int getRequestType(Map kvPairs) {
@@ -95,7 +93,6 @@ public class DispatcherKvpReader {
     /**
      * Returns the request type for a given KVP set.
      *
-     * @param kvPairs DOCUMENT ME!
      * @return Request type.
      */
     public static int getServiceType(Map kvPairs) {

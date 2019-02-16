@@ -78,8 +78,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
     }
 
     /**
-     * @param id
-     * @param model the model over the appropriate cataloginfo's list of {@link LayerIdentifierInfo}
+     * @param list the model over the appropriate cataloginfo's list of {@link LayerIdentifierInfo}
      * @see WMSInfo#getIdentifiers()
      * @see LayerInfo#getIdentifiers()
      * @see LayerGroupInfo#getIdentifiers()

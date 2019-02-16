@@ -333,7 +333,7 @@ public class WMSMapContent extends MapContent {
     /**
      * Set an abstract which describes this context.
      *
-     * @param conAbstract the Abstract.
+     * @param contextAbstract the Abstract.
      */
     public void setAbstract(final String contextAbstract) {
         getUserData().put("abstract", contextAbstract);

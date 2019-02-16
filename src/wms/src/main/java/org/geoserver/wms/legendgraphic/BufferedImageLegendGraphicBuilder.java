@@ -479,12 +479,10 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
     /**
      * Extracts legend for layer based on LayerInfo configuration or style LegendGraphics.
      *
-     * @param published FeatureType representing the layer
      * @param w width for the image (hint)
      * @param h height for the image (hint)
      * @param transparent (should the image be transparent)
      * @param request GetLegendGraphicRequest being built
-     * @return image with the title
      */
     private RenderedImage getLayerLegend(
             LegendRequest legend,
@@ -541,7 +539,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      * @param imageStack the list of BufferedImages, one for each applicable Rule
      * @param rules The applicable rules, one for each image in the stack (if not null it's used to
      *     compute labels)
-     * @param request The request.
+     * @param req The request.
      * @param forceLabelsOn true for force labels on also with a single image.
      * @param forceLabelsOff true for force labels off also with more than one rule.
      * @return the stack image with all the images on the argument list.

@@ -160,7 +160,7 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
         return featureElevationMinimumStrategy;
     }
 
-    /** @param featureElevationMiminumStrategy the featureElevationMiminumStrategy to set */
+    /** @param featureElevationMinimumStrategy the featureElevationMiminumStrategy to set */
     public void setFeatureElevationMinimumStrategy(
             DimensionDefaultValueSelectionStrategy featureElevationMinimumStrategy) {
         this.featureElevationMinimumStrategy = featureElevationMinimumStrategy;
@@ -171,7 +171,7 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl
         return featureElevationMaximumStrategy;
     }
 
-    /** @param featureElevationMaxinumStrategy the featureElevationMaxinumStrategy to set */
+    /** @param featureElevationMaximumStrategy the featureElevationMaxinumStrategy to set */
     public void setFeatureElevationMaximumStrategy(
             DimensionDefaultValueSelectionStrategy featureElevationMaximumStrategy) {
         this.featureElevationMaximumStrategy = featureElevationMaximumStrategy;

@@ -36,7 +36,7 @@ public class DescribeLayerTransformer extends TransformerBase {
     /**
      * Creates a new DescribeLayerTransformer object.
      *
-     * @param serverBaseUrl the base URL, usually "http://host:port/geoserver"
+     * @param baseURL the base URL, usually "http://host:port/geoserver"
      */
     public DescribeLayerTransformer(final String baseURL) {
         if (baseURL == null) {

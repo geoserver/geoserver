@@ -26,9 +26,7 @@ public class HTMLImageMapResponse extends Response {
     /**
      * Writes the generated map to an OutputStream.
      *
-     * @param out final output stream
-     * @throws ServiceException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
+     * @param output final output stream
      */
     @Override
     public void write(Object value, OutputStream output, Operation operation)

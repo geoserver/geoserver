@@ -82,7 +82,7 @@ public class RasterLayerLegendHelper {
      *
      * @param request the {@link GetLegendGraphicRequest} for which we want to build a legend
      * @param style the {@link Style} for which we want to build a legend
-     * @param rule the {@link Rule} to use for rendering
+     * @param ruleName the {@link Rule} to use for rendering
      */
     public RasterLayerLegendHelper(
             final GetLegendGraphicRequest request, Style style, String ruleName) {

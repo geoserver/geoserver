@@ -55,9 +55,9 @@ public abstract class Request {
     /**
      * ServiceType,RequestType,ServiceRef constructor.
      *
-     * @param serviceType Name of hte service (example, WFS)
-     * @param requestType Name of the request (example, GetCapabilties)
-     * @param serviceRef The servlet for the request.
+     * @param service Name of hte service (example, WFS)
+     * @param request Name of the request (example, GetCapabilties)
+     * @param serviceConfig The servlet for the request.
      */
     protected Request(String service, String request, ServiceInfo serviceConfig) {
         this.service = service;
@@ -116,7 +116,7 @@ public abstract class Request {
     /**
      * Sets requested request type.
      *
-     * @param reqeust The type of request.
+     * @param requestType The type of request.
      */
     public void setRequest(String requestType) {
         this.request = requestType;

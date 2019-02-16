@@ -29,7 +29,7 @@ public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
 
     GeoServer gs;
 
-    /** @param service The wfs service descriptors. */
+    /** @param services The wfs service descriptors. */
     public WfsExceptionHandler(List services, GeoServer gs) {
         super(services);
         this.gs = gs;

@@ -45,11 +45,7 @@ public abstract class FeatureTypeSchema {
         return builder.build(new FeatureTypeInfo[] {featureType}, baseUrl);
     }
 
-    /**
-     * Converts the schema to a gml2 schema.
-     *
-     * @param baseUrl is the prefix-base to use for self-referencing urls.
-     */
+    /** Converts the schema to a gml2 schema. */
     public FeatureTypeSchema toGML2() {
         if (this instanceof GML2) {
             return this;

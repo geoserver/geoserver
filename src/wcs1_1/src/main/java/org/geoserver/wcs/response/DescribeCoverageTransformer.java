@@ -90,11 +90,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected String proxifiedBaseUrl;
 
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public WCS111DescribeCoverageTranslator(ContentHandler handler) {
             super(handler, null, null);
         }

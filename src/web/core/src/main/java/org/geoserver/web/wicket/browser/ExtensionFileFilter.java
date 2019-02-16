@@ -21,7 +21,7 @@ public class ExtensionFileFilter implements FileFilter, Serializable {
     /**
      * Builds a file filter for the specified extension
      *
-     * @param extension an extension, e.g., ".txt"
+     * @param extensions an extension, e.g., ".txt"
      */
     public ExtensionFileFilter(String... extensions) {
         this.extensions = new String[extensions.length];

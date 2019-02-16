@@ -31,7 +31,6 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     /**
      * Creates a new datastore configuration page to create a new datastore of the given type
      *
-     * @param the workspace to attach the new datastore to, like in {@link WorkspaceInfo#getId()}
      * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display
      *     name
      */
@@ -70,7 +69,6 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
      * Callback method called when the submit button have been pressed and the parameters validation
      * has succeed.
      *
-     * @param paramsForm the form to report any error to
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
     @Override

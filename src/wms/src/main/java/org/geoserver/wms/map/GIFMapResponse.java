@@ -108,7 +108,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
     /**
      * Transforms the rendered image into the appropriate format, streaming to the output stream.
      *
-     * @param image The image to be formatted.
+     * @param originalImage The image to be formatted.
      * @param outStream The stream to write to.
      * @throws ServiceException not really.
      * @throws IOException if encoding to <code>outStream</code> fails.

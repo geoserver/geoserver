@@ -45,12 +45,7 @@ public class TestWfsPost extends HttpServlet {
 
     static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
 
-    /**
-     * Initializes the servlet.
-     *
-     * @param config DOCUMENT ME!
-     * @throws ServletException DOCUMENT ME!
-     */
+    /** Initializes the servlet. */
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
@@ -63,8 +58,6 @@ public class TestWfsPost extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -76,19 +69,13 @@ public class TestWfsPost extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return DOCUMENT ME!
-     */
+    /** Returns a short description of the servlet. */
     public String getServletInfo() {
         return "Tests a WFS post request using a form entry.";
     }
@@ -98,8 +85,6 @@ public class TestWfsPost extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

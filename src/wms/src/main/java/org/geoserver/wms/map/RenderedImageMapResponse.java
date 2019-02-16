@@ -64,7 +64,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
     }
 
     /**
-     * @param the mime type to be written down as an HTTP header when a map of this format is
+     * @param mime the mime type to be written down as an HTTP header when a map of this format is
      *     generated
      */
     public RenderedImageMapResponse(String mime, WMS wms) {

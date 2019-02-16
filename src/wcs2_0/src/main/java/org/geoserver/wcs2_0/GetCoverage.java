@@ -1931,7 +1931,6 @@ public class GetCoverage {
      *
      * @param coverage the input {@link GridCoverage2D}
      * @param spatialInterpolation the requested {@link Interpolation}
-     * @param extensions the list of WCS extensions to draw info from
      * @param hints an instance of {@link Hints} to apply
      * @return a scaled version of the input {@link GridCoverage2D} according to what is specified
      *     in the list of extensions. It might be the source coverage itself if no operations where

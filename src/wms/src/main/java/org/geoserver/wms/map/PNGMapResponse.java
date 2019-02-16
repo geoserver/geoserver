@@ -61,10 +61,6 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     private static MapProducerCapabilities CAPABILITIES =
             new MapProducerCapabilities(true, false, true, true, null);
 
-    /**
-     * @param format the format name as to be reported in the capabilities document
-     * @param wms
-     */
     public PNGMapResponse(WMS wms) {
         super(OUTPUT_FORMATS, wms);
     }

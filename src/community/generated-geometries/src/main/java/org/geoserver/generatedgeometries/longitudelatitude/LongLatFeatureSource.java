@@ -71,8 +71,8 @@ public class LongLatFeatureSource extends DecoratingSimpleFeatureSource {
     }
 
     private SimpleFeatureCollection getFeaturesWithGeom(SimpleFeatureCollection features) {
-        DefaultFeatureCollection collection = new DefaultFeatureCollection();
         SimpleFeatureType schema = getSchema();
+        DefaultFeatureCollection collection = new DefaultFeatureCollection(null, schema);
         SimpleFeatureIterator iterator = features.features();
         while (iterator.hasNext()) {
             SimpleFeature next = iterator.next();

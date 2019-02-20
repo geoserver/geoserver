@@ -24,7 +24,7 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 public class DirectoryParamPanel extends FileParamPanel {
 
     private static final long serialVersionUID = -8317791966175845831L;
-    GeoServerDialog gsDialog;
+    protected GeoServerDialog gsDialog;
 
     /**
      * @param id

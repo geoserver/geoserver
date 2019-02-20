@@ -37,9 +37,9 @@ import org.geotools.util.logging.Logging;
 public class FileParamPanel extends Panel implements ParamPanel {
     private static final Logger LOGGER = Logging.getLogger(FileParamPanel.class);
     private static final long serialVersionUID = 2630421795437249103L;
-    TextField<String> textField;
-    ModalWindow dialog;
-    IModel<? extends FileFilter> fileFilter;
+    protected TextField<String> textField;
+    protected ModalWindow dialog;
+    protected IModel<? extends FileFilter> fileFilter;
 
     /**
      * @param id
@@ -71,7 +71,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
         textField =
-                new AutoCompleteTextField<String>("paramValue", new FileModel(paramValue)) {
+                new AutoCompleteTextField<String>("paramValue", getFileModel(paramValue)) {
                     @Override
                     protected Iterator<String> getChoices(String input) {
                         try {
@@ -109,6 +109,10 @@ public class FileParamPanel extends Panel implements ParamPanel {
         feedback.add(textField);
         feedback.add(chooserButton(paramLabelModel.getObject()));
         add(feedback);
+    }
+
+    protected IModel<String> getFileModel(IModel<String> paramValue) {
+        return new FileModel(paramValue);
     }
 
     protected Component chooserButton(final String windowTitle) {

@@ -26,8 +26,6 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
 
     public static final ComponentAuthorizer DEFAULT_AUTHORIZER = new DefaultPageAuthorizer();
     public static final String SAVED_REQUEST = "SPRING_SECURITY_SAVED_REQUEST_KEY";
-    
-
 
     public GeoServerSecuredPage() {
         super();
@@ -55,15 +53,12 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
 
             // then redirect to the login page
             throw new RestartResponseException(GeoServerLoginPage.class);
-        } else if (!getPageAuthorizer().isAccessAllowed(this.getClass(), auth)){
-        	//GEOS-9108 check for workspace admin
-        	if(!ComponentAuthorizer.WORKSPACE_ADMIN.isAccessAllowed(this.getClass(), auth))
-        		throw new RestartResponseException(UnauthorizedPage.class);
+        } else if (!getPageAuthorizer().isAccessAllowed(this.getClass(), auth)) {
+            // GEOS-9108 check for workspace admin
+            if (!ComponentAuthorizer.WORKSPACE_ADMIN.isAccessAllowed(this.getClass(), auth))
+                throw new RestartResponseException(UnauthorizedPage.class);
         }
-            
     }
-    
-   
 
     /**
      * Override to use a page authorizer other than the default one. When you do so, remember to

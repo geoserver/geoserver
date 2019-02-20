@@ -68,7 +68,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
      * "flattened" list of attributes
      *
      * @param attributeDescriptors A List of attribute descriptors, populated recursively
-     * @param featuretype The feature type to scan
+     * @param featureType The feature type to scan
      * @param attrAlias An alias for adding as a prefix to the simple attribute names
      */
     private static void scanAttributeDescriptors(
@@ -138,7 +138,6 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
          * Recursively breaks down SimpleFeatures that may contain other features as attributes to
          * accumulate simple attribute values to a List
          *
-         * @param attributeValues The List of attribute values
          * @param feature A SimpleFeature to harvest attributes
          */
         private void accumulateAttributes(SimpleFeature feature) {

@@ -358,8 +358,8 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      *
      * </pre>
      *
-     * @param sourceRect the <code>Rectangle</code> in source coordinates.
-     * @param sourceIndex the index of the source image.
+     * @param pxRect the <code>Rectangle</code> in source coordinates.
+     * @param i the index of the source image.
      * @return a <code>Rectangle</code> indicating the destination bounding box, or <code>null
      *     </code> if the bounding box is unknown.
      * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the

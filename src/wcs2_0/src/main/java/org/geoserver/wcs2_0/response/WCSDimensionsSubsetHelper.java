@@ -993,10 +993,6 @@ public class WCSDimensionsSubsetHelper {
      *
      * <p>This method only works for StructuredGridCoverage2DReaders
      *
-     * @param cinfo the CoverageInfo associated to the coverage
-     * @param gcr the main {@link GridCoverageRequest} to be split
-     * @param reader the {@link StructuredGridCoverage2DReader} instance to be used for query, and
-     *     dimensions management
      * @return a List of new {@link GridCoverageRequest}s
      * @throws UnsupportedOperationException
      * @throws IOException

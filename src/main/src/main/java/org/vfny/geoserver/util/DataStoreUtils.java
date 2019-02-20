@@ -206,13 +206,7 @@ public abstract class DataStoreUtils {
         return factory;
     }
 
-    /**
-     * Utility methods for find param by key
-     *
-     * @param params DOCUMENT ME!
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** Utility methods for find param by key */
     public static Param find(Param[] params, String key) {
         for (int i = 0; i < params.length; i++) {
             if (key.equalsIgnoreCase(params[i].key)) {
@@ -285,7 +279,6 @@ public abstract class DataStoreUtils {
      * @param factory
      * @param params
      * @return Map with real values that may be acceptable to Factory
-     * @throws IOException DOCUMENT ME!
      */
     public static Map toConnectionParams(DataAccessFactory factory, Map params) throws IOException {
         Map map = new HashMap(params.size());

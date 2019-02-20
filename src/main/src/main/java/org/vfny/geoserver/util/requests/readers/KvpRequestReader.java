@@ -108,20 +108,12 @@ public abstract class KvpRequestReader implements ApplicationContextAware {
     /**
      * returns the value asociated with <code>key</code> on the set of key/value pairs of this
      * request reader
-     *
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
      */
     protected String getValue(String key) {
         return Converters.convert(kvpPairs.get(key), String.class);
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** */
     protected boolean keyExists(String key) {
         return kvpPairs.containsKey(key);
     }
@@ -129,8 +121,6 @@ public abstract class KvpRequestReader implements ApplicationContextAware {
     /**
      * returns the propper Request subclass for the set of parameters it was setted up and the kind
      * of request it is specialized for
-     *
-     * @return DOCUMENT ME!
      */
     public abstract Request getRequest(HttpServletRequest request) throws ServiceException;
 
@@ -199,12 +189,7 @@ public abstract class KvpRequestReader implements ApplicationContextAware {
         return KvpUtils.readNested(rawList);
     }
 
-    /**
-     * creates a Map of key/value pairs from a HTTP style query String
-     *
-     * @param qString DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** creates a Map of key/value pairs from a HTTP style query String */
     public static Map parseKvpSet(String qString) {
         // uses the request cleaner to remove HTTP junk
         String cleanRequest = clean(qString);

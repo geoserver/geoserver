@@ -1426,7 +1426,7 @@ public class ResourcePool {
     /**
      * Returns a coverage reader, caching the result.
      *
-     * @param info The coverage metadata.
+     * @param storeInfo The coverage metadata.
      * @param hints Hints to use when loading the coverage, may be <code>null</code>.
      * @throws IOException Any errors that occur loading the reader.
      */
@@ -1606,7 +1606,8 @@ public class ResourcePool {
      * <p>
      *
      * @param info The grid coverage metadata.
-     * @param envelope The section of the coverage to load.
+     * @param coverageName The grid coverage to load
+     * @param env The section of the coverage to load.
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
@@ -1628,7 +1629,7 @@ public class ResourcePool {
      * <p>
      *
      * @param info The grid coverage metadata.
-     * @param envelope The section of the coverage to load.
+     * @param env The section of the coverage to load.
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
@@ -2140,7 +2141,7 @@ public class ResourcePool {
      * Deletes a style from the configuration.
      *
      * @param style The configuration for the style.
-     * @param purge Whether to delete the file from disk.
+     * @param purgeFile Whether to delete the file from disk.
      */
     public void deleteStyle(StyleInfo style, boolean purgeFile) throws IOException {
         synchronized (styleCache) {

@@ -25,7 +25,6 @@ public class BufferStrategy implements ServiceStrategy {
         return "BUFFER";
     }
 
-    /** DOCUMENT ME! */
     ByteArrayOutputStream buffer = null;
 
     /**
@@ -33,7 +32,6 @@ public class BufferStrategy implements ServiceStrategy {
      *
      * @param response Response being processed.
      * @return A ByteArrayOutputStream for writeTo opperation.
-     * @throws IOException DOCUMENT ME!
      */
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         buffer = new ByteArrayOutputStream(1024 * 1024);

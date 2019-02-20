@@ -24,7 +24,7 @@ public class StyleEditTabPanel extends Panel {
 
     /**
      * @param id The id given to the panel.
-     * @param model The model for the panel which wraps a {@link LayerInfo} instance.
+     * @param parent parent the page that contains this editor.
      */
     public StyleEditTabPanel(String id, AbstractStylePage parent) {
         super(id);

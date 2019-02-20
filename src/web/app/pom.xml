@@ -837,11 +837,21 @@
       </dependencies>
     </profile>
     <profile>
-      <id>gt-ogr</id>
+      <id>gt-ogr-jni</id>
       <dependencies>
         <dependency>
           <groupId>org.geotools</groupId>
-          <artifactId>gt-ogr</artifactId>
+          <artifactId>gt-ogr-jni</artifactId>
+          <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>gt-ogr-bridj</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-ogr-bridj</artifactId>
           <version>${gt.version}</version>
         </dependency>
       </dependencies>

@@ -83,11 +83,7 @@ public class TemplateController extends AbstractCatalogController {
         resources = catalog.getResourceLoader();
     }
 
-    /**
-     * Template definition.
-     *
-     * @return Template definition
-     */
+    /** Template definition. */
     @DeleteMapping(value = "/{templateName}")
     public void templateDelete(
             HttpServletResponse response,
@@ -110,11 +106,7 @@ public class TemplateController extends AbstractCatalogController {
         }
     }
 
-    /**
-     * Template definition.
-     *
-     * @return Template Definitin
-     */
+    /** Template definition. */
     @GetMapping(
         value = "/{templateName}",
         produces = {MediaTypeExtensions.TEXT_FTL_VALUE}
@@ -150,11 +142,7 @@ public class TemplateController extends AbstractCatalogController {
         }
     }
 
-    /**
-     * All templates as JSON, XML or HTML.
-     *
-     * @return All templates
-     */
+    /** All templates as JSON, XML or HTML. */
     @PutMapping(
         value = "/{templateName}",
         consumes = {MediaTypeExtensions.TEXT_FTL_VALUE, MediaType.TEXT_PLAIN_VALUE}

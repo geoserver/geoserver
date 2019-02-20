@@ -810,7 +810,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * &lt;/xsd:complexType&gt;
              *         </pre>
              *
-             * @param ftype The FeatureType configuration to report capabilities on.
+             * @param info The FeatureType configuration to report capabilities on.
              * @throws RuntimeException For any errors.
              */
             protected void handleFeatureType(FeatureTypeInfo info) {

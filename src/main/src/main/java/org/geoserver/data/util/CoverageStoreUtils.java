@@ -59,24 +59,12 @@ public final class CoverageStoreUtils {
         }
     }
 
-    /**
-     * Utility method for finding Params
-     *
-     * @param factory DOCUMENT ME!
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** Utility method for finding Params */
     public static ParameterValue find(Format format, String key) {
         return find(format.getReadParameters(), key);
     }
 
-    /**
-     * Utility methods for find param by key
-     *
-     * @param params DOCUMENT ME!
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** Utility methods for find param by key */
     public static ParameterValue find(ParameterValueGroup params, String key) {
         List list = params.values();
         Iterator it = list.iterator();
@@ -225,7 +213,6 @@ public final class CoverageStoreUtils {
      * @param factory
      * @param params
      * @return Map with real values that may be acceptable to GDSFactory
-     * @throws IOException DOCUMENT ME!
      */
     public static Map toParams(GridFormatFactorySpi factory, Map params) throws IOException {
         final Map map = new HashMap(params.size());

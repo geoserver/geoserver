@@ -195,7 +195,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Sets the bounds of the resource in lat / lon.
      *
-     * @param The lat/lon bounds.
+     * @param box The lat/lon bounds.
      * @uml.property name="latLonBoundingBox"
      */
     void setLatLonBoundingBox(ReferencedEnvelope box);
@@ -213,7 +213,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Sets the bounds of the resource in the native crs.
      *
-     * @param The native crs bounds.
+     * @param box The native crs bounds.
      * @uml.property name="boundingBox"
      */
     void setNativeBoundingBox(ReferencedEnvelope box);
@@ -247,7 +247,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Sets the identifier coordinate reference system of the resource.
      *
-     * @param crs The identifier of cordinate reference system.
+     * @param srs The identifier of coordinate reference system.
      * @uml.property name="sRS"
      */
     void setSRS(String srs);

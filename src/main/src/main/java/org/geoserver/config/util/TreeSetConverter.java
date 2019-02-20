@@ -1,3 +1,7 @@
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 /*
  * Copyright (C) 2004, 2005 Joe Walnes.
  * Copyright (C) 2006, 2007, 2010, 2011, 2013, 2014, 2016 XStream Committers.

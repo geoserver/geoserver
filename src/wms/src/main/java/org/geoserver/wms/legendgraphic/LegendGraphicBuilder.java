@@ -171,14 +171,11 @@ public abstract class LegendGraphicBuilder {
      * Calculates a global rescaling factor for all the symbols to be drawn in the given rules. This
      * is to be sure all symbols are drawn inside the given w x h box.
      *
-     * @param width horizontal constraint
-     * @param height vertical constraint
      * @param featureType FeatureType to be used for size extraction in expressions (used to create
      *     a sample if feature is null)
      * @param feature Feature to be used for size extraction in expressions (if null a sample
      *     Feature will be created from featureType)
      * @param rules set of rules to scan for symbols
-     * @param minimumSymbolSize lower constraint for the symbols size
      */
     protected double[] calcSymbolSize(
             double defaultMaxSize,
@@ -216,7 +213,6 @@ public abstract class LegendGraphicBuilder {
     /**
      * Gets a numeric value for the given PointSymbolizer
      *
-     * @param feature sample to be used for evals
      * @param symbolizer symbolizer
      * @param defaultSize size to use is none can be taken from the symbolizer
      */

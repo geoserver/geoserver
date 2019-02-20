@@ -167,8 +167,7 @@ public abstract class NameSpaceTranslator {
      * <p>checks to see if the reference provided is found in the list of elements for this
      * namespace.
      *
-     * @param definition The reference name to check for, may be either reference or
-     *     prefix:reference.
+     * @param type The reference name to check for, may be either reference or prefix:reference.
      * @return true when found, false otherwise.
      */
     public boolean isValidTypeRef(String type) {

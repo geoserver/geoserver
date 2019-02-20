@@ -339,9 +339,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /**
      * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
      * with attribute number whose value is the specified tag value.
-     *
-     * @param tag DOCUMENT ME!
-     * @return DOCUMENT ME!
      */
     protected IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();

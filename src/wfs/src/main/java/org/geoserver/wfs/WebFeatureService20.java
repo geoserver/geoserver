@@ -83,7 +83,7 @@ public interface WebFeatureService20 {
      * @return A value collection type instance.
      * @throws WFSException Any service exceptions.
      */
-    ValueCollectionType getPropertyValue(GetPropertyValueType requets) throws WFSException;
+    ValueCollectionType getPropertyValue(GetPropertyValueType request) throws WFSException;
 
     /**
      * WFS LockFeatureType operation.

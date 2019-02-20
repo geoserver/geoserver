@@ -366,8 +366,7 @@ public class GeorectifyCoverage implements GSProcess {
     /**
      * Store a GridCoverage2D and returns the file where the underlying image have been stored.
      *
-     * @param coverage a {@link GridCoverage2D} wrapping the image to be stored.
-     * @param tempFolder
+     * @param image the to be stored.
      * @return the {@link File} storing the image.
      * @throws IOException
      */
@@ -382,11 +381,7 @@ public class GeorectifyCoverage implements GSProcess {
      * @param targetEnvelope the target envelope
      * @param width the final image's width
      * @param height the final image's height
-     * @param targetCrs the target coordinate reference system
-     * @param order
-     * @param tempFolder
-     * @param loggingFolder
-     * @param timeOut
+     * @param targetCRS the target coordinate reference system
      * @throws IOException
      */
     private File warpFile(

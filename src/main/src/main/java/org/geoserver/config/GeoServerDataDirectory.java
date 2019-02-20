@@ -334,7 +334,6 @@ public class GeoServerDataDirectory {
      * Returns the directory for the specified workspace, if the directory does not exist it will be
      * created.
      *
-     * @param create If set to true the directory will be created when it does not exist.
      * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
     @Deprecated
@@ -989,7 +988,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve the WMS store configuration XML as a Resource
      *
-     * @param wmss The coverage store
+     * @param si The store
      * @return A {@link Resource}
      */
     private @Nonnull Resource config(StoreInfo si) {
@@ -1014,7 +1013,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve the resource configuration XML as a Resource
      *
-     * @param wmss The resource
+     * @param si The resource
      * @return A {@link Resource}
      */
     private @Nonnull Resource config(ResourceInfo si) {
@@ -1101,7 +1100,7 @@ public class GeoServerDataDirectory {
      * Retrieve a resource in the the configuration directory of a Layer. An empty path will
      * retrieve the directory itself.
      *
-     * @param li The store
+     * @param l The layer
      * @return A {@link Resource}
      */
     public @Nonnull Resource get(LayerInfo l, String... path) {
@@ -1228,7 +1227,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve the style configuration XML as a Resource
      *
-     * @param c The style
+     * @param s The style
      * @return A {@link Resource}
      */
     public @Nonnull Resource config(StyleInfo s) {
@@ -1253,7 +1252,7 @@ public class GeoServerDataDirectory {
     /**
      * Retrieve the style definition (SLD) as a Resource
      *
-     * @param c The style
+     * @param s The style
      * @return A {@link Resource}
      */
     public @Nonnull Resource style(StyleInfo s) {

@@ -129,7 +129,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
      * LdapUserDetails object.
      *
      * @param user the user who's authorities are required
-     * @param pw be used to bind to ldap server prior to the search operations, null otherwise
+     * @param password be used to bind to ldap server prior to the search operations, null otherwise
      * @return the set of roles granted to the user.
      */
     public final Collection<GrantedAuthority> getGrantedAuthorities(

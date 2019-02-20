@@ -50,7 +50,6 @@ import org.vfny.geoserver.global.CoverageInfoLabelComparator;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -110,8 +109,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
     private class WCS20GetCapabilitiesTranslator extends TranslatorSupport {
         /**
-         * DOCUMENT ME!
-         *
          * @uml.property name="request"
          * @uml.associationEnd multiplicity="(0 1)"
          */
@@ -121,11 +118,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private org.geoserver.ExtendedCapabilitiesProvider.Translator translator;
         private TranslatorHelper helper;
 
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public WCS20GetCapabilitiesTranslator(ContentHandler handler) {
             super(handler, null, null);
             this.helper = new TranslatorHelper();
@@ -323,12 +316,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("wcs:ServiceMetadata");
         }
 
-        /**
-         * Handles the service identification of the capabilities document.
-         *
-         * @param config The OGC service to transform.
-         * @throws SAXException For any errors.
-         */
+        /** Handles the service identification of the capabilities document. */
         private void handleServiceIdentification() {
             start("ows:ServiceIdentification");
 
@@ -419,12 +407,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("ows:ServiceIdentification");
         }
 
-        /**
-         * Handles the service provider of the capabilities document.
-         *
-         * @param config The OGC service to transform.
-         * @throws SAXException For any errors.
-         */
+        /** Handles the service provider of the capabilities document. */
         private void handleServiceProvider() {
             start("ows:ServiceProvider");
             SettingsInfo settings = wcs.getGeoServer().getSettings();
@@ -446,9 +429,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         /**
          * Handles the OperationMetadata portion of the document, printing out the operations and
          * where to bind to them.
-         *
-         * @param config The global wms.
-         * @throws SAXException For any problems.
          */
         private void handleOperationsMetadata() {
             start("ows:OperationsMetadata");
@@ -524,12 +504,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("ows:Operation");
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param kwords DOCUMENT ME!
-         * @throws SAXException DOCUMENT ME!
-         */
+        /** */
         private void handleKeywords(List<KeywordInfo> kwords) {
             if (kwords != null && !kwords.isEmpty()) {
                 start("ows:Keywords");
@@ -540,11 +515,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Handles contacts.
-         *
-         * @param wcs the service.
-         */
+        /** Handles contacts. */
         private void handleContact() {
             final GeoServer gs = wcs.getGeoServer();
             start("ows:ServiceContact");

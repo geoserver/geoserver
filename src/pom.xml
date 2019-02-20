@@ -2013,6 +2013,8 @@
   <errorProne.version>2.3.2</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>
   <pmd.version>6.11.0</pmd.version>
+  <checkstyle.skip>false</checkstyle.skip>
+  <qa>false</qa>
  </properties>
 
  <profiles>
@@ -2221,7 +2223,7 @@
             <version>3.2.1</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
-              <suppressionFile>${geoserverBaseDir}/dependency-check-suppression.xml</suppressionFile>
+              <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
             </configuration>
             <executions>
               <execution>
@@ -2237,6 +2239,11 @@
     
     <profile>
       <id>pmd</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -2267,7 +2274,7 @@
             </dependencies>
             <configuration>
               <rulesets>
-                <ruleset>${geoserverBaseDir}/pmd-ruleset.xml</ruleset>
+                <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
               </rulesets>
               <failurePriority>3</failurePriority>
               <minimumPriority>3</minimumPriority>
@@ -2292,6 +2299,12 @@
     <!-- for those using JDK 11 -->
     <profile>
       <id>errorprone</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>(1.8,)</jdk>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -2320,6 +2333,12 @@
     <!-- using github.com/google/error-prone-javac is required when running on JDK 8 -->
     <profile>
       <id>errorprone8</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>1.8</jdk>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -2346,8 +2365,13 @@
       </build>
     </profile>
     
-        <profile>
+    <profile>
       <id>spotbugs</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -2359,7 +2383,7 @@
               <threshold>High</threshold>
               <xmlOutput>true</xmlOutput>
               <maxRank>10</maxRank>
-              <excludeFilterFile>${geoserverBaseDir}/spotbugs-exclude.xml</excludeFilterFile>
+              <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
               <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
             </configuration>
             <executions>
@@ -2372,6 +2396,38 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+           <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>3.0.0</version>
+              <configuration>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <!-- ignore generated classes, e.g., javacc ones -->
+                    <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+                    <skip>${checkstyle.skip}</skip>
+                    <configLocation>${geoserverBaseDir}/../build/qa/checkstyle.xml</configLocation>
+                  </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
     </profile>
   </profiles>
 

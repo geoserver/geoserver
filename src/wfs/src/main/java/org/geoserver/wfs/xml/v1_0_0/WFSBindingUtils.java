@@ -82,7 +82,7 @@ public class WFSBindingUtils {
     }
 
     /**
-     * @param value A number
+     * @param number A number
      * @return The number as a {@link BigInteger}.
      */
     public static BigInteger asBigInteger(Number number) {

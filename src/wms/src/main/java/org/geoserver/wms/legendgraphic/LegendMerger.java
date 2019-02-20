@@ -358,7 +358,7 @@ public class LegendMerger {
      *
      * @param rules The applicable rules, one for each image in the stack (if not null it's used to
      *     compute labels)
-     * @param request The request.
+     * @param req The request.
      * @param mergeOptions options to be used for merging
      * @return the image with all the images on the argument list.
      */

@@ -31,12 +31,9 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.web.GWCIconFactory;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.ImageAjaxLink;
-import org.geoserver.wms.WMSInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
@@ -114,13 +111,6 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         }
     }
 
-    /**
-     * @param id
-     * @param model the model over the appropriate list of {@link Grid}
-     * @see WMSInfo#getAuthorityURLs()
-     * @see LayerInfo#getAuthorityURLs()
-     * @see LayerGroupInfo#getAuthorityURLs()
-     */
     public TileMatrixSetEditor(final String id, final IModel<GridSetInfo> info) {
         super(id, new PropertyModel<List<Grid>>(info, "levels"));
         add(new TileMatrixSetValidator());

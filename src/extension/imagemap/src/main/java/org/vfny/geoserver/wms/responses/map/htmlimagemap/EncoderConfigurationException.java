@@ -7,11 +7,7 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap;
 
 import org.geoserver.platform.ServiceException;
 
-/**
- * DOCUMENT ME!
- *
- * @author Mauro Bartolomeoli
- */
+/** @author Mauro Bartolomeoli */
 public class EncoderConfigurationException extends ServiceException {
     /** */
     private static final long serialVersionUID = -791532675720744977L;

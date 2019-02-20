@@ -156,8 +156,6 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
          * image to be returned. (in use, the formula is exponential: as you increase the KMScore
          * value, the number of features required increases exponentially).
          *
-         * @param kmscore the score, between 0 and 100, use to determine what output to use
-         * @param numFeatures how many features are being rendered
          * @return true: use just kml vectors, false: use raster result
          */
         boolean useVectorOutput(KmlEncodingContext context) {

@@ -1,6 +1,5 @@
 /* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
- * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
+ * (c) 2007-2008-2009 GeoSolutions S.A.S., http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -342,7 +341,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     /**
-     * @param Rule object
+     * @param obj Rule object
      * @return a string with json rule representation
      */
     private JSONObject jsonRule(Object obj) {

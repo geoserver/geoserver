@@ -51,12 +51,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     TextField<String> definition;
     DropDownChoice<CompositionType> compositionChoice;
 
-    /**
-     * Creates a new editor.
-     *
-     * @param id
-     * @param The module should return a non null collection of strings.
-     */
+    /** Creates a new editor. */
     public CoverageViewEditor(
             String id,
             final IModel<List<String>> inputCoverages,

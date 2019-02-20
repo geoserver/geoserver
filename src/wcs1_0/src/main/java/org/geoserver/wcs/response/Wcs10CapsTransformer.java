@@ -96,14 +96,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
         // the path that does contain the GeoServer internal XML schemas
         public static final String SCHEMAS = "schemas";
 
-        /** DOCUMENT ME! */
         private GetCapabilitiesType request;
 
-        /**
-         * Creates a new WCS100CapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WCS100CapsTranslator object. */
         public WCS100CapsTranslator(ContentHandler handler) {
             super(handler, null, null);
         }
@@ -240,7 +235,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * Handles the service section of the capabilities document.
          *
-         * @param config The OGC service to transform.
          * @throws SAXException For any errors.
          */
         private void handleService(boolean allSections) {
@@ -306,12 +300,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param kwords DOCUMENT ME!
-         * @throws SAXException DOCUMENT ME!
-         */
+        /** */
         private void handleKeywords(List kwords) {
             if (kwords == null || kwords.isEmpty()) {
                 return;
@@ -328,11 +317,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:keywords");
         }
 
-        /**
-         * Handles contacts.
-         *
-         * @param config the service.
-         */
+        /** Handles contacts. */
         private void handleContact() {
             final GeoServer gs = wcs.getGeoServer();
             String tmp = "";
@@ -446,12 +431,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param serviceConfig DOCUMENT ME!
-         * @throws SAXException DOCUMENT ME!
-         */
+        /** */
         private void handleCapabilities(boolean allSections) {
             start("wcs:Capability");
             handleRequest();
@@ -463,9 +443,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * Handles the request portion of the document, printing out the capabilities and where to
          * bind to them.
-         *
-         * @param config The global wms.
-         * @throws SAXException For any problems.
          */
         private void handleRequest() {
             start("wcs:Request");
@@ -529,9 +506,6 @@ public class Wcs10CapsTransformer extends TransformerBase {
         /**
          * Handles the printing of the exceptions information, prints the formats that GeoServer can
          * return exceptions in.
-         *
-         * @param config The wms service global config.
-         * @throws SAXException For any problems.
          */
         private void handleExceptions() {
             start("wcs:Exception");
@@ -549,18 +523,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
             end("wcs:Exception");
         }
 
-        /**
-         * Handles the vendor specific capabilities. Right now there are none, so we do nothing.
-         *
-         * @param config The global config that may contain vendor specifics.
-         * @throws SAXException For any problems.
-         */
+        /** Handles the vendor specific capabilities. Right now there are none, so we do nothing. */
         private void handleVendorSpecifics() {}
 
-        /**
-         * @param referencedEnvelope
-         * @throws IOException
-         */
         private void handleEnvelope(
                 ReferencedEnvelope referencedEnvelope,
                 DimensionInfo timeInfo,

@@ -86,7 +86,7 @@ public class ImageUtils {
      *
      * @param width the width of the image to create.
      * @param height the height of the image to create.
-     * @param paletteInverter an {@link IndexColorModel} if the image is to be indexed, or <code>
+     * @param palette A {@link IndexColorModel} if the image is to be indexed, or <code>
      *     null</code> otherwise.
      * @return an image of size <code>width x height</code> appropriate for the given color model,
      *     if any, and to be used as a transparent image or not depending on the <code>transparent

@@ -26,7 +26,6 @@ public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactor
      *
      * @param response Response being processed.
      * @return A ByteArrayOutputStream for writeTo opperation.
-     * @throws IOException DOCUMENT ME!
      */
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         buffer = new ByteArrayOutputStream(1024 * 1024);

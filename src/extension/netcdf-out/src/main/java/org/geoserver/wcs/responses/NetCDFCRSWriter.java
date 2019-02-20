@@ -450,7 +450,7 @@ class NetCDFCRSWriter {
     /**
      * Setup a {@link NetCDFUtilities#GEO_TRANSFORM} attribute on top of the MathTransform
      *
-     * @param MathTransform the grid2world geoTransformation
+     * @param transform the grid2world geoTransformation
      * @return the {@link Attribute} containing the GeotTransform attribute
      */
     private Attribute getGeoTransformAttribute(MathTransform transform) {

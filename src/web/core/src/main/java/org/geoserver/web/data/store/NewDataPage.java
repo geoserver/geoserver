@@ -54,8 +54,6 @@ public class NewDataPage extends GeoServerSecuredPage {
     /**
      * Creates the page components to present the list of available vector and raster data source
      * types
-     *
-     * @param workspaceId the id of the workspace to attach the new resource store to.
      */
     public NewDataPage() {
 

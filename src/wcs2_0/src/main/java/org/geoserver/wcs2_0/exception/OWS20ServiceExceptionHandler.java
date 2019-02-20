@@ -69,7 +69,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
     /**
      * Constructor to be called if the exception is for a particular service.
      *
-     * @param services List of services this handler handles exceptions for.
+     * @param service The service this handler handles exceptions for.
      */
     public OWS20ServiceExceptionHandler(Service service) {
         super(Arrays.asList(service));

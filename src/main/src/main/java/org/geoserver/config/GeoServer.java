@@ -169,7 +169,7 @@ public interface GeoServer {
     /**
      * Looks up a service by name, local to a specific workspace.
      *
-     * @param name THe workspace.
+     * @param workspace THe workspace.
      * @param name The name of the service.
      * @param clazz The type of the service.
      * @return The service with the specified name or <code>null</code> if no such service could be

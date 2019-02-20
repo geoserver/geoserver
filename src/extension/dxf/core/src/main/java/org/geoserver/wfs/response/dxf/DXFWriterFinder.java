@@ -40,7 +40,6 @@ public final class DXFWriterFinder {
      * Create a new DXFWriter instance for the requested version (null => any available version)
      *
      * @param version requested version compatibility
-     * @param mew writer
      */
     public static DXFWriter getWriter(String version, Writer writer) {
         FactoryRegistry writerRegistry = getServiceRegistry();

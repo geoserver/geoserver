@@ -48,11 +48,7 @@ public class CoveragesTransformer extends TransformerBase {
     }
 
     private class CoveragesTranslator extends TranslatorSupport {
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public CoveragesTranslator(ContentHandler handler) {
             super(handler, null, null);
         }

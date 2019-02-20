@@ -61,8 +61,7 @@ class PALFileLoader {
      * for the colormap we area going to create. If this happens we might get very bad behaviour.
      * Note also that if we set this parameter to -1 we'll get an opaque {@link IndexColorModel}.
      *
-     * @param filePath to the aplette file.
-     * @param transparentIndex transparent pixel index (zero-based).
+     * @param file the palette file.
      */
     public PALFileLoader(Resource file) {
         if (file.getType() != Type.RESOURCE)

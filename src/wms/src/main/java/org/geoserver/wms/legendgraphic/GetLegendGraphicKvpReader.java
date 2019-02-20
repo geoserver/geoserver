@@ -91,7 +91,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     /**
      * Creates a new GetLegendGraphicKvpReader object.
      *
-     * @param params map of key/value pairs with the parameters for a GetLegendGraphic request
      * @param wms WMS config object.
      */
     public GetLegendGraphicKvpReader(WMS wms) {
@@ -237,7 +236,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * <p>Additional LayerInfo details such as title and legend are filled in if available.
      *
      * @param layerInfo The layer description
-     * @param req The GetLegendGrapicRequest used for context
+     * @param request The GetLegendGrapicRequest used for context
      * @return created LegendRequest
      * @throws FactoryRegistryException
      * @throws IOException

@@ -97,13 +97,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         return "GML2";
     }
 
-    /**
-     * prepares for encoding into GML2 format
-     *
-     * @param outputFormat DOCUMENT ME!
-     * @param results DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     */
+    /** prepares for encoding into GML2 format */
     @SuppressWarnings("unchecked")
     public void prepare(
             String outputFormat, FeatureCollectionResponse results, GetFeatureRequest request)
@@ -228,14 +222,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param output DOCUMENT ME!
-     * @throws ServiceException DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     * @throws IllegalStateException DOCUMENT ME!
-     */
+    /** */
     public void encode(
             OutputStream output, FeatureCollectionResponse results, GetFeatureRequest request)
             throws ServiceException, IOException {

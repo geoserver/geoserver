@@ -155,9 +155,6 @@ public class GeoServerConfigurationLock {
     /**
      * Tries to upgrade the current read lock to a write lock. If the current lock is not a read
      * one, it will throw an {@link IllegalStateException}
-     *
-     * @return True if the lock upgrade succeeded, false in case it failed. In case of failure the
-     *     previously owned read lock is also lost.
      */
     public void tryUpgradeLock() {
         LockType lock = currentLock.get();

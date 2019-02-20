@@ -687,7 +687,6 @@ public class WMS implements ApplicationContextAware {
      * Grabs the list of allowed MIME-Types for the GetMap operation from the set of {@link
      * GetMapOutputFormat}s registered in the application context.
      *
-     * @param applicationContext The application context where to grab the GetMapOutputFormats from.
      * @see GetMapOutputFormat#getContentType()
      */
     public Set<String> getAvailableMapFormatNames() {

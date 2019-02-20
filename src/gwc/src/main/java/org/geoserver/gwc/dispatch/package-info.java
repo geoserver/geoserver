@@ -1,3 +1,8 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 /**
  * Classes to integrate GWC service requests with the GeoServer {@link org.geoserver.ows.Dispatcher}
  * framework.

@@ -10,10 +10,8 @@ QGIS style exporting abilities have been evolving over time, as a reference:
 
 * For vector data QGIS exports SLD 1.1 styles that can be read by GeoServer. In order to get
   the suitable results it's important to use QGIS 3.0 or newer, and GeoServer 2.13.x or newer.
-* Raster data styling export is new in QGIS 3.5 (yet to be released at the time of writing, with
-  a possible backport to 3.4 under discussion). This new version exports SLD 1.0 styles with
-  vendor extensions to support constrast streching that most recent GeoServer versions support
-  properly. For older QGIS versions limited export functionality is available using the SLD4Raster plugin.
+* Raster data styling export is new in QGIS 3.4.5 (yet to be released at the time of writing).
+  This new version exports SLD 1.0 styles with vendor extensions to support constrast streching that most recent GeoServer versions support properly. For older QGIS versions limited export functionality is available using the SLD4Raster plugin.
 
 For the export it is advised to use the :guilabel:`Save As` functionality available in the style dialog,
 as indicated below in this guide. Other plugins exist that streamline the export process, but they
@@ -98,7 +96,7 @@ Exporting raster symbology
 
 This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
 
-#. Open QGIS (minimum version 3.5)
+#. Open QGIS (minimum version 3.4.5)
 #. Load the :file:`sfdem.tif` raster from the GeoServer data directory, :file:`<GEOSERVER_DATA_DIR>/data/sf/sfdem.tif`
 #. Double click the layer to open the :guilabel:`Properties` dialog and switch to the :guilabel:`Symbology` page.
 #. Choose a `Singleband pseudocolor` rendering, Generate :guilabel:`Min / Max Value Settings` using :guilabel:`Mean +/- standard deviation` with using ``1.5`` standard deviations. Generate a 5 classes :guilabel:`Linear` interpolated map, as shown in figure.

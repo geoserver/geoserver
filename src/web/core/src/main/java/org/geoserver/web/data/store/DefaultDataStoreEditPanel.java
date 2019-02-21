@@ -146,7 +146,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
      *
      * @param paramMetadata
      */
-    private Panel getInputComponent(
+    protected Panel getInputComponent(
             final String componentId, final IModel paramsModel, final ParamInfo paramMetadata) {
 
         final GeoServerEnvironment gsEnvironment =

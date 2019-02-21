@@ -132,7 +132,9 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         loginAsCite();
 
         tester.startPage(WorkspaceNewPage.class);
-        tester.assertRenderedPage(UnauthorizedPage.class);
+        // geos-9108 fix
+        // tester.assertRenderedPage(UnauthorizedPage.class);
+        tester.assertRenderedPage(WorkspaceNewPage.class);
     }
 
     @Test

@@ -85,6 +85,12 @@ under the License.
     <rule ref="category/java/errorprone.xml/UnnecessaryConversionTemporary" />
     <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals" />
     <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable" />
+    <rule ref="category/java/errorprone.xml/CloseResource" >
+        <properties>
+            <!-- When calling the store to close, PMD wants the full prefix before the call to the method to match, so let's try to use common var names for store ... -->
+            <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt"/>
+        </properties>
+    </rule>
 
     <rule ref="category/java/multithreading.xml/AvoidThreadGroup" />
     <rule ref="category/java/multithreading.xml/DontCallThreadRun" />

@@ -64,7 +64,7 @@ On windows the files in question might look like::
    gdalalljni.dll
 
 Locating a pre-build GDAL that includes Java support might be difficult. One option is to download
-the ``gisinternals.com <http://www.gisinternals.com/release.php>`_ packages, in particular the 
+the `gisinternals.com <http://www.gisinternals.com/release.php>`_ packages, in particular the 
 release zip packages including both mapserver and GDAL (these are rather complete and include the necessary libraries,
 whilst the MSI installers are typically missing the Java support).
 

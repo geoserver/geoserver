@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePoolCallback;
@@ -19,30 +19,23 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
-public class LongLatGeometryResourcePoolCallback
+public class GeometryGenerationResourcePoolCallback
         implements ResourcePoolCallback<SimpleFeatureType, SimpleFeature> {
 
     private static Logger LOGGER =
-            Logging.getLogger(LongLatGeometryResourcePoolCallback.class.getPackage().getName());
+            Logging.getLogger(GeometryGenerationResourcePoolCallback.class.getPackage().getName());
 
     private static final long serialVersionUID = 1L;
 
-    private final LongLatGeometryGenerationStrategy strategy;
+    private final GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> strategy;
 
-    public LongLatGeometryResourcePoolCallback(LongLatGeometryGenerationStrategy strategy) {
+    public GeometryGenerationResourcePoolCallback(GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> strategy) {
         this.strategy = strategy;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param info feature layer info
-     * @param unused this implementation does not need it
-     * @return true if supporting strategy can handle given info or false otherwise
-     */
     @Override
-    public boolean canBuildFeatureType(FeatureTypeInfo info, SimpleFeatureType unused) {
-        return strategy.canHandle(info);
+    public boolean canBuildFeatureType(FeatureTypeInfo info, SimpleFeatureType simpleFeatureType) {
+        return strategy.canHandle(info, simpleFeatureType);
     }
 
     @Override
@@ -67,7 +60,7 @@ public class LongLatGeometryResourcePoolCallback
     public FeatureSource<SimpleFeatureType, SimpleFeature> wrapFeatureSource(
             FeatureTypeInfo info, FeatureSource<SimpleFeatureType, SimpleFeature> featureSource) {
         if (canWrapFeatureSource(info, null)) {
-            return new LongLatFeatureSource(info, (SimpleFeatureSource) featureSource, strategy);
+            return new GeometryGenerationFeatureSource(info, (SimpleFeatureSource) featureSource, strategy);
         }
         return featureSource;
     }

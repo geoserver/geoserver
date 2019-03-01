@@ -18,7 +18,7 @@
 
   <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy"/>
 
-  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryResourcePoolCallback">
+  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.GeometryGenerationResourcePoolCallback">
     <constructor-arg ref="longLatStrategy"/>
   </bean>
 

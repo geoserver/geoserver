@@ -61,6 +61,15 @@ public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Fe
     void configure(FeatureTypeInfo info);
 
     /**
+     * Checks whether this strategy can be applied for given feature type.
+     *
+     * @param info feature layer info
+     * @param featureType source feature type
+     * @return true if can be applied, false otherwise
+     */
+    boolean canHandle(FeatureTypeInfo info, FT featureType);
+    
+    /**
      * Enhances definition of the feature without geometry with {@link GeometryAttribute} based on
      * particular feature attributes.
      *

@@ -57,4 +57,9 @@ public class DummyGeometryGenerationStrategy implements GeometryGenerationStrate
     public void configure(FeatureTypeInfo info) {
         configured = true;
     }
+
+    @Override
+    public boolean canHandle(FeatureTypeInfo info, FeatureType featureType) {
+        return true;
+    }
 }

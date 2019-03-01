@@ -3,16 +3,13 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries;
 
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.generatedgeometries.GeometryGenerationStrategy;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.feature.DefaultFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
@@ -20,13 +17,13 @@ import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
 
-class LongLatFeatureSource extends DecoratingSimpleFeatureSource {
+class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
 
     private final FeatureTypeInfo featureTypeInfo;
     private final GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> strategy;
     private SimpleFeatureType cachedFeatureType;
 
-    LongLatFeatureSource(
+    GeometryGenerationFeatureSource(
             FeatureTypeInfo featureTypeInfo,
             SimpleFeatureSource delegate,
             GeometryGenerationStrategy strategy) {
@@ -55,32 +52,22 @@ class LongLatFeatureSource extends DecoratingSimpleFeatureSource {
 
     @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
-        return super.getFeatures();
+        SimpleFeatureCollection features = super.getFeatures();
+        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
     }
 
     @Override
     public SimpleFeatureCollection getFeatures(Filter srcFilter) throws IOException {
         Filter filter = strategy.convertFilter(featureTypeInfo, srcFilter);
         SimpleFeatureCollection features = super.getFeatures(filter);
-        return getFeaturesWithGeom(features);
+        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
     }
 
     @Override
     public SimpleFeatureCollection getFeatures(Query srcQuery) throws IOException {
         Query query = strategy.convertQuery(featureTypeInfo, srcQuery);
         SimpleFeatureCollection features = super.getFeatures(query);
-        return getFeaturesWithGeom(features);
+        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
     }
 
-    private SimpleFeatureCollection getFeaturesWithGeom(SimpleFeatureCollection features) {
-        SimpleFeatureType schema = getSchema();
-        DefaultFeatureCollection collection = new DefaultFeatureCollection(null, schema);
-        SimpleFeatureIterator iterator = features.features();
-        while (iterator.hasNext()) {
-            SimpleFeature next = iterator.next();
-            collection.add(strategy.generateGeometry(featureTypeInfo, schema, next));
-        }
-        iterator.close();
-        return collection;
-    }
 }

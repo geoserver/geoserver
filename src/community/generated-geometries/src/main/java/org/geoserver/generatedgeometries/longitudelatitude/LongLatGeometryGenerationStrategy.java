@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Point;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -99,7 +98,8 @@ public class LongLatGeometryGenerationStrategy
         return NAME;
     }
 
-    boolean canHandle(FeatureTypeInfo info) {
+    @Override
+    public boolean canHandle(FeatureTypeInfo info, SimpleFeatureType unused) {
         return info != null
                 && (featureTypeInfos.contains(info.getId())
                         || getStrategyName(info).map(NAME::equals).orElse(false));
@@ -121,15 +121,11 @@ public class LongLatGeometryGenerationStrategy
         LongLatConfiguration configuration = getLongLatConfiguration(info);
 
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.init(src);
         builder.setName(src.getName());
         builder.setCRS(DefaultGeographicCRS.WGS84);
         builder.add(configuration.geomAttributeName, Point.class);
-
-        for (AttributeDescriptor ad : src.getAttributeDescriptors()) {
-            if (!ad.getLocalName().equalsIgnoreCase(configuration.geomAttributeName)) {
-                builder.add(ad);
-            }
-        }
+        builder.setDefaultGeometry(configuration.geomAttributeName);
 
         SimpleFeatureType simpleFeatureType = builder.buildFeatureType();
         cache.put(simpleFeatureType.getName(), simpleFeatureType);

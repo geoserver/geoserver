@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.core;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -14,23 +14,29 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 import java.util.NoSuchElementException;
 
-public class GeometryGenerationFeatureCollection extends DecoratingSimpleFeatureCollection {
+class GeometryGenerationFeatureCollection extends DecoratingSimpleFeatureCollection {
 
     private final FeatureTypeInfo featureTypeInfo;
     private final SimpleFeatureType schema;
     private final GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> strategy;
-    
-    protected GeometryGenerationFeatureCollection(
+
+    GeometryGenerationFeatureCollection(
             SimpleFeatureCollection delegate,
             FeatureTypeInfo featureTypeInfo,
             SimpleFeatureType schema,
             GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> strategy) {
         super(delegate);
+
         this.featureTypeInfo = featureTypeInfo;
         this.schema = schema;
         this.strategy = strategy;
     }
 
+    @Override
+    public SimpleFeatureType getSchema() {
+        return this.schema;
+    }
+    
     @Override
     public SimpleFeatureIterator features() {
         return new GeometryGenerationCollectionIterator(super.features());

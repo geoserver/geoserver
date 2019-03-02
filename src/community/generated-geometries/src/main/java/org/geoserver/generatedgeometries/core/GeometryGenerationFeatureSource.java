@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.core;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;

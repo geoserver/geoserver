@@ -3,10 +3,8 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.core;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.Query;
 import org.opengis.feature.Feature;
@@ -113,12 +111,4 @@ public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Fe
      */
     Query convertQuery(FeatureTypeInfo info, Query query);
 
-    /**
-     * A factory of UI for methodology configuration.
-     *
-     * @param id identifier of UI component wrapper
-     * @param model data model passed to UI
-     * @return root of UI component tree
-     */
-    Component createUI(String id, IModel model);
 }

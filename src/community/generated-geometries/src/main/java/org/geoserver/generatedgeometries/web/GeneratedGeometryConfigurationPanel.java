@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.web;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,7 +28,6 @@ import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geoserver.web.data.resource.FeatureResourceConfigurationPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 
@@ -58,16 +57,16 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
 
     private Fragment content;
     private final Map<String, Component> componentMap = new HashMap<>();
-    private ChoiceRenderer<GeometryGenerationStrategy> choiceRenderer =
-            new ChoiceRenderer<GeometryGenerationStrategy>() {
+    private ChoiceRenderer<GeometryGenerationStrategyUIGenerator> choiceRenderer =
+            new ChoiceRenderer<GeometryGenerationStrategyUIGenerator>() {
                 @Override
-                public Object getDisplayValue(GeometryGenerationStrategy ggm) {
+                public Object getDisplayValue(GeometryGenerationStrategyUIGenerator geometryGenerationStrategyPanel) {
                     return new StringResourceModel(
-                                    format("geometryGenerationMethodology.%s", ggm.getName()))
+                                    format("geometryGenerationMethodology.%s", geometryGenerationStrategyPanel.getName()))
                             .getString();
                 }
             };
-    private GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> selectedStrategy;
+    private GeometryGenerationStrategyUIGenerator selectedStrategy;
     private WebMarkupContainer methodologyConfiguration;
 
     public GeneratedGeometryConfigurationPanel(String id, final IModel model) {
@@ -88,8 +87,7 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private void init(IModel model) {
         if (isSimpleFeatureType(model)) {
             initMainPanel();
-            List<GeometryGenerationStrategy> strategies =
-                    extensionFinder.find(GeometryGenerationStrategy.class);
+            List<GeometryGenerationStrategyUIGenerator> strategies = extensionFinder.find(GeometryGenerationStrategyUIGenerator.class);
             initMethodologyDropdown(strategies, model);
             initActionLink(model);
         } else {
@@ -102,8 +100,8 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     }
 
     private void initMethodologyDropdown(
-            List<GeometryGenerationStrategy> strategies, IModel model) {
-        DropDownChoice<GeometryGenerationStrategy> methodologyDropDown =
+            List<GeometryGenerationStrategyUIGenerator> strategies, IModel model) {
+        DropDownChoice<GeometryGenerationStrategyUIGenerator> methodologyDropDown =
                 new DropDownChoice<>(
                         "methodologyDropDown",
                         new PropertyModel<>(this, "selectedStrategy"),
@@ -114,9 +112,9 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
         methodologyConfiguration.setOutputMarkupId(true);
         content.add(methodologyConfiguration);
 
-        for (GeometryGenerationStrategy ggm : strategies) {
-            Component configuration = ggm.createUI("configuration", model);
-            componentMap.put(ggm.getName(), configuration);
+        for (GeometryGenerationStrategyUIGenerator ggsp : strategies) {
+            Component configuration = ggsp.createUI("configuration", model);
+            componentMap.put(ggsp.getName(), configuration);
             configuration.setVisible(false);
         }
 

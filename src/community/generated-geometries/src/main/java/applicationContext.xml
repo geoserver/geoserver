@@ -13,12 +13,17 @@
     <property name="id" value="generatedGeometry"/>
     <property name="titleKey" value="data.resource.config.generated-geometry"/>
     <property name="componentClass"
-              value="org.geoserver.generatedgeometries.GeneratedGeometryConfigurationPanel"/>
+              value="org.geoserver.generatedgeometries.web.GeneratedGeometryConfigurationPanel"/>
   </bean>
 
-  <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy"/>
+  
+  <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy"/>
+  
+  <bean id="longLatStrategyPanel" class="org.geoserver.generatedgeometries.web.longitudelatitude.LongLatGeometryStrategyUIGenerator">
+    <constructor-arg ref="longLatStrategy"/>
+  </bean>
 
-  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.GeometryGenerationResourcePoolCallback">
+  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.core.GeometryGenerationResourcePoolCallback">
     <constructor-arg ref="longLatStrategy"/>
   </bean>
 

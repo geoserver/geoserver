@@ -4,7 +4,7 @@
  *  application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries.core.longitudelatitude;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -20,17 +20,17 @@ import java.io.IOException;
 
 import static java.util.Collections.emptyMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.bbox;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.enableGeometryGenerationStrategy;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.filenameOf;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.setupXMLNamespaces;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.wholeWorld;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.wmsUrl;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.wmsUrlStdSize;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.bbox;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.enableGeometryGenerationStrategy;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.setupXMLNamespaces;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wholeWorld;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrl;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrlStdSize;
 import static org.junit.Assert.assertEquals;
 
 public class LongLatWMSTest extends GeoServerSystemTestSupport {

@@ -1,10 +1,9 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries.core.longitudelatitude;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -19,14 +18,14 @@ import java.io.IOException;
 import static java.util.Collections.emptyMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.enableGeometryGenerationStrategy;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.filenameOf;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.setupXMLNamespaces;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.wfsUrl;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.enableGeometryGenerationStrategy;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.setupXMLNamespaces;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wfsUrl;
 
 public class LongLatWFSTest extends GeoServerSystemTestSupport {
 

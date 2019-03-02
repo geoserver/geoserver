@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries.web.longitudelatitude;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -21,8 +21,10 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy.LongLatConfiguration;
+import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LongLatConfiguration;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.CRSPanel;
+import org.geoserver.web.wicket.SRSToCRSModel;
 import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
@@ -50,6 +52,7 @@ public class LongLatGeometryConfigurationPanel extends Panel {
     private TextField<String> geometryAttributeNameTextField;
     private DropDownChoice<AttributeTypeInfo> lonAttributeDropDown;
     private DropDownChoice<AttributeTypeInfo> latAttributeDropDown;
+    private CRSPanel declaredCRS;
 
     public LongLatGeometryConfigurationPanel(String panelId, IModel model) {
         this(panelId, model, GeoServerApplication::get);
@@ -85,8 +88,11 @@ public class LongLatGeometryConfigurationPanel extends Panel {
                         attributes,
                         choiceRenderer);
         add(latAttributeDropDown);
-
-        addAjaxTrigger(geometryAttributeNameTextField, lonAttributeDropDown, latAttributeDropDown);
+        declaredCRS =
+                new CRSPanel(
+                        "srsPicker", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
+        add(declaredCRS);
+        addAjaxTrigger(geometryAttributeNameTextField, lonAttributeDropDown, latAttributeDropDown, declaredCRS);
     }
 
     private <T> PropertyModel<T> forExpression(String expression) {
@@ -126,7 +132,8 @@ public class LongLatGeometryConfigurationPanel extends Panel {
     private boolean isValid() {
         return isNotEmpty(geometryAttributeName)
                 && selectedLonAttribute != null
-                && selectedLatAttribute != null;
+                && selectedLatAttribute != null
+                && declaredCRS.getCRS() != null;
     }
 
     LongLatConfiguration getLongLatConfiguration() throws ConfigurationException {
@@ -136,6 +143,7 @@ public class LongLatGeometryConfigurationPanel extends Panel {
         return new LongLatConfiguration(
                 geometryAttributeName,
                 selectedLonAttribute.getName(),
-                selectedLatAttribute.getName());
+                selectedLatAttribute.getName(),
+                declaredCRS.getCRS());
     }
 }

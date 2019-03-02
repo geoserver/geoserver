@@ -6,7 +6,7 @@
 
 package org.geoserver.platform;
 
-import org.geoserver.generatedgeometries.GeometryGenerationStrategy;
+import org.geoserver.generatedgeometries.core.GeometryGenerationStrategy;
 
 import java.util.Arrays;
 import java.util.List;

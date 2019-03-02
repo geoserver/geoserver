@@ -1,11 +1,17 @@
+/*
+ * (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 /* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.core;
 
-import org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy;
+import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy;
 
 import static org.mockito.Mockito.mock;
 
@@ -15,6 +21,7 @@ public class GeometryGenerationResourcePoolCallbackTest {
             mock(LongLatGeometryGenerationStrategy.class);
     private GeometryGenerationResourcePoolCallback callback =
             new GeometryGenerationResourcePoolCallback(strategy);
+
       /*
     @Test
     public void testThatCanBuildFeatureType() {

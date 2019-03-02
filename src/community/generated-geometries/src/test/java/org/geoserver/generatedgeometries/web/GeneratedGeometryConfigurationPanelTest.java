@@ -1,10 +1,16 @@
 /*
+ * (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+/*
  *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
  */
 
-package org.geoserver.generatedgeometries;
+package org.geoserver.generatedgeometries.web;
 
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
@@ -14,8 +20,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.generatedgeometries.core.GeometryGenerationStrategy;
+import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData;
 import org.geoserver.generatedgeometries.dummy.DummyGeometryGenerationStrategy;
-import org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -27,11 +34,11 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatTestData.filenameOf;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
 import static org.geoserver.platform.TestGeoServerExtensionFinders.emptyFinder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -4,7 +4,7 @@
  * application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries.core.longitudelatitude;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;

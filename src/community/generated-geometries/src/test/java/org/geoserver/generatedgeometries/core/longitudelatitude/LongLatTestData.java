@@ -10,7 +10,7 @@
  *  application directory.
  */
 
-package org.geoserver.generatedgeometries.longitudelatitude;
+package org.geoserver.generatedgeometries.core.longitudelatitude;
 
 import com.google.common.base.Joiner;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -26,10 +26,10 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.geoserver.data.test.MockData.DEFAULT_PREFIX;
 import static org.geoserver.data.test.MockData.DEFAULT_URI;
-import static org.geoserver.generatedgeometries.GeometryGenerationStrategy.STRATEGY_METADATA_KEY;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
-import static org.geoserver.generatedgeometries.longitudelatitude.LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.GeometryGenerationStrategy.STRATEGY_METADATA_KEY;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME;
 
 public class LongLatTestData {
 

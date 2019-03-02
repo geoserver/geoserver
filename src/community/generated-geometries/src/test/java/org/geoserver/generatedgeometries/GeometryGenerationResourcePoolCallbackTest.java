@@ -26,9 +26,9 @@ public class GeometryGenerationResourcePoolCallbackTest {
         given(strategy.canHandle(info2)).willReturn(false);
 
         // then
-        assertFalse(callback.canBuildFeatureType(null, null));
-        assertTrue(callback.canBuildFeatureType(info1, null));
-        assertFalse(callback.canBuildFeatureType(info2, null));
+        assertFalse(callback.canHandleFeatureType(null, null));
+        assertTrue(callback.canHandleFeatureType(info1, null));
+        assertFalse(callback.canHandleFeatureType(info2, null));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class GeometryGenerationResourcePoolCallbackTest {
         SimpleFeatureType featureType = mock(SimpleFeatureType.class);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, featureType);
+        SimpleFeatureType builtFeatureType = callback.retypeFeatureType(info, featureType);
 
         // then
         assertSame(featureType, builtFeatureType);
@@ -56,7 +56,7 @@ public class GeometryGenerationResourcePoolCallbackTest {
                 .willThrow(ConfigurationException.class);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, featureType);
+        SimpleFeatureType builtFeatureType = callback.retypeFeatureType(info, featureType);
 
         // then
         assertSame(featureType, builtFeatureType);
@@ -73,7 +73,7 @@ public class GeometryGenerationResourcePoolCallbackTest {
                 .willReturn(expectedFeatureType);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, srcFeatureType);
+        SimpleFeatureType builtFeatureType = callback.retypeFeatureType(info, srcFeatureType);
 
         // then
         assertSame(expectedFeatureType, builtFeatureType);

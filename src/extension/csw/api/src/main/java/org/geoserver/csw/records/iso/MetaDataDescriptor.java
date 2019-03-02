@@ -76,11 +76,15 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         EmfComplexFeatureReader reader = EmfComplexFeatureReader.newInstance();
 
         SchemaIndex index = null;
+        SchemaIndex indexGMX = null;
         try {
             index =
                     reader.parse(
                             new URL(
                                     "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd"));
+            indexGMX =
+                    reader.parse(
+                            new URL("http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"));
         } catch (IOException e) {
             // this is fatal
             throw new RuntimeException(e);
@@ -102,6 +106,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         featureTypeRegistry.register(bboxType);
 
         featureTypeRegistry.addSchemas(index);
+        featureTypeRegistry.addSchemas(indexGMX);
 
         METADATA_TYPE =
                 (FeatureType)

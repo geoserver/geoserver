@@ -1103,10 +1103,9 @@ public class ResourcePool {
             ft = tb.buildFeatureType();
         } // end special case for SimpleFeatureType
 
-        for (ResourcePoolCallback callback : extensions(ResourcePoolCallback.class)) {
-            if (callback.canBuildFeatureType(info, ft)) {
-                ft = callback.buildFeatureType(info, ft);
-            }
+        // extension point for retyping the feature type
+        for (RetypeFeatureTypeCallback callback : extensions(RetypeFeatureTypeCallback.class)) {
+            ft = callback.retypeFeatureType(info, ft);
         }
 
         return ft;
@@ -1243,10 +1242,9 @@ public class ResourcePool {
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
                 getFeatureSourceInternal(info, hints);
 
-        for (ResourcePoolCallback callback : extensions(ResourcePoolCallback.class)) {
-            if (callback.canWrapFeatureSource(info, featureSource)) {
-                featureSource = callback.wrapFeatureSource(info, featureSource);
-            }
+        // extension point for wrapping a feature source
+        for (RetypeFeatureTypeCallback callback : extensions(RetypeFeatureTypeCallback.class)) {
+            featureSource = callback.wrapFeatureSource(info, featureSource);
         }
         return featureSource;
     }

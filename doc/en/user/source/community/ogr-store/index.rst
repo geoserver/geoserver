@@ -64,7 +64,7 @@ On windows the files in question might look like::
    gdalalljni.dll
 
 Locating a pre-build GDAL that includes Java support might be difficult. One option is to download
-the ``gisinternals.com <http://www.gisinternals.com/release.php>`_ packages, in particular the 
+the `gisinternals.com <http://www.gisinternals.com/release.php>`_ packages, in particular the 
 release zip packages including both mapserver and GDAL (these are rather complete and include the necessary libraries,
 whilst the MSI installers are typically missing the Java support).
 
@@ -109,3 +109,10 @@ OGR exposes access to data throught DataSource objects, which are not thread saf
 request at a time can use them. At the same time, they can be expensive to create and hold onto
 useful state, like in memory data caches, spatial indexes and the like.
 As such, they have been stored in a pool much like relational database connections.
+
+The :guilabel:`Prime DataSources` option can be enabled to force a full read of the source data
+before the GDAL ``DataSource`` object is used. In some formats this allows the creation of useful
+support data structures, like an in memory spatial index in the ``OpenFileGDB`` format.
+Since the full read can be expensive, care should be taken to configure the pooling options so that
+it gets reused as much as possible (e.g., setting a higher ``min connections``, eventually setting
+it to the same value as ``max connections``).

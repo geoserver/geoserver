@@ -16,9 +16,9 @@
               value="org.geoserver.generatedgeometries.web.GeneratedGeometryConfigurationPanel"/>
   </bean>
 
-  
+
   <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy"/>
-  
+
   <bean id="longLatStrategyPanel" class="org.geoserver.generatedgeometries.web.longitudelatitude.LongLatGeometryStrategyUIGenerator">
     <constructor-arg ref="longLatStrategy"/>
   </bean>

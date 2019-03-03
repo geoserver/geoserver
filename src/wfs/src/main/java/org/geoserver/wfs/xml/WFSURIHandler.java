@@ -74,7 +74,7 @@ public class WFSURIHandler extends URIHandlerImpl {
                 LOGGER.log(Level.WARNING, "Unable to determine network interface info", ex);
             }
 
-            return Collections.list(e);
+            return e != null ? Collections.list(e) : Collections.emptyList();
         }
     }
 

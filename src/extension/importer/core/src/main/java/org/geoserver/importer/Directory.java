@@ -158,54 +158,57 @@ public class Directory extends FileData {
             Set<File> all = new LinkedHashSet<File>(Arrays.asList(fileList));
 
             // scan all the files looking for spatial ones
-            for (File f : dir.listFiles()) {
-                if (f.isHidden()) {
-                    all.remove(f);
-                    continue;
-                }
-                if (f.isDirectory()) {
-                    if (!recursive && !f.equals(file)) {
-                        // skip it
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isHidden()) {
+                        all.remove(f);
                         continue;
                     }
-                    // @hacky - ignore __MACOSX
-                    // this could probably be dealt with in a better way elsewhere
-                    // like by having Directory ignore the contents since they
-                    // are all hidden files anyway
-                    if (!"__MACOSX".equals(f.getName())) {
-                        Directory d = new Directory(f);
-                        d.prepare(m);
+                    if (f.isDirectory()) {
+                        if (!recursive && !f.equals(file)) {
+                            // skip it
+                            continue;
+                        }
+                        // @hacky - ignore __MACOSX
+                        // this could probably be dealt with in a better way elsewhere
+                        // like by having Directory ignore the contents since they
+                        // are all hidden files anyway
+                        if (!"__MACOSX".equals(f.getName())) {
+                            Directory d = new Directory(f);
+                            d.prepare(m);
 
-                        files.add(d);
+                            this.files.add(d);
+                        }
+                        // q.push(f);
+                        continue;
                     }
-                    // q.push(f);
-                    continue;
-                }
 
-                // special case for .aux files, they are metadata but get picked up as readable
-                // by the erdas imagine reader...just ignore them for now
-                if ("aux".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
-                    continue;
-                }
+                    // special case for .aux files, they are metadata but get picked up as readable
+                    // by the erdas imagine reader...just ignore them for now
+                    if ("aux".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
+                        continue;
+                    }
 
-                // determine if this is a spatial format or not
-                DataFormat format = DataFormat.lookup(f);
+                    // determine if this is a spatial format or not
+                    DataFormat format = DataFormat.lookup(f);
 
-                if (format != null) {
-                    SpatialFile sf = newSpatialFile(f, format);
+                    if (format != null) {
+                        SpatialFile sf = newSpatialFile(f, format);
 
-                    // gather up the related files
-                    sf.prepare(m);
+                        // gather up the related files
+                        sf.prepare(m);
 
-                    files.add(sf);
+                        this.files.add(sf);
 
-                    all.removeAll(sf.allFiles());
+                        all.removeAll(sf.allFiles());
+                    }
                 }
             }
 
             // take any left overs and add them as unspatial/unrecognized
             for (File f : all) {
-                files.add(new ASpatialFile(f));
+                this.files.add(new ASpatialFile(f));
             }
         }
 

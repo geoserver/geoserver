@@ -431,13 +431,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         } else {
             LayerGroupInfo lg = getLayerGroupInfo();
             if (lg != null) {
-                if (lg != null) {
-                    if (lg.getTitle() != null) {
-                        title = lg.getTitle();
-                    }
-                    if (lg.getAbstract() != null) {
-                        description = lg.getAbstract();
-                    }
+                if (lg.getTitle() != null) {
+                    title = lg.getTitle();
+                }
+                if (lg.getAbstract() != null) {
+                    description = lg.getAbstract();
                 }
             }
         }

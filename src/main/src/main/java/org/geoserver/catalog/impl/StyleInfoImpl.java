@@ -172,24 +172,6 @@ public class StyleInfoImpl implements StyleInfo {
                 .toString();
     }
 
-    private Object readResolve() {
-        // this check is here to enable smooth migration from old configurations that don't have
-        // the version property, and a transition from the deprecated sldVersion property
-
-        if (format == null) {
-            format = SLDHandler.FORMAT;
-        }
-
-        if (languageVersion == null && sldVersion != null) {
-            languageVersion = sldVersion;
-        }
-        if (languageVersion == null) {
-            languageVersion = SLDHandler.VERSION_10;
-        }
-
-        return this;
-    }
-
     @Override
     public String prefixedName() {
         if (workspace != null) {

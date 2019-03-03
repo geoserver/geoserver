@@ -60,7 +60,7 @@ class SVGWriter extends OutputStreamWriter {
 
         // do not show decimal separator if it is not needed
         formatter.setDecimalSeparatorAlwaysShown(false);
-        formatter.setDecimalFormatSymbols(null);
+        formatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
         // set default number of fraction digits
         formatter.setMaximumFractionDigits(5);
@@ -212,12 +212,6 @@ class SVGWriter extends OutputStreamWriter {
             setGeometryType(gtype);
 
             setPointsAsCircles("#circle".equals(style));
-
-            if ((style != null) && !"#circle".equals(style) && style.startsWith("#")) {
-                style = style.substring(1);
-            } else {
-                style = null;
-            }
 
             setUpWriterHandler(featureType, doCollect);
 

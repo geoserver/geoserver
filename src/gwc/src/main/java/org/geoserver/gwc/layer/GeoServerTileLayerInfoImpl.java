@@ -22,6 +22,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -62,8 +63,10 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     private Set<String> mimeFormats;
 
     @SuppressWarnings("unused")
+    @SuppressFBWarnings("SE_BAD_FIELD")
     private List<FormatModifier> formatModifiers;
 
+    @SuppressFBWarnings("SE_BAD_FIELD")
     private Set<XMLGridSubset> gridSubsets;
 
     @SuppressWarnings("unused")
@@ -85,6 +88,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      */
     private int expireCache;
 
+    @SuppressFBWarnings("SE_BAD_FIELD")
     private List<ExpirationRule> expireCacheList;
 
     private int expireClients;

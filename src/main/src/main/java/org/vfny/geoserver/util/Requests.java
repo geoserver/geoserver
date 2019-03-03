@@ -82,19 +82,19 @@ public final class Requests {
                                 .getSession()
                                 .getServletContext()
                                 .getInitParameter(PROXY_PARAM);
-            }
 
-            if ((url == null) || (url.trim().length() == 0)) {
-                url =
-                        httpServletRequest.getScheme()
-                                + "://"
-                                + httpServletRequest.getServerName()
-                                + ":"
-                                + httpServletRequest.getServerPort()
-                                + httpServletRequest.getContextPath()
-                                + "/";
-            } else {
-                url = appendContextPath(url, httpServletRequest.getContextPath());
+                if ((url == null) || (url.trim().length() == 0)) {
+                    url =
+                            httpServletRequest.getScheme()
+                                    + "://"
+                                    + httpServletRequest.getServerName()
+                                    + ":"
+                                    + httpServletRequest.getServerPort()
+                                    + httpServletRequest.getContextPath()
+                                    + "/";
+                } else {
+                    url = appendContextPath(url, httpServletRequest.getContextPath());
+                }
             }
         }
 
@@ -124,19 +124,19 @@ public final class Requests {
                                 .getSession()
                                 .getServletContext()
                                 .getInitParameter(PROXY_PARAM);
-            }
 
-            if ((url == null) || (url.trim().length() == 0)) {
-                url =
-                        httpServletRequest.getScheme()
-                                + "://"
-                                + httpServletRequest.getServerName()
-                                + ":"
-                                + httpServletRequest.getServerPort()
-                                + httpServletRequest.getRequestURI()
-                                + "/";
-            } else {
-                url = appendContextPath(url, httpServletRequest.getRequestURI());
+                if (((url == null) || (url.trim().length() == 0))) {
+                    url =
+                            httpServletRequest.getScheme()
+                                    + "://"
+                                    + httpServletRequest.getServerName()
+                                    + ":"
+                                    + httpServletRequest.getServerPort()
+                                    + httpServletRequest.getRequestURI()
+                                    + "/";
+                } else {
+                    url = appendContextPath(url, httpServletRequest.getRequestURI());
+                }
             }
         }
 
@@ -157,6 +157,9 @@ public final class Requests {
     public static String appendContextPath(String url, String contextPath) {
         if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
+        }
+        if (contextPath == null) {
+            return url;
         }
 
         if (contextPath.startsWith("/")) {

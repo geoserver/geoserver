@@ -163,9 +163,9 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             }
             LookAt la = lookAtFactory.buildLookAt(layerBounds, lookAtOptions, false);
             folder.setAbstractView(la);
-        }
 
-        encodeNetworkLinks(folder, layer, bounds, zoomLevel);
+            encodeNetworkLinks(folder, layer, bounds, zoomLevel);
+        }
     }
 
     /**

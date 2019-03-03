@@ -25,6 +25,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.xml.transform.TransformerBase;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
@@ -92,7 +93,7 @@ public class DefaultWebMapService
     public static Boolean TRANSPARENT = Boolean.TRUE;
 
     /** default for 'transparent' parameter. */
-    public static ExecutorService RENDERING_POOL;
+    public static volatile ExecutorService RENDERING_POOL;
 
     /** default for 'bbox' paramter */
     public static ReferencedEnvelope BBOX =
@@ -166,6 +167,7 @@ public class DefaultWebMapService
     }
 
     /** @see ApplicationContextAware#setApplicationContext(ApplicationContext) */
+    @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // method is not called by multiple threads
     public void setApplicationContext(ApplicationContext context) throws BeansException {
 
         // first time initialization of line width optimization flag

@@ -27,7 +27,6 @@ import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 public class DefaultProcessManager
         implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
@@ -89,11 +88,9 @@ public class DefaultProcessManager
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof ContextRefreshedEvent) {
-            if (event instanceof ContextClosedEvent) {
-                synchService.shutdownNow();
-                asynchService.shutdownNow();
-            }
+        if (event instanceof ContextClosedEvent) {
+            synchService.shutdownNow();
+            asynchService.shutdownNow();
         }
     }
 

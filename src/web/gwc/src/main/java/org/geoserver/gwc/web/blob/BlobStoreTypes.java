@@ -28,17 +28,13 @@ public final class BlobStoreTypes {
         if (TYPES == null) {
             // the treemap with comparator makes sure that the types are always displayed in the
             // same order, alphabetically sorted on name
-            TYPES =
-                    new TreeMap<Class<? extends BlobStoreInfo>, BlobStoreType<?>>(
-                            new Comparator<Class<?>>() {
-                                @Override
-                                public int compare(Class<?> o1, Class<?> o2) {
-                                    return o1.toString().compareTo(o2.toString());
-                                }
-                            });
+
+            TreeMap<Class<? extends BlobStoreInfo>, BlobStoreType<?>> tmp =
+                    new TreeMap<>(Comparator.comparing(Object::toString));
             for (BlobStoreType<?> type : GeoWebCacheExtensions.extensions(BlobStoreType.class)) {
-                TYPES.put(type.getConfigClass(), type);
+                tmp.put(type.getConfigClass(), type);
             }
+            TYPES = tmp;
         }
         return TYPES;
     }

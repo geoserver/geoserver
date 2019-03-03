@@ -100,29 +100,32 @@ public class SpatialFile extends FileData {
         // getBaseName only gets the LAST extension so beware for .shp.aux.xml stuff
         final String baseName = getBaseName(file.getName());
 
-        for (File f : file.getParentFile().listFiles()) {
-            if (f.equals(file)) {
-                continue;
-            }
+        File[] files = file.getParentFile().listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.equals(file)) {
+                    continue;
+                }
 
-            if (!f.getName().startsWith(baseName)) {
-                continue;
-            }
+                if (!f.getName().startsWith(baseName)) {
+                    continue;
+                }
 
-            if (!f.isFile()) {
-                continue;
-            }
+                if (!f.isFile()) {
+                    continue;
+                }
 
-            String ext = f.getName().substring(baseName.length());
-            // once the basename is stripped, extension(s) should be present
-            if (ext.charAt(0) == '.') {
-                if (".prj".equalsIgnoreCase(ext)) {
-                    prjFile = f;
-                } else if (styleFile == null && styleExtensions.contains(ext.substring(1))) {
-                    // TODO: deal with multiple style files? for now we just grab the first
-                    styleFile = f;
-                } else {
-                    suppFiles.add(f);
+                String ext = f.getName().substring(baseName.length());
+                // once the basename is stripped, extension(s) should be present
+                if (ext.charAt(0) == '.') {
+                    if (".prj".equalsIgnoreCase(ext)) {
+                        prjFile = f;
+                    } else if (styleFile == null && styleExtensions.contains(ext.substring(1))) {
+                        // TODO: deal with multiple style files? for now we just grab the first
+                        styleFile = f;
+                    } else {
+                        suppFiles.add(f);
+                    }
                 }
             }
         }
@@ -205,7 +208,7 @@ public class SpatialFile extends FileData {
         return true;
     }
 
-    private Object readResolve() {
+    protected Object readResolve() {
         suppFiles = suppFiles == null ? new ArrayList<File>() : suppFiles;
         return this;
     }

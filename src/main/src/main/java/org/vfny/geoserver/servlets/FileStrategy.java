@@ -97,7 +97,7 @@ public class FileStrategy implements ServiceStrategy {
                             + " safe is "
                             + safe
                             + ", temp exists "
-                            + temp.exists());
+                            + (temp == null ? "false" : temp.exists()));
             throw new IllegalStateException("flush should only be called after getDestination");
         }
 

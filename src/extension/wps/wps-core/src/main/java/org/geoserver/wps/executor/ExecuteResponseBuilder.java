@@ -165,7 +165,7 @@ public class ExecuteResponseBuilder {
         }
 
         // status location, if asynch
-        if (status.isAsynchronous()
+        if ((status != null && status.isAsynchronous())
                 && request.getBaseUrl() != null
                 && status.getExecutionId() != null) {
             Map<String, String> kvp = new LinkedHashMap<String, String>();
@@ -205,7 +205,7 @@ public class ExecuteResponseBuilder {
         }
 
         // process outputs
-        if (status.getException() == null && outputs != null) {
+        if (status != null && status.getException() == null && outputs != null) {
             ProcessOutputsType1 processOutputs = f.createProcessOutputsType1();
             response.setProcessOutputs(processOutputs);
 

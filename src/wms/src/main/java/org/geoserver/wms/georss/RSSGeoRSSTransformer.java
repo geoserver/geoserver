@@ -143,6 +143,8 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
                     || (col == null && feature.getDefaultGeometry() != null)) {
                 geometryEncoding.encode((Geometry) feature.getDefaultGeometry(), this);
                 end("item");
+            } else if (col == null) {
+                end("item");
             } else {
                 geometryEncoding.encode(col.getGeometryN(0), this);
                 end("item");

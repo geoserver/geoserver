@@ -166,11 +166,8 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         List<String> selection = (List<String>) coveragesChoice.getModelObject();
                         compositionType = compositionChoice.getModelObject();
-                        List<CoverageBand> bandsList = new ArrayList<CoverageBand>();
-                        int i =
-                                currentOutputBands != null && !currentOutputBands.isEmpty()
-                                        ? currentOutputBands.size()
-                                        : 0;
+                        List<CoverageBand> bandsList = new ArrayList<>();
+                        int i = currentOutputBands.size();
                         for (Iterator<String> it = selection.iterator(); it.hasNext(); ) {
                             String coverage = it.next();
 
@@ -179,8 +176,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                             String bandIndex = null;
                             if (bandIndexChar != -1) {
                                 coverageName = coverage.substring(0, bandIndexChar);
-                                bandIndex =
-                                        coverage.substring(bandIndexChar + 1, coverage.length());
+                                bandIndex = coverage.substring(bandIndexChar + 1);
                             }
                             CoverageBand band =
                                     new CoverageBand(

@@ -171,9 +171,7 @@ public class WFSPPIO extends XMLPPIO {
 
         // ok, let's scan the entire collection then...
         CoordinateReferenceSystem crs = null;
-        SimpleFeatureIterator fi = null;
-        try {
-            fi = fc.features();
+        try (SimpleFeatureIterator fi = fc.features()) {
             while (fi.hasNext()) {
                 SimpleFeature f = fi.next();
                 CoordinateReferenceSystem featureCrs = null;
@@ -198,8 +196,6 @@ public class WFSPPIO extends XMLPPIO {
                     }
                 }
             }
-        } finally {
-            fi.close();
         }
 
         return crs;

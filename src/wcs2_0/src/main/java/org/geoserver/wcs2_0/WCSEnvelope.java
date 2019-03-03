@@ -81,6 +81,8 @@ public class WCSEnvelope extends AbstractEnvelope {
             // Make an empty envelope (min == max)
             // while keeping it legal (min <= max).
             minimum = maximum = 0.5 * (minimum + maximum);
+            ordinates[dimension + ordinates.length / 2] = maximum;
+            ordinates[dimension] = minimum;
         } else if (dimension >= 0 && dimension < ordinates.length / 2) {
             ordinates[dimension + ordinates.length / 2] = maximum;
             ordinates[dimension] = minimum;

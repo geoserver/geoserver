@@ -54,13 +54,13 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     transient ClassProperties cp;
 
     /** "dirty" properties */
-    HashMap<String, Object> properties;
+    volatile HashMap<String, Object> properties;
 
     /**
      * The old values of the live collections (we have to clone them because once the proxy commits
      * the original map will contain the same values as the new one, breaking getOldValues()
      */
-    HashMap<String, Object> oldCollectionValues;
+    volatile HashMap<String, Object> oldCollectionValues;
 
     public ModificationProxy(Object proxyObject) {
         this.proxyObject = proxyObject;

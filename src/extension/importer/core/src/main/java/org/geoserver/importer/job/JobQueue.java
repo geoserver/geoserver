@@ -93,16 +93,19 @@ public class JobQueue {
                         }
 
                         final Importer importer = GeoServerExtensions.bean(Importer.class);
-                        for (File f : importer.getUploadRoot().listFiles()) {
-                            if (f.isDirectory() && new File(f, ".clean-me").exists()) {
-                                try {
-                                    IOUtils.delete(f);
-                                } catch (IOException e) {
-                                    LOGGER.log(
-                                            Level.WARNING,
-                                            "It was not possible to cleanup Importer temporary folder "
-                                                    + f,
-                                            e);
+                        File[] files = importer.getUploadRoot().listFiles();
+                        if (files != null) {
+                            for (File f : files) {
+                                if (f.isDirectory() && new File(f, ".clean-me").exists()) {
+                                    try {
+                                        IOUtils.delete(f);
+                                    } catch (IOException e) {
+                                        LOGGER.log(
+                                                Level.WARNING,
+                                                "It was not possible to cleanup Importer temporary folder "
+                                                        + f,
+                                                e);
+                                    }
                                 }
                             }
                         }

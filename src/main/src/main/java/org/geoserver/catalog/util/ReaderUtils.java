@@ -317,7 +317,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return defaultValue;
         }
 
@@ -556,7 +556,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return 0.0;
         }
 

@@ -87,6 +87,9 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
         @Override
         public boolean equals(Object o) {
+            if (!(o instanceof SRS)) {
+                return false;
+            }
             return code.equals(((SRS) o).code);
         }
 

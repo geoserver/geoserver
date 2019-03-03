@@ -231,7 +231,7 @@ public class RasterizerController extends BaseSLDServiceController {
             final String[] labels = new String[classes + 1];
             final double[] quantities = new double[classes + 1];
 
-            ColorRamp colorRamp = null;
+            ColorRamp colorRamp;
             quantities[0] = min - DEFAULT_MIN_DECREMENT;
             if (colorMapType == ColorMap.TYPE_INTERVALS) {
                 max = max + DEFAULT_MIN_DECREMENT;
@@ -274,6 +274,8 @@ public class RasterizerController extends BaseSLDServiceController {
                         customRamp.setMid(Color.decode(midColor));
                     }
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown ramp type: " + ramp);
             }
             colorRamp.setNumClasses(classes);
 

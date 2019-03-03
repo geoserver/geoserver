@@ -1061,7 +1061,9 @@ public class CatalogBuilder {
                                 .toString());
 
         // request and response SRS's
-        if ((nativeCRS.getIdentifiers() != null) && !nativeCRS.getIdentifiers().isEmpty()) {
+        if (nativeCRS != null
+                && (nativeCRS.getIdentifiers() != null)
+                && !nativeCRS.getIdentifiers().isEmpty()) {
             cinfo.getRequestSRS()
                     .add(((Identifier) nativeCRS.getIdentifiers().toArray()[0]).toString());
             cinfo.getResponseSRS()

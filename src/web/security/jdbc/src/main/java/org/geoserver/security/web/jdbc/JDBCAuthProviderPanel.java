@@ -88,12 +88,11 @@ public class JDBCAuthProviderPanel
 
         // do the test
         Class.forName(get("driverClassName").getDefaultModelObjectAsString());
-        Connection cx =
+        try (Connection cx =
                 DriverManager.getConnection(
                         get("connectURL").getDefaultModelObjectAsString(),
                         get("username").getDefaultModelObjectAsString(),
-                        get("password").getDefaultModelObjectAsString());
-        cx.close();
+                        get("password").getDefaultModelObjectAsString())) {}
     }
 
     public String getUsername() {

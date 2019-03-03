@@ -21,9 +21,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.servlet.HandlerMapping;
 
 /** WFS Settings controller */
 @RestController
@@ -78,13 +75,7 @@ public class WFSSettingsController extends ServiceSettingsController {
                 new XStreamPersister.Callback() {
                     @Override
                     protected ServiceInfo getServiceObject() {
-                        Map<String, String> uriTemplateVars =
-                                (Map<String, String>)
-                                        RequestContextHolder.getRequestAttributes()
-                                                .getAttribute(
-                                                        HandlerMapping
-                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
-                                                        RequestAttributes.SCOPE_REQUEST);
+                        Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String workspace = uriTemplateVars.get("workspaceName");
                         ServiceInfo service;
                         if (workspace != null) {

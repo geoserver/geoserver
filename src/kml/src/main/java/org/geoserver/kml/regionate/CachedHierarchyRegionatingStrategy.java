@@ -35,6 +35,7 @@ import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.geotools.util.CanonicalSet;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.h2.tools.DeleteDbFiles;
 import org.locationtech.jts.geom.Envelope;
@@ -219,6 +220,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
      * @param dataDir
      * @param tile
      */
+    @SuppressFBWarnings(
+            "DMI_CONSTANT_DB_PASSWORD") // well spotted, but the db contents are not sensitive
     private Set<String> getFeaturesForTile(String dataDir, Tile tile) throws Exception {
         Connection conn = null;
         Statement st = null;

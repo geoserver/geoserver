@@ -15,7 +15,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -77,20 +76,11 @@ public class FeatureTemplate {
     /** The pattern used by DATETIME_FORMAT */
     public static String DATE_FORMAT_PATTERN = "MM/dd/yy";
 
-    /** Default date format produced by templates */
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-
     /** The pattern used by DATETIME_FORMAT */
     public static String DATETIME_FORMAT_PATTERN = "MM/dd/yy HH:mm:ss";
 
-    /** Default datetime format produced by templates */
-    public static SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat(DATETIME_FORMAT_PATTERN);
-
     /** The pattern used by DATETIME_FORMAT */
     public static String TIME_FORMAT_PATTERN = "HH:mm:ss";
-
-    /** Default time format produced by templates */
-    public static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat();
 
     /** Template cache used to avoid paying the cost of template lookup for each feature */
     Map templateCache = new HashMap();

@@ -92,12 +92,12 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         }
 
         @Override
-        public String getProperty(String key) {
+        public synchronized String getProperty(String key) {
             return (String) linkMap.get(key);
         }
 
         @Override
-        public String getProperty(String key, String defaultValue) {
+        public synchronized String getProperty(String key, String defaultValue) {
             return (String) (linkMap.containsKey(key) ? linkMap.get(key) : defaultValue);
         }
 

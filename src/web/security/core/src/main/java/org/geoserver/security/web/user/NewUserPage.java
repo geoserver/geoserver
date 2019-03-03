@@ -64,7 +64,7 @@ public class NewUserPage extends AbstractUserPage {
             }
         } catch (IOException ex) {
             try {
-                gaStore.load();
+                if (gaStore != null) gaStore.load();
             } catch (IOException ex2) {
             }
             throw ex;

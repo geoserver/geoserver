@@ -29,7 +29,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
 
-    ConcurrentHashMap<K, Queue<Pipelineable<K>>> pipelines;
+    volatile ConcurrentHashMap<K, Queue<Pipelineable<K>>> pipelines;
     ScheduledExecutorService executor;
     ExecutorService tasks;
 
@@ -61,11 +61,12 @@ public class PipeliningTaskQueue<K> implements Runnable {
     public void execute(K key, Runnable task, String desc) {
         Queue<Pipelineable<K>> pipeline = pipelines.get(key);
         if (pipeline == null) {
-            synchronized (pipelines) {
+            synchronized (this) {
                 pipeline = pipelines.get(key);
                 if (pipeline == null) {
                     pipeline = new ConcurrentLinkedQueue();
-                    pipelines.put(key, pipeline);
+                    Queue<Pipelineable<K>> other = pipelines.putIfAbsent(key, pipeline);
+                    if (other != null) pipeline = other;
                 }
             }
         }

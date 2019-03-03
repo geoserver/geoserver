@@ -68,6 +68,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.SLDNamedLayerValidator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -744,6 +745,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     StyleHandler styleHandler() {
         String format = styleModel.getObject().getFormat();
+        if (format == null) {
+            return Styles.handler(SLDHandler.FORMAT);
+        }
         return Styles.handler(format);
     }
 
@@ -867,7 +871,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         // The problem only exists for styles with an "sld" format (either explicitly or by
         // default).
-        if ("sld".equalsIgnoreCase(si.getFormat())) {
+        if ("sld".equalsIgnoreCase(si.getFormat()) || si.getFormat() == null) {
             String filename = si.getFilename();
             String filenameCss = filename.substring(0, filename.lastIndexOf('.')) + ".css";
             GeoServerDataDirectory dataDir =

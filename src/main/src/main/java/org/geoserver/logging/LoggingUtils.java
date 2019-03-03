@@ -186,7 +186,7 @@ public class LoggingUtils {
             // ok, the possibly-new 'logs' directory is in-place, with all the various configs
             // there.
             // Is the originally configured log4jconfigfile there now?
-            if (resource.getType() != Type.RESOURCE) {
+            if (resource == null || resource.getType() != Type.RESOURCE) {
                 LoggingInitializer.LOGGER.warning(
                         "Still couldn't find log4jConfigFile '"
                                 + configFileName

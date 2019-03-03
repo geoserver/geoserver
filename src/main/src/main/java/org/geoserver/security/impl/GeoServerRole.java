@@ -6,6 +6,7 @@
 package org.geoserver.security.impl;
 
 import java.util.Properties;
+import org.geotools.util.SuppressFBWarnings;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -90,6 +91,9 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
         return getAuthority().compareTo(o.getAuthority());
     }
 
+    // not sure why the equals would compare against types that are not a GeoServerRole
+    // suppressing for the moment...
+    @SuppressFBWarnings("EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS")
     public boolean equals(Object obj) {
         if (obj == null) return false;
 

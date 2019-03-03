@@ -331,18 +331,13 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         File outFile = new File(tempDir, originalSchema.getTypeName() + ".gml");
 
         // write out
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(outFile);
-
+        try (OutputStream os = new FileOutputStream(outFile)) {
             // let's invoke the transformer
             FeatureTransformer ft = new FeatureTransformer();
             ft.setNumDecimals(16);
             ft.getFeatureNamespaces()
                     .declarePrefix("gs", originalSchema.getName().getNamespaceURI());
             ft.transform(curCollection, os);
-        } finally {
-            os.close();
         }
 
         return outFile;

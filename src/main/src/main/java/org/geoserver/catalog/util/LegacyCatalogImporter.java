@@ -118,75 +118,81 @@ public class LegacyCatalogImporter {
         File featureTypes = new File(dir, "featureTypes");
         if (!featureTypes.exists()) featureTypes.mkdir();
         File[] featureTypeDirectories = featureTypes.listFiles();
-        for (int i = 0; i < featureTypeDirectories.length; i++) {
-            File featureTypeDirectory = featureTypeDirectories[i];
-            if (!featureTypeDirectory.isDirectory() || featureTypeDirectory.isHidden()) continue;
+        if (featureTypeDirectories != null) {
+            for (int i = 0; i < featureTypeDirectories.length; i++) {
+                File featureTypeDirectory = featureTypeDirectories[i];
+                if (!featureTypeDirectory.isDirectory() || featureTypeDirectory.isHidden())
+                    continue;
 
-            // load info.xml
-            File ftInfoFile = new File(featureTypeDirectory, "info.xml");
-            if (!ftInfoFile.exists()) {
-                LOGGER.fine(
-                        "No info.xml found in directory: '"
-                                + featureTypeDirectory.getName()
-                                + "', ignoring");
-                continue;
-            }
-
-            LegacyFeatureTypeInfoReader ftInfoReader = new LegacyFeatureTypeInfoReader();
-            try {
-                ftInfoReader.read(Files.asResource(ftInfoFile));
-                FeatureTypeInfo featureType = readFeatureType(ftInfoReader, featureTypeDirectory);
-                if (featureType == null) {
+                // load info.xml
+                File ftInfoFile = new File(featureTypeDirectory, "info.xml");
+                if (!ftInfoFile.exists()) {
+                    LOGGER.fine(
+                            "No info.xml found in directory: '"
+                                    + featureTypeDirectory.getName()
+                                    + "', ignoring");
                     continue;
                 }
-                catalog.add(featureType);
 
-                LOGGER.info("Loaded feature type '" + featureType.getPrefixedName() + "'");
-
-                // create a wms layer for the feature type
-                LayerInfo layer = factory.createLayer();
-                layer.setResource(featureType);
-                layer.setName(featureType.getName());
-                layer.setPath(ftInfoReader.wmsPath());
-                if (layer.getPath() == null) {
-                    layer.setPath("/");
-                }
-                layer.setType(PublishedType.VECTOR);
-
-                String defaultStyleName = ftInfoReader.defaultStyle();
-                if (defaultStyleName != null) {
-                    StyleInfo style = catalog.getStyleByName(defaultStyleName);
-                    if (style != null) {
-                        layer.setDefaultStyle(style);
+                LegacyFeatureTypeInfoReader ftInfoReader = new LegacyFeatureTypeInfoReader();
+                try {
+                    ftInfoReader.read(Files.asResource(ftInfoFile));
+                    FeatureTypeInfo featureType =
+                            readFeatureType(ftInfoReader, featureTypeDirectory);
+                    if (featureType == null) {
+                        continue;
                     }
-                }
-                List<String> styles = ftInfoReader.styles();
-                if (styles != null) {
-                    for (String styleName : styles) {
-                        StyleInfo style = catalog.getStyleByName(styleName);
+                    catalog.add(featureType);
+
+                    LOGGER.info("Loaded feature type '" + featureType.getPrefixedName() + "'");
+
+                    // create a wms layer for the feature type
+                    LayerInfo layer = factory.createLayer();
+                    layer.setResource(featureType);
+                    layer.setName(featureType.getName());
+                    layer.setPath(ftInfoReader.wmsPath());
+                    if (layer.getPath() == null) {
+                        layer.setPath("/");
+                    }
+                    layer.setType(PublishedType.VECTOR);
+
+                    String defaultStyleName = ftInfoReader.defaultStyle();
+                    if (defaultStyleName != null) {
+                        StyleInfo style = catalog.getStyleByName(defaultStyleName);
                         if (style != null) {
-                            layer.getStyles().add(style);
+                            layer.setDefaultStyle(style);
                         }
                     }
-                }
+                    List<String> styles = ftInfoReader.styles();
+                    if (styles != null) {
+                        for (String styleName : styles) {
+                            StyleInfo style = catalog.getStyleByName(styleName);
+                            if (style != null) {
+                                layer.getStyles().add(style);
+                            }
+                        }
+                    }
 
-                Map legendURL = ftInfoReader.legendURL();
-                if (legendURL != null) {
-                    LegendInfo legend = factory.createLegend();
-                    legend.setHeight((Integer) legendURL.get("height"));
-                    legend.setWidth((Integer) legendURL.get("width"));
-                    legend.setFormat((String) legendURL.get("format"));
-                    legend.setOnlineResource((String) legendURL.get("onlineResource"));
-                    layer.setLegend(legend);
-                }
+                    Map legendURL = ftInfoReader.legendURL();
+                    if (legendURL != null) {
+                        LegendInfo legend = factory.createLegend();
+                        legend.setHeight((Integer) legendURL.get("height"));
+                        legend.setWidth((Integer) legendURL.get("width"));
+                        legend.setFormat((String) legendURL.get("format"));
+                        legend.setOnlineResource((String) legendURL.get("onlineResource"));
+                        layer.setLegend(legend);
+                    }
 
-                layer.setEnabled(featureType.isEnabled());
-                catalog.add(layer);
-            } catch (Exception e) {
-                LOGGER.warning(
-                        "Error loadin '" + featureTypeDirectory.getName() + "/info.xml', ignoring");
-                LOGGER.log(Level.INFO, "", e);
-                continue;
+                    layer.setEnabled(featureType.isEnabled());
+                    catalog.add(layer);
+                } catch (Exception e) {
+                    LOGGER.warning(
+                            "Error loadin '"
+                                    + featureTypeDirectory.getName()
+                                    + "/info.xml', ignoring");
+                    LOGGER.log(Level.INFO, "", e);
+                    continue;
+                }
             }
         }
 
@@ -194,64 +200,68 @@ public class LegacyCatalogImporter {
         File coverages = new File(dir, "coverages");
         if (!coverages.exists()) coverages.mkdir();
         File[] coverageDirectories = coverages.listFiles();
-        for (int i = 0; i < coverageDirectories.length; i++) {
-            File coverageDirectory = coverageDirectories[i];
-            if (!coverageDirectory.isDirectory() || coverageDirectory.isHidden()) continue;
+        if (coverageDirectories != null) {
+            for (int i = 0; i < coverageDirectories.length; i++) {
+                File coverageDirectory = coverageDirectories[i];
+                if (!coverageDirectory.isDirectory() || coverageDirectory.isHidden()) continue;
 
-            // load info.xml
-            File cInfoFile = new File(coverageDirectory, "info.xml");
-            if (!cInfoFile.exists()) {
-                LOGGER.fine(
-                        "No info.xml found in directory: '"
-                                + coverageDirectory.getName()
-                                + "', ignoring");
-                continue;
-            }
-
-            LegacyCoverageInfoReader cInfoReader = new LegacyCoverageInfoReader();
-            try {
-                cInfoReader.read(cInfoFile);
-
-                CoverageInfo coverage = readCoverage(cInfoReader);
-                if (coverage == null) {
+                // load info.xml
+                File cInfoFile = new File(coverageDirectory, "info.xml");
+                if (!cInfoFile.exists()) {
+                    LOGGER.fine(
+                            "No info.xml found in directory: '"
+                                    + coverageDirectory.getName()
+                                    + "', ignoring");
                     continue;
                 }
-                catalog.add(coverage);
 
-                // create a wms layer for the feature type
-                LayerInfo layer = factory.createLayer();
-                layer.setResource(coverage);
-                layer.setName(coverage.getName());
-                layer.setPath(cInfoReader.wmsPath());
-                if (layer.getPath() == null) {
-                    layer.setPath("/");
-                }
-                layer.setType(PublishedType.RASTER);
+                LegacyCoverageInfoReader cInfoReader = new LegacyCoverageInfoReader();
+                try {
+                    cInfoReader.read(cInfoFile);
 
-                String defaultStyleName = cInfoReader.defaultStyle();
-                if (defaultStyleName != null) {
-                    StyleInfo style = catalog.getStyleByName(defaultStyleName);
-                    if (style != null) {
-                        layer.setDefaultStyle(style);
+                    CoverageInfo coverage = readCoverage(cInfoReader);
+                    if (coverage == null) {
+                        continue;
                     }
-                }
-                List<String> styles = cInfoReader.styles();
-                if (styles != null) {
-                    for (String styleName : styles) {
-                        StyleInfo style = catalog.getStyleByName(styleName);
+                    catalog.add(coverage);
+
+                    // create a wms layer for the feature type
+                    LayerInfo layer = factory.createLayer();
+                    layer.setResource(coverage);
+                    layer.setName(coverage.getName());
+                    layer.setPath(cInfoReader.wmsPath());
+                    if (layer.getPath() == null) {
+                        layer.setPath("/");
+                    }
+                    layer.setType(PublishedType.RASTER);
+
+                    String defaultStyleName = cInfoReader.defaultStyle();
+                    if (defaultStyleName != null) {
+                        StyleInfo style = catalog.getStyleByName(defaultStyleName);
                         if (style != null) {
-                            layer.getStyles().add(style);
+                            layer.setDefaultStyle(style);
                         }
                     }
-                }
-                layer.setEnabled(coverage.isEnabled());
+                    List<String> styles = cInfoReader.styles();
+                    if (styles != null) {
+                        for (String styleName : styles) {
+                            StyleInfo style = catalog.getStyleByName(styleName);
+                            if (style != null) {
+                                layer.getStyles().add(style);
+                            }
+                        }
+                    }
+                    layer.setEnabled(coverage.isEnabled());
 
-                catalog.add(layer);
-            } catch (Exception e) {
-                LOGGER.warning(
-                        "Error loading '" + coverageDirectory.getName() + "/info.xml', ignoring");
-                LOGGER.log(Level.INFO, "", e);
-                continue;
+                    catalog.add(layer);
+                } catch (Exception e) {
+                    LOGGER.warning(
+                            "Error loading '"
+                                    + coverageDirectory.getName()
+                                    + "/info.xml', ignoring");
+                    LOGGER.log(Level.INFO, "", e);
+                    continue;
+                }
             }
         }
     }

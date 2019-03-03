@@ -177,14 +177,13 @@ public class Util {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(bin));
         String line = reader.readLine();
-        boolean isXML = line.startsWith(xmlDeclarationStart);
-
-        bin.reset();
         Properties props = new Properties();
-
-        if (isXML) props.loadFromXML(bin);
-        else props.load(bin);
-
+        if (line != null) {
+            boolean isXML = line.startsWith(xmlDeclarationStart);
+            bin.reset();
+            if (isXML) props.loadFromXML(bin);
+            else props.load(bin);
+        }
         return props;
     }
 

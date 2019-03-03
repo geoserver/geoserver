@@ -1010,7 +1010,7 @@ public class CatalogImpl implements Catalog {
     public void remove(LayerGroupInfo layerGroup) {
         // ensure no references to the layer group
         for (LayerGroupInfo lg : facade.getLayerGroups()) {
-            if (lg.getLayers().contains(layerGroup) || layerGroup.equals(lg.getRootLayer())) {
+            if (lg.getLayers().contains(layerGroup)) {
                 String msg =
                         "Unable to delete layer group referenced by layer group '"
                                 + lg.getName()
@@ -1216,6 +1216,7 @@ public class CatalogImpl implements Catalog {
         return postValidate(namespace, isNew);
     }
 
+    @SuppressFBWarnings("NP_NULL_PARAM_DEREF") // I don't see this happening...
     public void remove(NamespaceInfo namespace) {
         if (!getResourcesByNamespace(namespace, ResourceInfo.class).isEmpty()) {
             throw new IllegalArgumentException("Unable to delete non-empty namespace.");
@@ -1324,6 +1325,7 @@ public class CatalogImpl implements Catalog {
         return postValidate(workspace, isNew);
     }
 
+    @SuppressFBWarnings("NP_NULL_PARAM_DEREF") // I don't see this happening...
     public void remove(WorkspaceInfo workspace) {
         // JD: maintain the link between namespace and workspace, remove this when this is no
         // longer necessary

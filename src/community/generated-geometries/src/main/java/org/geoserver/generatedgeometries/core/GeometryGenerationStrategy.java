@@ -11,7 +11,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -75,8 +74,7 @@ public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Fe
      * @param simpleFeatureType source feature type without geometry attribute
      * @return simple feature type with geometry attribute
      */
-    FT defineGeometryAttributeFor(FeatureTypeInfo info, FT simpleFeatureType)
-            throws ConfigurationException;
+    FT defineGeometryAttributeFor(FeatureTypeInfo info, FT simpleFeatureType);
 
     /**
      * Generates {@link org.locationtech.jts.geom.Geometry} from simple type's attributes and sets

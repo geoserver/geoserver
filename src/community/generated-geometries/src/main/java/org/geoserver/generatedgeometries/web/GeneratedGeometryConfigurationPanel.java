@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -68,6 +69,7 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
             };
     private GeometryGenerationStrategyUIGenerator selectedStrategy;
     private WebMarkupContainer methodologyConfiguration;
+    private String listNullValue = new ResourceModel("GeneratedGeometryConfigurationPanel.listNullValue").getObject();
 
     public GeneratedGeometryConfigurationPanel(String id, final IModel model) {
         this(id, model, GeoServerExtensions::extensions, GeoServerApplication::get);
@@ -102,11 +104,16 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private void initMethodologyDropdown(
             List<GeometryGenerationStrategyUIGenerator> strategies, IModel model) {
         DropDownChoice<GeometryGenerationStrategyUIGenerator> methodologyDropDown =
-                new DropDownChoice<>(
+                new DropDownChoice<GeometryGenerationStrategyUIGenerator>(
                         "methodologyDropDown",
                         new PropertyModel<>(this, "selectedStrategy"),
                         strategies,
-                        choiceRenderer);
+                        choiceRenderer) {
+                    @Override
+                    protected String getNullKeyDisplayValue() {
+                        return listNullValue;
+                    }
+                };
         content.add(methodologyDropDown);
         methodologyConfiguration = new WebMarkupContainer("methodologyConfiguration");
         methodologyConfiguration.setOutputMarkupId(true);
@@ -140,31 +147,47 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     }
 
     private void initActionLink(IModel model) {
-        GeoServerAjaxFormLink createGeometryLink =
-                new GeoServerAjaxFormLink("createGeometryLink") {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        try {
-                            if (selectedStrategy != null) {
-                                FeatureTypeInfo info = (FeatureTypeInfo) model.getObject();
-                                selectedStrategy.configure(info);
+        GeoServerAjaxFormLink createGeometryLink = createAjaxLink("createGeometryLink", model);
+        GeoServerAjaxFormLink updateGeometryLink = createAjaxLink("updateGeometryLink", model);
+        boolean isGeometryCreated = false;
+        try {
+            isGeometryCreated = ((FeatureTypeInfo) model.getObject()).getFeatureType().getGeometryDescriptor() != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-                                ListView listView =
-                                        (ListView)
-                                                getPage().get("publishedinfo:tabs:panel:theList");
-                                findChildPanel(listView, BasicResourceConfig.class)
-                                        .ifPresent(target::add);
-                                findChildPanel(listView, FeatureResourceConfigurationPanel.class)
-                                        .ifPresent(target::add);
-                            } else {
-                                error(i18n("configurationNotSelected"));
-                            }
-                        } catch (Exception e) {
-                            error(i18n("geometryCreationError"));
-                        }
-                    }
-                };
+        updateGeometryLink.setVisible(isGeometryCreated);
+        createGeometryLink.setVisible(!isGeometryCreated);
+
         content.add(createGeometryLink);
+        content.add(updateGeometryLink);
+    }
+
+    private GeoServerAjaxFormLink createAjaxLink(String key, IModel model) {
+        return new GeoServerAjaxFormLink(key) {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                try {
+                    if (selectedStrategy != null) {
+                        FeatureTypeInfo info = (FeatureTypeInfo) model.getObject();
+                        selectedStrategy.configure(info);
+
+                        ListView listView =
+                                (ListView)
+                                        getPage().get("publishedinfo:tabs:panel:theList");
+                        findChildPanel(listView, BasicResourceConfig.class)
+                                .ifPresent(target::add);
+                        findChildPanel(listView, FeatureResourceConfigurationPanel.class)
+                                .ifPresent(target::add);
+                    } else {
+                        error(i18n("configurationNotSelected"));
+                    }
+                } catch (Exception e) {
+                    error(i18n("geometryCreationError"));
+                }
+            }
+        };
+
     }
 
     private <C extends Component> Optional<C> findChildPanel(ListView listView, Class<C> clazz) {

@@ -23,7 +23,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -121,8 +120,7 @@ public class LongLatGeometryGenerationStrategyTest {
     }
 
     @Test
-    public void testThatAfterCreateGeoTypeFromValidConfigurationHaveGeoAndAllAttributesExist()
-            throws ConfigurationException {
+    public void testThatAfterCreateGeoTypeFromValidConfigurationHaveGeoAndAllAttributesExist() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
         MetadataMap metadata = getMetadata();

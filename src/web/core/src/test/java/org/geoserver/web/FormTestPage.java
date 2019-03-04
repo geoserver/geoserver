@@ -9,6 +9,8 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
+import static java.lang.String.format;
+
 /**
  * Helper class to test components that need a form around them to be tested (typically custom
  * panels with form components inside).
@@ -33,4 +35,9 @@ public class FormTestPage extends WebPage {
         form.add(builder.buildComponent(PANEL));
         add(form);
     }
+
+    public String getFormPagePath(String path) {
+        return format("%s:%s:%s", FORM,PANEL, path);
+    }
+
 }

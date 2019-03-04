@@ -21,11 +21,11 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.generatedgeometries.core.GeneratedGeometryConfigurationException;
 import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LongLatConfiguration;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.SRSToCRSModel;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
 import java.util.List;
@@ -136,9 +136,9 @@ public class LongLatGeometryConfigurationPanel extends Panel {
                 && declaredCRS.getCRS() != null;
     }
 
-    LongLatConfiguration getLongLatConfiguration() throws ConfigurationException {
+    LongLatConfiguration getLongLatConfiguration() {
         if (!isValid()) {
-            throw new ConfigurationException("invalid configuration");
+            throw new GeneratedGeometryConfigurationException("invalid configuration");
         }
         return new LongLatConfiguration(
                 geometryAttributeName,

@@ -7,6 +7,7 @@ package org.geoserver.generatedgeometries.core.longitudelatitude;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.generatedgeometries.core.GeneratedGeometryConfigurationException;
 import org.geoserver.generatedgeometries.core.GeometryGenerationStrategy;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -33,7 +34,6 @@ import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class LongLatGeometryGenerationStrategy
     private final transient Map<Name, SimpleFeatureType> cache = new HashMap<>();
     private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
     private Set<String> featureTypeInfos = new HashSet<>();
-    private LongLatConfiguration configuration;
+    private Map<String, LongLatConfiguration> configurations = new HashMap<>();
 
     public static class LongLatConfiguration implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -80,6 +80,7 @@ public class LongLatGeometryGenerationStrategy
         public final String longAttributeName;
         public final String latAttributeName;
         public final CoordinateReferenceSystem crs;
+        public final int srid;
 
         public LongLatConfiguration(
                 String geomAttributeName, String longAttributeName, String latAttributeName, CoordinateReferenceSystem crs) {
@@ -87,6 +88,11 @@ public class LongLatGeometryGenerationStrategy
             this.longAttributeName = longAttributeName;
             this.latAttributeName = latAttributeName;
             this.crs = crs;
+            try {
+                this.srid = CRS.lookupEpsgCode(crs, true);
+            } catch (FactoryException e) {
+                throw new GeneratedGeometryConfigurationException(e);
+            }
         }
     }
 
@@ -108,13 +114,12 @@ public class LongLatGeometryGenerationStrategy
 
     @Override
     public void configure(FeatureTypeInfo info) {
-        info.setSRS(CRS.toSRS(configuration.crs));
+        info.setSRS(CRS.toSRS(getLongLatConfiguration(info).crs));
         featureTypeInfos.add(info.getId());
     }
 
     @Override
-    public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src)
-            throws ConfigurationException {
+    public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src) {
         if (cache.containsKey(src.getName())) {
             return cache.get(src.getName());
         }
@@ -122,12 +127,10 @@ public class LongLatGeometryGenerationStrategy
         LongLatConfiguration configuration = getLongLatConfiguration(info);
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
 
-//        builder.init(src);
         builder.setName(src.getName());
         builder.setCRS(configuration.crs);
 
         builder.add(configuration.geomAttributeName, Point.class);
-//        builder.setDefaultGeometry(configuration.geomAttributeName);
         for (AttributeDescriptor ad : src.getAttributeDescriptors()) {
             if (!ad.getLocalName().equalsIgnoreCase(configuration.geomAttributeName)) {
                 builder.add(ad);
@@ -139,16 +142,19 @@ public class LongLatGeometryGenerationStrategy
         return simpleFeatureType;
     }
 
-    public void setConfiguration(LongLatConfiguration configuration) {
-        this.configuration = configuration;
+    public void setConfigurationForLayer(String layerId, LongLatConfiguration configuration) {
+        configurations.put(layerId, configuration);
         cache.clear();
     }
 
-    private LongLatConfiguration getLongLatConfiguration(FeatureTypeInfo info) throws ConfigurationException {
-        if (configuration != null) {
-            return configuration;
+    private LongLatConfiguration getLongLatConfiguration(FeatureTypeInfo info) {
+        String layerId = info.getId();
+        LongLatConfiguration configuration = configurations.get(layerId);
+        if (configuration == null) {
+            configuration = getConfigurationFromMetadata(info);
+            configurations.put(layerId, configuration);
         }
-        return getConfigurationFromMetadata(info);
+        return configuration;
     }
 
     private LongLatConfiguration getConfigurationFromMetadata(FeatureTypeInfo info) {
@@ -161,10 +167,11 @@ public class LongLatGeometryGenerationStrategy
                         metadata.get(LATITUDE_ATTRIBUTE_NAME).toString(),
                         CRS.decode(metadata.get(GEOMETRY_CRS).toString()));
             } catch (FactoryException e) {
-                e.printStackTrace();
+                throw new GeneratedGeometryConfigurationException(e);
             }
         }
-        return null;
+        throw new GeneratedGeometryConfigurationException("configuration does not contain geometry attribute");
+
     }
 
     private void storeConfiguration(FeatureTypeInfo info, LongLatConfiguration configuration) {
@@ -187,9 +194,7 @@ public class LongLatGeometryGenerationStrategy
                 Double y = valueOf(getAsString(simpleFeature, configuration.latAttributeName));
 
                 Point point = geometryFactory.createPoint(new Coordinate(x, y));
-
-                //ToDo: not sure if its needed, if yes we should cache it to not lookup it everytime
-                point.setSRID(CRS.lookupEpsgCode(configuration.crs, true));
+                point.setSRID(getLongLatConfiguration(info).srid);
 
                 featureBuilder.add(point);
                 for (Property prop : simpleFeature.getProperties()) {
@@ -218,13 +223,13 @@ public class LongLatGeometryGenerationStrategy
     }
 
     @Override
-    public Filter convertFilter(FeatureTypeInfo info, Filter filter) throws RuntimeException {
+    public Filter convertFilter(FeatureTypeInfo info, Filter filter) {
         final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         DuplicatingFilterVisitor dfv = new DuplicatingFilterVisitor();
         Object bb = filter.accept(dfv, ff);
         if (bb instanceof BBOX) {
             BoundingBox bounds = ((BBOX) bb).getBounds();
-            LongLatConfiguration configuration = getConfigurationFromMetadata(info);
+            LongLatConfiguration configuration = getLongLatConfiguration(info);
             PropertyIsBetween longitudeFilter =
                     createBetweenFilter(
                             ff,
@@ -244,7 +249,7 @@ public class LongLatGeometryGenerationStrategy
     public Query convertQuery(FeatureTypeInfo info, Query query) {
         Query q = new Query();
         q.setFilter(convertFilter(info, query.getFilter()));
-        LongLatConfiguration configuration = getConfigurationFromMetadata(info);
+        LongLatConfiguration configuration = getLongLatConfiguration(info);
         List<String> properties = new ArrayList<>();
         try {
             properties =
@@ -264,7 +269,6 @@ public class LongLatGeometryGenerationStrategy
             logger().log(WARNING, message, e);
         }
         q.setPropertyNames(properties);
-//        q.setTypeName(info.getName());
         return q;
     }
 

@@ -14,7 +14,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +41,7 @@ public class GeometryGenerationRetypingCallback implements RetypeFeatureTypeCall
         if (canHandleFeatureType(featureTypeInfo)) {
             try {
                 return strategy.defineGeometryAttributeFor(featureTypeInfo, (SimpleFeatureType) featureType);
-            } catch (ConfigurationException e) {
+            } catch (GeneratedGeometryConfigurationException e) {
                 LOGGER.log(Level.WARNING, format("cannot build feature type [%s]", featureType), e);
             }
         }

@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -51,14 +50,13 @@ public class GeometryGenerationRetypingCallbackTest {
     }
 
     @Test
-    public void testThatReturnsSameFeatureTypeInCaseOfErrorDuringBuilding()
-            throws ConfigurationException {
+    public void testThatReturnsSameFeatureTypeInCaseOfErrorDuringBuilding() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
         given(strategy.canHandle(info, UNUSED)).willReturn(true);
         SimpleFeatureType featureType = mock(SimpleFeatureType.class);
         given(strategy.defineGeometryAttributeFor(info, featureType))
-                .willThrow(ConfigurationException.class);
+                .willThrow(GeneratedGeometryConfigurationException.class);
 
         // when
         FeatureType builtFeatureType = callback.retypeFeatureType(info, featureType);
@@ -68,7 +66,7 @@ public class GeometryGenerationRetypingCallbackTest {
     }
 
     @Test
-    public void testThatBuildsFeatureType() throws ConfigurationException {
+    public void testThatBuildsFeatureType() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
         given(strategy.canHandle(info, UNUSED)).willReturn(true);

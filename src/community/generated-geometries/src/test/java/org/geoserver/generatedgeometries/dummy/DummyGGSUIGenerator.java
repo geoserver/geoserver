@@ -10,7 +10,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.generatedgeometries.web.GeometryGenerationStrategyUIGenerator;
-import org.vfny.geoserver.global.ConfigurationException;
 
 public class DummyGGSUIGenerator implements GeometryGenerationStrategyUIGenerator {
 
@@ -31,7 +30,7 @@ public class DummyGGSUIGenerator implements GeometryGenerationStrategyUIGenerato
     }
 
     @Override
-    public void configure(FeatureTypeInfo info) throws ConfigurationException {
+    public void configure(FeatureTypeInfo info) {
         dummyGGStrategy.configure(info);
     }
 }

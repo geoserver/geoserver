@@ -13,7 +13,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
-import org.vfny.geoserver.global.ConfigurationException;
 
 import java.io.IOException;
 
@@ -44,7 +43,7 @@ class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
         SimpleFeatureType src = super.getSchema();
         try {
             return strategy.defineGeometryAttributeFor(featureTypeInfo, src);
-        } catch (ConfigurationException e) {
+        } catch (GeneratedGeometryConfigurationException e) {
             e.printStackTrace();
         }
         return src;

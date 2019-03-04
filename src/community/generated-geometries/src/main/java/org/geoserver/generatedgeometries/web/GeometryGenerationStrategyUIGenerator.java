@@ -8,7 +8,6 @@ package org.geoserver.generatedgeometries.web;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.vfny.geoserver.global.ConfigurationException;
 
 /**
  * Extension point for generating UI dedicated for particular {@link org.geoserver.generatedgeometries.core.GeometryGenerationStrategy}
@@ -39,7 +38,6 @@ public interface GeometryGenerationStrategyUIGenerator {
      * Configuration helper for the associated strategy.
      * 
      * @param info feature layer info
-     * @throws ConfigurationException
      */
-    void configure(FeatureTypeInfo info) throws ConfigurationException;
+    void configure(FeatureTypeInfo info);
 }

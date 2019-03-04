@@ -18,6 +18,7 @@ import java.io.IOException;
 import static java.util.Collections.emptyMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
@@ -95,6 +96,7 @@ public class LongLatWFSTest extends GeoServerSystemTestSupport {
                 "feature.0",
                 "//wfs:FeatureCollection/gml:featureMember/gs:LongLatBasicLayer/@fid",
                 dom);
+        assertXpathNotExists("//wfs:FeatureCollection/gml:featureMember/gs:LongLatLayer/gs:geom/gml:Point/gml:coordinates", dom);
     }
 
     @Test

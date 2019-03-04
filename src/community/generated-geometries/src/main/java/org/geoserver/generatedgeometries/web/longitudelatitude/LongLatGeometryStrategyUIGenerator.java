@@ -41,7 +41,7 @@ public class LongLatGeometryStrategyUIGenerator implements GeometryGenerationStr
 
     @Override
     public void configure(FeatureTypeInfo info) throws ConfigurationException {
-        strategy.setCongiguration(longLatConfigPanel.getLongLatConfiguration());
+        strategy.setConfiguration(longLatConfigPanel.getLongLatConfiguration());
         strategy.configure(info);
     }
 }

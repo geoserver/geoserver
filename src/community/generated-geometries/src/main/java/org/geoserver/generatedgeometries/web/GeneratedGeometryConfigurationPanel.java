@@ -21,8 +21,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
-import org.geoserver.platform.DefaultGeoServerExtensionFinder;
-import org.geoserver.platform.GeoServerExtensionFinder;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geoserver.web.data.resource.FeatureResourceConfigurationPanel;
@@ -37,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
@@ -53,7 +53,7 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private static final long serialVersionUID = 1L;
 
     private final transient Supplier<GeoServerApplication> geoServerApplicationSupplier;
-    private final GeoServerExtensionFinder extensionFinder;
+    private final transient Function<Class, List> extensionFinder;
 
     private Fragment content;
     private final Map<String, Component> componentMap = new HashMap<>();
@@ -70,13 +70,13 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private WebMarkupContainer methodologyConfiguration;
 
     public GeneratedGeometryConfigurationPanel(String id, final IModel model) {
-        this(id, model, new DefaultGeoServerExtensionFinder(), GeoServerApplication::get);
+        this(id, model, GeoServerExtensions::extensions, GeoServerApplication::get);
     }
 
-    GeneratedGeometryConfigurationPanel(
+    public GeneratedGeometryConfigurationPanel(
             String id,
             final IModel model,
-            GeoServerExtensionFinder extensionFinder,
+            Function<Class, List> extensionFinder,
             Supplier<GeoServerApplication> geoServerApplicationSupplier) {
         super(id, model);
         this.extensionFinder = extensionFinder;
@@ -87,7 +87,7 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private void init(IModel model) {
         if (isSimpleFeatureType(model)) {
             initMainPanel();
-            List<GeometryGenerationStrategyUIGenerator> strategies = extensionFinder.find(GeometryGenerationStrategyUIGenerator.class);
+            List<GeometryGenerationStrategyUIGenerator> strategies = extensionFinder.apply(GeometryGenerationStrategyUIGenerator.class);
             initMethodologyDropdown(strategies, model);
             initActionLink(model);
         } else {

@@ -11,7 +11,9 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.vfny.geoserver.global.ConfigurationException;
 
 /**
- *
+ * Extension point for generating UI dedicated for particular {@link org.geoserver.generatedgeometries.core.GeometryGenerationStrategy}
+ * implementation.
+ * Should be instantiated as Spring bean.
  */
 public interface GeometryGenerationStrategyUIGenerator {
 

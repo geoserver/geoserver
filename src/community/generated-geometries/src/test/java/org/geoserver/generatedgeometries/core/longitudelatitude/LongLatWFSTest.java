@@ -101,6 +101,7 @@ public class LongLatWFSTest extends GeoServerSystemTestSupport {
     public void testThatWFSReturnsFeaturesWithGeometryOnTheFly() throws Exception {
         // when
         Document dom = getAsDOM(wfsUrl(LONG_LAT_LAYER), 200);
+        print(dom);
 
         // then
         assertXpathExists("//wfs:FeatureCollection", dom);

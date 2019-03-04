@@ -1,5 +1,4 @@
-/*
- * (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,6 +29,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_CRS;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
@@ -57,6 +60,7 @@ public class LongLatGeometryGenerationStrategyTest {
     private static final String STRING_4_PROPERTY_NAME = "STRING_4_PROPERTY_NAME";
     private static final String GEOMETRY_PROPERTY_NAME = "GEOMETRY_PROPERTY_NAME";
     private static final String TEST_FEATURE_ID = "testFeature";
+    private static final String EPSG_4326 = "EPSG:4326";
 
     private final Logger logger = mock(Logger.class);
 
@@ -98,12 +102,10 @@ public class LongLatGeometryGenerationStrategyTest {
 
     private MetadataMap getMetadata() {
         MetadataMap metadata = new MetadataMap();
-        metadata.put(
-                LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME, GEOMETRY_PROPERTY_NAME);
-        metadata.put(
-                LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME, LONGITUDE_PROPERTY_NAME);
-        metadata.put(
-                LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME, LATITUDE_PROPERTY_NAME);
+        metadata.put(GEOMETRY_ATTRIBUTE_NAME, GEOMETRY_PROPERTY_NAME);
+        metadata.put(LATITUDE_ATTRIBUTE_NAME, LONGITUDE_PROPERTY_NAME);
+        metadata.put(LONGITUDE_ATTRIBUTE_NAME, LATITUDE_PROPERTY_NAME);
+        metadata.put(GEOMETRY_CRS, EPSG_4326);
         return metadata;
     }
 

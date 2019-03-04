@@ -139,7 +139,7 @@ public class LongLatGeometryGenerationStrategy
         return simpleFeatureType;
     }
 
-    public void setCongiguration(LongLatConfiguration configuration) {
+    public void setConfiguration(LongLatConfiguration configuration) {
         this.configuration = configuration;
         cache.clear();
     }

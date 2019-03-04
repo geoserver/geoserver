@@ -28,6 +28,7 @@ import static org.geoserver.data.test.MockData.DEFAULT_PREFIX;
 import static org.geoserver.data.test.MockData.DEFAULT_URI;
 import static org.geoserver.generatedgeometries.core.GeometryGenerationStrategy.STRATEGY_METADATA_KEY;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_CRS;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME;
 
@@ -93,6 +94,7 @@ public class LongLatTestData {
         metadata.put(GEOMETRY_ATTRIBUTE_NAME, "geom");
         metadata.put(LONGITUDE_ATTRIBUTE_NAME, "lon");
         metadata.put(LATITUDE_ATTRIBUTE_NAME, "lat");
+        metadata.put(GEOMETRY_CRS, "EPSG:4326");
         catalog.save(featureTypeInfo);
     }
 }

@@ -9,6 +9,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="dummyStrategy" class="org.geoserver.generatedgeometries.dummy.DummyGeometryGenerationStrategy"/>
+  <bean id="dummyStrategy" class="org.geoserver.generatedgeometries.dummy.DummyGGStrategy"/>
 
+  <bean id="dummyStrategyPanel" class="org.geoserver.generatedgeometries.dummy.DummyGGSUIGenerator">
+    <constructor-arg ref="dummyStrategy"/>
+  </bean>
 </beans>

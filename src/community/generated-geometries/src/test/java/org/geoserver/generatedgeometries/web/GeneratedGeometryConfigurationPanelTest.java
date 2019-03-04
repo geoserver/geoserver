@@ -1,13 +1,6 @@
-/*
- * (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- */
-
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
- *  This code is licensed under the GPL 2.0 license, available at the root
- *  application directory.
  */
 
 package org.geoserver.generatedgeometries.web;
@@ -20,9 +13,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.generatedgeometries.core.GeometryGenerationStrategy;
 import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData;
-import org.geoserver.generatedgeometries.dummy.DummyGeometryGenerationStrategy;
+import org.geoserver.generatedgeometries.dummy.DummyGGStrategy;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
@@ -33,13 +25,13 @@ import org.opengis.feature.type.FeatureType;
 import java.io.IOException;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
-import static org.geoserver.platform.TestGeoServerExtensionFinders.emptyFinder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -98,7 +90,7 @@ public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTest
         IModel model = new Model<>(info);
         GeneratedGeometryConfigurationPanel panel =
                 new GeneratedGeometryConfigurationPanel(
-                        "id", model, emptyFinder(), () -> application);
+                        "id", model, cl -> emptyList(), () -> application);
 
         // when
         tester.startComponentInPage(panel);
@@ -111,17 +103,17 @@ public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTest
         assertEquals(defaultModel.getObject(), "incorrectFeatureType");
     }
 
-    private DropDownChoice<GeometryGenerationStrategy> getStrategyDropDown() {
-        return (DropDownChoice<GeometryGenerationStrategy>)
+    private DropDownChoice<GeometryGenerationStrategyUIGenerator> getStrategyDropDown() {
+        return (DropDownChoice<GeometryGenerationStrategyUIGenerator>)
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:theList:0:content:content:methodologyDropDown");
     }
 
-    private Optional<? extends GeometryGenerationStrategy> findDummyStrategy(
-            DropDownChoice<GeometryGenerationStrategy> dropDown) {
+    private Optional<? extends GeometryGenerationStrategyUIGenerator> findDummyStrategyUIGenerator(
+            DropDownChoice<GeometryGenerationStrategyUIGenerator> dropDown) {
         return dropDown.getChoices()
                 .stream()
-                .filter(strategy -> strategy.getName().equals(DummyGeometryGenerationStrategy.NAME))
+                .filter(strategy -> strategy.getName().equals(DummyGGStrategy.NAME))
                 .findFirst();
     }
 
@@ -139,10 +131,10 @@ public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTest
         tester.assertComponent(
                 "publishedinfo:tabs:panel:theList:0:content",
                 GeneratedGeometryConfigurationPanel.class);
-        DropDownChoice<GeometryGenerationStrategy> dropDown = getStrategyDropDown();
-        Optional<? extends GeometryGenerationStrategy> dummyStrategyOptional =
-                findDummyStrategy(dropDown);
-        assertTrue(dummyStrategyOptional.isPresent());
+        DropDownChoice<GeometryGenerationStrategyUIGenerator> dropDown = getStrategyDropDown();
+        Optional<? extends GeometryGenerationStrategyUIGenerator> dummyStrategyUIGenerator =
+                findDummyStrategyUIGenerator(dropDown);
+        assertTrue(dummyStrategyUIGenerator.isPresent());
     }
 
     @Test
@@ -152,15 +144,15 @@ public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTest
         LayerInfo layerInfo = catalog.getLayerByName(getLayerId(LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME));
         login();
         tester.startPage(new ResourceConfigurationPage(layerInfo, true));
-        DropDownChoice<GeometryGenerationStrategy> dropDown = getStrategyDropDown();
-        GeometryGenerationStrategy dummyStrategy = findDummyStrategy(dropDown).get();
-        dropDown.setModelObject(dummyStrategy);
+        DropDownChoice<GeometryGenerationStrategyUIGenerator> dropDown = getStrategyDropDown();
+        GeometryGenerationStrategyUIGenerator dummyStrategyUIGenerator = findDummyStrategyUIGenerator(dropDown).get();
+        dropDown.setModelObject(dummyStrategyUIGenerator);
 
         // when
         executeAjaxEventBehavior(CREATE_GEOMETRY_LINK_PATH, "click", "0");
 
         // then
-        DummyGeometryGenerationStrategy strategy = (DummyGeometryGenerationStrategy) dummyStrategy;
+        DummyGGStrategy strategy = (DummyGGStrategy) applicationContext.getBean("dummyStrategy");
         assertTrue(strategy.configured);
     }
 }

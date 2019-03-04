@@ -23,7 +23,7 @@
     <constructor-arg ref="longLatStrategy"/>
   </bean>
 
-  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.core.GeometryGenerationResourcePoolCallback">
+  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.core.GeometryGenerationRetypingCallback">
     <constructor-arg ref="longLatStrategy"/>
   </bean>
 

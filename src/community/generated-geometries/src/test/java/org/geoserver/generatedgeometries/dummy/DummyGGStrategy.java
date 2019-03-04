@@ -12,7 +12,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
-public class DummyGeometryGenerationStrategy implements GeometryGenerationStrategy {
+public class DummyGGStrategy implements GeometryGenerationStrategy {
 
     public static final String NAME = "dummy";
 

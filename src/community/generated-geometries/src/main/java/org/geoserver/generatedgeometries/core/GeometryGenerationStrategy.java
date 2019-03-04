@@ -20,9 +20,9 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 /**
- * Describes particular methodology used by generated-geometries extension.
+ * Describes particular strategy used by generated-geometries extension.
  *
- * <p>A methodology is responsible for creating 'on-the-fly' definition of geometry attribute for
+ * <p/> Strategy is responsible for creating 'on-the-fly' definition of geometry attribute for
  * the layer based on its data definition, as well as generating geometry from the data.
  */
 public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Feature>

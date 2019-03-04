@@ -11,42 +11,40 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.vfny.geoserver.global.ConfigurationException;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-public class GeometryGenerationResourcePoolCallbackTest {
+public class GeometryGenerationRetypingCallbackTest {
+
+    private static final SimpleFeatureType UNUSED = null;
 
     private LongLatGeometryGenerationStrategy strategy =
             mock(LongLatGeometryGenerationStrategy.class);
-    private GeometryGenerationResourcePoolCallback callback =
-            new GeometryGenerationResourcePoolCallback(strategy);
-
-      /*
-    @Test
-    public void testThatCanBuildFeatureType() {
-        // given
-        given(strategy.canHandle(null)).willReturn(false);
-        FeatureTypeInfo info1 = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info1)).willReturn(true);
-        FeatureTypeInfo info2 = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info2)).willReturn(false);
-
-        // then
-        assertFalse(callback.canBuildFeatureType(null, null));
-        assertTrue(callback.canBuildFeatureType(info1, null));
-        assertFalse(callback.canBuildFeatureType(info2, null));
-    }
+    private GeometryGenerationRetypingCallback callback =
+            new GeometryGenerationRetypingCallback(strategy);
 
     @Test
     public void testThatReturnsSameFeatureTypeWhenCannotBuildIt() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info)).willReturn(false);
+        given(strategy.canHandle(info, UNUSED)).willReturn(false);
         SimpleFeatureType featureType = mock(SimpleFeatureType.class);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, featureType);
+        FeatureType builtFeatureType = callback.retypeFeatureType(info, featureType);
 
         // then
         assertSame(featureType, builtFeatureType);
@@ -57,13 +55,13 @@ public class GeometryGenerationResourcePoolCallbackTest {
             throws ConfigurationException {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info)).willReturn(true);
+        given(strategy.canHandle(info, UNUSED)).willReturn(true);
         SimpleFeatureType featureType = mock(SimpleFeatureType.class);
         given(strategy.defineGeometryAttributeFor(info, featureType))
                 .willThrow(ConfigurationException.class);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, featureType);
+        FeatureType builtFeatureType = callback.retypeFeatureType(info, featureType);
 
         // then
         assertSame(featureType, builtFeatureType);
@@ -73,39 +71,24 @@ public class GeometryGenerationResourcePoolCallbackTest {
     public void testThatBuildsFeatureType() throws ConfigurationException {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info)).willReturn(true);
+        given(strategy.canHandle(info, UNUSED)).willReturn(true);
         SimpleFeatureType srcFeatureType = mock(SimpleFeatureType.class);
         SimpleFeatureType expectedFeatureType = mock(SimpleFeatureType.class);
         given(strategy.defineGeometryAttributeFor(info, srcFeatureType))
                 .willReturn(expectedFeatureType);
 
         // when
-        SimpleFeatureType builtFeatureType = callback.buildFeatureType(info, srcFeatureType);
+        FeatureType builtFeatureType = callback.retypeFeatureType(info, srcFeatureType);
 
         // then
         assertSame(expectedFeatureType, builtFeatureType);
     }
-
-    @Test
-    public void testThatCanWrapFeatureSource() {
-        // given
-        given(strategy.canHandle(null)).willReturn(false);
-        FeatureTypeInfo info1 = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info1)).willReturn(true);
-        FeatureTypeInfo info2 = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info2)).willReturn(false);
-
-        // then
-        assertFalse(callback.canWrapFeatureSource(null, null));
-        assertTrue(callback.canWrapFeatureSource(info1, null));
-        assertFalse(callback.canWrapFeatureSource(info2, null));
-    }
-
+    
     @Test
     public void testThatReturnsSameFeatureSourceWhenCannotWrapIt() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info)).willReturn(false);
+        given(strategy.canHandle(info, UNUSED)).willReturn(false);
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mock(FeatureSource.class);
 
         // when
@@ -120,7 +103,7 @@ public class GeometryGenerationResourcePoolCallbackTest {
     public void testThatWrapsFeatureSource() {
         // given
         FeatureTypeInfo info = mock(FeatureTypeInfo.class);
-        given(strategy.canHandle(info)).willReturn(true);
+        given(strategy.canHandle(info, UNUSED)).willReturn(true);
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource =
                 mock(SimpleFeatureSource.class);
 
@@ -132,5 +115,5 @@ public class GeometryGenerationResourcePoolCallbackTest {
         assertNotSame(featureSource, wrapped);
         assertTrue(wrapped instanceof GeometryGenerationFeatureSource);
     }
-    /**/
+    
 }

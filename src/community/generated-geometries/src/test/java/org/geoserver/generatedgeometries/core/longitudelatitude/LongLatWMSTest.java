@@ -1,5 +1,4 @@
-/*
- *  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+/*  (c) 2019 Open Source Geospatial Foundation - all rights reserved
  *  This code is licensed under the GPL 2.0 license, available at the root
  *  application directory.
  */
@@ -14,8 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import static java.util.Collections.emptyMap;
@@ -27,7 +28,6 @@ import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTe
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.bbox;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.enableGeometryGenerationStrategy;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.setupXMLNamespaces;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wholeWorld;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrl;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrlStdSize;
@@ -36,8 +36,8 @@ import static org.junit.Assert.assertEquals;
 public class LongLatWMSTest extends GeoServerSystemTestSupport {
 
     @Before
-    public void before() {
-        setupXMLNamespaces();
+    public void before() throws Exception {
+        getGeoServer().reload();
     }
 
     @Override
@@ -88,6 +88,7 @@ public class LongLatWMSTest extends GeoServerSystemTestSupport {
 
         // when
         BufferedImage image = getAsImage(url, "image/png");
+        ImageIO.write(image, "png", new File("image.png"));
 
         // then
         assertEquals(width, image.getWidth());

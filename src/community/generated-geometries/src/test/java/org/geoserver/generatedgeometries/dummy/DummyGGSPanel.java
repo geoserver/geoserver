@@ -9,9 +9,9 @@ package org.geoserver.generatedgeometries.dummy;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-class DummyGGMPanel extends Panel {
+class DummyGGSPanel extends Panel {
 
-    DummyGGMPanel(String id, IModel<?> model) {
+    DummyGGSPanel(String id, IModel<?> model) {
         super(id, model);
         setOutputMarkupId(true);
     }

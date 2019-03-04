@@ -69,4 +69,10 @@ class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
         return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
     }
 
+    @Override
+    public int getCount(Query srcQuery) throws IOException {
+        Query query = strategy.convertQuery(featureTypeInfo, srcQuery);
+        return super.getCount(query);
+    }
+    
 }

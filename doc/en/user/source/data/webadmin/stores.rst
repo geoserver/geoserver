@@ -12,7 +12,7 @@ A store connects to a data source that contains raster or vector data. A data so
 Store types
 -----------
 
-While there are many potential formats for data sources, there are only four kinds of stores. For raster data, a store can be a file. For vector data, a store can be a file, database, or server. 
+While there are many potential formats for data sources, there are only four kinds of stores. For raster data, a store can be a file. For vector data, a store can be a file, database, or server.
 
 .. list-table::
    :widths: 15 85
@@ -25,9 +25,9 @@ While there are many potential formats for data sources, there are only four kin
    * - .. image:: img/data_stores_type3.png
      - vector data in a file
    * - .. image:: img/data_stores_type2.png
-     - vector data in a database 
+     - vector data in a database
    * - .. image:: img/data_stores_type5.png
-     - vector server (web feature server)     
+     - vector server (web feature server)
 
 Edit a Store
 ------------
@@ -35,13 +35,13 @@ Edit a Store
 To view or edit a store, click the store name. A store configuration page will be displayed.  The exact contents of this page depend on the specific format of the store. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats. The example shows the configuration for the ``nurc:ArcGridSample`` store.
 
 .. figure:: img/data_stores_edit.png
-   
+
    Editing a raster data store
 
 Basic Store Info
 ^^^^^^^^^^^^^^^^
 
-The basic information is common for all formats. 
+The basic information is common for all formats.
 
 * **Workspace** - the store is assigned to the selected workspace
 * **Data Source Name** - the store name as listed on the view page
@@ -53,16 +53,18 @@ Connection Parameters
 
 The connection parameters vary depending on data format.
 
+.. _data_webadmin_stores_add_a_store:
+
 Add a Store
 -----------
 
-The buttons for adding and removing a store can be found at the top of the Stores page. 
+The buttons for adding and removing a store can be found at the top of the Stores page.
 
 .. figure:: img/data_stores_add_remove.png
 
    Buttons to add and remove a Store
 
-To add a store, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue. 
+To add a store, select the :guilabel:`Add new Store` button. You will be prompted to choose a data source. GeoServer natively supports many formats (with more available via extensions). Click the appropriate data source to continue.
 
 .. figure:: img/data_stores_chooser.png
 
@@ -77,8 +79,8 @@ The example below shows the ArcGrid raster configuration page.
 
 Remove a Store
 --------------
-   
-To remove a store, click the checkbox next to the store. Multiple stores can be selected, or all can be selected by clicking the checkbox in the header.  
+
+To remove a store, click the checkbox next to the store. Multiple stores can be selected, or all can be selected by clicking the checkbox in the header.
 
 .. figure:: img/data_stores_delete.png
 
@@ -87,6 +89,5 @@ To remove a store, click the checkbox next to the store. Multiple stores can be 
 Click the :guilabel:`Remove selected Stores` button. You will be asked to confirm the removal of the configuration for the store(s) and all resources defined under them. Clicking :guilabel:`OK` removes the selected store(s), and returns to the Stores page.
 
 .. figure:: img/data_stores_delete_confirm.png
-   
-   Confirm removal of stores
 
+   Confirm removal of stores

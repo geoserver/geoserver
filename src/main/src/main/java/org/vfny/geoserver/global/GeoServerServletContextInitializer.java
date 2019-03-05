@@ -5,6 +5,9 @@
  */
 package org.vfny.geoserver.global;
 
+import java.util.logging.Logger;
+import javax.servlet.ServletContext;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -19,6 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class GeoServerServletContextInitializer implements ApplicationContextAware {
+    static final Logger LOGGER = Logging.getLogger(GeoServerServletContextInitializer.class);
+
     /** The key to register the object under. */
     String key;
 
@@ -33,7 +38,13 @@ public class GeoServerServletContextInitializer implements ApplicationContextAwa
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         if (context instanceof WebApplicationContext) {
             WebApplicationContext webContext = (WebApplicationContext) context;
-            webContext.getServletContext().setAttribute(key, object);
+            ServletContext sc = webContext.getServletContext();
+            if (sc == null) {
+                LOGGER.warning(
+                        "Could not get servlet context in GeoServerServletContextInitializer, null was returned");
+            } else {
+                sc.setAttribute(key, object);
+            }
         }
     }
 }

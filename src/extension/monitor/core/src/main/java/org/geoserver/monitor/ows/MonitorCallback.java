@@ -121,21 +121,22 @@ public class MonitorCallback implements DispatcherCallback {
         }
     }
 
-    Map<String, Map<String, String>> OPS;
+    volatile Map<String, Map<String, String>> OPS;
 
     String normalizedOpId(Operation op) {
         if (OPS == null) {
             synchronized (this) {
                 if (OPS == null) {
-                    OPS = new HashMap<String, Map<String, String>>();
+                    HashMap<String, Map<String, String>> tmp = new HashMap<>();
                     for (Service s : GeoServerExtensions.extensions(Service.class)) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        OPS.put(s.getId().toUpperCase(), map);
+                        HashMap<String, String> map = new HashMap<>();
+                        tmp.put(s.getId().toUpperCase(), map);
 
                         for (String o : s.getOperations()) {
                             map.put(o.toUpperCase(), o);
                         }
                     }
+                    OPS = tmp;
                 }
             }
         }

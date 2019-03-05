@@ -477,13 +477,15 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 
         final File[] files =
                 (filter != null ? sourceDirectory.listFiles(filter) : sourceDirectory.listFiles());
-        for (File file : files) {
-            if (file.isDirectory()) {
-                if (recursive) {
-                    deleteDirectory(file, filter, recursive, deleteItself);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    if (recursive) {
+                        deleteDirectory(file, filter, recursive, deleteItself);
+                    }
+                } else {
+                    if (!file.delete()) return false;
                 }
-            } else {
-                if (!file.delete()) return false;
             }
         }
         return !deleteItself || sourceDirectory.delete();

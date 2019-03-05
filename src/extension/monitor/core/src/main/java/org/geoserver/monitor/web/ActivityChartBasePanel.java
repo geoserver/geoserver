@@ -39,9 +39,6 @@ public abstract class ActivityChartBasePanel extends Panel {
 
     private static final long serialVersionUID = -2436197080363116473L;
 
-    protected static long PAGE_OFFSET = 1000;
-    protected static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
     Date from;
     Date to;
     NonCachingImage chartImage;
@@ -177,7 +174,8 @@ public abstract class ActivityChartBasePanel extends Panel {
     }
 
     protected String getChartTitle(Date[] range) {
-        return "Activity " + FORMAT.format(range[0]) + " - " + FORMAT.format(range[1]);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return "Activity " + format.format(range[0]) + " - " + format.format(range[1]);
     }
 
     protected abstract Date[] getDateRange();

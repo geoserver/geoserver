@@ -73,7 +73,7 @@ public class ReaderDimensionsAccessor {
                 public int compare(Object o1, Object o2) {
                     // the domain can be a mix of dates and ranges
                     if (o1 instanceof Date) {
-                        if (o1 instanceof DateRange) {
+                        if (o2 instanceof DateRange) {
                             return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
                         } else {
                             return ((Date) o1).compareTo((Date) o2);
@@ -224,6 +224,9 @@ public class ReaderDimensionsAccessor {
             String[] splitted = timeOrRange.split("/");
             final String strStart = splitted[0];
             final String strEnd = splitted[1];
+            if (strStart == null || strEnd == null) {
+                throw new IllegalArgumentException("Invalid date range " + timeOrRange);
+            }
             if (strStart != null && strStart.equals(strEnd)) {
                 return df.parse(strStart);
             } else {

@@ -78,7 +78,7 @@ public class EditGroupPage extends AbstractGroupPage {
         } catch (IOException ex) {
             try {
                 // try to reload the store
-                store.load();
+                if (store != null) store.load();
             } catch (IOException ex2) {
             }
             throw ex;
@@ -103,7 +103,7 @@ public class EditGroupPage extends AbstractGroupPage {
             }
         } catch (IOException ex) {
             try {
-                gaStore.load();
+                if (gaStore != null) gaStore.load();
             } catch (IOException ex2) {
             }
             throw ex;

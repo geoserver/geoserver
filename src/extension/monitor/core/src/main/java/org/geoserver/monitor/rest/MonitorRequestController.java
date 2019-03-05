@@ -48,8 +48,6 @@ public class MonitorRequestController extends RestBaseController {
 
     static final MediaType CSV_MEDIATYPE = MediaType.valueOf(CSV_MEDIATYPE_VALUE);
 
-    static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
     Monitor monitor;
 
     @Autowired
@@ -209,7 +207,7 @@ public class MonitorRequestController extends RestBaseController {
 
     Date parseDate(String s) {
         try {
-            return DATE_FORMAT.parse(s);
+            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
         } catch (ParseException e) {
             return Converters.convert(s, Date.class);
         }

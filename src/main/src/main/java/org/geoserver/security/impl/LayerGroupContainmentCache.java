@@ -137,7 +137,8 @@ class LayerGroupContainmentCache {
                         });
         // this group does not contain anything anymore, remove from containment
         for (LayerGroupSummary d : groupCache.values()) {
-            d.containerGroups.remove(lg);
+            // will be removed by equality
+            d.containerGroups.remove(new LayerGroupSummary(lg));
         }
     }
 

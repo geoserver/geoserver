@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.Filter;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -62,7 +63,7 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
     static final Object TERMINATOR = new Object();
 
     /** The queue connecting the background threads loading the resources with the iterator */
-    BlockingQueue<Object> queue;
+    final BlockingQueue<Object> queue;
 
     /** The thread coordinating the background resource load */
     Thread thread;
@@ -80,6 +81,7 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
      * @param filter The filter getting specific child resources out of the root
      * @param mapper The mapper performing work on the resources found
      */
+    @SuppressFBWarnings("SC_START_IN_CTOR")
     public AsynchResourceIterator(
             Resource root, Filter<Resource> filter, ResourceMapper<T> mapper) {
         // parallelize filtering (this is still synch'ed, cannot do anything in parallel with this)
@@ -151,6 +153,7 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
             thread.start();
         } else if (resources.size() == 1) {
             // don't start a thread for a single resource, there is no parallelism advantage
+            queue = null;
             final Resource r = resources.get(0);
             try {
                 mapped = mapper.apply(r);
@@ -161,6 +164,7 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
             }
         } else {
             // nothing found
+            queue = null;
             mapped = null;
             completed = true;
         }

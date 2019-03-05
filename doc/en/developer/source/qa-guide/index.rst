@@ -5,14 +5,9 @@ The GeoServer builds on Travis and `https://build.geoserver.org/ <https://build.
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
 and will fail the build in case of rule violation.
 
-In case you want to just run the build with the full checks locally, use the following command
-if you are using a JDK 8::
+In case you want to just run the build with the full checks locally, use the following command::
 
-    mvn clean install -Ppmd,errorprone8 -Dall
-
-or the following if using JDK 11::
-
-    mvn clean install -Ppmd,errorprone -Dall
+    mvn clean install -Dqa -Dall
 
 Add extra parameters as you see fit, like ``-T1C -nsu`` to speed up the build, or ``-Dfmt.skip=true -DskipTests``
 to avoid running tests and code formatting.
@@ -44,12 +39,36 @@ error message, and a reference to a XML file with the same information after it 
 In case of parallel build, the specific error messages will be in the body of the build, while the
 XML file reference wil be at end end, just search for "PMD Failure" in the build logs to find the specific code issues.
 
+PMD false positive suppression
+""""""""""""""""""""""""""""""
+
 Occasionally PMD will report a false positive failure, for those it's possible to annotate the method
 or the class in question with a SuppressWarnings using ``PMD.<RuleName``, e.g. if the above error
 was actually a legit use of ``System.out.println`` it could have been annotated with::
 
     @SuppressWarnings("PMD.SystemPrintln")
     public void methodDoingPrintln(...) {
+
+PMD CloseResource checks
+""""""""""""""""""""""""
+
+PMD can check for Closeable that are not getting property closed by the code, and report about it.
+PMD by default only checks for SQL related closeables, like "Connection,ResultSet,Statement", but it
+can be instructed to check for more by configuration (do check the PMD configuration in 
+``build/qa/pmd-ruleset.xml``.
+
+The check is a bit fragile, in that there are multiple ways to close an object between direct calls,
+utilities and delegate methods. The configuration lists the type of methods, and the eventual
+prefix, that will be used to perform the close, for example::
+
+    <rule ref="category/java/errorprone.xml/CloseResource" >
+        <properties>
+            <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt"/>
+        </properties>
+    </rule>
+
+For closing delegates that use an instance object instead of a class static method, the variable
+name is included in the prefix, so some uninformity in variable names is required.
 
 Error Prone
 -----------
@@ -75,3 +94,35 @@ In case Error Prone is reporting an invalid error, the method or class in questi
 with SuppressWarnings with the name of the rule, e.g., to get rid of the above the following annotation could be used::
 
    @SuppressWarnings("IdentityBinaryExpression")
+
+Spotbugs
+--------
+
+The `Spotbugs <https://spotbugs.github.io/>`_ checker runs as a post-compile bytecode analyzer.
+
+Any failure to comply with the rules will show up as a compile error, e.g.::
+
+        33630 [ERROR] page could be null and is guaranteed to be dereferenced in org.geotools.swing.wizard.JWizard.setCurrentPanel(String) [org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard, org.geotools.swing.wizard.JWizard] Dereferenced at JWizard.java:[line 278]Dereferenced at JWizard.java:[line 269]Null value at JWizard.java:[line 254]Known null at JWizard.java:[line 255] NP_GUARANTEED_DEREF
+
+It is also possible to run the spotbugs:gui goal to have a Swing based issue explorer, e.g.::
+
+    mvn spotbugs:gui -Pspotbugs -f wms
+
+In case an invalid report is given, an annotation on the class/method/variable can be added to ignore it:
+
+   @SuppressFBWarnings("NP_GUARANTEED_DEREF")
+
+or if it's a general one that should be ignored, the ``${geoserverBaseDir}/build/qa/spotbugs-exclude.xml`` file can be modified.
+
+Checkstyle
+----------
+
+Google Format is already in use to keep the code formatted, so Checkstyle is used mainly to verify javadocs errors
+and presence of copyright headers, which none of the other tools can cover.
+
+Any failure to comply with the rules will show up as a compiler error in the build output, e.g.::
+
+        14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
+        15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
+        15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
+

@@ -5,7 +5,8 @@
  */
 package org.geoserver.wfs.xml;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1016,7 +1017,7 @@ public abstract class FeatureTypeSchemaBuilder {
 
     public static class GML32 extends GML3 {
         /** Cached gml32 schema */
-        private static XSDSchema gml32Schema;
+        private static volatile XSDSchema gml32Schema;
 
         public GML32(GeoServer gs) {
             super(gs);
@@ -1046,7 +1047,11 @@ public abstract class FeatureTypeSchemaBuilder {
 
         protected XSDSchema gmlSchema() {
             if (gml32Schema == null) {
-                gml32Schema = createGml32Schema();
+                synchronized (FeatureTypeSchemaBuilder.class) {
+                    if (gml32Schema == null) {
+                        gml32Schema = createGml32Schema();
+                    }
+                }
             }
 
             return gml32Schema;

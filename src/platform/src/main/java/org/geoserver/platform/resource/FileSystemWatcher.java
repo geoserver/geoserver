@@ -212,6 +212,9 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
                     exsists = true;
                 }
                 File[] files = file.listFiles();
+                if (files == null) {
+                    return null;
+                }
 
                 List<File> removed = new ArrayList<File>(files.length);
                 List<File> created = new ArrayList<File>(files.length);

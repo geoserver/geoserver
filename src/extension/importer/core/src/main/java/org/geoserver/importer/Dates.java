@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -51,15 +50,7 @@ public class Dates {
     public static Collection<DatePattern> patterns(boolean strict) {
         Collection<DatePattern> patterns = PATTERNS;
         if (!strict) {
-            patterns =
-                    Collections2.filter(
-                            patterns,
-                            new Predicate<DatePattern>() {
-                                @Override
-                                public boolean apply(DatePattern input) {
-                                    return !input.isStrict();
-                                }
-                            });
+            patterns = Collections2.filter(patterns, input -> input != null && !input.isStrict());
         }
         return patterns;
     }

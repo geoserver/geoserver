@@ -394,7 +394,8 @@ public class GeoServerApplication extends WebApplication
     public HttpServletRequest servletRequest(Request req) {
         if (req == null || !(req instanceof ServletWebRequest)) {
             throw new IllegalStateException(
-                    "Request not of type ServletWebRequest, was: " + req.getClass().getName());
+                    "Request not of type ServletWebRequest, was: "
+                            + (req == null ? "null" : req.getClass().getName()));
         }
 
         return ((ServletWebRequest) req).getContainerRequest();

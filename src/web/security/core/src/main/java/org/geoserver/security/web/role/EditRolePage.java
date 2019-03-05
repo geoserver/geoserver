@@ -59,7 +59,7 @@ public class EditRolePage extends AbstractRolePage {
             store.store();
         } catch (IOException ex) {
             try {
-                store.load();
+                if (store != null) store.load();
             } catch (IOException ex2) {
             }
             throw ex;

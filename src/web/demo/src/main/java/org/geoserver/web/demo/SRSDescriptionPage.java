@@ -151,28 +151,14 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         // use the unicode escape sequence for the degree sign so its not
         // screwed up by different local encodings
         this.jsUnit = crs instanceof ProjectedCRS ? "m" : "degrees";
-        try {
-            String unit = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
-            if ("ft".equals(unit) || "feets".equals(unit)) this.jsUnit = "feet";
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
-        }
-
         CoordinateReferenceSystem mapCrs = crs;
         if (crs != null) {
-            // CoordinateSystem coordinateSystem = crs.getCoordinateSystem();
-            // coordinateSystem.getName();
-            // coordinateSystem.getRemarks();
-            // coordinateSystem.getDimension();
-            //
-            // if(crs instanceof SingleCRS){
-            // Datum datum = ((SingleCRS)crs).getDatum();
-            // datum.getName();
-            // datum.getAlias();
-            // datum.getAnchorPoint();
-            // datum.getRemarks();
-            // datum.getScope();
-            // }
+            try {
+                String unit = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
+                if ("ft".equals(unit) || "feets".equals(unit)) this.jsUnit = "feet";
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
+            }
 
             scope = crs.getScope();
             remarks = crs.getRemarks();

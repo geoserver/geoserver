@@ -102,7 +102,7 @@ public class GWCConfig implements Cloneable, Serializable {
         readResolve();
     }
 
-    private GWCConfig readResolve() {
+    protected Object readResolve() {
         if (null == version) {
             version = "0.0.1";
         }

@@ -70,7 +70,7 @@ public class IpFlowController extends QueueController {
         // generate a unique queue id for this client if none was found
         if (queue == null) {
             // beware of multiple concurrent requests...
-            synchronized (queues) {
+            synchronized (this) {
                 queue = queues.get(incomingIp);
                 if (queue == null) {
                     queue = new TimedBlockingQueue(queueSize, true);

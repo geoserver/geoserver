@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -79,7 +80,10 @@ public abstract class AbstractURLPublisher extends AbstractController {
 
         // set the mime if known by the servlet container, set nothing otherwise
         // (Tomcat behaves like this when it does not recognize the file format)
-        String mime = getServletContext().getMimeType(new File(url.getFile()).getName());
+        String mime =
+                Optional.ofNullable(getServletContext())
+                        .map(sc -> sc.getMimeType(new File(url.getFile()).getName()))
+                        .orElse(null);
         if (mime != null) {
             response.setContentType(mime);
         }

@@ -11,6 +11,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.wcs10.CapabilitiesSectionType;
 import net.opengis.wcs10.GetCapabilitiesType;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -273,20 +275,20 @@ public class Wcs10CapsTransformer extends TransformerBase {
         private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
             AttributesImpl attributes = new AttributesImpl();
 
-            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+            if (StringUtils.isNotBlank(mdl.getAbout())) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
 
-            if ((linkType != null) && (linkType != "")) {
+            if (StringUtils.isNotBlank(linkType)) {
                 attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
             }
 
-            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+            if (StringUtils.isNotBlank(mdl.getMetadataType())) {
                 attributes.addAttribute(
                         "", "metadataType", "metadataType", "", mdl.getMetadataType());
             }
 
-            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+            if (StringUtils.isNotBlank(mdl.getContent())) {
                 attributes.addAttribute(
                         "",
                         "xlink:href",
@@ -325,13 +327,13 @@ public class Wcs10CapsTransformer extends TransformerBase {
             SettingsInfo settings = gs.getSettings();
             ContactInfo contact = settings.getContact();
 
-            if (((contact != null) && (contact.getContactPerson() != ""))
-                    || ((contact.getContactOrganization() != null)
-                            && (contact.getContactOrganization() != ""))) {
+            if (contact != null
+                    && (StringUtils.isNotBlank(contact.getContactPerson())
+                            || (StringUtils.isNotBlank(contact.getContactOrganization())))) {
                 start("wcs:responsibleParty");
 
                 tmp = contact.getContactPerson();
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:individualName", tmp);
                 } else {
                     // not optional
@@ -339,13 +341,13 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 }
 
                 tmp = contact.getContactOrganization();
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:organisationName", tmp);
                 }
 
                 tmp = contact.getContactPosition();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:positionName", tmp);
                 }
 
@@ -354,13 +356,13 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 start("wcs:phone");
                 tmp = contact.getContactVoice();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:voice", tmp);
                 }
 
                 tmp = contact.getContactFacsimile();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:facsimile", tmp);
                 }
 
@@ -369,48 +371,48 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 start("wcs:address");
                 tmp = contact.getAddressType();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     String addr = "";
                     addr = contact.getAddress();
 
-                    if ((addr != null) && (addr != "")) {
+                    if (StringUtils.isNotBlank(addr)) {
                         element("wcs:deliveryPoint", tmp + " " + addr);
                     }
                 } else {
                     tmp = contact.getAddress();
 
-                    if ((tmp != null) && (tmp != "")) {
+                    if (StringUtils.isNotBlank(tmp)) {
                         element("wcs:deliveryPoint", tmp);
                     }
                 }
 
                 tmp = contact.getAddressCity();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:city", tmp);
                 }
 
                 tmp = contact.getAddressState();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:administrativeArea", tmp);
                 }
 
                 tmp = contact.getAddressPostalCode();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:postalCode", tmp);
                 }
 
                 tmp = contact.getAddressCountry();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:country", tmp);
                 }
 
                 tmp = contact.getContactEmail();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:electronicMailAddress", tmp);
                 }
 
@@ -418,7 +420,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
                 tmp = contact.getOnlineResource();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     AttributesImpl attributes = new AttributesImpl();
                     attributes.addAttribute("", "xlink:href", "xlink:href", "", tmp);
                     start("wcs:onlineResource", attributes);
@@ -510,11 +512,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
         private void handleExceptions() {
             start("wcs:Exception");
 
-            final List<String> exceptionFormats = wcs.getExceptionFormats();
+            List<String> exceptionFormats = wcs.getExceptionFormats();
 
-            if (exceptionFormats == null || exceptionFormats.isEmpty()) {
-                exceptionFormats.add("application/vnd.ogc.se_xml");
-            }
+            if (exceptionFormats == null) exceptionFormats = new ArrayList<>();
+            if (exceptionFormats.isEmpty()) exceptionFormats.add("application/vnd.ogc.se_xml");
 
             for (String format : exceptionFormats) {
                 element("wcs:Format", format);
@@ -690,19 +691,19 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
                 tmp = cv.getDescription();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:description", tmp);
                 }
 
                 tmp = cv.getPrefixedName();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:name", tmp);
                 }
 
                 tmp = cv.getTitle();
 
-                if ((tmp != null) && (tmp != "")) {
+                if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:label", tmp);
                 }
 

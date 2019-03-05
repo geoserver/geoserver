@@ -5,7 +5,9 @@
  */
 package org.geoserver.ows;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -89,10 +91,11 @@ public class ProxifyingURLMangler implements URLMangler {
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
         // possible security liabilities)
-        baseURL =
-                (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null)
-                        ? this.mangleURLHeaders(baseURL, proxyBase)
-                        : this.mangleURLFixedURL(baseURL, proxyBase);
+        if (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null) {
+            this.mangleURLHeaders(baseURL, proxyBase);
+        } else {
+            this.mangleURLFixedURL(baseURL, proxyBase);
+        }
     }
 
     /**

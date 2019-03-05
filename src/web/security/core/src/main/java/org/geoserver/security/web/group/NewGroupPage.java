@@ -33,7 +33,7 @@ public class NewGroupPage extends AbstractGroupPage {
             store.store();
         } catch (IOException ex) {
             try {
-                store.load();
+                if (store != null) store.load();
             } catch (IOException ex2) {
             }
             throw ex;
@@ -52,7 +52,7 @@ public class NewGroupPage extends AbstractGroupPage {
             }
         } catch (IOException ex) {
             try {
-                gaStore.load();
+                if (gaStore != null) gaStore.load();
             } catch (IOException ex2) {
             }
             throw ex;

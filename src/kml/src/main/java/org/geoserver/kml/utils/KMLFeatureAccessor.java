@@ -303,15 +303,13 @@ public class KMLFeatureAccessor {
      * @param filters
      */
     private Filter joinFilters(Filter... filters) {
+        Filter result = null;
         if (filters == null || filters.length == 0) {
             return Filter.EXCLUDE;
-        }
-
-        Filter result = null;
-        if (filters.length > 0) {
+        } else if (filters.length > 0) {
             FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
             result = ff.and(Arrays.asList(filters));
-        } else if (filters.length == 1) {
+        } else {
             result = filters[0];
         }
 

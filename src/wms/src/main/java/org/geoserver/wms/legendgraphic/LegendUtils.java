@@ -5,10 +5,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -38,6 +35,7 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.geotools.util.SuppressFBWarnings;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -455,7 +453,9 @@ public class LegendUtils {
             opacity = ExpressionExtractor.extractCqlExpressions(opacityExp);
             opacityValue = opacity.evaluate(null, Double.class);
         }
-        if ((opacityValue.doubleValue() - 1) > 0 || opacityValue.doubleValue() < 0) {
+        if (opacityValue == null
+                || (opacityValue.doubleValue() - 1) > 0
+                || opacityValue.doubleValue() < 0) {
             throw new IllegalArgumentException(
                     Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "Opacity", opacityValue));
         }
@@ -490,6 +490,10 @@ public class LegendUtils {
      * @return the {@link Color} out of this {@link ColorMapEntry}.
      * @throws NumberFormatException in case the color string is badly formatted.
      */
+    @SuppressFBWarnings({
+        "NP_NULL_ON_SOME_PATH",
+        "NP_NULL_PARAM_DEREF"
+    }) // SP does not recognize the check in ensureNotNull
     public static Color color(final ColorMapEntry entry) {
         ensureNotNull(entry, "entry");
         Expression color = entry.getColor();
@@ -510,6 +514,7 @@ public class LegendUtils {
      *     part.
      * @return the quantity part for the provided {@link ColorMapEntry}.
      */
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // SP does not recognize the check in ensureNotNull
     public static double getQuantity(final ColorMapEntry entry) {
         ensureNotNull(entry, "entry");
         Expression quantity = entry.getQuantity();

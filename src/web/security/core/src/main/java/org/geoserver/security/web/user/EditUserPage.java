@@ -51,7 +51,7 @@ public class EditUserPage extends AbstractUserPage {
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, ex.getLocalizedMessage(), ex);
             try {
-                ugStore.load();
+                if (ugStore != null) ugStore.load();
             } catch (IOException ex2) {
             }
             throw ex;
@@ -84,7 +84,7 @@ public class EditUserPage extends AbstractUserPage {
             }
         } catch (IOException ex) {
             try {
-                roleStore.load();
+                if (roleStore != null) roleStore.load();
             } catch (IOException ex2) {
             }
             throw ex;

@@ -873,7 +873,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (roleService == null) {
                     roleService = roleServiceHelper.load(name);
                     if (roleService != null) {
-                        roleServices.put(name, roleService);
+                        GeoServerRoleService previous = roleServices.putIfAbsent(name, roleService);
+                        if (previous != null) {
+                            roleService = previous;
+                        }
                     }
                 }
             }
@@ -948,7 +951,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (validator == null) {
                     validator = passwordValidatorHelper.load(name);
                     if (validator != null) {
-                        passwordValidators.put(name, validator);
+                        PasswordValidator previous =
+                                passwordValidators.putIfAbsent(name, validator);
+                        if (previous != null) {
+                            validator = previous;
+                        }
                     }
                 }
             }
@@ -1231,7 +1238,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (ugService == null) {
                     ugService = userGroupServiceHelper.load(name);
                     if (ugService != null) {
-                        userGroupServices.put(name, ugService);
+                        GeoServerUserGroupService previous =
+                                userGroupServices.putIfAbsent(name, ugService);
+                        if (previous != null) {
+                            ugService = previous;
+                        }
                     }
                 }
             }

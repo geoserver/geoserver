@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import net.opengis.wcs10.DescribeCoverageType;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -222,11 +223,11 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
             AttributesImpl attributes = new AttributesImpl();
 
-            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+            if (StringUtils.isNotBlank(mdl.getAbout())) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
 
-            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+            if (StringUtils.isNotBlank(mdl.getMetadataType())) {
                 attributes.addAttribute(
                         "", "metadataType", "metadataType", "", mdl.getMetadataType());
             }
@@ -235,7 +236,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
             }
 
-            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+            if (StringUtils.isNotBlank(mdl.getContent())) {
                 attributes.addAttribute(
                         "",
                         "xlink:href",
@@ -463,7 +464,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             final GridGeometry originalGrid = ci.getGrid();
             final GridEnvelope gridRange = originalGrid.getGridRange();
             final AffineTransform2D gridToCRS = (AffineTransform2D) originalGrid.getGridToCRS();
-            final int gridDimension = (gridToCRS != null ? gridToCRS.getSourceDimensions() : 0);
+            final int gridDimension = gridToCRS.getSourceDimensions();
 
             AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute(

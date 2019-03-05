@@ -2380,9 +2380,9 @@
             <version>3.1.10</version>
             <configuration>
               <effort>More</effort>
-              <threshold>High</threshold>
+              <!--threshold>High</threshold-->
               <xmlOutput>true</xmlOutput>
-              <maxRank>10</maxRank>
+              <maxRank>15</maxRank>
               <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
               <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
             </configuration>

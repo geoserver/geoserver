@@ -306,9 +306,9 @@ public class WPSExecutionManager
         if (event instanceof ContextRefreshedEvent) {
             if (executors == null) {
                 executors = Executors.newCachedThreadPool();
-            } else if (event instanceof ContextClosedEvent) {
-                executors.shutdownNow();
             }
+        } else if (event instanceof ContextClosedEvent) {
+            executors.shutdownNow();
         }
     }
 

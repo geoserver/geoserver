@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import org.geoserver.monitor.Monitor;
@@ -41,6 +42,6 @@ public class DailyActivityPanel extends ActivityChartBasePanel {
 
     @Override
     protected String getChartTitle(Date[] range) {
-        return "Activity " + FORMAT.format(range[0]);
+        return "Activity " + new SimpleDateFormat("yyyy-MM-dd").format(range[0]);
     }
 }

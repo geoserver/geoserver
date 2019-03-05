@@ -8,6 +8,7 @@ package org.geoserver.security.web.auth;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
@@ -27,8 +28,12 @@ public class RequestFilterChainWrapper implements Serializable {
         this.chain = chain;
     }
 
-    public boolean equals(Object obj) {
-        return chain.equals(obj);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RequestFilterChainWrapper that = (RequestFilterChainWrapper) o;
+        return Objects.equals(chain, that.chain);
     }
 
     public void setName(String name) {

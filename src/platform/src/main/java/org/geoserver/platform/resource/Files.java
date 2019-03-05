@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -204,7 +205,7 @@ public final class Files {
                 return Collections.emptyList();
             }
             List<Resource> result = new ArrayList<Resource>();
-            for (File child : file.listFiles()) {
+            for (File child : Optional.ofNullable(file.listFiles()).orElse(new File[0])) {
                 result.add(new ResourceAdaptor(child));
             }
             return result;
@@ -443,14 +444,16 @@ public final class Files {
 
         boolean allClean = true;
         File[] files = directory.listFiles();
-
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                allClean &= delete(files[i]);
-            } else {
-                if (!files[i].delete()) {
-                    LOGGER.log(Level.WARNING, "Could not delete {0}", files[i].getAbsolutePath());
-                    allClean = false;
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    allClean &= delete(files[i]);
+                } else {
+                    if (!files[i].delete()) {
+                        LOGGER.log(
+                                Level.WARNING, "Could not delete {0}", files[i].getAbsolutePath());
+                        allClean = false;
+                    }
                 }
             }
         }

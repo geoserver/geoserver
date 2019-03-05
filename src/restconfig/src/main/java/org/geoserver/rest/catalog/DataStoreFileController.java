@@ -223,16 +223,19 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream);
 
             // packing files
-            for (File file : directory.listFiles()) {
-                // new zip entry and copying inputstream with file to zipOutputStream, after all
-                // closing streams
-                zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-                FileInputStream fileInputStream = new FileInputStream(file);
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    // new zip entry and copying inputstream with file to zipOutputStream, after all
+                    // closing streams
+                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+                    FileInputStream fileInputStream = new FileInputStream(file);
 
-                IOUtils.copy(fileInputStream, zipOutputStream);
+                    IOUtils.copy(fileInputStream, zipOutputStream);
 
-                fileInputStream.close();
-                zipOutputStream.closeEntry();
+                    fileInputStream.close();
+                    zipOutputStream.closeEntry();
+                }
             }
 
             zipOutputStream.finish();

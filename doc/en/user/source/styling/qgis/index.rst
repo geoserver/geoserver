@@ -1,6 +1,6 @@
 .. _qgis:
 
-Generating SLD styles with QGIS 
+Generating SLD styles with QGIS
 ===============================
 
 QGIS includes a sophisticated style editor with many map rendering possibilities. Styles generated
@@ -18,10 +18,10 @@ as indicated below in this guide. Other plugins exist that streamline the export
 may ruin the style trying to adapt it to older GeoServer versions (e.g., translating it
 down to SLD 1.0 by simple text processing means), or rewrite it entirely.
 
-.. warning:: Despite the progress in the last years, it is known that not all QGIS rendering 
-   options are supported by SLD and/or by GeoServer (e.g. shapeburst symbology), 
+.. warning:: Despite the progress in the last years, it is known that not all QGIS rendering
+   options are supported by SLD and/or by GeoServer (e.g. shapeburst symbology),
    and that support for exporting some parts  is simply missing (e.g.. expression based symbology is
-   supported in SLD, but QGIS won't export it). If you are interested, both projects would welcome 
+   supported in SLD, but QGIS won't export it). If you are interested, both projects would welcome
    sponsoring to improve the situation.
 
 
@@ -75,7 +75,7 @@ This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
 
       Uploading style in GeoServer...
 
-#. Click on guilabel:`Apply`. 
+#. Click on guilabel:`Apply`.
 
 #. Change to the :guilabel:`Layer preview` tab, click on the :guilabel:`Preview on Layer` link to choose ``topp:states`` to verify  proper rendering.
 
@@ -93,6 +93,12 @@ This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
 
 Exporting raster symbology
 --------------------------
+The following are a couple of examples on how to export raster layers' symbology in QGIS and how to use the resulting SLD to style layers in GeoServer.
+
+.. warning:: As mentioned above, this functionality has some limitations:
+
+  * :guilabel:`Hillshading` vendor options are not fully supported by GeoServer so you can't choose the `Band` and the position of the sun (`Altitude` and `Azimuth`), the `Multidirectional` option is not supported too
+  * GeoServer is not able to interpret the :guilabel:`Color Rendering` options yet
 
 This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
 
@@ -147,3 +153,42 @@ This is a step by step guide to style a GeoServer demo layer, ``sfdem``.
       :align: center
 
       Associating style in GeoServer...
+
+The next example shows how to style an aerial image instead.
+
+#. Download an aerial image (for example from `USGS Landsat image archives <https://landsatlook.usgs.gov/sentinel2/viewer.html>`_) if you do not already have one. Give it a name (``aerial`` in this example) and :guilabel:`save it as GeoTIFF`
+
+   .. figure:: images/landsat_usgs_sentinel2.png
+      :align: center
+
+      aerial.tiff
+
+#. Open GeoServer, :guilabel:`create a new Store` (see :ref:`Add a Store <data_webadmin_stores_add_a_store>`), :guilabel:`add a GeoTIFF Raster Data Source` to the Store and :guilabel:`connect` it to your ``aerial.tif`` file
+#. In GeoServer, :guilabel:`create a new Layer` (see :ref:`Add a Layer <data_webadmin_layers_add_a_layer>`) choosing the Store you have created in the previous step
+#. Open QGIS (minimum version 3.4.5)
+#. Load the ``aerial.tif`` raster
+#. Double click the layer to open the :guilabel:`Properties` dialog and switch to the :guilabel:`Symbology` page
+#. Choose a `Multiband color` rendering, set the :guilabel:`bands` (Red band == Band 1 (red), Green band == Band 2 (Green), Blue band == Band 3 (Blue)), generate :guilabel:`Min / Max Value Settings` using ``5,0 - 95,0 % range`` of :guilabel:`Cumulative count cut` and select ``Stretch to MinMax`` as :guilabel:`Contrast enhancement` option, as shown in the picture below
+
+   .. figure:: images/qgis-sentinel2-raster-style.png
+      :align: center
+
+      QGIS layer properties - Symbology
+
+#. The layer renders as follows:
+
+   .. figure:: images/qgis-sentinel2-raster-rendering.png
+      :align: center
+
+      QGIS layer rendering
+
+#. :guilabel:`Save the Style` as SLD
+
+#. Go in GeoServer, use the generated SLD to :guilabel:`create a new style`, choose the ``aerial`` layer through the :guilabel:`Preview on Layer` link and verify if the layer is properly rendered (see the previous example for further details)
+
+   .. figure:: images/gs-sentinel2-raster-rendering.png
+      :align: center
+
+      GeoServer layer rendering
+
+#. Finally :guilabel:`Publish` the ``aerial`` layer with the new style as described in the previous example.

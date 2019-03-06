@@ -5,6 +5,15 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -14,23 +23,14 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
-import java.io.IOException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
-
 public class GeometryGenerationFeatureSourceTest {
 
     private FeatureTypeInfo featureTypeInfo = mock(FeatureTypeInfo.class);
     private SimpleFeatureSource delegate = mock(SimpleFeatureSource.class);
     private GeometryGenerationStrategy strategy = mock(GeometryGenerationStrategy.class);
 
-    private GeometryGenerationFeatureSource featureSource = new GeometryGenerationFeatureSource(featureTypeInfo, delegate, strategy);
+    private GeometryGenerationFeatureSource featureSource =
+            new GeometryGenerationFeatureSource(featureTypeInfo, delegate, strategy);
 
     @Test
     public void testThatDefinesSchemaAtFirstUse() {
@@ -116,12 +116,11 @@ public class GeometryGenerationFeatureSourceTest {
         Query query = mock(Query.class);
         given(strategy.convertQuery(featureTypeInfo, srcQuery)).willReturn(query);
         given(delegate.getCount(query)).willReturn(17);
-        
+
         // when
         int count = featureSource.getCount(srcQuery);
 
         // then
         assertThat(count, is(17));
     }
-    
 }

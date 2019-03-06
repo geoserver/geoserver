@@ -5,6 +5,21 @@
 
 package org.geoserver.generatedgeometries.core.longitudelatitude;
 
+import static java.lang.Double.valueOf;
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static java.util.logging.Level.WARNING;
+import static org.geoserver.generatedgeometries.core.GeometryGenerationStrategy.getStrategyName;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.generatedgeometries.core.GeneratedGeometryConfigurationException;
@@ -35,25 +50,7 @@ import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import static java.lang.Double.valueOf;
-import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
-import static java.util.logging.Level.WARNING;
-import static org.geoserver.generatedgeometries.core.GeometryGenerationStrategy.getStrategyName;
-
-/**
- * Implementation of geometry generation strategy for long/lat attributes in the layer.
- */
+/** Implementation of geometry generation strategy for long/lat attributes in the layer. */
 public class LongLatGeometryGenerationStrategy
         implements GeometryGenerationStrategy<SimpleFeatureType, SimpleFeature> {
 
@@ -61,13 +58,13 @@ public class LongLatGeometryGenerationStrategy
             Logging.getLogger(LongLatGeometryGenerationStrategy.class.getPackage().getName());
 
     private static final long serialVersionUID = 1L;
-    
+
     static final String NAME = "longLat";
     static final String LONGITUDE_ATTRIBUTE_NAME = "longitudeAttributeName";
     static final String LATITUDE_ATTRIBUTE_NAME = "latitudeAttributeName";
     static final String GEOMETRY_ATTRIBUTE_NAME = "geometryAttributeName";
     static final String GEOMETRY_CRS = "geometryCRS";
-    
+
     private final transient Map<Name, SimpleFeatureType> cache = new HashMap<>();
     private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
     private Set<String> featureTypeInfos = new HashSet<>();
@@ -75,7 +72,7 @@ public class LongLatGeometryGenerationStrategy
 
     public static class LongLatConfiguration implements Serializable {
         private static final long serialVersionUID = 1L;
-        
+
         public final String geomAttributeName;
         public final String longAttributeName;
         public final String latAttributeName;
@@ -83,7 +80,10 @@ public class LongLatGeometryGenerationStrategy
         public final int srid;
 
         public LongLatConfiguration(
-                String geomAttributeName, String longAttributeName, String latAttributeName, CoordinateReferenceSystem crs) {
+                String geomAttributeName,
+                String longAttributeName,
+                String latAttributeName,
+                CoordinateReferenceSystem crs) {
             this.geomAttributeName = geomAttributeName;
             this.longAttributeName = longAttributeName;
             this.latAttributeName = latAttributeName;
@@ -109,7 +109,7 @@ public class LongLatGeometryGenerationStrategy
     public boolean canHandle(FeatureTypeInfo info, SimpleFeatureType unused) {
         return info != null
                 && (featureTypeInfos.contains(info.getId())
-                || getStrategyName(info).map(NAME::equals).orElse(false));
+                        || getStrategyName(info).map(NAME::equals).orElse(false));
     }
 
     @Override
@@ -119,7 +119,8 @@ public class LongLatGeometryGenerationStrategy
     }
 
     @Override
-    public SimpleFeatureType defineGeometryAttributeFor(FeatureTypeInfo info, SimpleFeatureType src) {
+    public SimpleFeatureType defineGeometryAttributeFor(
+            FeatureTypeInfo info, SimpleFeatureType src) {
         if (cache.containsKey(src.getName())) {
             return cache.get(src.getName());
         }
@@ -170,8 +171,8 @@ public class LongLatGeometryGenerationStrategy
                 throw new GeneratedGeometryConfigurationException(e);
             }
         }
-        throw new GeneratedGeometryConfigurationException("configuration does not contain geometry attribute");
-
+        throw new GeneratedGeometryConfigurationException(
+                "configuration does not contain geometry attribute");
     }
 
     private void storeConfiguration(FeatureTypeInfo info, LongLatConfiguration configuration) {

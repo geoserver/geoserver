@@ -5,6 +5,18 @@
 
 package org.geoserver.generatedgeometries.web.longitudelatitude;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -29,19 +41,6 @@ import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSupport {
 
@@ -76,9 +75,12 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
     }
 
     @Test
-    public void testThatConfigurationPanelHasLoadedControlsAndNotCreateConfigWhenNothingIsSelected() {
+    public void
+            testThatConfigurationPanelHasLoadedControlsAndNotCreateConfigWhenNothingIsSelected() {
         // given
-        FormTestPage testPage = new FormTestPage(id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
+        FormTestPage testPage =
+                new FormTestPage(
+                        id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
 
         // when
         FormTestPage page = tester.startPage(testPage);
@@ -86,7 +88,8 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
         // then
         Component lonDDLComponent =
-                tester.getComponentFromLastRenderedPage(page.getFormPagePath("lonAttributesDropDown"));
+                tester.getComponentFromLastRenderedPage(
+                        page.getFormPagePath("lonAttributesDropDown"));
         assertThat(lonDDLComponent, CoreMatchers.instanceOf(DropDownChoice.class));
         DropDownChoice<AttributeTypeInfo> lonAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>) lonDDLComponent;
@@ -94,7 +97,8 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
                 lonAttributesDropDown.getChoices().toArray(), attributeTypeInfoList.toArray());
 
         Component latDDLComponent =
-                tester.getComponentFromLastRenderedPage(page.getFormPagePath("latAttributesDropDown"));
+                tester.getComponentFromLastRenderedPage(
+                        page.getFormPagePath("latAttributesDropDown"));
         assertThat(latDDLComponent, CoreMatchers.instanceOf(DropDownChoice.class));
         DropDownChoice<AttributeTypeInfo> latAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>) latDDLComponent;
@@ -102,11 +106,14 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
                 latAttributesDropDown.getChoices().toArray(), attributeTypeInfoList.toArray());
 
         assertThat(
-                tester.getComponentFromLastRenderedPage(page.getFormPagePath("geometryAttributeName")),
+                tester.getComponentFromLastRenderedPage(
+                        page.getFormPagePath("geometryAttributeName")),
                 CoreMatchers.instanceOf(TextField.class));
 
         try {
-            LongLatGeometryConfigurationPanel panel = (LongLatGeometryConfigurationPanel) tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
+            LongLatGeometryConfigurationPanel panel =
+                    (LongLatGeometryConfigurationPanel)
+                            tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
             panel.getLongLatConfiguration();
             fail("Exception should be triggered for empty configuration");
         } catch (GeneratedGeometryConfigurationException e) {
@@ -116,11 +123,14 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
     @Test
     @Ignore
-    public void testThatConfigurationPanelCreateConfigWhenAllAttributesAreSelected() throws FactoryException {
+    public void testThatConfigurationPanelCreateConfigWhenAllAttributesAreSelected()
+            throws FactoryException {
         // given
         String geometryAttrName = "the_geometry";
         LongLatGeometryGenerationStrategy.LongLatConfiguration longLatConfiguration = null;
-        FormTestPage testPage = new FormTestPage(id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
+        FormTestPage testPage =
+                new FormTestPage(
+                        id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
 
         // when
         FormTestPage page = tester.startPage(testPage);
@@ -128,14 +138,19 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
         DropDownChoice<AttributeTypeInfo> lonAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("lonAttributesDropDown"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("lonAttributesDropDown"));
         DropDownChoice<AttributeTypeInfo> latAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("latAttributesDropDown"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("latAttributesDropDown"));
         TextField<String> geometryAttrField =
                 (TextField<String>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("geometryAttributeName"));
-        CRSPanel srsPicker = (CRSPanel) tester.getComponentFromLastRenderedPage(page.getFormPagePath("srsPicker"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("geometryAttributeName"));
+        CRSPanel srsPicker =
+                (CRSPanel)
+                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("srsPicker"));
 
         // set values
         lonAttributesDropDown.setModelObject(attributeTypeInfo1);
@@ -146,7 +161,9 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
         // then
         try {
-            LongLatGeometryConfigurationPanel panel = (LongLatGeometryConfigurationPanel) tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
+            LongLatGeometryConfigurationPanel panel =
+                    (LongLatGeometryConfigurationPanel)
+                            tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
             longLatConfiguration = panel.getLongLatConfiguration();
         } catch (GeneratedGeometryConfigurationException e) {
             fail(e.getMessage());
@@ -162,7 +179,9 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
     public void testThatConfigurationPanelDoNotCreateConfigWhenSomeAttributesAreMissing() {
         // given
         LongLatGeometryGenerationStrategy.LongLatConfiguration longLatConfiguration = null;
-        FormTestPage testPage = new FormTestPage(id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
+        FormTestPage testPage =
+                new FormTestPage(
+                        id -> new LongLatGeometryConfigurationPanel(id, model, () -> application));
 
         // when
         FormTestPage page = tester.startPage(testPage);
@@ -170,13 +189,16 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
         DropDownChoice<AttributeTypeInfo> lonAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("lonAttributesDropDown"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("lonAttributesDropDown"));
         DropDownChoice<AttributeTypeInfo> latAttributesDropDown =
                 (DropDownChoice<AttributeTypeInfo>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("latAttributesDropDown"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("latAttributesDropDown"));
         TextField<String> geometryAttrField =
                 (TextField<String>)
-                        tester.getComponentFromLastRenderedPage(page.getFormPagePath("geometryAttributeName"));
+                        tester.getComponentFromLastRenderedPage(
+                                page.getFormPagePath("geometryAttributeName"));
 
         // set values
         lonAttributesDropDown.setModelObject(attributeTypeInfo1);
@@ -184,7 +206,9 @@ public class LongLatGeometryConfigurationPanelTest extends GeoServerWicketTestSu
 
         // then
         try {
-            LongLatGeometryConfigurationPanel panel = (LongLatGeometryConfigurationPanel) tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
+            LongLatGeometryConfigurationPanel panel =
+                    (LongLatGeometryConfigurationPanel)
+                            tester.getComponentFromLastRenderedPage(page.getFormPagePath(""));
             longLatConfiguration = panel.getLongLatConfiguration();
         } catch (GeneratedGeometryConfigurationException e) {
             // ok

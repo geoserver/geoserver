@@ -5,6 +5,10 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import static java.lang.String.format;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.RetypeFeatureTypeCallback;
 import org.geotools.data.FeatureSource;
@@ -14,11 +18,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.lang.String.format;
 
 public class GeometryGenerationRetypingCallback implements RetypeFeatureTypeCallback {
 
@@ -40,7 +39,8 @@ public class GeometryGenerationRetypingCallback implements RetypeFeatureTypeCall
     public FeatureType retypeFeatureType(FeatureTypeInfo featureTypeInfo, FeatureType featureType) {
         if (canHandleFeatureType(featureTypeInfo)) {
             try {
-                return strategy.defineGeometryAttributeFor(featureTypeInfo, (SimpleFeatureType) featureType);
+                return strategy.defineGeometryAttributeFor(
+                        featureTypeInfo, (SimpleFeatureType) featureType);
             } catch (GeneratedGeometryConfigurationException e) {
                 LOGGER.log(Level.WARNING, format("cannot build feature type [%s]", featureType), e);
             }
@@ -49,9 +49,12 @@ public class GeometryGenerationRetypingCallback implements RetypeFeatureTypeCall
     }
 
     @Override
-    public <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) {
+    public <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(
+            FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) {
         if (canHandleFeatureType(featureTypeInfo)) {
-            return (FeatureSource<T, U>) new GeometryGenerationFeatureSource(featureTypeInfo, (SimpleFeatureSource) featureSource, strategy);
+            return (FeatureSource<T, U>)
+                    new GeometryGenerationFeatureSource(
+                            featureTypeInfo, (SimpleFeatureSource) featureSource, strategy);
         }
         return featureSource;
     }

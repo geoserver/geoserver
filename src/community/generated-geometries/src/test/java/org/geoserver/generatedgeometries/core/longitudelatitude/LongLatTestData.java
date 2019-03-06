@@ -12,17 +12,6 @@
 
 package org.geoserver.generatedgeometries.core.longitudelatitude;
 
-import com.google.common.base.Joiner;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.MetadataMap;
-
-import javax.xml.namespace.QName;
-import java.util.HashMap;
-import java.util.Map;
-
 import static java.lang.String.format;
 import static org.geoserver.data.test.MockData.DEFAULT_PREFIX;
 import static org.geoserver.data.test.MockData.DEFAULT_URI;
@@ -31,6 +20,16 @@ import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGe
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_CRS;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LONGITUDE_ATTRIBUTE_NAME;
+
+import com.google.common.base.Joiner;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.namespace.QName;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.MetadataMap;
 
 public class LongLatTestData {
 

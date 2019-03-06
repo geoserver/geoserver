@@ -5,20 +5,6 @@
 
 package org.geoserver.generatedgeometries.core.longitudelatitude;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Document;
-
-import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
 import static java.util.Collections.emptyMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
@@ -32,6 +18,19 @@ import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTe
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrl;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wmsUrlStdSize;
 import static org.junit.Assert.assertEquals;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class LongLatWMSTest extends GeoServerSystemTestSupport {
 

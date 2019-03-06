@@ -5,11 +5,9 @@
 
 package org.geoserver.generatedgeometries.core;
 
-/**
- * Thrown when there is an error in geometry strategy configuration.
- */
+/** Thrown when there is an error in geometry strategy configuration. */
 public class GeneratedGeometryConfigurationException extends RuntimeException {
-    
+
     public GeneratedGeometryConfigurationException(Exception e) {
         super(e);
     }

@@ -5,6 +5,11 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+
+import java.io.Serializable;
+import java.util.Optional;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.Query;
 import org.opengis.feature.Feature;
@@ -12,17 +17,11 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
-import java.io.Serializable;
-import java.util.Optional;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
-
 /**
  * Describes particular strategy used by generated-geometries extension.
  *
- * <p/> Strategy is responsible for creating 'on-the-fly' definition of geometry attribute for
- * the layer based on its data definition, as well as generating geometry from the data.
+ * <p>Strategy is responsible for creating 'on-the-fly' definition of geometry attribute for the
+ * layer based on its data definition, as well as generating geometry from the data.
  */
 public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Feature>
         extends Serializable {
@@ -65,7 +64,7 @@ public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Fe
      * @return true if can be applied, false otherwise
      */
     boolean canHandle(FeatureTypeInfo info, FT featureType);
-    
+
     /**
      * Enhances definition of the feature without geometry with {@link GeometryAttribute} based on
      * particular feature attributes.
@@ -108,5 +107,4 @@ public interface GeometryGenerationStrategy<FT extends FeatureType, F extends Fe
      * @return converted query
      */
     Query convertQuery(FeatureTypeInfo info, Query query);
-
 }

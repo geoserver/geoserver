@@ -5,6 +5,18 @@
 
 package org.geoserver.generatedgeometries.web;
 
+import static java.lang.String.format;
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -31,19 +43,6 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.lang.String.format;
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
-
 /**
  * Resource configuration section for generated geometry on-the-fly.
  *
@@ -61,15 +60,19 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private ChoiceRenderer<GeometryGenerationStrategyUIGenerator> choiceRenderer =
             new ChoiceRenderer<GeometryGenerationStrategyUIGenerator>() {
                 @Override
-                public Object getDisplayValue(GeometryGenerationStrategyUIGenerator geometryGenerationStrategyPanel) {
+                public Object getDisplayValue(
+                        GeometryGenerationStrategyUIGenerator geometryGenerationStrategyPanel) {
                     return new StringResourceModel(
-                                    format("geometryGenerationMethodology.%s", geometryGenerationStrategyPanel.getName()))
+                                    format(
+                                            "geometryGenerationMethodology.%s",
+                                            geometryGenerationStrategyPanel.getName()))
                             .getString();
                 }
             };
     private GeometryGenerationStrategyUIGenerator selectedStrategy;
     private WebMarkupContainer methodologyConfiguration;
-    private String listNullValue = new ResourceModel("GeneratedGeometryConfigurationPanel.listNullValue").getObject();
+    private String listNullValue =
+            new ResourceModel("GeneratedGeometryConfigurationPanel.listNullValue").getObject();
 
     public GeneratedGeometryConfigurationPanel(String id, final IModel model) {
         this(id, model, GeoServerExtensions::extensions, GeoServerApplication::get);
@@ -89,7 +92,8 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
     private void init(IModel model) {
         if (isSimpleFeatureType(model)) {
             initMainPanel();
-            List<GeometryGenerationStrategyUIGenerator> strategies = extensionFinder.apply(GeometryGenerationStrategyUIGenerator.class);
+            List<GeometryGenerationStrategyUIGenerator> strategies =
+                    extensionFinder.apply(GeometryGenerationStrategyUIGenerator.class);
             initMethodologyDropdown(strategies, model);
             initActionLink(model);
         } else {
@@ -151,7 +155,9 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
         GeoServerAjaxFormLink updateGeometryLink = createAjaxLink("updateGeometryLink", model);
         boolean isGeometryCreated = false;
         try {
-            isGeometryCreated = ((FeatureTypeInfo) model.getObject()).getFeatureType().getGeometryDescriptor() != null;
+            isGeometryCreated =
+                    ((FeatureTypeInfo) model.getObject()).getFeatureType().getGeometryDescriptor()
+                            != null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -173,10 +179,8 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
                         selectedStrategy.configure(info);
 
                         ListView listView =
-                                (ListView)
-                                        getPage().get("publishedinfo:tabs:panel:theList");
-                        findChildPanel(listView, BasicResourceConfig.class)
-                                .ifPresent(target::add);
+                                (ListView) getPage().get("publishedinfo:tabs:panel:theList");
+                        findChildPanel(listView, BasicResourceConfig.class).ifPresent(target::add);
                         findChildPanel(listView, FeatureResourceConfigurationPanel.class)
                                 .ifPresent(target::add);
                     } else {
@@ -187,7 +191,6 @@ public class GeneratedGeometryConfigurationPanel extends ResourceConfigurationPa
                 }
             }
         };
-
     }
 
     private <C extends Component> Optional<C> findChildPanel(ListView listView, Class<C> clazz) {

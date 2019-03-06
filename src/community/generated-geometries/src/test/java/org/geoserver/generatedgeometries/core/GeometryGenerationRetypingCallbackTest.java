@@ -11,6 +11,12 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy;
 import org.geotools.data.FeatureSource;
@@ -19,12 +25,6 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
-
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 public class GeometryGenerationRetypingCallbackTest {
 
@@ -81,7 +81,7 @@ public class GeometryGenerationRetypingCallbackTest {
         // then
         assertSame(expectedFeatureType, builtFeatureType);
     }
-    
+
     @Test
     public void testThatReturnsSameFeatureSourceWhenCannotWrapIt() {
         // given
@@ -113,5 +113,4 @@ public class GeometryGenerationRetypingCallbackTest {
         assertNotSame(featureSource, wrapped);
         assertTrue(wrapped instanceof GeometryGenerationFeatureSource);
     }
-    
 }

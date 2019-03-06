@@ -5,6 +5,12 @@
 
 package org.geoserver.generatedgeometries.web.longitudelatitude;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -26,13 +32,6 @@ import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryG
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.SRSToCRSModel;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class LongLatGeometryConfigurationPanel extends Panel {
 
@@ -89,10 +88,13 @@ public class LongLatGeometryConfigurationPanel extends Panel {
                         choiceRenderer);
         add(latAttributeDropDown);
         declaredCRS =
-                new CRSPanel(
-                        "srsPicker", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
+                new CRSPanel("srsPicker", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
         add(declaredCRS);
-        addAjaxTrigger(geometryAttributeNameTextField, lonAttributeDropDown, latAttributeDropDown, declaredCRS);
+        addAjaxTrigger(
+                geometryAttributeNameTextField,
+                lonAttributeDropDown,
+                latAttributeDropDown,
+                declaredCRS);
     }
 
     private <T> PropertyModel<T> forExpression(String expression) {

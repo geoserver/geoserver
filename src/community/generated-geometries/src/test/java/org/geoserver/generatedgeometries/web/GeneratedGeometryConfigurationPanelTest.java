@@ -5,6 +5,20 @@
 
 package org.geoserver.generatedgeometries.web;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
+import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Optional;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -21,21 +35,6 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
-
-import java.io.IOException;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_LAYER;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.LONG_LAT_QNAME;
-import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTestSupport {
 
@@ -145,7 +144,8 @@ public class GeneratedGeometryConfigurationPanelTest extends GeoServerWicketTest
         login();
         tester.startPage(new ResourceConfigurationPage(layerInfo, true));
         DropDownChoice<GeometryGenerationStrategyUIGenerator> dropDown = getStrategyDropDown();
-        GeometryGenerationStrategyUIGenerator dummyStrategyUIGenerator = findDummyStrategyUIGenerator(dropDown).get();
+        GeometryGenerationStrategyUIGenerator dummyStrategyUIGenerator =
+                findDummyStrategyUIGenerator(dropDown).get();
         dropDown.setModelObject(dummyStrategyUIGenerator);
 
         // when

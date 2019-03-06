@@ -5,15 +5,15 @@
 
 package org.geoserver.generatedgeometries.web.longitudelatitude;
 
+import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy;
 import org.geoserver.generatedgeometries.web.GeometryGenerationStrategyUIGenerator;
 
-import java.io.Serializable;
-
-public class LongLatGeometryStrategyUIGenerator implements GeometryGenerationStrategyUIGenerator, Serializable {
+public class LongLatGeometryStrategyUIGenerator
+        implements GeometryGenerationStrategyUIGenerator, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,7 +40,8 @@ public class LongLatGeometryStrategyUIGenerator implements GeometryGenerationStr
 
     @Override
     public void configure(FeatureTypeInfo info) {
-        strategy.setConfigurationForLayer(info.getId(), longLatConfigPanel.getLongLatConfiguration());
+        strategy.setConfigurationForLayer(
+                info.getId(), longLatConfigPanel.getLongLatConfiguration());
         strategy.configure(info);
     }
 }

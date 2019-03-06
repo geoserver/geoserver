@@ -5,6 +5,7 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import java.io.IOException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
 import org.geotools.data.Query;
@@ -13,8 +14,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
-
-import java.io.IOException;
 
 class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
 
@@ -52,21 +51,24 @@ class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
     @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         SimpleFeatureCollection features = super.getFeatures();
-        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
+        return new GeometryGenerationFeatureCollection(
+                features, featureTypeInfo, getSchema(), strategy);
     }
 
     @Override
     public SimpleFeatureCollection getFeatures(Filter srcFilter) throws IOException {
         Filter filter = strategy.convertFilter(featureTypeInfo, srcFilter);
         SimpleFeatureCollection features = super.getFeatures(filter);
-        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
+        return new GeometryGenerationFeatureCollection(
+                features, featureTypeInfo, getSchema(), strategy);
     }
 
     @Override
     public SimpleFeatureCollection getFeatures(Query srcQuery) throws IOException {
         Query query = strategy.convertQuery(featureTypeInfo, srcQuery);
         SimpleFeatureCollection features = super.getFeatures(query);
-        return new GeometryGenerationFeatureCollection(features, featureTypeInfo, getSchema(), strategy);
+        return new GeometryGenerationFeatureCollection(
+                features, featureTypeInfo, getSchema(), strategy);
     }
 
     @Override
@@ -74,5 +76,4 @@ class GeometryGenerationFeatureSource extends DecoratingSimpleFeatureSource {
         Query query = strategy.convertQuery(featureTypeInfo, srcQuery);
         return super.getCount(query);
     }
-    
 }

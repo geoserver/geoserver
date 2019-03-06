@@ -5,14 +5,13 @@
 
 package org.geoserver.generatedgeometries.core;
 
+import java.util.NoSuchElementException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import java.util.NoSuchElementException;
 
 class GeometryGenerationFeatureCollection extends DecoratingSimpleFeatureCollection {
 
@@ -36,7 +35,7 @@ class GeometryGenerationFeatureCollection extends DecoratingSimpleFeatureCollect
     public SimpleFeatureType getSchema() {
         return this.schema;
     }
-    
+
     @Override
     public SimpleFeatureIterator features() {
         return new GeometryGenerationCollectionIterator(super.features());
@@ -66,5 +65,4 @@ class GeometryGenerationFeatureCollection extends DecoratingSimpleFeatureCollect
             delegate.close();
         }
     }
-
 }

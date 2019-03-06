@@ -10,16 +10,16 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.FeatureTypeInfo;
 
 /**
- * Extension point for generating UI dedicated for particular {@link org.geoserver.generatedgeometries.core.GeometryGenerationStrategy}
- * implementation.
- * Should be instantiated as Spring bean.
+ * Extension point for generating UI dedicated for particular {@link
+ * org.geoserver.generatedgeometries.core.GeometryGenerationStrategy} implementation. Should be
+ * instantiated as Spring bean.
  */
 public interface GeometryGenerationStrategyUIGenerator {
 
     /**
-     * The name of the UI that can be used for identifying it.
-     * Usually it is the same as name of {@link org.geoserver.generatedgeometries.core.GeometryGenerationStrategy}
-     * associated with the generator.
+     * The name of the UI that can be used for identifying it. Usually it is the same as name of
+     * {@link org.geoserver.generatedgeometries.core.GeometryGenerationStrategy} associated with the
+     * generator.
      *
      * @return the name of UI generator
      */
@@ -36,7 +36,7 @@ public interface GeometryGenerationStrategyUIGenerator {
 
     /**
      * Configuration helper for the associated strategy.
-     * 
+     *
      * @param info feature layer info
      */
     void configure(FeatureTypeInfo info);

@@ -5,29 +5,6 @@
 
 package org.geoserver.generatedgeometries.core.longitudelatitude;
 
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geotools.data.Query;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Test;
-import org.locationtech.jts.geom.Point;
-import org.mockito.ArgumentCaptor;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_ATTRIBUTE_NAME;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.GEOMETRY_CRS;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy.LATITUDE_ATTRIBUTE_NAME;
@@ -47,6 +24,28 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Test;
+import org.locationtech.jts.geom.Point;
+import org.mockito.ArgumentCaptor;
+import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.And;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 
 public class LongLatGeometryGenerationStrategyTest {
 

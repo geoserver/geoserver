@@ -5,16 +5,6 @@
 
 package org.geoserver.generatedgeometries.core.longitudelatitude;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Document;
-
-import java.io.IOException;
-
 import static java.util.Collections.emptyMap;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
@@ -27,6 +17,15 @@ import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTe
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.filenameOf;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.setupXMLNamespaces;
 import static org.geoserver.generatedgeometries.core.longitudelatitude.LongLatTestData.wfsUrl;
+
+import java.io.IOException;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class LongLatWFSTest extends GeoServerSystemTestSupport {
 
@@ -96,7 +95,9 @@ public class LongLatWFSTest extends GeoServerSystemTestSupport {
                 "feature.0",
                 "//wfs:FeatureCollection/gml:featureMember/gs:LongLatBasicLayer/@fid",
                 dom);
-        assertXpathNotExists("//wfs:FeatureCollection/gml:featureMember/gs:LongLatLayer/gs:geom/gml:Point/gml:coordinates", dom);
+        assertXpathNotExists(
+                "//wfs:FeatureCollection/gml:featureMember/gs:LongLatLayer/gs:geom/gml:Point/gml:coordinates",
+                dom);
     }
 
     @Test

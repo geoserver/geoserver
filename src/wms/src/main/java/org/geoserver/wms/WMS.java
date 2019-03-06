@@ -205,6 +205,18 @@ public class WMS implements ApplicationContextAware {
     /** Advanced projection key */
     public static String ADVANCED_PROJECTION_KEY = "advancedProjectionHandling";
 
+    /** Enable advanced projection handling */
+    public static Boolean ENABLE_ADVANCED_PROJECTION_DENSIFICATION = false;
+
+    /** Advanced projection densification key */
+    public static String ADVANCED_PROJECTION_DENSIFICATION_KEY = "advancedProjectionDensification";
+
+    /** Disable DateLine Wrapping Heuristic. */
+    public static Boolean DISABLE_DATELINE_WRAPPING_HEURISTIC = false;
+
+    /** DateLine Wrapping Heuristic key */
+    public static String DATELINE_WRAPPING_HEURISTIC_KEY = "disableDatelineWrappingHeuristic";
+
     /** GIF disposal methods */
     public static final String DISPOSAL_METHOD_NONE = "none";
 
@@ -546,6 +558,24 @@ public class WMS implements ApplicationContextAware {
                 getMetadataValue(
                         ADVANCED_PROJECTION_KEY, ENABLE_ADVANCED_PROJECTION, Boolean.class);
         return enabled;
+    }
+
+    public boolean isAdvancedProjectionDensificationEnabled() {
+        Boolean enabled =
+                getMetadataValue(
+                        ADVANCED_PROJECTION_DENSIFICATION_KEY,
+                        ENABLE_ADVANCED_PROJECTION_DENSIFICATION,
+                        Boolean.class);
+        return enabled;
+    }
+
+    public boolean isDateLineWrappingHeuristicDisabled() {
+        Boolean disabled =
+                getMetadataValue(
+                        DATELINE_WRAPPING_HEURISTIC_KEY,
+                        DISABLE_DATELINE_WRAPPING_HEURISTIC,
+                        Boolean.class);
+        return disabled;
     }
 
     public int getMaxAllowedFrames() {

@@ -67,6 +67,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
+        setOutputMarkupId(true);
 
         CheckBox circularArcs = new CheckBox("circularArcPresent");
         add(circularArcs);

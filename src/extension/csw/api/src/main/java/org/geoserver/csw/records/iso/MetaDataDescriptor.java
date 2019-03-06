@@ -49,6 +49,8 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
     public static final String NAMESPACE_GMD = "http://www.isotc211.org/2005/gmd";
     public static final String NAMESPACE_APISO = "http://www.opengis.net/cat/csw/apiso/1.0";
 
+    public static final String NAMESPACE_XLINK = "http://www.w3.org/1999/xlink";
+
     public static FeatureType METADATA_TYPE;
     public static AttributeDescriptor METADATA_DESCRIPTOR;
 
@@ -70,6 +72,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         NAMESPACES.declarePrefix("csw", CSW.NAMESPACE);
         NAMESPACES.declarePrefix("gco", NAMESPACE_GCO);
         NAMESPACES.declarePrefix("gmd", NAMESPACE_GMD);
+        NAMESPACES.declarePrefix("xlink", NAMESPACE_XLINK);
 
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
 

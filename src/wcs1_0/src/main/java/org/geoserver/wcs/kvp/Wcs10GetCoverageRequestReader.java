@@ -45,6 +45,7 @@ import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -396,6 +397,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
      * @param rangeSubset
      * @param axis
      */
+    @SuppressWarnings("unchecked")
     private void checkTypeAxisRange(
             final RangeSubsetType rangeSubset, Object axis, String axisName) {
         if (axis instanceof String) {
@@ -467,6 +469,27 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
             axisSubset.getSingleValue().add(singleValue);
 
+            rangeSubset.getAxisSubset().add(axisSubset);
+        } else if (axis instanceof Collection) {
+            AxisSubsetType axisSubset = Wcs10Factory.eINSTANCE.createAxisSubsetType();
+            axisSubset.setName(axisName);
+            for (Object value : (Collection<?>) axis) {
+                if (value instanceof NumberRange) {
+                    NumberRange<?> range = (NumberRange<?>) value;
+                    IntervalType interval = Wcs10Factory.eINSTANCE.createIntervalType();
+                    TypedLiteralType min = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    TypedLiteralType max = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    min.setValue(Double.toString(range.getMinimum()));
+                    max.setValue(Double.toString(range.getMaximum()));
+                    interval.setMin(min);
+                    interval.setMax(max);
+                    axisSubset.getInterval().add(interval);
+                } else {
+                    TypedLiteralType singleValue = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    singleValue.setValue(String.valueOf(value));
+                    axisSubset.getSingleValue().add(singleValue);
+                }
+            }
             rangeSubset.getAxisSubset().add(axisSubset);
         }
     }

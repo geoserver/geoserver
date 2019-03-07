@@ -94,6 +94,11 @@
     <constructor-arg ref="geoServer"/>
   </bean>
 
+  <bean id="wcs100ElevationKvpParser" class="org.geoserver.wcs.kvp.ElevationKvpParser">
+    <constructor-arg value="ELEVATION"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
 
   <!-- kvp request readers -->
 

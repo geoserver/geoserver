@@ -575,6 +575,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 "m");
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__timeranges");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkElevationRangesEnvelope(dom);
 
@@ -610,6 +611,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__timeranges");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkElevationRangesEnvelope(dom);
 
@@ -634,6 +636,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 getLayerId(WATTEMP), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__watertemp");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkWaterTempElevationEnvelope(dom);
 
@@ -658,6 +661,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__timeranges");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkElevationRangesEnvelope(dom);
 
@@ -751,6 +755,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 null);
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__multidim");
         //        print(dom);
+        checkValidationErrors(dom, getWcs20Schema());
 
         checkTimeElevationRangesEnvelope(dom);
 
@@ -911,43 +916,35 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     private void checkWaterTempElevationEnvelope(Document dom) throws XpathException {
         // check the envelope with time
-        assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
+        assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:Envelope)", dom);
         assertXpathEvaluatesTo(
-                "Lat Long elevation",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels",
-                dom);
-        assertXpathEvaluatesTo(
-                "Deg Deg m", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
-        assertXpathEvaluatesTo(
-                "3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
+                "Lat Long elevation", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
+        assertXpathEvaluatesTo("Deg Deg m", "//gml:boundedBy/gml:Envelope/@uomLabels", dom);
+        assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:Envelope/@srsDimension", dom);
         assertXpathEvaluatesTo(
                 "40.562080748421806 0.23722068851276978 0.0",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner",
+                "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
                 dom);
         assertXpathEvaluatesTo(
                 "44.55808294568743 14.592757149389236 100.0",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:upperCorner",
+                "//gml:boundedBy/gml:Envelope/gml:upperCorner",
                 dom);
     }
 
     private void checkElevationRangesEnvelope(Document dom) throws XpathException {
         // check the envelope with time
-        assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
+        assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:Envelope)", dom);
         assertXpathEvaluatesTo(
-                "Lat Long elevation",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels",
-                dom);
-        assertXpathEvaluatesTo(
-                "Deg Deg m", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
-        assertXpathEvaluatesTo(
-                "3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
+                "Lat Long elevation", "//gml:boundedBy/gml:Envelope/@axisLabels", dom);
+        assertXpathEvaluatesTo("Deg Deg m", "//gml:boundedBy/gml:Envelope/@uomLabels", dom);
+        assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:Envelope/@srsDimension", dom);
         assertXpathEvaluatesTo(
                 "40.562080748421806 0.23722068851276978 20.0",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner",
+                "//gml:boundedBy/gml:Envelope/gml:lowerCorner",
                 dom);
         assertXpathEvaluatesTo(
                 "44.55808294568743 14.592757149389236 150.0",
-                "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:upperCorner",
+                "//gml:boundedBy/gml:Envelope/gml:upperCorner",
                 dom);
     }
 

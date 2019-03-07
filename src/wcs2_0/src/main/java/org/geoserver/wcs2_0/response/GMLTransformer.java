@@ -319,11 +319,13 @@ class GMLTransformer extends TransformerBase {
                     helper.getAdditionalDimensions();
             final Set<String> dimensionsName = additionalDimensions.keySet();
             final Iterator<String> dimensionsIterator = dimensionsName.iterator();
+            int index = 0;
             while (dimensionsIterator.hasNext()) {
                 final String dimensionName = dimensionsIterator.next();
                 final DimensionInfo customDimension = additionalDimensions.get(dimensionName);
                 if (customDimension != null) {
-                    setAdditionalDimensionMetadata(dimensionName, customDimension, helper);
+                    setAdditionalDimensionMetadata(dimensionName, customDimension, index, helper);
+                    index++;
                 }
             }
         }
@@ -333,11 +335,15 @@ class GMLTransformer extends TransformerBase {
          *
          * @param name the custom dimension name
          * @param dimension the custom dimension related {@link DimensionInfo} instance
+         * @param index the custom dimension index to ensure unique GML ids
          * @param helper the {@link WCSDimensionsHelper} instance to be used to parse domains
          * @throws IOException
          */
         private void setAdditionalDimensionMetadata(
-                final String name, final DimensionInfo dimension, WCSDimensionsHelper helper)
+                final String name,
+                final DimensionInfo dimension,
+                int index,
+                WCSDimensionsHelper helper)
                 throws IOException {
             Utilities.ensureNonNull("helper", helper);
             final String startTag =
@@ -349,11 +355,11 @@ class GMLTransformer extends TransformerBase {
             // TODO: check if we are in the list of instants case, or in the list of periods case
 
             // list case
-            int i = 0;
-            for (String item : domain) {
+            for (int i = 0; i < domain.size(); i++) {
+                String item = domain.get(i);
                 Date date = WCSDimensionsValueParser.parseAsDate(item);
                 if (date != null) {
-                    final String dimensionId = helper.getCoverageId() + "_dd_" + i;
+                    final String dimensionId = helper.getCoverageId() + "_dd_" + index + "_" + i;
                     encodeDate(date, helper, dimensionId);
                     continue;
                 }
@@ -385,7 +391,6 @@ class GMLTransformer extends TransformerBase {
                 //                }
 
                 // TODO: Add more cases
-                i++;
             }
             end(TAG.ADDITIONAL_DIMENSION);
         }
@@ -690,18 +695,13 @@ class GMLTransformer extends TransformerBase {
             envelopeAttrs.addAttribute(
                     "", "srsDimension", "srsDimension", "", String.valueOf(srsDimension));
             start("gml:boundedBy");
-            String envelopeName;
-            if (dimensionHelper != null && (hasTime || hasElevation)) {
-                envelopeName = "gml:EnvelopeWithTimePeriod";
-            } else {
-                envelopeName = "gml:Envelope";
-            }
+            String envelopeName = hasTime ? "gml:EnvelopeWithTimePeriod" : "gml:Envelope";
             start(envelopeName, envelopeAttrs);
 
             element("gml:lowerCorner", lower);
             element("gml:upperCorner", upper);
 
-            if (dimensionHelper != null && hasTime) {
+            if (hasTime) {
                 element("gml:beginPosition", dimensionHelper.getBeginTime());
                 element("gml:endPosition", dimensionHelper.getEndTime());
             }

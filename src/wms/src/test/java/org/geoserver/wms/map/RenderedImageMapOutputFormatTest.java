@@ -290,6 +290,50 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
+    public void testAdvancedProjectionDensificationWithFormatOption() throws Exception {
+        Graphics2D graphics = Mockito.mock(Graphics2D.class);
+        this.rasterMapProducer = new DummyRasterMapProducer(getWMS());
+        ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
+
+        Catalog catalog = getCatalog();
+        final FeatureSource fs =
+                catalog.getFeatureTypeByName(
+                                STRAIGHT_VERTICAL_LINE.getPrefix(),
+                                STRAIGHT_VERTICAL_LINE.getLocalPart())
+                        .getFeatureSource(null, null);
+
+        final ReferencedEnvelope env =
+                new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
+        CoordinateReferenceSystem utm32 = CRS.decode("EPSG:32632");
+        ReferencedEnvelope targetEnv = env.transform(utm32, true);
+
+        GetMapRequest request = new GetMapRequest();
+        request.getFormatOptions().put("advancedProjectionHandlingDensification", "true");
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(targetEnv);
+        map.getViewport().setCoordinateReferenceSystem(utm32);
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.setRequest(request);
+
+        StyleInfo styleByName = catalog.getStyleByName(STRAIGHT_VERTICAL_LINE_STYLE);
+        Style basicStyle = styleByName.getStyle();
+        map.addLayer(new FeatureLayer(fs, basicStyle));
+
+        request.setFormat(getMapFormat());
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        BufferedImage image = (BufferedImage) imageMap.getImage();
+        imageMap.dispose();
+        assertNotBlank("densify", image);
+        ArgumentCaptor<Shape> shape = ArgumentCaptor.forClass(Shape.class);
+        Mockito.verify(graphics).draw(shape.capture());
+        LiteShape2 drawnShape = (LiteShape2) shape.getValue();
+        assertEquals(64, drawnShape.getGeometry().getCoordinates().length);
+    }
+
+    @Test
     public void testWrappingHeuristic() throws Exception {
         WMS wms = getWMS();
         WMSInfo info = wms.getServiceInfo();
@@ -352,6 +396,46 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
 
         GetMapRequest request = new GetMapRequest();
+        final WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.setRequest(request);
+
+        StyleInfo styleByName = catalog.getStyleByName(STRAIGHT_VERTICAL_LINE_STYLE);
+        Style basicStyle = styleByName.getStyle();
+        map.addLayer(new FeatureLayer(fs, basicStyle));
+
+        request.setFormat(getMapFormat());
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        BufferedImage image = (BufferedImage) imageMap.getImage();
+        imageMap.dispose();
+        assertNotBlank("dateline_heuristic", image);
+        ArgumentCaptor<Shape> shape = ArgumentCaptor.forClass(Shape.class);
+        Mockito.verify(graphics).draw(shape.capture());
+        LiteShape2 drawnShape = (LiteShape2) shape.getValue();
+        assertTrue(drawnShape.getGeometry() instanceof LineString);
+    }
+
+    @Test
+    public void testDisabledWrappingHeuristicWithFormatOption() throws Exception {
+        Graphics2D graphics = Mockito.mock(Graphics2D.class);
+        this.rasterMapProducer = new DummyRasterMapProducer(getWMS());
+        ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
+
+        Catalog catalog = getCatalog();
+        final FeatureSource fs =
+                catalog.getFeatureTypeByName(
+                                CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
+                        .getFeatureSource(null, null);
+
+        final ReferencedEnvelope env =
+                new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
+
+        GetMapRequest request = new GetMapRequest();
+        request.getFormatOptions().put("disableDatelineWrappingHeuristic", "true");
         final WMSMapContent map = new WMSMapContent();
         map.getViewport().setBounds(env);
         map.setMapWidth(300);

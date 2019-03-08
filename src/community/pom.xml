@@ -321,7 +321,13 @@
       <modules>
         <module>wms-eo</module>
       </modules>
-    </profile>	
+    </profile>
+    <profile>
+      <id>importer-fgdb</id>
+      <modules>
+        <module>importer-fgdb</module>
+      </modules>
+    </profile>
     <profile>
       <id>geopkg</id>
       <modules>

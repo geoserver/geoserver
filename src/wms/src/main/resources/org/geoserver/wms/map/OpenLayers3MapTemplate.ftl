@@ -283,7 +283,9 @@
       var projection = new ol.proj.Projection({
           code: '${request.SRS?js_string}',
           units: '${units?js_string}',
+          <#if yx == "true">
           axisOrientation: 'neu',
+          </#if>
           global: ${global}
       });
       var map = new ol.Map({

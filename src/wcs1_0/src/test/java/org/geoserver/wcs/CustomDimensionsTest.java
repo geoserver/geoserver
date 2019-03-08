@@ -57,6 +57,20 @@ public class CustomDimensionsTest extends CoverageTestSupport {
     }
 
     @Test
+    public void testGetCoverageKVPBadValue() throws Exception {
+        // check that we get no data when requesting an incorrect value for custom dimension
+        String request = getWaterTempRequestKVP("bad_dimension_value");
+        MockHttpServletResponse response = getAsServletResponse(request);
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNull(image);
+
+        request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toLowerCase());
+        response = getAsServletResponse(request);
+        image = ImageIO.read(getBinaryInputStream(response));
+        assertNull(image);
+    }
+
+    @Test
     public void testGetCoverageGoodValue() throws Exception {
         // check that we get data when requesting a correct value for custom dimension
         String request = getWaterTempRequest("CustomDimValueA");
@@ -70,6 +84,30 @@ public class CustomDimensionsTest extends CoverageTestSupport {
         image = ImageIO.read(getBinaryInputStream(response));
         assertNotNull(image);
         assertEquals("image/tiff", response.getContentType());
+    }
+
+    @Test
+    public void testGetCoverageKVPGoodValue() throws Exception {
+        // check that we get data when requesting a correct value for custom dimension
+        String request = getWaterTempRequestKVP("CustomDimValueA");
+        MockHttpServletResponse response = getAsServletResponse(request);
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotNull(image);
+        assertEquals("image/tiff", response.getContentType());
+
+        request = request.replace(DIMENSION_NAME, DIMENSION_NAME.toLowerCase());
+        response = getAsServletResponse(request);
+        image = ImageIO.read(getBinaryInputStream(response));
+        assertNotNull(image);
+        assertEquals("image/tiff", response.getContentType());
+    }
+
+    private String getWaterTempRequestKVP(String dimensionValue) {
+        String url =
+                "wcs?service=WCS&version=1.0.0&request=GetCoverage"
+                        + "&sourceCoverage=%s&format=GEOTIFF&width=25&height=24"
+                        + "&crs=EPSG:4326&bbox=0.237,40.562,14.593,44.558&%s=%s";
+        return String.format(url, getLayerId(CUST_WATTEMP), DIMENSION_NAME, dimensionValue);
     }
 
     private String getWaterTempRequest(String dimensionValue) {

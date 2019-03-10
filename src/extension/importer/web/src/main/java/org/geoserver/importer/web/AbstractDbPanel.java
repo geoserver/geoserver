@@ -84,52 +84,11 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     }
 
     public ImportData createImportSource() {
-        //        try {
-
         // build up the store connection param map
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
+        fillStoreParams(params);
 
         return new Database(params);
-
-        //          // ok, check we can connect
-        //          DataAccess store = null;
-        //          try {
-        //              store = DataAccessFinder.getDataStore(params);
-        //              // force the store to open a connection
-        //              store.getNames();
-        //              store.dispose();
-        //          } catch (Throwable e) {
-        //              LOGGER.log(Level.INFO, "Could not connect to the datastore", e);
-        //              error(new ParamResourceModel("ImporterError.databaseConnectionError",
-        //                      AbstractDBMSPage.this, e.getMessage()).getString());
-        //              return;
-        //          } finally {
-        //              if (store != null)
-        //                  store.dispose();
-        //          }
-        //
-        //          // build the store
-        //          CatalogBuilder builder = new CatalogBuilder(getCatalog());
-        //          builder.setWorkspace(workspace);
-        //          StoreInfo si = builder.buildDataStore(generalParams.name);
-        //          si.setDescription(generalParams.description);
-        //          si.getConnectionParameters().putAll(params);
-        //          si.setEnabled(true);
-        //          si.setType(factory.getDisplayName());
-        //          getCatalog().add(si);
-        //
-        //          // redirect to the layer chooser
-        //          PageParameters pp = new PageParameters();
-        //          pp.put("store", si.getName());
-        //          pp.put("workspace", workspace.getName());
-        //          pp.put("storeNew", true);
-        //          pp.put("workspaceNew", false);
-        //          pp.put("skipGeometryless", isGeometrylessExcluded());
-        //          setResponsePage(VectorLayerChooserPage.class, pp);
-        //      } catch (Exception e) {
-        //          LOGGER.log(Level.SEVERE, "Error while setting up mass import", e);
-        //      }
-        //        return new DataStoreSource()
     }
 
     /** Switches between the types of param panels */

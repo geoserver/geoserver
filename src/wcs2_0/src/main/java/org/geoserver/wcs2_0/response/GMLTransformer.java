@@ -285,6 +285,7 @@ class GMLTransformer extends TransformerBase {
             start("gmlcov:metadata");
             start("gmlcov:Extension");
 
+            handleAdditionalMetadata(context);
             if (dimensionsHelper != null) {
 
                 // handle time if necessary
@@ -303,6 +304,10 @@ class GMLTransformer extends TransformerBase {
 
             end("gmlcov:Extension");
             end("gmlcov:metadata");
+        }
+
+        protected void handleAdditionalMetadata(Object context) {
+            // Override to do something.
         }
 
         /**

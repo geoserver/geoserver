@@ -1,0 +1,319 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Parameter Extractor
+  description: A parameter extractor rule allows specific request parameters as URL path fragments instead of using the query string. A echo parameter makes sure that certain URL paratemers are added to the capabilities documents backlinks.
+
+paths:
+  /params-extractor/echoes:
+    get:
+      operationId: getEchoParameters
+      summary: Get a list of echo parameters
+      description: List all echo parameters currently configured.  Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/EchoParameters"
+          examples:
+            application/xml: |
+              <EchoParameters>
+                <EchoParameter>
+                  <id>0</id>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/params-extractor/echoes/0.xml" rel="alternate" type="application/atom+xml"/>
+                </EchoParameter>
+              </EchoParameters>
+
+            application/json: |
+              {"EchoParameters": {"EchoParameter": [
+                  {
+                  "id": 0,
+                  "href": "http://localhost:8080/geoserver/rest/params-extractor/echoes/0.json"
+                }
+              ]}}
+
+    post:
+      operationId: postEchoParameter
+      summary: Create a new echo parameter
+      description: Adds a new echo parameter
+      parameters:
+        - $ref: '#/parameters/echoBodyParameter'
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created echo parameter can be found
+              type: string
+
+  /params-extractor/echoes/{parameterId}:
+    get:
+      operationId: getEchoParameter
+      summary: Retrieve a particular echo parameter definition
+      description: Controls a particular echo parameter. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/echos/{parameterId}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          description: The identifier of the  echo parameter to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/EchoParameter"
+          examples:
+            application/xml: |
+              <EchoParameter activated="true" id="0" parameter="CQL_FILTER"/>
+
+            application/json: |
+              {"EchoParameter": {
+                "id": 0,
+                "parameter": "CQL_FILTER",
+                "activated": true
+              }}
+
+    put:
+      operationId: putEchoParameter
+      summary: Modify an echo parametr
+      description: Modify an echo parameter
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          description: The identifier of the  echo parameter to retrieve.
+          type: string
+        - $ref: '#/parameters/echoBodyParameter'
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The echo parameter was successfully updated.
+
+    delete:
+      operationId: deleteEchoParameter
+      summary: Delete an echo parameter
+      description: Deletes an echo parameter from the configuration
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          description: The identifier of the  echo parameter to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+
+  /params-extractor/rules:
+    get:
+      operationId: getRules
+      summary: Get a list of rules
+      description: List all rules currently configured.  Use the "Accept:" header to specify format or append an extension to the endpoint (example "/datastores.xml" for XML)
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Rules"
+          examples:
+            application/xml: |
+              <Rules>
+                <Rule>
+                  <id>0</id>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/params-extractor/rules/0.xml" rel="alternate" type="application/atom+xml"/>
+                </Rule>
+              </Rules>
+
+            application/json: |
+              {"Rules": {"Rule": [
+                {
+                  "id": 0,
+                  "href": "http://localhost:8080/geoserver/rest/params-extractor/rules/0.json"
+                }
+              ]}}
+
+    post:
+      operationId: postRule
+      summary: Create a new rule
+      description: Adds a new rule
+      parameters:
+        - $ref: '#/parameters/ruleBodyParameter'
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created rule can be found
+              type: string
+
+  /params-extractor/rules/{ruleId}:
+    get:
+      operationId: getRule
+      summary: Retrieve a particular rule definition
+      description: Controls a particular rule . Use the "Accept:" header to specify format or append an extension to the endpoint (example "/echos/{parameterId}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          description: The identifier of the  rule to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Rule"
+          examples:
+            application/xml: |
+              <Rule activated="true" id="0" parameter="cql_filter" position="3" remove="1" transform="seq='$2'"/>
+
+            application/json: |
+              {"Rule": {
+                "id": 0,
+                "activated": true,
+                "position": 3,
+                "parameter": "cql_filter",
+                "transform": "seq='$2'",
+                "remove": 1
+              }}
+
+    put:
+      operationId: putRule
+      summary: Modify a rule
+      description: Modify a rule
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          description: The identifier of the  echo parameter to retrieve.
+          type: string
+        - $ref: '#/parameters/ruleBodyParameter'
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The rule was successfully updated.
+
+    delete:
+      operationId: deleteRule
+      summary: Delete a rule
+      description: Deletes a rule from the configuration
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          description: The identifier of the  rule to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+
+parameters:
+  echoBodyParameter:
+    name: body
+    in: body
+    schema:
+      $ref: '#/definitions/EchoParameter'
+
+  ruleBodyParameter:
+    name: body
+    in: body
+    schema:
+      $ref: '#/definitions/Rule'
+
+
+definitions:
+  EchoParameters:
+    title: Echo parameter links list
+    type: array
+    items:
+      title: echoParameterListItem
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifeir of the echo paameter
+        link:
+          type: string
+          description: URL to the echo parameter definition
+  EchoParameter:
+    title: EchoParameter
+    type: object
+    properties:
+      id:
+        type: string
+        description: identifier of the echo parameter
+      parameter:
+        type: string
+        description: The parameter name
+      activated:
+        type: boolean
+        description: Whether or not the parameter echoing is active
+  Rules:
+    title: Rule link list
+    type: array
+    items:
+      title: ruleListItem
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifeir of the rule
+        link:
+          type: string
+          description: URL to  the rule definition
+  Rule:
+    title: Rule
+    type: object
+    properties:
+      id:
+        type: string
+        description: identifier of the rule
+      activated:
+        type: boolean
+        description: Whether or not the parameter echoing is active
+      position:
+        type: integer
+        description: The position of the URL base path element to be selected
+      parameter:
+        type: string
+        description: The name of the parameter produced by this rule
+      transform:
+        type: string
+        description: Expression that defines the value of the parameter, use {PARAMETER} as a placeholder for the selected path element
+      match:
+        type: string
+        description: Regex match expression with groups, for example ^(?:/[^/]*){3}(/([^/]+)).*$ selects the URL base path third element
+      activation:
+        type: string
+        description: If defined this rule will only be applied to URLs that match this regex expression
+      remove:
+        type: integer
+        description: The match expression group to be removed from URL, by default 1
+      combine:
+        type: string
+        description: Defines how to combine parameter existing value ($1 existing value, $2 new value), by default the value is overridden
+      

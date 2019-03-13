@@ -20,6 +20,8 @@ import org.geoserver.rest.converters.XStreamCatalogListConverter;
  */
 public class RestListWrapper<T> extends RestWrapperAdapter<T> {
 
+    String itemAttributeName = "name";
+
     public RestListWrapper(
             Collection<T> collection,
             Class<T> clazz,
@@ -28,8 +30,23 @@ public class RestListWrapper<T> extends RestWrapperAdapter<T> {
         super(collection, clazz, controller, template);
     }
 
+    public RestListWrapper(
+            Collection<T> collection,
+            Class<T> clazz,
+            RestBaseController controller,
+            String itemAttributeName,
+            Template template) {
+        super(collection, clazz, controller, template);
+        this.itemAttributeName = itemAttributeName;
+    }
+
     /** Alias for {@link #getObject()} */
     public Collection<T> getCollection() {
         return (Collection<T>) getObject();
+    }
+
+    /** The item attribute name, identifying the object, typically "name" */
+    public String getItemAttributeName() {
+        return itemAttributeName;
     }
 }

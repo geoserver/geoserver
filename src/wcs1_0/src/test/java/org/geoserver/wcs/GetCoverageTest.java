@@ -5,8 +5,10 @@
  */
 package org.geoserver.wcs;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -362,6 +364,22 @@ public class GetCoverageTest extends WCSTestSupport {
         GetCoverageType getCoverage =
                 (GetCoverageType) xmlReader.read(null, new StringReader(request), null);
         return service.getCoverage(getCoverage);
+    }
+
+    @Test
+    public void testBboxOutsideCoverage() throws Exception {
+        String queryString =
+                "&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                        + "&bbox=-147,44,-146,45&crs=EPSG:4326&width=150&height=150";
+        Document dom = getAsDOM("wcs?sourcecoverage=" + getLayerId(TASMANIA_BM) + queryString);
+        // print(dom);
+        assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
+        String error =
+                xpath.evaluate("/ServiceExceptionReport/ServiceException/text()", dom).trim();
+        assertThat(error, not(containsString("Exception")));
+        assertXpathEvaluatesTo(
+                "InvalidParameterValue", "/ServiceExceptionReport/ServiceException/@code", dom);
+        assertXpathEvaluatesTo("bbox", "/ServiceExceptionReport/ServiceException/@locator", dom);
     }
 
     @Test

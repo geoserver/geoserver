@@ -614,9 +614,14 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // compute intersection envelope to be used
             GeneralEnvelope destinationEnvelope =
-                    (GeneralEnvelope)
-                            getHorizontalEnvelope(
-                                    computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope));
+                    computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope);
+            if (destinationEnvelope == null) {
+                throw new WcsException(
+                        "The request bbox is outside of the coverage area",
+                        InvalidParameterValue,
+                        "bbox");
+            }
+            destinationEnvelope = (GeneralEnvelope) getHorizontalEnvelope(destinationEnvelope);
             if (targetCRS != null) {
                 destinationEnvelope = CRS.transform(destinationEnvelope, targetCRS);
                 destinationEnvelope.setCoordinateReferenceSystem(targetCRS);

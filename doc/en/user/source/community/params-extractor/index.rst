@@ -156,3 +156,11 @@ Follow a print screen of the rules management UI with all the rules previously d
    *Rules management UI*
 
 Note that the first rule (the advanced one) is not active.
+
+REST API
+--------
+
+The rules and echo parameters can also be managed by means of a REST API found at 
+``geoserver/rest/params-extractor``. Documentation for it is available in 
+:api:`Swagger format <params-extractor.yaml>`
+

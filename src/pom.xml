@@ -2223,7 +2223,7 @@
             <version>3.2.1</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
-              <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
+              <suppressionFile>"${geoserverBaseDir}"/../build/qa/dependency-check-suppression.xml</suppressionFile>
             </configuration>
             <executions>
               <execution>
@@ -2274,7 +2274,7 @@
             </dependencies>
             <configuration>
               <rulesets>
-                <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
+                <ruleset>"${geoserverBaseDir}"/../build/qa/pmd-ruleset.xml</ruleset>
               </rulesets>
               <failurePriority>3</failurePriority>
               <minimumPriority>3</minimumPriority>
@@ -2383,7 +2383,7 @@
               <!--threshold>High</threshold-->
               <xmlOutput>true</xmlOutput>
               <maxRank>15</maxRank>
-              <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
+              <excludeFilterFile>"${geoserverBaseDir}"/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
               <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
             </configuration>
             <executions>
@@ -2416,7 +2416,7 @@
                     <!-- ignore generated classes, e.g., javacc ones -->
                     <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
                     <skip>${checkstyle.skip}</skip>
-                    <configLocation>${geoserverBaseDir}/../build/qa/checkstyle.xml</configLocation>
+                    <configLocation>"${geoserverBaseDir}"/../build/qa/checkstyle.xml</configLocation>
                   </configuration>
               <executions>
                 <execution>

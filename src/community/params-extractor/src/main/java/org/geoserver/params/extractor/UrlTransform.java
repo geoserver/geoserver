@@ -52,11 +52,11 @@ public class UrlTransform {
         return queryStringBuilder.toString();
     }
 
-    public void addParameter(String name, String value, Optional<String> combine) {
+    public void addParameter(String name, String value, String combine) {
         String rawName = getRawName(name);
         String[] existingValues = parameters.get(rawName);
-        if (existingValues != null && combine.isPresent()) {
-            String combinedValue = combine.get().replace("$1", existingValues[0]);
+        if (existingValues != null && combine != null) {
+            String combinedValue = combine.replace("$1", existingValues[0]);
             combinedValue = combinedValue.replace("$2", value);
             existingValues[0] = combinedValue;
         } else {

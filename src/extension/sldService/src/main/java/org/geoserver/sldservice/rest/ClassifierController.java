@@ -168,6 +168,7 @@ public class ClassifierController extends BaseSLDServiceController {
                     boolean continuous,
             @RequestParam(value = "bbox", required = false) ReferencedEnvelope bbox,
             @RequestParam(value = "stddevs", required = false) Double stddevs,
+            @RequestParam(value = "env", required = false) String env,
             final HttpServletResponse response)
             throws Exception {
         LayerInfo layerInfo = catalog.getLayerByName(layerName);
@@ -193,7 +194,11 @@ public class ClassifierController extends BaseSLDServiceController {
                 this.getColorRamp(
                         customClasses, customColors, startColor, endColor, midColor, colors);
         final List<Rule> rules;
+        if (env != null) {
+            RestEnvVariableCallback.setOptions(env);
+        }
         try {
+
             ResourceInfo obj = layerInfo.getResource();
             /* Check if it's feature type or coverage */
             if (obj instanceof FeatureTypeInfo) {

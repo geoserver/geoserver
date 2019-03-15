@@ -10,7 +10,10 @@ import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.rest.RestException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -28,8 +31,8 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -45,7 +48,7 @@ import org.springframework.http.HttpStatus;
 class ImageReader {
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
 
-    private ArrayList<GeneralParameterValue> readParameters;
+    private GeneralParameterValue[] readParameters;
     private final ReferencedEnvelope envelope;
     private CoverageInfo coverageInfo;
     private int selectedBand;
@@ -66,14 +69,25 @@ class ImageReader {
     }
 
     public ImageReader invoke() throws IOException, TransformException, FactoryException {
-        // grab the raster, for the time being, read fully trying to force deferred loading where
-        // possible
-        readParameters = new ArrayList<>();
         GridCoverage2DReader reader =
                 (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-        ParameterValue<Boolean> useImageRead = AbstractGridFormat.USE_JAI_IMAGEREAD.createValue();
-        useImageRead.setValue(true);
-        readParameters.add(useImageRead);
+
+        // use the configured reading parameters
+        final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
+        final List<GeneralParameterDescriptor> parameterDescriptors =
+                new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
+        this.readParameters =
+                CoverageUtils.getParameters(
+                        readParametersDescriptor, coverageInfo.getParameters(), false);
+
+        // grab the raster, for the time being, read fully trying to force deferred loading where
+        // possible
+        readParameters =
+                CoverageUtils.mergeParameter(
+                        parameterDescriptors,
+                        readParameters,
+                        true,
+                        AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
 
         // grab the original grid geometry
         GridEnvelope originalGridrange = reader.getOriginalGridRange();
@@ -122,10 +136,12 @@ class ImageReader {
         }
 
         if (!readGeometry.equals(originalGeometry)) {
-            ParameterValue<GridGeometry2D> ggParam =
-                    AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
-            ggParam.setValue(readGeometry);
-            readParameters.add(ggParam);
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            parameterDescriptors,
+                            readParameters,
+                            readGeometry,
+                            AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
         }
 
         // can we delegate band selection to the reader? if so, it can help a lot, especially
@@ -140,19 +156,20 @@ class ImageReader {
             if (sampleModel != null) {
                 verifyBandSelection(selectedBand, sampleModel);
                 if (sampleModel.getNumBands() > 1) {
-                    ParameterValue<int[]> value = AbstractGridFormat.BANDS.createValue();
                     // this param is zero based, the service is like SLD, 1-based
-                    value.setValue(new int[] {selectedBand - 1});
-                    readParameters.add(value);
+                    readParameters =
+                            CoverageUtils.mergeParameter(
+                                    parameterDescriptors,
+                                    readParameters,
+                                    new int[] {selectedBand - 1},
+                                    AbstractGridFormat.BANDS.getName().getCode());
                     bandSelected = true;
                 }
             }
         }
 
         // finally perform the read
-        coverage =
-                reader.read(
-                        readParameters.toArray(new GeneralParameterValue[readParameters.size()]));
+        coverage = reader.read(readParameters);
 
         // the reader can do a best-effort on grid geometry, might not have cut it
         if (readEnvelope != null && isUncut(coverage, readGeometry)) {
@@ -214,8 +231,8 @@ class ImageReader {
         return image;
     }
 
-    ArrayList<GeneralParameterValue> getReadParameters() {
-        return readParameters;
+    List<GeneralParameterValue> getReadParameters() {
+        return Arrays.asList(readParameters);
     }
 
     GridCoverage2D getCoverage() {

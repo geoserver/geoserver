@@ -209,6 +209,11 @@ The parameters usable to customize the ColorMap are:
      - limits the data the classifier is working on to a range of "stddevs" standard deviations around the mean value. 
      - a positive floating point number (e.g., '1', '2.5', '3').
      -
+   * - env
+     - a list of environment variables that the underlying layer may be using to select features/rasters to be
+       classified (e.g., by using the ``filter`` in vector and mosaic layer definitions)  
+     - a semicolon separate list of name to value assignments, e.g. ``name1:value1;name2:value2;name3:value3;...``
+     -
     
 Examples
 ~~~~~~~~~~

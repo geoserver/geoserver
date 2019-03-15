@@ -35,6 +35,10 @@ public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
     protected Rule[] checkSLD(String resultXml) {
         sldParser.setInput(new StringReader(resultXml));
         StyledLayerDescriptor descriptor = sldParser.parseSLD();
+        return checkSLD(descriptor);
+    }
+
+    protected Rule[] checkSLD(StyledLayerDescriptor descriptor) {
         assertNotNull(descriptor);
         assertNotNull(descriptor.getStyledLayers());
         if (descriptor.getStyledLayers().length > 0) {

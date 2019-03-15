@@ -21,6 +21,29 @@ public final class RuleBuilder {
     private Pattern matchPattern;
     private Pattern activationPattern;
 
+    public RuleBuilder copy(Rule other) {
+        this.id = other.getId();
+        this.activated = other.getActivated();
+        this.position = other.getPosition();
+        if (position != null) {
+            this.matchPattern =
+                    Pattern.compile(String.format("^(?:/[^/]*){%d}(/([^/]+)).*$", position));
+        } else {
+            this.matchPattern = null;
+        }
+        this.match = other.getMatch();
+        this.parameter = other.getParameter();
+        this.activation = other.getActivation();
+        if (activation != null) {
+            this.activationPattern = Pattern.compile(activation);
+        }
+        this.transform = other.getTransform();
+        this.remove = other.getRemove();
+        this.combine = other.getCombine();
+
+        return this;
+    }
+
     public RuleBuilder withId(String id) {
         this.id = id;
         return this;

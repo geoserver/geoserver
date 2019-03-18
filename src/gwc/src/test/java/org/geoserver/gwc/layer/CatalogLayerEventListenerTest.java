@@ -34,6 +34,7 @@ import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.GridSetBroker;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -74,7 +75,8 @@ public class CatalogLayerEventListenerTest {
         mockMediator = mock(GWC.class);
         when(mockMediator.getConfig()).thenReturn(configDefaults);
 
-        GridSetBroker gridsets = new GridSetBroker(true, true);
+        GridSetBroker gridsets =
+                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
         when(mockMediator.getGridSetBroker()).thenReturn(gridsets);
 
         mockLayerInfo = mock(LayerInfo.class);
@@ -390,7 +392,8 @@ public class CatalogLayerEventListenerTest {
         GeoServerTileLayerInfo tileLayerInfo =
                 TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, mockMediator.getConfig());
 
-        GridSetBroker gridsets = new GridSetBroker(true, true);
+        GridSetBroker gridsets =
+                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
         GeoServerTileLayer tileLayer =
                 new GeoServerTileLayer(mockLayerGroupInfo, gridsets, tileLayerInfo);
 

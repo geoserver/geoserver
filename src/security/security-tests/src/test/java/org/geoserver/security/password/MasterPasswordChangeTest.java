@@ -104,7 +104,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         tmp = new File(getSecurityManager().get("security").dir(), "mpw2.properties");
         mpConfig.setURL(URLs.fileToUrl(tmp));
 
-        FileUtils.writeStringToFile(tmp, "geoserver2");
+        FileUtils.writeStringToFile(tmp, "geoserver2", "UTF-8");
 
         getSecurityManager().saveMasterPasswordProviderConfig(mpConfig);
         config = getSecurityManager().getMasterPasswordConfig();

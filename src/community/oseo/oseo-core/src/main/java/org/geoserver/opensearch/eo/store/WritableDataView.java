@@ -67,24 +67,10 @@ class WritableDataView extends DefaultView implements SimpleFeatureStore {
     }
 
     @Override
-    public void modifyFeatures(AttributeDescriptor[] type, Object[] value, Filter filter)
-            throws IOException {
-        Filter mixedFilter = mixFilter(filter);
-        delegate.modifyFeatures(type, value, mixedFilter);
-    }
-
-    @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
         Filter mixedFilter = mixFilter(filter);
         delegate.modifyFeatures(attributeName, attributeValue, mixedFilter);
-    }
-
-    @Override
-    public void modifyFeatures(AttributeDescriptor type, Object value, Filter filter)
-            throws IOException {
-        Filter mixedFilter = mixFilter(filter);
-        delegate.modifyFeatures(type, value, mixedFilter);
     }
 
     @Override

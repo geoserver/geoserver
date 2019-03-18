@@ -772,11 +772,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public String[] listSubNames() throws IOException {
-        return delegate.listSubNames();
-    }
-
-    @Override
     public String[] getGridCoverageNames() throws IOException {
         return delegate.getGridCoverageNames();
     }
@@ -784,21 +779,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
     @Override
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
-    }
-
-    @Override
-    public String getCurrentSubname() throws IOException {
-        return delegate.getCurrentSubname();
-    }
-
-    @Override
-    public boolean hasMoreGridCoverages() throws IOException {
-        return delegate.hasMoreGridCoverages();
-    }
-
-    @Override
-    public void skip() throws IOException {
-        delegate.skip();
     }
 
     @Override
@@ -848,12 +828,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     @Override
-    public int getNumOverviews(String coverageName) {
-        checkCoverageName(coverageName);
-        return delegate.getNumOverviews(referenceName);
-    }
-
-    @Override
     public ImageLayout getImageLayout() throws IOException {
         return imageLayout;
     }
@@ -888,11 +862,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters(referenceName);
-    }
-
-    @Override
-    public int getNumOverviews() {
-        return delegate.getNumOverviews(referenceName);
     }
 
     @Override

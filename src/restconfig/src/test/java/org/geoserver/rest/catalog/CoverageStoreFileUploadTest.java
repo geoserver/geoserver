@@ -36,7 +36,6 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -373,7 +372,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(URLs.fileToUrl(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);
@@ -464,7 +463,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
         try {
             // Selection of the reader to use for the mosaic
-            reader = imageMosaicFormat.getReader(DataUtilities.fileToURL(Resources.find(mosaic)));
+            reader = imageMosaicFormat.getReader(URLs.fileToUrl(Resources.find(mosaic)));
 
             // configure the coverage
             configureCoverageInfo(builder, store, reader);

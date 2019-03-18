@@ -132,7 +132,7 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
         // we should get a log message, but the startup should continue
         File service =
                 new File(getDataDirectory().getResourceLoader().getBaseDirectory(), "service.xml");
-        FileUtils.writeStringToFile(service, "duDaDa");
+        FileUtils.writeStringToFile(service, "duDaDa", "UTF-8");
         getGeoServer().reload();
         assertEquals(0, geoServer.getServices().size());
     }

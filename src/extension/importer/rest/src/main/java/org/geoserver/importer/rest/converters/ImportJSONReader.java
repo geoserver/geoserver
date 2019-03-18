@@ -294,7 +294,7 @@ public class ImportJSONReader {
     }
 
     public ImportTransform transform(String json) throws IOException {
-        return transform(IOUtils.toInputStream(json));
+        return transform(IOUtils.toInputStream(json, "UTF-8"));
     }
 
     public ImportTransform transform(InputStream inputStream) throws IOException {

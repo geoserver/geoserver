@@ -39,6 +39,7 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.ows.LocalWorkspace;
+import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.junit.After;
@@ -127,7 +128,8 @@ public class CatalogConfigurationTest {
         when(catalog.getLayerGroupByName(eq(tileLayerName(groupWithNoTileLayer))))
                 .thenReturn(groupWithNoTileLayer);
 
-        gridSetBroker = new GridSetBroker(true, true);
+        gridSetBroker =
+                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
 
         Set<String> layerNames =
                 ImmutableSet.of(

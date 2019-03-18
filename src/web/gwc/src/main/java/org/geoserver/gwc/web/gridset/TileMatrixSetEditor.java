@@ -414,7 +414,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             tileWidth,
                             tileHeight,
                             false);
-            Grid grid = tmpGridset.getGridLevels()[0];
+            Grid grid = tmpGridset.getGrid(0);
             newGrid.setResolution(grid.getResolution());
             newGrid.setScaleDenominator(grid.getScaleDenominator());
         } else {

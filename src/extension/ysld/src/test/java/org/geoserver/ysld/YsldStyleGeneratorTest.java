@@ -79,7 +79,7 @@ public class YsldStyleGeneratorTest {
                                         fts.rules().get(3).getDescription().getTitle().toString());
 
                                 for (org.geotools.styling.Rule r : fts.rules()) {
-                                    assertEquals(1, r.getSymbolizers().length);
+                                    assertEquals(1, r.symbolizers().size());
                                 }
 
                                 return null;

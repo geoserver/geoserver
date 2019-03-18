@@ -381,7 +381,7 @@ public class KMLTest extends WMSTestSupport {
         try {
             // create the time template
 
-            FileUtils.writeStringToFile(templateFile, "${dates.value}");
+            FileUtils.writeStringToFile(templateFile, "${dates.value}", "UTF-8");
 
             Document doc =
                     getAsDOM(
@@ -409,7 +409,7 @@ public class KMLTest extends WMSTestSupport {
         File templateFile = new File(resourceDir, "time.ftl");
         try {
             // create the time template
-            FileUtils.writeStringToFile(templateFile, "${dates.value}||${dates.value}");
+            FileUtils.writeStringToFile(templateFile, "${dates.value}||${dates.value}", "UTF-8");
 
             Document doc =
                     getAsDOM(
@@ -439,7 +439,7 @@ public class KMLTest extends WMSTestSupport {
         File templateFile = new File(resourceDir, "height.ftl");
         try {
             // create the height template
-            FileUtils.writeStringToFile(templateFile, "200");
+            FileUtils.writeStringToFile(templateFile, "200", "UTF-8");
 
             Document doc =
                     getAsDOM(

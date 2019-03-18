@@ -8,7 +8,6 @@ package org.geoserver.wms.icons;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.geotools.factory.CommonFactoryFinder;
@@ -237,19 +236,13 @@ public final class IconPropertyInjector {
             graphicFill = injectGraphic(key + ".graphic", stroke.getGraphicFill());
         }
 
-        if (stroke.getDashArray() == null) {
-            dashArray = null;
-        } else {
-            dashArray = Arrays.copyOf(stroke.getDashArray(), stroke.getDashArray().length);
-        }
-
         return styleFactory.createStroke(
                 color,
                 width,
                 opacity,
                 lineJoin,
                 lineCap,
-                dashArray,
+                stroke.getDashArray(),
                 dashOffset,
                 graphicFill,
                 graphicStroke);

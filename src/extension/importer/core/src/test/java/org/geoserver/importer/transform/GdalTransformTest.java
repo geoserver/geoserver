@@ -65,7 +65,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(3, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(0, reader.getNumOverviews());
+            assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
@@ -110,7 +110,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(16, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_USHORT, sm.getDataType());
-            assertEquals(3, reader.getNumOverviews());
+            assertEquals(3, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
@@ -158,7 +158,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(3, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(3, reader.getNumOverviews());
+            assertEquals(3, reader.getDatasetLayout().getNumInternalOverviews());
         } finally {
             if (reader != null) {
                 reader.dispose();
@@ -206,7 +206,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             SampleModel sm = layout.getSampleModel(null);
             assertEquals(1, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
-            assertEquals(0, reader.getNumOverviews());
+            assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
             assertEquals(
                     Integer.valueOf(4326),
                     CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));

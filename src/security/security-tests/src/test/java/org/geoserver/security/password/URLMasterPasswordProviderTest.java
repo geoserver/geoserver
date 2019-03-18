@@ -40,7 +40,7 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         mpp.setName(config.getName());
         mpp.doSetMasterPassword("geoserver".toCharArray());
 
-        String encoded = IOUtils.toString(new FileInputStream(tmp));
+        String encoded = IOUtils.toString(new FileInputStream(tmp), "UTF-8");
         assertFalse("geoserver".equals(encoded));
 
         char[] passwd = mpp.doGetMasterPassword();

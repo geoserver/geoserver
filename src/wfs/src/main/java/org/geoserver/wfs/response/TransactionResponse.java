@@ -20,6 +20,7 @@ import net.opengis.wfs.InsertedFeatureType;
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionResultsType;
 import net.opengis.wfs.TransactionType;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
@@ -193,7 +194,13 @@ public class TransactionResponse extends WFSResponse {
             throw new WFSException(action.getMessage(), action.getCode(), action.getLocator());
         }
 
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
 
         TransactionType req = (TransactionType) operation.getParameters()[0];

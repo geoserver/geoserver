@@ -436,11 +436,6 @@ public class VectorMapRenderUtils {
     private static boolean isFeatureTypeStyleActive(FeatureType ftype, FeatureTypeStyle fts) {
         // TODO: find a complex feature equivalent for this check
         return fts.featureTypeNames().isEmpty()
-                || ((ftype.getName().getLocalPart() != null)
-                        && (ftype.getName()
-                                        .getLocalPart()
-                                        .equalsIgnoreCase(fts.getFeatureTypeName())
-                                || FeatureTypes.isDecendedFrom(
-                                        ftype, null, fts.getFeatureTypeName())));
+                || fts.featureTypeNames().stream().anyMatch(tn -> FeatureTypes.matches(ftype, tn));
     }
 }

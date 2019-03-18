@@ -204,7 +204,8 @@ public class DefaultTileLayerCatalogTest {
 
         FileUtils.writeStringToFile(
                 file,
-                "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>originalname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>");
+                "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>originalname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>",
+                "UTF-8");
 
         waitForFlag(hasBeenCreated, 200);
         GeoServerTileLayerInfo info = catalog.getLayerById("id1");
@@ -217,7 +218,8 @@ public class DefaultTileLayerCatalogTest {
 
         FileUtils.writeStringToFile(
                 file,
-                "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>newname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>");
+                "<org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl><id>id1</id><name>newname</name></org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl>",
+                "UTF-8");
 
         waitForFlag(hasBeenModified, 200);
 

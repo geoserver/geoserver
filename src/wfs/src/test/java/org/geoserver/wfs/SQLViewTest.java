@@ -85,7 +85,7 @@ public class SQLViewTest extends WFSTestSupport {
         vt.addParameter(new VirtualTableParameter("bool", "true"));
         vt.addParameter(new VirtualTableParameter("name", "name-f001"));
         vt.addGeometryMetadatata("pointProperty", Point.class, 4326);
-        jds.addVirtualTable(vt);
+        jds.createVirtualTable(vt);
 
         FeatureTypeInfo vft = cb.buildFeatureType(jds.getFeatureSource(vt.getName()));
         vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);

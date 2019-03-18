@@ -688,10 +688,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ConfigurationException
      * @throws InterruptedException
      */
+    @SuppressWarnings("deprecation")
     void reload() {
         final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
         try {
-            tld.reInit();
+            tld.reInit(); // some mock testing uses this blasted method, don't know how to work
+            // around it
         } catch (RuntimeException e) {
             log.log(Level.WARNING, "Unable to reinit TileLayerDispatcher", e);
             throw e;

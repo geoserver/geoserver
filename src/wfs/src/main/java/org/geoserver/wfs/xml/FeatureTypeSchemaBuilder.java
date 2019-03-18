@@ -955,7 +955,13 @@ public abstract class FeatureTypeSchemaBuilder {
 
         protected XSDSchema gmlSchema() {
             if (gml2Schema == null) {
-                gml2Schema = xmlConfiguration.schema();
+                XSDSchema result;
+                try {
+                    result = xmlConfiguration.getXSD().getSchema();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                gml2Schema = result;
             }
 
             return gml2Schema;
@@ -1000,7 +1006,11 @@ public abstract class FeatureTypeSchemaBuilder {
         }
 
         private XSDSchema createGml3Schema() {
-            return xmlConfiguration.schema();
+            try {
+                return xmlConfiguration.getXSD().getSchema();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         protected boolean filterAttributeType(AttributeDescriptor attribute) {

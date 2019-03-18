@@ -1773,7 +1773,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         if (pwDigestFile.getType() == Type.RESOURCE) {
             InputStream fin = pwDigestFile.in();
             try {
-                return IOUtils.toString(fin);
+                return IOUtils.toString(fin, "UTF-8");
             } finally {
                 fin.close();
             }

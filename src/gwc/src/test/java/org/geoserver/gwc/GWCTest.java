@@ -254,7 +254,7 @@ public class GWCTest {
                         testGridSet,
                         new BoundingBox(-180, 0, 0, 90),
                         0,
-                        testGridSet.getGridLevels().length - 1);
+                        testGridSet.getNumLevels() - 1);
         when(xmlConfig.getGridSet(eq("TEST"))).thenReturn(Optional.of(testGridSet));
         tileLayer.addGridSubset(testGridSubset);
         tileLayerGroup = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerGroupInfo);
@@ -919,6 +919,7 @@ public class GWCTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testReload() throws Exception {
         mediator.reload();
         verify(tld, times(1)).reInit();

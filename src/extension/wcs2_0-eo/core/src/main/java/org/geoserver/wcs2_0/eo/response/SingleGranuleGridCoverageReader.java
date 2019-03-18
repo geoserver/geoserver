@@ -106,11 +106,6 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         throw new UnsupportedOperationException();
     }
 
-    public boolean removeCoverage(String coverageName)
-            throws IOException, UnsupportedOperationException {
-        return reader.removeCoverage(coverageName);
-    }
-
     public boolean removeCoverage(String coverageName, boolean delete)
             throws IOException, UnsupportedOperationException {
         return reader.removeCoverage(coverageName, delete);
@@ -167,10 +162,6 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         throw new UnsupportedOperationException();
     }
 
-    public String[] listSubNames() throws IOException {
-        return reader.listSubNames();
-    }
-
     public GeneralEnvelope getOriginalEnvelope() {
         return granuleEnvelope;
     }
@@ -195,16 +186,8 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.getCoordinateReferenceSystem(coverageName);
     }
 
-    public String getCurrentSubname() throws IOException {
-        return reader.getCurrentSubname();
-    }
-
     public GridEnvelope getOriginalGridRange() {
         return reader.getOriginalGridRange();
-    }
-
-    public boolean hasMoreGridCoverages() throws IOException {
-        return reader.hasMoreGridCoverages();
     }
 
     public GridEnvelope getOriginalGridRange(String coverageName) {
@@ -226,10 +209,6 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
     public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
             throws IOException {
         return reader.read(coverageName, parameters);
-    }
-
-    public void skip() throws IOException {
-        reader.skip();
     }
 
     public void dispose() throws IOException {
@@ -254,14 +233,6 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
             String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return reader.getReadingResolutions(coverageName, policy, requestedResolution);
-    }
-
-    public int getNumOverviews() {
-        return reader.getNumOverviews();
-    }
-
-    public int getNumOverviews(String coverageName) {
-        return reader.getNumOverviews(coverageName);
     }
 
     public ImageLayout getImageLayout() throws IOException {

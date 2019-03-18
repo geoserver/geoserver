@@ -492,7 +492,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof LineSymbolizer);
         // named layer with user style + named style -> 2 layers
         assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(1));
@@ -503,7 +504,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof LineSymbolizer);
         assertEquals(catalog.getLayerByName((getLayerId(MockData.ROAD_SEGMENTS))), layers.get(2));
         assertEquals(catalog.getStyleByName("line").getStyle(), styles.get(2).getStyle());
@@ -529,7 +531,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
                                 .get(0)
                                 .rules()
                                 .get(0)
-                                .getSymbolizers()[0]
+                                .symbolizers()
+                                .get(0)
                         instanceof PointSymbolizer);
 
         // Test bounds calculation

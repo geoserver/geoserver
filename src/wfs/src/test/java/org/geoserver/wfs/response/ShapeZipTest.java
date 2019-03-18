@@ -702,7 +702,7 @@ public class ShapeZipTest extends WFSTestSupport {
                 try {
                     final String name = entry.getName();
                     if (name.toLowerCase().endsWith(fileName.toLowerCase())) {
-                        String unzippedFileContents = IOUtils.toString(zis);
+                        String unzippedFileContents = IOUtils.toString(zis, "UTF-8");
                         assertEquals(expectedContent, unzippedFileContents);
                         return;
                     }

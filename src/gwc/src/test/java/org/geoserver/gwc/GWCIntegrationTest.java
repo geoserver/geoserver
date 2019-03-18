@@ -1574,7 +1574,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         testGridSet,
                         new BoundingBox(-180, 0, 0, 90),
                         0,
-                        testGridSet.getGridLevels().length - 1);
+                        testGridSet.getNumLevels() - 1);
         GeoServerTileLayer tileLayer =
                 (GeoServerTileLayer)
                         GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS_NO_CRS));

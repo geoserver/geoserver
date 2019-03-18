@@ -160,7 +160,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
             crsFile = File.createTempFile("srs", "wkt", parentDir);
             String s = crs.toWKT();
             s = s.replaceAll("\n\r", "").replaceAll("  ", "");
-            FileUtils.writeStringToFile(crsFile, s);
+            FileUtils.writeStringToFile(crsFile, s, "UTF-8");
         }
 
         return crsFile;

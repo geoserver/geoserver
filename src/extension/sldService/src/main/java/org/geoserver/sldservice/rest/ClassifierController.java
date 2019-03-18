@@ -251,6 +251,12 @@ public class ClassifierController extends BaseSLDServiceController {
             throw new RestException(e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
 
+        if (rules == null || rules.isEmpty()) {
+            throw new RestException(
+                    "Could not generate any rule, there is likely no data matching the request (layer is empty, of filtered down to no matching features/pixels)",
+                    HttpStatus.NOT_FOUND);
+        }
+
         if (fullSLD) {
             StyledLayerDescriptor sld = SF.createStyledLayerDescriptor();
             NamedLayer namedLayer = SF.createNamedLayer();

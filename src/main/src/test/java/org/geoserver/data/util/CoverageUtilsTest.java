@@ -5,13 +5,20 @@
  */
 package org.geoserver.data.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.parameter.GeneralParameterDescriptor;
+import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 
@@ -37,5 +44,22 @@ public class CoverageUtilsTest {
         Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
         assertTrue(value instanceof Integer);
         assertEquals(Integer.valueOf(1), value);
+    }
+
+    @Test
+    public void testMergeExisting() throws CQLException {
+        List<GeneralParameterDescriptor> descriptors =
+                new ImageMosaicFormat().getReadParameters().getDescriptor().descriptors();
+        GeneralParameterValue[] oldParams = new GeneralParameterValue[1];
+        oldParams[0] = ImageMosaicFormat.FILTER.createValue();
+        Filter filter = CQL.toFilter("a = 6");
+        GeneralParameterValue[] newParams =
+                CoverageUtils.mergeParameter(
+                        descriptors,
+                        oldParams,
+                        filter,
+                        ImageMosaicFormat.FILTER.getName().getCode());
+        assertEquals(1, newParams.length);
+        assertEquals(filter, ((ParameterValue) newParams[0]).getValue());
     }
 }

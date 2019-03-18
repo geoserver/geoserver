@@ -19,8 +19,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
@@ -31,8 +37,11 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.coverage.grid.GridGeometry;
+import org.opengis.filter.Filter;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -90,12 +99,11 @@ class ImageReader {
                         AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
 
         // grab the original grid geometry
-        GridEnvelope originalGridrange = reader.getOriginalGridRange();
-        GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
-        MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        Filter readFilter = getReadFilter(readParameters);
+        GridGeometry originalGeometry = getOriginalGridGeometry(reader, readFilter);
+        Envelope2D originalEnvelope = ((GridGeometry2D) originalGeometry).getEnvelope2D();
         CoordinateReferenceSystem crs = originalEnvelope.getCoordinateReferenceSystem();
-        GridGeometry2D originalGeometry =
-                new GridGeometry2D(originalGridrange, PixelInCell.CELL_CORNER, g2w, crs, null);
+        MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         GridGeometry2D readGeometry = new GridGeometry2D(originalGeometry);
 
         // do we need to restrict to a specific bounding box?
@@ -135,6 +143,17 @@ class ImageReader {
             readGeometry = new GridGeometry2D(reducedRange, readGeometry.getEnvelope());
         }
 
+        // if there is a filter, set it back as it might have been simplified (e.g., env var
+        // expansion)
+        if (readFilter != null) {
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            parameterDescriptors,
+                            readParameters,
+                            readFilter,
+                            ImageMosaicFormat.FILTER.getName().getCode());
+        }
+
         if (!readGeometry.equals(originalGeometry)) {
             readParameters =
                     CoverageUtils.mergeParameter(
@@ -170,6 +189,11 @@ class ImageReader {
 
         // finally perform the read
         coverage = reader.read(readParameters);
+        if (coverage == null) {
+            throw new RestException(
+                    "Could not generate any rule, there is likely no data matching the request (layer is empty, of filtered down to no matching features/pixels)",
+                    HttpStatus.NOT_FOUND);
+        }
 
         // the reader can do a best-effort on grid geometry, might not have cut it
         if (readEnvelope != null && isUncut(coverage, readGeometry)) {
@@ -201,6 +225,46 @@ class ImageReader {
         }
 
         return this;
+    }
+
+    private GridGeometry2D getOriginalGridGeometry(GridCoverage2DReader reader, Filter readFilter)
+            throws IOException {
+        MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
+
+        if (readFilter != null && reader instanceof StructuredGridCoverage2DReader) {
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            String coverageName = reader.getGridCoverageNames()[0];
+            GranuleSource granules = sr.getGranules(coverageName, true);
+            SimpleFeatureCollection filteredGranules =
+                    granules.getGranules(new Query(null, readFilter));
+            ReferencedEnvelope bounds = filteredGranules.getBounds();
+            if (bounds == null || bounds.isEmpty()) {
+                throw new RestException(
+                        "Could not generate any rule, there is likely no data matching the request (layer is empty, of filtered down to no matching features/pixels)",
+                        HttpStatus.NOT_FOUND);
+            }
+
+            return new GridGeometry2D(PixelInCell.CELL_CORNER, g2w, bounds, null);
+        } else {
+            GridEnvelope originalGridRange = reader.getOriginalGridRange();
+            return new GridGeometry2D(originalGridRange, PixelInCell.CELL_CORNER, g2w, crs, null);
+        }
+    }
+
+    private Filter getReadFilter(GeneralParameterValue[] readParameters) {
+        for (GeneralParameterValue readParameter : readParameters) {
+            if (readParameter instanceof ParameterValue
+                    && ImageMosaicFormat.FILTER
+                            .getName()
+                            .equals(readParameter.getDescriptor().getName())) {
+                ParameterValue pv = (ParameterValue) readParameter;
+                Filter filter = (Filter) pv.getValue();
+                return (Filter) filter.accept(new SimplifyingFilterVisitor(), null);
+            }
+        }
+
+        return null;
     }
 
     private boolean isUncut(GridCoverage2D coverage, GridGeometry2D targetGridGeometry) {

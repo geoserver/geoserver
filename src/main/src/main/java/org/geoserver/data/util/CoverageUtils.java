@@ -5,7 +5,7 @@
  */
 package org.geoserver.data.util;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -420,12 +420,30 @@ public class CoverageUtils {
                 final ParameterValue pv = (ParameterValue) pd.createValue();
                 pv.setValue(value);
 
-                // add to the list
-                GeneralParameterValue[] readParametersClone =
-                        new GeneralParameterValue[readParameters.length + 1];
-                System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
-                readParametersClone[readParameters.length] = pv;
-                readParameters = readParametersClone;
+                // if it's in the list already, override
+                int existingPvIndex = -1;
+                for (int i = 0; i < readParameters.length && existingPvIndex < 0; i++) {
+                    GeneralParameterValue oldPv = readParameters[i];
+                    if (aliases.contains(oldPv.getDescriptor().getName().getCode())) {
+                        existingPvIndex = i;
+                    }
+                }
+
+                if (existingPvIndex >= 0) {
+                    GeneralParameterValue[] clone =
+                            new GeneralParameterValue[readParameters.length];
+                    System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
+                    clone[existingPvIndex] = pv;
+                    readParameters = clone;
+
+                } else {
+                    // add to the list
+                    GeneralParameterValue[] clone =
+                            new GeneralParameterValue[readParameters.length + 1];
+                    System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
+                    clone[readParameters.length] = pv;
+                    readParameters = clone;
+                }
 
                 // leave
                 break;

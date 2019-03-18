@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.media.jai.PlanarImage;
@@ -50,10 +51,12 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
@@ -754,6 +757,19 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
         // also make sure the env vars have been cleared, this thread is the same that run the
         // request
+        assertNull(CQL.toExpression("env('group')").evaluate(null));
+    }
+
+    @Test
+    public void testEnvVectorNotThere() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:FilteredPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=name&method=uniqueInterval&fullSLD=true&env=group:NotAGroup";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertEquals(404, response.getStatus());
         assertNull(CQL.toExpression("env('group')").evaluate(null));
     }
 
@@ -1587,7 +1603,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         checkRasterEnv("SE", 1214, 1735);
     }
 
-    public void checkRasterEnv(String direction, double low, double high) throws Exception {
+    private void checkRasterEnv(String direction, double low, double high) throws Exception {
         final String restPath =
                 RestBaseController.ROOT_PATH
                         + "/sldservice/cite:sfdem_mosaic/"
@@ -1602,6 +1618,18 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals(2, entries.length);
         assertEquals(low, entries[0].getQuantity().evaluate(null, Double.class), 0.1);
         assertEquals(high, entries[1].getQuantity().evaluate(null, Double.class), 0.1);
+    }
+
+    @Test
+    public void testRasterEnvNotFound() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:sfdem_mosaic/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=1&ramp=jet&fullSLD=true&env=direction:IDontExist";
+        MockHttpServletResponse servletResponse = getAsServletResponse(restPath);
+        assertEquals(404, servletResponse.getStatus());
     }
 
     private Map<GeneralParameterDescriptor, Object> getParametersMap(
@@ -1629,6 +1657,34 @@ public class ClassifierTest extends SLDServiceBaseTest {
             if (!(Math.abs(delta[i]) <= eps)) {
                 fail("Envelopes have not same 2D bounds: " + env1 + ", " + env2);
             }
+        }
+    }
+
+    @Test
+    public void testImageReaderEnv() throws Exception {
+        // the backing reader supports native selection
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(SFDEM_MOSAIC));
+        try {
+            EnvFunction.setLocalValue("direction", "NE");
+            ImageReader reader = new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, null).invoke();
+
+            List<GeneralParameterValue> readParameters = reader.getReadParameters();
+            Map<GeneralParameterDescriptor, Object> parameterValues =
+                    getParametersMap(readParameters);
+
+            // check no duplicates
+            Set<String> parameterCodes =
+                    readParameters
+                            .stream()
+                            .map(rp -> rp.getDescriptor().getName().getCode())
+                            .collect(Collectors.toSet());
+            assertEquals(readParameters.size(), parameterCodes.size());
+
+            // the filter has been set with env vars expanded
+            Filter filter = (Filter) parameterValues.get(ImageMosaicFormat.FILTER);
+            assertEquals(ECQL.toFilter("direction = 'NE'"), filter);
+        } finally {
+            EnvFunction.clearLocalValues();
         }
     }
 }

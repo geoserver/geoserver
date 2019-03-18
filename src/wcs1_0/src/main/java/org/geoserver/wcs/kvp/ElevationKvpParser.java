@@ -7,6 +7,7 @@ package org.geoserver.wcs.kvp;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.util.Version;
 
 /**
  * A {@link ElevationKvpParser} picking the max number of values to be parsed from the WCS
@@ -23,6 +24,8 @@ public class ElevationKvpParser extends org.geoserver.ows.kvp.ElevationKvpParser
      */
     public ElevationKvpParser(String key, GeoServer geoServer) {
         super(key);
+        setService("WCS");
+        setVersion(new Version("1.0.0"));
         this.geoServer = geoServer;
     }
 

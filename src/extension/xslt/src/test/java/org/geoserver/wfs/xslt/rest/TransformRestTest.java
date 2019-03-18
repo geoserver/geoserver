@@ -224,7 +224,7 @@ public class TransformRestTest extends XSLTTestSupport {
         String actual = null;
         try {
             is = repository.getTransformSheet(info);
-            actual = IOUtils.toString(is);
+            actual = IOUtils.toString(is, "UTF-8");
         } finally {
             IOUtils.closeQuietly(is);
         }

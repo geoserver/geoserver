@@ -295,7 +295,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
                 StringBuilder url = new StringBuilder();
                 String parameters = httpRequest.getQueryString();
                 url.append(mangledUrl).append("?").append(parameters);
-                FileUtils.writeStringToFile(target, url.toString());
+                FileUtils.writeStringToFile(target, url.toString(), "UTF-8");
             } else {
                 org.geotools.xsd.Configuration cfg = null;
                 QName elementName = null;

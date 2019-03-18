@@ -205,7 +205,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
     public void testKvpEntityExpansion() throws Exception {
         // prepare the file to be expanded
         File messageFile = new File("./target/message.txt");
-        FileUtils.writeStringToFile(messageFile, "broken!");
+        FileUtils.writeStringToFile(messageFile, "broken!", "UTF-8");
         String filePath = messageFile.getCanonicalPath().replace('\\', '/');
 
         // filter with entity expansion to a ./message.txt file

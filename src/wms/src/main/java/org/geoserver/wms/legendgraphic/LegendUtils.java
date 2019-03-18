@@ -561,11 +561,7 @@ public class LegendUtils {
         // get applicable rules at the current scale
         for (int i = 0; i < ftStyles.length; i++) {
             FeatureTypeStyle fts = ftStyles[i];
-            Rule[] rules = fts.getRules();
-
-            for (int j = 0; j < rules.length; j++) {
-                Rule r = rules[j];
-
+            for (Rule r : fts.rules()) {
                 if (isWithInScale(r, scaleDenominator)) {
                     ruleList.add(r);
 
@@ -800,12 +796,9 @@ public class LegendUtils {
     public static Rule getRule(FeatureTypeStyle[] fts, String rule) {
         Rule sldRule = null;
         for (int i = 0; i < fts.length; i++) {
-            Rule[] rules = fts[i].getRules();
-
-            for (int r = 0; r < rules.length; r++) {
-                if (rule.equalsIgnoreCase(rules[r].getName())) {
-                    sldRule = rules[r];
-
+            for (Rule r : fts[i].rules()) {
+                if (rule.equalsIgnoreCase(r.getName())) {
+                    sldRule = r;
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine(
                                 new StringBuffer("found requested rule: ").append(rule).toString());

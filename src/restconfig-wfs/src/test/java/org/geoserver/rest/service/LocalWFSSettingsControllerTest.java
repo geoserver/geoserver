@@ -176,7 +176,8 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutFullAsXML() throws Exception {
         String xml =
                 IOUtils.toString(
-                        LocalWFSSettingsControllerTest.class.getResourceAsStream("wfs.xml"));
+                        LocalWFSSettingsControllerTest.class.getResourceAsStream("wfs.xml"),
+                        "UTF-8");
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",

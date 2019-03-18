@@ -799,7 +799,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        FileUtils.writeStringToFile(script, "touch test.properties\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create context with default name
@@ -849,7 +849,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch $1\n");
+        FileUtils.writeStringToFile(script, "touch $1\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create context with default name

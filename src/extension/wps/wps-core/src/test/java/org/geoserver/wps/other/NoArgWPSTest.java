@@ -45,7 +45,7 @@ public class NoArgWPSTest extends WPSTestSupport {
 
         // Document d = postAsDOM(root(), xml); // allows you to debug exception
         InputStream is = post(root(), xml);
-        String s = IOUtils.toString(is);
+        String s = IOUtils.toString(is, "UTF-8");
         assertEquals(s, "Completed!");
     }
 }

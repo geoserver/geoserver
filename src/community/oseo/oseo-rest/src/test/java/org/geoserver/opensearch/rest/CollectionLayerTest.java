@@ -137,7 +137,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     }
 
     protected String getTestStringData(String location) throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream(location));
+        return IOUtils.toString(getClass().getResourceAsStream(location), "UTF-8");
     }
 
     @Test

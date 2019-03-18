@@ -42,11 +42,10 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
         List<FeatureTypeStyle> filtered = new ArrayList<FeatureTypeStyle>();
         for (FeatureTypeStyle fts : copy.featureTypeStyles()) {
             // do the same filtering as streaming renderer
-            String ftName = fts.getFeatureTypeName();
             if (fts.featureTypeNames().isEmpty()
-                    || ((schema.getName().getLocalPart() != null)
-                            && (schema.getName().getLocalPart().equalsIgnoreCase(ftName)
-                                    || FeatureTypes.isDecendedFrom(schema, null, ftName)))) {
+                    || fts.featureTypeNames()
+                            .stream()
+                            .anyMatch(tn -> FeatureTypes.matches(schema, tn))) {
                 filtered.add(fts);
             }
         }

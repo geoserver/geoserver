@@ -159,12 +159,12 @@ public class SecuredWMTSLayer extends Layer {
 
     @Deprecated
     public double getScaleHintMax() {
-        return delegate.getScaleHintMax();
+        return delegate.getScaleDenominatorMax();
     }
 
     @Deprecated
     public double getScaleHintMin() {
-        return delegate.getScaleHintMin();
+        return delegate.getScaleDenominatorMin();
     }
 
     public Set<String> getSrs() {
@@ -249,12 +249,12 @@ public class SecuredWMTSLayer extends Layer {
 
     @Deprecated
     public void setScaleHintMax(double scaleHintMax) {
-        delegate.setScaleHintMax(scaleHintMax);
+        delegate.setScaleDenominatorMax(scaleHintMax);
     }
 
     @Deprecated
     public void setScaleHintMin(double scaleHintMin) {
-        delegate.setScaleHintMin(scaleHintMin);
+        delegate.setScaleDenominatorMin(scaleHintMin);
     }
 
     public void setSrs(Set<String> srs) {

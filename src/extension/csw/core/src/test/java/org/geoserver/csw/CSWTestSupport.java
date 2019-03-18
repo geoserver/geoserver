@@ -101,7 +101,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         InputStream is = null;
         try {
             is = getClass().getResourceAsStream(resourceLocation);
-            return IOUtils.toString(is);
+            return IOUtils.toString(is, "UTF-8");
         } finally {
             IOUtils.closeQuietly(is);
         }

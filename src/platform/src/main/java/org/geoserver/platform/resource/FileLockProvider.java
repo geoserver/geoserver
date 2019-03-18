@@ -186,7 +186,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
     private File getFile(String lockKey) {
         File locks = new File(root, "filelocks"); // avoid same directory as GWC
         locks.mkdirs();
-        String sha1 = DigestUtils.shaHex(lockKey);
+        String sha1 = DigestUtils.sha1Hex(lockKey);
         return new File(locks, sha1 + ".lock");
     }
 

@@ -191,9 +191,7 @@ public abstract class LegendGraphicBuilder {
         for (int i = 0; i < ruleCount; i++) {
             Feature sample = getSampleFeatureForRule(featureType, feature, rules[i]);
             MetaBufferEstimator estimator = new MetaBufferEstimator(sample);
-            final Symbolizer[] symbolizers = rules[i].getSymbolizers();
-            for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                final Symbolizer symbolizer = symbolizers[sIdx];
+            for (Symbolizer symbolizer : rules[i].symbolizers()) {
                 if (symbolizer instanceof PointSymbolizer || symbolizer instanceof LineSymbolizer) {
                     double size = getSymbolizerSize(estimator, symbolizer, defaultMaxSize);
                     // a line symbolizer is depicted as a line of the requested size, so don't go
@@ -240,14 +238,12 @@ public abstract class LegendGraphicBuilder {
      */
     protected Feature getSampleFeatureForRule(
             FeatureType featureType, Feature sample, final Rule rule) {
-        Symbolizer[] symbolizers = rule.getSymbolizers();
         // if we don't have a sample as input, we need to create a sampleFeature
         // looking at the requested symbolizers (we chose the one with the max
         // dimensionality and create a congruent sample)
         if (sample == null) {
             int dimensionality = 1;
-            for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                final Symbolizer symbolizer = symbolizers[sIdx];
+            for (Symbolizer symbolizer : rule.symbolizers()) {
                 if (LineSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
                     dimensionality = 2;
                 }

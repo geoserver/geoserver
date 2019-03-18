@@ -718,7 +718,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         FileUtils.copyFile(schemaSourceFile, schemaFile);
         String gml = FileUtils.readFileToString(gmlSourceFile);
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml);
+        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
@@ -737,7 +737,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         FileUtils.copyFile(schemaSourceFile, schemaFile);
         String gml = FileUtils.readFileToString(gmlSourceFile);
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
-        FileUtils.writeStringToFile(gmlFile, gml);
+        FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
         DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
@@ -1213,7 +1213,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         // write out a simple shell script in the data dir and make it executable
         File scripts = getDataDirectory().findOrCreateDir("importer", "scripts");
         File script = new File(scripts, "test.sh");
-        FileUtils.writeStringToFile(script, "touch test.properties\n");
+        FileUtils.writeStringToFile(script, "touch test.properties\n", "UTF-8");
         script.setExecutable(true, true);
 
         // create a simple import and place the script in the transform chain

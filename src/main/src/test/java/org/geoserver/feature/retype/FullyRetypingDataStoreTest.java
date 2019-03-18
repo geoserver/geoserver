@@ -23,7 +23,6 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLock;
-import org.geotools.data.FeatureLockFactory;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -35,6 +34,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -233,17 +234,18 @@ public class FullyRetypingDataStoreTest {
 
         // test a non mapped attribute
         String newDescription = ((String) original.getAttribute("description")) + " xxx";
-        store.modifyFeatures(
-                original.getFeatureType().getDescriptor("description"), newDescription, fidFilter);
+        store.modifyFeatures(new NameImpl("description"), newDescription, fidFilter);
         SimpleFeature modified = store.getFeatures(fidFilter).features().next();
         assertEquals(newDescription, modified.getAttribute("description"));
 
         // test a mapped attribute
         MultiPoint mpo = (MultiPoint) original.getAttribute("pointProperty");
         MultiPoint mpm =
-                mpo.getFactory().createMultiPoint(new Coordinate[] {new Coordinate(10, 12)});
-        store.modifyFeatures(
-                original.getFeatureType().getDescriptor("pointProperty"), mpm, fidFilter);
+                mpo.getFactory()
+                        .createMultiPoint(
+                                new CoordinateArraySequence(
+                                        new Coordinate[] {new Coordinate(10, 12)}));
+        store.modifyFeatures(new NameImpl("pointProperty"), mpm, fidFilter);
         modified = store.getFeatures(fidFilter).features().next();
         assertTrue(mpm.equalsExact((Geometry) modified.getAttribute("pointProperty")));
     }
@@ -296,7 +298,7 @@ public class FullyRetypingDataStoreTest {
     public void testLockUnlockFilter() throws Exception {
         SimpleFeatureLocking fl;
         fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
-        final FeatureLock lock = FeatureLockFactory.generate(10 * 60 * 1000);
+        final FeatureLock lock = new FeatureLock("lock", 10 * 60 * 1000);
         Transaction t = new DefaultTransaction();
         t.addAuthorization(lock.getAuthorization());
         fl.setTransaction(t);
@@ -318,7 +320,7 @@ public class FullyRetypingDataStoreTest {
     public void testLockUnlockQuery() throws Exception {
         SimpleFeatureLocking fl;
         fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
-        final FeatureLock lock = FeatureLockFactory.generate(10 * 60 * 1000);
+        final FeatureLock lock = new FeatureLock("test", 10 * 60 * 1000);
         Transaction t = new DefaultTransaction();
         t.addAuthorization(lock.getAuthorization());
         fl.setTransaction(t);

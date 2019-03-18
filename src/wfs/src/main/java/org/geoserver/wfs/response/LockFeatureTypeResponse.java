@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.opengis.wfs.LockFeatureResponseType;
 import net.opengis.wfs.LockFeatureType;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
@@ -119,7 +120,13 @@ public class LockFeatureTypeResponse extends WFSResponse {
 
     void write1_1(LockFeatureResponseType lockResponse, OutputStream output, Operation operation)
             throws IOException {
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
 
         LockFeatureType req = (LockFeatureType) operation.getParameters()[0];

@@ -103,21 +103,13 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
                 if (delegate instanceof ComplexDataHandler) {
                     continue;
                 }
-                if (delegate instanceof ParserDelegate2
-                        && ((ParserDelegate2) delegate)
-                                .canHandle(elementName, attributes, handler, parent)) {
-                    return false;
-                } else if (delegate.canHandle(elementName)) {
+                if (delegate instanceof ParserDelegate
+                        && delegate.canHandle(elementName, attributes, handler, parent)) {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        @Override
-        public boolean canHandle(QName elementName) {
-            return false;
         }
 
         @Override

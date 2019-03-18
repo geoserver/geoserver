@@ -89,12 +89,11 @@ class GridSetInfo implements Serializable {
         this.alignTopLeft = gridset.isTopLeftAligned();
         this.resolutionsPreserved = gridset.isResolutionsPreserved();
 
-        Grid[] grids = gridset.getGridLevels();
         this.levels = new ArrayList<Grid>();
 
-        if (grids != null) {
-            for (Grid grid : grids) {
-                this.levels.add(grid.clone());
+        if (gridset.getNumLevels() > 0) {
+            for (int i = 0; i < gridset.getNumLevels(); i++) {
+                this.levels.add(gridset.getGrid(i).clone());
             }
         }
     }

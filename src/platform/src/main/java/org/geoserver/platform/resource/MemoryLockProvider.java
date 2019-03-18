@@ -55,7 +55,7 @@ public class MemoryLockProvider implements LockProvider {
     private int getIndex(String lockKey) {
         // Simply hashing the lock key generated a significant number of collisions,
         // doing the SHA1 digest of it provides a much better distribution
-        int idx = Math.abs(DigestUtils.shaHex(lockKey).hashCode() % locks.length);
+        int idx = Math.abs(DigestUtils.sha1Hex(lockKey).hashCode() % locks.length);
         return idx;
     }
 

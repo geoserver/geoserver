@@ -86,7 +86,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                 getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
         assertNotNull(multipleRulesStyle);
 
-        Rule rule = multipleRulesStyle.getFeatureTypeStyles()[0].getRules()[0];
+        Rule rule = multipleRulesStyle.featureTypeStyles().get(0).rules().get(0);
         LOGGER.info(
                 "testing single rule "
                         + rule.getName()

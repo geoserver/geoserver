@@ -1460,8 +1460,10 @@ public class GeoServerDataDirectory {
                                 cs.getGrayChannel().accept(this);
                             }
                             final SelectedChannelType[] rgbChannels = cs.getRGBChannels();
-                            for (SelectedChannelType ch : rgbChannels) {
-                                if (ch != null) ch.accept(this);
+                            if (rgbChannels != null) {
+                                for (SelectedChannelType ch : rgbChannels) {
+                                    if (ch != null) ch.accept(this);
+                                }
                             }
                         }
                     });

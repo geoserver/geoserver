@@ -25,7 +25,6 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureLock;
-import org.geotools.data.FeatureLockFactory;
 import org.geotools.data.FeatureLocking;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.InProcessLockingManager;
@@ -543,19 +542,19 @@ public class LockFeature {
 
         if (lockExpiry < 0) {
             // negative time used to query if lock is available!
-            return FeatureLockFactory.generate(handle, lockExpiry);
+            return new FeatureLock(handle, lockExpiry);
         }
 
         if (lockExpiry == 0) {
             // perma lock with no expiry!
-            return FeatureLockFactory.generate(handle, 0);
+            return new FeatureLock(handle, 0);
         }
 
         // FeatureLock is specified in minutes or seconds depending on the version
         if (request.getAdaptee() instanceof net.opengis.wfs20.LockFeatureType) {
-            return FeatureLockFactory.generate(handle, lockExpiry * 1000);
+            return new FeatureLock(handle, lockExpiry * 1000);
         } else {
-            return FeatureLockFactory.generate(handle, lockExpiry * 60 * 1000);
+            return new FeatureLock(handle, lockExpiry * 60 * 1000);
         }
     }
 }

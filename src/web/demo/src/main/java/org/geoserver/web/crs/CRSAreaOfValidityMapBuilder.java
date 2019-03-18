@@ -30,11 +30,10 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.map.DefaultMapContext;
-import org.geotools.map.DefaultMapLayer;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
-import org.geotools.map.MapContext;
+import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -219,17 +218,17 @@ class CRSAreaOfValidityMapBuilder {
             throws IOException {
 
         Geometry geographicBoundingBox = getGeographicBoundingBox(crs);
-        MapContext mapContent = getMapContext(crs, geographicBoundingBox, areaOfInterest);
+        MapContent mapContent = getMapContext(crs, geographicBoundingBox, areaOfInterest);
 
         graphics.setColor(new Color(153, 179, 204));
         graphics.fillRect(0, 0, mapWidth, mapHeight);
 
         Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
 
-        mapContent.setAreaOfInterest(areaOfInterest, crs);
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(areaOfInterest, crs));
 
         GTRenderer renderer = new StreamingRenderer();
-        renderer.setContext(mapContent);
+        renderer.setMapContent(mapContent);
         RenderingHints hints =
                 new RenderingHints(
                         RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -274,13 +273,13 @@ class CRSAreaOfValidityMapBuilder {
         return ml;
     }
 
-    private MapContext getMapContext(
+    private MapContent getMapContext(
             CoordinateReferenceSystem crs,
             Geometry geographicBoundingBox,
             org.locationtech.jts.geom.Envelope areaOfInterest)
             throws IOException {
 
-        DefaultMapContext mapContent = new DefaultMapContext();
+        MapContent mapContent = new MapContent();
 
         Style style;
         URL shpfile;
@@ -289,16 +288,16 @@ class CRSAreaOfValidityMapBuilder {
         shpfile = getClass().getResource("TM_WORLD_BORDERS.shp");
         source = getFeatureSource(shpfile);
         style = getStyle("TM_WORLD_BORDERS.sld");
-        mapContent.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new FeatureLayer(source, style));
 
         source = getLatLonFeatureSource();
         style = getStyle("latlon.sld");
-        mapContent.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new FeatureLayer(source, style));
 
         shpfile = getClass().getResource("cities.shp");
         source = getFeatureSource(shpfile);
         style = getStyle("cities.sld");
-        mapContent.addLayer(new DefaultMapLayer(source, style));
+        mapContent.addLayer(new FeatureLayer(source, style));
 
         Layer layer = createCrsLayer(geographicBoundingBox, crs);
         mapContent.addLayer(layer);

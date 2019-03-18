@@ -195,10 +195,10 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         private de.micromata.opengis.kml.v_2_2_0.Point toKmlPoint(Coordinate c) {
             de.micromata.opengis.kml.v_2_2_0.Point result =
                     new de.micromata.opengis.kml.v_2_2_0.Point();
-            if (Double.isNaN(c.z)) {
+            if (Double.isNaN(c.getZ())) {
                 result.addToCoordinates(c.x, c.y);
             } else {
-                result.addToCoordinates(c.x, c.y, c.z);
+                result.addToCoordinates(c.x, c.y, c.getZ());
             }
 
             return result;

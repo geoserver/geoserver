@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
 import net.opengis.ows10.Ows10Factory;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
 import org.geoserver.platform.ServiceException;
@@ -90,7 +91,13 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
         // response.setCharacterEncoding( "UTF-8" );
         OWSConfiguration configuration = new OWSConfiguration();
 
-        Encoder encoder = new Encoder(configuration, configuration.schema());
+        XSDSchema result;
+        try {
+            result = configuration.getXSD().getSchema();
+        } catch (IOException e1) {
+            throw new RuntimeException(e1);
+        }
+        Encoder encoder = new Encoder(configuration, result);
         encoder.setIndenting(true);
         encoder.setIndentSize(2);
         encoder.setLineWidth(60);

@@ -20,7 +20,7 @@ public class GeoServerTolerantStartupTest extends GeoServerSystemTestSupport {
         // ruin one coverage description
         File root = getDataDirectory().getRoot().dir();
         File targetCoverage = new File(root, "workspaces/wcs/BlueMarble/coveragestore.xml");
-        FileUtils.writeStringToFile(targetCoverage, "boom!");
+        FileUtils.writeStringToFile(targetCoverage, "boom!", "UTF-8");
 
         // reload and check it does not go belly up
         getGeoServer().reload();

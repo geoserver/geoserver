@@ -424,7 +424,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         Resource newRes = getDataDirectory().get("/mydir/mynewres");
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals(STR_MY_NEW_TEST, IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_NEW_TEST, IOUtils.toString(is, "UTF-8"));
         }
 
         newRes.delete();
@@ -440,7 +440,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         assertTrue(Resources.exists(myRes));
         assertTrue(Resources.exists(newRes));
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is, "UTF-8"));
         }
 
         newRes.delete();
@@ -456,7 +456,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         Assert.assertFalse(Resources.exists(myRes));
         assertTrue(Resources.exists(newRes));
         try (InputStream is = newRes.in()) {
-            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is));
+            Assert.assertEquals(STR_MY_TEST, IOUtils.toString(is, "UTF-8"));
         }
 
         newRes.renameTo(myRes);

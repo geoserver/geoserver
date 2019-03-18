@@ -94,22 +94,6 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getMetadataValue(coverageName, name);
     }
 
-    public String[] listSubNames() throws IOException {
-        return delegate.listSubNames();
-    }
-
-    public String getCurrentSubname() throws IOException {
-        return delegate.getCurrentSubname();
-    }
-
-    public boolean hasMoreGridCoverages() throws IOException {
-        return delegate.hasMoreGridCoverages();
-    }
-
-    public void skip() throws IOException {
-        delegate.skip();
-    }
-
     public void dispose() throws IOException {
         delegate.dispose();
     }
@@ -191,15 +175,6 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
-    }
-
-    public int getNumOverviews() {
-        return delegate.getNumOverviews(coverageName);
-    }
-
-    public int getNumOverviews(String coverageName) {
-        checkCoverageName(coverageName);
-        return delegate.getNumOverviews(coverageName);
     }
 
     public ImageLayout getImageLayout() throws IOException {

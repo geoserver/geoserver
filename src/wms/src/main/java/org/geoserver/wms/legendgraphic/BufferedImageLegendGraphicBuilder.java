@@ -342,7 +342,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
 
             Feature sample = getSampleFeatureForRule(layer, sampleFeature, applicableRules[i]);
 
-            final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
+            final List<Symbolizer> symbolizers = applicableRules[i].symbolizers();
             final GraphicLegend graphic = applicableRules[i].getLegend();
 
             // If this rule has a legend graphic defined in the SLD, use it
@@ -360,9 +360,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 shapePainter.paint(graphics, this.samplePoint, graphic, scaleDenominator, false);
 
             } else {
-                for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                    Symbolizer symbolizer = symbolizers[sIdx];
-
+                for (Symbolizer symbolizer : symbolizers) {
                     // skip raster symbolizers
                     if (!(symbolizer instanceof RasterSymbolizer)) {
                         // rescale symbols if needed

@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.catalog;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,6 +16,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogRepository;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -34,6 +36,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.GeoTools;
+import org.geotools.factory.Hints;
 import org.geotools.util.URLs;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -230,10 +233,12 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
         GridCoverage2DReader reader = null;
         try {
-            reader = ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
+            CatalogRepository repository = catalog.getResourcePool().getRepository();
+            Hints hints = new Hints(new RenderingHints(Hints.REPOSITORY, repository));
+            reader = ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL, hints);
             if (reader == null) {
                 throw new RestException(
-                        "Could not aquire reader for coverage.", HttpStatus.INTERNAL_SERVER_ERROR);
+                        "Could not acquire reader for coverage.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             // coverage read params

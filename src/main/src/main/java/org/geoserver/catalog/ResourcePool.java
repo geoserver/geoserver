@@ -2862,11 +2862,12 @@ public class ResourcePool {
     }
 
     /**
-     * Package private on purpose, using it for testing
+     * The catalog repository, used to gather store references by name by some GeoTools stores like
+     * pre-generalized or image mosaic
      *
      * @return
      */
-    CatalogRepository getRepository() {
+    public CatalogRepository getRepository() {
         return repository;
     }
 }

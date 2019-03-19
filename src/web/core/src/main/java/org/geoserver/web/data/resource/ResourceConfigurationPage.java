@@ -98,8 +98,14 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                         : getCatalog().getResource(info.getResource().getId(), ResourceInfo.class));
     }
 
+    private void updateResourceInLayerModel(ResourceInfo resource) {
+        LayerInfo layer = getPublishedInfo();
+        layer.setResource(resource);
+        myModel.setObject(layer);
+    }
+
     private void setupResource(ResourceInfo resource) {
-        getPublishedInfo().setResource(resource);
+        updateResourceInLayerModel(resource);
         myResourceModel = new CompoundPropertyModel<ResourceInfo>(new ResourceModel(resource));
     }
 
@@ -178,6 +184,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
      */
     public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);
+        updateResourceInLayerModel(info);
         visitChildren(
                 (component, visit) -> {
                     if (component instanceof ResourceConfigurationPanel) {

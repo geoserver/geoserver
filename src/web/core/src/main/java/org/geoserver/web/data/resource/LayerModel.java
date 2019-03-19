@@ -8,6 +8,7 @@ package org.geoserver.web.data.resource;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
 
 /**
@@ -18,6 +19,7 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class LayerModel implements IModel<LayerInfo> {
     LayerInfo layerInfo;
+    ResourceInfo resourceInfo;
 
     public LayerModel(LayerInfo layerInfo) {
         setObject(layerInfo);
@@ -25,8 +27,11 @@ public class LayerModel implements IModel<LayerInfo> {
 
     @Override
     public LayerInfo getObject() {
-        if (layerInfo.getResource().getCatalog() == null)
-            new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(layerInfo);
+        if (resourceInfo.getCatalog() == null) {
+            new CatalogBuilder(GeoServerApplication.get().getCatalog()).attach(resourceInfo);
+        }
+        // preserve resourceinfo that is modification proxy
+        layerInfo.setResource(resourceInfo);
         return layerInfo;
     }
 
@@ -35,6 +40,8 @@ public class LayerModel implements IModel<LayerInfo> {
         // workaround for dbconfig, by "dettaching" we force hibernate to reload the object
         // fully initialized with no lazy lists or proxies
         this.layerInfo = GeoServerApplication.get().getCatalog().detach((LayerInfo) object);
+        this.resourceInfo =
+                GeoServerApplication.get().getCatalog().detach(((LayerInfo) object).getResource());
     }
 
     public void detach() {

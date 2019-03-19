@@ -149,6 +149,13 @@ The bounding box determines the extent of the data within a layer.
 
    Bounding Boxes of a layer
 
+
+Index for sorting layers in GetCapabilities
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:guilabel:`Index for sorting layer groups in GetCapabilities` : to use in replacement of standard alphabetical order when required. By default all the layer groups are created with index 2147483647 (the max value allowed). It's recommended to not change this value if the alphabetical order is preferred. All the layers with the same index order with the default alphabetical order.
+
+
 Coverage Parameters (Raster)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

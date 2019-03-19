@@ -670,7 +670,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortOrder) {
+            Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortOrder) {
         return delegate.list(of, filter, offset, count, sortOrder);
     }
 

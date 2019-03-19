@@ -32,14 +32,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
  *
  * @author Andrea Aime - TOPP
  * @param <T>
  * @param <F>
  */
-public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo> implements CoverageInfo {
+public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
+        implements CoverageInfo {
 
     public DecoratingCoverageInfo(CoverageInfo delegate) {
         super(delegate);
@@ -93,12 +94,14 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo> impl
         return delegate.getGridCoverage(listener, hints);
     }
 
-    public GridCoverage getGridCoverage(ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
+    public GridCoverage getGridCoverage(
+            ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException {
         return delegate.getGridCoverage(listener, envelope, hints);
     }
 
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+            throws IOException {
         return delegate.getGridCoverageReader(listener, hints);
     }
 
@@ -329,6 +332,5 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo> impl
     @Override
     public void setSortIndex(Integer sortIndex) {
         delegate.setSortIndex(sortIndex);
-
     }
 }

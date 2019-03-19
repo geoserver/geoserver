@@ -226,7 +226,7 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }
-    
+
     @Override
     public Integer getSortIndex() {
         return delegate.getSortIndex();
@@ -235,7 +235,6 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setSortIndex(Integer sortIndex) {
         delegate.setSortIndex(sortIndex);
-        
     }
 
     @Override

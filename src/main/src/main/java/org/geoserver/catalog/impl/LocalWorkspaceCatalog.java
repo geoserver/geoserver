@@ -340,7 +340,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             final Filter filter,
             final Integer offset,
             final Integer count,
-            final SortBy sortBy) {
+            final SortBy... sortBy) {
 
         CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
         if (iterator.hasNext() && useNameDequalifyingProxy()) {

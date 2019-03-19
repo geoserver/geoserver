@@ -437,7 +437,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                             Filter filter,
                             Integer offset,
                             Integer count,
-                            SortBy sortBy) {
+                            SortBy... sortBy) {
                         return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
                     }
                 };
@@ -488,7 +488,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                             Filter filter,
                             Integer offset,
                             Integer count,
-                            SortBy sortBy) {
+                            SortBy... sortBy) {
                         return (CloseableIterator<T>) mockIterator;
                     }
                 };

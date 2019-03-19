@@ -37,10 +37,8 @@ public interface ResourceInfo extends CatalogInfo {
     /** Key for enabling/disabling HTTP caching flag in the metadata map */
     public static final String CACHING_ENABLED = "cachingEnabled";
 
-    /**
-     * Default value in sorting
-     */
-    static final Integer DEFAULT_INDEX_FOR_NOT_SORTED = 99999;
+    /** Default value in sorting */
+    static final Integer DEFAULT_INDEX_FOR_NOT_SORTED = Integer.MAX_VALUE;
 
     /** The catalog the resource is part of. */
     Catalog getCatalog();
@@ -51,8 +49,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The name of the resource.
      *
-     * <p>
-     * This name corresponds to the "published" name of the resource.
+     * <p>This name corresponds to the "published" name of the resource.
      *
      * @uml.property name="name"
      */
@@ -71,9 +68,8 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The native name of the resource.
      *
-     * <p>
-     * This name corresponds to the physical resource the feature type is derived
-     * from: a shapefile name, a database table, etc...
+     * <p>This name corresponds to the physical resource the feature type is derived from: a
+     * shapefile name, a database table, etc...
      */
     String getNativeName();
 
@@ -86,8 +82,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the prefixed name for the resource.
      *
-     * <p>
-     * This method is a convenience for:
+     * <p>This method is a convenience for:
      *
      * <pre>
      * return getNamespace().getPrefix() + ":" + getName();
@@ -101,8 +96,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The namespace uri of the resource.
      *
-     * <p>
-     * Example would be an application schema namespace uri.
+     * <p>Example would be an application schema namespace uri.
      *
      * @uml.property name="namespace"
      * @uml.associationEnd inverse="resources:org.geoserver.catalog.NamespaceInfo"
@@ -120,8 +114,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The title of the resource.
      *
-     * <p>
-     * This is usually something that is meant to be displayed in a user interface.
+     * <p>This is usually something that is meant to be displayed in a user interface.
      *
      * @uml.property name="title"
      */
@@ -151,8 +144,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * A description of the resource.
      *
-     * <p>
-     * This is usually something that is meant to be displayed in a user interface.
+     * <p>This is usually something that is meant to be displayed in a user interface.
      *
      * @uml.property name="description"
      */
@@ -193,12 +185,9 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in lat / lon.
      *
-     * <p>
-     * This value represents a "fixed value" and is not calulated on the underlying
-     * dataset.
+     * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
      *
-     * @return The bounds of the resource in lat / lon, or <code>null</code> if not
-     *         set.
+     * @return The bounds of the resource in lat / lon, or <code>null</code> if not set.
      * @uml.property name="latLonBoundingBox"
      */
     ReferencedEnvelope getLatLonBoundingBox();
@@ -214,12 +203,9 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in the native crs.
      *
-     * <p>
-     * This value represents a "fixed value" and is not calulated on the underlying
-     * dataset.
+     * <p>This value represents a "fixed value" and is not calulated on the underlying dataset.
      *
-     * @return The bounds of the resource in native crs., or <code>null</code> if
-     *         not set.
+     * @return The bounds of the resource in native crs., or <code>null</code> if not set.
      * @uml.property name="boundingBox"
      */
     ReferencedEnvelope getNativeBoundingBox();
@@ -235,12 +221,11 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in its declared CRS.
      *
-     * <p>
-     * This value is derived from {@link #getNativeBoundingBox()},
-     * {@link #getCRS()}, and {@link #getProjectionPolicy()}. In the case where the
-     * native bounding box is unset, {@link #getLatLonBoundingBox()} should be
-     * reprojected to {@link #getCRS()}. If the reprojection fails, null should be
-     * returned. So clients calling this method should be prepared to handle null.
+     * <p>This value is derived from {@link #getNativeBoundingBox()}, {@link #getCRS()}, and {@link
+     * #getProjectionPolicy()}. In the case where the native bounding box is unset, {@link
+     * #getLatLonBoundingBox()} should be reprojected to {@link #getCRS()}. If the reprojection
+     * fails, null should be returned. So clients calling this method should be prepared to handle
+     * null.
      *
      * @throws Exception If the bounding box can not be calculated.
      */
@@ -249,8 +234,7 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the identifier of coordinate reference system of the resource.
      *
-     * <p>
-     * Srs can be in multiple forms, examples:
+     * <p>Srs can be in multiple forms, examples:
      *
      * <ol>
      * </ol>
@@ -277,34 +261,31 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The coordinate reference system object for the resource.
      *
-     * <p>
-     * This object is derived from {@link #getSRS()}.
+     * <p>This object is derived from {@link #getSRS()}.
      */
     CoordinateReferenceSystem getCRS();
 
     /**
-     * The policy that should be used with the native projection of the resource
-     * with respect to the declare projection.
+     * The policy that should be used with the native projection of the resource with respect to the
+     * declare projection.
      */
     ProjectionPolicy getProjectionPolicy();
 
     /**
-     * Sets the policy that should be used with the native projection of the
-     * resource with respect to the declare projection.
+     * Sets the policy that should be used with the native projection of the resource with respect
+     * to the declare projection.
      */
     void setProjectionPolicy(ProjectionPolicy policy);
 
     /**
      * A persistent map of metadata.
      *
-     * <p>
-     * Data in this map is intended to be persisted. Common case of use is to have
-     * services associate various bits of data with a particular resource. An
-     * example might include caching information.
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services
+     * associate various bits of data with a particular resource. An example might include caching
+     * information.
      *
-     * <p>
-     * The key values of this map are of type {@link String} and values are of type
-     * {@link Serializable}.
+     * <p>The key values of this map are of type {@link String} and values are of type {@link
+     * Serializable}.
      *
      * @uml.property name="metadata"
      */
@@ -318,16 +299,12 @@ public interface ResourceInfo extends CatalogInfo {
     boolean isEnabled();
 
     /**
-     * Derived property indicating whether both this ResourceInfo and its StoreInfo
-     * are enabled.
+     * Derived property indicating whether both this ResourceInfo and its StoreInfo are enabled.
      *
-     * <p>
-     * Note this is a derived property and hence not part of the model. Consider it
-     * equal to
+     * <p>Note this is a derived property and hence not part of the model. Consider it equal to
      * {@code getStore() != null && getStore().isEnabled() && this.isEnabled()}
      *
-     * @return the chained enabled status considering this object and it's StoreInfo
-     *         parent
+     * @return the chained enabled status considering this object and it's StoreInfo parent
      * @see #getStore()
      * @see StoreInfo#isEnabled()
      */
@@ -362,7 +339,7 @@ public interface ResourceInfo extends CatalogInfo {
      * <p>
      *
      * @param adapterClass The class of the adapter.
-     * @param hints        Hints to use when creating the adapter.
+     * @param hints Hints to use when creating the adapter.
      * @return The adapter, an intsanceof adapterClass, or <code>null</code>.
      */
     <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints);
@@ -370,10 +347,8 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The handle to the live resource.
      *
-     * <p>
-     * This method does I/O and is potentially blocking. The <tt>listener</tt> is
-     * used to report the progress of obtaining the resource and to report any
-     * warnings / errors that occur during.
+     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> is used to report
+     * the progress of obtaining the resource and to report any warnings / errors that occur during.
      *
      * @uml.property name="resource"
      * @uml.associationEnd inverse="resourceInfo:org.geoserver.catalog.Resource"
@@ -381,8 +356,8 @@ public interface ResourceInfo extends CatalogInfo {
     // Resource getResource(ProgressListener listener) throws IOException;
 
     /**
-     * Returns true if the resource existence should be advertised (true by default,
-     * unless otherwise set)
+     * Returns true if the resource existence should be advertised (true by default, unless
+     * otherwise set)
      */
     boolean isAdvertised();
 
@@ -393,14 +368,10 @@ public interface ResourceInfo extends CatalogInfo {
      */
     void setAdvertised(boolean advertised);
 
-    /**
-     * Returns true if the resource will configure services access, false otherwise
-     */
+    /** Returns true if the resource will configure services access, false otherwise */
     boolean isServiceConfiguration();
 
-    /**
-     * Set to true if the resource will configure services access, false otherwise
-     */
+    /** Set to true if the resource will configure services access, false otherwise */
     void setServiceConfiguration(boolean serviceConfiguration);
 
     /** Returns a list of disabled services names for this resource */
@@ -411,7 +382,7 @@ public interface ResourceInfo extends CatalogInfo {
 
     /**
      * The index used to order the results
-     * 
+     *
      * @return the index
      */
     public Integer getSortIndex();

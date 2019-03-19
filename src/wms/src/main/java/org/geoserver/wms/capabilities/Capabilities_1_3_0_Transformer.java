@@ -674,11 +674,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle root bounding box
             List<LayerGroupInfo> layerGroups;
             List<LayerInfo> layers;
-            SortBy lgOrder = asc("sortIndex");
-            SortBy order = asc("sortIndex");
+            SortBy lgOrder1 = asc("sortIndex");
+            SortBy lgOrder2 = asc("name");
+            SortBy order1 = asc("sortIndex");
+            SortBy order2 = asc("name");
             try (CloseableIterator<LayerGroupInfo> lgIter = catalog.list(LayerGroupInfo.class, lgFilter, null, null,
-                    lgOrder);
-                    CloseableIterator<LayerInfo> iter = catalog.list(LayerInfo.class, filter, null, null, order)) {
+                    lgOrder1, lgOrder2);
+                    CloseableIterator<LayerInfo> iter = catalog.list(LayerInfo.class, filter, null, null, order1,
+                            order2)) {
                 layerGroups = Lists.newArrayList(lgIter);
                 layers = Lists.newArrayList(iter);
             }

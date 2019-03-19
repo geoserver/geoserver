@@ -1565,7 +1565,7 @@ public interface Catalog extends CatalogInfo {
             final Filter filter,
             @Nullable Integer offset,
             @Nullable Integer count,
-            @Nullable SortBy sortBy);
+            @Nullable SortBy... sortBy);
 
     /** Removes all the listeners which are instances of the specified class */
     public void removeListeners(Class listenerClass);

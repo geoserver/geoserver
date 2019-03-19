@@ -42,7 +42,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -52,7 +51,6 @@ import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geoserver.web.data.store.panel.ParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
-import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -271,7 +269,5 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(new ResourceConfigurationPage(layer, true));
         tester.assertContains("33");
-
     }
-
 }

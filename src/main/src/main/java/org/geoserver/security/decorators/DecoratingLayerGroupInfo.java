@@ -24,12 +24,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will
- * override selected methods to perform their "decoration" job
+ * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will override selected
+ * methods to perform their "decoration" job
  *
  * @author Andrea Aime
  */
-public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> implements LayerGroupInfo {
+public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
+        implements LayerGroupInfo {
 
     public DecoratingLayerGroupInfo(LayerGroupInfo delegate) {
         super(delegate);
@@ -179,7 +180,11 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(delegate).append(']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(delegate)
+                .append(']')
+                .toString();
     }
 
     @Override

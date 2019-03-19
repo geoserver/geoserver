@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -50,7 +49,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         int prevIndex = 0;
         for (String layerName : originalList) {
             Integer currentIndex = catalog.getLayerByName(layerName).getSortIndex();
-            assertTrue(currentIndex>=prevIndex);
+            assertTrue(currentIndex >= prevIndex);
             prevIndex = currentIndex;
         }
     }
@@ -63,9 +62,9 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         List<String> originalList = layerNameList(doc);
         assertFalse(originalList.isEmpty());
         int prevIndex = 0;
-        for (String layerName : originalList) {            
+        for (String layerName : originalList) {
             Integer currentIndex = catalog.getLayerByName(layerName).getSortIndex();
-            assertTrue(currentIndex>=prevIndex);
+            assertTrue(currentIndex >= prevIndex);
             prevIndex = currentIndex;
         }
     }

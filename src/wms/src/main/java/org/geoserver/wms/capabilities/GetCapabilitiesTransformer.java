@@ -820,10 +820,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Filter filter = Predicates.acceptAll();
             addNameSpaceFilterIfNeed(filter, "workspace.name");
             // order by name ASC
-            SortBy order = asc("sortIndex");
+            SortBy order1 = asc("sortIndex");
+            SortBy order2 = asc("name");
             // get list from iterator
             try (CloseableIterator<LayerGroupInfo> iter =
-                    catalog.list(LayerGroupInfo.class, filter, null, null, order)) {
+                    catalog.list(LayerGroupInfo.class, filter, null, null, order1, order2)) {
                 return Lists.newArrayList(iter);
             }
         }
@@ -839,10 +840,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // namespace filter
             addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
             // order by name ASC
-            SortBy order = asc("sortIndex");
+            SortBy order1 = asc("sortIndex");
+            SortBy order2 = asc("name");
             // get list:
             try (CloseableIterator<LayerInfo> iter =
-                    catalog.list(LayerInfo.class, filter, null, null, order)) {
+                    catalog.list(LayerInfo.class, filter, null, null, order1, order2)) {
                 return Lists.newArrayList(iter);
             }
         }
@@ -949,7 +951,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     data,
                     new Comparator<LayerInfo>() {
                         public int compare(LayerInfo o1, LayerInfo o2) {
-                            return o1.getSortIndex().compareTo(o2.getSortIndex());
+                            if(o1.getSortIndex().compareTo(o2.getSortIndex())!=0) {
+                                return o1.getSortIndex().compareTo(o2.getSortIndex());
+                            } else {
+                                return o1.getName().compareTo(o2.getName());
+                            }
                         }
                     });
 

@@ -32,8 +32,7 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected String id;
 
-    // this property has been left to ensure backwards compatibility with xstream
-    // but it's marked
+    // this property has been left to ensure backwards compatibility with xstream but it's marked
     // transient
     // to avoid its value being serialized.
     // TODO: revert to normal property when the resource/publishing split is done
@@ -53,15 +52,13 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected LegendInfo legend;
 
-    // this property has been left to ensure backwards compatibility with xstream
-    // but it's marked
+    // this property has been left to ensure backwards compatibility with xstream but it's marked
     // transient
     // to avoid its value being serialized.
     // TODO: revert to normal property when the resource/publishing split is done
     protected transient boolean enabled;
 
-    // this property has been left to ensure backwards compatibility with xstream
-    // but it's marked
+    // this property has been left to ensure backwards compatibility with xstream but it's marked
     // transient
     // to avoid its value being serialized.
     // TODO: revert to normal property when the resource/publishing split is done
@@ -76,16 +73,16 @@ public class LayerInfoImpl implements LayerInfo {
     protected AttributionInfo attribution;
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map
-     * with key "authorityURLs", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "authorityURLs", and a not transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
     protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(1);
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map
-     * with key "identifiers", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "identifiers", and a not transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
@@ -114,14 +111,16 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public void setName(String name) {
-        // TODO: remove this log and reinstate field assignment when resource/publish
-        // split is
+        // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo name, but that will be ignored");
+        LOGGER.log(
+                Level.FINE,
+                "Warning, some code is setting the LayerInfo name, but that will be ignored");
         this.name = name;
 
         if (resource == null) {
-            throw new NullPointerException("Layer name must not be set without an underlying resource");
+            throw new NullPointerException(
+                    "Layer name must not be set without an underlying resource");
         }
         resource.setName(name);
     }
@@ -202,7 +201,8 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public boolean isEnabled() {
         if (resource == null) {
-            throw new NullPointerException("Unable to get Layer enabled flag without an underlying resource");
+            throw new NullPointerException(
+                    "Unable to get Layer enabled flag without an underlying resource");
         }
         return resource.isEnabled();
         // TODO: uncomment back when resource/publish split is complete
@@ -220,14 +220,16 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public void setEnabled(boolean enabled) {
-        // TODO: remove this log and reinstate field assignment when resource/publish
-        // split is
+        // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
+        LOGGER.log(
+                Level.FINE,
+                "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
         this.enabled = enabled;
 
         if (resource == null) {
-            throw new NullPointerException("Layer enabled flag must not be set without an underlying resource");
+            throw new NullPointerException(
+                    "Layer enabled flag must not be set without an underlying resource");
         }
         resource.setEnabled(enabled);
     }
@@ -267,78 +269,60 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof LayerInfo))
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof LayerInfo)) return false;
         final LayerInfo other = (LayerInfo) obj;
         if (defaultStyle == null) {
-            if (other.getDefaultStyle() != null)
-                return false;
-        } else if (!defaultStyle.equals(other.getDefaultStyle()))
-            return false;
+            if (other.getDefaultStyle() != null) return false;
+        } else if (!defaultStyle.equals(other.getDefaultStyle())) return false;
         if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
-            return false;
+            if (other.getId() != null) return false;
+        } else if (!id.equals(other.getId())) return false;
         if (legend == null) {
-            if (other.getLegend() != null)
-                return false;
-        } else if (!legend.equals(other.getLegend()))
-            return false;
+            if (other.getLegend() != null) return false;
+        } else if (!legend.equals(other.getLegend())) return false;
         // TODO: add back when resource/publish split is in place
-        // if (name == null) {
-        // if (other.getName() != null)
-        // return false;
-        // } else if (!name.equals(other.getName()))
-        // return false;
+        //        if (name == null) {
+        //            if (other.getName() != null)
+        //                return false;
+        //        } else if (!name.equals(other.getName()))
+        //            return false;
         if (path == null) {
-            if (other.getPath() != null)
-                return false;
-        } else if (!path.equals(other.getPath()))
-            return false;
+            if (other.getPath() != null) return false;
+        } else if (!path.equals(other.getPath())) return false;
         if (resource == null) {
-            if (other.getResource() != null)
-                return false;
-        } else if (!resource.equals(other.getResource()))
-            return false;
+            if (other.getResource() != null) return false;
+        } else if (!resource.equals(other.getResource())) return false;
         if (styles == null) {
-            if (other.getStyles() != null)
-                return false;
-        } else if (!styles.equals(other.getStyles()))
-            return false;
+            if (other.getStyles() != null) return false;
+        } else if (!styles.equals(other.getStyles())) return false;
         if (type == null) {
-            if (other.getType() != null)
-                return false;
-        } else if (!type.equals(other.getType()))
-            return false;
+            if (other.getType() != null) return false;
+        } else if (!type.equals(other.getType())) return false;
         if (attribution == null) {
-            if (other.getAttribution() != null)
-                return false;
-        } else if (!attribution.equals(other.getAttribution()))
-            return false;
+            if (other.getAttribution() != null) return false;
+        } else if (!attribution.equals(other.getAttribution())) return false;
         if (authorityURLs == null) {
-            if (other.getAuthorityURLs() != null)
-                return false;
-        } else if (!authorityURLs.equals(other.getAuthorityURLs()))
-            return false;
+            if (other.getAuthorityURLs() != null) return false;
+        } else if (!authorityURLs.equals(other.getAuthorityURLs())) return false;
 
         if (identifiers == null) {
-            if (other.getIdentifiers() != null)
-                return false;
-        } else if (!identifiers.equals(other.getIdentifiers()))
-            return false;
+            if (other.getIdentifiers() != null) return false;
+        } else if (!identifiers.equals(other.getIdentifiers())) return false;
 
         return true;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(getName()).append(", resource:")
-                .append(resource).append(']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(getName())
+                .append(", resource:")
+                .append(resource)
+                .append(']')
+                .toString();
     }
 
     @Override
@@ -364,7 +348,8 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public boolean isAdvertised() {
         if (resource == null) {
-            throw new NullPointerException("Unable to get Layer advertised flag without an underlying resource");
+            throw new NullPointerException(
+                    "Unable to get Layer advertised flag without an underlying resource");
         }
         return resource.isAdvertised();
         // TODO: uncomment back when resource/publish split is complete
@@ -373,14 +358,16 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public void setAdvertised(boolean advertised) {
-        // TODO: remove this log and reinstate field assignment when resource/publish
-        // split is
+        // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
+        LOGGER.log(
+                Level.FINE,
+                "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
         this.advertised = advertised;
 
         if (resource == null) {
-            throw new NullPointerException("Layer advertised flag must not be set without an underlying resource");
+            throw new NullPointerException(
+                    "Layer advertised flag must not be set without an underlying resource");
         }
         resource.setAdvertised(advertised);
     }
@@ -442,5 +429,4 @@ public class LayerInfoImpl implements LayerInfo {
     public void setSortIndex(Integer sortIndex) {
         this.resource.setSortIndex(sortIndex);
     }
-
 }

@@ -47,6 +47,10 @@ To view or edit a layer group, click the layer group name.  A layer group config
 
 .. figure:: img/data_layergroups_edit.png
 
+
+:guilabel:`Index for sorting layer groups in GetCapabilities` : to use in replacement of standard alphabetical order when required. By default all the layer groups are created with index 2147483647 (the max value allowed). It's recommended to not change this value if the alphabetical order is preferred. All the layers with the same index order with the default alphabetical order.
+
+
 .. figure:: img/data_layergroups_edit_table.png
 
    Layer Groups Edit page

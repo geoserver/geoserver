@@ -173,7 +173,9 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
         delegate.setCatalog(catalog);
     }
 
-    public void setSortIndex(Integer sortIndex) { delegate.setSortIndex(sortIndex); }
+    public void setSortIndex(Integer sortIndex) {
+        delegate.setSortIndex(sortIndex);
+    }
 
     public void setDescription(String description) {
         delegate.setDescription(description);

@@ -10,8 +10,8 @@ import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -32,16 +32,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected Mode mode = Mode.SINGLE;
     protected Boolean queryDisabled;
 
-    /**
-     * This property in 2.2.x series is stored under the metadata map with key
-     * 'title'.
-     */
+    /** This property in 2.2.x series is stored under the metadata map with key 'title'. */
     protected String title;
 
-    /**
-     * This property in 2.2.x series is stored under the metadata map with key
-     * 'abstract'.
-     */
+    /** This property in 2.2.x series is stored under the metadata map with key 'abstract'. */
     protected String abstractTxt;
 
     protected WorkspaceInfo workspace;
@@ -50,8 +44,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected StyleInfo rootLayerStyle;
 
     /**
-     * This property is here for compatibility purpose, in 2.3.x series it has been
-     * replaced by 'publishables'
+     * This property is here for compatibility purpose, in 2.3.x series it has been replaced by
+     * 'publishables'
      */
     protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
 
@@ -65,16 +59,16 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected AttributionInfo attribution;
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map
-     * with key "authorityURLs", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "authorityURLs", and a not transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
     protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(2);
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map
-     * with key "identifiers", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key
+     * "identifiers", and a not transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
@@ -88,8 +82,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
 
     /**
-     * Set the keywords of this layer group. The provided keywords will override any
-     * existing keywords no merge will be done.
+     * Set the keywords of this layer group. The provided keywords will override any existing
+     * keywords no merge will be done.
      *
      * @param keywords new keywords of this layer group
      */
@@ -214,8 +208,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
 
     /**
-     * Used after deserialization. It converts 'layers' property content, used until
-     * 2.3.x, to 'publishables' property content.
+     * Used after deserialization. It converts 'layers' property content, used until 2.3.x, to
+     * 'publishables' property content.
      */
     public void convertLegacyLayers() {
         if (layers != null && publishables == null) {
@@ -302,7 +296,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(name)
+                .append(']')
+                .toString();
     }
 
     public String getPrefixedName() {

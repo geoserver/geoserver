@@ -769,7 +769,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+            Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortBy) {
 
         Filter securityFilter = securityFilter(of, filter);
 

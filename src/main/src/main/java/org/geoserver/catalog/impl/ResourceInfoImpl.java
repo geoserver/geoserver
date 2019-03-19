@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.*;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -74,8 +73,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected Integer sortIndex = ResourceInfo.DEFAULT_INDEX_FOR_NOT_SORTED;
 
-    protected ResourceInfoImpl() {
-    }
+    protected ResourceInfoImpl() {}
 
     protected ResourceInfoImpl(Catalog catalog) {
         this.catalog = catalog;
@@ -215,7 +213,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         }
 
         ReferencedEnvelope result;
-        if (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS) && php == ProjectionPolicy.REPROJECT_TO_DECLARED) {
+        if (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS)
+                && php == ProjectionPolicy.REPROJECT_TO_DECLARED) {
             result = nativeBox.transform(declaredCRS, true);
         } else if (php == ProjectionPolicy.FORCE_DECLARED) {
             result = ReferencedEnvelope.create((Envelope) nativeBox, declaredCRS);
@@ -223,10 +222,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
             result = nativeBox;
         }
 
-        // make sure that in no case the actual field value is returned to the client,
-        // this
-        // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on
-        // its own
+        // make sure that in no case the actual field value is returned to the client, this
+        // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own
         return ReferencedEnvelope.create(result);
     }
 
@@ -284,7 +281,11 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']').toString();
+        return new StringBuilder(getClass().getSimpleName())
+                .append('[')
+                .append(name)
+                .append(']')
+                .toString();
     }
 
     public List<String> getAlias() {
@@ -304,7 +305,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         try {
             return CRS.decode(getSRS());
         } catch (Exception e) {
-            throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
+            throw new RuntimeException(
+                    "This is unexpected, the layer seems to be mis-configured", e);
         }
     }
 
@@ -413,96 +415,60 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof ResourceInfo))
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof ResourceInfo)) return false;
 
         final ResourceInfo other = (ResourceInfo) obj;
         if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
-            return false;
+            if (other.getId() != null) return false;
+        } else if (!id.equals(other.getId())) return false;
         if (_abstract == null) {
-            if (other.getAbstract() != null)
-                return false;
-        } else if (!_abstract.equals(other.getAbstract()))
-            return false;
+            if (other.getAbstract() != null) return false;
+        } else if (!_abstract.equals(other.getAbstract())) return false;
         if (alias == null) {
-            if (other.getAlias() != null)
-                return false;
-        } else if (!alias.equals(other.getAlias()))
-            return false;
+            if (other.getAlias() != null) return false;
+        } else if (!alias.equals(other.getAlias())) return false;
         if (description == null) {
-            if (other.getDescription() != null)
-                return false;
-        } else if (!description.equals(other.getDescription()))
-            return false;
-        if (enabled != other.isEnabled())
-            return false;
+            if (other.getDescription() != null) return false;
+        } else if (!description.equals(other.getDescription())) return false;
+        if (enabled != other.isEnabled()) return false;
         if (keywords == null) {
-            if (other.getKeywords() != null)
-                return false;
-        } else if (!keywords.equals(other.getKeywords()))
-            return false;
+            if (other.getKeywords() != null) return false;
+        } else if (!keywords.equals(other.getKeywords())) return false;
         if (latLonBoundingBox == null) {
-            if (other.getLatLonBoundingBox() != null)
-                return false;
-        } else if (!latLonBoundingBox.equals(other.getLatLonBoundingBox()))
-            return false;
+            if (other.getLatLonBoundingBox() != null) return false;
+        } else if (!latLonBoundingBox.equals(other.getLatLonBoundingBox())) return false;
         if (metadataLinks == null) {
-            if (other.getMetadataLinks() != null)
-                return false;
-        } else if (!metadataLinks.equals(other.getMetadataLinks()))
-            return false;
+            if (other.getMetadataLinks() != null) return false;
+        } else if (!metadataLinks.equals(other.getMetadataLinks())) return false;
         if (name == null) {
-            if (other.getName() != null)
-                return false;
-        } else if (!name.equals(other.getName()))
-            return false;
+            if (other.getName() != null) return false;
+        } else if (!name.equals(other.getName())) return false;
         if (namespace == null) {
-            if (other.getNamespace() != null)
-                return false;
-        } else if (!namespace.equals(other.getNamespace()))
-            return false;
+            if (other.getNamespace() != null) return false;
+        } else if (!namespace.equals(other.getNamespace())) return false;
         if (nativeBoundingBox == null) {
-            if (other.getNativeBoundingBox() != null)
-                return false;
-        } else if (!nativeBoundingBox.equals(other.getNativeBoundingBox()))
-            return false;
+            if (other.getNativeBoundingBox() != null) return false;
+        } else if (!nativeBoundingBox.equals(other.getNativeBoundingBox())) return false;
         if (nativeCRS == null) {
-            if (other.getNativeCRS() != null)
-                return false;
-        } else if (!CRS.equalsIgnoreMetadata(nativeCRS, other.getNativeCRS()))
-            return false;
+            if (other.getNativeCRS() != null) return false;
+        } else if (!CRS.equalsIgnoreMetadata(nativeCRS, other.getNativeCRS())) return false;
         if (nativeName == null) {
-            if (other.getNativeName() != null)
-                return false;
-        } else if (!nativeName.equals(other.getNativeName()))
-            return false;
+            if (other.getNativeName() != null) return false;
+        } else if (!nativeName.equals(other.getNativeName())) return false;
         if (projectionPolicy == null) {
-            if (other.getProjectionPolicy() != null)
-                return false;
-        } else if (!projectionPolicy.equals(other.getProjectionPolicy()))
-            return false;
+            if (other.getProjectionPolicy() != null) return false;
+        } else if (!projectionPolicy.equals(other.getProjectionPolicy())) return false;
         if (srs == null) {
-            if (other.getSRS() != null)
-                return false;
-        } else if (!srs.equals(other.getSRS()))
-            return false;
+            if (other.getSRS() != null) return false;
+        } else if (!srs.equals(other.getSRS())) return false;
         if (store == null) {
-            if (other.getStore() != null)
-                return false;
-        } else if (!store.equals(other.getStore()))
-            return false;
+            if (other.getStore() != null) return false;
+        } else if (!store.equals(other.getStore())) return false;
         if (title == null) {
-            if (other.getTitle() != null)
-                return false;
-        } else if (!title.equals(other.getTitle()))
-            return false;
+            if (other.getTitle() != null) return false;
+        } else if (!title.equals(other.getTitle())) return false;
         return true;
     }
 }

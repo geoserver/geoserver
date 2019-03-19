@@ -152,8 +152,36 @@ A collection can have multiple layers:
 * ``/oseo/collection/{COLLECTION}/layers/{layer}`` returns the specific configuration (PUT can be used to modify it, and DELETE to remove it).
 * Creation of a layer configuration can be done either by post-ing to ``/oseo/collection/{COLLECTION}/layers`` or by put-int to ``/oseo/collection/{COLLECTION}/layers/{layer}``.
 
-The layer configuration specification will have different contents depending on
-the collection structure:
+The layer configuration fields are:
+
+.. list-table::
+   :widths: 30 70 
+   :header-rows: 1
+           
+   * - Attribute
+     - Description
+   * - workspace
+     - The workspace that will contain the store and layer to be published
+   * - layer
+     - The name of the layer that will be created
+   * - separateBands
+     - A boolean value, true if the underlying granule table has the "band" column populated with values, meaning the
+       product bands are split among different files, false if a single product is stored in a single file
+   * - heterogeneousCRS
+     - A boolean value, indicating if the products in the collection share the same CRS (false) or are expressed in different CRSses (true)
+   * - timeRanges
+     - A boolean value, indicating if the products are associated to a single time (false) or have have a time range of validity (true)
+   * - bands
+     - The list of bands used in this layer (to be specified only if "separateBands" is used)
+   * - browseBands
+     - An array of 1 or 3 band names used to create the default display for the layer
+   * - mosaicCRS
+     - The identifier of the CRS used by the mosaic (must match the granules table one) 
+   * - defaultLayer
+     - A flag indicating if the layer is considered the default one for the collection  (thus also appearing at ``/oseo/collection/{COLLECTION}/layer``
+
+
+The layer configuration specification will have different contents depending on the collection structure:
 
 * Single CRS, non band split, RGB or RGBA files, time configured as an "instant" (only ``timeStart`` used):
 

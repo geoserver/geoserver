@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.FeatureCollection;
@@ -269,13 +269,13 @@ public class FeatureWrapper extends BeansWrapper {
 
         Catalog cat = getCatalog();
 
-        FeatureTypeInfo info = null;
+        ResourceInfo info = null;
         if (cat != null) {
             info =
                     cat.getResourceByName(
                             att.getType().getName().getNamespaceURI(),
                             att.getType().getName().getLocalPart(),
-                            FeatureTypeInfo.class);
+                            ResourceInfo.class);
 
             if (info != null) {
                 map.put("type", info);

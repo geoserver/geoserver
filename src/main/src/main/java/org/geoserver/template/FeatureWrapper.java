@@ -116,16 +116,10 @@ public class FeatureWrapper extends BeansWrapper {
     }
 
     private Catalog getCatalog() {
-        if (gsCatalog != null) return gsCatalog;
-
         try {
-            return (gsCatalog = (Catalog) GeoServerExtensions.bean("catalog2"));
+            return (gsCatalog = (Catalog) GeoServerExtensions.bean("catalog"));
         } catch (NoSuchBeanDefinitionException e) {
-            try {
-                return (gsCatalog = (Catalog) GeoServerExtensions.bean("catalog"));
-            } catch (NoSuchBeanDefinitionException e2) {
-                return null;
-            }
+            return null;
         }
     }
 

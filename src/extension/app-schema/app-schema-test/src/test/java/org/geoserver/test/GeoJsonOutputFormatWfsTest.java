@@ -88,14 +88,19 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         // get the station from the response
         JSONObject station = getStationPropertiesById(geoJson, "st.1");
         assertThat(station, notNullValue());
+        // validate the station name
+        JSONObject name = station.getJSONObject("name");
+        assertThat(name.size(), is(2));
+        assertThat(name.get("value"), is("station1"));
+        assertThat(name.get("@code"), is("st1"));
         // validate the station contact
-        JSONArray contact = station.getJSONArray("contact");
+        JSONObject contact = station.getJSONObject("contact");
         assertThat(contact.size(), is(2));
-        JSONArray phone = contact.getJSONObject(0).getJSONArray("phone");
+        assertThat(contact.get("@mail"), is("st1@stations.org"));
+        JSONObject phone = contact.getJSONObject("phone");
         assertThat(phone.size(), is(2));
-        assertThat(phone.getString(0), is("95482156"));
-        JSONObject timezone = phone.getJSONObject(1);
-        assertThat(timezone.get("timeZone"), is("CET"));
+        assertThat(phone.get("value"), is("95482156"));
+        assertThat(phone.get("@timeZone"), is("CET"));
         // check the x-links for measurements exist
         JSONArray measurements = station.getJSONArray("measurements");
         assertThat(measurements.size(), is(2));

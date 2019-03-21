@@ -8,7 +8,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Objects;
 import net.sf.json.JSON;
@@ -58,6 +60,13 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                     "/test-data/stations/geoJson/stations.xsd",
                     "/test-data/stations/geoJson/stations.properties",
                     "/test-data/stations/geoJson/measurements.properties");
+            // add borehole
+            new Gsml32BoreholeMockData().getNamespaces().forEach((k, v) -> putNamespace(k, v));
+            addFeatureType(
+                    Gsml32BoreholeMockData.GSMLBH_PREFIX,
+                    "Borehole",
+                    "Gsml32Borehole.xml",
+                    "Gsml32Borehole.properties");
         }
     }
 
@@ -86,7 +95,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     /** Helper method that station 1 exists and was correctly encoded in the GeoJSON response. */
     private void checkStation1Exists(JSON geoJson) {
         // get the station from the response
-        JSONObject station = getStationPropertiesById(geoJson, "st.1");
+        JSONObject station = getFeaturePropertiesById(geoJson, "st.1");
         assertThat(station, notNullValue());
         // validate the station name
         JSONObject name = station.getJSONObject("name");
@@ -116,7 +125,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
      * Helper method that just extracts \ looks for a station in the provided GeoJSON response based
      * on its ID.
      */
-    private JSONObject getStationPropertiesById(JSON geoJson, String id) {
+    private JSONObject getFeaturePropertiesById(JSON geoJson, String id) {
         assertThat(geoJson, instanceOf(JSONObject.class));
         JSONObject json = (JSONObject) geoJson;
         JSONArray features = json.getJSONArray("features");
@@ -129,5 +138,62 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         }
         // feature matching the provided ID not found
         return null;
+    }
+
+    @Test
+    public void testSimpleContentTimeEncoding() throws Exception {
+        String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
+        JSON json = getAsJSON(path);
+        print(json);
+        JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
+        assertThat(properties, is(notNullValue()));
+        JSONObject timeInstant =
+                getNestedObject(
+                        properties,
+                        "relatedSamplingFeature",
+                        "SamplingFeatureComplex",
+                        "relatedSamplingFeature",
+                        "SF_Specimen",
+                        "samplingTime",
+                        "TimeInstant");
+        assertThat(timeInstant.getString("timePosition"), is("2014-07-02T00:00:00Z"));
+    }
+
+    @Test
+    public void testOneDimensionalEncoding() throws Exception {
+        String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
+        JSON json = getAsJSON(path);
+        print(json);
+        JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
+        assertThat(properties, is(notNullValue()));
+        JSONObject samplingLocation =
+                getNestedObject(
+                        properties,
+                        "relatedSamplingFeature",
+                        "SamplingFeatureComplex",
+                        "relatedSamplingFeature",
+                        "SF_Specimen",
+                        "samplingLocation",
+                        "value");
+        JSONArray coordinates = samplingLocation.getJSONArray("coordinates");
+        assertThat(coordinates.size(), is(2));
+        JSONArray c1 = coordinates.getJSONArray(0);
+        assertThat(c1.size(), is(1));
+        assertEquals(57.9, c1.getDouble(0), 0.1);
+        JSONArray c2 = coordinates.getJSONArray(1);
+        assertThat(c2.size(), is(1));
+        assertEquals(66.5, c2.getDouble(0), 0.1);
+    }
+
+    /** Drills into nested JSON objects (won't traverse arrays though) */
+    private JSONObject getNestedObject(JSONObject root, String... keys) {
+        JSONObject curr = root;
+        for (String key : keys) {
+            if (!curr.has(key)) {
+                fail("Could not find property " + key + " in " + curr);
+            }
+            curr = curr.getJSONObject(key);
+        }
+        return curr;
     }
 }

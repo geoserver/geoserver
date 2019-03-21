@@ -7,6 +7,7 @@ package org.geoserver.wfs.json;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -416,7 +417,10 @@ class ComplexGeoJsonWriter {
             return null;
         }
         Object value = simpleContent.getValue();
-        if (value instanceof Number || value instanceof String || value instanceof Character) {
+        if (value instanceof Number
+                || value instanceof String
+                || value instanceof Character
+                || value instanceof Date) {
             // the extract value is a simple Java type
             return value;
         }

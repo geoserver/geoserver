@@ -119,10 +119,10 @@
 						<value>'rock'</value>
 					</ClientProperty>
 				</AttributeMapping>                
-				<AttributeMapping>
+				<!--AttributeMapping>
 					<targetAttribute>sa:relatedSamplingFeature/sa:SamplingFeatureComplex/sa:relatedSamplingFeature/spec:SF_Specimen/spec:samplingTime/gml:TimeInstant</targetAttribute>
 					<idExpression><OCQL>strConcat('borehole.specimen.samplingTime.GA.', SAMPLE_ID)</OCQL></idExpression>
-				</AttributeMapping>  
+				</AttributeMapping-->  
 				<AttributeMapping>
 					<targetAttribute>sa:relatedSamplingFeature/sa:SamplingFeatureComplex/sa:relatedSamplingFeature/spec:SF_Specimen/spec:samplingTime/gml:TimeInstant/gml:timePosition</targetAttribute>
 					<sourceExpression><OCQL>SAMPLING_DATE</OCQL></sourceExpression>

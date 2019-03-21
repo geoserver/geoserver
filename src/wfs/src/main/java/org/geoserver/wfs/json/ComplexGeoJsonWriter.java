@@ -194,7 +194,7 @@ class ComplexGeoJsonWriter {
         jsonWriter.array();
         // encode each linked feature
         for (Map<NameImpl, String> feature : linkedFeatures) {
-            encodeAttributes(feature);
+            encodeAttributesArray(feature);
         }
         // end the linked features JSON array
         jsonWriter.endArray();
@@ -430,24 +430,18 @@ class ComplexGeoJsonWriter {
         // get the attribute name and start a JSON object
         String name = attribute.getName().getLocalPart();
         jsonWriter.key(name);
-        if (attributes != null && !attributes.isEmpty()) {
-            // we have some attributes to encode
-            jsonWriter.array();
-        }
+        jsonWriter.object();
         // let's see if we have actually some properties to encode
         if (attribute.getProperties() != null && !attribute.getProperties().isEmpty()) {
-            jsonWriter.object();
             // encode the object properties, since this is not a top feature or a
             // chained feature we don't need to explicitly handle the geometry attribute
             encodeProperties(null, attribute.getType(), attribute.getProperties());
-            // end the attribute JSON object
-            jsonWriter.endObject();
         }
         if (attributes != null && !attributes.isEmpty()) {
             // encode the attributes list
             encodeAttributes(attributes);
-            jsonWriter.endArray();
         }
+        jsonWriter.endObject();
     }
 
     /**
@@ -474,20 +468,35 @@ class ComplexGeoJsonWriter {
             return;
         }
         // we need to encode a list of attributes, let's first encode the main value
-        jsonWriter.key(name).array();
-        jsonWriter.value(value);
+        jsonWriter.key(name).object();
+        jsonWriter.key("value").value(value);
         // encode the attributes list
         encodeAttributes(attributes);
-        // close the values \ attributes array
-        jsonWriter.endArray();
+        // close the values \ attributes object
+        jsonWriter.endObject();
     }
 
     /**
-     * Utility method that encode an attributes map, only the attribute name local part will be
-     * used. Attributes with a NULL value will not be encoded. This method assumes that it is
-     * already in an array context.
+     * Utility method that encode an attributes map as a set of properties in an object The
+     * attribute name local part will be used as the property name. Attributes with a NULL value
+     * will not be encoded. This method assumes that it is already in an object context.
      */
     private void encodeAttributes(Map<NameImpl, String> attributes) {
+        attributes.forEach(
+                (name, value) -> {
+                    if (value != null) {
+                        // encode attribute, we don't take namespace into account
+                        jsonWriter.key("@" + name.getLocalPart()).value(value);
+                    }
+                });
+    }
+
+    /**
+     * Utility method that encode an attributes map as an array of objects, each one having a single
+     * key (based on the attribute name local part ) and value . Attributes with a NULL value will
+     * not be encoded. This method assumes that it is already in an array context.
+     */
+    private void encodeAttributesArray(Map<NameImpl, String> attributes) {
         attributes.forEach(
                 (name, value) -> {
                     if (value != null) {

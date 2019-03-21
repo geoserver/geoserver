@@ -179,12 +179,16 @@ public class GeoJSONBuilder extends JSONBuilder {
         // adjust the order of X and Y ordinates if needed
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
             // encode latitude first and then longitude
-            roundedValue(y);
+            if (!Double.isNaN(y)) { // for 1d linear referencing cases
+                roundedValue(y);
+            }
             roundedValue(x);
         } else {
             // encode longitude first and then latitude
             roundedValue(x);
-            roundedValue(y);
+            if (!Double.isNaN(y)) { // for 1d linear referencing cases
+                roundedValue(y);
+            }
         }
         // if Z value is not available but we have a measure, we set Z value to zero
         z = Double.isNaN(z) && !Double.isNaN(m) ? 0 : z;

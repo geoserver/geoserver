@@ -162,6 +162,9 @@ The Google formatter plugin is embedded in the build and will reformat the code 
 
 The `google-java-format <https://github.com/google/google-java-format>`__ project offers a plugin for Eclipse, but we are waiting an support for ASOP variant. While we wait for this fix build once on the command line, to format the any code changes before committing.
 
+As workaround you could use a `modified version <https://github.com/fernandor777/google-java-format/releases/download/1.7-gsgt/google-java-format-eclipse-plugin-1.6.0.jar>`__ with 4 spaces indent by default, putting the jar file on Eclipse dropins folder.
+
+
 You may also:
 
 #. Download https://github.com/geotools/geotools/blob/master/build/eclipse/eclipse-java-google-style.xml

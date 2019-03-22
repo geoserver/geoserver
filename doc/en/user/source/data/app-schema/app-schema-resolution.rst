@@ -75,3 +75,4 @@ If your GeoServer instance is deployed on a network whose firewall rules prevent
 #. Or: Deploy JAR files containing all required schema files on the classpath (see `Classpath`_ above).
 #. Or: Use a catalog (see `OASIS Catalog`_ above).
 
+.. warning:: System property "schema.cache.dir" with a cache directory location is required for using a mapping file from a remote URL with 'http://' or 'https://' protocol.

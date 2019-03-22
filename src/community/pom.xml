@@ -593,5 +593,11 @@
         <module>monitor-hibernate</module>
       </modules>
     </profile>
+    <profile>
+      <id>mapml</id>
+      <modules>
+        <module>mapml</module>
+      </modules>
+    </profile>
   </profiles>  
 </project>

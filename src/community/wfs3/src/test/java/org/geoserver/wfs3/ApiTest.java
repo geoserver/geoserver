@@ -194,4 +194,29 @@ public class ApiTest extends WFS3TestSupport {
         assertEquals(wfs.getMaxFeatures(), limitSchema.getMaximum().intValue());
         assertEquals(wfs.getMaxFeatures(), ((Number) limitSchema.getDefault()).intValue());
     }
+
+    @Test
+    public void testWorkspaceQualifiedAPI() throws Exception {
+        MockHttpServletRequest request = createRequest("cdf/wfs3/api");
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        MockHttpServletResponse response = dispatch(request);
+        assertEquals(200, response.getStatus());
+        assertEquals("application/x-yaml", response.getContentType());
+        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+
+        ObjectMapper mapper = Yaml.mapper();
+        OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
+        Map<String, Parameter> params = api.getComponents().getParameters();
+        Parameter collectionId = params.get("collectionId");
+        List<String> collectionIdValues = collectionId.getSchema().getEnum();
+        List<String> expectedCollectionIds =
+                getCatalog()
+                        .getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
+                        .stream()
+                        .map(ft -> ft.getName())
+                        .collect(Collectors.toList());
+        assertThat(collectionIdValues, equalTo(expectedCollectionIds));
+    }
 }

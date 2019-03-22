@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-script</artifactId>
-  <version>2.15-SNAPSHOT</version>
+  <version>2.16-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.script</groupId>
  <artifactId>gs-script-groovy</artifactId>
@@ -24,7 +24,22 @@
   <dependency>
    <groupId>org.geoscript</groupId>
    <artifactId>geoscript-groovy</artifactId>
-   <version>1.11-SNAPSHOT</version>
+   <version>1.13-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <groupId>org.codehaus.groovy</groupId>
+    <artifactId>groovy-jsr223</artifactId>
+    <version>2.5.5</version>
+  </dependency>
+  <dependency>
+    <groupId>org.codehaus.groovy</groupId>
+    <artifactId>groovy-ant</artifactId>
+    <version>2.5.5</version>
+  </dependency>
+  <dependency>
+    <groupId>org.codehaus.groovy</groupId>
+    <artifactId>groovy-groovydoc</artifactId>
+    <version>2.5.5</version>
   </dependency>
   <dependency>
     <!-- this dependency taken from geoscript-groovy pom but upgraded to 1.0.9 -->

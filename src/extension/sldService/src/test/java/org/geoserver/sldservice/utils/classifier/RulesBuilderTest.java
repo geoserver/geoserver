@@ -69,9 +69,9 @@ public class RulesBuilderTest {
                     SimpleFeatureBuilder.build(
                             dataType,
                             new Object[] {
-                                new Integer(i + 1),
+                                Integer.valueOf(i + 1),
                                 names[i],
-                                new Integer(iVal[i]),
+                                Integer.valueOf(iVal[i]),
                                 new Double(dVal[i]),
                                 fac.createPoint(new Coordinate(iVal[i], iVal[i])),
                                 "Group" + (i % 4)
@@ -105,7 +105,7 @@ public class RulesBuilderTest {
                     SimpleFeatureBuilder.build(
                             jenksType,
                             new Object[] {
-                                new Integer(i + 1),
+                                Integer.valueOf(i + 1),
                                 new Double(jenks71[i]),
                                 fac.createLineString(
                                         new Coordinate[] {

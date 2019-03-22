@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -155,10 +156,10 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                     // reloaded. We also rework if the dumper died for some reason (e.g., improper
                     // config, invalid templates)
                     if (newLimit != rollLimit
-                            || newPath != path
-                            || newHeaderTemplate != headerTemplate
-                            || newContentTemplate != contentTemplate
-                            || newFooterTemplate != footerTemplate
+                            || !Objects.equals(newPath, path)
+                            || !Objects.equals(newHeaderTemplate, headerTemplate)
+                            || !Objects.equals(newContentTemplate, contentTemplate)
+                            || !Objects.equals(newFooterTemplate, footerTemplate)
                             || !dumper.isAlive()) {
                         // config changed, close the current dumper and create a new one
                         closeDumper(dumper);

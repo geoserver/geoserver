@@ -6,10 +6,13 @@ package org.geoserver.sldservice.utils.classifier;
 
 import static java.util.Locale.ENGLISH;
 
+import it.geosolutions.jaiext.JAIExt;
 import it.geosolutions.jaiext.classbreaks.ClassBreaksDescriptor;
 import it.geosolutions.jaiext.classbreaks.ClassBreaksRIF;
 import it.geosolutions.jaiext.classbreaks.Classification;
 import it.geosolutions.jaiext.classbreaks.ClassificationMethod;
+import it.geosolutions.jaiext.stats.Statistics;
+import it.geosolutions.jaiext.stats.Statistics.StatsType;
 import java.awt.*;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
@@ -19,7 +22,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Optional;
 import javax.media.jai.Histogram;
+import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
+import javax.media.jai.RenderedOp;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.image.ImageWorker;
@@ -27,6 +32,7 @@ import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
 import org.opengis.filter.FilterFactory2;
 
@@ -57,6 +63,7 @@ public class RasterSymbolizerBuilder {
             Integer.getInteger("org.geoserver.sldService.maxPixels", 4194304);
 
     private long maxPixels;
+    private Double standardDeviations;
 
     /**
      * Builds the {@link RasterSymbolizerBuilder} with a given pixel reading threshold before
@@ -83,29 +90,26 @@ public class RasterSymbolizerBuilder {
      *     exception should be thrown
      */
     public ColorMap uniqueIntervalClassification(RenderedImage image, Integer maxIntervals) {
-        // compute min and max, for the common case avoid doing an extrema a use a pre-defined range
-        // instead
         int low, high;
         int dataType = image.getSampleModel().getDataType();
         ImageWorker iw = getImageWorker(image);
-        switch (dataType) {
-            case DataBuffer.TYPE_BYTE:
-                low = 0;
-                high = 255;
-                break;
-                // The histogram can be very expensive memory wise as it's backed by a
-                // AtomicDouble[],
-                // check how many
-            case DataBuffer.TYPE_USHORT:
-            case DataBuffer.TYPE_SHORT:
-            case DataBuffer.TYPE_INT:
-                low = (int) iw.getMinimums()[0];
-                high = (int) iw.getMaximums()[0];
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "Cannot perform unique value classification over rasters of float type, only integer numbers are supported. Try a classification by intervals or quantiles instead");
+
+        // compute min and max, for the common case avoid doing an extrema or use a pre-defined
+        // range instead
+        if (dataType == DataBuffer.TYPE_BYTE && standardDeviations == null) {
+            low = 0;
+            high = 255;
+        } else if (dataType == DataBuffer.TYPE_DOUBLE || dataType == DataBuffer.TYPE_FLOAT) {
+            throw new IllegalArgumentException(
+                    "Cannot perform unique value classification over rasters of float type, only integer numbers are supported. Try a classification by intervals or quantiles instead");
+        } else {
+            final NumberRange range = getOperationRange(iw);
+            low = (int) range.getMinimum();
+            high = (int) range.getMaximum();
         }
+
+        // The histogram can be very expensive memory wise as it's backed by a
+        // AtomicDouble[], check how many are they going to be
         if (high - low > MAX_UNIQUE_VALUES) {
             throw new IllegalArgumentException(
                     "Cannot perform unique value classification over rasters with a potential range of values greater than "
@@ -162,7 +166,7 @@ public class RasterSymbolizerBuilder {
             // try to get as many pixels as possible, don't jump from 1M to 250k. Prefer skipping
             // rows rather than cols (for the not so uncommon striped raster to be classified)
             int yPeriod = (int) Math.round(Math.sqrt(pixels / (double) maxPixels));
-            int xPeriod = (int) Math.ceil(pixels / (yPeriod * maxPixels));
+            int xPeriod = (int) Math.ceil(pixels / (yPeriod * (double) maxPixels));
             iw.setXPeriod(xPeriod).setYPeriod(yPeriod);
         }
 
@@ -181,8 +185,9 @@ public class RasterSymbolizerBuilder {
     public ColorMap equalIntervalClassification(
             RenderedImage image, int intervals, boolean open, boolean continuous) {
         ImageWorker iw = getImageWorker(image);
-        double low = iw.getMinimums()[0];
-        double high = iw.getMaximums()[0];
+        final NumberRange range = getOperationRange(iw);
+        double low = (int) range.getMinimum();
+        double high = (int) range.getMaximum();
 
         Number[] breaks = new Number[continuous ? intervals : intervals + 1];
         double step = (high - low) / (continuous ? (intervals - 1) : intervals);
@@ -324,9 +329,10 @@ public class RasterSymbolizerBuilder {
         pb.set(iw.getYPeriod(), 6);
         pb.set(noData, 7);
         if (numHistogramBins > 0) {
+            final NumberRange range = getOperationRange(iw);
             Double[][] extrema = new Double[2][1];
-            extrema[0][0] = iw.getMinimums()[0];
-            extrema[1][0] = iw.getMaximums()[0];
+            extrema[0][0] = range.getMinimum();
+            extrema[1][0] = range.getMaximum();
             pb.set(extrema, 2);
             pb.set(true, 8);
             pb.set(numHistogramBins, 9);
@@ -378,5 +384,51 @@ public class RasterSymbolizerBuilder {
         }
 
         return getColorMapFromBreaks(breaks, open, continuous);
+    }
+
+    public void setStandardDeviations(Double standardDeviations) {
+        this.standardDeviations = standardDeviations;
+    }
+
+    private NumberRange getOperationRange(ImageWorker iw) {
+        if (standardDeviations == null) {
+            double min = iw.getMinimums()[0];
+            double max = iw.getMaximums()[0];
+            return new NumberRange(Double.class, min, max);
+        } else {
+            // Create the parameterBlock
+            ParameterBlock pb = new ParameterBlock();
+            pb.setSource(iw.getRenderedImage(), 0);
+            if (JAIExt.isJAIExtOperation("Stats")) {
+                StatsType[] stats =
+                        new StatsType[] {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
+
+                // Image parameters
+                pb.set(iw.getXPeriod(), 0); // xPeriod
+                pb.set(iw.getYPeriod(), 1); // yPeriod
+                pb.set(iw.getROI(), 2); // ROI
+                pb.set(iw.getNoData(), 3); // NoData
+                pb.set(stats, 6); // statistic operation
+                final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
+                // Retrieving the statistics
+                Statistics[][] results =
+                        (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
+                double mean = (double) results[0][0].getResult();
+                double stddev = (double) results[0][1].getResult();
+                double[] extrema = (double[]) results[0][2].getResult();
+                double min = extrema[0];
+                double max = extrema[1];
+                // return a range centered in the mean with the desired number of standard
+                // deviations, but make sure it does not exceed the data minimim and maximums
+                return new NumberRange(
+                        Double.class,
+                        Math.max(mean - stddev * standardDeviations, min),
+                        Math.min(mean + stddev * standardDeviations, max));
+            } else {
+                // the op should be unique to jai-ext but best be careful
+                throw new IllegalArgumentException(
+                        "Stats image operation is not backed by JAIExt, please enable JAIExt");
+            }
+        }
     }
 }

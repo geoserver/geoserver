@@ -54,13 +54,13 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     transient ClassProperties cp;
 
     /** "dirty" properties */
-    HashMap<String, Object> properties;
+    volatile HashMap<String, Object> properties;
 
     /**
      * The old values of the live collections (we have to clone them because once the proxy commits
      * the original map will contain the same values as the new one, breaking getOldValues()
      */
-    HashMap<String, Object> oldCollectionValues;
+    volatile HashMap<String, Object> oldCollectionValues;
 
     public ModificationProxy(Object proxyObject) {
         this.proxyObject = proxyObject;
@@ -112,8 +112,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     Map clone = ModificationProxyCloner.cloneMap(real, false);
                     oldCollectionValues().put(property, clone);
                     return wrap;
-                } else {
-                    // proceed with the invocation
                 }
             }
         }
@@ -147,8 +145,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
                     // cache the proxy, in case it is modified itself
                     properties().put(property, result);
-                } else {
-                    // result was already proxied, leave as is
                 }
             }
             return result;

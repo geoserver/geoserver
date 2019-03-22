@@ -95,6 +95,7 @@ public class WFS3Filter implements GeoServerFilter {
         private String level;
         private String row;
         private String col;
+        private String styleId;
 
         private RequestWrapper(HttpServletRequest wrapped) {
             super(wrapped);
@@ -105,6 +106,13 @@ public class WFS3Filter implements GeoServerFilter {
                 request = "api";
             } else if (pathInfo.endsWith("/conformance") || pathInfo.endsWith("/conformance/")) {
                 request = "conformance";
+            } else if (pathInfo.matches("/styles/?")) {
+                request = wrapped.getMethod().toLowerCase() + "Styles";
+            } else if (pathInfo.matches("/styles/([^/]+)/?")) {
+                request = wrapped.getMethod().toLowerCase() + "Style";
+                Matcher matcher = Pattern.compile("/styles/([^/]+)/?").matcher(pathInfo);
+                matcher.matches();
+                this.styleId = matcher.group(1);
             } else if (pathInfo.matches("/tilingSchemes/([^/]+)/?")) {
                 request = "describeTilingScheme";
                 Matcher matcher = Pattern.compile("/tilingSchemes/([^/]+)/?").matcher(pathInfo);
@@ -116,6 +124,19 @@ public class WFS3Filter implements GeoServerFilter {
                         Pattern.compile("/collections/([^/]+)/tiles/([^/]+)/?").matcher(pathInfo);
                 matcher.matches();
                 this.tilingScheme = matcher.group(2);
+            } else if (pathInfo.matches("/collections/([^/]+)/styles/?")) {
+                request = wrapped.getMethod().toLowerCase() + "Styles";
+                Matcher matcher =
+                        Pattern.compile("/collections/([^/]+)/styles/?").matcher(pathInfo);
+                matcher.matches();
+                setLayerName(matcher.group(1));
+            } else if (pathInfo.matches("/collections/([^/]+)/styles/([^/]+)/?")) {
+                request = wrapped.getMethod().toLowerCase() + "Style";
+                Matcher matcher =
+                        Pattern.compile("/collections/([^/]+)/styles/([^/]+)/?").matcher(pathInfo);
+                matcher.matches();
+                setLayerName(matcher.group(1));
+                this.styleId = matcher.group(2);
             } else if (pathInfo.startsWith("/collections")) {
                 List<Function<String, Boolean>> matchers = new ArrayList<>();
                 matchers.add(
@@ -295,6 +316,13 @@ public class WFS3Filter implements GeoServerFilter {
         }
 
         @Override
+        public String getMethod() {
+            // hack to ensure the Dispatcher does not handle this one as a OWS style post and
+            // consequently tries to find the request type in the payload
+            return "GET";
+        }
+
+        @Override
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
             Map<String, String[]> filtered = new HashMap<>(original);
@@ -323,8 +351,12 @@ public class WFS3Filter implements GeoServerFilter {
                 }
             }
             if (typeName != null) {
-                filtered.put("typeName", new String[] {typeName});
-                filtered.put("typeNames", new String[] {typeName});
+                if (request.toLowerCase().contains("style")) {
+                    filtered.put("layerName", new String[] {typeName});
+                } else {
+                    filtered.put("typeName", new String[] {typeName});
+                    filtered.put("typeNames", new String[] {typeName});
+                }
             }
             if (outputFormat != null) {
                 filtered.put("outputFormat", new String[] {outputFormat});
@@ -339,6 +371,7 @@ public class WFS3Filter implements GeoServerFilter {
             if (level != null) filtered.put("level", new String[] {level});
             if (row != null) filtered.put("row", new String[] {row});
             if (col != null) filtered.put("col", new String[] {col});
+            if (styleId != null) filtered.put("styleId", new String[] {styleId});
             return filtered;
         }
 

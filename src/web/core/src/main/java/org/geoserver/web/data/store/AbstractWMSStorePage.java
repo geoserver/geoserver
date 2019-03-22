@@ -92,7 +92,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                 new TextParamPanel(
                         "capabilitiesURL",
                         new PropertyModel(model, "capabilitiesURL"),
-                        new ParamResourceModel("capabilitiesURL", AbstractWMSStorePage.this),
+                        new ParamResourceModel("capabilitiesURL", this),
                         true);
         form.add(capabilitiesURL);
 

@@ -6,6 +6,7 @@
 package org.geoserver.wps.gs.download;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -1410,7 +1411,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                                 new DownloadServiceConfiguration(
                                         DownloadServiceConfiguration.NO_LIMIT,
                                         DownloadServiceConfiguration.NO_LIMIT,
-                                        10,
+                                        DownloadServiceConfiguration.NO_LIMIT,
                                         10,
                                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
                                         DownloadServiceConfiguration.NO_LIMIT)),
@@ -1654,6 +1655,44 @@ public class DownloadProcessTest extends WPSTestSupport {
                     "java.lang.IllegalArgumentException: Download Limits Exceeded. Unable to proceed!",
                     e.getMessage());
         }
+    }
+
+    /**
+     * Test download estimator for raster data. Make sure the estimator works again full raster at
+     * native resolution downloads
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDownloadEstimatorFullNativeRaster() throws Exception {
+        // Estimator process for checking limits
+        DownloadEstimatorProcess limits =
+                new DownloadEstimatorProcess(
+                        new StaticDownloadServiceConfiguration(
+                                new DownloadServiceConfiguration(
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        (long) 10, // small number, but before fix it was not
+                                        // triggering exception
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.NO_LIMIT,
+                                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL,
+                                        DownloadServiceConfiguration.NO_LIMIT)),
+                        getGeoServer());
+
+        // Estimate download full data at native resolution. It should return false
+        assertFalse(
+                limits.execute(
+                        getLayerId(MockData.USA_WORLDIMG), // layerName
+                        null, // filter
+                        null, // target CRS
+                        null, // ROI CRS
+                        null, // ROI
+                        false, // clip
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // band indices
+                        new NullProgressListener() // progressListener
+                        ));
     }
 
     /**

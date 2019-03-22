@@ -132,52 +132,35 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 locking = (SimpleFeatureLocking) store;
 
                 // TODO: Revisit Lock/Delete interaction in gt2
-                if (false) {
-                    // REVISIT: This is bad - by releasing locks before
-                    // we remove features we open ourselves up to the
-                    // danger of someone else locking the features we
-                    // are about to remove.
-                    //
-                    // We cannot do it the other way round, as the
-                    // Features will not exist
-                    //
-                    // We cannot grab the fids offline using AUTO_COMMIT
-                    // because we may have removed some of them earlier
-                    // in the transaction
-                    //
-                    locking.unLockFeatures(filter);
-                    store.removeFeatures(filter);
-                } else {
-                    // This a bit better and what should be done, we
-                    // will need to rework the gt2 locking api to work
-                    // with fids or something
-                    //
-                    // The only other thing that would work
-                    // would be to specify that FeatureLocking is
-                    // required to remove locks when removing Features.
-                    //
-                    // While that sounds like a good idea, it
-                    // would be extra work when doing release mode ALL.
-                    //
-                    DataStore data = (DataStore) store.getDataStore();
-                    FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-                    writer = data.getFeatureWriter(typeName, filter, store.getTransaction());
+                // This a bit better and what should be done, we
+                // will need to rework the gt2 locking api to work
+                // with fids or something
+                //
+                // The only other thing that would work
+                // would be to specify that FeatureLocking is
+                // required to remove locks when removing Features.
+                //
+                // While that sounds like a good idea, it
+                // would be extra work when doing release mode ALL.
+                //
+                DataStore data = (DataStore) store.getDataStore();
+                FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
+                writer = data.getFeatureWriter(typeName, filter, store.getTransaction());
 
-                    try {
-                        while (writer.hasNext()) {
-                            String fid = writer.next().getID();
-                            Set featureIds = new HashSet();
-                            featureIds.add(factory.featureId(fid));
-                            locking.unLockFeatures(factory.id(featureIds));
-                            writer.remove();
-                            deleted++;
-                        }
-                    } finally {
-                        writer.close();
+                try {
+                    while (writer.hasNext()) {
+                        String fid = writer.next().getID();
+                        Set featureIds = new HashSet();
+                        featureIds.add(factory.featureId(fid));
+                        locking.unLockFeatures(factory.id(featureIds));
+                        writer.remove();
+                        deleted++;
                     }
-
-                    store.removeFeatures(filter);
+                } finally {
+                    writer.close();
                 }
+
+                store.removeFeatures(filter);
             } else {
                 // We don't have to worry about locking right now
                 int deletedCount = store.getFeatures(filter).size();

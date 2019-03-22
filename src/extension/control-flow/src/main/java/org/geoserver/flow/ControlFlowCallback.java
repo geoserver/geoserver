@@ -84,8 +84,6 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         REQUEST_CONTROLLERS.remove();
     }
 
-    private ApplicationContext applicationContext;
-
     /** Returns the current number of blocked/queued requests. */
     public long getBlockedRequests() {
         return blockedRequests.get();
@@ -203,7 +201,6 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
         if (applicationContext instanceof ConfigurableApplicationContext) {
             // register default beans if needed
             registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);
@@ -222,7 +219,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
     /** Register default beans for control flow configurator and flow controller. */
     private void registDefaultBeansIfNeeded(ConfigurableApplicationContext applicationContext) {
         ConfigurableListableBeanFactory factory = applicationContext.getBeanFactory();
-        // make sure defautl beans are only registered once
+        // make sure default beans are only registered once
         synchronized (ControlFlowCallback.class) {
             // first handle the configurator bean
             try {
@@ -231,7 +228,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                 // we need to use the default configurator
                 factory.registerSingleton(
                         "defaultControlFlowConfigurator", new DefaultControlFlowConfigurator());
-                LOGGER.fine("Defautl flow configurator bean dynamically registered.");
+                LOGGER.fine("Default flow configurator bean dynamically registered.");
             }
             // handle the flow controller provider bean
             try {
@@ -241,7 +238,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                 factory.registerSingleton(
                         "defaultFlowControllerProvider",
                         new DefaultFlowControllerProvider(applicationContext));
-                LOGGER.fine("Defautl flow controller provider bean dynamically registered.");
+                LOGGER.fine("Default flow controller provider bean dynamically registered.");
             }
         }
     }

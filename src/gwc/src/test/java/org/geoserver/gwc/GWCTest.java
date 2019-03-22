@@ -372,6 +372,7 @@ public class GWCTest {
         when(tld.layerExists(eq(tileLayerGroup.getName()))).thenReturn(true);
     }
 
+    @Test
     public void testAddTileLayer() throws Exception {
 
         doThrow(new IllegalArgumentException("fake")).when(tld).addLayer(same(tileLayer));

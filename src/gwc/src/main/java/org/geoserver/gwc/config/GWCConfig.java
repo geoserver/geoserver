@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
@@ -102,7 +102,7 @@ public class GWCConfig implements Cloneable, Serializable {
         readResolve();
     }
 
-    private GWCConfig readResolve() {
+    protected Object readResolve() {
         if (null == version) {
             version = "0.0.1";
         }
@@ -356,7 +356,55 @@ public class GWCConfig implements Cloneable, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return EqualsBuilder.reflectionEquals(this, o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GWCConfig gwcConfig = (GWCConfig) o;
+        return directWMSIntegrationEnabled == gwcConfig.directWMSIntegrationEnabled
+                && WMSCEnabled == gwcConfig.WMSCEnabled
+                && TMSEnabled == gwcConfig.TMSEnabled
+                && securityEnabled == gwcConfig.securityEnabled
+                && innerCachingEnabled == gwcConfig.innerCachingEnabled
+                && persistenceEnabled == gwcConfig.persistenceEnabled
+                && cacheLayersByDefault == gwcConfig.cacheLayersByDefault
+                && cacheNonDefaultStyles == gwcConfig.cacheNonDefaultStyles
+                && metaTilingX == gwcConfig.metaTilingX
+                && metaTilingY == gwcConfig.metaTilingY
+                && gutter == gwcConfig.gutter
+                && Objects.equals(version, gwcConfig.version)
+                && Objects.equals(WMTSEnabled, gwcConfig.WMTSEnabled)
+                && Objects.equals(cacheProviderClass, gwcConfig.cacheProviderClass)
+                && Objects.equals(cacheConfigurations, gwcConfig.cacheConfigurations)
+                && Objects.equals(defaultCachingGridSetIds, gwcConfig.defaultCachingGridSetIds)
+                && Objects.equals(
+                        defaultCoverageCacheFormats, gwcConfig.defaultCoverageCacheFormats)
+                && Objects.equals(defaultVectorCacheFormats, gwcConfig.defaultVectorCacheFormats)
+                && Objects.equals(defaultOtherCacheFormats, gwcConfig.defaultOtherCacheFormats)
+                && Objects.equals(lockProviderName, gwcConfig.lockProviderName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                version,
+                directWMSIntegrationEnabled,
+                WMSCEnabled,
+                TMSEnabled,
+                WMTSEnabled,
+                securityEnabled,
+                innerCachingEnabled,
+                persistenceEnabled,
+                cacheProviderClass,
+                cacheConfigurations,
+                cacheLayersByDefault,
+                cacheNonDefaultStyles,
+                metaTilingX,
+                metaTilingY,
+                gutter,
+                defaultCachingGridSetIds,
+                defaultCoverageCacheFormats,
+                defaultVectorCacheFormats,
+                defaultOtherCacheFormats,
+                lockProviderName);
     }
 
     public String getLockProviderName() {

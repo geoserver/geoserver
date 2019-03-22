@@ -132,9 +132,10 @@ public class RequestInfo {
      * @return
      */
     public static RequestInfo get() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) return null;
         return (RequestInfo)
-                RequestContextHolder.getRequestAttributes()
-                        .getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
+                requestAttributes.getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
 
     public Map<String, String[]> getQueryMap() {
@@ -147,7 +148,11 @@ public class RequestInfo {
      * @param requestInfo
      */
     public static void set(RequestInfo requestInfo) {
-        RequestContextHolder.getRequestAttributes()
-                .setAttribute(RequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            throw new IllegalStateException("Request attributes are not set");
+        }
+        requestAttributes.setAttribute(
+                RequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
     }
 }

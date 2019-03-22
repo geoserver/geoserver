@@ -219,7 +219,7 @@ public class StyleParameterFilter extends ParameterFilter {
     }
 
     @Override
-    protected ParameterFilter readResolve() {
+    protected Object readResolve() {
         super.readResolve();
         Preconditions.checkState(
                 this.getKey().equalsIgnoreCase("STYLES"),

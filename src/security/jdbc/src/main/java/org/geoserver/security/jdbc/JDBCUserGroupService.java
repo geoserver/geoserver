@@ -410,7 +410,9 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             con = getConnection();
             ps = getDMLStatement("users.count", con);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("SQL query did not return a count");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);
@@ -429,7 +431,9 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             con = getConnection();
             ps = getDMLStatement("groups.count", con);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("SQL query did not return a count");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);
@@ -557,7 +561,9 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             ps = getDMLStatement("userprops.userCountHavingProperty", con);
             ps.setString(1, propname);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("SQL query did not return a count");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);
@@ -628,7 +634,9 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             ps = getDMLStatement("userprops.userCountNotHavingProperty", con);
             ps.setString(1, propname);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("SQL query did not return a count");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);
@@ -710,7 +718,9 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             ps.setString(1, propname);
             ps.setString(2, propvalue);
             rs = ps.executeQuery();
-            rs.next();
+            if (!rs.next()) {
+                throw new IOException("SQL query did not return a count");
+            }
             count = rs.getInt(1);
         } catch (SQLException ex) {
             throw new IOException(ex);

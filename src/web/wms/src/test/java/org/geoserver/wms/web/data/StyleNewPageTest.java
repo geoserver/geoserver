@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +18,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -76,6 +78,28 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 TextField.class);
 
         tester.assertModelValue("styleForm:context:panel:name", "");
+    }
+
+    @Test
+    public void testCopyFormat() {
+        FormTester form = tester.newFormTester("styleForm");
+        // Select the ZIP format
+        form.select("context:panel:format", new StyleFormatsModel().getObject().indexOf("zip"));
+        tester.executeAjaxEvent("styleForm:context:panel:format", "change");
+        // Select the SLD style to copy
+        form.select("context:panel:existingStyles", 0);
+        tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "change");
+        // Verify that the format is ZIP
+        tester.assertModelValue("styleForm:context:panel:format", "zip");
+        // Copy the SLD style
+        tester.clickLink("styleForm:context:panel:copy", true);
+        // Verify that the format is SLD on the server
+        tester.assertModelValue("styleForm:context:panel:format", "sld");
+        // Verify that the format is SLD in the response page
+        String doc = tester.getLastResponse().getDocument();
+        TagTester tag = TagTester.createTagByAttribute(doc, "name", "context:panel:format");
+        tag = tag.getChild("selected", "selected");
+        assertEquals("sld", tag.getAttribute("value"));
     }
 
     @Test

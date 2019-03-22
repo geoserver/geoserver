@@ -1230,6 +1230,21 @@ public class GetFeature {
         if (declaredCRS != null) {
             transformedFilter =
                     WFSReprojectionUtil.normalizeFilterCRS(filter, source.getSchema(), declaredCRS);
+        } else {
+            // this may happen with complex features, let's try to use the feature type info CRS
+            FeatureTypeInfo featureTypeInfo =
+                    catalog.getFeatureTypeByName(
+                            primaryTypeName.getPrefix(), primaryTypeName.getLocalPart());
+            if (featureTypeInfo != null && featureTypeInfo.getCRS() != null) {
+                // the feature type info has a CRS defined, so let's use it
+                transformedFilter =
+                        WFSReprojectionUtil.normalizeFilterCRS(
+                                filter,
+                                source.getSchema(),
+                                WFSReprojectionUtil.getDeclaredCrs(
+                                        featureTypeInfo.getCRS(), wfsVersion),
+                                featureTypeInfo.getCRS());
+            }
         }
 
         // replace gml:boundedBy with an expression
@@ -1387,7 +1402,7 @@ public class GetFeature {
     static Integer traverseXlinkDepth(String raw) {
         Integer traverseXlinkDepth = null;
         try {
-            traverseXlinkDepth = new Integer(raw);
+            traverseXlinkDepth = Integer.valueOf(raw);
         } catch (NumberFormatException nfe) {
             // try handling *
             if ("*".equals(raw)) {
@@ -1395,7 +1410,7 @@ public class GetFeature {
                 // might be reported in teh acapabilitis document, using
                 // INteger.MAX_VALUE will result in stack overflow... for now
                 // we just use 10
-                traverseXlinkDepth = new Integer(2);
+                traverseXlinkDepth = Integer.valueOf(2);
             } else {
                 // not wildcard case, throw original exception
                 throw nfe;
@@ -1425,6 +1440,7 @@ public class GetFeature {
         return meta;
     }
 
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     List<List<String>> parsePropertyNames(Query query, List<FeatureTypeInfo> featureTypes) {
         List<List<String>> propNames = new ArrayList();
         for (FeatureTypeInfo featureType : featureTypes) {

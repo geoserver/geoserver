@@ -121,9 +121,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
         private void encodeProperty(Feature f, Property p) {
             if (p.getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
                 encodeSimpleLiteral(p);
-            } else if (CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
-                // skip it for the moment, it is constrained to be last
-            } else {
+            } else if (!CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
                 throw new IllegalArgumentException(
                         "Don't know how to encode property " + p + " in record " + f);
             }

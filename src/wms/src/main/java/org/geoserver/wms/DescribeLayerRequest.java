@@ -83,7 +83,7 @@ public class DescribeLayerRequest extends WMSRequest {
         return outputFormat;
     }
 
-    /** @param infoFormat The describeFormat to set. */
+    /** @param outputFormat The describeFormat to set. */
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
     }

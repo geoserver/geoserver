@@ -48,7 +48,6 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * Description ...
      *
      * @param lock
-     * @throws UnsupportedOperationException DOCUMENT ME!
      * @see
      *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
      */
@@ -60,14 +59,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param query DOCUMENT ME!
-     * @return DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     * @throws DataSourceException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures(Query query) throws IOException {
         if (source instanceof FeatureLocking) {
             return ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).lockFeatures(query);
@@ -79,11 +71,11 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     //    /**
     //     * A custom hack for PostgisFeatureLocking?
     //     *
-    //     * @param feature DOCUMENT ME!
+
     //     *
-    //     * @return DOCUMENT ME!
+
     //     *
-    //     * @throws IOException DOCUMENT ME!
+
     //     */
     //    public int lockFeature(Feature feature) throws IOException {
     //        if (source instanceof PostgisFeatureLocking) {
@@ -93,44 +85,24 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     //        throw new IOException("FeatureTypeConfig does not support single FeatureLock");
     //    }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param filter DOCUMENT ME!
-     * @return DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 
         return locking().lockFeatures(filter);
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures() throws IOException {
         return locking().lockFeatures();
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public void unLockFeatures() throws IOException {
         locking().lockFeatures();
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param filter DOCUMENT ME!
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public void unLockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 

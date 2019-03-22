@@ -48,7 +48,6 @@ import org.geotools.renderer.style.IconStyle2D;
 import org.geotools.renderer.style.MarkStyle2D;
 import org.geotools.renderer.style.Style2D;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.referencing.FactoryException;
@@ -184,8 +183,8 @@ public class PDFMapResponse extends AbstractMapResponse {
             // we already do everything that the optimized data loading does...
             // if we set it to true then it does it all twice...
             java.util.Map rendererParams = new HashMap();
-            rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-            rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+            rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
+            rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
             // we need the renderer to draw everything on the batik provided graphics object
             rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
             // render everything in vector form if possible
@@ -198,8 +197,6 @@ public class PDFMapResponse extends AbstractMapResponse {
                     mapContent.getRendererScaleMethod());
 
             renderer.setRendererHints(rendererParams);
-
-            Envelope dataArea = mapContent.getRenderingArea();
 
             // enforce no more than x rendering errors
             int maxErrors = wms.getMaxRenderingErrors();

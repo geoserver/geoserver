@@ -97,7 +97,7 @@ public class GetMap {
      *   <li>request.getStyles().length == request.getLayers().size()
      * </ul>
      *
-     * @param req a {@link GetMapRequest}
+     * @param request a {@link GetMapRequest}
      * @throws ServiceException if an error occurs creating the map from the provided request
      */
     public WebMap run(GetMapRequest request) throws ServiceException {
@@ -907,7 +907,6 @@ public class GetMap {
                         FeatureTypeConstraint featureTypeConstraint = featureTypeConstraints[j];
                         filters.add(featureTypeConstraint.getFilter());
                     }
-                    ;
                     combined = ff.and(combined, ff.and(filters));
                 }
                 combinedList[i] = combined;

@@ -104,11 +104,10 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 new PropertyModel<String>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
         List<String> providers =
-                new ArrayList<String>(
+                new ArrayList<>(
                         Arrays.asList(applicationContext.getBeanNamesForType(LockProvider.class)));
         providers.remove("lockProvider"); // remove the global lock provider
         Collections.sort(providers);
-        ;
 
         DropDownChoice<String> lockProviderChoice =
                 new Select2DropDownChoice<>(

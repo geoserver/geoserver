@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.RequestBaseType;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
@@ -58,7 +59,10 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
                 String prefix = (String) declaredPrefixes.nextElement();
                 if (!"xml".equalsIgnoreCase(prefix)) {
                     String uri = ns.getURI(prefix);
-                    addAttribute(attributes, prefix == "" ? "xmlns" : "xmlns:" + prefix, uri);
+                    addAttribute(
+                            attributes,
+                            StringUtils.isBlank(prefix) ? "xmlns" : "xmlns:" + prefix,
+                            uri);
                 }
             }
             addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");

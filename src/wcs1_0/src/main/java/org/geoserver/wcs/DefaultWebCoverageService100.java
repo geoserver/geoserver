@@ -63,6 +63,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.util.CRSUtilities;
 import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.Filter;
@@ -385,7 +386,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (elevationDimension != null
                     && elevationDimension.isEnabled()
                     && dimensions.hasElevation()) {
-                List<Double> elevations = new ArrayList<Double>();
+                List<Object> elevations = new ArrayList<Object>();
                 // extract elevation values
                 List axisSubset = null;
                 if (request.getRangeSubset() != null) {
@@ -396,29 +397,17 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
                             String axisName = axis.getName();
                             if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                                if (axis.getSingleValue().size() > 0) {
-                                    for (int s = 0; s < axis.getSingleValue().size(); s++) {
-                                        elevations.add(
-                                                Double.parseDouble(
-                                                        ((TypedLiteralType)
-                                                                        axis.getSingleValue()
-                                                                                .get(s))
-                                                                .getValue()));
-                                    }
-                                } else if (axis.getInterval().size() > 0) {
-                                    IntervalType interval =
-                                            (IntervalType) axis.getInterval().get(0);
-                                    int min = Integer.parseInt(interval.getMin().getValue());
-                                    int max = Integer.parseInt(interval.getMax().getValue());
-                                    int res =
-                                            (interval.getRes() != null
-                                                    ? Integer.parseInt(interval.getRes().getValue())
-                                                    : 1);
-
-                                    int count = (int) (Math.floor(max - min) / res + 1);
-                                    for (int b = 0; b < count; b++) {
-                                        elevations.add(new Double(min + b * res));
-                                    }
+                                // grab the elevation values
+                                for (Object object : axis.getSingleValue()) {
+                                    TypedLiteralType value = (TypedLiteralType) object;
+                                    elevations.add(Double.parseDouble(value.getValue()));
+                                }
+                                // grab the elevation intervals
+                                for (Object object : axis.getInterval()) {
+                                    IntervalType interval = (IntervalType) object;
+                                    double min = Double.parseDouble(interval.getMin().getValue());
+                                    double max = Double.parseDouble(interval.getMax().getValue());
+                                    elevations.add(NumberRange.create(min, max));
                                 }
                             }
                         }
@@ -448,9 +437,15 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     AxisSubsetType axis = (AxisSubsetType) axisSubset.get(i);
                     String axisName = axis.getName();
                     if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
+                        String key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName;
                         Object dimInfo =
                                 meta.getMetadata()
-                                        .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName);
+                                        .entrySet()
+                                        .stream()
+                                        .filter(e -> e.getKey().equalsIgnoreCase(key))
+                                        .findFirst()
+                                        .map(e -> e.getValue())
+                                        .orElse(null);
                         axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
@@ -608,9 +603,14 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // compute intersection envelope to be used
             GeneralEnvelope destinationEnvelope =
-                    (GeneralEnvelope)
-                            getHorizontalEnvelope(
-                                    computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope));
+                    computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope);
+            if (destinationEnvelope == null) {
+                throw new WcsException(
+                        "The request bbox is outside of the coverage area",
+                        InvalidParameterValue,
+                        "bbox");
+            }
+            destinationEnvelope = (GeneralEnvelope) getHorizontalEnvelope(destinationEnvelope);
             if (targetCRS != null) {
                 destinationEnvelope = CRS.transform(destinationEnvelope, targetCRS);
                 destinationEnvelope.setCoordinateReferenceSystem(targetCRS);
@@ -692,7 +692,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // the coverage crs or the request bbox can be reprojected to that
             // crs
             //
-            MathTransform destinationToSourceTransform = null;
             // STEP 1: reproject requested BBox to native CRS if needed
             if (!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
                 retVal = CRS.transform(getHorizontalEnvelope(requestedEnvelope), nativeCRS);
@@ -965,28 +964,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                             "Invalid values for axis " + axisSubset.getName(),
                             InvalidParameterValue,
                             "AxisSubset");
-            } else if (axisSubset.getName().equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                double[] elevations = null;
-                if (axisSubset.getSingleValue().size() > 0) {
-                    elevations = new double[axisSubset.getSingleValue().size()];
-                    for (int s = 0; s < axisSubset.getSingleValue().size(); s++) {
-                        elevations[s] =
-                                Double.parseDouble(
-                                        ((TypedLiteralType) axisSubset.getSingleValue().get(s))
-                                                .getValue());
-                    }
-                } else if (axisSubset.getInterval().size() > 0) {
-                    IntervalType interval = (IntervalType) axisSubset.getInterval().get(0);
-                    int min = Integer.parseInt(interval.getMin().getValue());
-                    int max = Integer.parseInt(interval.getMax().getValue());
-                    int res =
-                            (interval.getRes() != null
-                                    ? Integer.parseInt(interval.getRes().getValue())
-                                    : 1);
-
-                    elevations = new double[(int) (Math.floor(max - min) / res + 1)];
-                    for (int b = 0; b < elevations.length; b++) elevations[b] = (min + b * res);
-                }
             }
         }
     }

@@ -99,10 +99,9 @@ public class SelectionGroupRemovalLink extends AjaxLink<Object> {
                                     ugStore.store();
                                 } catch (IOException ex) {
                                     try {
-                                        ugStore.load();
+                                        if (ugStore != null) ugStore.load();
                                     } catch (IOException ex2) {
                                     }
-                                    ;
                                     throw new RuntimeException(ex);
                                 }
 
@@ -127,10 +126,9 @@ public class SelectionGroupRemovalLink extends AjaxLink<Object> {
                                         gaStore.store();
                                     } catch (IOException ex) {
                                         try {
-                                            gaStore.load();
+                                            if (gaStore != null) gaStore.load();
                                         } catch (IOException ex2) {
                                         }
-                                        ;
                                         throw new RuntimeException(ex);
                                     }
                                 }

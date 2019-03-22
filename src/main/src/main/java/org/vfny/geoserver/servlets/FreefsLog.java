@@ -23,14 +23,7 @@ public class FreefsLog extends HttpServlet {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
-    /** Default name for configuration directory */
-    private static final String CONFIG_DIR = "data/";
-
-    /**
-     * Initializes logging and config.
-     *
-     * @throws ServletException DOCUMENT ME!
-     */
+    /** Initializes logging and config. */
     public void init() throws ServletException {
         // configure log4j, since console logging is configured elsewhere
         // we deny all logging, this is really just to prevent log4j

@@ -79,12 +79,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ImportJSONWriter {
 
-    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-    static {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-
     Importer importer;
 
     private Callback callback;
@@ -643,7 +637,7 @@ public class ImportJSONWriter {
                 if (sf instanceof Granule) {
                     Granule g = (Granule) sf;
                     if (g.getTimestamp() != null) {
-                        json.key("timestamp").value(DATE_FORMAT.format(g.getTimestamp()));
+                        json.key("timestamp").value(getISODateFormat().format(g.getTimestamp()));
                     }
                 }
             }
@@ -885,5 +879,11 @@ public class ImportJSONWriter {
     /** @param callback the callback to set */
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    private SimpleDateFormat getISODateFormat() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return format;
     }
 }

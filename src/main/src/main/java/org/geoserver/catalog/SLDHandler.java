@@ -114,7 +114,7 @@ public class SLDHandler extends StyleHandler {
 
     @Override
     public String mimeType(Version version) {
-        if (version != null && VERSION_11.equals(version)) {
+        if (version != null && version.equals(VERSION_11)) {
             return MIMETYPE_11;
         }
         return MIMETYPE_10;
@@ -320,10 +320,6 @@ public class SLDHandler extends StyleHandler {
             reader = RequestUtils.getBufferedXMLReader((InputStream) input, XML_LOOKAHEAD);
         } else {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
-        }
-
-        if (!reader.ready()) {
-            return null;
         }
 
         String version;

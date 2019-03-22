@@ -90,7 +90,6 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
             if (ROLE_NAME.endsWith(localName)) {
                 if (inSecRoleRef) roleName = currentValue.trim();
                 if (inAuthConstraint) inAuthConstraintRoles.add(currentValue.trim());
-                ;
                 if (inSecRole) inSecRoleRoles.add(currentValue.trim());
             }
 

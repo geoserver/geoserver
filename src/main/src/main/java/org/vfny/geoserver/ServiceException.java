@@ -62,10 +62,10 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses");
 
     /** message inserted by GeoServer as to what it thinks happened */
-    protected String preMessage = new String();
+    protected String preMessage = "";
 
     /** full classpath of originating GeoServer class */
-    protected String locator = new String();
+    protected String locator = "";
 
     /** Empty constructor. */
     public ServiceException() {
@@ -118,8 +118,6 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
     }
 
     /**
-     * DOCUMENT ME!
-     *
      * @param e The message for the .
      * @param preMessage The message to tack on the front.
      * @param locator The message for the .
@@ -137,12 +135,7 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
         this.preMessage = e.preMessage;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param testString DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** */
     protected boolean isEmpty(String testString) {
         return (testString == null) || testString.equals("");
     }
@@ -151,12 +144,7 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
         return locator;
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param printStackTrace DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** */
 
     // public String getXmlResponse() {
     //	return getXmlResponse(true);
@@ -174,7 +162,6 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      *     it faster.
      */
     public String getXmlMessage(boolean printStackTrace) {
-        String indent = "   ";
         StringBuffer mesg = new StringBuffer();
 
         // this distinction no longer so much applies, as we don't always
@@ -213,7 +200,6 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      * Return request type.
      *
      * @param printStackTrace whether the stack trace should be included.
-     * @param request DOCUMENT ME!
      * @return The ServiceExceptionReport of this error.
      * @task REVISIT: Our error handling should actually have knowledge of the app configuration, so
      *     that we can set the ogc error report to validate right (reference our own schema), and to

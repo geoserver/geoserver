@@ -191,7 +191,7 @@ public class RateFlowController implements FlowController {
         if (counters.size() > COUNTERS_CLEANUP_THRESHOLD
                 && (elapsed > (timeInterval) || (elapsed > 10000))) {
             int cleanupCount = 0;
-            synchronized (counters) {
+            synchronized (this) {
                 for (Map.Entry<String, Counter> entry : counters.entrySet()) {
                     Counter c = entry.getValue();
                     long timePeriodId = c.getTimePeriodId();

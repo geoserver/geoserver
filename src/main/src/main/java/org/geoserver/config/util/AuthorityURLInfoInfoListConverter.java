@@ -54,7 +54,7 @@ public class AuthorityURLInfoInfoListConverter {
     }
 
     /**
-     * @param list the list of layer identifiers to serialize
+     * @param obj the list of layer identifiers to serialize
      * @return {@code null} if {@code list} is null, empty or contains only null objects; the JSON
      *     array representation of {@code list} otherwise, with any null element stripped off.
      */

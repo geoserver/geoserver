@@ -832,7 +832,7 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
                 GeometryOperand.get("http://www.opengis.net/gml", "Polygon")
             };
 
-    SpatialOperators spatialOperands = new SpatialOperatorsImpl();
+    volatile SpatialOperators spatialOperands = new SpatialOperatorsImpl();
 
     List<GeometryOperand> geometryOperands = new LinkedList<GeometryOperand>();
 
@@ -889,18 +889,21 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
 
     @Override
     public SpatialOperatorsImpl getSpatialOperators() {
-        synchronized (spatialOperands) {
-            if (spatialOperands == null
-                    || spatialOperands.getOperators() == null
-                    || spatialOperands.getOperators().size() == 0) {
-                spatialOperands = new SpatialOperatorsImpl();
+        if (spatialOperands == null
+                || spatialOperands.getOperators() == null
+                || spatialOperands.getOperators().size() == 0) {
+            synchronized (this) {
+                if (spatialOperands == null
+                        || spatialOperands.getOperators() == null
+                        || spatialOperands.getOperators().size() == 0) {
+                    spatialOperands = new SpatialOperatorsImpl();
 
-                for (SpatialOperator operator : spatialOperators) {
-                    if (((SpatialOperatorsImpl) spatialOperands).getOperators() == null) {
-                        ((SpatialOperatorsImpl) spatialOperands)
-                                .setOperators(new HashSet<SpatialOperator>());
+                    for (SpatialOperator operator : spatialOperators) {
+                        if ((spatialOperands).getOperators() == null) {
+                            ((SpatialOperatorsImpl) spatialOperands).setOperators(new HashSet<>());
+                        }
+                        (spatialOperands).getOperators().add(operator);
                     }
-                    ((SpatialOperatorsImpl) spatialOperands).getOperators().add(operator);
                 }
             }
         }
@@ -922,4 +925,4 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
             }
         };
     }
-};
+}

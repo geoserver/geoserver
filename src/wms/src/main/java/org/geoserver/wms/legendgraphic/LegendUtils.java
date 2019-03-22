@@ -5,10 +5,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -38,6 +35,7 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.geotools.util.SuppressFBWarnings;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -135,9 +133,6 @@ public class LegendUtils {
 
     /** default legend graphic layout is vertical */
     private static final LegendLayout DEFAULT_LAYOUT = LegendLayout.VERTICAL;
-
-    /** default group legend graphic layout is vertical */
-    private static final LegendLayout DEFAULT_GROUPLAYOUT = LegendLayout.VERTICAL;
 
     /** default column height is not limited */
     private static final int DEFAULT_COLUMN_HEIGHT = 0;
@@ -458,7 +453,9 @@ public class LegendUtils {
             opacity = ExpressionExtractor.extractCqlExpressions(opacityExp);
             opacityValue = opacity.evaluate(null, Double.class);
         }
-        if ((opacityValue.doubleValue() - 1) > 0 || opacityValue.doubleValue() < 0) {
+        if (opacityValue == null
+                || (opacityValue.doubleValue() - 1) > 0
+                || opacityValue.doubleValue() < 0) {
             throw new IllegalArgumentException(
                     Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "Opacity", opacityValue));
         }
@@ -493,6 +490,10 @@ public class LegendUtils {
      * @return the {@link Color} out of this {@link ColorMapEntry}.
      * @throws NumberFormatException in case the color string is badly formatted.
      */
+    @SuppressFBWarnings({
+        "NP_NULL_ON_SOME_PATH",
+        "NP_NULL_PARAM_DEREF"
+    }) // SP does not recognize the check in ensureNotNull
     public static Color color(final ColorMapEntry entry) {
         ensureNotNull(entry, "entry");
         Expression color = entry.getColor();
@@ -513,6 +514,7 @@ public class LegendUtils {
      *     part.
      * @return the quantity part for the provided {@link ColorMapEntry}.
      */
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // SP does not recognize the check in ensureNotNull
     public static double getQuantity(final ColorMapEntry entry) {
         ensureNotNull(entry, "entry");
         Expression quantity = entry.getQuantity();
@@ -525,6 +527,22 @@ public class LegendUtils {
         }
         ensureNotNull(quantityString, "quantityString");
         return quantityString.doubleValue();
+    }
+
+    /**
+     * Extracts the label part from the provided {@link ColorMapEntry}.
+     *
+     * @param entry the provided {@link ColorMapEntry} from which we should extract the label part.
+     * @return the label part for the provided {@link ColorMapEntry}.
+     */
+    public static String getLabel(final ColorMapEntry entry) {
+        ensureNotNull(entry, "entry");
+        String labelString = entry.getLabel();
+        if (labelString != null && labelString.startsWith("${")) {
+            Expression label = ExpressionExtractor.extractCqlExpressions(labelString);
+            labelString = label.evaluate(null, String.class);
+        }
+        return labelString;
     }
 
     /**
@@ -577,10 +595,9 @@ public class LegendUtils {
      */
     public static boolean isWithInScale(final Rule r, final double scaleDenominator) {
         return (scaleDenominator == -1)
-                || (((r.getMinScaleDenominator() - BufferedImageLegendGraphicBuilder.TOLERANCE)
+                || (((r.getMinScaleDenominator() - LegendGraphicBuilder.TOLERANCE)
                                 <= scaleDenominator)
-                        && ((r.getMaxScaleDenominator()
-                                        + BufferedImageLegendGraphicBuilder.TOLERANCE)
+                        && ((r.getMaxScaleDenominator() + LegendGraphicBuilder.TOLERANCE)
                                 > scaleDenominator));
     }
 

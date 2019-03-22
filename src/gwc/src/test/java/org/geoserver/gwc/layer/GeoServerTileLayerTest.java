@@ -130,6 +130,7 @@ public class GeoServerTileLayerTest {
     @After
     public void tearDown() throws Exception {
         GWC.set(null);
+        Dispatcher.REQUEST.remove();
     }
 
     @Before

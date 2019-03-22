@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms;
 
+import java.util.Objects;
+
 /**
  * Cache configuration object for WMS remote styles. Allows enabling the cache and setting the size,
  * in terms of entries and single entry size.
@@ -80,6 +82,11 @@ public class CacheConfiguration implements Cloneable {
                     && other.maxEntrySize == maxEntrySize;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enabled, maxEntries, maxEntrySize);
     }
 
     public Object clone() {

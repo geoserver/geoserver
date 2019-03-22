@@ -74,7 +74,7 @@ public class WPSExecutionManager
     private WPSResourceManager resourceManager;
 
     /** The classes that will actually run the process once the inputs are parsed */
-    private List<ProcessManager> processManagers;
+    private volatile List<ProcessManager> processManagers;
 
     /** Objects listening to the process lifecycles */
     private List<ProcessListener> listeners;
@@ -141,9 +141,8 @@ public class WPSExecutionManager
      * Process submission, not blocking. Returns an id that can be used to get the process status
      * and result later.
      *
-     * @param ExecuteType The request to be executed
-     * @param inputs The process inputs
-     * @return The execution id
+     * @param request The request to be executed
+     * @return The execution response
      * @throws ProcessException
      */
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
@@ -152,7 +151,7 @@ public class WPSExecutionManager
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);
-        LazyInputMap inputs = request.getProcessInputs(WPSExecutionManager.this);
+        LazyInputMap inputs = request.getProcessInputs(this);
         request.validateOutputs(inputs);
         ExecutionStatus status =
                 new ExecutionStatus(processName, executionId, request.isAsynchronous());
@@ -307,9 +306,9 @@ public class WPSExecutionManager
         if (event instanceof ContextRefreshedEvent) {
             if (executors == null) {
                 executors = Executors.newCachedThreadPool();
-            } else if (event instanceof ContextClosedEvent) {
-                executors.shutdownNow();
             }
+        } else if (event instanceof ContextClosedEvent) {
+            executors.shutdownNow();
         }
     }
 

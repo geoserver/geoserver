@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.logging.Logger;
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.geoserver.wms.legendgraphic.Cell.ClassesEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
@@ -45,9 +44,6 @@ import org.geotools.styling.SelectedChannelType;
  */
 @SuppressWarnings("deprecation")
 public class ColorMapLegendCreator {
-
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(ColorMapLegendCreator.class);
 
     /**
      * Builder class for building a {@link ColorMapLegendCreator}.
@@ -296,8 +292,8 @@ public class ColorMapLegendCreator {
          * Sets the {@link ColorMapType} for this legend builder in order to instruct it on how to
          * build the legend.
          *
-         * @param colorMapType a int representing a {@link ColorMapType} for this legend builder in
-         *     order to instruct it on how to build the legend.
+         * @param type a int representing a {@link ColorMapType} for this legend builder in order to
+         *     instruct it on how to build the legend.
          */
         public void setColorMapType(final int type) {
             this.colorMapType = ColorMapType.create(type);

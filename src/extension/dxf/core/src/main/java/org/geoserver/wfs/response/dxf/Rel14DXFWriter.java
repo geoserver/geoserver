@@ -396,7 +396,6 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
             throws IOException {
         LOGGER.warning("Rel14DXFWriter.writeAttributeDefinitionBlocks");
         for (FeatureCollection coll : featureList) {
-            String fid = coll.hashCode() + "";
 
             // consider only items cached to be treated as
             // blocks (by the previous block_record analysis)

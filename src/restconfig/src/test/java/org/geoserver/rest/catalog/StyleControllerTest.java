@@ -298,6 +298,22 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testPostAsSLD11() throws Exception {
+        String xml = newSLD11XML();
+
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/styles", xml, SLDHandler.MIMETYPE_11);
+        assertEquals(201, response.getStatus());
+        assertNotNull(response.getHeader("Location"));
+        assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
+
+        final StyleInfo style = catalog.getStyleByName("foo");
+        assertNotNull(style);
+        assertNotNull(style.getSLD());
+    }
+
+    @Test
     public void testPostExternalEntityAsSLD() throws Exception {
         String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
 
@@ -329,6 +345,31 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
         GeoServerResourceLoader rl = getResourceLoader();
         assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
+    }
+
+    @Test
+    public void testPostAsSLD11ToWorkspace() throws Exception {
+        assertNull(catalog.getStyleByName("gs", "foo"));
+
+        String xml = newSLD11XML();
+
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/workspaces/gs/styles",
+                        xml,
+                        SLDHandler.MIMETYPE_11);
+        assertEquals(201, response.getStatus());
+        assertNotNull(response.getHeader("Location"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/styles/foo"));
+
+        assertNotNull(catalog.getStyleByName("gs", "foo"));
+
+        GeoServerResourceLoader rl = getResourceLoader();
+        assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
+
+        final StyleInfo styleInfo = catalog.getStyleByName("gs:foo");
+        assertNotNull(styleInfo);
+        assertNotNull(styleInfo.getSLD());
     }
 
     @Test

@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.geometry.GeneralEnvelope;
@@ -36,8 +35,6 @@ import org.opengis.referencing.operation.TransformException;
  * @version $Id: CoverageStoreUtils.java,v 1.12 2004/09/21 21:14:48 cholmesny Exp $
  */
 public final class CoverageStoreUtils {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(CoverageStoreUtils.class.toString());
     public static final Format[] formats = GridFormatFinder.getFormatArray();
 
     private CoverageStoreUtils() {}
@@ -62,24 +59,12 @@ public final class CoverageStoreUtils {
         }
     }
 
-    /**
-     * Utility method for finding Params
-     *
-     * @param factory DOCUMENT ME!
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** Utility method for finding Params */
     public static ParameterValue find(Format format, String key) {
         return find(format.getReadParameters(), key);
     }
 
-    /**
-     * Utility methods for find param by key
-     *
-     * @param params DOCUMENT ME!
-     * @param key DOCUMENT ME!
-     * @return DOCUMENT ME!
-     */
+    /** Utility methods for find param by key */
     public static ParameterValue find(ParameterValueGroup params, String key) {
         List list = params.values();
         Iterator it = list.iterator();
@@ -228,7 +213,6 @@ public final class CoverageStoreUtils {
      * @param factory
      * @param params
      * @return Map with real values that may be acceptable to GDSFactory
-     * @throws IOException DOCUMENT ME!
      */
     public static Map toParams(GridFormatFactorySpi factory, Map params) throws IOException {
         final Map map = new HashMap(params.size());

@@ -65,6 +65,45 @@ public class CollectionTest extends WFS3TestSupport {
     }
 
     @Test
+    public void testCollectionVirtualWorkspace() throws Exception {
+        String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
+        DocumentContext json = getAsJSONPath("cite/wfs3/collections/" + roadSegments, 200);
+
+        assertEquals("RoadSegments", json.read("$.name", String.class));
+        assertEquals("RoadSegments", json.read("$.title", String.class));
+
+        // check we have the expected number of links and they all use the right "rel" relation
+        List<String> formats =
+                DefaultWebFeatureService30.getAvailableFormats(FeatureCollectionResponse.class);
+        assertThat(
+                (int) json.read("$.links.length()", Integer.class),
+                Matchers.greaterThanOrEqualTo(formats.size()));
+        for (String format : formats) {
+            // check title and rel.
+            List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
+            Map item = (Map) items.get(0);
+            assertEquals("RoadSegments items as " + format, item.get("title"));
+            assertEquals("item", item.get("rel"));
+        }
+        // the WFS3 specific GML3.2 output format is available
+        assertNotNull(json.read("$.links[?(@.type=='" + GML32WFS3OutputFormat.FORMAT + "')]"));
+
+        // tiling scheme extension
+        Map tilingScheme = (Map) json.read("links[?(@.rel=='tilingScheme')]", List.class).get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/wfs3/collections/"
+                        + roadSegments
+                        + "/tiles/{tilingSchemeId}",
+                tilingScheme.get("href"));
+        Map tiles = (Map) json.read("links[?(@.rel=='tiles')]", List.class).get(0);
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/wfs3/collections/"
+                        + roadSegments
+                        + "/tiles/{tilingSchemeId}/{level}/{row}/{col}",
+                tiles.get("href"));
+    }
+
+    @Test
     public void testCollectionsXML() throws Exception {
         Document dom =
                 getAsDOM(
@@ -87,6 +126,6 @@ public class CollectionTest extends WFS3TestSupport {
                         "wfs3/collections/"
                                 + getEncodedName(MockData.ROAD_SEGMENTS)
                                 + "?f=application/x-yaml");
-        System.out.println(yaml);
+        // System.out.println(yaml);
     }
 }

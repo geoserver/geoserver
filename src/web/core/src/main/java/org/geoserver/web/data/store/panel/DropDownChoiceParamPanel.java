@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 
 /** A DataStore parameter panel that presents a dropdown choice */
 public class DropDownChoiceParamPanel extends Panel implements ParamPanel {
@@ -40,7 +41,7 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel {
         Label label = new Label("paramName", paramLabelModel.getObject() + requiredMark);
         add(label);
 
-        choice = new DropDownChoice<>("paramValue", paramValue, options);
+        choice = new Select2DropDownChoice<>("paramValue", paramValue, options);
         choice.setRequired(required);
         if (!required) {
             choice.setNullValid(true);

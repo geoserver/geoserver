@@ -6,6 +6,7 @@
 package org.geoserver.wms;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -13,7 +14,6 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Wrapper;
@@ -128,9 +128,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
                 List<String> styleNames = (List) baseMap.get("baseMapStyles");
                 if (styleNames.isEmpty()) {
                     // use defaults
-                    for (PublishedInfo l : bm.getLayers()) {
-                        bm.getStyles().add(null);
-                    }
+                    bm.getStyles().addAll(Collections.nCopies(bm.getLayers().size(), null));
                 } else {
                     for (int i = 0; i < styleNames.size(); i++) {
                         String styleName = styleNames.get(i);

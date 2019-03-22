@@ -23,6 +23,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.config.GeoServerReinitializer;
 import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
@@ -62,7 +63,7 @@ import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
  * @author groldan
  * @see GeoServerInitializer
  */
-public class GWCInitializer implements GeoServerInitializer {
+public class GWCInitializer implements GeoServerReinitializer {
 
     private static final Logger LOGGER = Logging.getLogger(GWCInitializer.class);
 

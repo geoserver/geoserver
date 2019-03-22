@@ -28,5 +28,71 @@
     <sequence minOccurs="0" maxOccurs="unbounded">
       <element ref="gml:AbstractTimeObject" />
     </sequence>
+    <attribute name="default"/>
+  </complexType>
+
+  <element name="ElevationDomain" type="wcsgs:ElevationDomainType">
+    <annotation>
+      <documentation>A description of the elevation domain for this coverage
+      </documentation>
+    </annotation>
+  </element>
+  <complexType name="ElevationDomainType">
+    <choice minOccurs="0" maxOccurs="unbounded">
+      <element ref="wcsgs:SingleValue" />
+      <element ref="wcsgs:Range" />
+    </choice>
+    <attribute name="uom" />
+    <attribute name="default" />
+  </complexType>
+
+  <element name="DimensionDomain" type="wcsgs:DimensionDomainType">
+    <annotation>
+      <documentation>A description of a custom domain for this coverage
+      </documentation>
+    </annotation>
+  </element>
+  <complexType name="DimensionDomainType">
+    <choice minOccurs="0" maxOccurs="unbounded">
+      <element ref="gml:AbstractTimeObject" />
+      <element ref="wcsgs:SingleValue" />
+      <element ref="wcsgs:Range" />
+    </choice>
+    <attribute name="name" />
+    <attribute name="uom" />
+    <attribute name="default" />
+  </complexType>
+
+  <element name="SingleValue" type="string">
+    <annotation>
+      <documentation>A non-temporal dimension value
+      </documentation>
+    </annotation>
+  </element>
+  <element name="Range" type="wcsgs:RangeType">
+    <annotation>
+      <documentation>A non-temporal dimension range
+      </documentation>
+    </annotation>
+  </element>
+  <complexType name="RangeType">
+    <sequence>
+      <element name="start" type="string" />
+      <element name="end" type="string" />
+      <element ref="wcsgs:Interval" minOccurs="0" />
+    </sequence>
+  </complexType>
+  <element name="Interval" type="wcsgs:IntervalType">
+    <annotation>
+      <documentation>The discrete interval of a non-temporal dimension range
+      </documentation>
+    </annotation>
+  </element>
+  <complexType name="IntervalType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="unit" />
+      </extension>
+    </simpleContent>
   </complexType>
 </schema>

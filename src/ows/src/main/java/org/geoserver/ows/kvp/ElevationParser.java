@@ -7,6 +7,7 @@ package org.geoserver.ows.kvp;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -128,7 +129,8 @@ public class ElevationParser {
                         checkMaxElevations(values, maxValues);
                     }
                 } else {
-                    throw new ParseException("Invalid elevation parameter: " + period, 0);
+                    throw new ParseException(
+                            "Invalid elevation parameter: " + Arrays.toString(period), 0);
                 }
             }
             checkMaxElevations(values, maxValues);

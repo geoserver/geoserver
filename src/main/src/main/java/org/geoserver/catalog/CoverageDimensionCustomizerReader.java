@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.measure.format.ParserException;
 import javax.media.jai.ImageLayout;
@@ -42,7 +41,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.factory.Hints;
-import org.geotools.util.logging.Logging;
 import org.opengis.coverage.ColorInterpretation;
 import org.opengis.coverage.PaletteInterpretation;
 import org.opengis.coverage.SampleDimension;
@@ -68,8 +66,6 @@ import tec.uom.se.format.SimpleUnitFormat;
  * @author Daniele Romagnoli - GeoSolutions SAS
  */
 public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
-
-    private static Logger LOGGER = Logging.getLogger(CoverageDimensionCustomizerReader.class);
 
     static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
@@ -296,7 +292,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                         .contains(AbstractGridFormat.BANDS)) {
             return null;
         }
-        ;
 
         // lookup the bands if possible
         if (parameters != null) {
@@ -909,34 +904,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             } else {
                 return sampleDim.toString();
             }
-        }
-
-        private void parseUOM(StringBuilder label, Unit uom) {
-            String uomString = uom.toString();
-            uomString = uomString.replaceAll("\u00B2", "^2");
-            uomString = uomString.replaceAll("\u00B3", "^3");
-            uomString = uomString.replaceAll("\u212B", "A");
-            uomString = uomString.replaceAll("�", "");
-            label.append(uomString);
-        }
-
-        private void buildDescription() {
-            StringBuilder label = new StringBuilder("GridSampleDimension".intern());
-            final Unit uom = sampleDim.getUnits();
-
-            String uName = name.toUpperCase();
-            if (uom != null) {
-                label.append("(".intern());
-                parseUOM(label, uom);
-                label.append(")".intern());
-            }
-
-            label.append("[".intern());
-            label.append(getMinimumValue());
-            label.append(",".intern());
-            label.append(getMaximumValue());
-            label.append("]".intern());
-            configuredDescription = new SimpleInternationalString(label.toString());
         }
     }
 

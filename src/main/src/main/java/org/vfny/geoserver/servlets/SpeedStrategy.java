@@ -27,7 +27,6 @@ public class SpeedStrategy implements ServiceStrategy {
         return "SPEED";
     }
 
-    /** DOCUMENT ME! */
     private OutputStream out = null;
 
     /**

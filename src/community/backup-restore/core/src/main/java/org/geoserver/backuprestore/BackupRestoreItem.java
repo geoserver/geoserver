@@ -39,6 +39,7 @@ import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -49,6 +50,8 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
+import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
+import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
@@ -514,6 +517,18 @@ public abstract class BackupRestoreItem<T> {
         return info;
     }
 
+    /**
+     * @param info
+     * @return
+     */
+    private StoreInfo unwrapSecured(StoreInfo info) {
+        if (info instanceof SecuredDataStoreInfo)
+            return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo)
+            return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
+        return info;
+    }
+
     /** @param catalog */
     protected void syncTo(Catalog srcCatalog) {
         // do a manual import
@@ -547,7 +562,7 @@ public abstract class BackupRestoreItem<T> {
                     targetDataStore =
                             (DataStoreInfo)
                                     clone(
-                                            (DataStoreInfo) unwrap(store),
+                                            (DataStoreInfo) unwrap(unwrapSecured(store)),
                                             targetWorkspace,
                                             DataStoreInfo.class);
                     if (targetDataStore != null) {
@@ -588,7 +603,7 @@ public abstract class BackupRestoreItem<T> {
                     targetCoverageStore =
                             (CoverageStoreInfo)
                                     clone(
-                                            (CoverageStoreInfo) unwrap(store),
+                                            (CoverageStoreInfo) unwrap(unwrapSecured(store)),
                                             targetWorkspace,
                                             CoverageStoreInfo.class);
                     if (targetCoverageStore != null) {
@@ -670,8 +685,12 @@ public abstract class BackupRestoreItem<T> {
                 LayerGroupInfo targetLayerGroup = catalog.getLayerGroupByName(lg.getName());
                 if (targetLayerGroup == null) {
                     WorkspaceInfo targetWorkspace =
-                            catalog.getWorkspaceByName(targetLayerGroup.getWorkspace().getName());
+                            lg.getWorkspace() != null
+                                    ? catalog.getWorkspaceByName(lg.getWorkspace().getName())
+                                    : null;
                     targetLayerGroup = clone((LayerGroupInfo) unwrap(lg), targetWorkspace);
+                    catalog.add(targetLayerGroup);
+                    catalog.save(catalog.getLayerGroup(targetLayerGroup.getId()));
                 }
             }
         } catch (Exception e) {
@@ -726,12 +745,12 @@ public abstract class BackupRestoreItem<T> {
             target.setDescription(source.getDescription());
             target.setType(source.getType() != null ? source.getType() : "Shapefile");
 
-            if (source instanceof StoreInfoImpl) {
-                ((StoreInfoImpl) target).setDefault(((StoreInfoImpl) source).isDefault());
-                ((StoreInfoImpl) target)
+            if (source instanceof DataStoreInfoImpl) {
+                ((DataStoreInfoImpl) target).setDefault(((StoreInfoImpl) source).isDefault());
+                ((DataStoreInfoImpl) target)
                         .setConnectionParameters(
-                                ((StoreInfoImpl) source).getConnectionParameters());
-                ((StoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
+                                ((DataStoreInfoImpl) source).getConnectionParameters());
+                ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
 
             if (source instanceof CoverageStoreInfoImpl) {
@@ -887,7 +906,7 @@ public abstract class BackupRestoreItem<T> {
         return target;
     }
 
-    private LayerGroupInfo clone(LayerGroupInfo source, WorkspaceInfo workspace) {
+    protected LayerGroupInfo clone(LayerGroupInfo source, WorkspaceInfo workspace) {
         LayerGroupInfo target = catalog.getFactory().createLayerGroup();
         target.setWorkspace(workspace);
         target.setAbstract(source.getAbstract());

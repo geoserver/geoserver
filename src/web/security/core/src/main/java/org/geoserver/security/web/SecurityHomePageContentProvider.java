@@ -91,7 +91,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             }
 
             // check for default master password
-            boolean visibility = manager.checkMasterPassword(DEFAULT_ADMIN_PASSWD);
+            boolean visibility = manager.checkMasterPassword(DEFAULT_ADMIN_PASSWD, false);
 
             Label label =
                     new Label(
@@ -101,7 +101,6 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             label.setEscapeModelStrings(false);
             add(label);
             Link link = null;
-            ;
             add(
                     link =
                             new Link("mplink") {

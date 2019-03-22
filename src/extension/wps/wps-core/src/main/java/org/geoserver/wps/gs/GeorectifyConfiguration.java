@@ -160,8 +160,6 @@ public class GeorectifyConfiguration implements ApplicationListener {
                         try {
                             cacheMax = (String) props.get(GRKeys.GDAL_CACHEMAX);
                             if (cacheMax != null) {
-                                int gdalCacheMaxMemory =
-                                        Integer.parseInt(cacheMax); // Only for validation
                                 envVariables.put(GRKeys.GDAL_CACHEMAX, cacheMax);
                             }
                         } catch (NumberFormatException nfe) {

@@ -225,7 +225,6 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         if (info != null && info instanceof LayerGroupInfo) {
             LayerGroupInfo lg = (LayerGroupInfo) info;
 
-            LayerGroupHelper layerGroupHelper = new LayerGroupHelper(lg);
             List<LayerInfo> layers = lg.layers();
             List<StyleInfo> styles = lg.styles();
 

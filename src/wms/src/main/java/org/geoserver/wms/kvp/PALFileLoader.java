@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms.kvp;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.IndexColorModel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -61,8 +61,7 @@ class PALFileLoader {
      * for the colormap we area going to create. If this happens we might get very bad behaviour.
      * Note also that if we set this parameter to -1 we'll get an opaque {@link IndexColorModel}.
      *
-     * @param filePath to the aplette file.
-     * @param transparentIndex transparent pixel index (zero-based).
+     * @param file the palette file.
      */
     public PALFileLoader(Resource file) {
         if (file.getType() != Type.RESOURCE)
@@ -72,7 +71,7 @@ class PALFileLoader {
             reader = new BufferedReader(new InputStreamReader(file.in()));
             // header
             boolean loadNext = false;
-            String temp = reader.readLine().trim();
+            String temp = trimNextLine(reader);
             if (temp.equalsIgnoreCase("JASC-PAL")) {
                 if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Found header in palette file");
                 loadNext = true;
@@ -80,7 +79,7 @@ class PALFileLoader {
 
             // version
             if (loadNext) {
-                temp = reader.readLine().trim();
+                temp = trimNextLine(reader);
                 if (temp.equalsIgnoreCase("0100")) {
                     if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Found version in palette file");
                     loadNext = true;
@@ -88,7 +87,7 @@ class PALFileLoader {
             }
 
             // num colors
-            if (loadNext) temp = reader.readLine().trim();
+            if (loadNext) temp = trimNextLine(reader);
 
             this.mapsize = Integer.parseInt(temp);
             if (mapsize > 256 || mapsize <= 0)
@@ -98,7 +97,7 @@ class PALFileLoader {
             final byte colorMap[][] = new byte[3][mapsize < 256 ? mapsize + 1 : mapsize];
             for (int i = 0; i < mapsize; i++) {
                 // get the line
-                temp = reader.readLine().trim();
+                temp = trimNextLine(reader);
 
                 if (temp.startsWith("#")) temp = "0x" + temp.substring(1);
 
@@ -152,6 +151,15 @@ class PALFileLoader {
                     LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
                 }
         }
+    }
+
+    public String trimNextLine(BufferedReader reader) throws IOException {
+        String line = reader.readLine();
+        if (line == null) {
+            throw new IOException(
+                    "Was expecting to get another line, but the end of file was reached, while reading a PAL file");
+        }
+        return line.trim();
     }
 
     public IndexColorModel getIndexColorModel() {

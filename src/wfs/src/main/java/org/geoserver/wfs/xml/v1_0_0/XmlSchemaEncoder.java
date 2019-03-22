@@ -99,7 +99,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     /**
      * Internal method to generate the XML response object, using feature types.
      *
-     * @param wfsRequest The request object.
+     * @param request The request object.
      * @return The XMLSchema describing the features requested.
      * @throws WFSException For any problems.
      */
@@ -195,9 +195,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      *
      * @param prefix the namespace prefix, which must be mapped in the main ConfigInfo, for this
      *     import statement.
-     * @param typeNames a list of all requested typeNames, only those that match the prefix will be
-     *     a part of this import statement.
-     * @param r DOCUMENT ME!
+     * @param infos a list of all requested typeNames, only those that match the prefix will be a
+     *     part of this import statement.
      * @return The namespace element.
      */
     private StringBuffer getNSImport(
@@ -248,10 +247,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * either what's in the schema file, or if it's not there then generates the types from their
      * FeatureTypes. Also appends the global element so that the types can substitute as features.
      *
-     * @param requestedTypes The requested table names.
-     * @param gs DOCUMENT ME!
+     * @param infos The requested table names.
      * @return A string of the types printed.
-     * @throws WFSException DOCUMENT ME!
      * @task REVISIT: We need a way to make sure the extension bases are correct. should likely add
      *     a field to the info.xml in the featureTypes folder, that optionally references an
      *     extension base (should it be same namespace? we could also probably just do an import on
@@ -261,9 +258,9 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      */
     private String generateSpecifiedTypes(FeatureTypeInfo[] infos) {
         // TypeRepository repository = TypeRepository.getInstance();
-        String tempResponse = new String();
+        String tempResponse = "";
 
-        String generatedType = new String();
+        String generatedType = "";
         Set validTypes = new HashSet();
 
         // Loop through requested tables to add element types
@@ -317,7 +314,6 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * Transforms a FeatureTypeInfo into gml, with no headers.
      *
      * @param schema the schema to transform.
-     * @return DOCUMENT ME!
      * @task REVISIT: when this class changes to writing directly to out this can just take a writer
      *     and write directly to it.
      */
@@ -356,22 +352,21 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     /**
      * Adds a feature type object to the final output buffer
      *
-     * @param inputFileName The name of the feature type.
+     * @param inputFile The name of the feature type.
      * @return The string representation of the file containing the schema.
      * @throws WFSException For io problems reading the file.
      */
     public String writeFile(File inputFile) throws IOException {
         LOGGER.finest("writing file " + inputFile);
 
-        String finalOutput = new String();
+        String finalOutput = "";
 
         try {
             // File inputFile = new File(inputFileName);
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] fileBuffer = new byte[inputStream.available()];
-            int bytesRead;
 
-            while ((bytesRead = inputStream.read(fileBuffer)) != -1) {
+            while (inputStream.read(fileBuffer) != -1) {
                 String tempOutput = new String(fileBuffer);
                 finalOutput = finalOutput + tempOutput;
             }

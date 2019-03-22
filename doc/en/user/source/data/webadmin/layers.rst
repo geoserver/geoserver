@@ -31,10 +31,12 @@ Layers can be divided into two types of data: raster and vector. These two forma
    * - .. image:: img/point_icon.png
      - Point
 
+.. _data_webadmin_layers_add_a_layer:
+
 Add a Layer
 -----------
 
-At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers. 
+At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers.
 The green plus button allows you to add a new layer. The red minus button allows you to remove selected layers.
 
 .. figure:: img/data_layers_add_remove.png
@@ -118,7 +120,7 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 * **Native SRS**—Specifies the coordinate system the layer is stored in. Clicking the projection link displays a description of the SRS.
 * **Declared SRS**—Specifies the coordinate system GeoServer publishes to clients
 * **SRS Handling**—Determines how GeoServer should handle projection when the two SRSes differ. Possible values are:
-  
+
   * **Force declared** (default): the declared SRS is forced upon the data, overwriting the native one. This is the default option and normally the best course of action,
     the declared code comes from the EPSG database and has a wealth of extra information in it, starting from a valid EPSG code, an area of validity, a link back in the
     database to find the best transformation steps to other coordinate reference systems should reprojection be required. Use this option when the source has no
@@ -128,10 +130,10 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
     CRS is requested, the reprojection will go directly from native to declared)
   * **Keep native**: this is a setting that should be used in very rare cases. Keeping native means using the declared one in the capabilities documents, but then
     using the native CRS in all othe requests (with no reprojection in between, unless explicitly requested from client). This is particularly problematic if the source
-    is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output). 
-    The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection 
+    is a shapefile, as the PRJ files lack all the extra information provided by the EPSG database (it will for example break WFS 1.1 and 2.0 SRS declarations in GML output).
+    The setting meant to be used in cases where WMS is the primary target, and the native and declared CRSs have very small differences, avoiding on the fly reprojection
     and datum change.
-    
+
 In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native**
 only if you really know what you're doing.
 
@@ -286,7 +288,7 @@ Sets the WFS specific publishing parameters.
 
      The list will be used only for the capabilities document generation, but will not be used to limit the actual target SRS usage in GetFeature requests.
 
-* **Encode coordinates measures**—Checking this setting will cause coordinates measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.  
+* **Encode coordinates measures**—Checking this setting will cause coordinates measures ("M") to be encoded in WFS output formats that support measures. The default (not checked) is to not encode coordinates measures.
 
 WCS Settings
 ^^^^^^^^^^^^
@@ -336,14 +338,14 @@ For each enabled dimension the following configuration options are available:
 
 * **Reference value**—The default value specifier. Only shown for the default value strategies where its used.
 * **Nearest match**—Whether to enable, or not, WMS nearest match support on this dimension. Currently supported only on the time dimension.
-* **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled). 
-  Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to 
+* **Acceptable interval**—A maximum search distance from the specified value (available only when nearest match is enabled).
+  Can be empty (no limit), a single value (symmetric search) or using a ``before/after`` syntax to
   specify an asymmetric search range. Time distances should specified using the ISO period syntax. For example, ``PT1H/PT0H`` allows to search up to one hour before the user specified value,
   but not after.
 
 For time dimension the value must be in ISO 8601 DateTime format ``yyyy-MM-ddThh:mm:ss.SSSZ`` For elevation dimension, the value must be and integer of floating point number.
 
-Only for the "Reference value" strategy, it is also possible to use ranges or times and ranges of elevation, in the form ``fromValue/toValue``. 
+Only for the "Reference value" strategy, it is also possible to use ranges or times and ranges of elevation, in the form ``fromValue/toValue``.
 Only for the "Reference value" strategy, and limited to times, it's also possible to use relative times like ``P1M/PRESENT``, but caution is given that the reference value
 is copied verbatim into the capabilities document, and as a result, not all client might be recognizing that syntax.
 

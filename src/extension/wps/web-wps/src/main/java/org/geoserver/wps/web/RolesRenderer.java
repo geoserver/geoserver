@@ -27,4 +27,4 @@ public class RolesRenderer extends AbstractAutoCompleteRenderer<String> {
     protected String getTextValue(String object) {
         return selectedRoles.toString() + object;
     }
-};
+}

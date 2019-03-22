@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.15-SNAPSHOT</version>
+  <version>2.16-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -33,12 +33,13 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
-   <!--
+   
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <!--
    <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-js</artifactId>
@@ -170,11 +171,13 @@
      <artifactId>gs-gwc-sqlite</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <!--
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geogig</artifactId>
      <version>${project.version}</version>
    </dependency>
+-->
    <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-core</artifactId>
@@ -198,6 +201,11 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wmts-multi-dimensional</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-wmts-styles</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
@@ -300,11 +308,13 @@
      <artifactId>gs-wfs3</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <!--
    <dependency>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
      <version>${project.version}</version>
    </dependency>
+   -->
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-s3-geotiff</artifactId>
@@ -330,6 +340,11 @@
      <artifactId>gs-qos</artifactId>
      <version>${project.version}</version>
    </dependency> 
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-web-ogr</artifactId>
+     <version>${project.version}</version>
+   </dependency>    
  </dependencies>
  <build>
   <plugins>

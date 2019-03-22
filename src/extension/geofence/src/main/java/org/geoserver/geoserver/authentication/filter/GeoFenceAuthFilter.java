@@ -10,7 +10,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProvider;
 import org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -30,8 +29,6 @@ public class GeoFenceAuthFilter
 
     static final Logger LOGGER = Logging.getLogger(GeoFenceAuthFilter.class);
 
-    private RuleReaderService ruleReaderService;
-
     private GeoFenceSecurityProvider geofenceAuth;
 
     // static final String ROOT_ROLE = "ROLE_ADMINISTRATOR";
@@ -44,7 +41,6 @@ public class GeoFenceAuthFilter
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        GeoFenceAuthFilterConfig cfg = (GeoFenceAuthFilterConfig) config;
         // anything to set here? maybe the cache config
 
         aep = new BasicAuthenticationEntryPoint();
@@ -117,10 +113,6 @@ public class GeoFenceAuthFilter
     // @Override
     public boolean applicableForServices() {
         return true;
-    }
-
-    public void setRuleReaderService(RuleReaderService ruleReaderService) {
-        this.ruleReaderService = ruleReaderService;
     }
 
     public void setGeofenceAuth(GeoFenceSecurityProvider geofenceAuth) {

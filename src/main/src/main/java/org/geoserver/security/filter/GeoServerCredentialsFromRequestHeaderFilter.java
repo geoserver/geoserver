@@ -202,6 +202,9 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
                 LOGGER.log(Level.WARNING, "unsupported decode user name");
             }
         }
+        if (username == null || password == null) {
+            return null;
+        }
         StringBuffer buff = new StringBuffer(password);
         buff.append(":");
         buff.append(getName());

@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class ProxyBase implements InvocationHandler {
 
     /** "dirty" properties */
-    private HashMap<String, Object> properties;
+    private volatile HashMap<String, Object> properties;
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 

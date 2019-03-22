@@ -83,7 +83,7 @@ public class StoredQueryProvider {
     /**
      * Creates a new stored query.
      *
-     * @param def The stored query definition.
+     * @param query The stored query definition.
      */
     public StoredQuery createStoredQuery(StoredQueryDescriptionType query) {
         return createStoredQuery(query, true);
@@ -92,7 +92,7 @@ public class StoredQueryProvider {
     /**
      * Creates a new stored query specifying whether to persist the query to disk or not.
      *
-     * @param def The stored query definition.
+     * @param query The stored query definition.
      * @param store Whether to persist the query or not.
      */
     public StoredQuery createStoredQuery(StoredQueryDescriptionType query, boolean store) {
@@ -152,9 +152,9 @@ public class StoredQueryProvider {
         try {
             Resource dir = storedQueryDir();
             Resource f = dir.get(toFilename(query.getName()));
-            if (f.getType() != Type.UNDEFINED) {
-                // TODO: back up the old file in case there is an error during encoding
-            }
+            // if (f.getType() != Type.UNDEFINED) {
+            // TODO: back up the old file in case there is an error during encoding
+            // }
 
             BufferedOutputStream bout = new BufferedOutputStream(f.out());
             try {

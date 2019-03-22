@@ -8,7 +8,6 @@ package org.geoserver.wcs.kvp;
 import java.util.Map;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.Wcs10Factory;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
@@ -19,11 +18,9 @@ import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
  * @author Alessio Fabiani, GeoSolutions
  */
 public class Wcs10DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
-    private Catalog catalog;
 
-    public Wcs10DescribeCoverageKvpRequestReader(Catalog catalog) {
+    public Wcs10DescribeCoverageKvpRequestReader() {
         super(DescribeCoverageType.class, Wcs10Factory.eINSTANCE);
-        this.catalog = catalog;
     }
 
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {

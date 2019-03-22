@@ -22,7 +22,7 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
     static Logger LOGGER = Logging.getLogger("org.geoserver.montior");
 
     /** cached geoip lookup service */
-    static LookupService geoIPLookup;
+    static volatile LookupService geoIPLookup;
 
     // TODO: cache by IP address
 

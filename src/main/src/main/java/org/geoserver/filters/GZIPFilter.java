@@ -1,5 +1,10 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2007 - 2013 OpenPlans
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+/*
  * Copyright 2003 Jayson Falkner (jayson@jspinsider.com)
  * This code is from "Servlets and JavaServer pages; the J2EE Web Tier",
  * http://www.jspbook.com. You may freely use the code both commercially
@@ -59,7 +64,7 @@ public class GZIPFilter implements Filter {
                 myCompressedTypes.add(Pattern.compile(typeNames[i]));
             }
         } catch (Exception e) {
-            System.out.println("Error while setting up GZIPFilter; " + e);
+            throw new RuntimeException("Error while setting up GZIPFilter; " + e);
         }
     }
 

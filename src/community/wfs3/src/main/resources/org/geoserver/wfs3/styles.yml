@@ -1,0 +1,259 @@
+---
+openapi: 3.0.1
+paths:
+  /styles:
+    description: something
+    get:
+      tags:
+        - Styles
+      summary: retrieve all available styles from the dataset
+      operationId: getStyles
+      parameters:
+        - $ref: '#/components/parameters/styleFormat'
+      responses:
+        '200':
+          description: A list of styles for the dataset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/styles'
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    post:
+      tags:
+        - Styles
+      summary: 'add styles to the dataset '
+      operationId: addStyle
+      requestBody:
+        description: A single style.
+        content:
+          application/json:
+      responses:
+        '201':
+          description: Styles were created.
+          headers:
+            location:
+              description: The URL of the first created style
+              schema:
+                type: string
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+  '/styles/{styleId}':
+    description: something
+    get:
+      tags:
+        - Styles
+      summary: retrieve a style of the dataset by id
+      operationId: getStyle
+      parameters:
+        - $ref: '#/components/parameters/styleIdentifier'
+        - $ref: '#/components/parameters/styleFormat'
+      responses:
+        '200':
+          description: A style of the dataset
+          content:
+            application/json:
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    put:
+      tags:
+        - Styles
+      summary: replace a style from the dataset
+      operationId: replaceStyle
+      parameters:
+        - $ref: '#/components/parameters/styleIdentifier'
+      requestBody:
+        description: A single style.
+        content:
+          application/json:
+      responses:
+        '204':
+          description: Style was replaced.
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    delete:
+      tags:
+        - Styles
+      summary: delete a Style from the dataset
+      operationId: deleteStyle
+      parameters:
+        - $ref: '#/components/parameters/styleIdentifier'
+      responses:
+        '204':
+          description: Style was deleted.
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+  '/collections/{collectionId}/styles':
+    description: something
+    get:
+      tags:
+        - Styles
+      summary: retrieve all available styles from the collection
+      operationId: getCollectionStyles
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleFormat'
+      responses:
+        '200':
+          description: A list of styles for the collection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/styles'
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    post:
+      tags:
+        - Styles
+      summary: 'add styles to the collection '
+      operationId: addCollectionStyle
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      requestBody:
+        description: A single style.
+        content:
+          application/json:
+      responses:
+        '201':
+          description: Styles were created.
+          headers:
+            location:
+              description: The URL of the first created style
+              schema:
+                type: string
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+  '/collections/{collectionId}/styles/{styleId}':
+    description: something
+    get:
+      tags:
+        - Styles
+      summary: retrieve a style of the collection by id
+      operationId: getCollectionStyle
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleIdentifier'
+        - $ref: '#/components/parameters/styleFormat'
+      responses:
+        '200':
+          description: A style of the collection
+          content:
+            application/json:
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    put:
+      tags:
+        - Styles
+      summary: replace a style from the collection
+      operationId: replaceCollectionStyle
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleIdentifier'
+      requestBody:
+        description: A single style.
+        content:
+          application/json:
+      responses:
+        '204':
+          description: Style was replaced.
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    delete:
+      tags:
+        - Styles
+      summary: delete a Style from the dataset
+      operationId: deleteCollectionStyle
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleIdentifier'
+      responses:
+        '204':
+          description: Style was deleted.
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+components:
+  schemas:
+    stylesArray:
+      required:
+        - id
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: default
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+    styles:
+      required:
+        - type
+      type: object
+      properties:
+        styles:
+          type: array
+          items:
+            $ref: '#/components/schemas/stylesArray'
+  parameters:
+    styleFormat:
+      name: f
+      in: query
+      description: |-
+        \
+                The format of the response. If no value is provided, the standard http rules apply, i.e., the accept header shall be used to determine the format.\
+                The only pre-defined value is "sld". The response to other values is determined by the server.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        enum:
+          - sld
+      example: sld
+    styleIdentifier:
+      name: styleId
+      in: path
+      description: Local identifier of a specific style, for a collection or dataset. A list of all available styles can be found under the /styles or /collections/{collectionId}/styles paths.
+      required: true
+      schema:
+        type: string

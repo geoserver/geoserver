@@ -36,6 +36,7 @@ import org.geotools.feature.collection.MaxSimpleFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
@@ -173,8 +174,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @deprecated
      * @param featureSource
-     * @param schema DOCUMENT ME!
-     * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS
      * @param linearizationTolerance TODO
      * @param metadata Feature type metadata
@@ -230,7 +229,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @throws DataSourceException If query could not meet the restrictions of definitionQuery
      */
     protected Query makeDefinitionQuery(Query query, SimpleFeatureType schema) throws IOException {
-        if ((query == Query.ALL) || query.equals(Query.ALL)) {
+        if (definitionQuery == null && linearizationTolerance == null) {
             return query;
         }
 
@@ -329,8 +328,16 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Filter newFilter = filter;
 
         try {
-            if (definitionQuery != Filter.INCLUDE) {
-                newFilter = ff.and(definitionQuery, filter);
+            if (definitionQuery == Filter.INCLUDE) {
+                return filter;
+            }
+            SimplifyingFilterVisitor visitor = new SimplifyingFilterVisitor();
+            Filter simplifiedDefinitionQuery = (Filter) definitionQuery.accept(visitor, null);
+            if (filter == Filter.INCLUDE) {
+                newFilter = simplifiedDefinitionQuery;
+            } else if (simplifiedDefinitionQuery != Filter.INCLUDE) {
+                // expand eventual env vars before hitting the store machinery
+                newFilter = ff.and(simplifiedDefinitionQuery, filter);
             }
         } catch (Exception ex) {
             throw new DataSourceException("Can't create the definition filter", ex);
@@ -474,18 +481,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             // we need to reproject all bbox and geometries to a target crs, which is
             // the native one usually, but it's the declared on in the force case (since in
             // that case we completely ignore the native one)
-            CoordinateReferenceSystem targetCRS = null;
             CoordinateReferenceSystem nativeCRS = geom.getCoordinateReferenceSystem();
             if (srsHandling == ProjectionPolicy.FORCE_DECLARED) {
                 defaultCRS = declaredCRS;
-                targetCRS = declaredCRS;
                 nativeFeatureType = FeatureTypes.transform(nativeFeatureType, declaredCRS);
             } else if (srsHandling == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 defaultCRS = declaredCRS;
-                targetCRS = nativeCRS;
             } else { // FeatureTypeInfo.LEAVE
                 defaultCRS = nativeCRS;
-                targetCRS = nativeCRS;
             }
 
             // now we apply a default to all geometries and bbox in the filter

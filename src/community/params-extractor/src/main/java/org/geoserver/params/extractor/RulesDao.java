@@ -6,34 +6,31 @@ package org.geoserver.params.extractor;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 public final class RulesDao {
 
     private static final Logger LOGGER = Logging.getLogger(RulesDao.class);
-    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final SecureXStream xStream;
 
-    private static final GeoServerDataDirectory DATA_DIRECTORY =
-            (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
+    static {
+        xStream = new SecureXStream();
+        xStream.registerConverter(new RuleConverter());
+        xStream.alias("Rule", Rule.class);
+        xStream.alias("Rules", RuleList.class);
+        xStream.addImplicitCollection(RuleList.class, "rules");
+        xStream.allowTypes(new Class[] {Rule.class, RuleList.class});
+    }
 
     public static String getRulesPath() {
         return "params-extractor/extraction-rules.xml";
@@ -44,8 +41,12 @@ public final class RulesDao {
     }
 
     public static List<Rule> getRules() {
-        Resource rules = DATA_DIRECTORY.get(getRulesPath());
+        Resource rules = getDataDirectory().get(getRulesPath());
         return getRules(rules.in());
+    }
+
+    private static GeoServerDataDirectory getDataDirectory() {
+        return (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
     }
 
     public static List<Rule> getRules(InputStream inputStream) {
@@ -54,10 +55,9 @@ public final class RulesDao {
                 Utils.debug(LOGGER, "Rules files seems to be empty.");
                 return new ArrayList<>();
             }
-            RuleHandler handler = new RuleHandler();
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(inputStream, handler);
-            return handler.rules;
+
+            RuleList list = (RuleList) xStream.fromXML(inputStream);
+            return list.rules == null ? new ArrayList<>() : list.rules;
         } catch (Exception exception) {
             throw Utils.exception(exception, "Error parsing rules files.");
         } finally {
@@ -66,8 +66,8 @@ public final class RulesDao {
     }
 
     public static void saveOrUpdateRule(Rule rule) {
-        Resource rules = DATA_DIRECTORY.get(getRulesPath());
-        Resource tmpRules = DATA_DIRECTORY.get(getTempRulesPath());
+        Resource rules = getDataDirectory().get(getRulesPath());
+        Resource tmpRules = getDataDirectory().get(getTempRulesPath());
         saveOrUpdateRule(rule, rules.in(), tmpRules.out());
         rules.delete();
         tmpRules.renameTo(rules);
@@ -95,8 +95,8 @@ public final class RulesDao {
     }
 
     public static void deleteRules(String... rulesIds) {
-        Resource rules = DATA_DIRECTORY.get(getRulesPath());
-        Resource tmpRules = DATA_DIRECTORY.get(getTempRulesPath());
+        Resource rules = getDataDirectory().get(getRulesPath());
+        Resource tmpRules = getDataDirectory().get(getTempRulesPath());
         deleteRules(rules.in(), tmpRules.out(), rulesIds);
         rules.delete();
         tmpRules.renameTo(rules);
@@ -123,99 +123,18 @@ public final class RulesDao {
 
     private static void writeRules(List<Rule> rules, OutputStream outputStream) {
         try {
-            XMLStreamWriter output =
-                    XMLOutputFactory.newInstance()
-                            .createXMLStreamWriter(new OutputStreamWriter(outputStream, "utf-8"));
-            output.writeStartDocument();
-            output.writeCharacters(NEW_LINE);
-            output.writeStartElement("Rules");
-            output.writeCharacters(NEW_LINE);
-            rules.forEach(rule -> writeRule(rule, output));
-            output.writeEndElement();
-            output.writeCharacters(NEW_LINE);
-            output.writeEndDocument();
-            output.close();
+            xStream.toXML(new RuleList(rules), outputStream);
         } catch (Exception exception) {
             throw Utils.exception(exception, "Something bad happen when writing rules.");
         }
     }
 
-    private static void writeRule(Rule rule, XMLStreamWriter output) {
-        try {
-            output.writeCharacters("  ");
-            output.writeStartElement("Rule");
-            writeAttribute("id", rule.getId(), output);
-            writeAttribute("activated", rule.getActivated(), output);
-            writeAttribute("position", rule.getPosition(), output);
-            writeAttribute("match", rule.getMatch(), output);
-            writeAttribute("activation", rule.getActivation(), output);
-            writeAttribute("parameter", rule.getParameter(), output);
-            writeAttribute("transform", rule.getTransform(), output);
-            writeAttribute("remove", rule.getRemove(), output);
-            writeAttribute("combine", rule.getCombine(), output);
-            output.writeEndElement();
-            output.writeCharacters(NEW_LINE);
-        } catch (Exception exception) {
-            throw Utils.exception(exception, "Error writing rule %s.", rule.getId());
-        }
-    }
+    /** Support class for XStream serialization */
+    static final class RuleList {
+        List<Rule> rules;
 
-    private static <T> void writeAttribute(String name, T value, XMLStreamWriter output)
-            throws Exception {
-        if (value != null) {
-            output.writeAttribute(name, value.toString());
-        }
-    }
-
-    private static final class RuleHandler extends DefaultHandler {
-
-        final List<Rule> rules = new ArrayList<>();
-
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (!qName.equalsIgnoreCase("rule")) {
-                return;
-            }
-            Utils.debug(LOGGER, "Start parsing rule.");
-            RuleBuilder ruleBuilder = new RuleBuilder();
-            getAttribute("id", attributes, ruleBuilder::withId);
-            getAttribute(
-                    "activated", attributes, compose(Boolean::valueOf, ruleBuilder::withActivated));
-            getAttribute(
-                    "position", attributes, compose(Integer::valueOf, ruleBuilder::withPosition));
-            getAttribute("match", attributes, ruleBuilder::withMatch);
-            getAttribute("activation", attributes, ruleBuilder::withActivation);
-            getAttribute("parameter", attributes, ruleBuilder::withParameter);
-            getAttribute("remove", attributes, compose(Integer::valueOf, ruleBuilder::withRemove));
-            getAttribute("transform", attributes, ruleBuilder::withTransform);
-            getAttribute("combine", attributes, ruleBuilder::withCombine);
-            rules.add(ruleBuilder.build());
-            Utils.debug(LOGGER, "End parsing rule.");
-        }
-
-        private static <T> Consumer<String> compose(
-                Function<String, T> convert, Consumer<T> setter) {
-            return (value) -> setter.accept(convert.apply(value));
-        }
-
-        private void getAttribute(
-                String attributeName, Attributes attributes, Consumer<String> setter) {
-            String attributeValue = attributes.getValue(attributeName);
-            if (attributeValue == null) {
-                Utils.debug(LOGGER, "Rule attribute %s is NULL.", attributeName);
-                return;
-            }
-            Utils.debug(LOGGER, "Rule attribute %s is %s.", attributeName, attributeValue);
-            try {
-                setter.accept(attributeValue);
-            } catch (Exception exception) {
-                throw Utils.exception(
-                        exception,
-                        "Error setting attribute '%s' with value '%s'.",
-                        attributeName,
-                        attributeValue);
-            }
+        public RuleList(List<Rule> rules) {
+            this.rules = rules;
         }
     }
 }

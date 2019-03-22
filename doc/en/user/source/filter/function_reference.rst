@@ -449,12 +449,19 @@ Non-string values will be converted into a string representation automatically.
    * - Concatenate
      - ``s1``:String, ``s2``:String, ...
      - Concatenates any number of strings.  Non-string arguments are allowed.
+   * - strAbbreviate
+     - ``sentence``:String, ``lower``:Integer, ``upper``:Integer, ``append``:String
+     - Abbreviates the sentence at first space beyond ``lower`` (or at ``upper``
+       if no space). Appends ``append`` if string is abbreviated.
    * - strCapitalize
      - ``sentence``:String
      - Fully capitalizes the sentence. For example, "HoW aRe YOU?" will be turned into "How Are You?"
    * - strConcat
      - ``a``:String, ``b``:String
      - Concatenates the two strings into one
+   * - strDefaultIfBlank
+     - ``str``:String, ``default``:String
+     - returns ``default`` if ``str`` is empty, blank or null
    * - strEndsWith
      - ``string``:String, ``suffix``:String
      - Returns true if ``string`` ends with ``suffix``
@@ -479,6 +486,9 @@ Non-string values will be converted into a string representation automatically.
    * - strStartsWith
      - ``string``:String, ``prefix``:String
      - Returns true if ``string`` starts with ``prefix``
+   * - strStripAccents
+     - ``string``:String
+     - Removes diacritics (~= accents) from a string. The case will not be altered.
    * - strSubstring
      - ``string``:String, ``begin``:Integer, ``end``:Integer
      - Returns a new string that is a substring of this string. The substring begins at the specified ``begin`` and extends to the character at index ``endIndex - 1`` (indexes are zero-based).

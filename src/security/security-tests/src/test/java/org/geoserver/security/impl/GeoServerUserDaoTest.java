@@ -141,6 +141,7 @@ public class GeoServerUserDaoTest {
         assertNotNull(dao.loadUserByUsername("newuser"));
     }
 
+    @Test
     public void addExistingUser() throws Exception {
         try {
             dao.putUser(

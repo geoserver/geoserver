@@ -8,7 +8,7 @@ package org.geoserver.wms.featureinfo;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
+import javax.swing.*;
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.renderer.style.ExternalGraphicFactory;
@@ -95,13 +95,11 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
                     }
                     // evaluate the icon if found, if not SLD asks us to go to the next one
                     if (icon != null) {
-                        if (icon != null) {
-                            int size = Math.max(icon.getIconHeight(), icon.getIconWidth());
-                            if (size > buffer) {
-                                buffer = size;
-                            }
-                            return;
+                        int size = Math.max(icon.getIconHeight(), icon.getIconWidth());
+                        if (size > buffer) {
+                            buffer = size;
                         }
+                        return;
                     }
                 } else if (gs instanceof Mark) {
                     // if we get here it means size was null

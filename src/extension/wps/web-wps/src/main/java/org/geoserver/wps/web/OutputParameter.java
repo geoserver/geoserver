@@ -34,7 +34,6 @@ class OutputParameter implements Serializable {
     public OutputParameter(Name processName, String paramName) {
         this.processName = processName;
         this.paramName = paramName;
-        Parameter<?> p = getParameter();
         this.mimeType = getDefaultMime();
     }
 

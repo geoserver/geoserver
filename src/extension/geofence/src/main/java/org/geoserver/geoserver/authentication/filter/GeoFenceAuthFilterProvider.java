@@ -5,7 +5,6 @@
 package org.geoserver.geoserver.authentication.filter;
 
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
@@ -13,8 +12,6 @@ import org.geoserver.security.filter.GeoServerSecurityFilter;
 
 /** @author ETj (etj at geo-solutions.it) */
 public class GeoFenceAuthFilterProvider extends AbstractFilterProvider {
-
-    private RuleReaderService ruleReaderService;
 
     private GeoFenceSecurityProvider geofenceAuth;
 
@@ -33,14 +30,9 @@ public class GeoFenceAuthFilterProvider extends AbstractFilterProvider {
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         GeoFenceAuthFilter filter = new GeoFenceAuthFilter();
 
-        filter.setRuleReaderService(ruleReaderService);
         filter.setGeofenceAuth(geofenceAuth);
 
         return filter;
-    }
-
-    public void setRuleReaderService(RuleReaderService ruleReaderService) {
-        this.ruleReaderService = ruleReaderService;
     }
 
     public void setGeofenceAuth(GeoFenceSecurityProvider geofenceAuth) {

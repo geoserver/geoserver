@@ -95,7 +95,6 @@
     <!-- geoserver auth mechanism -->
 
     <bean id="geofenceFilter" class="org.geoserver.geoserver.authentication.filter.GeoFenceAuthFilterProvider">
-        <property name="ruleReaderService" ref="${ruleReaderFrontend}"/>
         <property name="geofenceAuth" ref="geofenceAuth"/>
     </bean>
 

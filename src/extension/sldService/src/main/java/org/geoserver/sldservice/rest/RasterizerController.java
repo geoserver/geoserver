@@ -1,6 +1,5 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
+ * (c) 2007-2008-2009 GeoSolutions S.A.S., http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -146,9 +145,6 @@ public class RasterizerController extends BaseSLDServiceController {
             ResourceInfo obj = layerInfo.getResource();
             /* Check if it's feature type or coverage */
             if (obj instanceof CoverageInfo) {
-                CoverageInfo cvInfo;
-                cvInfo = (CoverageInfo) obj;
-
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
                 RasterSymbolizer rasterSymbolizer = getRasterSymbolizer(defaultStyle);
 
@@ -229,16 +225,13 @@ public class RasterizerController extends BaseSLDServiceController {
             throws Exception {
         StyleBuilder sb = new StyleBuilder();
 
-        ColorMap originalColorMap = rasterSymbolizer.getColorMap();
         ColorMap resampledColorMap = null;
-
-        int numClasses = originalColorMap.getColorMapEntries().length;
 
         if (classes > 0) {
             final String[] labels = new String[classes + 1];
             final double[] quantities = new double[classes + 1];
 
-            ColorRamp colorRamp = null;
+            ColorRamp colorRamp;
             quantities[0] = min - DEFAULT_MIN_DECREMENT;
             if (colorMapType == ColorMap.TYPE_INTERVALS) {
                 max = max + DEFAULT_MIN_DECREMENT;
@@ -281,6 +274,8 @@ public class RasterizerController extends BaseSLDServiceController {
                         customRamp.setMid(Color.decode(midColor));
                     }
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown ramp type: " + ramp);
             }
             colorRamp.setNumClasses(classes);
 
@@ -303,7 +298,6 @@ public class RasterizerController extends BaseSLDServiceController {
         return style;
     }
 
-    /** @param defaultStyle */
     private RasterSymbolizer getRasterSymbolizer(StyleInfo sInfo) {
         RasterSymbolizer rasterSymbolizer = null;
 

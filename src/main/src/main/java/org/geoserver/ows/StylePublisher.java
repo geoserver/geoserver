@@ -33,11 +33,7 @@ public class StylePublisher extends AbstractURLPublisher {
     /** Servlet resource loader */
     protected ServletContextResourceLoader scloader;
 
-    /**
-     * Creates the new file publisher.
-     *
-     * @param loader The loader used to locate files.
-     */
+    /** Creates the new file publisher. */
     public StylePublisher(Catalog catalog) {
         this.catalog = catalog;
     }

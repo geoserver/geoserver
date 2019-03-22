@@ -202,12 +202,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private ConfigurableLockProvider lockProvider;
 
-    private DefaultStorageFinder storageFinder;
-
-    private ApplicationContext applicationContext;
-
-    private JDBCPasswordEncryptionHelper passwordHelper;
-
     private JDBCConfigurationStorage jdbcConfigurationStorage;
 
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
@@ -261,7 +255,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.owsDispatcher = owsDispatcher;
         this.catalog = catalog;
         this.rawCatalog = rawCatalog;
-        this.storageFinder = storageFinder;
 
         catalogLayerEventListener = new CatalogLayerEventListener(this, catalog);
         catalogStyleChangeListener = new CatalogStyleChangeListener(this, catalog);
@@ -2127,8 +2120,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         final Set<String> affectedLayers = getLayerNamesForGridSets(gridsetIds);
 
-        final Set<TileLayerConfiguration> changedConfigs = new HashSet<>();
-
         for (String layerName : affectedLayers) {
             TileLayer tileLayer = getTileLayerByName(layerName);
             Lock lock = null;
@@ -2441,8 +2432,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
 
         syncEnv();

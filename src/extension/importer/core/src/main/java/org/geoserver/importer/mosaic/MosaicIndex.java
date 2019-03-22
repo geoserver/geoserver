@@ -10,7 +10,6 @@ import com.google.common.collect.Iterators;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -56,41 +55,39 @@ public class MosaicIndex {
     }
 
     public void delete() throws IOException {
-        for (File f :
+        File[] files =
                 mosaic.getFile()
                         .listFiles(
-                                new FilenameFilter() {
-                                    @Override
-                                    public boolean accept(File dir, String name) {
-                                        if ("sample_image".equalsIgnoreCase(name)) {
-                                            return true;
-                                        }
-
-                                        if (!mosaic.getName()
-                                                .equalsIgnoreCase(
-                                                        FilenameUtils.getBaseName(name))) {
-                                            return false;
-                                        }
-
-                                        String ext = FilenameUtils.getExtension(name);
-                                        ShpFileType shpFileType = null;
-                                        if (ext != null) {
-                                            try {
-                                                shpFileType =
-                                                        ShpFileType.valueOf(ext.toUpperCase());
-                                            } catch (IllegalArgumentException iae) {
-                                                // the extension is not matching
-                                            }
-                                        }
-                                        return "properties".equalsIgnoreCase(ext)
-                                                || shpFileType != null;
+                                (dir, name) -> {
+                                    if ("sample_image".equalsIgnoreCase(name)) {
+                                        return true;
                                     }
-                                })) {
-            if (!f.delete()) {
-                // throwing exception here caused sporadic test failures on
-                // windows related to file locking but only in the cleanup
-                // method SystemTestData.tearDown
-                LOGGER.warning("unable to delete mosaic file " + f.getAbsolutePath());
+
+                                    if (!mosaic.getName()
+                                            .equalsIgnoreCase(FilenameUtils.getBaseName(name))) {
+                                        return false;
+                                    }
+
+                                    String ext = FilenameUtils.getExtension(name);
+                                    ShpFileType shpFileType = null;
+                                    if (ext != null) {
+                                        try {
+                                            shpFileType = ShpFileType.valueOf(ext.toUpperCase());
+                                        } catch (IllegalArgumentException iae) {
+                                            // the extension is not matching
+                                        }
+                                    }
+                                    return "properties".equalsIgnoreCase(ext)
+                                            || shpFileType != null;
+                                });
+        if (files != null) {
+            for (File f : files) {
+                if (!f.delete()) {
+                    // throwing exception here caused sporadic test failures on
+                    // windows related to file locking but only in the cleanup
+                    // method SystemTestData.tearDown
+                    LOGGER.warning("unable to delete mosaic file " + f.getAbsolutePath());
+                }
             }
         }
     }

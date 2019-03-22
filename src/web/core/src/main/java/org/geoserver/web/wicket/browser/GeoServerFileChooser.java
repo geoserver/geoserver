@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket.browser;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -192,7 +193,7 @@ public class GeoServerFileChooser extends Panel {
      */
     protected void directoryClicked(File file, AjaxRequestTarget target) {
         // explicitly change the root model, inform the other components the model has changed
-        GeoServerFileChooser.this.file.setObject(file);
+        this.file.setObject(file);
         fileTable.getProvider().setDirectory(new Model<File>(file));
         breadcrumbs.setSelection(file);
 
@@ -278,7 +279,7 @@ public class GeoServerFileChooser extends Panel {
                     return displayName.trim();
                 }
                 return FilenameUtils.getPrefix(f.getAbsolutePath());
-            } catch (Exception e) {
+            } catch (Exception | AWTError e) {
                 LOGGER.log(
                         Level.FINE,
                         "Failed to get file display name, "

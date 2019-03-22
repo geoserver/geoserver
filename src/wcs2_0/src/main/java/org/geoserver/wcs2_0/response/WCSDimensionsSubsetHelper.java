@@ -805,7 +805,8 @@ public class WCSDimensionsSubsetHelper {
                 }
 
                 // only care for custom dimensions
-                if (dimensionKeys.contains(dimension)) {
+                if (dimensionKeys.stream().anyMatch(dimension::equalsIgnoreCase)) {
+                    dimension = dimension.toUpperCase(); // using uppercase with imagemosaic
                     List<Object> selectedValues = new ArrayList<Object>();
 
                     // now decide what to do
@@ -992,10 +993,6 @@ public class WCSDimensionsSubsetHelper {
      *
      * <p>This method only works for StructuredGridCoverage2DReaders
      *
-     * @param cinfo the CoverageInfo associated to the coverage
-     * @param gcr the main {@link GridCoverageRequest} to be split
-     * @param reader the {@link StructuredGridCoverage2DReader} instance to be used for query, and
-     *     dimensions management
      * @return a List of new {@link GridCoverageRequest}s
      * @throws UnsupportedOperationException
      * @throws IOException
@@ -1175,7 +1172,6 @@ public class WCSDimensionsSubsetHelper {
 
         // spatial subset
         Filter filter = filterSpatial(gcr, reader, source);
-        ;
 
         // temporal subset
         filter = filterTime(filter, gcr, coverageName, reader);

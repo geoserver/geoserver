@@ -6,6 +6,7 @@
 package org.geoserver.kml.utils;
 
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
@@ -165,7 +166,7 @@ public class LookAtOptions {
                             "Illegal value for KML format option 'altitudeMode': '"
                                     + object
                                     + "'. Expected one of "
-                                    + AltitudeMode.values());
+                                    + Arrays.toString(AltitudeMode.values()));
                 }
             }
         }

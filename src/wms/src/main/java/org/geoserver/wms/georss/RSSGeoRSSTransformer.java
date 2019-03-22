@@ -110,12 +110,10 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
 
             String title = feature.getID();
             String link = null;
-            String description = "[Error while loading description]";
 
             try {
                 title = AtomUtils.getFeatureTitle(feature);
                 link = AtomUtils.getEntryURL(wms, feature, map);
-                description = AtomUtils.getFeatureDescription(feature);
             } catch (Exception e) {
                 String msg = "Error occured executing title template for: " + feature.getID();
                 LOGGER.log(Level.WARNING, msg, e);
@@ -144,6 +142,8 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             if (geometryEncoding == GeometryEncoding.LATLONG
                     || (col == null && feature.getDefaultGeometry() != null)) {
                 geometryEncoding.encode((Geometry) feature.getDefaultGeometry(), this);
+                end("item");
+            } else if (col == null) {
                 end("item");
             } else {
                 geometryEncoding.encode(col.getGeometryN(0), this);

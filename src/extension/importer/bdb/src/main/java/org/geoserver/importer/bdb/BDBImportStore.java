@@ -172,7 +172,7 @@ public class BDBImportStore implements ImportStore {
         // if not an advance, error
         long current = importIdSeq.getStats(StatsConfig.DEFAULT).getCurrent();
         if (id.longValue() < current) {
-            id = new Long(current);
+            id = Long.valueOf(current);
         }
 
         // reserve the spot now (the delta must have one added to it)
@@ -229,8 +229,7 @@ public class BDBImportStore implements ImportStore {
         LongBinding keyBinding = new LongBinding();
         List<Long> ids = new ArrayList();
 
-        OperationStatus op = null;
-        while ((op = c.getNext(key, val, LockMode.DEFAULT)) == OperationStatus.SUCCESS) {
+        while (c.getNext(key, val, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
             ids.add(LongBinding.entryToLong(key));
         }
         c.close();
@@ -296,8 +295,7 @@ public class BDBImportStore implements ImportStore {
             DatabaseEntry key = new DatabaseEntry();
             DatabaseEntry val = new DatabaseEntry();
 
-            OperationStatus op = null;
-            while ((op = c.getNext(key, val, LockMode.DEFAULT)) == OperationStatus.SUCCESS) {
+            while (c.getNext(key, val, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
                 visitor.visit(importBinding.entryToObject(val));
             }
         } finally {

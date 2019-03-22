@@ -37,7 +37,7 @@ public class GetFeatureHTMLOutputFormat extends WFSGetFeatureOutputFormat {
     public GetFeatureHTMLOutputFormat(GeoServerResourceLoader loader, GeoServer geoServer) {
         super(geoServer, BaseRequest.HTML_MIME);
         this.geoServer = geoServer;
-        this.templateSupport = new FreemarkerTemplateSupport(loader, geoServer);
+        this.templateSupport = new FreemarkerTemplateSupport(loader);
     }
 
     @Override
@@ -143,5 +143,10 @@ public class GetFeatureHTMLOutputFormat extends WFSGetFeatureOutputFormat {
             info = geoServer.getCatalog().getFeatureTypeByName(collection.getSchema().getName());
         }
         return info;
+    }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "html";
     }
 }

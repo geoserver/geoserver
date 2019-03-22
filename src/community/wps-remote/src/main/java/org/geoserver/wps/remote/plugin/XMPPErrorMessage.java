@@ -46,10 +46,6 @@ public class XMPPErrorMessage implements XMPPMessage {
         }
         final String pID = (signalArgs != null ? signalArgs.get("id") : null);
 
-        // NOTIFY SERVICE for aborting the computation as soon as possible
-        final String serviceJID = message.getFrom();
-        xmppClient.sendMessage(serviceJID, "topic=abort");
-
         // NOTIFY LISTENERS
         for (RemoteProcessClientListener listener : xmppClient.getRemoteClientListeners()) {
             listener.setTask(pID, cause.getLocalizedMessage());

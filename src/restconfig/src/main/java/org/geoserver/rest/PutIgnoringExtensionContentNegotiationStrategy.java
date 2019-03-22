@@ -54,7 +54,8 @@ public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNe
     public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
             throws HttpMediaTypeNotAcceptableException {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (pathMatcher.getMatchingCondition(request) != null
+        if (request != null
+                && pathMatcher.getMatchingCondition(request) != null
                 && ("PUT".equals(request.getMethod()) || "POST".equals(request.getMethod()))) {
             return mediaTypes;
         }

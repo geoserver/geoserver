@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.15-SNAPSHOT</version>
+ <version>2.16-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1259,7 +1259,7 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.3.3</version>
+      <version>1.3.4</version>
     </dependency>
     <dependency>
       <groupId>com.ning</groupId>
@@ -1478,7 +1478,7 @@
    <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
-     <version>2.3.2</version>
+     <version>3.8.0</version>
      <configuration>
        <source>1.8</source>
        <target>1.8</target>
@@ -1575,7 +1575,7 @@
       <descriptor>release/ext-geofence.xml</descriptor>
       <descriptor>release/ext-geofence-server.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.15-SNAPSHOT</finalName>
+     <finalName>geoserver-2.16-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1757,6 +1757,24 @@
        </execution>
      </executions>
    </plugin>
+   
+   <plugin>
+    <groupId>org.commonjava.maven.plugins</groupId>
+    <artifactId>directory-maven-plugin</artifactId>
+    <version>0.3.1</version>
+    <executions>
+      <execution>
+        <id>directories</id>
+        <goals>
+          <goal>highest-basedir</goal>
+        </goals>
+        <phase>initialize</phase>
+        <configuration>
+          <property>geoserverBaseDir</property>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
 
   </plugins>
 
@@ -1935,10 +1953,10 @@
  </modules>
 
  <properties>
-  <gs.version>2.15-SNAPSHOT</gs.version>
-  <gt.version>21-SNAPSHOT</gt.version>
-  <gwc.version>1.15-SNAPSHOT</gwc.version>
-  <jts.version>1.16.0</jts.version>
+  <gs.version>2.16-SNAPSHOT</gs.version>
+  <gt.version>22-SNAPSHOT</gt.version>
+  <gwc.version>1.16-SNAPSHOT</gwc.version>
+  <jts.version>1.16.1</jts.version>
   <spring.version>5.1.1.RELEASE</spring.version>
   <spring.security.version>5.1.1.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
@@ -1947,8 +1965,8 @@
   <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.2.0</imageio-ext.version>
-  <jaiext.version>1.1.4</jaiext.version>
+  <imageio-ext.version>1.3.0</imageio-ext.version>
+  <jaiext.version>1.1.7</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
@@ -1962,8 +1980,8 @@
   <maven.build.timestamp.format>dd-MMM-yyyy HH:mm</maven.build.timestamp.format>
   <build.timestamp>${maven.build.timestamp}</build.timestamp>
   <build.hudsonId>-1</build.hudsonId>
-  <fork.javac>true</fork.javac>
-  <javac.maxHeapSize>256m</javac.maxHeapSize>
+  <fork.javac>false</fork.javac>
+  <javac.maxHeapSize>256M</javac.maxHeapSize>
   <image.tests>true</image.tests>
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
@@ -1983,14 +2001,20 @@
   <jackson2.version>2.9.7</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.9.3</marlin.version>
-  <postgresql.jdbc.version>42.1.1</postgresql.jdbc.version>
+  <postgresql.jdbc.version>42.2.5</postgresql.jdbc.version>
   <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
   <jacoco.version>0.8.1</jacoco.version>
-  <hazelcast.version>3.11-BETA-1</hazelcast.version>
+  <hazelcast.version>3.11.1</hazelcast.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
   <fmt.skip>false</fmt.skip>
+  <errorProneFlags></errorProneFlags>
+  <errorProne.version>2.3.2</errorProne.version>
+  <javac.version>9+181-r4173-1</javac.version>
+  <pmd.version>6.11.0</pmd.version>
+  <checkstyle.skip>false</checkstyle.skip>
+  <qa>false</qa>
  </properties>
 
  <profiles>
@@ -2047,6 +2071,10 @@
     </activation>
     <dependencies>
       <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-main</artifactId>
+      </dependency>
+      <dependency>
         <groupId>org.geowebcache</groupId>
         <artifactId>gwc-core</artifactId>
       </dependency>
@@ -2066,7 +2094,7 @@
             </goals>
             <configuration>
               <includeGroupIds>org.geotools,org.geowebcache</includeGroupIds>
-              <includeArtifactIds>gwc-core</includeArtifactIds>
+              <includeArtifactIds>gt-main,gwc-core</includeArtifactIds>
             </configuration>
           </execution>
         </executions>
@@ -2094,6 +2122,9 @@
           <phase>package</phase>
           <configuration>
             <tasks>
+               <loadproperties prefix="gt">
+                  <zipentry zipfile="target/dependency/gt-main-${gt.version}.jar" name="META-INF/MANIFEST.MF"/>
+               </loadproperties>
                <loadproperties prefix="gwc">
                   <zipentry zipfile="target/dependency/gwc-core-${gwc.version}.jar" name="META-INF/MANIFEST.MF"/>
                </loadproperties>
@@ -2187,29 +2218,12 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.commonjava.maven.plugins</groupId>
-            <artifactId>directory-maven-plugin</artifactId>
-            <version>0.3.1</version>
-            <executions>
-              <execution>
-                <id>directories</id>
-                <goals>
-                  <goal>highest-basedir</goal>
-                </goals>
-                <phase>initialize</phase>
-                <configuration>
-                  <property>geoserverBaseDir</property>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
             <version>3.2.1</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
-              <suppressionFile>${geoserverBaseDir}/dependency-check-suppression.xml</suppressionFile>
+              <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
             </configuration>
             <executions>
               <execution>
@@ -2221,6 +2235,199 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    
+    <profile>
+      <id>pmd</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>3.11.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-core</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-java</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-javascript</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>net.sourceforge.pmd</groupId>
+                <artifactId>pmd-jsp</artifactId>
+                <version>${pmd.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <rulesets>
+                <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
+              </rulesets>
+              <failurePriority>3</failurePriority>
+              <minimumPriority>3</minimumPriority>
+              <verbose>true</verbose>
+              <printFailingErrors>true</printFailingErrors>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- for those using JDK 11 -->
+    <profile>
+      <id>errorprone</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>(1.8,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>false</fork>
+              <compilerArgs>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${errorProne.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- using github.com/google/error-prone-javac is required when running on JDK 8 -->
+    <profile>
+      <id>errorprone8</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration>
+              <fork>true</fork>
+              <compilerArgs combine.children="append">
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -XepExcludedPaths:${project.build.directory}/generated-sources/.* ${errorProneFlags}</arg>
+                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.3.2</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>spotbugs</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>3.1.10</version>
+            <configuration>
+              <effort>More</effort>
+              <!--threshold>High</threshold-->
+              <xmlOutput>true</xmlOutput>
+              <maxRank>15</maxRank>
+              <excludeFilterFile>${geoserverBaseDir}/../build/qa/spotbugs-exclude.xml</excludeFilterFile>
+              <jvmArgs>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</jvmArgs>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+           <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>3.0.0</version>
+              <configuration>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <!-- ignore generated classes, e.g., javacc ones -->
+                    <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+                    <skip>${checkstyle.skip}</skip>
+                    <configLocation>${geoserverBaseDir}/../build/qa/checkstyle.xml</configLocation>
+                  </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
     </profile>
   </profiles>
 

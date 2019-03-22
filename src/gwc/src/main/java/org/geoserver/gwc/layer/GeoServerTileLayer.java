@@ -431,13 +431,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         } else {
             LayerGroupInfo lg = getLayerGroupInfo();
             if (lg != null) {
-                if (lg != null) {
-                    if (lg.getTitle() != null) {
-                        title = lg.getTitle();
-                    }
-                    if (lg.getAbstract() != null) {
-                        description = lg.getAbstract();
-                    }
+                if (lg.getTitle() != null) {
+                    title = lg.getTitle();
+                }
+                if (lg.getAbstract() != null) {
+                    description = lg.getAbstract();
                 }
             }
         }
@@ -1323,9 +1321,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     @Override
-    public void setAdvertised(boolean advertised) {
-        return;
-    }
+    public void setAdvertised(boolean advertised) {}
 
     @Override
     public boolean isTransientLayer() {
@@ -1333,9 +1329,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     }
 
     @Override
-    public void setTransientLayer(boolean transientLayer) {
-        return;
-    }
+    public void setTransientLayer(boolean transientLayer) {}
 
     @Override
     public void setBlobStoreId(String blobStoreId) {
@@ -1384,7 +1378,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                                         baseUrl,
                                         legendInfo.getOnlineResource(),
                                         null,
-                                        URLMangler.URLType.RESOURCE));
+                                        URLMangler.URLType.SERVICE));
                 legends.put(styleInfo.prefixedName(), gwcLegendInfo.build());
             } else {
                 int finalWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;

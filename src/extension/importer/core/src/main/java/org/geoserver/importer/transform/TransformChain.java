@@ -113,7 +113,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         }
     }
 
-    private Object readResolve() {
+    protected Object readResolve() {
         if (transforms == null) {
             transforms = new ArrayList();
         }

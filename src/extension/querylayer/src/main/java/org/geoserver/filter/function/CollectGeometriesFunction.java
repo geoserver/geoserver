@@ -1,6 +1,7 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.filter.function;
 
@@ -28,17 +29,17 @@ public class CollectGeometriesFunction extends FunctionImpl {
 
     public CollectGeometriesFunction(
             Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
-        functionName = new FunctionNameImpl(name, args != null ? args.size() : -1);
-        setName(name.getLocalPart());
-        setFallbackValue(fallback);
-        setParameters(args);
-        this.maxCoordinates = maxCoordinates;
-
-        if (args.size() != 1) {
+        if (args == null || args.size() != 1) {
             throw new IllegalArgumentException(
                     "CollectGeometries function requires a single"
                             + " argument, a collection of geometries");
         }
+
+        functionName = new FunctionNameImpl(name, args.size());
+        setName(name.getLocalPart());
+        setFallbackValue(fallback);
+        setParameters(args);
+        this.maxCoordinates = maxCoordinates;
     }
 
     public Object evaluate(Object object) {

@@ -148,12 +148,11 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
 
             // do the test
             Class.forName(get("driverClassName").getDefaultModelObjectAsString());
-            Connection cx =
+            try (Connection cx =
                     DriverManager.getConnection(
                             get("connectURL").getDefaultModelObjectAsString(),
                             get("userName").getDefaultModelObjectAsString(),
-                            get("password").getDefaultModelObjectAsString());
-            cx.close();
+                            get("password").getDefaultModelObjectAsString())) {}
         }
     }
 
@@ -183,8 +182,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
                         (DataSource)
                                 initialContext.lookup(
                                         get("jndiName").getDefaultModelObjectAsString());
-                Connection con = datasource.getConnection();
-                con.close();
+                try (Connection con = datasource.getConnection()) {}
             } finally {
                 initialContext.close();
             }

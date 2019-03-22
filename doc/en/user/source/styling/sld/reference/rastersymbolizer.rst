@@ -196,7 +196,7 @@ The value ``false`` (the default) specifies that the color scale is calculated u
 CQL Expressions
 """""""""""""""
 
-Most of the ColorMapEntry attributes (color, quantity and opacity) can be defined using ``cql expressions``, with the ${...expression...} syntax.
+All of the ColorMapEntry attributes (color, quantity, label and opacity) can be defined using ``cql expressions``, with the ${...expression...} syntax.
 
 CQL expressions are useful to make the color map dynamic, using values taken from the client:    
 

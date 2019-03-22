@@ -17,7 +17,7 @@ before_script:
   - wget -P $M2_HOME/lib/ext http://repo1.maven.org/maven2/io/takari/maven/takari-smart-builder/0.6.1/takari-smart-builder-0.6.1.jar
   - export PATH=$M2_HOME/bin:$PATH
 script:
-  - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install -Dfmt.action=check --builder smart && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install -Dfmt.action=check --builder smart 
+  - mvn -f src/pom.xml -B -U -T3 -fae -Prelease clean install --builder smart $ARGS && mvn -f src/community/pom.xml -B -U -T4 -fae -DskipTests -Prelease -PcommunityRelease clean install --builder smart $COMMUNITY_ARGS
   - grep -H "<testsuite" `find . -iname "TEST-*.xml"` | sed 's/.\/\(.*\)\/target.*:<testsuite .* name="\(.*\)" time="\([^"]*\)" .*/\3\t\2\t\1/' | sort -nr | head -50
 before-caching:
   - rm -rf $HOME/.m2/repository/org/geotools
@@ -27,4 +27,12 @@ notifications:
   email:
     on_success: never
     on_failure: never
-jdk: oraclejdk8
+matrix:
+  include:
+    - jdk: oraclejdk8
+      env: ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
+    - jdk: oraclejdk11
+      env: ARGS="-Dfmt.skip=true" COMMUNITY_ARGS=$ARGS
+    - jdk: oraclejdk11
+      env: ARGS="-Dfmt.action=check -Dqa -DskipTests=true" COMMUNITY_ARGS="-Dfmt.action=check -DskipTests=true"
+

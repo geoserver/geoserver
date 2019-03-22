@@ -129,18 +129,16 @@ public class ExecuteResponseBuilder {
 
         // status
         response.setStatus(f.createStatusType());
-        XMLGregorianCalendar gc =
-                Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
-        response.getStatus().setCreationTime(gc);
         if (status == null) {
-            if (status.getException() != null) {
-                setResponseFailed(response, getException(ProcessState.FAILED));
-            } else if (outputs == null) {
+            if (outputs == null) {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else {
                 response.getStatus().setProcessSucceeded("Process succeeded.");
             }
         } else {
+            XMLGregorianCalendar gc =
+                    Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
+            response.getStatus().setCreationTime(gc);
             if (status.getPhase() == ProcessState.QUEUED) {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else if (status.getPhase() == ProcessState.RUNNING) {
@@ -167,7 +165,7 @@ public class ExecuteResponseBuilder {
         }
 
         // status location, if asynch
-        if (status.isAsynchronous()
+        if ((status != null && status.isAsynchronous())
                 && request.getBaseUrl() != null
                 && status.getExecutionId() != null) {
             Map<String, String> kvp = new LinkedHashMap<String, String>();
@@ -207,7 +205,7 @@ public class ExecuteResponseBuilder {
         }
 
         // process outputs
-        if (status.getException() == null && outputs != null) {
+        if (status != null && status.getException() == null && outputs != null) {
             ProcessOutputsType1 processOutputs = f.createProcessOutputsType1();
             response.setProcessOutputs(processOutputs);
 

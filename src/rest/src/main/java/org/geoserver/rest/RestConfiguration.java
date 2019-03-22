@@ -168,8 +168,9 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
     public void configurePathMatch(PathMatchConfigurer configurer) {
         // Force MVC to use /restng endpoint. If we need something more advanced, we should make a
         // custom PathHelper
-        configurer.setUrlPathHelper(new GeoServerUrlPathHelper());
-        configurer.getUrlPathHelper().setAlwaysUseFullPath(true);
+        GeoServerUrlPathHelper helper = new GeoServerUrlPathHelper();
+        helper.setAlwaysUseFullPath(true);
+        configurer.setUrlPathHelper(helper);
     }
 
     @Override
@@ -193,7 +194,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
             try {
                 return URLDecoder.decode(source, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                return null;
+                throw new RuntimeException(e);
             }
         }
     }

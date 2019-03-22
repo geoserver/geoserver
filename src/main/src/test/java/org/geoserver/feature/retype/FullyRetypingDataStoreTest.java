@@ -159,7 +159,7 @@ public class FullyRetypingDataStoreTest {
                 new WKTReader()
                         .read("MULTIPOINT(39.73245 2.00342)")
                         .equalsExact((Geometry) sf.getAttribute("pointProperty")));
-        assertEquals(new Long(155), sf.getAttribute("intProperty"));
+        assertEquals(Long.valueOf(155), sf.getAttribute("intProperty"));
         assertNull(sf.getAttribute("newProperty"));
     }
 

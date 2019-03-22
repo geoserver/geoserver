@@ -4,8 +4,7 @@
  */
 package org.geoserver.wfs3;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -51,9 +50,7 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
 
     protected DocumentContext getAsJSONPath(MockHttpServletResponse response)
             throws UnsupportedEncodingException {
-        assertThat(
-                response.getContentType(),
-                anyOf(startsWith("application/json"), startsWith("application/geo+json")));
+        assertThat(response.getContentType(), containsString("json"));
         JsonContext json = (JsonContext) JsonPath.parse(response.getContentAsString());
         if (!isQuietTests()) {
             print(json(response));
@@ -70,11 +67,13 @@ public class WFS3TestSupport extends GeoServerSystemTestSupport {
     }
 
     @Override
-    protected void onSetUp(SystemTestData testData) {
+    protected void onSetUp(SystemTestData testData) throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs/3.0");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");
+        namespaces.put("sld", "http://www.opengis.net/sld");
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
 
         CiteTestData.registerNamespaces(namespaces);
 

@@ -46,7 +46,7 @@ public interface ExtendedCapabilitiesProvider<Info extends ServiceInfo, Request>
      * Encodes the extended capabilities.
      *
      * @param tx the translator used to encode the extended capabilities to
-     * @param wms WMS service metadata
+     * @param wfs WFS service metadata
      * @param request the originating request, may be useful for the provider to decide whether or
      *     not, or how, to contribute to the capabilities document
      */

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs.response;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.util.HashMap;
@@ -90,11 +91,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected String proxifiedBaseUrl;
 
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public WCS111DescribeCoverageTranslator(ContentHandler handler) {
             super(handler, null, null);
         }
@@ -188,20 +185,20 @@ public class DescribeCoverageTransformer extends TransformerBase {
         protected void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
             AttributesImpl attributes = new AttributesImpl();
 
-            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+            if (isNotBlank(mdl.getAbout())) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
 
-            if ((mdl.getMetadataType() != null) && (mdl.getMetadataType() != "")) {
+            if (isNotBlank(mdl.getMetadataType())) {
                 attributes.addAttribute(
                         "", "metadataType", "metadataType", "", mdl.getMetadataType());
             }
 
-            if ((linkType != null) && (linkType != "")) {
+            if (isNotBlank(linkType)) {
                 attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
             }
 
-            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+            if (isNotBlank(mdl.getContent())) {
                 attributes.addAttribute(
                         "",
                         "xlink:href",

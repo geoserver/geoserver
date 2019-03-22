@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.RichTextString;
@@ -36,7 +35,6 @@ import org.opengis.feature.type.AttributeDescriptor;
  *     shane@axiomalaska.com
  */
 public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
-    private static Logger log = Logger.getLogger(ExcelOutputFormat.class);
 
     protected static int CELL_CHAR_LIMIT = (int) Math.pow(2, 15) - 1; // 32,767
 

@@ -56,7 +56,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -217,8 +216,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             throw new RestException("No files for datastore " + storeName, HttpStatus.NOT_FOUND);
         }
 
-        FileSystemResource resource = new FileSystemResource(directory.getPath());
-
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             BufferedOutputStream bufferedOutputStream =
@@ -226,16 +223,19 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             ZipOutputStream zipOutputStream = new ZipOutputStream(bufferedOutputStream);
 
             // packing files
-            for (File file : directory.listFiles()) {
-                // new zip entry and copying inputstream with file to zipOutputStream, after all
-                // closing streams
-                zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-                FileInputStream fileInputStream = new FileInputStream(file);
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    // new zip entry and copying inputstream with file to zipOutputStream, after all
+                    // closing streams
+                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+                    FileInputStream fileInputStream = new FileInputStream(file);
 
-                IOUtils.copy(fileInputStream, zipOutputStream);
+                    IOUtils.copy(fileInputStream, zipOutputStream);
 
-                fileInputStream.close();
-                zipOutputStream.closeEntry();
+                    fileInputStream.close();
+                    zipOutputStream.closeEntry();
+                }
             }
 
             zipOutputStream.finish();

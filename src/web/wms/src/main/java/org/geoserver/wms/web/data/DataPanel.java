@@ -142,14 +142,8 @@ public class DataPanel extends Panel {
         Query q = new Query();
         q.setMaxFeatures(1);
         FeatureCollection<?, ?> features = fs.getFeatures(q);
-        FeatureIterator<?> fi = null;
-        Feature sample = null;
-        try {
-            fi = features.features();
-            sample = fi.next();
-        } finally {
-            fi.close();
+        try (FeatureIterator<?> fi = features.features()) {
+            return fi.next();
         }
-        return sample;
     }
 }

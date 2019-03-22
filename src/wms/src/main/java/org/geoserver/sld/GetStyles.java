@@ -51,24 +51,25 @@ public class GetStyles {
                 namedLayer.setName(layerName);
                 LayerGroupInfo group = wms.getLayerGroupByName(layerName);
                 LayerInfo layer = wms.getLayerByName(layerName);
-                if (group != null) {
-                    // nothing to do, groups have no style
-                } else if (layer != null) {
-                    Style style = layer.getDefaultStyle().getStyle();
-                    // add the default style first
-                    style = cloneStyle(style);
-                    style.setDefault(true);
-                    style.setName(layer.getDefaultStyle().getName());
-                    namedLayer.styles().add(style);
-                    // add alternate styles
-                    for (StyleInfo si : layer.getStyles()) {
-                        style = cloneStyle(si.getStyle());
-                        style.setName(si.getName());
+                if (group == null) {
+                    // groups have no style, check other cases
+                    if (layer != null) {
+                        Style style = layer.getDefaultStyle().getStyle();
+                        // add the default style first
+                        style = cloneStyle(style);
+                        style.setDefault(true);
+                        style.setName(layer.getDefaultStyle().getName());
                         namedLayer.styles().add(style);
+                        // add alternate styles
+                        for (StyleInfo si : layer.getStyles()) {
+                            style = cloneStyle(si.getStyle());
+                            style.setName(si.getName());
+                            namedLayer.styles().add(style);
+                        }
+                    } else {
+                        // we should really add a code and a locator...
+                        throw new ServiceException("Unknown layer " + layerName);
                     }
-                } else {
-                    // we should really add a code and a locator...
-                    throw new ServiceException("Unknown layer " + layerName);
                 }
             }
 

@@ -173,6 +173,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
     }
 
     @Test
+    @SuppressWarnings("SelfComparison")
     public void testRoleServiceWrapperAccessRules() throws Exception {
         setMockCreator(
                 new MockCreator() {

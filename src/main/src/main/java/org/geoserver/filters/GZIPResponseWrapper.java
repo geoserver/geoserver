@@ -1,11 +1,17 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2007 - 2013 OpenPlans
- * Copyright 2003 Jayson Falkner (jayson@jspinsider.com)
- * This code is from "Servlets and JavaServer pages; the J2EE Web Tier",
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+/* This code is from "Servlets and JavaServer pages; the J2EE Web Tier",
  * http://www.jspbook.com. You may freely use the code both commercially
  * and non-commercially. If you like the code, please pick up a copy of
  * the book and help support the authors, development of more free code,
  * and the JSP/Servlet/J2EE community.
+ *
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  *
  * Modified by David Winslow <dwinslow@openplans.org> on 2007-12-13.
  */

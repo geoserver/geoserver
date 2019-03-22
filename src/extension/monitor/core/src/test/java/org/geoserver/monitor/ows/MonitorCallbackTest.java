@@ -68,6 +68,7 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -153,6 +154,7 @@ public class MonitorCallbackTest {
         data = monitor.start();
     }
 
+    @After
     public void tearDown() throws Exception {
         monitor.complete();
     }

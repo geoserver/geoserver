@@ -1075,10 +1075,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void handleStyles(final LayerInfo layer) {
-            if (layer.getResource() instanceof WMSLayerInfo) {
-                // do nothing for the moment, we may want to list the set of cascaded named styles
-                // in the future (when we add support for that)
-            } else {
+            // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
+            // named styles
+            // in the future (when we add support for that)
+            if (!(layer.getResource() instanceof WMSLayerInfo)) {
                 // add the layer style
                 start("Style");
 
@@ -1366,7 +1366,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * <p>It is common practice to supply a URL to a WMS accesible legend graphic when it is
          * difficult to create a dynamic legend for a layer.
          *
-         * @param layerName The name of the layer.
+         * @param layer The layer.
          * @param legend The user specified legend url. If null a default url pointing back to the
          *     GetLegendGraphic operation will be automatically created.
          * @param style The styel for the layer.
@@ -1555,7 +1555,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // output bounding box for each supported service srs
                 for (String srs : serviceInfo.getSRS()) {
                     srs = qualifySRS(srs);
-                    if (crs != null && srs.equals(crs)) {
+                    if (crs != null && crs.equals(srs)) {
                         continue; // already did this one
                     }
 

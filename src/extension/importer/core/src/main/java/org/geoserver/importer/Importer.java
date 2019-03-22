@@ -213,7 +213,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public ImportTask getCurrentlyProcessingTask(long contextId) {
-        return currentlyProcessing.get(new Long(contextId));
+        return currentlyProcessing.get(Long.valueOf(contextId));
     }
 
     @Override
@@ -480,7 +480,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             } else {
                 return initForFile(context, (FileData) data);
             }
-        } else if (data instanceof Table) {
         } else if (data instanceof Database) {
             return initForDatabase(context, (Database) data);
         }
@@ -1279,7 +1278,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     (SimpleFeatureType) task.getMetadata().get(FeatureType.class);
             task.setOriginalLayerName(featureType.getTypeName());
             String nativeName = task.getLayer().getResource().getNativeName();
-            if (!featureType.getName().equals(nativeName)) {
+            if (!featureType.getTypeName().equals(nativeName)) {
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(featureType);
                 tb.setName(nativeName);
@@ -1423,7 +1422,6 @@ public class Importer implements DisposableBean, ApplicationListener {
         Throwable error = null;
         ProgressMonitor monitor = task.progress();
         try {
-            long startTime = System.currentTimeMillis();
             task.clearMessages();
 
             task.setTotalToProcess(format.getFeatureCount(task.getData(), task));

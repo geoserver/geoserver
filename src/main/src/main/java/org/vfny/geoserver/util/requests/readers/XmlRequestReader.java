@@ -28,13 +28,7 @@ public abstract class XmlRequestReader {
     /** The service handling the request * */
     private ServiceInfo serviceConfig;
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param reader DOCUMENT ME!
-     * @return DOCUMENT ME!
-     * @throws ServiceException DOCUMENT ME!
-     */
+    /** */
     public abstract Request read(Reader reader, HttpServletRequest req) throws ServiceException;
 
     /**
@@ -44,7 +38,6 @@ public abstract class XmlRequestReader {
      */
     public XmlRequestReader(ServiceInfo service) {
         this.serviceConfig = service;
-        ;
     }
 
     public ServiceInfo getService() {

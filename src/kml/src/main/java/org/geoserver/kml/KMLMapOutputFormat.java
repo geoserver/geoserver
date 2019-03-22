@@ -72,8 +72,8 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     /**
      * Produce the actual map ready for output.
      *
-     * @param map WMSMapContext describing what layers, styles, area of interest etc are to be used
-     *     when producing the map.
+     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to
+     *     be used when producing the map.
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
     public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {

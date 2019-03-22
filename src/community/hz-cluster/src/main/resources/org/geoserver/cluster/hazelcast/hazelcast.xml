@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- 
-
 Configure Hazelcast for clustering GeoServer's catalog and web sessions 
-
-For more information, see: http://www.hazelcast.com/docs/2.3/manual/multi_html/ch12.html
-
+For more information, see:
+https://docs.hazelcast.org/docs/3.11.1/manual/html-single/index.html#understanding-configuration
 -->
-
-<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-2.3.xsd"
-           xmlns="http://www.hazelcast.com/schema/config"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+                               https://hazelcast.com/schema/config/hazelcast-config-3.11.xsd">
   <group>
     <name>gscluster</name>
     <password>geoserver</password>
   </group>
-  
-  <!-- Make sure to change this in web.xml as well -->
-  <instanceName>gscluster</instanceName>
 
+  <instance-name>gscluster</instance-name>
+
+  <!--
+     Make Hazelcast use log4j just like GeoServer. Remember to add:
+       log4j.category.com.hazelcast=INFO
+     in the geoserver logging configuration to see Hazelcast log messages
+  -->
+  <properties>
+    <property name="hazelcast.logging.type">log4j</property>
+  </properties>
+
+  <!-- Network section, by default it enables multicast, tune it to use tcp in case
+    multicast is not allowed, and list the nodes that make up a reasonable core of the
+    cluster (e.g., machines that will never be all down at the same time) -->
   <network>
     <port auto-increment="true">5701</port>
     <join>
@@ -26,7 +34,14 @@ For more information, see: http://www.hazelcast.com/docs/2.3/manual/multi_html/c
         <multicast-group>224.2.2.3</multicast-group>
         <multicast-port>54327</multicast-port>
       </multicast>
+      <tcp-ip enabled="false">
+        <interface>127.0.0.1</interface>
+      </tcp-ip>
+      <aws enabled="false">
+        <access-key>my-access-key</access-key>
+        <secret-key>my-secret-key</secret-key>
+        <region>us-east-1</region>
+      </aws>
     </join>
   </network>
-
 </hazelcast>

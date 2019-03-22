@@ -16,13 +16,13 @@ import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
-import com.yammer.metrics.Metrics;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.annotation.Nullable;
@@ -38,10 +38,12 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogEventImpl;
+import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
@@ -93,7 +95,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         e.setSource(localAddress(cluster.getHz()));
         topic.publish(e);
 
-        Metrics.newCounter(getClass(), "dispatched").inc();
+        incCounter(getClass(), "dispatched");
         waitForAck(e);
     }
 
@@ -157,10 +159,10 @@ public class EventHzSynchronizer extends HzSynchronizer {
     }
 
     @Override
-    protected void processEvent(Event event) throws Exception {
+    protected Future<?> processEvent(Event event) {
         Preconditions.checkState(isStarted());
         if (!(event instanceof ConfigChangeEvent)) {
-            return;
+            return null;
         }
         try {
             LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
@@ -176,6 +178,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         } finally {
             ack(event);
         }
+        return null;
     }
 
     private void processCatalogEvent(final ConfigChangeEvent event)
@@ -201,6 +204,13 @@ public class EventHzSynchronizer extends HzSynchronizer {
                 evt = new CatalogAddEventImpl();
                 break;
             case MODIFY:
+                subj = getCatalogInfo(cat, id, clazz);
+                notifyMethod =
+                        CatalogListener.class.getMethod(
+                                "handleModifyEvent", CatalogModifyEvent.class);
+                evt = new CatalogModifyEventImpl();
+                break;
+            case POST_MODIFY:
                 subj = getCatalogInfo(cat, id, clazz);
                 notifyMethod =
                         CatalogListener.class.getMethod(
@@ -244,7 +254,11 @@ public class EventHzSynchronizer extends HzSynchronizer {
             for (CatalogListener l : ImmutableList.copyOf(cat.getListeners())) {
                 // Don't notify self otherwise the event bounces back out into the
                 // cluster.
-                if (l != this && isStarted()) {
+                if (l != this
+                        && isStarted()
+                        && // HACK-HACK-HACK -- prevent infinite loop with update sequence listener
+                        !"org.geoserver.config.UpdateSequenceListener"
+                                .equals(l.getClass().getCanonicalName())) {
                     notifyMethod.invoke(l, evt);
                 }
             }
@@ -292,7 +306,12 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
         for (ConfigurationListener l : gs.getListeners()) {
             try {
-                if (l != this) notifyMethod.invoke(l, subj);
+                if (l != this
+                        && // HACK-HACK-HACK -- prevent infinite loop with update sequence listener
+                        !"org.geoserver.config.UpdateSequenceListener"
+                                .equals(l.getClass().getCanonicalName())) {
+                    notifyMethod.invoke(l, subj);
+                }
             } catch (Exception ex) {
                 LOGGER.log(
                         Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), ce), ex);

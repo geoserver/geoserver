@@ -1,0 +1,59 @@
+<!-- This file specifies a spotbugs filter for excluding reports that
+     should not be considered errors.
+
+     The format of this file is documented at:
+
+       https://spotbugs.readthedocs.io/en/latest/filter.html
+
+     When possible, please specify the full names of the bug codes,
+     using the pattern attribute, to make it clearer what reports are
+     being suppressed.  You can find a listing of codes at:
+
+       https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html
+  -->
+<FindBugsFilter>
+    <!-- Won't use prepared statements, very bad performance for geospatial use cases -->
+    <Match>
+        <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    </Match>
+    <Match>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
+    </Match>
+    <!-- Returns moslty false positives -->
+    <Match>
+        <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    </Match>
+    <!-- Too many cases where we have a semi-legit usage of same name -->
+    <Match>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+    </Match>
+    <!-- False positives, might want to revisit later -->
+    <Match>
+       <Bug pattern="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"/>
+    </Match>
+    <!-- Annoying but not actually a bug per se, might want to revisit later -->
+    <Match>
+       <Bug pattern="MF_CLASS_MASKS_FIELD"/>
+    </Match>
+    <!-- False positives -->
+    <Match>
+      <Bug pattern="UWF_UNWRITTEN_FIELD"/>
+    </Match>
+    <!-- Too many false positives -->
+    <Match>
+      <Bug pattern="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"/>
+    </Match>
+    <!-- Too many false positives -->
+    <Match>
+      <Bug pattern="NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE"/>
+    </Match>
+    <!-- Too many false positives -->
+    <Match>
+      <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+    <!-- False positives under Java 11, see https://github.com/spotbugs/spotbugs/issues/878 
+         and https://github.com/spotbugs/spotbugs/issues/756 -->
+    <Match>
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
+</FindBugsFilter>

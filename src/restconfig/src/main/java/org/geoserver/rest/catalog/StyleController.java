@@ -197,6 +197,7 @@ public class StyleController extends AbstractCatalogController {
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false) String name,
             @RequestHeader("Content-Type") String contentType,
+            @RequestParam(name = "raw", required = false, defaultValue = "false") boolean raw,
             UriComponentsBuilder builder)
             throws IOException {
 
@@ -224,7 +225,7 @@ public class StyleController extends AbstractCatalogController {
         checkStyleResourceNotExists(sinfo);
 
         try {
-            writeStyle(sinfo, sld, rawData, handler, version);
+            writeStyle(raw, sinfo, sld, rawData, handler, version);
         } catch (Exception e) {
             throw new RestException("Error writing style", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
@@ -427,7 +428,7 @@ public class StyleController extends AbstractCatalogController {
                 Version version = handler.versionForMimeType(mimeType);
 
                 StyledLayerDescriptor sld = handler.parse(content, version, null, entityResolver);
-                writeStyle(info, sld, rawData, handler, version);
+                writeStyle(false, info, sld, rawData, handler, version);
                 catalog.save(info);
             } catch (Exception invalid) {
                 throw new RestException(
@@ -489,6 +490,7 @@ public class StyleController extends AbstractCatalogController {
      *     error.
      */
     private void writeStyle(
+            boolean raw,
             StyleInfo info,
             StyledLayerDescriptor sld,
             byte[] rawData,
@@ -505,8 +507,13 @@ public class StyleController extends AbstractCatalogController {
             }
         }
 
+        // only SLD 1.0 handler can write out a pretty printed SLD, and only under certain
+        // conditions
         Style style = Styles.style(sld);
-        if (handler instanceof SLDHandler && sld.getStyledLayers().length <= 1) {
+        if (!raw
+                && handler instanceof SLDHandler
+                && sld.getStyledLayers().length <= 1
+                && SLDHandler.VERSION_10.equals(version)) {
             info.setFormat(handler.getFormat());
             resourcePool.writeStyle(info, style, true);
         } else {

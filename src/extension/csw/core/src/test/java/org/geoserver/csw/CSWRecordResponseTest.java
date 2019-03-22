@@ -100,6 +100,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
 
+    @Test
     public void testEncodeBrief() throws Exception {
         // setup the request
         CSWRecordsResult response = getCSWResponse();
@@ -168,6 +169,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
                 dom);
     }
 
+    @Test
     public void testEncodeSummary() throws Exception {
         // setup the request
         CSWRecordsResult response = getCSWResponse();
@@ -218,6 +220,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
                 dom);
     }
 
+    @Test
     public void testEncodeFull() throws Exception {
         // setup the request
         CSWRecordsResult response = getCSWResponse();

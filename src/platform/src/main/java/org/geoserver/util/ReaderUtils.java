@@ -276,7 +276,6 @@ public class ReaderUtils {
      *     exist.
      * @return The value if the attribute was found, the null otherwise.
      * @throws Exception When a child attribute is required and not found.
-     * @throws NullPointerException DOCUMENT ME!
      */
     public static String getAttribute(Element elem, String attName, boolean mandatory)
             throws Exception {
@@ -331,7 +330,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return defaultValue;
         }
 
@@ -529,7 +528,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return 0.0;
         }
 
@@ -667,8 +666,8 @@ public class ReaderUtils {
         if (keywords == null
                 || keywords.length() == 0
                 || delimiter == null
-                || delimiter.length() == 0 | keywords.indexOf(delimiter) < 0)
-            return Collections.emptyList();
+                || delimiter.length() == 0
+                || keywords.indexOf(delimiter) < 0) return Collections.emptyList();
 
         ////
         //

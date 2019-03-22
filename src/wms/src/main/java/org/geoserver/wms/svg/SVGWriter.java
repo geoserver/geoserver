@@ -60,7 +60,7 @@ class SVGWriter extends OutputStreamWriter {
 
         // do not show decimal separator if it is not needed
         formatter.setDecimalSeparatorAlwaysShown(false);
-        formatter.setDecimalFormatSymbols(null);
+        formatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
         // set default number of fraction digits
         formatter.setMaximumFractionDigits(5);
@@ -83,8 +83,6 @@ class SVGWriter extends OutputStreamWriter {
 
     private double minCoordDistance;
 
-    private String attributeStyle;
-
     private boolean pointsAsCircles;
 
     /** Creates a new SVGWriter object. */
@@ -106,10 +104,6 @@ class SVGWriter extends OutputStreamWriter {
         writers.put(MultiPoint.class, new MultiPointWriter());
         writers.put(MultiLineString.class, new MultiLineStringWriter());
         writers.put(MultiPolygon.class, new MultiPolygonWriter());
-    }
-
-    public void setAttributeStyle(String attributeName) {
-        this.attributeStyle = attributeName;
     }
 
     public void setPointsAsCircles(boolean asCircles) {
@@ -219,14 +213,6 @@ class SVGWriter extends OutputStreamWriter {
 
             setPointsAsCircles("#circle".equals(style));
 
-            if ((style != null) && !"#circle".equals(style) && style.startsWith("#")) {
-                style = style.substring(1);
-            } else {
-                style = null;
-            }
-
-            setAttributeStyle(style);
-
             setUpWriterHandler(featureType, doCollect);
 
             if (doCollect) {
@@ -259,8 +245,6 @@ class SVGWriter extends OutputStreamWriter {
             LOGGER.finer("Established a collecting features writer handler");
         } else {
             this.writerHandler = new SVGFeatureWriterHandler();
-
-            String typeName = featureType.getTypeName();
 
             /*
              * REVISIT: get rid of all this attribute stuff, since if attributes are needed it fits
@@ -355,7 +339,7 @@ class SVGWriter extends OutputStreamWriter {
             try {
                 write(ft.getID());
             } catch (IOException ex) {
-                System.err.println("error getting fid from " + ft);
+                LOGGER.severe("error getting fid from " + ft);
                 throw ex;
             }
 
@@ -405,7 +389,6 @@ class SVGWriter extends OutputStreamWriter {
 
             SimpleFeatureType type = ft.getFeatureType();
             int numAtts = type.getAttributeCount();
-            String name;
             Object value;
 
             for (int i = 0; i < numAtts; i++) {

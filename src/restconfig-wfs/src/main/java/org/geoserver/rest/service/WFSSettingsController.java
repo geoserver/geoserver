@@ -7,7 +7,6 @@ package org.geoserver.rest.service;
 
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -17,15 +16,11 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSXStreamLoader;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.servlet.HandlerMapping;
 
 /** WFS Settings controller */
 @RestController
@@ -39,7 +34,6 @@ import org.springframework.web.servlet.HandlerMapping;
     }
 )
 public class WFSSettingsController extends ServiceSettingsController {
-    private static final Logger LOGGER = Logging.getLogger(WFSSettingsController.class);
 
     @Autowired
     public WFSSettingsController(GeoServer geoServer) {
@@ -81,13 +75,7 @@ public class WFSSettingsController extends ServiceSettingsController {
                 new XStreamPersister.Callback() {
                     @Override
                     protected ServiceInfo getServiceObject() {
-                        Map<String, String> uriTemplateVars =
-                                (Map<String, String>)
-                                        RequestContextHolder.getRequestAttributes()
-                                                .getAttribute(
-                                                        HandlerMapping
-                                                                .URI_TEMPLATE_VARIABLES_ATTRIBUTE,
-                                                        RequestAttributes.SCOPE_REQUEST);
+                        Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String workspace = uriTemplateVars.get("workspaceName");
                         ServiceInfo service;
                         if (workspace != null) {

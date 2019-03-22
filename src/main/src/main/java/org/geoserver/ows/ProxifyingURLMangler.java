@@ -5,7 +5,9 @@
  */
 package org.geoserver.ows;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -89,10 +91,11 @@ public class ProxifyingURLMangler implements URLMangler {
         // Mangles the URL base in different ways based on a flag
         // (for two reasons: a) speed; b) to make the admin aware of
         // possible security liabilities)
-        baseURL =
-                (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null)
-                        ? this.mangleURLHeaders(baseURL, proxyBase)
-                        : this.mangleURLFixedURL(baseURL, proxyBase);
+        if (this.geoServer.getGlobal().isUseHeadersProxyURL() == true && proxyBase != null) {
+            this.mangleURLHeaders(baseURL, proxyBase);
+        } else {
+            this.mangleURLFixedURL(baseURL, proxyBase);
+        }
     }
 
     /**
@@ -122,6 +125,11 @@ public class ProxifyingURLMangler implements URLMangler {
      * @return mangled proxy URL
      */
     private StringBuilder mangleURLHeaders(StringBuilder baseURL, String proxyBase) {
+
+        // If the request is not an OWS request, does not proxy the URL
+        if (Dispatcher.REQUEST.get() == null) {
+            return baseURL;
+        }
 
         // If the proxy base URL does not contain templates, fall back to
         // the fixed URL cse

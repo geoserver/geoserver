@@ -167,6 +167,10 @@ public class Styles {
                             @Nullable
                             @Override
                             public String apply(@Nullable StyleHandler styleHandler) {
+                                if (styleHandler == null) {
+                                    throw new RuntimeException(
+                                            "Got a null style handler, unexpected");
+                                }
                                 return styleHandler.getName();
                             }
                         });

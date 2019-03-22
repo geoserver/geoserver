@@ -1,6 +1,7 @@
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.filter.function;
 
@@ -46,20 +47,20 @@ public class QueryFunction extends FunctionImpl {
             Literal fallback,
             boolean single,
             int maxResults) {
-        this.catalog = catalog;
-        this.maxResults = maxResults;
-        this.single = single;
-
-        functionName = new FunctionNameImpl(name, args != null ? args.size() : -1);
-        setName(name.getLocalPart());
-        setFallbackValue(fallback);
-        setParameters(args);
-
         if (args.size() < 3 || args.size() > 4) {
             throw new IllegalArgumentException(
                     "QuerySingle function requires 3 or 4 arguments (feature type qualified name, "
                             + "cql filter, extracted attribute name and sort by clause");
         }
+
+        this.catalog = catalog;
+        this.maxResults = maxResults;
+        this.single = single;
+
+        functionName = new FunctionNameImpl(name, args.size());
+        setName(name.getLocalPart());
+        setFallbackValue(fallback);
+        setParameters(args);
     }
 
     @Override

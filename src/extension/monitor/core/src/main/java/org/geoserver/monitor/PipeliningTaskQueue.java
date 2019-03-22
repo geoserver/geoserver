@@ -5,7 +5,6 @@
  */
 package org.geoserver.monitor;
 
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,7 +29,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
 
-    ConcurrentHashMap<K, Queue<Pipelineable<K>>> pipelines;
+    volatile ConcurrentHashMap<K, Queue<Pipelineable<K>>> pipelines;
     ScheduledExecutorService executor;
     ExecutorService tasks;
 
@@ -62,11 +61,12 @@ public class PipeliningTaskQueue<K> implements Runnable {
     public void execute(K key, Runnable task, String desc) {
         Queue<Pipelineable<K>> pipeline = pipelines.get(key);
         if (pipeline == null) {
-            synchronized (pipelines) {
+            synchronized (this) {
                 pipeline = pipelines.get(key);
                 if (pipeline == null) {
                     pipeline = new ConcurrentLinkedQueue();
-                    pipelines.put(key, pipeline);
+                    Queue<Pipelineable<K>> other = pipelines.putIfAbsent(key, pipeline);
+                    if (other != null) pipeline = other;
                 }
             }
         }
@@ -127,16 +127,6 @@ public class PipeliningTaskQueue<K> implements Runnable {
             this.key = key;
             this.task = task;
             this.lock = new ReentrantLock();
-        }
-    }
-
-    public void print() {
-        for (Map.Entry<K, Queue<Pipelineable<K>>> e : pipelines.entrySet()) {
-            System.out.print(e.getKey());
-            for (Pipelineable<K> p : e.getValue()) {
-                System.out.print(p.desc + " ");
-            }
-            System.out.println();
         }
     }
 }

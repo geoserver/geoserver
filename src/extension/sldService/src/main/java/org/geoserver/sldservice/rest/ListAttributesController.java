@@ -1,6 +1,5 @@
 /* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
- * Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
- *  http://www.geo-solutions.it
+ * (c) 2007-2008-2009 GeoSolutions S.A.S, http://www.geo-solutions.it
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -29,7 +27,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
-import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,7 +51,6 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/sldservice")
 public class ListAttributesController extends AbstractCatalogController {
-    private static final Logger LOGGER = Logging.getLogger(ListAttributesController.class);
 
     @Autowired
     public ListAttributesController(@Qualifier("catalog") Catalog catalog) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs.response;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
@@ -83,18 +83,12 @@ public class WCSCapsTransformer extends TransformerBase {
 
     protected class WCS111CapsTranslator extends TranslatorSupport {
         /**
-         * DOCUMENT ME!
-         *
          * @uml.property name="request"
          * @uml.associationEnd multiplicity="(0 1)"
          */
         protected GetCapabilitiesType request;
 
-        /**
-         * Creates a new WFSCapsTranslator object.
-         *
-         * @param handler DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public WCS111CapsTranslator(ContentHandler handler) {
             super(handler, null, null);
         }
@@ -203,12 +197,7 @@ public class WCSCapsTransformer extends TransformerBase {
             end("wcs:Capabilities");
         }
 
-        /**
-         * Handles the service identification of the capabilities document.
-         *
-         * @param config The OGC service to transform.
-         * @throws SAXException For any errors.
-         */
+        /** Handles the service identification of the capabilities document. */
         protected void handleServiceIdentification() {
             start("ows:ServiceIdentification");
             element("ows:Title", wcs.getTitle());
@@ -232,12 +221,7 @@ public class WCSCapsTransformer extends TransformerBase {
             end("ows:ServiceIdentification");
         }
 
-        /**
-         * Handles the service provider of the capabilities document.
-         *
-         * @param config The OGC service to transform.
-         * @throws SAXException For any errors.
-         */
+        /** Handles the service provider of the capabilities document. */
         protected void handleServiceProvider() {
             start("ows:ServiceProvider");
             SettingsInfo settings = wcs.getGeoServer().getSettings();
@@ -259,9 +243,6 @@ public class WCSCapsTransformer extends TransformerBase {
         /**
          * Handles the OperationMetadata portion of the document, printing out the operations and
          * where to bind to them.
-         *
-         * @param config The global wms.
-         * @throws SAXException For any problems.
          */
         protected void handleOperationsMetadata() {
             start("ows:OperationsMetadata");
@@ -331,12 +312,7 @@ public class WCSCapsTransformer extends TransformerBase {
             end("ows:Operation");
         }
 
-        /**
-         * DOCUMENT ME!
-         *
-         * @param kwords DOCUMENT ME!
-         * @throws SAXException DOCUMENT ME!
-         */
+        /** */
         protected void handleKeywords(List kwords) {
             if (kwords != null && kwords.size() > 0) {
                 start("ows:Keywords");
@@ -351,11 +327,7 @@ public class WCSCapsTransformer extends TransformerBase {
             }
         }
 
-        /**
-         * Handles contacts.
-         *
-         * @param wcs the service.
-         */
+        /** Handles contacts. */
         protected void handleContact() {
             final GeoServer gs = wcs.getGeoServer();
             start("ows:ServiceContact");
@@ -487,15 +459,15 @@ public class WCSCapsTransformer extends TransformerBase {
         protected void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
             AttributesImpl attributes = new AttributesImpl();
 
-            if ((mdl.getAbout() != null) && (mdl.getAbout() != "")) {
+            if (isNotBlank(mdl.getAbout())) {
                 attributes.addAttribute("", "about", "about", "", mdl.getAbout());
             }
 
-            if ((linkType != null) && (linkType != "")) {
+            if (isNotBlank(linkType)) {
                 attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
             }
 
-            if ((mdl.getContent() != null) && (mdl.getContent() != "")) {
+            if (isNotBlank(mdl.getContent())) {
                 attributes.addAttribute(
                         "",
                         "xlink:href",

@@ -49,7 +49,7 @@ public interface HTTPStoreInfo extends StoreInfo {
     /** @return seconds to wait for connect requests before timing out, defaults to 30 */
     int getConnectTimeout();
 
-    /** @param seconds to wait for connect requests before timing out */
+    /** @param timeoutSeconds to wait for connect requests before timing out */
     void setConnectTimeout(int timeoutSeconds);
 
     /**

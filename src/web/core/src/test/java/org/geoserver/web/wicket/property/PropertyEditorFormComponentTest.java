@@ -15,6 +15,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport {
@@ -35,7 +36,8 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
     // since introduction of PropertyEditorFormComponent.validate this test is broken
     // Using the component in the GUI works perfectly
 
-    // @Test
+    @Test
+    @Ignore
     public void testAdd() {
         // JD:for the life of me i can't figure out any sane way to test forms with ajax in the mix
         // so unable to test the case of adding multiple key/value pairs since it involves
@@ -57,6 +59,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
     }
 
     @Test
+    @SuppressWarnings("TryFailThrowable")
     public void testRemove() {
         foo.getProps().put("foo", "bar");
         foo.getProps().put("bar", "baz");

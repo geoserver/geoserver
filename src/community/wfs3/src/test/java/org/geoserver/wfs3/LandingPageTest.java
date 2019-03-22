@@ -93,7 +93,7 @@ public class LandingPageTest extends WFS3TestSupport {
     @Test
     public void testLandingPageYaml() throws Exception {
         String yaml = getAsString("wfs3/?f=application/x-yaml");
-        System.out.println(yaml);
+        // System.out.println(yaml);
         // TODO: add actual tests in here
     }
 

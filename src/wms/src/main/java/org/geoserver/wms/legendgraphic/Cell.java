@@ -95,8 +95,8 @@ public abstract class Cell {
 
         Row() {}
 
-        Row(final List<Cell> columns) {
-            columns.addAll(columns);
+        Row(final List<Cell> cells) {
+            this.cells.addAll(cells);
         }
 
         protected Cell get(final int index) {
@@ -190,7 +190,7 @@ public abstract class Cell {
                     new ColorManager.SimpleColorManager(
                             color, opacity, requestedDimension, borderColor));
 
-            final String label = currentCME.getLabel();
+            final String label = LegendUtils.getLabel(currentCME);
             final double quantity = LegendUtils.getQuantity(currentCME);
             final String symbol = " = ";
 
@@ -412,7 +412,7 @@ public abstract class Cell {
                     new ColorManager.SimpleColorManager.GradientColorManager(
                             color, opacity, previousColor, requestedDimension, borderColor));
 
-            String label = currentCME.getLabel();
+            String label = LegendUtils.getLabel(currentCME);
             double quantity = LegendUtils.getQuantity(currentCME);
 
             // Added variation for DynamicColorMap
@@ -591,7 +591,7 @@ public abstract class Cell {
                     new ColorManager.SimpleColorManager(
                             color, opacity, requestedDimension, borderColor));
 
-            String label = currentCME.getLabel();
+            String label = LegendUtils.getLabel(currentCME);
             double quantity1 =
                     leftEdge
                             ? LegendUtils.getQuantity(currentCME)

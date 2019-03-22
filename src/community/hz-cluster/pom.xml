@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.15-SNAPSHOT</version>
+    <version>2.16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -35,10 +35,10 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast-wm</artifactId>
-      <version>3.3.1</version>
+      <version>${hazelcast.web.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.yammer.metrics</groupId>
+      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlet</artifactId>
       <version>${metrics.version}</version>
     </dependency>
@@ -100,7 +100,8 @@
   </dependencies>
 
   <properties>
-    <metrics.version>2.1.5</metrics.version>
+    <hazelcast.web.version>3.8.3</hazelcast.web.version>
+    <metrics.version>4.0.3</metrics.version>
   </properties>
 </project>
 

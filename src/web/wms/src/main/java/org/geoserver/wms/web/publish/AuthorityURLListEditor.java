@@ -49,7 +49,6 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
     /**
      * @param id
-     * @param model the model over the appropriate cataloginfo's list of {@link AuthorityURLInfo}
      * @see WMSInfo#getAuthorityURLs()
      * @see LayerInfo#getAuthorityURLs()
      * @see LayerGroupInfo#getAuthorityURLs()

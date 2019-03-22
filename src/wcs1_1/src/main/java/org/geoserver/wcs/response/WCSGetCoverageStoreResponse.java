@@ -12,6 +12,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.Catalog;
@@ -24,10 +26,10 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverage;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -38,6 +40,8 @@ import org.vfny.geoserver.wcs.WcsException;
  * @author Andrea Aime - TOPP
  */
 public class WCSGetCoverageStoreResponse extends Response {
+
+    static final Logger LOGGER = Logging.getLogger(WCSGetCoverageStoreResponse.class);
 
     GeoServer geoServer;
     Catalog catalog;
@@ -111,7 +115,9 @@ public class WCSGetCoverageStoreResponse extends Response {
             delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, os);
             os.flush();
         }
-        System.out.println(coverageFile);
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Saving coverage to temp file: " + coverageFile);
+        }
 
         // build the path where the clients will be able to retrieve the coverage files
         final String coverageLocation =
@@ -122,8 +128,7 @@ public class WCSGetCoverageStoreResponse extends Response {
                         URLType.RESOURCE);
 
         // build the response
-        WCSInfo wcs = geoServer.getService(WCSInfo.class);
-        CoveragesTransformer tx = new CoveragesTransformer(wcs, request, coverageLocation);
+        CoveragesTransformer tx = new CoveragesTransformer(request, coverageLocation);
         try {
             tx.transform(coverageInfo, output);
         } catch (TransformerException e) {

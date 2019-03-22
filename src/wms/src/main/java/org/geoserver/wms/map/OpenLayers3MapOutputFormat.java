@@ -63,7 +63,7 @@ public class OpenLayers3MapOutputFormat extends AbstractOpenLayersMapOutputForma
             return false;
         }
 
-        Pattern MSIE_PATTERN = Pattern.compile("MSIE (\\d+)\\.");
+        Pattern MSIE_PATTERN = Pattern.compile(".*MSIE (\\d+)\\..*");
         Matcher matcher = MSIE_PATTERN.matcher(agent);
         if (!matcher.matches()) {
             return true;

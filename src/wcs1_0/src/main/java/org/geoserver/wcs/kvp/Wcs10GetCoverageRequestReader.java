@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import net.opengis.gml.CodeType;
 import net.opengis.gml.DirectPositionType;
 import net.opengis.gml.Gml4wcsFactory;
@@ -34,6 +35,9 @@ import net.opengis.wcs10.TimeSequenceType;
 import net.opengis.wcs10.TypedLiteralType;
 import net.opengis.wcs10.Wcs10Factory;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.KvpUtils.Tokenizer;
@@ -45,6 +49,7 @@ import org.geotools.metadata.i18n.Errors;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -389,6 +394,27 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             } else checkTypeAxisRange(rangeSubset, axis, "ELEVATION");
         }
 
+        // check for custom dimensions
+        CoverageInfo coverage = this.catalog.getCoverageByName(coverageName);
+        if (coverage != null) {
+            for (Entry<String, ?> entry : coverage.getMetadata().entrySet()) {
+                String name = entry.getKey();
+                if (name.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)
+                        && entry.getValue() instanceof DimensionInfo
+                        && ((DimensionInfo) entry.getValue()).isEnabled()) {
+                    name = name.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
+                    Object value = kvp.get(name);
+                    // ignore anything that got converted by a KVP parser so that they
+                    // are only handled as keywords and not as a custom dimension since
+                    // WCS 1.0.0 does not define away to avoid these name clashes.
+                    if (value instanceof String) {
+                        name = name.toUpperCase();
+                        checkTypeAxisRange(rangeSubset, Arrays.asList(value), name);
+                    }
+                }
+            }
+        }
+
         return rangeSubset;
     }
 
@@ -396,6 +422,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
      * @param rangeSubset
      * @param axis
      */
+    @SuppressWarnings("unchecked")
     private void checkTypeAxisRange(
             final RangeSubsetType rangeSubset, Object axis, String axisName) {
         if (axis instanceof String) {
@@ -467,6 +494,27 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
             axisSubset.getSingleValue().add(singleValue);
 
+            rangeSubset.getAxisSubset().add(axisSubset);
+        } else if (axis instanceof Collection) {
+            AxisSubsetType axisSubset = Wcs10Factory.eINSTANCE.createAxisSubsetType();
+            axisSubset.setName(axisName);
+            for (Object value : (Collection<?>) axis) {
+                if (value instanceof NumberRange) {
+                    NumberRange<?> range = (NumberRange<?>) value;
+                    IntervalType interval = Wcs10Factory.eINSTANCE.createIntervalType();
+                    TypedLiteralType min = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    TypedLiteralType max = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    min.setValue(Double.toString(range.getMinimum()));
+                    max.setValue(Double.toString(range.getMaximum()));
+                    interval.setMin(min);
+                    interval.setMax(max);
+                    axisSubset.getInterval().add(interval);
+                } else {
+                    TypedLiteralType singleValue = Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                    singleValue.setValue(String.valueOf(value));
+                    axisSubset.getSingleValue().add(singleValue);
+                }
+            }
             rangeSubset.getAxisSubset().add(axisSubset);
         }
     }

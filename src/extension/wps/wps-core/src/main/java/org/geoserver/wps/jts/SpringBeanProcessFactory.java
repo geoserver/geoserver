@@ -94,12 +94,14 @@ public class SpringBeanProcessFactory
         beanMap = new HashMap<String, String>();
         for (String beanName : beanNames) {
             Class c = applicationContext.getType(beanName);
-            String name = c.getSimpleName();
-            if (name.endsWith("Process")) {
-                name = name.substring(0, name.indexOf("Process"));
+            if (c != null) {
+                String name = c.getSimpleName();
+                if (name.endsWith("Process")) {
+                    name = name.substring(0, name.indexOf("Process"));
+                }
+                classMap.put(name, c);
+                beanMap.put(name, beanName);
             }
-            classMap.put(name, c);
-            beanMap.put(name, beanName);
         }
     }
 

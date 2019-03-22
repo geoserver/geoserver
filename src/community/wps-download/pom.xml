@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>org.geoserver</groupId>
 		<artifactId>community</artifactId>
-		<version>2.15-SNAPSHOT</version>
+		<version>2.16-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>gs-wps-download</artifactId>
 	<packaging>jar</packaging>
-	<version>2.15-SNAPSHOT</version>
+	<version>2.16-SNAPSHOT</version>
 	<name>DownloadProcess</name>
 
 	<dependencies>
@@ -45,12 +45,12 @@
 		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec</artifactId>
-			<version>0.2.2-bof2</version>
+			<version>0.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jcodec</groupId>
 			<artifactId>jcodec-javase</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3</version>
 		</dependency>
 
 		<!-- test dependencies -->

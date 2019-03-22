@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.DefaultQuery;
 import org.geotools.data.Query;
 import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -331,7 +330,7 @@ public class EncodeHTMLImageMap extends WebMap {
 
                     // set the actual filter
                     // q.setFilter(ruleFilter);
-                    q = new DefaultQuery(schema.getTypeName(), ruleFilter);
+                    q = new Query(schema.getTypeName(), ruleFilter);
                     // q = (Query) DataUtilities.mixQueries(new
                     // Query(schema.getTypeName(),ruleFilter), q, "HTMLImageMapEncoder");
                 }

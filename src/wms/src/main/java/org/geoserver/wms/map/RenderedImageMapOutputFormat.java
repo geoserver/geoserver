@@ -8,12 +8,8 @@ package org.geoserver.wms.map;
 import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import it.geosolutions.jaiext.vectorbin.ROIGeometry;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -160,6 +156,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
     private static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION =
             "advancedProjectionHandling";
+    private static final String ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION =
+            "advancedProjectionHandlingDensification";
+    private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
+            "disableDatelineWrappingHeuristic";
 
     /** The size of a megabyte */
     private static final int KB = 1024;
@@ -205,7 +205,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * @param the mime type to be written down as an HTTP header when a map of this format is
+     * @param mime the mime type to be written down as an HTTP header when a map of this format is
      *     generated
      */
     public RenderedImageMapOutputFormat(String mime, WMS wms) {
@@ -430,8 +430,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // setup the renderer hints
         Map<Object, Object> rendererParams = new HashMap<Object, Object>();
-        rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-        rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
+        rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
+        rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(
                 StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
@@ -452,8 +452,26 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // turn on advanced projection handling
         if (wms.isAdvancedProjectionHandlingEnabled()) {
             rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
+            if (request.getFormatOptions().get(ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION)
+                    != null) {
+                rendererParams.put(
+                        StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY,
+                        getFormatOptionAsBoolean(
+                                request, ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION));
+            } else if (wms.isAdvancedProjectionDensificationEnabled()) {
+                rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY, true);
+            }
             if (wms.isContinuousMapWrappingEnabled()) {
                 rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
+            }
+            if (request.getFormatOptions().get(DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION)
+                    != null) {
+                rendererParams.put(
+                        StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY,
+                        !getFormatOptionAsBoolean(
+                                request, DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION));
+            } else if (wms.isDateLineWrappingHeuristicDisabled()) {
+                rendererParams.put(StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY, false);
             }
         }
 
@@ -993,7 +1011,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Band selection
         //
         final int[] bandIndices =
-                ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(symbolizer);
+                transformation == null
+                        ? ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(
+                                symbolizer)
+                        : null;
 
         // actual read
         final ReadingContext context = new ReadingContext();
@@ -1440,7 +1461,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
         ImageWorker iw = new ImageWorker(image);
-        Object roiCandidate = image.getProperty("roi");
+        Object roiCandidate = image.getProperty("ROI");
         if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null
@@ -1486,7 +1507,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (roiCandidate instanceof ROI) {
             ROI imageROI = (ROI) roiCandidate;
             try {
-                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+                roi = imageROI.intersect(new ROIGeometry(mapRasterArea));
             } catch (IllegalArgumentException e) {
                 // in the unlikely event that the ROI does not intersect the target map
                 // area an exception will be thrown. Catching the exception instead of checking

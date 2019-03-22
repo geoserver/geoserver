@@ -6,7 +6,6 @@
 package org.geoserver.wms.georss;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -14,7 +13,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -32,13 +30,6 @@ import org.opengis.feature.simple.SimpleFeature;
  * @author David Winslow
  */
 public final class AtomUtils {
-
-    /**
-     * A date formatting object that does most of the formatting work for RFC3339. Note that since
-     * Java's SimpleDateFormat does not provide all the facilities needed for RFC3339 there is still
-     * some custom code to finish the job.
-     */
-    private static DateFormat rfc3339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** A number formatting object to format the the timezone offset info in RFC3339 output. */
     private static NumberFormat doubleDigit = new DecimalFormat("00");
@@ -58,7 +49,7 @@ public final class AtomUtils {
      * @return the formatted date
      */
     public static String dateToRFC3339(Date d) {
-        StringBuilder result = new StringBuilder(rfc3339.format(d));
+        StringBuilder result = new StringBuilder(formatRFC3339(d));
         Calendar cal = new GregorianCalendar();
         cal.setTime(d);
         cal.setTimeZone(TimeZone.getDefault());
@@ -76,6 +67,15 @@ public final class AtomUtils {
         }
 
         return result.toString();
+    }
+
+    /**
+     * A date formatting object that does most of the formatting work for RFC3339. Note that since
+     * Java's SimpleDateFormat does not provide all the facilities needed for RFC3339 there is still
+     * some custom code to finish the job.
+     */
+    private static String formatRFC3339(Date d) {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(d);
     }
 
     // TODO: use an html based output format
@@ -145,15 +145,5 @@ public final class AtomUtils {
             description.setLength(description.length() - 1);
             return description.toString();
         }
-    }
-
-    private static String commaSeparatedLayers(WMSMapContent con) {
-        StringBuilder layers = new StringBuilder();
-        List<Layer> mapLayers = con.layers();
-        for (int i = 0; i < mapLayers.size(); i++) {
-            layers.append(mapLayers.get(i).getTitle());
-            if (i < mapLayers.size() - 1) layers.append(",");
-        }
-        return layers.toString();
     }
 }

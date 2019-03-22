@@ -94,7 +94,7 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                 new TextParamPanel(
                         "capabilitiesURL",
                         new PropertyModel(model, "capabilitiesURL"),
-                        new ParamResourceModel("capabilitiesURL", AbstractWMTSStorePage.this),
+                        new ParamResourceModel("capabilitiesURL", this),
                         true);
         form.add(capabilitiesURL);
 

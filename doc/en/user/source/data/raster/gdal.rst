@@ -45,32 +45,87 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 Installing GDAL native libraries
 ++++++++++++++++++++++++++++++++
 
-The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext whose latest artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/>`_.
+Starting GeoServer 2.16.x the imageio-ext plugin needs a GDAL version 2.x (tested in particular with 2.2.x and 2.4.x).
 
-Browse to the native and then gdal directory for the `Image IO-Ext download link <https://demo.geo-solutions.it/share/github/imageio-ext/releases/native/gdal/1.9.2/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
+Windows packages and setup
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  #. The CRS definitions
-  #. The native libraries matching the target operating system
-     (more details on picking the right one for your windows installation
-     in the "Extra Steps for Windows Platforms" section)
+For Windows, `gisinternals.com <http://www.gisinternals.com/release.php>`_ provides complete packages,
+with Java bindings support, in the ``release-<version>-GDAL-<version>-mapserver-<version>.zip`` packages
+(the GDAL installers at the time of writing provide no Java support).
+
+Unpack the zip file in a suitable location, and then set the following variables before starting up
+GeoServer::
+
+  set PATH=%PATH%;C:\<unzipped_package>\bin;C:\<unzipped_package>\bin\gdal\java
+  set GDAL_DRIVER_PATH=C:\<unzipped_package>\bin\gdal\plugins
+  set GDAL_DATA=C:\<unzipped_package>\bin\gdal-data
   
-Let's now install the CRS definitions.
+There are a few optional drivers that you can find in ``c:\<unzipped_package>\bin\gdal\plugins-extra``
+and ``c:\<unzipped_package>\bin\gdal\plugins-optional``. Adding those paths to ``GDAL_DRIVER_PATH``
+enables the additional formats. 
 
-* Click on the "gdal_data.zip" to download the CRS definitions archive.
-* Extract this archive on disk and place it in a proper directory on your system.
-* Create a GDAL_DATA environment variable to the folder where you have extracted this file. Make also sure that this directory is reachable and readable by the application server process's user.
+.. warning:: Before adding the extra formats please make sure that you are within your rights 
+             to use them in a server environment (some packages are specifically forbidden from
+             free usage on the server side and require a commercial licence, e.g., ECW).
+  
+.. note:: Depending on the version of the underlying operating system you'll have to pick up the right one. You can google around for the one you need. Also make sure you download the 32 bit  
+          version if you are using a 32 bit version of Windows or the 64 bit version (has a "-x64" suffix in the name of the zip file) if you are running a 64 bit version of Windows.
+          Again, pick the one that matches your infrastructure.
+   
+Note on running GeoServer as a Service on Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We now have to install the native libraries.
+If you downloaded an installed GeoServer as a Windows service you installed the 32 bit version.
 
-* Assuming you are using a 64 bit Ubuntu 11 Linux Operating System (for instance), click on the linux folder and then on "gdal192-Ubuntu11-gcc4.5.2-x86_64.tar.gz" to download the native libraries archive (Before doing this, make sure to read and agree with the ECWEULA if you intend to use ECW).
-* If you are using a Windows Operating System make sure to download the archive matching your Microsoft Visual C++ Redistributables and your architecture. For example on a 64 bit Windows with 2010 Redistributables, download the gdal-1.9.2-MSVC2010-x64.zip archive
-* Extract the archive on disk and place it in a proper directory on your system.
-   .. warning:: If you are using a version of GDAL more recent than 1.9.2, replace the :file:`imageio-ext-gdal-bindings-1.9.2.jar` file with the equivalent java binding jar (typically named either :file:`gdal.jar` or :file:`imageio-ext-gdal-bindings-*.jar`) included with your GDAL version. If your GDAL version does not include a bindings jar, it was probably not compiled with the java bindings and will not work with GeoServer.
+Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) won't allow the GeoServer service to use GDAL. As a result, during the service startup, GeoServer log will likely report the following message::
 
-   .. warning:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
+  it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
+  WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path
 
-   .. note:: The native libraries contains the GDAL gdalinfo utility which can be used to test whether or not the libs are corrupted. This can be done by browsing to the directory where the libs have been extracted and performing a *gdalinfo* command with the *formats* options that shows all the formats supported. The key element of GDAL support in GeoServer is represented by the JAVA bindings. To test the bindings, the package contains a Java version of the gdalinfo utility inside the "javainfo" folder (a .bat script for Windows and a .sh for Linux), it is very important to run it (again, with the *formats* options) to make sure that the Java bindings are working properly since that is what GeoServer uses. An error message like *Can't load IA 32-bit .dll on a AMD 64-bit platform* in the log files indicates a  mixed version of the tools, please go through the installation process again and pick the appropriate versions. More details on troubleshooting are provided in the *Note on running GeoServer as a Service on Windows* section below.
+Taking a look at the ``wrapper.conf`` configuration file available inside the GeoServer installation (at ``bin/wrapper/wrapper.conf``), there is this useful entry::
 
+    # Java Library Path (location of Wrapper.DLL or libwrapper.so)
+    wrapper.java.library.path.1=bin/wrapper/lib
+
+To allow the GDAL native DLLs to be loaded, you have two options:
+
+#. Move the native DLLs to the referenced path (bin/wrapper/lib)
+#. Add a ``wrapper.java.library.path.2=path/where/you/deployed/nativelibs`` entry just after the ``wrapper.java.library.path1=bin/wrapper/lib`` line.
+
+Linux packages and setup
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+For common LTS Linux distribution there are packages for GDAL and the associated Java bindings,
+e.g., on Ubuntu and derivatives you can install them using::
+
+  sudo apt-get install gdal-bin libgdal-java
+  
+The libraries as installed above are already in the search path, so no extra setup is normally needed.
+In case setting up the ``GDAL_DATA`` is required to handle certain projections, it's normally found
+in ``/usr/share/gdal/<version>``, so you can execute the following prior to start GeoServer, e.g::
+
+  export GDAL_DATA=/usr/share/gdal/<version>
+  
+In case you decide to build from sources instead, remember to run ``configure`` with ``--with-java``,
+and after the main build and install, get into the ``swig/java`` and run a build and install there.
+For more information about building GDAL see:
+
+* `General build information <https://trac.osgeo.org/gdal/wiki/BuildHints>`_
+* `Specific info to build GDAL Java bindings <https://trac.osgeo.org/gdal/wiki/GdalOgrInJavaBuildInstructionsUnix>`_
+
+After the build and installation, export the following variables to make GeoServer use the GDAL custom build::
+
+  export LD_LIBRARY_PATH=/<path_to_gdal_install>/lib
+  export GDAL_DATA=/<path_to_gdal_install>/share/gdal
+
+In case of version mismatch
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are using a version of GDAL that does not match the one expected by GeoServer, you can go and replace the :file:`gdal-2.2.0.jar` file with the equivalent java binding jar (typically named either :file:`gdal-<version>.jar` or :file:`imageio-ext-gdal-bindings-*.jar`) included with your GDAL version. If your GDAL version does not include a bindings jar, it was probably not compiled with the java bindings and will not work with GeoServer.
+
+Testing the installation
+------------------------
 
 Once these steps have been completed, restart GeoServer.  If all the steps have been performed  correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store in the :guilabel:`Stores` section as shown here below.
 
@@ -84,53 +139,9 @@ If new formats do not appear in the GUI and you see the following message in the
 
 *it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
 WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
+WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdalalljni in java.library.path*
 
 that means that the installations failed for some reason.
-
-Extra Steps for Windows Platforms
--------------------------------------------------
-There are a few things to be careful with as well as some extra steps if you are deploying on Windows.
-
-As stated above, we have multiple versions like MSVC2005, MSVC2008 and so on matching the Microsoft Visual C++ Redistributables. Depending on the version of the underlying operating system you'll have to pick up the right one. You can google around for the one you need. Also make sure you download the 32 bit version if you are using a 32 bit version of Windows or the 64 bit version (has a "-x64" suffix in the name of the zip file) if you are running a 64 bit version of Windows.
-Again, pick the one that matches your infrastructure.
-   
-Note on running GeoServer as a Service on Windows
-++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Note that if you downloaded an installed GeoServer as a Windows service you installed the 32 bit version.
-
-Simply deploying the GDAL ImageI/O-Ext native libraries in a location referred by the PATH environment variable (like, as an instance, the JDK/bin folder) doesn't allow GeoServer to leverage on GDAL, when run as a service. As a result, during the service startup, GeoServer log reports this worrisome message:
-
-*it.geosolutions.imageio.gdalframework.GDALUtilities loadGDAL
-WARNING: Native library load failed.java.lang.UnsatisfiedLinkError: no gdaljni in java.library.path*
-
-Taking a look at the wrapper.conf configuration file available inside the GeoServer installation (at bin/wrapper/wrapper.conf), there is this useful entry:
-
-# Java Library Path (location of Wrapper.DLL or libwrapper.so)
-wrapper.java.library.path.1=bin/wrapper/lib
-
-To allow the GDAL native DLLs to be loaded, you have two options:
-
-#. Move the native DLLs to the referenced path (bin/wrapper/lib)
-#. Add a wrapper.java.library.path.2=path/where/you/deployed/nativelibs entry just after the wrapper.java.library.path1=bin/wrapper/lib line.
-
-Adding support for ECW and MrSID on Windows
-+++++++++++++++++++++++++++++++++++++++++++
-If you are on Windows and you want to add support for ECW and MrSID there is an extra step to perform.
-
-Download and install ECW and MrSID from `GeoSolutions site <https://demo.geo-solutions.it/share/github/imageio-ext/releases/native/gdal/1.9.2/windows/>`_
-
-In the Windows packaging ECW and MrSID are built as plugins hence they are not loaded by default but we need to place their DLLs in a location that is pointed to by the *GDAL_DRIVER_PATH* environment variable. By default the installer place the plugins in C:\\Program Files\\GDAL\\gdalplugins.
-
-.. figure:: images/gdal_driver_path.png
-   :align: center
-
-GDAL internally uses an environment variable to look up additional drivers (notice that there are a few default places where GDAL will look anyway). For additional information, please see the `GDAL wiki <http://trac.osgeo.org/gdal/wiki/ConfigOptions#GDAL_DRIVER_PATH>`_.
-
-Restart GeoServer, you should now see the new data sources available 
-
-.. figure:: images/ecw_mrsid_sources.png
-   :align: center
 
 Configuring a DTED data store
 -----------------------------

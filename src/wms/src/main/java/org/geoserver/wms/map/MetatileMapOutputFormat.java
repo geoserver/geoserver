@@ -100,7 +100,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         }
     }
 
-    private static QuickTileCache tileCache;
+    private QuickTileCache tileCache;
 
     private GetMapRequest request;
 
@@ -108,6 +108,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
 
     public MetatileMapOutputFormat(GetMapRequest request, RenderedImageMapOutputFormat delegate) {
         if (tileCache == null) {
+            // the meta tile cache is a singleton, so no need to keep it as a static member
             tileCache = (QuickTileCache) GeoServerExtensions.bean("metaTileCache");
         }
         this.request = request;

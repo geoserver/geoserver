@@ -151,7 +151,7 @@ public class GeoServerApplication extends WebApplication
     /**
      * Loads a bean from the spring application context with a specific name.
      *
-     * @param type The class of the bean to return.
+     * @param name The name of the bean to return.
      */
     public Object getBean(String name) {
         return GeoServerExtensions.bean(name);
@@ -394,7 +394,8 @@ public class GeoServerApplication extends WebApplication
     public HttpServletRequest servletRequest(Request req) {
         if (req == null || !(req instanceof ServletWebRequest)) {
             throw new IllegalStateException(
-                    "Request not of type ServletWebRequest, was: " + req.getClass().getName());
+                    "Request not of type ServletWebRequest, was: "
+                            + (req == null ? "null" : req.getClass().getName()));
         }
 
         return ((ServletWebRequest) req).getContainerRequest();

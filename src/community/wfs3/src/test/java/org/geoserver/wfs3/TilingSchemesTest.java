@@ -95,7 +95,7 @@ public class TilingSchemesTest extends WFS3TestSupport {
                 0.001d);
         assertEquals(s3, jsonDoc.read("wellKnownScaleSet", String.class));
         assertEquals(v, jsonDoc.read("tileMatrix[0].scaleDenominator", Double.class), v2);
-        assertEquals(new Integer(i), jsonDoc.read(s4, Integer.class));
+        assertEquals(Integer.valueOf(i), jsonDoc.read(s4, Integer.class));
     }
 
     @Test

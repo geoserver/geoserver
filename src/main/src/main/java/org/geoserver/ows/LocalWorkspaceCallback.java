@@ -18,6 +18,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -38,6 +39,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
         catalog = gs.getCatalog();
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public Request init(Request request) {
         WorkspaceInfo ws = null;
         LayerGroupInfo lg = null;

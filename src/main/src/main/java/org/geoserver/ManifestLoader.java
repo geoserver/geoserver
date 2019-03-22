@@ -30,6 +30,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
@@ -58,10 +59,14 @@ public class ManifestLoader {
 
     private static ClassLoader classLoader;
 
-    /** @throws Exception */
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public ManifestLoader(GeoServerResourceLoader loader) throws Exception {
 
         classLoader = loader.getClassLoader();
+        if (classLoader == null) {
+            throw new IllegalStateException(
+                    "Could not get the class loader from GeoServerResourceLoader");
+        }
 
         props = new Properties();
 
@@ -224,9 +229,6 @@ public class ManifestLoader {
         if (classLoader == null) {
             throw new IllegalArgumentException("Unable to run with null classLoader");
         }
-
-        // load metadata
-        Map<String, Manifest> manifests = ManifestLoader.loadManifest(classLoader);
 
         // start building the model
         AboutModel model = new AboutModel();
@@ -620,7 +622,7 @@ public class ManifestLoader {
              * A parser for {@link Manifest} bean which generates {@link ManifestModel}s
              *
              * @param name the name to assign to the generated model
-             * @param m the manifest bean to load
+             * @param manifest the manifest bean to load
              * @return the generated model
              */
             private static ManifestModel parseManifest(

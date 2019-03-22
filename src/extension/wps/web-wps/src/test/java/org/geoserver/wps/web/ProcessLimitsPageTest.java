@@ -81,7 +81,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         InputLimit il = (InputLimit) item.getDefaultModelObject();
         assertEquals("data", il.getName());
         assertEquals(
-                new Integer(1),
+                Integer.valueOf(1),
                 item.get("itemProperties:2:component:text").getDefaultModelObject());
         // levels range validator
         item =
@@ -99,7 +99,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         il = (InputLimit) item.getDefaultModelObject();
         assertEquals("levels", il.getName());
         assertEquals(
-                new Integer(3),
+                Integer.valueOf(3),
                 item.get("itemProperties:2:component:text").getDefaultModelObject());
     }
 

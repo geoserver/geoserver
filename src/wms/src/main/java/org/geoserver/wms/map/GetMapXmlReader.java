@@ -314,7 +314,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
             // TODO: add support for remote WFS here
             // handle the InLineFeature stuff
-            boolean isBaseMap = false;
             if ((sl instanceof UserLayer)
                     && ((((UserLayer) sl)).getInlineFeatureDatastore() != null)) {
                 // SPECIAL CASE - we make the temporary version

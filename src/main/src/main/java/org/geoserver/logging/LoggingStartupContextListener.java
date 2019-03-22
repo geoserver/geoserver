@@ -45,11 +45,9 @@ public class LoggingStartupContextListener implements ServletContextListener {
                         GeoServerExtensions.getProperty(
                                 LoggingUtils.GT2_LOGGING_REDIRECTION, context));
         try {
-            if (logging == GeoToolsLoggingRedirection.JavaLogging) {
-                // no redirection needed
-            } else if (logging == GeoToolsLoggingRedirection.CommonsLogging) {
+            if (logging == GeoToolsLoggingRedirection.CommonsLogging) {
                 Logging.ALL.setLoggerFactory(CommonsLoggerFactory.getInstance());
-            } else {
+            } else if (logging != GeoToolsLoggingRedirection.JavaLogging) {
                 Logging.ALL.setLoggerFactory(Log4JLoggerFactory.getInstance());
             }
         } catch (Exception e) {

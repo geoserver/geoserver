@@ -3,7 +3,7 @@
 Freemarker templates
 ====================
 
-`Freemarker <http://freemarker.sourceforge.net/>`_ is a simple yet powerful template engine that GeoServer emplys for user customization of outputs.
+`Freemarker <http://freemarker.sourceforge.net/>`_ is a simple yet powerful template engine that GeoServer uses for user customization of outputs.
 
 It is possible to use the GeoServer REST API to manage Freemarker templates for catalog resources.
 

@@ -263,7 +263,6 @@ public class ReaderUtils {
      *     exist.
      * @return The value if the attribute was found, the null otherwise.
      * @throws Exception When a child attribute is required and not found.
-     * @throws NullPointerException DOCUMENT ME!
      */
     public static String getAttribute(Element elem, String attName, boolean mandatory)
             throws Exception {
@@ -318,7 +317,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return defaultValue;
         }
 
@@ -414,22 +413,6 @@ public class ReaderUtils {
             throw new Exception("No such attribute: " + attName);
         }
         return elem.getAttribute(attName);
-    }
-
-    public static boolean getChildAttributeAsBoolean(
-            Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Boolean.parseBoolean(value) : null;
-    }
-
-    public static int getChildAttributeAsInt(Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Integer.parseInt(value) : null;
-    }
-
-    public static double getChildAttributeAsDouble(Element root, String childName, String attName) {
-        String value = getChildAttribute(root, childName, attName);
-        return value != null ? Double.parseDouble(value) : null;
     }
 
     /**
@@ -573,7 +556,7 @@ public class ReaderUtils {
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
-        if ((value == null) || (value == "")) {
+        if ((value == null) || ("".equals(value))) {
             return 0.0;
         }
 

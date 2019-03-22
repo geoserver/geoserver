@@ -5,15 +5,11 @@
 package org.geoserver.geofence.config;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CachedRuleReader;
-import org.geotools.util.logging.Logging;
 
 /** @author ETj (etj at geo-solutions.it) */
 public class GeoFenceConfigurationController {
-
-    private static final Logger LOGGER = Logging.getLogger(GeoFenceConfigurationController.class);
 
     private GeoFenceConfigurationManager configurationManager;
 

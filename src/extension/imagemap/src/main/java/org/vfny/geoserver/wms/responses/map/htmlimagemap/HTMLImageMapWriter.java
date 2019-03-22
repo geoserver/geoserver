@@ -88,7 +88,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * Creates a new HTMLImageMapWriter object.
      *
      * @param out stream to encode the layer to
-     * @param config current wms context
+     * @param mapContent current wms context
      * @throws ClassCastException
      * @throws UnsupportedEncodingException
      */
@@ -151,7 +151,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * Encodes a single layer (FeatureCollection) using the supplied style.
      *
      * @param fColl layer to encode
-     * @param style style to use for encoding
+     * @param ftsList the feature type styles to use for encoding
      * @throws IOException if an error occurs during encoding
      * @throws AbortedException if the operation is aborted
      */
@@ -161,7 +161,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         SimpleFeatureIterator iter = null;
         try {
             SimpleFeatureType featureType = fColl.getSchema();
-            Class<?> gtype = featureType.getGeometryDescriptor().getType().getBinding();
 
             // iterates through the single features
             iter = fColl.features();
@@ -299,7 +298,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * encoding
          *
          * @param ft feature to encode
-         * @param style style to use for the encoding
          * @param fts "cached" ftss matching the FeatureType of the feature
          * @throws IOException if an error occurs during encoding
          */
@@ -359,7 +357,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * d) post geometry encoding e) end feature encoding
          *
          * @param ft feature to encode
-         * @param style style to use for the encoding
          * @param fts "cached" ftss matching the FeatureType of the feature
          * @throws IOException if an error occurs during encoding
          */
@@ -482,7 +479,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Analyze the supplied style and process any matching rule.
          *
          * @param ft feature to which the style is going to be applied
-         * @param style style to process
          * @param ftsList cached fts matching the feature
          * @return true if the supplied feature has to be included in the output according to style
          *     filters.
@@ -825,7 +821,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * the loop.
          *
          * @param ft feature to encode
-         * @param style style to use for the encoding
          * @param fts "cached" ftss matching the FeatureType of the feature
          * @throws IOException if an error occurs during encoding
          */
@@ -875,7 +870,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Analyze the supplied style and process any matching rule.
          *
          * @param ft feature to which the style is going to be applied
-         * @param style style to process
          * @param ftsList cached fts matching the feature
          * @return true if the style filters "accept" the feature
          * @throws IOException if an error occurs during the process

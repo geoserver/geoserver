@@ -17,7 +17,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.http.HttpInputMessage;
@@ -77,7 +79,8 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
             Object object = wrapper.getObject();
             Template template = wrapper.getTemplate();
             OutputStream outputStream = outputMessage.getBody();
-            Charset charSet = contentType.getCharset();
+            Charset charSet =
+                    contentType != null ? contentType.getCharset() : getGeoServerDefaultCharset();
 
             if (charSet != null) {
                 templateWriter =
@@ -93,6 +96,11 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
         } catch (TemplateException te) {
             throw new IOException("Template processing error " + te.getMessage());
         }
+    }
+
+    private Charset getGeoServerDefaultCharset() {
+        return Charset.forName(
+                GeoServerExtensions.bean(GeoServer.class).getGlobal().getSettings().getCharset());
     }
 
     public int getPriority() {

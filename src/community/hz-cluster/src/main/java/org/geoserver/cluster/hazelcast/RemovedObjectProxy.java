@@ -30,6 +30,8 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.DataStore;
 
@@ -124,12 +126,16 @@ class RemovedObjectProxy implements InvocationHandler {
             catalogVisitor.visit((FeatureTypeInfo) proxy);
         } else if (WMSLayerInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((WMSLayerInfo) proxy);
+        } else if (WMTSLayerInfo.class.equals(infoInterface)) {
+            catalogVisitor.visit((WMTSLayerInfo) proxy);
         } else if (CoverageStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((CoverageStoreInfo) proxy);
         } else if (DataStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((DataStoreInfo) proxy);
         } else if (WMSStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((WMSStoreInfo) proxy);
+        } else if (WMTSStoreInfo.class.equals(infoInterface)) {
+            catalogVisitor.visit((WMTSStoreInfo) proxy);
         } else if (StyleInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((StyleInfo) proxy);
         } else if (LayerInfo.class.equals(infoInterface)) {

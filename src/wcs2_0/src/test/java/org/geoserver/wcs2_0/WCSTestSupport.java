@@ -11,7 +11,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -29,7 +28,9 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -50,7 +51,6 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
-import org.geotools.util.URLs;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.After;
@@ -77,7 +77,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final boolean IS_WINDOWS;
 
-    protected static final Schema WCS20_SCHEMA;
+    private static Schema WCS20_SCHEMA;
 
     List<GridCoverage> coverages = new ArrayList<GridCoverage>();
 
@@ -93,117 +93,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     static final float EPS = 1E-5f;
 
     static {
-        final Map<String, String> namespaceMap =
-                new HashMap<String, String>() {
-                    {
-                        put(
-                                "http://www.opengis.net/wcs/2.0",
-                                "./src/main/resources/schemas/wcs/2.0/");
-                        put(
-                                "http://www.opengis.net/gmlcov/1.0",
-                                "./src/main/resources/schemas/gmlcov/1.0/");
-                        put(
-                                "http://www.opengis.net/gml/3.2",
-                                "./src/main/resources/schemas/gml/3.2.1/");
-                        put("http://www.w3.org/1999/xlink", "./src/test/resources/schemas/xlink/");
-                        put(
-                                "http://www.w3.org/XML/1998/namespace",
-                                "./src/test/resources/schemas/xml/");
-                        put(
-                                "http://www.isotc211.org/2005/gmd",
-                                "./src/main/resources/schemas/iso/19139/20070417/gmd/");
-                        put(
-                                "http://www.isotc211.org/2005/gco",
-                                "./src/main/resources/schemas/iso/19139/20070417/gco/");
-                        put(
-                                "http://www.isotc211.org/2005/gss",
-                                "./src/main/resources/schemas/iso/19139/20070417/gss/");
-                        put(
-                                "http://www.isotc211.org/2005/gts",
-                                "./src/main/resources/schemas/iso/19139/20070417/gts/");
-                        put(
-                                "http://www.isotc211.org/2005/gsr",
-                                "./src/main/resources/schemas/iso/19139/20070417/gsr/");
-                        put(
-                                "http://www.opengis.net/swe/2.0",
-                                "./src/main/resources/schemas/sweCommon/2.0/");
-                        put(
-                                "http://www.opengis.net/ows/2.0",
-                                "./src/main/resources/schemas/ows/2.0/");
-                    }
-                };
-
-        try {
-            final SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-            factory.setResourceResolver(
-                    new LSResourceResolver() {
-
-                        DOMImplementationLS dom;
-
-                        {
-                            try {
-                                // ok, this is ugly.. the only way I've found to create an InputLS
-                                // without
-                                // having to really implement every bit of it is to create a
-                                // DOMImplementationLS
-                                DocumentBuilderFactory builderFactory =
-                                        DocumentBuilderFactory.newInstance();
-                                builderFactory.setNamespaceAware(true);
-
-                                DocumentBuilder builder = builderFactory.newDocumentBuilder();
-                                // fake xml to parse
-                                String xml =
-                                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
-                                dom =
-                                        (DOMImplementationLS)
-                                                builder.parse(
-                                                                new ByteArrayInputStream(
-                                                                        xml.getBytes()))
-                                                        .getImplementation();
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-
-                        @Override
-                        public LSInput resolveResource(
-                                String type,
-                                String namespaceURI,
-                                String publicId,
-                                String systemId,
-                                String baseURI) {
-
-                            String localPosition = namespaceMap.get(namespaceURI);
-                            if (localPosition != null) {
-                                try {
-                                    if (systemId.contains("/")) {
-                                        systemId =
-                                                systemId.substring(systemId.lastIndexOf("/") + 1);
-                                    }
-                                    File file = new File(localPosition + systemId);
-                                    if (file.exists()) {
-                                        URL url = URLs.fileToUrl(file);
-                                        systemId = url.toURI().toASCIIString();
-                                        LSInput input = dom.createLSInput();
-                                        input.setPublicId(publicId);
-                                        input.setSystemId(systemId);
-                                        return input;
-                                    }
-                                } catch (Exception e) {
-                                    return null;
-                                }
-                            }
-                            return null;
-                        }
-                    });
-            WCS20_SCHEMA =
-                    factory.newSchema(
-                            WCSTestSupport.class.getResource("/schemas/wcs/2.0/wcsAll.xsd"));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
-        }
         boolean windows = false;
         try {
             windows = System.getProperty("os.name").matches(".*Windows.*");
@@ -211,6 +100,125 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
             // no os.name? oh well, never mind
         }
         IS_WINDOWS = windows;
+    }
+
+    protected static Schema getWcs20Schema() {
+        if (WCS20_SCHEMA == null) {
+            final Map<String, String> namespaceMap =
+                    new HashMap<String, String>() {
+                        {
+                            put("http://www.opengis.net/wcs/2.0", "/schemas/wcs/2.0/");
+                            put("http://www.opengis.net/gmlcov/1.0", "/schemas/gmlcov/1.0/");
+                            put("http://www.opengis.net/gml/3.2", "/schemas/gml/3.2.1/");
+                            put("http://www.w3.org/1999/xlink", "/schemas/xlink/");
+                            put("http://www.w3.org/XML/1998/namespace", "/schemas/xml/");
+                            put(
+                                    "http://www.isotc211.org/2005/gmd",
+                                    "/schemas/iso/19139/20070417/gmd/");
+                            put(
+                                    "http://www.isotc211.org/2005/gco",
+                                    "/schemas/iso/19139/20070417/gco/");
+                            put(
+                                    "http://www.isotc211.org/2005/gss",
+                                    "/schemas/iso/19139/20070417/gss/");
+                            put(
+                                    "http://www.isotc211.org/2005/gts",
+                                    "/schemas/iso/19139/20070417/gts/");
+                            put(
+                                    "http://www.isotc211.org/2005/gsr",
+                                    "/schemas/iso/19139/20070417/gsr/");
+                            put("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/");
+                            put("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/");
+                            put("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/");
+                        }
+                    };
+
+            try {
+                final SchemaFactory factory =
+                        SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+                factory.setResourceResolver(
+                        new LSResourceResolver() {
+
+                            DOMImplementationLS dom;
+
+                            {
+                                try {
+                                    // ok, this is ugly.. the only way I've found to create an
+                                    // InputLS
+                                    // without
+                                    // having to really implement every bit of it is to create a
+                                    // DOMImplementationLS
+                                    DocumentBuilderFactory builderFactory =
+                                            DocumentBuilderFactory.newInstance();
+                                    builderFactory.setNamespaceAware(true);
+
+                                    DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                                    // fake xml to parse
+                                    String xml =
+                                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
+                                    dom =
+                                            (DOMImplementationLS)
+                                                    builder.parse(
+                                                                    new ByteArrayInputStream(
+                                                                            xml.getBytes()))
+                                                            .getImplementation();
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public LSInput resolveResource(
+                                    String type,
+                                    String namespaceURI,
+                                    String publicId,
+                                    String systemId,
+                                    String baseURI) {
+
+                                String localPosition = namespaceMap.get(namespaceURI);
+                                if (localPosition != null) {
+                                    try {
+                                        if (systemId.contains("/")) {
+                                            systemId =
+                                                    systemId.substring(
+                                                            systemId.lastIndexOf("/") + 1);
+                                        }
+                                        final URL resource =
+                                                WCSTestSupport.class.getResource(
+                                                        localPosition + "/" + systemId);
+                                        if (resource != null) {
+                                            systemId = resource.toURI().toASCIIString();
+                                            LSInput input = dom.createLSInput();
+                                            input.setPublicId(publicId);
+                                            input.setSystemId(systemId);
+                                            return input;
+                                        }
+                                    } catch (Exception e) {
+                                        return null;
+                                    }
+                                }
+                                return null;
+                            }
+                        });
+                WCS20_SCHEMA =
+                        factory.newSchema(
+                                new Source[] {
+                                    new StreamSource(
+                                            WCSTestSupport.class
+                                                    .getResource("/schemas/wcs/2.0/wcsAll.xsd")
+                                                    .toExternalForm()),
+                                    new StreamSource(
+                                            WCSTestSupport.class
+                                                    .getResource("/schemas/wcs/2.0/wcsgs.xsd")
+                                                    .toExternalForm())
+                                });
+            } catch (Exception e) {
+                throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
+            }
+        }
+
+        return WCS20_SCHEMA;
     }
 
     /** @return The global wcs instance from the application context. */
@@ -295,7 +303,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected void checkFullCapabilitiesDocument(Document dom) throws Exception {
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, getWcs20Schema());
 
         // TODO: check all the layers are here, the profiles, and so on
 
@@ -331,9 +339,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /**
      * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
      * with attribute number whose value is the specified tag value.
-     *
-     * @param tag DOCUMENT ME!
-     * @return DOCUMENT ME!
      */
     protected IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();

@@ -6,6 +6,8 @@
 
 package org.geoserver.security.auth;
 
+import java.util.Objects;
+
 /**
  * Composite key implementation for filter name and cache key
  *
@@ -32,10 +34,8 @@ public class AuthenticationCacheKey {
         if (!(other instanceof AuthenticationCacheKey)) return false;
 
         AuthenticationCacheKey otherKey = (AuthenticationCacheKey) other;
-        return (filterName == otherKey.filterName
-                        || (filterName != null && filterName.equals(otherKey.filterName)))
-                && (cacheKey == otherKey.cacheKey
-                        || (cacheKey != null && cacheKey.equals(otherKey.cacheKey)));
+        return (Objects.equals(filterName, otherKey.filterName))
+                && (Objects.equals(cacheKey, otherKey.cacheKey));
     }
 
     public int hashCode() {

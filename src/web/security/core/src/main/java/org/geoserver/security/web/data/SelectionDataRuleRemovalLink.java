@@ -12,11 +12,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.catalog.CascadeDeleteVisitor;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -64,8 +61,6 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection
-                                Catalog catalog = GeoServerApplication.get().getCatalog();
-                                CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
                                 DataAccessRuleDAO dao = DataAccessRuleDAO.get();
                                 for (DataAccessRule rule : removePanel.getRoots()) {
                                     dao.removeRule(rule);

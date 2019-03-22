@@ -13,6 +13,7 @@
         <include>poi-*.jar</include>
         <include>xmlbeans-*.jar</include>
         <include>dom4j-*.jar</include>
+        <include>commons-compress-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

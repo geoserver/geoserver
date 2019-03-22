@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.15-SNAPSHOT</version>
+    <version>2.16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -39,7 +39,7 @@
           <descriptor>release/ext-authkey.xml</descriptor>
           <!-- <descriptor>release/ext-groovy.xml</descriptor> -->
           <!-- <descriptor>release/ext-javascript.xml</descriptor> -->
-          <descriptor>release/ext-spatialite.xml</descriptor>
+          <!-- <descriptor>release/ext-spatialite.xml</descriptor> -->
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
@@ -54,7 +54,7 @@
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
           <descriptor>release/ext-jms-cluster.xml</descriptor>
-          <!-- descriptor>release/ext-hz-cluster.xml</descriptor -->
+          <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>
           <descriptor>release/ext-solr.xml</descriptor>
           <!-- If you are re-enabling this, remember to re-add the documentation -->
@@ -70,7 +70,7 @@
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-          <descriptor>release/ext-geogig.xml</descriptor>
+	  <!--descriptor>release/ext-geogig.xml</descriptor>-->
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
@@ -95,6 +95,8 @@
           <descriptor>release/ext-qos.xml</descriptor>
           <descriptor>release/ext-web-resource.xml</descriptor>
           <descriptor>release/ext-s3-geotiff.xml</descriptor>
+          <descriptor>release/ext-wmts-styles.xml</descriptor>
+          <descriptor>release/ext-ogr-datastore.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -208,9 +210,9 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>spatialite</module>
+        <!-- <module>spatialite</module> -->
         <module>jdbcconfig</module>
-        <!--module>script</module-->
+        <module>script</module>
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
@@ -222,14 +224,14 @@
         <module>kmlppio</module>
         <module>wps-download</module>
         <module>jms-cluster</module>
-        <!-- module>hz-cluster</module -->
+        <module>hz-cluster</module>
         <module>solr</module>
         <!-- <module>rest-upload</module> -->
         <module>params-extractor</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
-        <module>geogig</module>
+	<!--<module>geogig</module>-->
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
@@ -246,6 +248,7 @@
         <module>security/oauth2-openid-connect</module>
         <module>security/keycloak</module>
         <module>wmts-multi-dimensional</module>
+        <module>wmts-styles</module>
         <module>onelogin</module>
         <module>notification</module>
         <module>notification-common</module>
@@ -262,6 +265,7 @@
         <module>wfs3</module>
         <!-- <module>monitor-hibernate</module> -->
         <module>qos</module>
+        <module>web-ogr</module>
       </modules>
     </profile>
     <profile>
@@ -522,6 +526,12 @@
       </modules>
     </profile>
     <profile>
+      <id>wmts-styles</id>
+      <modules>
+        <module>wmts-styles</module>
+      </modules>
+    </profile>
+    <profile>
       <id>ows-simulate</id>
       <modules>
         <module>ows-simulate</module>
@@ -594,9 +604,15 @@
       </modules>
     </profile>
     <profile>
+<<<<<<< HEAD
       <id>mapml</id>
       <modules>
         <module>mapml</module>
+=======
+      <id>web-ogr</id>
+      <modules>
+        <module>web-ogr</module>
+>>>>>>> d7cacc6ee3a45e1ed393bdf125afacb7cc1cea43
       </modules>
     </profile>
   </profiles>  

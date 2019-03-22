@@ -5,7 +5,12 @@
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,8 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
+import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerConfigPersister;
@@ -22,6 +30,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
@@ -32,6 +41,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
+import org.geotools.util.Version;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -64,21 +74,40 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws IOException {
+        final Catalog catalog = getCatalog();
         testData.addStyle(
-                "singleStyleGroup",
-                "singleStyleGroup.sld",
-                CatalogIntegrationTest.class,
-                getCatalog());
+                "singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, catalog);
         testData.addStyle(
-                "multiStyleGroup",
-                "multiStyleGroup.sld",
-                CatalogIntegrationTest.class,
-                getCatalog());
+                "multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, catalog);
         testData.addStyle(
                 "recursiveStyleGroup",
                 "recursiveStyleGroup.sld",
                 CatalogIntegrationTest.class,
-                getCatalog());
+                catalog);
+
+        // add a style with relative resource references, and resources in sub-directories
+        testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, catalog);
+        StyleInfo style = catalog.getStyleByName("relative");
+        style.setFormatVersion(new Version("1.1.0"));
+        catalog.save(style);
+        File images = new File(testData.getDataDirectoryRoot(), "styles/images");
+        assertTrue(images.mkdir());
+        File image = new File("./src/test/resources/org/geoserver/catalog/rockFillSymbol.png");
+        assertTrue(image.exists());
+        FileUtils.copyFileToDirectory(image, images);
+        File svg = new File("./src/test/resources/org/geoserver/catalog/square16.svg");
+        assertTrue(svg.exists());
+        FileUtils.copyFileToDirectory(svg, images);
+
+        // add a workspace for style move testing
+        final CatalogFactory factory = catalog.getFactory();
+        final WorkspaceInfo secondaryWs = factory.createWorkspace();
+        secondaryWs.setName("secondary");
+        final NamespaceInfo secondaryNs = factory.createNamespace();
+        secondaryNs.setPrefix("secondary");
+        secondaryNs.setURI("http://www.geoserver.org/secondary");
+        catalog.add(secondaryWs);
+        catalog.add(secondaryNs);
     }
 
     @Test
@@ -528,5 +557,84 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         } catch (IllegalArgumentException e) {
             // expected
         }
+    }
+
+    @Test
+    public void testRenameWorspaceAfterReload() throws Exception {
+        // reload
+        getGeoServer().reload();
+
+        // rename workspace
+        Catalog catalog = getCatalog();
+        List<CatalogEvent> events = new ArrayList<>();
+        final WorkspaceInfo ws = catalog.getDefaultWorkspace();
+        String name = ws.getName();
+        try {
+            final String newName = "renamed_" + name;
+            ws.setName(newName);
+            catalog.save(ws);
+
+            // check rename occurred
+            final WorkspaceInfo wsRenamed = getCatalog().getWorkspaceByName(newName);
+            assertNotNull(wsRenamed);
+            assertEquals(newName, wsRenamed.getName());
+            final NamespaceInfo nsRenamed = getCatalog().getNamespaceByPrefix(newName);
+            assertNotNull(nsRenamed);
+            assertEquals(newName, nsRenamed.getName());
+
+            // do a reload
+            getGeoServer().reload();
+
+            // check it was actually successfully stored. Get the catalog again,
+            // as it has been replaced
+            catalog = getCatalog();
+            final WorkspaceInfo wsRenamed2 = catalog.getWorkspaceByName(newName);
+            assertNotNull(wsRenamed2);
+            assertEquals(newName, wsRenamed.getName());
+            final NamespaceInfo nsRenamed2 = getCatalog().getNamespaceByPrefix(newName);
+            assertNotNull(nsRenamed2);
+            assertEquals(newName, nsRenamed2.getName());
+
+            // the old one is gone, too
+            assertNull(catalog.getWorkspaceByName(name));
+        } finally {
+            ws.setName(name);
+            catalog.save(ws);
+        }
+    }
+
+    @Test
+    public void testReloadDefaultStyles() throws Exception {
+        // clear up all "point" styles
+        final Resource styles = getDataDirectory().getStyles();
+        styles.list()
+                .stream()
+                .filter(r -> r.getType() == Resource.Type.RESOURCE && r.name().contains("point"))
+                .forEach(r -> r.delete());
+
+        // reload
+        getGeoServer().reload();
+
+        // check the default point style has been re-created
+        final StyleInfo point = getCatalog().getStyleByName("point");
+        assertNotNull(point);
+    }
+
+    @Test
+    public void testChangeStyleWorkspaceRelativeResources() throws Exception {
+        // move style to a different workspace
+        final Catalog catalog = getCatalog();
+        final StyleInfo style = catalog.getStyleByName("relative");
+        final WorkspaceInfo secondaryWs = catalog.getWorkspaceByName("secondary");
+        style.setWorkspace(secondaryWs);
+        catalog.save(style);
+
+        // check the referenced image and svg has been moved keeping the relative position
+        final Resource relativeImage =
+                getDataDirectory().getStyles(secondaryWs, "images", "rockFillSymbol.png");
+        assertEquals(Resource.Type.RESOURCE, relativeImage.getType());
+        final Resource relativeSvg =
+                getDataDirectory().getStyles(secondaryWs, "images", "square16.svg");
+        assertEquals(Resource.Type.RESOURCE, relativeSvg.getType());
     }
 }

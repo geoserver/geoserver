@@ -112,8 +112,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     public static void updateFormats(Set<String> newFormats) {
-        if (!formats.equals(newFormats)) {
-            Map<String, String> replacement = new HashMap<String, String>();
+        if (!formats.keySet().equals(newFormats)) {
+            Map<String, String> replacement = new HashMap<>();
             for (String format : newFormats) {
                 replacement.put(format, format);
             }
@@ -280,7 +280,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         // locate the transformation, and make sure it's the same for all feature types
         Set<FeatureType> featureTypes = getFeatureTypes(collections);
         TransformInfo result = null;
-        FeatureType reference = null;
         for (FeatureType ft : featureTypes) {
             TransformInfo curr = locateTransform(outputFormat, ft);
             if (curr == null) {
@@ -292,7 +291,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
                         ServiceException.INVALID_PARAMETER_VALUE,
                         "typeName");
             } else if (result == null) {
-                reference = ft;
                 result = curr;
             } else if (!result.equals(curr)) {
                 throw new WFSException(

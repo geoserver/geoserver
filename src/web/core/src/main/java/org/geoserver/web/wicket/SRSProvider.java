@@ -87,6 +87,9 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
         @Override
         public boolean equals(Object o) {
+            if (!(o instanceof SRS)) {
+                return false;
+            }
             return code.equals(((SRS) o).code);
         }
 
@@ -139,12 +142,12 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
     private static final ArrayList<Property<SRS>> PROPERTIES =
             new ArrayList<Property<SRS>>(Arrays.asList(CODE, DESCRIPTION));
 
-    private List<SRS> items;
+    private volatile List<SRS> items;
 
     @Override
     protected List<SRS> getItems() {
         if (items == null) {
-            synchronized (SRSProvider.class) {
+            synchronized (this) {
                 if (items == null) {
                     items = buildCodeList();
                 }

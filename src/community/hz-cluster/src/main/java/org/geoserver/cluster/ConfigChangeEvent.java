@@ -26,6 +26,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -40,6 +42,8 @@ import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
+import org.geoserver.catalog.impl.WMTSLayerInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
@@ -74,11 +78,13 @@ public class ConfigChangeEvent extends Event {
         INTERFACES.put(WorkspaceInfoImpl.class, WorkspaceInfo.class);
         INTERFACES.put(DataStoreInfoImpl.class, DataStoreInfo.class);
         INTERFACES.put(WMSStoreInfoImpl.class, WMSStoreInfo.class);
+        INTERFACES.put(WMTSStoreInfoImpl.class, WMTSStoreInfo.class);
         INTERFACES.put(CoverageStoreInfoImpl.class, CoverageStoreInfo.class);
         INTERFACES.put(StyleInfoImpl.class, StyleInfo.class);
         INTERFACES.put(FeatureTypeInfoImpl.class, FeatureTypeInfo.class);
         INTERFACES.put(CoverageInfoImpl.class, CoverageInfo.class);
         INTERFACES.put(WMSLayerInfoImpl.class, WMSLayerInfo.class);
+        INTERFACES.put(WMTSLayerInfoImpl.class, WMTSLayerInfo.class);
         INTERFACES.put(MetadataLinkInfoImpl.class, MetadataLinkInfo.class);
         INTERFACES.put(LayerInfoImpl.class, LayerInfo.class);
         INTERFACES.put(LayerGroupInfoImpl.class, LayerGroupInfo.class);
@@ -90,7 +96,8 @@ public class ConfigChangeEvent extends Event {
     public enum Type {
         ADD,
         REMOVE,
-        MODIFY
+        MODIFY,
+        POST_MODIFY
     }
 
     /** id of object */

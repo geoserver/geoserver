@@ -26,7 +26,6 @@ import org.geoserver.wfs3.GetFeatureType;
 import org.geoserver.wfs3.TileDataRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
-import org.geowebcache.config.DefaultGridsets;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.locationtech.jts.geom.Envelope;
@@ -40,13 +39,10 @@ import org.opengis.filter.identity.FeatureId;
 public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeatureKvpRequestReader {
 
     public static final String DEFAULT_GEOMETRY = "";
-    private DefaultGridsets gridSets;
     private TileDataRequest tileData;
 
-    public GetFeatureKvpRequestReader(
-            GeoServer geoServer, FilterFactory filterFactory, DefaultGridsets gridSets) {
+    public GetFeatureKvpRequestReader(GeoServer geoServer, FilterFactory filterFactory) {
         super(GetFeatureType.class, null, geoServer, filterFactory);
-        this.gridSets = gridSets;
     }
 
     @Override

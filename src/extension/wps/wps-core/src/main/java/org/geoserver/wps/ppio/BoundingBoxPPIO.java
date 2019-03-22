@@ -7,6 +7,7 @@ package org.geoserver.wps.ppio;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
 import org.geoserver.wps.WPSException;
@@ -33,7 +34,6 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
      *
      * <p>This method should parse the input stream into its "internal" representation.
      *
-     * @param input The input stream.
      * @return An object of type {@link #getType()}.
      */
     public Object decode(BoundingBoxType boundingBoxType) throws Exception {
@@ -83,7 +83,6 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
      * Encodes the internal representation of the object to an XML stream.
      *
      * @param object An object of type {@link #getType()}.
-     * @param handler An XML content handler.
      */
     public BoundingBoxType encode(Object object) throws WPSException {
         if (object == null) {
@@ -109,8 +108,8 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         } else if (org.opengis.geometry.Envelope.class.isAssignableFrom(getType())) {
             org.opengis.geometry.Envelope env = (org.opengis.geometry.Envelope) object;
             crs = env.getCoordinateReferenceSystem();
-            bbox.setLowerCorner(Arrays.asList(env.getLowerCorner().getCoordinate()));
-            bbox.setUpperCorner(Arrays.asList(env.getUpperCorner().getCoordinate()));
+            bbox.setLowerCorner(doubleArrayToList(env.getLowerCorner().getCoordinate()));
+            bbox.setUpperCorner(doubleArrayToList(env.getUpperCorner().getCoordinate()));
         } else {
             throw new WPSException(
                     "Failed to convert from " + object + " to an OWS 1.1 Bounding box type");
@@ -129,5 +128,9 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         }
 
         return bbox;
+    }
+
+    private List<Double> doubleArrayToList(double[] coordinate) {
+        return Arrays.stream(coordinate).boxed().collect(Collectors.toList());
     }
 }

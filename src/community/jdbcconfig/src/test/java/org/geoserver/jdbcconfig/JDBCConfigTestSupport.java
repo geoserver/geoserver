@@ -25,6 +25,7 @@ import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamPersisterInitializer;
+import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
 import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
@@ -222,6 +223,8 @@ public class JDBCConfigTestSupport {
 
     private ConfigDatabase configDb;
 
+    private JDBCCatalogFacade facade;
+
     public JDBCConfigTestSupport(DBConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
@@ -266,6 +269,7 @@ public class JDBCConfigTestSupport {
         configDb = context.getBean(ConfigDatabase.class);
 
         catalog = new CatalogImpl();
+        catalog.setFacade(facade = new JDBCCatalogFacade(configDb));
         configDb.setCatalog(catalog);
         configDb.initDb(null);
     }
@@ -379,6 +383,10 @@ public class JDBCConfigTestSupport {
 
     public CatalogImpl getCatalog() {
         return catalog;
+    }
+
+    public JDBCCatalogFacade getFacade() {
+        return facade;
     }
 
     @Configuration

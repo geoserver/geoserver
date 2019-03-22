@@ -43,7 +43,7 @@ public class FeatureDescriptionTemplateTest {
                         featureType,
                         new Object[] {
                             "three",
-                            new Integer(3),
+                            Integer.valueOf(3),
                             new Double(3.3),
                             gf.createPoint(new Coordinate(3, 3))
                         },
@@ -92,12 +92,12 @@ public class FeatureDescriptionTemplateTest {
     //
     // DefaultFeature f = new DefaultFeature((DefaultFeatureType) featureType,
     // new Object[] {
-    // "three", new Integer(3), new Double(3.3), gf.createPoint(new Coordinate(3, 3))
+    // "three", Integer.valueOf(3), new Double(3.3), gf.createPoint(new Coordinate(3, 3))
     // }, "fid.3") {
     // };
     // DefaultFeature f4 = new DefaultFeature((DefaultFeatureType) featureType,
     // new Object[] {
-    // "four", new Integer(4), new Double(4.4), gf.createPoint(new Coordinate(4, 4))
+    // "four", Integer.valueOf(4), new Double(4.4), gf.createPoint(new Coordinate(4, 4))
     // }, "fid.4") {
     // };
     // SimpleFeatureCollection features = new DefaultFeatureCollection(null,null) {};

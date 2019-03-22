@@ -97,14 +97,16 @@ public class DownloadEstimatorProcess implements GSProcess {
                         name = "targetSizeX",
                         min = 0,
                         minValue = 1,
-                        description = "X Size of the Target Image (applies to raster data only)"
+                        description =
+                                "X Size of the Target Image (applies to raster data only), or native resolution if missing"
                     )
                     Integer targetSizeX,
             @DescribeParameter(
                         name = "targetSizeY",
                         min = 0,
                         minValue = 1,
-                        description = "Y Size of the Target Image (applies to raster data only)"
+                        description =
+                                "Y Size of the Target Image (applies to raster data only), or native resolution if missing"
                     )
                     Integer targetSizeY,
             @DescribeParameter(

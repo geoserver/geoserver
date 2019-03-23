@@ -604,15 +604,15 @@
       </modules>
     </profile>
     <profile>
-<<<<<<< HEAD
       <id>mapml</id>
       <modules>
         <module>mapml</module>
-=======
+      </modules>
+    </profile>
+    <profile>
       <id>web-ogr</id>
       <modules>
         <module>web-ogr</module>
->>>>>>> d7cacc6ee3a45e1ed393bdf125afacb7cc1cea43
       </modules>
     </profile>
   </profiles>  

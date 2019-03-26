@@ -5,16 +5,21 @@
 package org.geoserver.wcs2_0.kvp;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.data.test.MockData.TASMANIA_DEM;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
@@ -398,6 +403,51 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo(
                 "text/plain",
                 "//wcs:CoverageDescriptions/wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat",
+                dom);
+    }
+
+    @Test
+    public void testMetadata() throws Exception {
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        ci.setTitle("My Title");
+        ci.setDescription("My Abstract");
+        ci.getKeywords().add(0, new Keyword("my_keyword"));
+        MetadataLinkInfo mdl1 = catalog.getFactory().createMetadataLink();
+        mdl1.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        mdl1.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(mdl1);
+        MetadataLinkInfo mdl2 = catalog.getFactory().createMetadataLink();
+        mdl2.setContent("/metadata?key=value");
+        mdl2.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(mdl2);
+        catalog.save(ci);
+        String coverageId = getLayerId(TASMANIA_DEM).replace(":", "__");
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=" + coverageId);
+        // print(dom);
+
+        checkValidationErrors(dom, getWcs20Schema());
+        String base = "//wcs:CoverageDescriptions/wcs:CoverageDescription/";
+        assertXpathEvaluatesTo("My Title", base + "gml:name", dom);
+        assertXpathEvaluatesTo("My Abstract", base + "gml:description", dom);
+        base += "gmlcov:metadata/gmlcov:Extension/";
+        assertXpathEvaluatesTo("4", "count(" + base + "ows:Keywords/ows:Keyword)", dom);
+        assertXpathEvaluatesTo("my_keyword", base + "ows:Keywords/ows:Keyword[1]", dom);
+        assertXpathEvaluatesTo("2", "count(" + base + "ows:Metadata)", dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org", base + "ows:Metadata[1]/@about", dom);
+        assertXpathEvaluatesTo("simple", base + "ows:Metadata[1]/@xlink:type", dom);
+        assertXpathEvaluatesTo(
+                "http://www.geoserver.org/tasmania/dem.xml",
+                base + "ows:Metadata[1]/@xlink:href",
+                dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org", base + "ows:Metadata[2]/@about", dom);
+        assertXpathEvaluatesTo("simple", base + "ows:Metadata[2]/@xlink:type", dom);
+        assertXpathEvaluatesTo(
+                "src/test/resources/geoserver/metadata?key=value",
+                base + "ows:Metadata[2]/@xlink:href",
                 dom);
     }
 

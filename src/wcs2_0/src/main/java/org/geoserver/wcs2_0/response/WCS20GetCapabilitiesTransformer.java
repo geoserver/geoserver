@@ -27,6 +27,7 @@ import net.opengis.wcs20.GetCapabilitiesType;
 import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
@@ -47,6 +48,7 @@ import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.geometry.BoundingBox;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -653,12 +655,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
         private void handleCoverageSummary(CoverageInfo cv) throws Exception {
             start("wcs:CoverageSummary");
+            elementIfNotEmpty("ows:Title", cv.getTitle());
+            elementIfNotEmpty("ows:Abstract", cv.getDescription());
+            handleKeywords(cv.getKeywords());
             String covId = NCNameResourceCodec.encode(cv);
             element("wcs:CoverageId", covId);
             element("wcs:CoverageSubtype", "RectifiedGridCoverage"); // TODO make this parametric
 
             handleWGS84BoundingBox(cv.getLatLonBoundingBox());
             handleBoundingBox(cv.boundingBox());
+            cv.getMetadataLinks().forEach(this::handleMetadataLink);
 
             end("wcs:CoverageSummary");
         }
@@ -699,6 +705,19 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                             .append(boundingBox.getUpperCorner().getOrdinate(1))
                             .toString());
             end("ows:BoundingBox");
+        }
+
+        private void handleMetadataLink(MetadataLinkInfo mdl) {
+            if (isNotBlank(mdl.getContent())) {
+                String url = ResponseUtils.proxifyMetadataLink(mdl, request.getBaseUrl());
+                AttributesImpl attributes = new AttributesImpl();
+                if (isNotBlank(mdl.getAbout())) {
+                    attributes.addAttribute("", "about", "about", "", mdl.getAbout());
+                }
+                attributes.addAttribute("", "xlink:type", "xlink:type", "", "simple");
+                attributes.addAttribute("", "xlink:href", "xlink:href", "", url);
+                element("ows:Metadata", null, attributes);
+            }
         }
 
         private void handleLanguages() {

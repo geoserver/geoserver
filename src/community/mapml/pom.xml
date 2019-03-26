@@ -17,8 +17,7 @@
   
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-mapml</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>MapML</name>
+  <name>MapML Support</name>
   
   <dependencies>
     <dependency>

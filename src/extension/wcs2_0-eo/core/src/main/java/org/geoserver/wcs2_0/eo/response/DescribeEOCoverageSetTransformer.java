@@ -138,6 +138,8 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                     atts(
                             "xmlns:eop",
                             "http://www.opengis.net/eop/2.0", //
+                            "xmlns:ows",
+                            "http://www.opengis.net/ows/2.0",
                             "xmlns:gml",
                             "http://www.opengis.net/gml/3.2", //
                             "xmlns:wcsgs",

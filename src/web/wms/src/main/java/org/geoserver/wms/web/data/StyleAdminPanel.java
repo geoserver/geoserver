@@ -492,7 +492,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         // same here, force validation or the field won't be updated
                         stylePage.editor.reset();
                         stylePage.setRawStyle(stylePage.readFile(style));
-                        stylePage.getStyleInfo().setFormat(style.getFormat());
+                        if (formatChoice.isEnabled()) {
+                            formatChoice.setModelObject(style.getFormat());
+                        }
                         target.appendJavaScript(
                                 String.format(
                                         "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",

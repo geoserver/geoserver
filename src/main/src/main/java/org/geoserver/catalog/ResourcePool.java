@@ -2493,7 +2493,12 @@ public class ResourcePool {
         public void handleModifyEvent(CatalogModifyEvent event) {}
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
-            event.getSource().accept(this);
+            CatalogInfo source = event.getSource();
+            source.accept(this);
+
+            if (source instanceof FeatureTypeInfo) {
+                flushDataStore((FeatureTypeInfo) source);
+            }
         }
 
         public void handleRemoveEvent(CatalogRemoveEvent event) {

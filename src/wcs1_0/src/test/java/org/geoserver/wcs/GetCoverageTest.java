@@ -697,6 +697,18 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    public void testElevationFirstKVP() throws Exception {
+        String queryString =
+                "request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                        + "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25"
+                        + "&elevation=0.0&coverage="
+                        + getLayerId(WATTEMP);
+        MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 18.2849999185419);
+    }
+
+    @Test
     public void testElevationSecond() throws Exception {
         String request = getWaterTempElevationRequest("100.0");
 
@@ -717,6 +729,69 @@ public class GetCoverageTest extends WCSTestSupport {
         response = postAsServletResponse("wcs", request);
         assertEquals("image/tiff", response.getContentType());
         checkPixelValue(response, 10, 10, 13.337999683572);
+    }
+
+    @Test
+    public void testElevationSecondKVP() throws Exception {
+        String queryString =
+                "request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                        + "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25"
+                        + "&elevation=100.0&coverage="
+                        + getLayerId(WATTEMP);
+        MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 13.337999683572);
+    }
+
+    @Test
+    public void testElevationTooMany() throws Exception {
+        GeoServer gs = getGeoServer();
+        WCSInfo wcs = gs.getService(WCSInfo.class);
+        wcs.setMaxRequestedDimensionValues(2);
+        gs.save(wcs);
+        try {
+            String queryString =
+                    "request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                            + "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25"
+                            + "&elevation=0.0/1000.0/1.0&coverage="
+                            + getLayerId(WATTEMP);
+            MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
+            assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+            Document dom = dom(response, true);
+            print(dom);
+            String text =
+                    checkLegacyException(
+                            dom, ServiceException.INVALID_PARAMETER_VALUE, "elevation");
+            assertThat(text, containsString("More than 2 elevations"));
+        } finally {
+            wcs.setMaxRequestedDimensionValues(
+                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            gs.save(wcs);
+        }
+    }
+
+    @Test
+    public void testElevationRangeKVP() throws Exception {
+        String baseUrl =
+                "wcs?request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff"
+                        + "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25"
+                        + "&coverage="
+                        + getLayerId(WATTEMP);
+
+        // last range
+        MockHttpServletResponse response = getAsServletResponse(baseUrl + "&ELEVATION=75.0/100.0");
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 13.337999683572);
+
+        // middle hole, no data --> we should get back an exception
+        Document dom = getAsDOM(baseUrl + "&ELEVATION=25.0/75.0");
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport)", dom);
+
+        // first range
+        response = getAsServletResponse(baseUrl + "&ELEVATION=0.0/25.0");
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 18.2849999185419);
     }
 
     private String getWaterTempElevationRequest(String elevation) {

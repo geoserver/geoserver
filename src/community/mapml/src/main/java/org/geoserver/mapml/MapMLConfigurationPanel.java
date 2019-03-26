@@ -5,7 +5,6 @@
 
 package org.geoserver.mapml;
 
-import java.net.URI;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -15,16 +14,12 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 
-/**
- * Resource configuration panel for MapML
- */
+/** Resource configuration panel for MapML */
 public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Adds MapML configuration panel 
-     */
+    /** Adds MapML configuration panel */
     public MapMLConfigurationPanel(final String panelId, final IModel<LayerInfo> model) {
         super(panelId, model);
 
@@ -50,7 +45,12 @@ public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerIn
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
         add(useTiles);
 
-        
+        // add the checkbox to enable sharding or not
+        MapModel<Boolean> enableShardingModel =
+                new MapModel<Boolean>(
+                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                        "mapml.enableSharding");
+        CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
+        add(enableSharding);
     }
-
 }

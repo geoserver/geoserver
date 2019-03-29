@@ -425,6 +425,7 @@
 	</bean>
     <bean id="wmsJPEGLegendGraphicResponse" 
         class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse">
+        <constructor-arg index="0" ref="wms"/>
     </bean>
 	<bean id="wmsPNGLegendOutputFormat" 
 		class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">

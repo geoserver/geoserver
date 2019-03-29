@@ -12,6 +12,8 @@ import javax.imageio.ImageIO;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMS;
+import org.geotools.image.ImageWorker;
 import org.springframework.util.Assert;
 
 /**
@@ -23,8 +25,11 @@ import org.springframework.util.Assert;
  */
 public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
 
-    public JPEGLegendGraphicResponse() {
+    private final WMS wms;
+
+    public JPEGLegendGraphicResponse(WMS wms) {
         super(BufferedImageLegendGraphic.class, JPEGLegendOutputFormat.MIME_TYPE);
+        this.wms = wms;
     }
 
     /**
@@ -39,7 +44,8 @@ public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage legendImage = (BufferedImage) ((LegendGraphic) legend).getLegend();
-        JAISupport.encode(JPEGLegendOutputFormat.MIME_TYPE, legendImage, output);
+        boolean nativeAcc = wms.getJPEGNativeAcceleration();
+        new ImageWorker(legendImage).writeJPEG(output, "JPEG", 0.25f, nativeAcc);
     }
 
     @Override

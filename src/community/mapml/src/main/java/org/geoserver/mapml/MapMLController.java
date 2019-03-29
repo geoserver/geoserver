@@ -14,6 +14,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
+import org.geoserver.mapml.xml.Datalist;
 import org.geoserver.mapml.xml.Extent;
 import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Input;
@@ -21,6 +22,7 @@ import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
+import org.geoserver.mapml.xml.Option;
 import org.geoserver.mapml.xml.PositionType;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
@@ -106,7 +108,23 @@ public class MapMLController {
 
         String styleName = style.orElse("");
         String baseUrl = ResponseUtils.baseURL(request);
-
+        
+        // handle shard config
+        Boolean enableSharding = layerMeta.get("mapml.enableSharding", Boolean.class);
+        String shardListString = layerMeta.get("mapml.shardList", String.class);
+        String[] shardArray = new String[0];
+        if(shardListString != null) {
+            shardArray = shardListString.split("[,\\s]+");
+        }
+        String shardServerPattern = layerMeta.get("mapml.shardServerPattern", String.class);
+        if(shardArray.length < 1 || shardServerPattern == null || shardServerPattern.isEmpty()) {
+            enableSharding = Boolean.FALSE;
+        }
+        // if we have a valid shard config
+        if(Boolean.TRUE.equals(enableSharding)) { 
+            baseUrl = shardBaseURL(request, shardServerPattern);
+        }
+        
         // build the mapML doc
         Mapml mapml = new Mapml();
 
@@ -167,11 +185,30 @@ public class MapMLController {
         Input input = new Input();
         input.setName("z");
         input.setType(InputType.ZOOM);
-        input.setValue("0"); // TODO
-        input.setMin(0); // TODO
-        input.setMax(0); // TODO
+        input.setValue("0"); 
+        input.setMin(0);
+        input.setMax(0);
         extentList.add(input);
 
+        // shard list
+        if(Boolean.TRUE.equals(enableSharding)) {
+            input = new Input();
+            input.setName("s");
+            input.setType(InputType.HIDDEN);
+            input.setShard("true");
+            input.setList("servers");
+            extentList.add(input);
+            Datalist datalist = new Datalist();
+            datalist.setId("servers");
+            List<Option> options = datalist.getOptions();
+            for(int s = 0; s < shardArray.length; s++) {
+                Option o = new Option();
+                o.setValue(shardArray[s]);
+                options.add(o);
+            }
+            extentList.add(datalist);
+        }
+        
         Boolean useTiles = layerMeta.get("mapml.useTiles", Boolean.class);
         if (Boolean.TRUE.equals(useTiles)) {
             // tile inputs
@@ -350,5 +387,16 @@ public class MapMLController {
         body.setExtent(extent);
         mapml.setBody(body);
         return mapml;
+    }
+    
+    private static String shardBaseURL(HttpServletRequest req, String shardServerPattern) {
+        StringBuffer sb = new StringBuffer(req.getScheme());
+        sb.append("://")
+                .append(shardServerPattern)
+                .append(":")
+                .append(req.getServerPort())
+                .append(req.getContextPath())
+                .append("/");
+        return sb.toString();
     }
 }

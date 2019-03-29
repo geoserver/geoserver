@@ -52,5 +52,20 @@ public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerIn
                         "mapml.enableSharding");
         CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
         add(enableSharding);
+        
+        MapModel<String> shardListModel =
+                new MapModel<String>(
+                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                        "mapml.shardList");
+        TextField<String> shardList = new TextField<String>("shardList", shardListModel);
+        add(shardList);
+
+        MapModel<String> shardServerPatternModel =
+                new MapModel<String>(
+                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                        "mapml.shardServerPattern");
+        TextField<String> shardServerPattern = new TextField<String>("shardServerPattern", shardServerPatternModel);
+        add(shardServerPattern);
+
     }
 }

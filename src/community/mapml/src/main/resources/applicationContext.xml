@@ -16,13 +16,7 @@
         >
 
   <context:component-scan base-package="org.geoserver.mapml"/>
-  <bean id="mapMLPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="mapMLPage"/>
-    <property name="titleKey" value="MapMLPage.page.title"/>
-    <property name="descriptionKey" value="MapMLPage.page.description"/>
-    <property name="componentClass" value="org.geoserver.mapml.MapMLPage"/>
-  </bean>
-    <bean id="mapmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+  <bean id="mapmlLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="mapmlLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.wms"/>
     <property name="componentClass" value="org.geoserver.mapml.MapMLConfigurationPanel"/>

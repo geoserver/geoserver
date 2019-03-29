@@ -58,7 +58,7 @@ public class Datalist {
      * <p>For example, to add a new item, do as follows:
      *
      * <pre>
-     *    getOption().add(newItem);
+     *    getOptions().add(newItem);
      * </pre>
      *
      * <p>Objects of the following type(s) are allowed in the list {@link Option }

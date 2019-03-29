@@ -382,4 +382,18 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
         assertEquals(getPixelColor(expected, 10, 2).getRGB(), getPixelColor(image, 10, 2).getRGB());
     }
+
+    @Test
+    public void testJpegRasterLegend() throws Exception {
+        String base =
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer=wcs:World&style=raster"
+                        + "&format=image/jpeg&width=32&height=32";
+
+        BufferedImage image = getAsImage(base, "image/jpeg");
+        BufferedImage expected =
+                ImageIO.read(getClass().getResourceAsStream("../rasterLegend.png"));
+
+        ImageAssert.assertEquals(expected, image, 0);
+    }
 }

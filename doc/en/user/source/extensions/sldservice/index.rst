@@ -214,6 +214,10 @@ The parameters usable to customize the ColorMap are:
        classified (e.g., by using the ``filter`` in vector and mosaic layer definitions)  
      - a semicolon separate list of name to value assignments, e.g. ``name1:value1;name2:value2;name3:value3;...``
      -
+   * - continuous
+     - used only for raster layers, if set to true will generate a raster pallette that interpolates linearly between classified values 
+     - true|false
+     -
     
 Examples
 ~~~~~~~~~~

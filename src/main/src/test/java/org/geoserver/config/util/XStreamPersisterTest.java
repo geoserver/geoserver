@@ -53,6 +53,7 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -520,6 +521,21 @@ public class XStreamPersisterTest {
 
         catalog.add(s2);
         assertNull(s2.getWorkspace());
+    }
+
+    @Test
+    public void testLegacyStyle() throws Exception {
+        String xml =
+                "<style>\n"
+                        + "  <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>\n"
+                        + "  <name>raster</name>\n"
+                        + "  <filename>raster.sld</filename>\n"
+                        + "</style>";
+
+        StyleInfo style =
+                persister.load(new ByteArrayInputStream(xml.getBytes("UTF-8")), StyleInfo.class);
+        assertEquals(SLDHandler.FORMAT, style.getFormat());
+        assertEquals(SLDHandler.VERSION_10, style.getFormatVersion());
     }
 
     @Test

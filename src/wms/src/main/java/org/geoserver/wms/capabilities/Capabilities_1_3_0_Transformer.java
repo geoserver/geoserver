@@ -13,6 +13,7 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.wms.capabilities.CapabilityUtil.validateLegendInfo;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -1506,18 +1507,19 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * Writes layer LegendURL pointing to the user supplied icon URL, if any, or to the proper
          * GetLegendGraphic operation if an URL was not supplied.
          *
-         * <p>It is common practice to supply a URL to a WMS accesible legend graphic when it is
+         * <p>It is common practice to supply a URL to a WMS accessible legend graphic when it is
          * difficult to create a dynamic legend for a layer.
          *
          * @param layerName The name of the layer.
          * @param legend The user specified legend url. If null a default url pointing back to the
          *     GetLegendGraphic operation will be automatically created.
-         * @param style The styel for the layer.
-         * @param sampleStyle The styel to use for sample sizing.
+         * @param style The style for the layer.
+         * @param sampleStyle The style to use for sample sizing.
          */
         protected void handleLegendURL(
                 LayerInfo layer, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
-            if (legend != null) {
+            // if legend is valid, use it
+            if (validateLegendInfo(legend)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
                 }

@@ -21,6 +21,12 @@
     <property name="titleKey" value="publish.layer.config.wms"/>
     <property name="componentClass" value="org.geoserver.mapml.MapMLConfigurationPanel"/>
   </bean>
+  <bean id="mapMLGetFeatureOutputFormat" class="org.geoserver.mapml.MapMLGetFeatureOutputFormat">
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">
+    <constructor-arg ref="wms"/>
+  </bean>
   <mvc:annotation-driven>
     <mvc:message-converters>
       <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
@@ -30,7 +36,7 @@
           <list>
             <value>text/mapml</value>
           </list>
-        </property> 
+        </property>
       </bean>
     </mvc:message-converters>
   </mvc:annotation-driven>

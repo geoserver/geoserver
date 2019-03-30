@@ -57,7 +57,7 @@ public class MapMLController {
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
-        produces = "text/mapml"
+        produces = MapMLConstants.MIME_TYPE
     )
     public Mapml mapML(
             HttpServletRequest request,
@@ -108,6 +108,7 @@ public class MapMLController {
 
         String styleName = style.orElse("");
         String baseUrl = ResponseUtils.baseURL(request);
+        String baseUrlPattern = baseUrl;
         
         // handle shard config
         Boolean enableSharding = layerMeta.get("mapml.enableSharding", Boolean.class);
@@ -121,8 +122,8 @@ public class MapMLController {
             enableSharding = Boolean.FALSE;
         }
         // if we have a valid shard config
-        if(Boolean.TRUE.equals(enableSharding)) { 
-            baseUrl = shardBaseURL(request, shardServerPattern);
+        if(Boolean.TRUE.equals(enableSharding)) {
+            baseUrlPattern = shardBaseURL(request, shardServerPattern);
         }
         
         // build the mapML doc
@@ -140,7 +141,7 @@ public class MapMLController {
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent("text/mapml;projection=" + projType.value());
+        meta.setContent(MapMLConstants.MIME_TYPE + ";projection=" + projType.value());
         metas.add(meta);
         List<Link> links = head.getLinks();
 
@@ -260,7 +261,7 @@ public class MapMLController {
             Link link = new Link();
             link.setRel(RelType.TILE);
             link.setTref(
-                    baseUrl
+                    baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
@@ -332,7 +333,7 @@ public class MapMLController {
             Link link = new Link();
             link.setRel(RelType.IMAGE);
             link.setTref(
-                    baseUrl
+                    baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
@@ -366,7 +367,7 @@ public class MapMLController {
             Link link = new Link();
             link.setRel(RelType.QUERY);
             link.setTref(
-                    baseUrl
+                    baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetFeatureInfo&crs=EPSG:"
                             + projType.epsgCode
@@ -377,7 +378,7 @@ public class MapMLController {
                             + "&styles="
                             + styleName
                             + "&bbox={xmin},{ymin},{xmax},{ymax}"
-                            + "&format=info_format=text/plain"
+                            + "&info_format=text/mapml"
                             + "&transparent=false"
                             + "&width={w}&height={h}"
                             + "&x={i}&y={j}");

@@ -25,23 +25,54 @@ Configuration can be done using the Geoserver administrator GUI. The MapML confi
 
 .. figure:: images/mapml_config_ui.png
 
-License Title
-  The License Title will be included as the value of ``title`` attribute of the ``license`` ``link`` element in the MapML header.
+License Info
+^^^^^^^^^^^^
 
-License Link
-  The License Link will be included as the value of ``href`` attribute of the ``license`` ``link`` element in the MapML header, and should be a valid URL referencing the license document.
-  
-Use Tiles
+Together these two attributes all the administrator to define the contents of the ``<link rel=license>`` element in the MapML header. Here is an example of the resulting XML:
+
+  <link href="https://creativecommons.org/licenses/by/4.0/" rel="license" title="Attribution 4.0 International (CC BY 4.0)"/>
+
+**License Title**
+  The License Title will be included as the value of ``title`` attribute of the ``<link rel=license>`` element in the MapML header.
+
+**License Link**
+  The License Link will be included as the value of ``href`` attribute of the ``<link rel=license>`` element in the MapML header, and should be a valid URL referencing the license document.
+
+
+Tile Settings
+^^^^^^^^^^^^^
+
+Using tiles to access the WMS layer can increase the perceived performance of the web map. This is especially true if there is some kind of tile cache mechanism in use, either at the Geoserver datastore level, or at the web server level.
+
+**Use Tiles**
   If the Use Tiles checkbox is checked, the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.
+
+
+Sharding Config
+^^^^^^^^^^^^^^^^
+
+The Sharding Config options are intended to allow for parallel access to tiles via different server names. The actual server names must be configured in the DNS to refer to either the same server or different servers with the same GeSserver layer configuration. In the example above, the mapML client would alternate between the servers a.geoserver.org, b.geoserver.org, and c.geoserver.org to access the the map images. The values in the example above would result in the following MapML:  
+
+.. code-block:: html
+
+    <input name="s" type="hidden" shard="true" list="servers" min="0.0" max="0.0"/>
+    <datalist id="servers">
+        <option value="a"/>
+        <option value="b"/>
+        <option value="c"/>
+    </datalist>
+    <link tref="http://{s}.geoserver.org:8080/geoserver/test/wms?version=1.3.0&amp;service=WMS&amp;request=GetMap&amp;crs=EPSG:3857&amp;layers=cntry00&amp;styles=&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=image/png&amp;transparent=false&amp;width={w}&amp;height={h}" rel="image"/>
+
+
+**Enable Sharding**
+  If Enable Sharding is checked, and values are provided for the Shard List and Shard Server Pattern fields, then a hidden shard list input will be included in the MapML. 
   
-Enable Sharding
-  If Enable Sharding is checked, and values are provided for the Shard List and Shard Server Pattern fields, then a hidden shard list input will be included in the MapML. The Sharding Config options are intended to allow for parallel access to tiles via different server names.
-  
-Shard List
+**Shard List**
   If Enable Sharding is checked, the Shard List should be populated with a comma-separated list of shard names which will be used to populate the shard data list element.
   
-Shard Server Pattern
-  The Shard Server Pattern should be a valid DNS name including the special placeholder string {s} which will be replace with the Shard Names from the Shard List in requests to the server. 
+**Shard Server Pattern**
+  The Shard Server Pattern should be a valid DNS name including the special placeholder string {s} which will be replace with the Shard Names from the Shard List in requests to the server. This pattern should not include any slashes, the protocol string (http://) or the port number (:80), as these are all determined automatically from the URL used to access the MapML resource.  
+
 
 
 MapML Resources
@@ -68,6 +99,7 @@ MapML Visualization
 The only tool which is presently able to display MapML is a Leaflet-based MapML client. This client can be imported into an HTML page with the appropriate ``<map>`` and ``<layer>`` elements to reference the MapML resources defined above. Here is a simple, self-contained example of such an HTML page: 
 
 .. code-block:: html
+
     <html>
         <head>
             <title>MapML Test Map</title>

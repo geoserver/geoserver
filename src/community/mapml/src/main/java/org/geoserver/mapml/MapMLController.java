@@ -210,6 +210,13 @@ public class MapMLController {
             extentList.add(datalist);
         }
         
+        String dimension = layerMeta.get("mapml.dimension", String.class);
+        if("Time".equalsIgnoreCase(dimension)) {
+            
+        } else if("Elevation".equalsIgnoreCase(dimension)) {
+            
+        }
+        
         Boolean useTiles = layerMeta.get("mapml.useTiles", Boolean.class);
         if (Boolean.TRUE.equals(useTiles)) {
             // tile inputs

@@ -74,6 +74,12 @@ The Sharding Config options are intended to allow for parallel access to tiles v
   The Shard Server Pattern should be a valid DNS name including the special placeholder string {s} which will be replace with the Shard Names from the Shard List in requests to the server. This pattern should not include any slashes, the protocol string (http://) or the port number (:80), as these are all determined automatically from the URL used to access the MapML resource.  
 
 
+Dimension Config
+^^^^^^^^^^^^^^^^
+
+**Dimension**
+  The selected dimension (if any) is advertised in the mapml as an input with the appropriate value options or ranges, as configured in the *Dimension* tab of the Layer Configuration page. Only dimensions enabled in the *Dimension* tab are available as options.
+
 
 MapML Resources
 ---------------

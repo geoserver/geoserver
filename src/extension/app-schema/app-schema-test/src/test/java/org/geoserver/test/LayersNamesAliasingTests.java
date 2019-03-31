@@ -48,6 +48,41 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
         mappingsFolderPath = destDir.toPath();
     }
 
+    @Before
+    public void beforeTest() {
+        // instantiate WFS 1.1 xpath engine
+        WFS11_XPATH_ENGINE =
+                StationsMockData.buildXpathEngine(
+                        getBaseNamespaces(),
+                        "wfs",
+                        "http://www.opengis.net/wfs",
+                        "gml",
+                        "http://www.opengis.net/gml");
+        // instantiate WFS 2.0 xpath engine
+        WFS20_XPATH_ENGINE =
+                StationsMockData.buildXpathEngine(
+                        getBaseNamespaces(),
+                        "wfs",
+                        "http://www.opengis.net/wfs/2.0",
+                        "gml",
+                        "http://www.opengis.net/gml/3.2");
+    }
+
+    @Override
+    protected AliasStationsMockData createTestData() {
+        // instantiate our custom complex types
+        return new AliasStationsMockData();
+    }
+
+    Map<String, String> getBaseNamespaces() {
+        Map<String, String> nss = new HashMap<>();
+        nss.put("st_gml31", "http://www.stations_gml31.org/1.0");
+        nss.put("ms_gml31", "http://www.measurements_gml31.org/1.0");
+        nss.put("st_gml32", "http://www.stations_gml32.org/1.0");
+        nss.put("ms_gml32", "http://www.measurements_gml32.org/1.0");
+        return nss;
+    }
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -79,17 +114,6 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     }
 
     @Test
-    public void testAliasedNameWfsGetFeature11Post() throws Exception {
-        String xmlQuery = resourceToString("wfs110query.xml");
-        Document document = postAsDOM("wfs", xmlQuery);
-        checkCount(
-                WFS11_XPATH_ENGINE,
-                document,
-                1,
-                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
-    }
-
-    @Test
     public void testAliasedNameWfsGetFeature20() throws Exception {
         Document document =
                 getAsDOM(
@@ -103,7 +127,18 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     }
 
     @Test
-    public void testAliasedNameWfsGetFeature20Post() throws Exception {
+    public void testAliasedNameWfsGetFeaturePost11() throws Exception {
+        String xmlQuery = resourceToString("wfs110query.xml");
+        Document document = postAsDOM("wfs", xmlQuery);
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+    }
+
+    @Test
+    public void testAliasedNameWfsGetFeaturePost20() throws Exception {
         // load wfs 2.0.0 query body at wfs200query.xml
         String xmlQuery = resourceToString("wfs200query.xml");
         Document document = postAsDOM("wfs", xmlQuery);
@@ -115,7 +150,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     }
 
     @Test
-    public void testGetFeatureLocalWspace() throws Exception {
+    public void testLocalWorkspaceNoPrefixWfsGetFeature11() throws Exception {
         Document document =
                 getAsDOM(
                         "st_gml31/wfs?request=GetFeature&version=1.1.0&typename=lyr_Station_gml31");
@@ -127,18 +162,7 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     }
 
     @Test
-    public void testGetFeaturePostQueryLocalWspace() throws Exception {
-        String xmlQuery = resourceToString("wfs110queryNoPrefix.xml");
-        Document document = postAsDOM("st_gml31/wfs", xmlQuery);
-        checkCount(
-                WFS11_XPATH_ENGINE,
-                document,
-                1,
-                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
-    }
-
-    @Test
-    public void testGetFeature20LocalWspace() throws Exception {
+    public void testLocalWorkspaceNoPrefixWfsGetFeature20() throws Exception {
         Document document =
                 getAsDOM(
                         "st_gml32/wfs?request=GetFeature&version=2.0.0&typeNames=lyr_Station_gml32");
@@ -150,7 +174,18 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
     }
 
     @Test
-    public void testGetFeaturePostQuery20LocalWspace() throws Exception {
+    public void testLocalWorkspaceNoPrefixWfsGetFeaturePost11() throws Exception {
+        String xmlQuery = resourceToString("wfs110queryNoPrefix.xml");
+        Document document = postAsDOM("st_gml31/wfs", xmlQuery);
+        checkCount(
+                WFS11_XPATH_ENGINE,
+                document,
+                1,
+                "//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31");
+    }
+
+    @Test
+    public void testLocalWorkspaceNoPrefixWfsGetFeaturePost20() throws Exception {
         String xmlQuery = resourceToString("wfs200queryNoPrefix.xml");
         Document document = postAsDOM("st_gml32/wfs", xmlQuery);
         checkCount(
@@ -168,35 +203,6 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
                 StandardCharsets.UTF_8);
     }
 
-    @Before
-    public void beforeTest() {
-        // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getBaseNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs",
-                        "gml",
-                        "http://www.opengis.net/gml");
-        // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getBaseNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs/2.0",
-                        "gml",
-                        "http://www.opengis.net/gml/3.2");
-    }
-
-    protected Map<String, String> getBaseNamespaces() {
-        Map<String, String> nss = new HashMap<>();
-        nss.put("st_gml31", "http://www.stations_gml31.org/1.0");
-        nss.put("ms_gml31", "http://www.measurements_gml31.org/1.0");
-        nss.put("st_gml32", "http://www.stations_gml32.org/1.0");
-        nss.put("ms_gml32", "http://www.measurements_gml32.org/1.0");
-        return nss;
-    }
-
     /**
      * Helper method that checks if the provided XPath expression evaluated against the provided XML
      * document yields the expected number of matches.
@@ -208,26 +214,6 @@ public final class LayersNamesAliasingTests extends AbstractAppSchemaTestSupport
             assertEquals(expectedCount, xpathEngine.getMatchingNodes(xpath, document).getLength());
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
-        }
-    }
-
-    public static void copyResource(String resourcePath, Path directoryPath) throws IOException {
-        ClassLoader cl = LayersNamesAliasingTests.class.getClassLoader();
-        Files.copy(cl.getResourceAsStream(resourcePath), directoryPath);
-    }
-
-    /** * GetFeature tests ** */
-    @Override
-    protected AliasStationsMockData createTestData() {
-        // instantiate our custom complex types
-        return new AliasStationsMockData();
-    }
-
-    private class AliasStationsMockData extends StationsMockData {
-        @Override
-        public void addContent() {
-            setLayerNamePrefix("lyr");
-            super.addContent();
         }
     }
 }

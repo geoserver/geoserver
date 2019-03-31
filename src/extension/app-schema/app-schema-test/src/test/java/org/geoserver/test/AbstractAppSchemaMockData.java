@@ -42,8 +42,6 @@ import org.locationtech.jts.geom.Envelope;
 public abstract class AbstractAppSchemaMockData extends SystemTestData
         implements NamespaceTestData {
 
-    private String layerNamePrefix;
-
     /** Folder for for test data. */
     private static final String TEST_DATA = "/test-data/";
 
@@ -97,24 +95,24 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     });
 
     /** Use FeatureTypeInfo constants for srs handling as values */
-    private static final String KEY_SRS_HANDLINGS = "srsHandling";
+    static final String KEY_SRS_HANDLINGS = "srsHandling";
 
     /** The feature type alias, a string */
-    private static final String KEY_ALIAS = "alias";
+    static final String KEY_ALIAS = "alias";
 
     /** The style name */
-    private static final String KEY_STYLE = "style";
+    static final String KEY_STYLE = "style";
 
     /** The srs code (a number) for this layer */
-    private static final String KEY_SRS_NUMBER = "srs";
+    static final String KEY_SRS_NUMBER = "srs";
 
     /** The lon/lat envelope as a JTS Envelope */
-    private static final String KEY_LL_ENVELOPE = "ll_envelope";
+    static final String KEY_LL_ENVELOPE = "ll_envelope";
 
     /** The native envelope as a JTS Envelope */
-    private static final String KEY_NATIVE_ENVELOPE = "native_envelope";
+    static final String KEY_NATIVE_ENVELOPE = "native_envelope";
 
-    private static final Envelope DEFAULT_ENVELOPE = new Envelope(-180, 180, -90, 90);
+    static final Envelope DEFAULT_ENVELOPE = new Envelope(-180, 180, -90, 90);
 
     /** Map of data store name to data store connection parameters map. */
     private final Map<String, Map<String, Serializable>> datastoreParams =
@@ -133,7 +131,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     private File styles;
 
     /** the 'featureTypes' directory, under 'data' */
-    private File featureTypesBaseDir;
+    protected File featureTypesBaseDir;
 
     /**
      * Pair of property file name and feature type directory to create db tables for online tests
@@ -273,7 +271,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         }
     }
 
-    private String getFileNamePart(String fileName) {
+    protected String getFileNamePart(String fileName) {
         if (fileName.indexOf(File.separator) > 0) {
             return fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length());
         } else {
@@ -396,7 +394,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param featureTypeDir feature type directory
      * @param dataStoreName data store directory name
      */
-    private void writeInfoFile(
+    private static void writeInfoFile(
             String namespacePrefix, String typeName, File featureTypeDir, String dataStoreName) {
         // prepare extra params default
         Map<String, Object> params = new HashMap<String, Object>();
@@ -412,7 +410,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             info.createNewFile();
             FileWriter writer = new FileWriter(info);
             writer.write("<featureType datastore=\"" + dataStoreName + "\">");
-            writer.write("<name>" + getLayerName(typeName) + "</name>");
+            writer.write("<name>" + typeName + "</name>");
             writer.write("<nativeName>" + typeName + "</nativeName>");
             if (params.get(KEY_ALIAS) != null)
                 writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
@@ -470,7 +468,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param dataStoreName data store name
      */
     @SuppressWarnings("serial")
-    private static Map<String, Serializable> buildAppSchemaDatastoreParams(
+    protected static Map<String, Serializable> buildAppSchemaDatastoreParams(
             final String namespacePrefix,
             final String typeName,
             final String mappingFileName,
@@ -490,11 +488,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private String getLayerName(String typeName) {
-        if (layerNamePrefix != null) return layerNamePrefix + "_" + typeName;
-        return typeName;
     }
 
     /**
@@ -595,7 +588,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param namespacePrefix
      * @param params
      */
-    private void addDataStore(
+    protected void addDataStore(
             String dataStoreName, String namespacePrefix, Map<String, Serializable> params) {
         datastoreParams.put(dataStoreName, params);
         datastoreNamespacePrefixes.put(dataStoreName, namespacePrefix);
@@ -641,7 +634,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @return name of the data store for the feature type
      */
     protected String getDataStoreName(String namespacePrefix, String typeName) {
-        return namespacePrefix + "_" + getLayerName(typeName);
+        return namespacePrefix + "_" + typeName;
     }
 
     /**
@@ -660,7 +653,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param typeName local name of the WFS feature type
      * @return directory that contains the mapping and property files
      */
-    private File getFeatureTypeDir(
+    protected File getFeatureTypeDir(
             File featureTypesBaseDir, String namespacePrefix, String typeName) {
         return new File(featureTypesBaseDir, getDataStoreName(namespacePrefix, typeName));
     }
@@ -674,7 +667,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param supportFileNames names of the support files, such as properties files, for this
      *     feature type
      */
-    private void copyMappingAndSupportFiles(
+    protected void copyMappingAndSupportFiles(
             String namespacePrefix,
             String typeName,
             String mappingFileName,
@@ -788,18 +781,5 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
         }
         return content.toString();
-    }
-
-    /**
-     * Prefix for layer name, to test name vs nativeName
-     *
-     * @return layer name prefix
-     */
-    public String getLayerNamePrefix() {
-        return layerNamePrefix;
-    }
-
-    public void setLayerNamePrefix(String layerNamePrefix) {
-        this.layerNamePrefix = layerNamePrefix;
     }
 }

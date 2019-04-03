@@ -3,7 +3,6 @@ package org.geoserver.mapml;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.List;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
@@ -14,6 +13,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
+import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Input;
 import org.geoserver.mapml.xml.InputType;
@@ -55,7 +55,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         List<FeatureCollection> featureCollections = featureCollectionResponse.getFeatures();
         if(featureCollections.size() != 1) {
             throw new ServiceException(
-                    "MapML OutputFormat does not support Multiple Feature Type output.");            
+                    "MapML OutputFormat does not support Multiple Feature Type output.");
         }
         FeatureCollection featureCollection = featureCollections.get(0);
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
@@ -105,7 +105,9 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
         // build the body
         BodyContent body = new BodyContent();
+        mapml.setBody(body);
         Extent extent = new Extent();
+        body.setExtent(extent);
         //extent.setUnits(projType);
         List<Object> extentList = extent.getInputOrDatalistOrLink();
 
@@ -118,12 +120,13 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         input.setMax(0);
         extentList.add(input);
         
-            
+        List<Feature> features = body.getFeatures();
         try(SimpleFeatureIterator iterator = fc.features()) {
             while(iterator.hasNext()){
                  SimpleFeature feature = iterator.next();
                  // convert feature to xml
-                 
+                 Feature f = MapMLGenerator.buildFeature(feature);
+                 features.add(f);
             }
         }
             

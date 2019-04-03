@@ -8,14 +8,12 @@
 
 package org.geoserver.mapml.xml;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
@@ -45,20 +43,29 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(
-    name = "",
-    propOrder = {"bboxOrImageOrGeometry"}
-)
+@XmlType
 @XmlRootElement(name = "feature")
 public class Feature {
 
-    @XmlElementRefs({
-        @XmlElementRef(name = "geometry", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "bbox", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "image", type = Image.class, required = false),
-        @XmlElementRef(name = "properties", type = JAXBElement.class, required = false)
-    })
-    protected List<Object> bboxOrImageOrGeometry;
+//    @XmlElementRefs({
+//        @XmlElementRef(name = "geometry", type = JAXBElement.class, required = false),
+//        @XmlElementRef(name = "bbox", type = JAXBElement.class, required = false),
+//        @XmlElementRef(name = "image", type = Image.class, required = false),
+//        @XmlElementRef(name = "properties", type = JAXBElement.class, required = false)
+//    })
+//    protected List<Object> bboxOrImageOrGeometry;
+//
+    @XmlElement(name = "geometry", required = false)
+    protected GeometryContent geometry;
+
+    @XmlElement(name = "bbox", required = false)
+    protected JAXBElement bbox;
+
+    @XmlElement(name = "image", required = false)
+    protected Image image;
+
+    @XmlElement(name = "properties", required = false)
+    protected PropertyContent properties;
 
     @XmlAttribute(name = "id")
     @XmlSchemaType(name = "anySimpleType")
@@ -67,30 +74,62 @@ public class Feature {
     @XmlAttribute(name = "class")
     @XmlSchemaType(name = "anySimpleType")
     protected String clazz;
+//
+//    /**
+//     * Gets the value of the bboxOrImageOrGeometry property.
+//     *
+//     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
+//     * modification you make to the returned list will be present inside the JAXB object. This is
+//     * why there is not a <CODE>set</CODE> method for the bboxOrImageOrGeometry property.
+//     *
+//     * <p>For example, to add a new item, do as follows:
+//     *
+//     * <pre>
+//     *    getBboxOrImageOrGeometry().add(newItem);
+//     * </pre>
+//     *
+//     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
+//     * <}{@link GeometryContent }{@code >} {@link Image } {@link JAXBElement }{@code <}{@link List
+//     * }{@code <}{@link String }{@code >}{@code >} {@link JAXBElement }{@code <}{@link
+//     * PropertyContent }{@code >}
+//     */
+//    public List<Object> getBboxOrImageOrGeometry() {
+//        if (bboxOrImageOrGeometry == null) {
+//            bboxOrImageOrGeometry = new ArrayList<Object>();
+//        }
+//        return this.bboxOrImageOrGeometry;
+//    }
 
-    /**
-     * Gets the value of the bboxOrImageOrGeometry property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the bboxOrImageOrGeometry property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getBboxOrImageOrGeometry().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
-     * <}{@link GeometryContent }{@code >} {@link Image } {@link JAXBElement }{@code <}{@link List
-     * }{@code <}{@link String }{@code >}{@code >} {@link JAXBElement }{@code <}{@link
-     * PropertyContent }{@code >}
-     */
-    public List<Object> getBboxOrImageOrGeometry() {
-        if (bboxOrImageOrGeometry == null) {
-            bboxOrImageOrGeometry = new ArrayList<Object>();
-        }
-        return this.bboxOrImageOrGeometry;
+    public GeometryContent getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(GeometryContent geometry) {
+        this.geometry = geometry;
+    }
+
+    public JAXBElement getBbox() {
+        return bbox;
+    }
+
+    public void setBbox(JAXBElement bbox) {
+        this.bbox = bbox;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public PropertyContent getProperties() {
+        return properties;
+    }
+
+    public void setProperties(PropertyContent properties) {
+        this.properties = properties;
     }
 
     /**

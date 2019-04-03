@@ -40,7 +40,8 @@ import org.w3c.dom.Element;
 @XmlSeeAlso({PropertyContent.class})
 public class AnyContent {
 
-    @XmlAnyElement protected List<Element> anyElement;
+    @XmlAnyElement(ArbitraryHandler.class) 
+    protected String anyElement;
 
     /**
      * Gets the value of the anyElement property.
@@ -57,10 +58,11 @@ public class AnyContent {
      *
      * <p>Objects of the following type(s) are allowed in the list {@link Element }
      */
-    public List<Element> getAnyElement() {
-        if (anyElement == null) {
-            anyElement = new ArrayList<Element>();
-        }
+    public String getAnyElement() {
         return this.anyElement;
+    }
+
+    public void setAnyElement(String anyElement) {
+        this.anyElement = anyElement;
     }
 }

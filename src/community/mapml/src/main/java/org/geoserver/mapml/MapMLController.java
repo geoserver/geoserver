@@ -328,12 +328,16 @@ public class MapMLController {
             input = new Input();
             input.setName("w");
             input.setType(InputType.WIDTH);
+            input.setMin(1);
+            input.setMax(10000);
             extentList.add(input);
 
             // height
             input = new Input();
             input.setName("h");
             input.setType(InputType.HEIGHT);
+            input.setMin(1);
+            input.setMax(10000);
             extentList.add(input);
 
             // image link

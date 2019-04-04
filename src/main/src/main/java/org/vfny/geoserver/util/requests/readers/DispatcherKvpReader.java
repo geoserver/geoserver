@@ -9,12 +9,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.platform.ServiceException;
 import org.vfny.geoserver.servlets.Dispatcher;
-
 
 /**
  * Reads in a generic request and attempts to determine its type.
@@ -25,21 +22,21 @@ import org.vfny.geoserver.servlets.Dispatcher;
  */
 public class DispatcherKvpReader {
     /** Class logger */
-    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
+    private static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
+
     private String queryString;
     private Map requestParams;
 
     /**
-     * Constructor with raw request string.  Calls parent.
+     * Constructor with raw request string. Calls parent.
      *
-     * @param reader A reader of the request from the http client.
+     * @param requestReader A reader of the request from the http client.
      * @param req The actual request made.
-     *
-     * @throws ServiceException DOCUMENT ME!
      * @throws IOException
      */
     public void read(BufferedReader requestReader, HttpServletRequest req)
-        throws ServiceException, IOException {
+            throws ServiceException, IOException {
         final StringBuffer output = new StringBuffer();
         int c;
 
@@ -55,8 +52,6 @@ public class DispatcherKvpReader {
 
     /**
      * Returns the request type for a given KVP set.
-     *
-     * @param kvPairs DOCUMENT ME!
      *
      * @return Request type.
      */
@@ -98,8 +93,6 @@ public class DispatcherKvpReader {
     /**
      * Returns the request type for a given KVP set.
      *
-     * @param kvPairs DOCUMENT ME!
-     *
      * @return Request type.
      */
     public static int getServiceType(Map kvPairs) {
@@ -120,9 +113,7 @@ public class DispatcherKvpReader {
         }
     }
 
-    /**
-     * @return The service, WFS,WMS,WCS,etc...
-     */
+    /** @return The service, WFS,WMS,WCS,etc... */
     public String getService() {
         if (requestParams.containsKey("SERVICE")) {
             return (String) requestParams.get("SERVICE");
@@ -131,9 +122,7 @@ public class DispatcherKvpReader {
         }
     }
 
-    /**
-     * @return The request, GetCapabilities,GetMap,etc...
-     */
+    /** @return The request, GetCapabilities,GetMap,etc... */
     public String getRequest() {
         if (requestParams.containsKey("REQUEST")) {
             return (String) requestParams.get("REQUEST");

@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 import org.vfny.geoserver.global.dto.CloneLibrary;
 import org.vfny.geoserver.global.dto.EqualsLibrary;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 
 /**
@@ -85,9 +85,9 @@ public class CloneLibraryTest extends TestCase {
         Map b;
         a = new HashMap();
         b = null;
-        a.put("a", new Integer(0));
-        a.put("b", new Integer(1));
-        a.put("c", new Integer(2));
+        a.put("a", Integer.valueOf(0));
+        a.put("b", Integer.valueOf(1));
+        a.put("c", Integer.valueOf(2));
 
         try {
             b = CloneLibrary.clone(a);
@@ -98,7 +98,7 @@ public class CloneLibraryTest extends TestCase {
         // requires EqualsLibrary tests to be completed
         assertTrue(EqualsLibrary.equals(a, b));
 
-        a.put("d", new Integer(3));
+        a.put("d", Integer.valueOf(3));
         assertTrue(!EqualsLibrary.equals(a, b));
 
         try {
@@ -110,7 +110,7 @@ public class CloneLibraryTest extends TestCase {
         assertTrue(EqualsLibrary.equals(a, b));
 
         a.remove("d");
-        a.put("d", new Integer(3));
+        a.put("d", Integer.valueOf(3));
         assertTrue(EqualsLibrary.equals(a, b));
     }
 

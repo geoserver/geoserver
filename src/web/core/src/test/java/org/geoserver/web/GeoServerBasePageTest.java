@@ -7,8 +7,8 @@ package org.geoserver.web;
 
 import static org.junit.Assert.*;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.core.util.string.ComponentRenderer;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.TagTester;
 import org.junit.Test;
 
@@ -17,10 +17,14 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
     public void testLoginFormShowsWhenLoggedOut() throws Exception {
         logout();
         tester.startPage(GeoServerHomePage.class);
-        tester.assertVisible("loginform");
-        tester.assertInvisible("logoutform");
-        Component loginForm = tester.getLastRenderedPage().get("loginform");
-        String responseTxt = ComponentRenderer.renderComponent(loginForm).toString();
+        tester.assertVisible("loginforms");
+        tester.assertVisible("logoutforms");
+        tester.assertVisible("loginforms:0:loginform");
+        tester.assertInvisible("logoutforms:0:logoutform");
+        ListView logoutforms = (ListView) tester.getLastRenderedPage().get("logoutforms");
+        assertEquals(1, logoutforms.getList().size());
+        ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
+        String responseTxt = ComponentRenderer.renderComponent(loginForms).toString();
         TagTester tagTester = TagTester.createTagByAttribute(responseTxt, "form");
         assertEquals("../j_spring_security_check", tagTester.getAttribute("action"));
     }
@@ -29,8 +33,18 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
     public void testLogoutFormShowsWhenLoggedIn() throws Exception {
         login();
         tester.startPage(GeoServerHomePage.class);
+        tester.assertVisible("loginforms");
+        tester.assertVisible("logoutforms");
+        tester.assertInvisible("loginforms:0:loginform");
+        tester.assertVisible("logoutforms:0:logoutform");
+        ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
+        assertEquals(1, loginForms.getList().size());
+        ListView logoutforms = (ListView) tester.getLastRenderedPage().get("logoutforms");
+        String responseTxt = ComponentRenderer.renderComponent(logoutforms).toString();
+        TagTester tagTester = TagTester.createTagByAttribute(responseTxt, "form");
+        assertEquals("../j_spring_security_logout", tagTester.getAttribute("action"));
     }
-    
+
     @Test
     public void testDefaultNodeInfoLoggedOut() throws Exception {
         logout();
@@ -44,8 +58,8 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDefaultNodeInfoLoggedIn() throws Exception {
         login();
-        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS,
-                "id:test;background:red;color:black");
+        System.setProperty(
+                DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS, "id:test;background:red;color:black");
         DefaultGeoServerNodeInfo.initializeFromEnviroment();
 
         tester.startPage(GeoServerHomePage.class);
@@ -57,5 +71,4 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         // assertTrue(style.contains("background:red;"));
         // assertTrue(style.contains("color:black;"));
     }
-    
 }

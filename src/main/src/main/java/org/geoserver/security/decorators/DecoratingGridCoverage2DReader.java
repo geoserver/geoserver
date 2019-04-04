@@ -6,13 +6,10 @@
 package org.geoserver.security.decorators;
 
 import it.geosolutions.imageio.maskband.DatasetLayout;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-
 import javax.media.jai.ImageLayout;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
@@ -26,9 +23,9 @@ import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 
 /**
- * Delegates every method to the delegate grid coverage reader. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the delegate grid coverage reader. Subclasses will override selected
+ * methods to perform their "decoration" job
+ *
  * @author Andrea Aime
  */
 public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DReader {
@@ -87,8 +84,8 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
-            IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters)
+            throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
@@ -139,8 +136,9 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
-    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy,
-            double[] requestedResolution) throws IOException {
+    public double[] getReadingResolutions(
+            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+            throws IOException {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
@@ -185,5 +183,4 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
     public DatasetLayout getDatasetLayout(String coverageName) {
         return delegate.getDatasetLayout(coverageName);
     }
-
 }

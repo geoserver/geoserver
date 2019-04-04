@@ -8,24 +8,25 @@ package org.geoserver.wps.gs.download;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Geometry;
+import org.opengis.referencing.operation.MathTransform;
 
 /**
- * This class is used for managing ROI and its CRS. ROIManager provides utility method like reprojecting the ROI in the desired CRS.
- * 
+ * This class is used for managing ROI and its CRS. ROIManager provides utility method like
+ * reprojecting the ROI in the desired CRS.
+ *
  * @author Simone Giannecchini, GeoSolutions
- * 
  */
 final class ROIManager {
 
     private static final Logger LOGGER = Logging.getLogger(ROIManager.class);
 
     /** Input Geometry */
-    final Geometry roi;
+    final Geometry originalRoi;
 
     /** ROI reprojected in the input ROI CRS */
     Geometry roiInNativeCRS;
@@ -51,15 +52,18 @@ final class ROIManager {
     /** Boolean indicating if the ROI is a BBOX */
     final boolean isROIBBOX;
 
+    /** Boolean indicating if the roiCRS equals the targetCRS */
+    boolean roiCrsEqualsTargetCrs = true;
+
     /**
      * Constructor.
-     * 
+     *
      * @param roi original ROI as a JTS geometry
-     * @param roiCRS {@link CoordinateReferenceSystem} for the provided geometry. If this is null the CRS must be provided with the USerData of the
-     *        roi
+     * @param roiCRS {@link CoordinateReferenceSystem} for the provided geometry. If this is null
+     *     the CRS must be provided with the USerData of the roi
      */
     public ROIManager(Geometry roi, CoordinateReferenceSystem roiCRS) {
-        this.roi = roi;
+        this.originalRoi = roi;
         DownloadUtilities.checkPolygonROI(roi);
         // Check ROI CRS
         if (roiCRS == null) {
@@ -76,8 +80,9 @@ final class ROIManager {
     }
 
     /**
-     * Reproject the initial roi to the provided CRS which is supposedly the native CRS of the data to clip.
-     * 
+     * Reproject the initial roi to the provided CRS which is supposedly the native CRS of the data
+     * to clip.
+     *
      * @param nativeCRS a valid instance of {@link CoordinateReferenceSystem}
      * @throws IOException in case something bad happens.
      */
@@ -85,7 +90,7 @@ final class ROIManager {
         if (nativeCRS == null) {
             throw new IllegalArgumentException("The provided nativeCRS is null");
         }
-        roiInNativeCRS = DownloadUtilities.transformGeometry(roi, nativeCRS);
+        roiInNativeCRS = DownloadUtilities.transformGeometry(originalRoi, nativeCRS);
         DownloadUtilities.checkPolygonROI(roiInNativeCRS);
         if (isROIBBOX) {
             if (LOGGER.isLoggable(Level.FINE)) {
@@ -104,15 +109,18 @@ final class ROIManager {
     }
 
     /**
-     * Reproject the initial roi to the provided CRS which is supposedly the target CRS as per the request.
-     * 
-     * <p>
-     * This method should be called once the native CRS has been set, that is the {@link #useNativeCRS(CoordinateReferenceSystem)} has been called.
-     * 
+     * Reproject the initial roi to the provided CRS which is supposedly the target CRS as per the
+     * request.
+     *
+     * <p>This method should be called once the native CRS has been set, that is the {@link
+     * #useNativeCRS(CoordinateReferenceSystem)} has been called.
+     *
      * @param targetCRS a valid instance of {@link CoordinateReferenceSystem}
      * @throws IOException in case something bad happens.
+     * @throws FactoryException
      */
-    public void useTargetCRS(final CoordinateReferenceSystem targetCRS) throws IOException {
+    public void useTargetCRS(final CoordinateReferenceSystem targetCRS)
+            throws IOException, FactoryException {
         if (targetCRS == null) {
             throw new IllegalArgumentException("The provided targetCRS is null");
         }
@@ -120,12 +128,27 @@ final class ROIManager {
             throw new IllegalStateException("It looks like useNativeCRS has not been called yet");
         }
         this.targetCRS = targetCRS;
+        if (!CRS.equalsIgnoreMetadata(roiCRS, targetCRS)) {
+
+            MathTransform reprojectionTrasform = CRS.findMathTransform(roiCRS, targetCRS, true);
+            if (!reprojectionTrasform.isIdentity()) {
+                // avoid doing the transform if this is the identity
+                roiCrsEqualsTargetCrs = false;
+            }
+        }
+
         if (isROIBBOX) {
             // we need to use a larger bbox in native CRS
             roiInTargetCRS = DownloadUtilities.transformGeometry(safeRoiInNativeCRS, targetCRS);
             DownloadUtilities.checkPolygonROI(roiInTargetCRS);
             safeRoiInTargetCRS = roiInTargetCRS.getEnvelope();
             safeRoiInTargetCRS.setUserData(targetCRS);
+
+            // Back to the minimal roiInTargetCrs for future clipping if needed.
+            roiInTargetCRS =
+                    roiCrsEqualsTargetCrs
+                            ? originalRoi
+                            : DownloadUtilities.transformGeometry(originalRoi, targetCRS);
 
             // touch safeRoiInNativeCRS
             safeRoiInNativeCRS = DownloadUtilities.transformGeometry(safeRoiInTargetCRS, nativeCRS);
@@ -136,63 +159,67 @@ final class ROIManager {
             roiInTargetCRS = DownloadUtilities.transformGeometry(roiInNativeCRS, targetCRS);
             safeRoiInTargetCRS = roiInTargetCRS;
         }
-
     }
 
-    /**
-     * @return the isBBOX
-     */
+    /** @return the isBBOX */
     public boolean isROIBBOX() {
         return isROIBBOX;
     }
 
-    /**
-     * @return the roi
-     */
-    public Geometry getRoi() {
-        return roi;
+    /** @return the roi */
+    public Geometry getOriginalRoi() {
+        return originalRoi;
     }
 
-    /**
-     * @return the roiInNativeCRS
-     */
+    /** @return the roiInNativeCRS */
     public Geometry getRoiInNativeCRS() {
         return roiInNativeCRS;
     }
 
-    /**
-     * @return the safeRoiInNativeCRS
-     */
+    /** @return the safeRoiInNativeCRS */
     public Geometry getSafeRoiInNativeCRS() {
         return safeRoiInNativeCRS;
     }
 
-    /**
-     * @return the roiInTargetCRS
-     */
+    /** @return the roiInTargetCRS */
     public Geometry getRoiInTargetCRS() {
         return roiInTargetCRS;
     }
 
-    /**
-     * @return the safeRoiInTargetCRS
-     */
+    /** @return the safeRoiInTargetCRS */
     public Geometry getSafeRoiInTargetCRS() {
         return safeRoiInTargetCRS;
     }
 
-    /**
-     * @return the roiCRS
-     */
+    /** @return the roiCRS */
     public CoordinateReferenceSystem getRoiCRS() {
         return roiCRS;
     }
 
-    /**
-     * @return the targetCRS
-     */
+    /** @return the targetCRS */
     public CoordinateReferenceSystem getTargetCRS() {
         return targetCRS;
     }
 
+    public CoordinateReferenceSystem getNativeCRS() {
+        return nativeCRS;
+    }
+
+    public boolean isRoiCrsEqualsTargetCrs() {
+        return roiCrsEqualsTargetCrs;
+    }
+
+    public Geometry getTargetRoi(boolean clip) {
+        if (clip) {
+            // clipping means carefully following the ROI shape
+            return isRoiCrsEqualsTargetCrs() ? originalRoi : getRoiInTargetCRS();
+        } else {
+            // use envelope of the ROI to simply crop and not clip the raster. This is important
+            // since when
+            // reprojecting we might read a bit more than needed!
+            return isRoiCrsEqualsTargetCrs()
+                    ? originalRoi.getEnvelope()
+                    : getSafeRoiInTargetCRS().getEnvelope();
+        }
+    }
 }

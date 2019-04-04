@@ -11,14 +11,14 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 /**
- * Panel for a parameter that can't be edited and thus its presented as a label
- * text instead of an input field.
- * 
+ * Panel for a parameter that can't be edited and thus its presented as a label text instead of an
+ * input field.
+ *
  * @author Gabriel Roldan
  */
 @SuppressWarnings("serial")
 public class LabelParamPanel extends Panel {
-	
+
     public LabelParamPanel(final String id, final IModel labelModel, IModel paramLabelModel) {
         super(id, labelModel);
         Label label = new Label("paramName", paramLabelModel);

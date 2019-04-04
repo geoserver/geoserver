@@ -6,9 +6,9 @@
 package org.geoserver.inspire.wms;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.inspire.ViewServicesUtils;
@@ -34,13 +33,12 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
-        return new String[]{VS_NAMESPACE, VS_SCHEMA};
+        return new String[] {VS_NAMESPACE, VS_SCHEMA};
     }
 
     /**
      * @return empty list, INSPIRE profile for WMS 1.1.1 not supported.
-     * @see
-     * org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()
      */
     @Override
     public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
@@ -49,8 +47,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
 
     /**
      * @return empty list, INSPIRE profile for WMS 1.1.1 not supported.
-     * @see
-     * org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
      */
     @Override
     public List<String> getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest request) {
@@ -71,13 +68,13 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
             return;
         }
         MetadataMap serviceMetadata = wms.getMetadata();
-        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities =
+                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
-        //Don't create extended capabilities element if mandatory content not present
-        //or turned off
+        // Don't create extended capabilities element if mandatory content not present
+        // or turned off
         if (metadataURL == null
-                || createExtendedCapabilities != null
-                && !createExtendedCapabilities) {
+                || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
@@ -101,9 +98,8 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
     }
 
     @Override
-    public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
-            NumberRange<Double> scaleDenominators) {
+    public NumberRange<Double> overrideScaleDenominators(
+            PublishedInfo layer, NumberRange<Double> scaleDenominators) {
         return scaleDenominators;
     }
-
 }

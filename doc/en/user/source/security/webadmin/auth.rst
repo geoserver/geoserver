@@ -5,6 +5,74 @@ Authentication
 
 This page manages the authentication options, including authentication providers and the authentication chain.
    
+Brute force attack prevention
+-----------------------------
+
+GeoServer ships with a delay based brute force attack prevention system.
+
+.. figure:: images/auth_brute_force.png
+   :align: center
+   
+   *Brute force attack prevention settings*
+
+.. list-table:: 
+   :widths: 40 60 
+   :header-rows: 1
+
+   * - Option
+     - Description
+   * - Enabled
+     - Whether the brute force attack prevention is enabled. Defaults to true.
+   * - Minimum delay on failed authentication (seconds)
+     - Minimum number of seconds a failed login request will be made to wait before getting a response
+   * - Maximum delay on failed authentication (seconds)
+     - Maximum number of seconds a failed login request will be made to wait before getting a response
+   * - Excluded network masks
+     - Network masks identifying hosts that are excluded from brute force attack prevention. Can be empty, include specific IPs, or a list of network masks. 
+       Defaults to 127.0.0.1, the localhost.
+   * - Maximum number of threads blocked on failed login delay
+     - Limits the number of threads that get delayed on failed login, should be set to a value less than the container's available response threads.
+       
+The mechanism works as follows:
+
+* Each failed authentication request is made to wait between min and max seconds before getting an actual response back
+* Each attempt to authenticate the same username in parallel fails immediately, regardless of whether the credentials were valid or not, with a message stating concurrent loging attempts are not allowed.
+
+The first item slows down a single threaded attack to the point of making it ineffective (each failed attempt is logged
+along with the IP attempting access), the second item breaks multi-threaded attacks ability to scale.
+Login attempts are slowed down/blocked on all protocols, be either a OGC request, a REST call, or the UI.
+
+A user trying to login from the user interface while another request is blocked waiting for the cool-down period to
+expire will see a message like the following:
+
+.. figure:: images/auth_brute_force_message.png
+   :align: center
+   
+   *Error message for parallel user interface login*
+  
+A HTTP request (REST or OGC) will instead get an immediate 401 with a message like:
+
+HTTP/1.1 401 User foo, 5896 concurrent login attempt(s) denied during the quiet period
+  
+
+A blessed set of IPs that can dodge the mechanism allows legit administrators to take control of the server even during
+an attack. The system only trusts the actual requestor IP, ignoring "X-Forwarded-For" headers, as they can be easily spoofed
+(this in turn requires the admin to access the system from a local network, without proxies in the middle, for the blessed
+IP to be recognized).
+
+The maximum number of threads blocked configuration allows to setup the system so that an attacker can mis-use the
+system to simply block all service threads, by issuing requests with random user names (the system cannot determine
+if a username is valid or not, none of the authentication mechanisms provides this information for security reasons).
+
+Considerations on how to setup the system:
+
+* A small delay is normally more than enough to stop a brute force attack, resist the temptation of setting high delay values
+  as they might end up blocking too many legit account and trigger the max blocked threads mechanism
+* Ensure that the execluded networks are well protected by other means
+* Set the maximum number of blocked threads to a value large allow peak hour legit logins (e.g., early morning when
+  all the users start working) while still leaving room for successful authentication requests
+* A clustered/load balanced setup will not share the state of blocked logins, each host tracks its local login failures.
+
 Authentication filters
 ----------------------
 

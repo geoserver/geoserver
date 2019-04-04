@@ -593,8 +593,7 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element ref="fes:AbstractQueryExpression"
-                  maxOccurs="unbounded"/>
+               <xsd:element ref="fes:AbstractQueryExpression" minOccurs="0" maxOccurs="unbounded"/>
             </xsd:sequence>
             <xsd:attribute name="lockId" type="xsd:string"/>
             <xsd:attribute name="expiry" type="xsd:positiveInteger"

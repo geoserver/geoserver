@@ -1,0 +1,566 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Layers
+  description: A layer is a published resource (feature type or coverage).
+
+paths:
+  /layers:
+    get:
+      operationId: layersGet
+      summary: Get a list of layers
+      description: Displays a list of all layers on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layers"
+          examples:
+            application/xml: |
+              <layers>
+                 <layer>
+                   <name>tiger:giant_polygon</name>
+                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                     href="http://localhost:8080/geoserver/rest/layers/tiger%3Agiant_polygon.xml"
+                     type="application/xml"/>
+                 </layer>
+                 <layer>
+                   <name>sf:bugsites</name>
+                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                     href="http://localhost:8080/geoserver/rest/layers/sf%3Abugsites.xml"
+                     type="application/xml"/>
+                 </layer>
+               </layers>
+            
+            application/json: |
+               {
+                 "layers": {
+                   "layer": [
+                     {
+                       "name": "tiger:giant_polygon",
+                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/tiger%3Agiant_polygon.json"
+                     },
+                     {
+                       "name": "sf:bugsites",
+                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/sf%3Abugsites.json"
+                     },
+                   ]
+                 }
+               }
+    post:
+      operationId: layersPost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: layersPut
+      description: Invalid. To edit a layer, use PUT on an individual layer instead.
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: layersDelete
+      description: Invalid.
+      responses:
+        405:
+          description: Method not allowed. 
+
+  /layers/{layerName}:
+    get:
+      operationId: layersNameGet
+      summary: Retrieve a layer 
+      description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layer"
+          examples:
+            application/xml: |
+              <layer>
+                <name>poi</name>
+                <path>/</path>
+                <type>VECTOR</type>
+                <defaultStyle>
+                  <name>poi</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/poi.xml" type="application/xml"/>
+                </defaultStyle>
+                <styles class="linked-hash-set">
+                  <style>
+                    <name>burg</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/burg.xml" type="application/xml"/>
+                  </style>
+                  <style>
+                    <name>point</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/point.xml" type="application/xml"/>
+                  </style>
+                </styles>
+                <resource class="featureType">
+                  <name>poi</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.xml" type="application/xml"/>
+                </resource>
+                <attribution>
+                  <logoWidth>0</logoWidth>
+                  <logoHeight>0</logoHeight>
+                </attribution>
+              </layer>
+              
+            application/json: |
+              {
+              
+                  "layer": {
+                      "name": "poi",
+                      "path": "/",
+                      "type": "VECTOR",
+                      "defaultStyle": {
+                          "name": "poi",
+                          "href": "http://localhost:8080/geoserver/rest/styles/poi.json"
+                      },
+                      "styles": {
+                          "@class": "linked-hash-set",
+                          "style": [
+                              {
+                                  "name": "burg",
+                                  "href": "http://localhost:8080/geoserver/rest/styles/burg.json"
+                              },
+                              {
+                                  "name": "point",
+                                  "href": "http://localhost:8080/geoserver/rest/styles/point.json"
+                              }
+                          ]
+                      },
+                      "resource": {
+                          "@class": "featureType",
+                          "name": "poi",
+                          "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json"
+                      },
+                      "attribution": {
+                          "logoWidth": 0,
+                          "logoHeight": 0
+                      }
+                  }
+              
+              }
+    post:
+      operationId: layersNamePost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: layersNamePut
+      summary: Modify a layer.
+      description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to modify.
+          type: string
+        - name: layerBody
+          in: body
+          description: The updated layer definition.
+          required: true
+          schema:
+            $ref: "#/definitions/Layer"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The layer was successfully updated.
+
+    delete:
+      operationId: layersNameDelete
+      summary: Delete layer
+      description: Deletes a layer from the server.
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to delete.
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group, also delete the layer group. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layer groups reference the layer.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: OK
+  /workspaces/{workspaceName}/layers:
+    get:
+      operationId: layersWorkspaceGet
+      summary: Get a list of layers in a workspace.
+      description: Displays a list of all layers in the provided workspace. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the workspace to list layers in
+          type: string
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layers"
+          examples:
+            application/xml: |
+               <layers>
+                 <layer>
+                   <name>bugsites</name>
+                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                     href="http://localhost:8080/geoserver/rest/workspaces/sf/layers/bugsites.xml"
+                     type="application/xml"/>
+                 </layer>
+               </layers>
+            
+            application/json: |
+               {
+                 "layers": {
+                   "layer": [
+                     {
+                       "name": "bugsites",
+                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/layers\/bugsites.json"
+                     },
+                   ]
+                 }
+               }
+    post:
+      operationId: layersWorkspacePost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: layersWorkspacePut
+      description: Invalid. To edit a layer, use PUT on an individual layer instead.
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: layersWorkspaceDelete
+      description: Invalid.
+      responses:
+        405:
+          description: Method not allowed. 
+  /workspaces/{workspaceName}/layers/{layerName}:
+    get:
+      operationId: layersNameWorkspaceGet
+      summary: Retrieve a layer 
+      description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the workspace the layer is in.
+          type: string
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to retrieve.
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layer"
+          examples:
+            application/xml: |
+              <layer>
+                <name>poi</name>
+                <path>/</path>
+                <type>VECTOR</type>
+                <defaultStyle>
+                  <name>poi</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/poi.xml" type="application/xml"/>
+                </defaultStyle>
+                <styles class="linked-hash-set">
+                  <style>
+                    <name>burg</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/burg.xml" type="application/xml"/>
+                  </style>
+                  <style>
+                    <name>point</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/point.xml" type="application/xml"/>
+                  </style>
+                </styles>
+                <resource class="featureType">
+                  <name>poi</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.xml" type="application/xml"/>
+                </resource>
+                <attribution>
+                  <logoWidth>0</logoWidth>
+                  <logoHeight>0</logoHeight>
+                </attribution>
+              </layer>
+              
+            application/json: |
+              {
+              
+                  "layer": {
+                      "name": "poi",
+                      "path": "/",
+                      "type": "VECTOR",
+                      "defaultStyle": {
+                          "name": "poi",
+                          "href": "http://localhost:8080/geoserver/rest/styles/poi.json"
+                      },
+                      "styles": {
+                          "@class": "linked-hash-set",
+                          "style": [
+                              {
+                                  "name": "burg",
+                                  "href": "http://localhost:8080/geoserver/rest/styles/burg.json"
+                              },
+                              {
+                                  "name": "point",
+                                  "href": "http://localhost:8080/geoserver/rest/styles/point.json"
+                              }
+                          ]
+                      },
+                      "resource": {
+                          "@class": "featureType",
+                          "name": "poi",
+                          "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json"
+                      },
+                      "attribution": {
+                          "logoWidth": 0,
+                          "logoHeight": 0
+                      }
+                  }
+              
+              }
+    post:
+      operationId: layersNameWorkspacePost
+      description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: layersNameWorkspacePut
+      summary: Modify a layer.
+      description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the workspace the layer is in.
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to modify.
+          type: string
+        - name: layerBody
+          in: body
+          description: The updated layer definition.
+          required: true
+          schema:
+            $ref: "#/definitions/Layer"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The layer was successfully updated.
+
+    delete:
+      operationId: layersNameWorkspaceDelete
+      summary: Delete layer
+      description: Deletes a layer from the server.
+      parameters:
+        - name: workspaceName
+          in: path
+          required: true
+          description: The name of the workspace the layer is in.
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to delete.
+          type: string
+        - name: recurse
+          in: query
+          description: Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group, also delete the layer group. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layer groups reference the layer.
+          required: false
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: OK
+
+definitions:
+  Layers:
+    title: layers
+    type: object
+    properties:
+      layers:
+        $ref: "#/definitions/LayerReference"
+        
+  LayerReference:
+    title: layers
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of layer
+      link:
+        type: string
+        description: URL to layer definition
+        
+  Layer:
+    title: layer
+    xml:
+      name: layer
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the layer
+      path:
+        type: string
+        description: Location of the layer in the WMS capabilities layer tree
+      type:
+        type: string
+        enum: 
+        - VECTOR
+        - RASTER
+        - REMOTE
+        - WMS
+        - GROUP
+        description: Type of published layer. Can be VECTOR, RASTER, REMOTE, WMS or GROUP. Must be consistent with resource definition.
+      defaultStyle:
+        $ref: "#/definitions/StyleReference"
+      styles:
+        type: object
+        description: Avaialble styles for layer publication
+        properties:
+          '@class':
+            type: string
+            enum:
+            - linked-hash-set
+            description: required value linked-hash-set.
+          style:
+            type: array
+            items:
+              $ref: "#/definitions/StyleReference"
+      resource:
+        type: object
+        description:  Resource supplying information for layer publication
+        properties:
+          '@class':
+            type: string
+            enum:
+            - featureType
+            default: featureType
+            description: required value featureType
+          name:
+            type: string
+            description: Name of resource
+          link:
+            type: string
+            readOnly: true
+            description: URL to the resource definition
+      opaque:
+        type: boolean
+        description: Controls layer transparency (whether the layer is opaque or transparent).
+      metadata:
+        type: array
+        items:
+          $ref: "#/definitions/MetadataEntry"
+      attribution:
+        type: object
+        description: WMS attribution information to be drawn on each map
+        properties:
+          title:
+            type: string
+            description: Human-readable text describing the data provider
+          href:
+            type: string
+            description: URL to data provider
+          logoURL:
+            type: string
+            description: Data provider logo
+          logoWidth:
+            type: integer
+            description: Data provider logo width
+          logoHeight:
+            type: integer
+            description: Data provider logo height
+          logoType:
+            type: string
+            description: Format of data provider logo, example "image/png"
+      authorityURLs:
+        type: array
+        items:
+          type: object
+          title: AuthorityURL
+          properties:
+            name:
+              type: string
+              description: Authory name, describing the industry, national or international origanization responsible for data product standard.
+            href:
+              type: string
+              description: URL to authority organization
+      identifiers:
+        type: array
+        items:
+          type: object
+          title: Identifier
+          properties:
+            authority:
+              type: string
+              description: Authority cited, for details see authorityURLs
+            identifier:
+              type: string
+              description: Work citied, often a data standard provided by 
+  StyleReference:
+      type: object
+      title: style
+      description: Reference to style definition
+      properties:
+        name:
+          type: string
+          description: Name of style
+        link:
+          type: string
+          readOnly: true
+          description: URL to the style definition
+  MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+          enum:
+          - buffer
+          description: Key used for metadata entry, additional keys are added over time
+        '$':
+          title: text
+          type: string
+          description: Text value for provided key Valid text depends on key used. Example  {'@key'='buffer','$'='5'}") or <entry key="buffer">5</entry>

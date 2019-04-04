@@ -1,0 +1,847 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Main
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
+
+paths:
+  /imports:
+    get:
+      operationId: getImports
+      summary: Get a list of all imports
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameterNone"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Contexts"
+          examples:
+            application/json: |
+              {
+                 "imports": [{
+                   "id": 0,
+                   "state": "COMPLETE",
+                   "href": "http://localhost:8080/geoserver/rest/imports/0"
+                 }, {
+                   "id": 1,
+                   "state": "PENDING",
+                   "href": "http://localhost:8080/geoserver/rest/imports/1"
+                 }]
+              }
+    post:
+      operationId: postImports
+      summary: Create a new import
+      description: Creates a new import. If the exec parameter is true, that import is immediately executed.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/AsyncParameter"
+        - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/Context"
+          headers:
+            Location:
+              description: href to the newly created import
+              type: string
+    delete:
+      operationId: deleteImports
+      summary: Delete all imports
+      description: Deletes all imports that are not in the COMPLETE state.
+      responses:
+        204:
+          description: No Content.
+  /imports/{importId}:
+    get:
+      operationId: getImport
+      summary: Retrieve import by id
+      produces:
+        - text/html
+        - application/json
+        - application/xml
+      parameters:
+        - name: importId
+          in: path
+          description: The ID of the import
+          required: true
+          type: string
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Context"
+    post:
+      operationId: postImport
+      summary: Create a new import, or execute an existing import
+      description: If an import with the id {importId} exists and is not in the INIT state, it is executed. If an import with that id does not exist, a new import is created with that id. If the exec parameter is true, this new import is immediately executed.
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/AsyncParameter"
+        - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
+      responses:
+        201:
+          description: Created. Returned if the import was created.
+          schema:
+            $ref: "#/definitions/Context"
+        204:
+          description: No Content. Returned if the import already existed and was executed.
+        412:
+          description: Precondition Failed. Returned if the import already existed and was in the INIT state.
+    put:
+      operationId: putImport
+      summary: Tries to create a new import with the provided id.
+      description: Creates a new import with the next unclaimed id >= {importId}. If the exec parameter is true, that import is immediately executed.
+      consumes:
+        - application/json
+        - text/json
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/AsyncParameter"
+        - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/Context"
+          headers:
+            Location:
+              description: href to the newly created import
+              type: string
+    delete:
+      operationId: deleteImport
+      summary: Delete an import
+      description: Deletes the import with id {importId}, as long as it is not in the COMPLETE state.
+      responses:
+        204:
+          description: No Content.
+
+parameters:
+  AsyncParameter:
+    name: async
+    description: Run the import asyncronously.
+    default: false
+    in: query
+    type: boolean
+    required: false
+  ExecParameter:
+    name: exec
+    description: Run the import when it is created.
+    default: false
+    in: query
+    type: boolean
+    required: false
+  #This parameter is handled at the converter level, and applies to all endpoints which return content. Default is 1 (self), unless otherwise specified in the controller method.
+  ExpandParameter:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
+    required: false
+  ExpandParameterNone:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: none
+    required: false
+  ContextParameter:
+    name: importBody
+    description: The import context to create.
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Context"
+definitions:
+  Contexts:
+    title: imports
+    type: array
+    description: List of import contexts.
+    items:
+      $ref: "#/definitions/Context"
+  Context:
+    title: context
+    type: object
+    description: An import context
+    properties:
+      id:
+        type: string
+        description: The import id
+      href:
+        type: string
+        description: URL to the import context endpoint
+      state: 
+        type: string
+        description: State of the import.
+        enum:
+        - INIT
+        - INIT_ERROR
+        - PENDING
+        - RUNNING
+        - COMPLETE
+      message:
+        type: string
+        description: The current context message, if any
+      archive:
+        type: boolean
+        description: Flag to control whether imported files (indirect) should be archived after import
+      targetWorkspace:
+        type: string
+        description: Target workspace of the import, if any.
+      targetStore:
+        $ref: "#/definitions/Store"
+      data:
+        $ref: "#/definitions/Data"
+      transforms:
+        $ref: "#/definitions/Transforms"
+      tasks:
+        $ref: "#/definitions/Tasks"
+  Tasks:
+    title: tasks
+    description: A list of tasks
+    type: array
+    items:
+      $ref: "#/definitions/Task"
+  Task:
+    title: task
+    type: object
+    description: An import task
+    properties:
+      id:
+        type: string
+        description: The task id
+      href:
+        type: string
+        description: URL to the task endpoint
+      state: 
+        type: string
+        description: State of the task.
+        enum:
+        - PENDING
+        - READY
+        - RUNNING
+        - NO_CRS
+        - NO_BOUNDS
+        - NO_FORMAT
+        - BAD_FORMAT
+        - ERROR
+        - CANCELED
+        - COMPLETE
+      updateMode:
+        type: string
+        description: Update mode of the task.
+        enum:
+        - CREATE 
+        - REPLACE 
+        - APPEND 
+        - UPDATE
+      data:
+        $ref: "#/definitions/Data"
+      target:
+        $ref: "#/definitions/Store"
+      progress:
+        type: string
+        description: URL to the progress endpoint for this task
+      layer:
+        $ref: "#/definitions/Layer"
+      errorMessage:
+        type: string
+        description: Any error messages for the task, concatenated.
+      transformChain:
+        $ref: "#/definitions/TransformChain"
+      messages:
+        $ref: "#/definitions/Messages"
+  Store:
+    title: store
+    type: object
+    description: A store
+    properties:
+      href: 
+        type: string
+        description: URL to the task target endpoint
+      store:
+        type: object
+        description: JSON representation of the store
+#  Store:
+#   oneOf:
+#      - $ref: "#/definitions/DataStore"
+#      - $ref: "#/definitions/CoverageStore"
+  DataStore:
+    title: Store
+    type: object
+    description: A vector store
+    properties:
+      href: 
+        type: string
+        description: URL to the task target endpoint
+      datastore:
+        title: datastore
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of data store
+          link:
+            type: string
+            description: URL to data store definition
+  CoverageStore:
+    title: Store
+    type: object
+    description: A raster store
+    properties:
+      href: 
+        type: string
+        description: URL to the task target endpoint
+      coverageStore:
+        type: object
+        required: [ name, type ]
+        example: |
+            <coverageStore>
+              <name>arcGridSample</name>
+              <description>Sample ASCII GRID coverage of Global rainfall.</description>
+              <type>ArcGrid</type>
+              <enabled>true</enabled>
+              <workspace>
+                <name>nurc</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc.xml" type="application/xml"/>
+              </workspace>
+              <__default>false</__default>
+              <url>file:coverages/arc_sample/precip30min.asc</url>
+              <coverages>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/arcGridSample/coverages.xml" type="application/xml"/>
+              </coverages>
+            </coverageStore>      
+            
+        properties:
+          name:
+            type: string
+            description: Name of the coverage store
+          description:
+            type: string
+            description: Description of the coverage store
+          type:
+            type: string
+            description: Type of coverage store
+          enabled:
+            type: boolean
+            description: Whether the store is enabled, or not
+          workspace:
+            type: object
+            description: The workspace containing the store
+            required: [name]
+            properties:
+              name: 
+                type: string
+                description: Name of the workspace
+              link:
+                type: string
+                description: A link to the workspace representation
+          __default__:
+              type: boolean
+              description: Whether the store is the default store of the workspace
+          url:
+            type: string
+            description: Location of the raster data source (often, but not necessarily, a file). Can be relative to the data directory.
+          coverages:
+            type: object
+            properties:
+              link:
+                type: string
+                description: A link to the list of coverages contained in this store
+  Layer:
+    title: layer
+    type: object
+    description: A layer
+    properties: 
+      name:
+        type: string
+        description: The name of the layer
+      href:
+        type: string
+        description: "URL to the importer layer endpoint"
+      title:
+        type: string
+        description: The layer title
+      abstract:
+        type: string
+        description: The layer abstract
+      description:
+        type: string
+        description: The layer description
+      originalName:
+        type: string
+        description: The original name of the layer. This may be different from the name if this name already exists in geoserver.
+      nativeName:
+        type: string
+        description: The name of the underlying resource
+      srs:
+        type: string
+        description: The SRS of the layer
+      bbox:
+        $ref: "#/definitions/Bbox"
+      attributes:
+        $ref: "#/definitions/FeatureType"
+      style:
+        $ref: "#/definitions/Style"
+  FeatureType:
+    title: featureType
+    type: array
+    description: Feature type attributes
+    items:
+      type: object
+      description: A feature type attribute.
+      properties:
+        name:
+          type: string
+          description: The name of the attribute
+        binding:
+          type: string
+          description: The java class representing the type of the attribute
+  Style:
+    title: style
+    type: object
+    description: A layer style
+    properties:
+      name:
+        type: string
+        description: Name of the style
+      href:
+        type: string
+        description: "URL to the importer layer style endpoint"
+      format:
+        type: string
+        description: Format of style
+      languageVersion:
+        type: object
+        properties:
+          version:
+            type: string
+            description: Version of style format
+      filename:
+        type: string
+        description: File name of the style
+  TransformChain:
+    title: transformChain
+    type: object
+    description: A chain of tranform operations to apply during the import process
+    properties:
+      type:
+        type: string
+        description: 'The type of transforms in the chain. One of "vector" or "raster"'
+      transforms:
+        $ref: "#/definitions/Transforms"
+  Transforms:
+    title: transforms
+    type: array
+    description: A list of transforms
+    items:
+      $ref: "#/definitions/Transform"
+  Transform:
+    title: transform
+    type: object
+    description: A data transform applied to the import data.
+    properties:
+      type:
+        type: string
+        description: The name of the transform
+      href: 
+        type: string
+        description: URL to the transform endpoint
+#  Transform:
+#    oneOf:
+#      - $ref: "#/definitions/DataFormatTransform"
+#      - $ref: "#/definitions/IntegerFieldToDateTransform"
+#      - $ref: "#/definitions/CreateIndexTransform"
+#      - $ref: "#/definitions/AttributeRemapTransform"
+#      - $ref: "#/definitions/AttributesToPointGeometryTransform"
+#.     - $ref: "#/definitions/ReprojectTransform"
+#      - $ref: "#/definitions/GdalTranslateTransform"
+#      - $ref: "#/definitions/GdalWarpTransform"
+#      - $ref: "#/definitions/GdalAddoTransform"
+#      - $ref: "#/definitions/PostScriptTransform"
+  DataFormatTransform:
+    title: DataFormatTransform
+    type: object
+    description: A data transform that converts a non date attribute in a date attribute.
+    properties:
+      type:
+        type: string
+        description: '"DataFormatTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      field:
+        type: string
+        description: The field to apply the transform to
+      format: 
+        type: string
+        description: "A date parsing pattern, setup using the Java SimpleDateFormat syntax. In case it's missing, a number of built-in formats will be tried instead (short and full ISO date formats, dates without any separators)."
+  IntegerFieldToDateTransform:
+    title: IntegerFieldToDateTransform
+    type: object
+    description: A data transform that allows a string or number field to be used as a year Date. The number is interpreted as an Integer.
+    properties:
+      type:
+        type: string
+        description: '"IntegerFieldToDateTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      field:
+        type: string
+        description: The field to apply the transform to
+  CreateIndexTransform:
+    title: CreateIndexTransform
+    type: object
+    description: A data transform that creates an index in the data (assuming the import data is a database).
+    properties:
+      type:
+        type: string
+        description: '"CreateIndexTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      field:
+        type: string
+        description: The field to create the index for
+  AttributeRemapTransform:
+    title: AttributeRemapTransform
+    type: object
+    description: A data transform that maps an attribute from one type to another.
+    properties:
+      type:
+        type: string
+        description: '"AttributeRemapTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      field:
+        type: string
+        description: The field to remap.
+      target:
+        type: string
+        description: The type to map the attribute to.
+  AttributesToPointGeometryTransform:
+    title: AttributesToPointGeometryTransform
+    type: object
+    description: A data transform that maps two numerical attributes to a point geometry.
+    properties:
+      type:
+        type: string
+        description: '"AttributesToPointGeometryTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      latField:
+        type: string
+        description: The field used for the lattitude
+      lonField:
+        type: string
+        description: The field used for the longitude
+  ReprojectTransform:
+    title: ReprojectTransform
+    type: object
+    description: A data transform that reprojects the geometry from one CRS to another.
+    properties:
+      type:
+        type: string
+        description: '"ReprojectTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      source:
+        type: string
+        description: The CRS to reproject from
+      target:
+        type: string
+        description: The CRS to reproject to
+  GdalTranslateTransform:
+    title: GdalTranslateTransform
+    type: object
+    description: A data transform that runs gdal_translate on a input raster file.
+    properties:
+      type:
+        type: string
+        description: '"GdalTranslateTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      options:
+        type: array
+        description: Array of options that are passed to gdal when running the transform
+        items:
+          type: string
+          description: An option passed to gdal
+  GdalWarpTransform:
+    title: GdalWarpTransform
+    type: object
+    description: A data transform that runs gdalwarp on a input raster file.
+    properties:
+      type:
+        type: string
+        description: '"GdalWarpTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      options:
+        type: array
+        description: Array of options that are passed to gdal when running the transform
+        items:
+          type: string
+          description: An option passed to gdal
+  GdalAddoTransform:
+    title: GdalAddoTransform
+    type: object
+    description: A data transform that runs gdaladdo on a input raster file.
+    properties:
+      type:
+        type: string
+        description: '"GdalAddoTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      options:
+        type: array
+        description: Array of options that are passed to gdal when running the transform
+        items:
+          type: string
+          description: An option passed to gdal
+      levels:
+        type: array
+        description: The levels
+        items:
+          type: integer
+          description: A level
+  PostScriptTransform:
+    title: PostScriptTransform
+    type: object
+    description: Invokes a script found in $GEOSERVER_DATA_DIR/importer/scripts 
+    properties:
+      type:
+        type: string
+        description: '"PostScriptTransform"'
+      href: 
+        type: string
+        description: URL to the transform endpoint
+      name:
+        type: string
+        description: The name of the script to be invoked
+      options:
+        type: array
+        description: Array of options that are passed to the script when running the transform
+        items:
+          type: string
+          description: An option passed to the script
+  Bbox:
+    title: Bbox
+    type: object
+    description: A spatially referenced bounding box.
+    properties:
+      minx:
+        type: string
+        description: The minimum x value
+      miny:
+        type: string
+        description: The minimum y value
+      maxx:
+        type: string
+        description: The maximum x value
+      maxy:
+        type: string
+        description: The maximum y value
+      crs:
+        type: string
+        description: The WKT representation of the CRS.
+  Data:
+    title: data
+    type: object
+    description: A data representation. Paramaters vary depending on the type.
+    properties:
+      type:
+        type: string
+        description: The type of the data
+        enum: 
+        - remote
+        - file
+        - directory
+        - mosaic
+        - database
+        - table
+#  Data:
+#    oneOf:
+#      - $ref: "#/definitions/Directory"
+#      - $ref: "#/definitions/File"
+#      - $ref: "#/definitions/Database"
+#      - $ref: "#/definitions/Table"
+#      - $ref: "#/definitions/Remote"
+  Remote:
+    title: remote
+    type: object
+    description: An import data object representing remote data.
+    properties:
+      type:
+        type: string
+        description: '"remote"'
+      location: 
+        type: string
+        description: The location from which to fetch the data.
+      username:
+        type: string
+        description: Username required to access the data (optional).
+      password:
+        type: string
+        description: Password required to access the data (optional).
+      domain:
+        type: string
+        description: domain of the data.
+  Files:
+    title: files
+    type: array
+    description: List of file descriptors
+    items:
+      $ref: "#/definitions/FileContents"
+  File:
+    title: file
+    type: object
+    description: An import data object representing a spatial file or granule
+    properties:
+      type:
+        type: string
+        description: '"file"'
+      format:
+        type: string
+        description: Format of the file
+      href: 
+        type: string
+        description: URL to the file endpoint
+      location:
+        type: string
+        description: Absolute system path to the file
+      charset:
+        type: string
+        description: The charset encoding of the data
+      file:
+        type: string
+        description: Name of the file
+      prj:
+        type: string
+        description: Name of the .prj file, if applicable
+      other:
+        type: array
+        description: List of other files that comprise this spatial file.
+        items:
+          type: string
+          description: Name of the file
+      message:
+        $ref: "#/definitions/Message"
+  FileContents:
+    title: filecontents
+    type: object
+    description: Description of a spatial file or granule
+    properties:
+      file:
+        type: string
+        description: Name of the file
+      href:
+        type: string
+        description: URL to the file endpoint
+      prj:
+        type: string
+        description: Name of the .prj file, if applicable
+      other:
+        type: array
+        description: List of other files that comprise this spatial file.
+        items:
+          type: string
+          description: Name of the file
+  Directory:
+    title: directory
+    type: object
+    description: An import data object representing a directory of spatial files or an image mosaic
+    properties:
+      type:
+        type: string
+        description: '"directory" or "mosaic"'
+      location: 
+        type: string
+        description: Absolute system path to the directory
+      href:
+        type: string
+        description: URL to the directory endpoint
+      charset:
+        type: string
+        description: Charset encoding of the data
+      files:
+        $ref: "#/definitions/Files"
+  Database:
+    title: database
+    type: object
+    description: An import data object representing a database
+    properties:
+      type:
+        type: string
+        description: '"database"'
+      format:
+        type: string
+      href:
+        type: string
+        description: URL to the database endpoint
+      properties:
+        type: object
+        description: Database connection parameters. Actual paramaters vary depending on the type of database.
+      tables:
+        type: array
+        items:
+          $ref: "#/definitions/Table"
+  Table:
+    title: table
+    type: object
+    description: An import data object representing a a database table
+    properties:
+      type:
+        type: string
+        description: '"table"'
+      name:
+        type: string
+      format:
+        type: string
+      href:
+        type: string
+        description: URL to the table endpoint
+  Message:
+    title: message
+    type: string
+    description: A message about the import data.
+  Messages:
+    title: messages
+    description: A list of log messages
+    type: array
+    items:
+      title: messages
+      type: object
+      properties:
+        level:
+          type: string
+          description: Level of the log message.
+        messsage:
+          type: string
+          description: The log message        

@@ -17,14 +17,91 @@
 	-->
     <bean id="remoteProcessFactoryConfigurationWatcher" 
 		class="org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher" destroy-method="stop"/>
+
+	<!-- XMPP Embedded Server -->
+	
+	<bean id="inmemoryStorageRegistry" class="org.apache.vysper.storage.inmemory.MemoryStorageProviderRegistry" />
+    
+    <!--<bean id="jcrStorageRegistry" class="org.apache.vysper.storage.jcr.JcrStorageProviderRegistry" />-->
+    
+    <!-- choose one of the storage registries -->
+    <alias name="inmemoryStorageRegistry" alias="storageRegistry" />
+    
+    <!-- default users; remove if you have persistently stored users
+         NOTE: if passwords are empty, random passwords are generated and printed on the console
+               So, your default install of Vysper is secure from the very beginning
+    -->
+    <!-- bean id="addUsers" class="org.apache.vysper.spring.AddUserHelper">
+        <constructor-arg index="0">
+            <map>
+                <entry key="admin@vysper.org" value="CHOOSE A SECURE PASSWORD" / -->
+                <!--<entry key="user1@vysper.org" value="CHOOSE A SECURE PASSWORD" />-->
+                <!--<entry key="user2@vysper.org" value="CHOOSE A SECURE PASSWORD" />-->
+                <!--<entry key="user3@vysper.org" value="CHOOSE A SECURE PASSWORD" />-->
+            <!-- /map>
+        </constructor-arg>
+        <property name="storageProviderRegistry" ref="storageRegistry" />
+    </bean -->
+    
+    <bean id="tcpEndpoint" class="org.apache.vysper.mina.TCPEndpoint">
+    	<property name="port" value="6222" />
+    </bean>
+    
+    <!-- for making the server available over HTTP transport, configure the BOSH endpoint
+         BOSH requires extension xep0124-xep0206-bosh to be on the classpath.
+    -->
+    <!--<bean id="boshEndpoint" class="org.apache.vysper.xmpp.extension.xep0124.BoshEndpoint">--> <!-- Using old jetty-security -->
+    
+    <!--<bean id="boshEndpoint" class="org.geoserver.wps.remote.plugin.server.XMPPBoshEndpoint">
+        <property name="accessControlAllowOrigin">
+            <list><value>*</value></list>
+        </property>
+        <property name="port" value="5222" />
+        <property name="contextPath" value="/" />
+        <property name="SSLCertificateKeystore" value="classpath:bogus_mina_tls.cert" />
+        <property name="SSLCertificateKeystorePassword" value="boguspw" />
+        <property name="SSLEnabled" value="true" />
+    </bean>-->
+    
+	<bean id="xmppServerEmbedded" class="org.geoserver.wps.remote.plugin.server.XMPPServerEmbedded"
+				init-method="init" destroy-method="stop">
+		<constructor-arg index="0" ref="remoteProcessFactoryConfigurationWatcher"/>
+        
+        <!-- If this is null or empty, it will use a default BOSH Endpoint on 5222 port -->
+        <property name="endpoints">
+            <list>
+                <ref bean="tcpEndpoint"/>
+                <!--<ref bean="boshEndpoint"/>-->
+            </list>
+        </property>
+        
+        <property name="storageProviderRegistry" ref="storageRegistry" />
+        <!--<property name="certificateFile" value="classpath:bogus_mina_tls.cert" />-->
+        <!--<property name="certificatePassword" value="boguspw" />-->
+        <property name="modules" >
+            <list>
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0092_software_version.SoftwareVersionModule"/>
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0202_entity_time.EntityTimeModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0054_vcardtemp.VcardTempModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0119_xmppping.XmppPingModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0049_privatedata.PrivateDataModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0050_adhoc_commands.AdhocCommandsModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0060_pubsub.PublishSubscribeModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0077_inbandreg.InBandRegistrationModule" />
+            </list>
+        </property>
+	</bean>
     
     <!--
     	Factory for remote processes 
     -->
-	<bean id="xmppRemoteProcessClient" class="org.geoserver.wps.remote.plugin.XMPPClient">
+	<bean id="xmppRemoteProcessClient" class="org.geoserver.wps.remote.plugin.XMPPClient" 
+					depends-on="xmppServerEmbedded">
 	    <constructor-arg index="0" ref="remoteProcessFactoryConfigurationWatcher"/>
 	    <constructor-arg index="1" value="true"/>
 	    <constructor-arg index="2" value="50"/>
+        <!--<property name="certificateFile" value="classpath:bogus_mina_tls.cert" />-->
+        <!--<property name="certificatePassword" value="boguspw" />-->
 	</bean>
 
 	<!-- REGISTER Signal -->
@@ -47,5 +124,5 @@
 	
 	<!-- LOG Signal -->
 	<bean id="xmppLogMessage" class="org.geoserver.wps.remote.plugin.XMPPLogMessage" />
-	
+
 </beans>

@@ -4,18 +4,14 @@
  */
 package org.geoserver.gdal;
 
+import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import java.util.Optional;
-
 import org.gdal.gdal.gdal;
 import org.geoserver.platform.ModuleStatus;
-import org.geotools.factory.GeoTools;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
 
-import it.geosolutions.imageio.gdalframework.GDALUtilities;
-
-/**
- * Status page checking availability and binary details
- */
+/** Status page checking availability and binary details */
 public class GDALStatus implements ModuleStatus {
 
     @Override
@@ -54,7 +50,7 @@ public class GDALStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getMessage() {
-        String message = "JNI GDAL Wrapper Version: " + getGDALWrapperJarVersion();
+        String message = "JNI GDAL Wrapper Version: " + getGDALWrapperJarVersion().orElse("null");
         if (!isAvailable()) {
             message += "\njava.library.path: " + System.getProperty("java.library.path", "");
         } else {
@@ -68,11 +64,15 @@ public class GDALStatus implements ModuleStatus {
         return Optional.ofNullable("");
     }
 
-    public String getGDALWrapperJarVersion() {
+    public Optional<String> getGDALWrapperJarVersion() {
         if (isAvailable()) {
-            return GeoTools.getVersion(gdal.class).toString();
+            Version v = GeoTools.getVersion(gdal.class);
+            if (v == null) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(v.toString());
         } else {
-            return "unavailable";
+            return Optional.ofNullable("unavailable");
         }
     }
 

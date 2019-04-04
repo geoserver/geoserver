@@ -1,0 +1,25 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Reloading
+  description: Reloading a GeoWebCache instance after changing configurations.
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /reload:
+    post:
+      operationId: reloadPost
+      summary: Reloads GWC settings/
+      description: Reloads the GeoWebCache settings after making changes to the configuration.
+      parameters:
+        - name: configurationName
+          in: body
+          description: The string value of the configuration ie. "reload_configuration=1"
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK

@@ -1,0 +1,121 @@
+<html>
+  <head>
+    <style type="text/css">
+      <#include "geoserver.css" parse=false>
+      <#include "style.css" parse=false>
+    </style>
+    <style type="text/css">
+    #content {
+      margin: 2em;
+     
+    }
+    #info {
+      margin-top: 2em;
+      margin-left: 1em;
+    }
+    #info li span {
+      margin-left: 1em;
+    }
+    label {
+      line-height: 1em;
+    }
+    </style>
+  </head>
+  <body>
+  
+  <div id="content">
+    <h1><span>Request ${properties.id}</span></h1>
+    <h5>${properties.host}</h5>
+    <div id="info">
+    <form>
+    <fieldset>
+      <ul>
+        <li>
+           <label>Started</label><span>${properties.startTime}</span>
+        </li>
+        <li>
+           <label>Finished</label><span>${properties.endTime}</span>
+        </li>
+        <li>
+           <label>Total</label><span>${properties.totalTime} ms</span>
+        </li>
+      </ul>
+    </fieldset>
+    <fieldset>
+      <legend>
+        <span>HTTP</span>
+      </legend>
+      <ul>
+        <li>
+           <label>Method</label><span>${properties.httpMethod}</span>
+        </li>
+        <li>
+           <label>Path</label><span>${properties.path}</span>
+        </li>
+        <li>
+           <label>Query String</label><span>${properties.queryString}</span>
+        </li>
+       </ul>
+    </fieldset>
+    
+    <#if properties.owsVersion != "null">
+    <fieldset>
+      <legend>
+        <span>OWS</span>
+      </legend>
+      <ul>
+        <li>
+          <label>Service</label><span>${properties.service}</span>
+        </li>
+        <li>
+          <label>Operation</label><span>${properties.operation}</span>
+        </li>
+        <li>
+          <label>Version</label><span>${properties.owsVersion}</span>
+        </li>
+      </ul>
+    </fieldset>
+    </#if>
+    
+    <fieldset>
+      <legend>
+        <span>Origin</span>
+      </legend>
+      <ul>
+         <li>
+          <label>IP Address</label><span>${properties.remoteAddr}</span>
+        </li>
+         <li>
+          <label>Hostname</label><span>${properties.remoteHost}</span>
+        </li>
+         <li>
+          <label>Username</label><span>${properties.remoteUser}</span>
+        </li>
+      </ul>
+    </fieldset>
+    
+    <fieldset>
+      <legend>
+        <span>Response</span>
+      </legend>
+      <ul>
+         <li>
+          <label>Content Type</label><span>${properties.responseContentType}</span>
+        </li>
+        <li>
+          <label>Content Length</label><span>${properties.responseLength} bytes</span>
+        </li>
+        <li>
+          <label>Cache result</label><span>${properties.cacheResult}</span>
+        </li>
+        <li>
+          <label>Miss reason</label><span>${properties.missReason}</span>
+        </li>
+      </ul>
+    </fieldset>
+    </form>
+    </div>
+  </div>
+  
+  </body>
+</html>

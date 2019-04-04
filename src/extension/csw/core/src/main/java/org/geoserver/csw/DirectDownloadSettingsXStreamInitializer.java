@@ -4,19 +4,17 @@
  */
 package org.geoserver.csw;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
-
-import com.thoughtworks.xstream.XStream;
 
 public class DirectDownloadSettingsXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType("directDownloadSettings",
-                DirectDownloadSettings.class);
+        persister.registerBreifMapComplexType(
+                "directDownloadSettings", DirectDownloadSettings.class);
         XStream xs = persister.getXStream();
         xs.alias("directDownloadSettings", DirectDownloadSettings.class);
     }
-
 }

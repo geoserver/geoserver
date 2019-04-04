@@ -19,5 +19,4 @@ public class ParamResourceModel extends org.apache.wicket.model.StringResourceMo
         super(resourceKey, component);
         setParameters(resources);
     }
-
 }

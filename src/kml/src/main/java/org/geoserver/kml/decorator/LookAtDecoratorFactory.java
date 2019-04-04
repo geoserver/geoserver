@@ -5,38 +5,37 @@
  */
 package org.geoserver.kml.decorator;
 
-import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.utils.LookAtOptions;
-import org.geoserver.wms.WMSInfo;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.LookAt;
 import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.kml.utils.LookAtOptions;
+import org.geoserver.wms.WMSInfo;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Adds LookAt elements on Document, Folder and Placemark
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
-            KmlEncodingContext context) {
+    public KmlDecorator getDecorator(
+            Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
-        if(!(context.getService() instanceof WMSInfo)) {
+        if (!(context.getService() instanceof WMSInfo)) {
             return null;
         }
-        
+
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkLookAtDecorator();
-        } else if (Folder.class.isAssignableFrom(featureClass) || NetworkLink.class.isAssignableFrom(featureClass)) {
+        } else if (Folder.class.isAssignableFrom(featureClass)
+                || NetworkLink.class.isAssignableFrom(featureClass)) {
             return new LayerLookAtDecorator();
         } else if (Document.class.isAssignableFrom(featureClass)) {
             return new DocumentLookAtDecorator();
@@ -55,9 +54,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             document.setAbstractView(lookAt);
 
             return document;
-
         }
-
     }
 
     class LayerLookAtDecorator implements KmlDecorator {
@@ -70,7 +67,6 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
             return feature;
         }
-
     }
 
     class PlacemarkLookAtDecorator implements KmlDecorator {
@@ -88,7 +84,6 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
             return pm;
         }
-
     }
 
     public LookAt buildLookAt(Envelope bounds, LookAtOptions options, boolean forceBounds) {
@@ -111,11 +106,11 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
         double R_EARTH = 6.371 * 1000000; // meters
         double VIEWER_WIDTH = 22 * Math.PI / 180; // The field of view of the google maps
-                                                  // camera, in radians
+        // camera, in radians
         double[] p1 = getRect(lon1, lat1, R_EARTH);
         double[] p2 = getRect(lon2, lat2, R_EARTH);
-        double[] midpoint = new double[] { (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2,
-                (p1[2] + p2[2]) / 2 };
+        double[] midpoint =
+                new double[] {(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2, (p1[2] + p2[2]) / 2};
 
         midpoint = getGeographic(midpoint[0], midpoint[1], midpoint[2]);
 
@@ -126,10 +121,10 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         double height = distance / (2 * Math.tan(VIEWER_WIDTH));
 
         final Double tilt = options.getTilt() == null ? Double.valueOf(0) : options.getTilt();
-        final Double heading = options.getHeading() == null ? Double.valueOf(0) : options
-                .getHeading();
-        final Double altitude = options.getAltitude() == null ? Double.valueOf(height) : options
-                .getAltitude();
+        final Double heading =
+                options.getHeading() == null ? Double.valueOf(0) : options.getHeading();
+        final Double altitude =
+                options.getAltitude() == null ? Double.valueOf(height) : options.getAltitude();
 
         // build the lookat
         LookAt lookAt = new LookAt();
@@ -151,19 +146,19 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         double x = radius * Math.sin(phi) * Math.cos(theta);
         double y = radius * Math.sin(phi) * Math.sin(theta);
         double z = radius * Math.cos(phi);
-        return new double[] { x, y, z };
+        return new double[] {x, y, z};
     }
 
     private double[] getGeographic(double x, double y, double z) {
         double theta, phi, radius;
-        radius = distance(new double[] { x, y, z }, new double[] { 0, 0, 0 });
+        radius = distance(new double[] {x, y, z}, new double[] {0, 0, 0});
         theta = Math.atan2(Math.sqrt(x * x + y * y), z);
         phi = Math.atan2(y, x);
 
         double lat = 90 - (theta * 180 / Math.PI);
         double lon = 90 - (phi * 180 / Math.PI);
 
-        return new double[] { (lon > 180 ? lon - 360 : lon), lat, radius };
+        return new double[] {(lon > 180 ? lon - 360 : lon), lat, radius};
     }
 
     private double distance(double[] p1, double[] p2) {
@@ -172,5 +167,4 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         double dz = p1[2] - p2[2];
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
-
 }

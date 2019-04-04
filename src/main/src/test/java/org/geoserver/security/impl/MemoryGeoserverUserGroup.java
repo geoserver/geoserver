@@ -8,20 +8,15 @@ package org.geoserver.security.impl;
 
 /**
  * Needed to test if subclassing works
- * 
- * @author christian
  *
+ * @author christian
  */
 public class MemoryGeoserverUserGroup extends GeoServerUserGroup {
 
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = 1L;
 
     public MemoryGeoserverUserGroup(String name) {
         super(name);
-        
     }
-
 }

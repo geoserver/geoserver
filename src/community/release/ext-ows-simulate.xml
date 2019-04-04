@@ -1,0 +1,16 @@
+<assembly>
+  <id>ows-simulate-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gs-ows-simulate*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

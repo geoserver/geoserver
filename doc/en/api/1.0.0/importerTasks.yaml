@@ -1,0 +1,542 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Tasks
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The tasks endpoint controls individual tasks within an import job. The importer extension is an optional install and may not be available on all deployments of GeoServer
+
+paths:
+  /imports/{importId}/tasks:
+    get:
+      operationId: getTasks
+      summary: Retrieve all tasks for import with id {importId}
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/ExpandParameterNone"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Tasks"
+          examples:
+           application/json: |
+             {
+                "tasks": [
+                  {
+                    "id": 0,
+                    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0",
+                    "state": "READY"
+                  }
+                ]
+              }
+    post:
+      operationId: postTask
+      summary: Create a new task
+      description: 'A new task can be created by issuing a POST to imports/<importId>/tasks as a "Content-type: multipart/form-data" multipart encoded data as defined by RFC 2388. One or more file can be uploaded this way, and a task will be created for importing them. In case the file being uploaded is a zip file, it will be unzipped on the server side and treated as a directory of files. 
+      
+        Alternatively, a new task can be created by issuing a POST as a "Content-type: application/x-www-form-urlencoded" 
+        form url encoded data containing a url paramerter with the location of the uploaded file.'
+      consumes:
+        - multipart/form-data
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/htm
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/ExpandParameterNone"
+        - $ref: "#/parameters/TaskParameter"
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: href to the newly created task
+              type: string
+          schema:
+            $ref: "#/definitions/Task"
+          examples:
+           application/json: |
+             {
+                "task": {
+                  "id": 1,
+                  "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1",
+                  "state": "READY",
+                  "updateMode": "CREATE",
+                  "data": {
+                    "type": "file",
+                    "format": "Shapefile",
+                    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/data",
+                    "file": "bugsites.shp"
+                  },
+                  "target": {
+                    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/target",
+                    "dataStore": {
+                      "name": "shapes",
+                      "type": "PostGIS"
+                    }
+                  },
+                  "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/progress",
+                  "layer": {
+                    "name": "bugsites",
+                    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/layer"
+                  },
+                  "transformChain": {
+                    "type": "vector",
+                    "transforms": []
+                  }
+                }
+              }
+  /imports/{importId}/tasks/{taskId}:
+    get:
+      operationId: getTask
+      summary: Retrieve task with id {taskId} within import with id {importId}  
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Task"
+    put:
+      operationId: putTask
+      summary: Modify task with id {taskId} within import with id {importId}
+      description: 'A PUT request over an existing task can be used to update its representation. The representation can be partial, and just contains the elements that need to be updated.
+
+        The updateMode of a task normally starts as "CREATE", that is, create the target resource if missing. Other possible values are "REPLACE", that is, delete the existing features in the target layer and replace them with the task source ones, or "APPEND", to just add the features from the task source into an existing layer.'
+      consumes:
+        - application/json
+        - text/json
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/TaskParameter"
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Task"
+    delete:
+      operationId: deleteTask
+      summary: Remove task with id {taskId} within import with id {importId}
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+      responses:
+        200: 
+          description: OK
+  /imports/{importId}/tasks/{filename}:
+    put:
+      operationId: putTaskFile
+      summary: Create a new task
+      description: 'A new task can be created by issuing a PUT containing the raw file content to this endpoint. The name of the uploaded file will be {filename}. The location of the uploaded file will be the top level directory associated with the import, or the "uploads" directory in the data directory if no directory is associated with the current import.'
+      consumes:
+        - \*/*
+      parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/Filename"        
+        - $ref: "#/parameters/ExpandParameter"
+        - name: fileBody
+          in: body
+          required: true
+          description: The file contents to upload.
+          schema:
+            type: string
+            format: binary
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/Tasks"
+  /imports/{importId}/tasks/{taskId}/progress:
+    get:
+      operationId: getTaskProgress
+      summary: Retrieve the current state and import progress of a task with id {taskId} within import with id {importId}
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+      produces:
+        - application/json
+        - text/htm
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Progress"
+  /imports/{importId}/tasks/{taskId}/target:
+    get:
+      operationId: getTaskTarget
+      summary: Retrieve the store of a task with id {taskId} within import with id {importId}
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Store"
+    put:
+      operationId: putTaskTarget
+      summary: Modify the target store for a task with id {taskId} within import with id {importId}
+      consumes:
+        - application/json
+        - text/json
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/TargetParameter"
+      responses:
+        200: 
+          description: OK
+  /imports/{importId}/tasks/{taskId}/layer:
+    get:
+      operationId: getTaskLayer
+      summary: Retrieve the layer of a task with id {taskId} within import with id {importId}
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/ExpandParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Layer"
+    put:
+      operationId: putTaskLayer
+      summary: Modify the target layer for a task with id {taskId} within import with id {importId}
+      consumes:
+        - application/json
+        - text/json
+      produces:
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ImportId"      
+        - $ref: "#/parameters/TaskId"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/LayerParameter"
+      responses:
+        200: 
+          description: OK
+          schema:
+            $ref: "#/definitions/Task"
+
+parameters:
+  ExpandParameter:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: self
+  ExpandParameterNone:
+    name: expand
+    type: string
+    in: query
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to.'
+    default: none
+  ImportId:
+    name: importId
+    in: path
+    description: The ID of the import
+    required: true
+    type: string
+  TaskId:
+    name: taskId
+    in: path
+    description: The ID of the task
+    required: true
+    type: string  
+  Filename:
+    name: filename
+    in: path
+    description: The filename
+    required: true
+    type: string        
+  TaskParameter:
+    name: taskBody
+    description: The task to create or modify
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Task"
+  TargetParameter:
+    name: targetBody
+    description: The store to modify
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Store"
+  LayerParameter:
+    name: layerBody
+    description: The layer to modify
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Layer"
+
+definitions:
+  Progress:
+    title: progress
+    type: object
+    description: Task progress
+    properties:
+      progress:
+        type: string
+        description: Number of operations completed
+      total: 
+        type: string
+        description: Total number of operations
+      state:
+        type: string
+        description: State of the task.
+        enum:
+        - PENDING
+        - READY
+        - RUNNING
+        - NO_CRS
+        - NO_BOUNDS
+        - NO_FORMAT
+        - BAD_FORMAT
+        - ERROR
+        - CANCELED
+        - COMPLETE      
+      message:
+        type: string
+        description: 'Error message. Only shown if state is "ERROR"'
+  Tasks:
+    title: tasks
+    description: A list of tasks
+    type: array
+    items:
+      $ref: "#/definitions/Task"        
+  Task:
+    title: task
+    type: object
+    description: An import task
+    properties:
+      id:
+        type: string
+        description: The task id
+      href:
+        type: string
+        description: URL to the task endpoint
+      state: 
+        type: string
+        description: State of the task.
+        enum:
+        - PENDING
+        - READY
+        - RUNNING
+        - NO_CRS
+        - NO_BOUNDS
+        - NO_FORMAT
+        - BAD_FORMAT
+        - ERROR
+        - CANCELED
+        - COMPLETE
+      updateMode:
+        type: string
+        description: Update mode of the task.
+        enum:
+        - CREATE 
+        - REPLACE 
+        - APPEND 
+        - UPDATE
+      data:
+        $ref: "#/definitions/Data"
+      target:
+        $ref: "#/definitions/Store"
+      progress:
+        type: string
+        description: URL to the progress endpoint for this task
+      layer:
+        $ref: "#/definitions/Layer"
+      errorMessage:
+        type: string
+        description: Any error messages for the task, concatenated.
+      transformChain:
+        $ref: "#/definitions/TransformChain"
+      messages:
+        $ref: "#/definitions/Messages"
+  Store:
+    title: store
+    type: object
+    description: A store
+    properties:
+      href: 
+        type: string
+        description: URL to the task target endpoint
+      store:
+        type: object
+        description: JSON representation of the store  
+  Layer:
+    title: layer
+    type: object
+    description: A layer
+    properties: 
+      name:
+        type: string
+        description: The name of the layer
+      href:
+        type: string
+        description: "URL to the importer layer endpoint"
+      title:
+        type: string
+        description: The layer title
+      abstract:
+        type: string
+        description: The layer abstract
+      description:
+        type: string
+        description: The layer description
+      originalName:
+        type: string
+        description: The original name of the layer. This may be different from the name if this name already exists in geoserver.
+      nativeName:
+        type: string
+        description: The name of the underlying resource
+      srs:
+        type: string
+        description: The SRS of the layer
+      bbox:
+        $ref: "#/definitions/Bbox"
+      attributes:
+        $ref: "#/definitions/FeatureType"
+      style:
+        $ref: "#/definitions/Style"
+  Data:
+    title: data
+    type: object
+    description: A data representation. Paramaters vary depending on the type.
+    properties:
+      type:
+        type: string
+        description: The type of the data
+        enum: 
+        - remote
+        - file
+        - directory
+        - mosaic
+        - database
+        - table
+  TransformChain:
+    title: transformChain
+    type: object
+    description: A chain of tranform operations to apply during the import process
+    properties:
+      type:
+        type: string
+        description: 'The type of transforms in the chain. One of "vector" or "raster"'
+      transforms:
+        $ref: "#/definitions/Transforms"
+  Transforms:
+    title: transforms
+    type: array
+    description: A list of transforms
+    items:
+      $ref: "#/definitions/Transform"
+  Transform:
+    title: transform
+    type: object
+    description: A data transform applied to the import data.
+    properties:
+      type:
+        type: string
+        description: The name of the transform
+      href: 
+        type: string
+        description: URL to the transform endpoint        
+  Message:
+    title: message
+    type: string
+    description: A message about the import data.
+  Messages:
+    title: messages
+    description: A list of log messages
+    type: array
+    items:
+      title: messages
+      type: object
+      properties:
+        level:
+          type: string
+          description: Level of the log message.
+        messsage:
+          type: string
+          description: The log message
+  Bbox:
+    title: Bbox
+    type: object
+    description: A spatially referenced bounding box.
+    properties:
+      minx:
+        type: string
+        description: The minimum x value
+      miny:
+        type: string
+        description: The minimum y value
+      maxx:
+        type: string
+        description: The maximum x value
+      maxy:
+        type: string
+        description: The maximum y value
+      crs:
+        type: string
+        description: The WKT representation of the CRS.
+  FeatureType:
+    title: featureType
+    type: array
+    description: Feature type attributes
+    items:
+      type: object
+      description: A feature type attribute.
+      properties:
+        name:
+          type: string
+          description: The name of the attribute
+        binding:
+          type: string
+          description: The java class representing the type of the attribute
+  Style:
+    title: style
+    type: object
+    description: A layer style
+    properties:
+      name:
+        type: string
+        description: Name of the style
+      href:
+        type: string
+        description: "URL to the importer layer style endpoint"
+      format:
+        type: string
+        description: Format of style
+      languageVersion:
+        type: object
+        properties:
+          version:
+            type: string
+            description: Version of style format
+      filename:
+        type: string
+        description: File name of the style     

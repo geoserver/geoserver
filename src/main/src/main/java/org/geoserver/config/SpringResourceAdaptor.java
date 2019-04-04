@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
@@ -17,19 +16,15 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 
 /**
- * 
  * Adaptor from Geoserver resource to Spring Resource
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class SpringResourceAdaptor implements org.springframework.core.io.Resource {
-    
-    
+
     /**
-     * 
      * Spring Resource is made relative to Data Directory if path is relative.
-     * 
+     *
      * @param resource Spring resource
      * @param store the Resource Store
      * @return Spring resource relative to Data Directory
@@ -53,7 +48,7 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     private Resource resource;
-      
+
     public SpringResourceAdaptor(Resource resource) {
         this.resource = resource;
     }
@@ -104,7 +99,8 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     @Override
-    public org.springframework.core.io.Resource createRelative(String relativePath) throws IOException {
+    public org.springframework.core.io.Resource createRelative(String relativePath)
+            throws IOException {
         return new SpringResourceAdaptor(resource.get(relativePath));
     }
 
@@ -121,5 +117,4 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     public Resource getResource() {
         return resource;
     }
-    
 }

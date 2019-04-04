@@ -25,5 +25,4 @@ public class GetCapabilitiesLegendURL_1_1_1Test extends GetCapabilitiesLegendURL
     protected String getElementPrefix() {
         return "";
     }
-
 }

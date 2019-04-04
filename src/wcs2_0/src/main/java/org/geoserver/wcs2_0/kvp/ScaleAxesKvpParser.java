@@ -6,17 +6,15 @@
 package org.geoserver.wcs2_0.kvp;
 
 import java.util.List;
-
 import net.opengis.wcs20.ScaleAxisByFactorType;
 import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.Wcs20Factory;
-
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 
 /**
  * Parses the WCS 2.0 {@link ScaleAxisType} from KVP
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class ScaleAxesKvpParser extends AbstractAxisValueKvpParser<ScaleAxisType> {
 
@@ -27,10 +25,10 @@ public class ScaleAxesKvpParser extends AbstractAxisValueKvpParser<ScaleAxisType
     @Override
     public Object parse(String value) throws Exception {
         ScaleAxisByFactorType sabf = Wcs20Factory.eINSTANCE.createScaleAxisByFactorType();
-        
+
         List<ScaleAxisType> items = parseItem(value);
         sabf.getScaleAxis().addAll(items);
-        
+
         return sabf;
     }
 
@@ -40,22 +38,23 @@ public class ScaleAxesKvpParser extends AbstractAxisValueKvpParser<ScaleAxisType
         try {
             sa.setAxis(axisName.trim());
             sa.setScaleFactor(Double.valueOf(value));
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throwInvalidSyntaxException(null);
         }
-        
+
         return sa;
     }
 
     @Override
     protected void throwInvalidSyntaxException(Exception e) {
-        WCS20Exception ex = new WCS20Exception(
-                "Invalid ScaleAxes syntax, expecting a comma separate list of axisName(scale)*",
-                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "scaleAxes");
-        if(e != null) {
+        WCS20Exception ex =
+                new WCS20Exception(
+                        "Invalid ScaleAxes syntax, expecting a comma separate list of axisName(scale)*",
+                        WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                        "scaleAxes");
+        if (e != null) {
             ex.initCause(e);
         }
         throw ex;
-        
     }
 }

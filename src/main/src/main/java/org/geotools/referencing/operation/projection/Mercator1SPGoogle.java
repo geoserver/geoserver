@@ -15,34 +15,31 @@ import org.opengis.referencing.operation.CylindricalProjection;
 import org.opengis.referencing.operation.MathTransform;
 
 /**
- * Mercator 1SP variation used by Google, which basically requires to accept lat/lon values
- * as spherical coordinates, that is, avoiding to do any conversion from ellipsoid to the sphere.
+ * Mercator 1SP variation used by Google, which basically requires to accept lat/lon values as
+ * spherical coordinates, that is, avoiding to do any conversion from ellipsoid to the sphere.
+ *
  * @author Andrea Aime
- * @deprecated Since GeoTools 2.4.0 there is no need to use this custom projection anymore, use 
- *             the WKT definition suggested in {@link "https://osgeo-org.atlassian.net/browse/GEOT-1511"}
- *             instead
+ * @deprecated Since GeoTools 2.4.0 there is no need to use this custom projection anymore, use the
+ *     WKT definition suggested in {@link "https://osgeo-org.atlassian.net/browse/GEOT-1511"}
+ *     instead
  */
 public class Mercator1SPGoogle extends Mercator {
 
     /**
      * Constructs a new map projection from the supplied parameters.
      *
-     * @param  parameters The parameter values in standard units.
+     * @param parameters The parameter values in standard units.
      * @throws ParameterNotFoundException if a mandatory parameter is missing.
      */
     protected Mercator1SPGoogle(final ParameterValueGroup parameters)
-            throws ParameterNotFoundException
-    {
+            throws ParameterNotFoundException {
         super(parameters);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public ParameterDescriptorGroup getParameterDescriptors() {
         return Provider.PARAMETERS;
     }
-
 
     /**
      * Provides the transform equations for the spherical case of the Mercator projection.
@@ -55,25 +52,19 @@ public class Mercator1SPGoogle extends Mercator {
         /**
          * Constructs a new map projection from the suplied parameters.
          *
-         * @param  parameters The parameter values in standard units.
+         * @param parameters The parameter values in standard units.
          * @throws ParameterNotFoundException if a mandatory parameter is missing.
          */
         protected Spherical(final ParameterValueGroup parameters)
-                throws ParameterNotFoundException
-        {
+                throws ParameterNotFoundException {
             super(parameters);
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         public ParameterDescriptorGroup getParameterDescriptors() {
             return Provider.PARAMETERS;
         }
     }
-
-
-
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -91,32 +82,32 @@ public class Mercator1SPGoogle extends Mercator {
      * @version $Id$
      * @author Martin Desruisseaux
      * @author Rueben Schulz
-     *
      * @see org.geotools.referencing.operation.DefaultMathTransformFactory
      */
     public static class Provider extends AbstractProvider {
-        /**
-         * The parameters group.
-         */
-        static final ParameterDescriptorGroup PARAMETERS = createDescriptorGroup(new NamedIdentifier[] {
-                new NamedIdentifier(Citations.OGC,      "Mercator_1SP_Google"),
-                new NamedIdentifier(Citations.GEOTOOLS, "Mercator_1SP_Google")
-            }, new ParameterDescriptor[] {
-                SEMI_MAJOR, SEMI_MINOR,
-                LATITUDE_OF_ORIGIN, CENTRAL_MERIDIAN, SCALE_FACTOR,
-                FALSE_EASTING, FALSE_NORTHING
-            });
+        /** The parameters group. */
+        static final ParameterDescriptorGroup PARAMETERS =
+                createDescriptorGroup(
+                        new NamedIdentifier[] {
+                            new NamedIdentifier(Citations.OGC, "Mercator_1SP_Google"),
+                            new NamedIdentifier(Citations.GEOTOOLS, "Mercator_1SP_Google")
+                        },
+                        new ParameterDescriptor[] {
+                            SEMI_MAJOR,
+                            SEMI_MINOR,
+                            LATITUDE_OF_ORIGIN,
+                            CENTRAL_MERIDIAN,
+                            SCALE_FACTOR,
+                            FALSE_EASTING,
+                            FALSE_NORTHING
+                        });
 
-        /**
-         * Constructs a new provider. 
-         */
+        /** Constructs a new provider. */
         public Provider() {
             super(PARAMETERS);
         }
 
-        /**
-         * Returns the operation type for this map projection.
-         */
+        /** Returns the operation type for this map projection. */
         public Class getOperationType() {
             return CylindricalProjection.class;
         }
@@ -124,17 +115,17 @@ public class Mercator1SPGoogle extends Mercator {
         /**
          * Creates a transform from the specified group of parameter values.
          *
-         * @param  parameters The group of parameter values.
+         * @param parameters The group of parameter values.
          * @return The created math transform.
          * @throws ParameterNotFoundException if a required parameter was not found.
          */
         protected MathTransform createMathTransform(final ParameterValueGroup parameters)
-                throws ParameterNotFoundException
-        {
+                throws ParameterNotFoundException {
             // make sure we assume a spherical reference
-            parameters.parameter("semi_minor").setValue(parameters.parameter("semi_major").getValue());
+            parameters
+                    .parameter("semi_minor")
+                    .setValue(parameters.parameter("semi_major").getValue());
             return new Spherical(parameters);
         }
     }
-
 }

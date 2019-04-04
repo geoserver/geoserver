@@ -5,12 +5,9 @@
 package org.geoserver.wps;
 
 import java.util.Map;
-
 import org.geoserver.wps.executor.ExecutionStatus;
 
-/**
- * The context of an event triggered in a {@link ProcessListener}
- */
+/** The context of an event triggered in a {@link ProcessListener} */
 public class ProcessEvent implements Cloneable {
 
     private ExecutionStatus status;
@@ -24,38 +21,25 @@ public class ProcessEvent implements Cloneable {
         this.inputs = inputs;
     }
 
-    public ProcessEvent(ExecutionStatus status, Map<String, Object> inputs,
-            Map<String, Object> outputs) {
+    public ProcessEvent(
+            ExecutionStatus status, Map<String, Object> inputs, Map<String, Object> outputs) {
         this.status = status;
         this.inputs = inputs;
         this.outputs = outputs;
     }
 
-    /**
-     * The process status. This is always available.
-     * 
-     *
-     */
+    /** The process status. This is always available. */
     public ExecutionStatus getStatus() {
         return status;
     }
 
-    /**
-     * The process inputs. This field is available only when the inputs have been parsed already
-     * 
-     *
-     */
+    /** The process inputs. This field is available only when the inputs have been parsed already */
     public Map<String, Object> getInputs() {
         return inputs;
     }
 
-    /**
-     * The process outputs. The field is available only when the process is complete
-     * 
-     *
-     */
+    /** The process outputs. The field is available only when the process is complete */
     public Map<String, Object> getOutputs() {
         return outputs;
     }
-
 }

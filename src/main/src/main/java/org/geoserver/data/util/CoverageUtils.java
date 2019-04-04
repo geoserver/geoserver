@@ -5,7 +5,7 @@
  */
 package org.geoserver.data.util;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.filter.text.ecql.ECQL;
@@ -31,19 +30,17 @@ import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 
-
 /**
- * DOCUMENT ME!
- *
  * @author $Author: Alessio Fabiani (alessio.fabiani@geo-solutions.it)
  * @author $Author: Simone Giannecchini (simone.giannecchini@geo-solutions.it)
  */
 public class CoverageUtils {
 
-    private final static Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CoverageUtils.class.toString());
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(CoverageUtils.class.toString());
     public static final int TRANSPARENT = 0;
     public static final int OPAQUE = 1;
-    
+
     public static GeneralParameterValue[] getParameters(ParameterValueGroup params) {
         final List parameters = new ArrayList();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
@@ -65,20 +62,22 @@ public class CoverageUtils {
                         continue;
                     }
 
-
                     // IGNORING READ_GRIDGEOMETRY2D param
                     if (_key.equalsIgnoreCase(readGeometryKey)) {
                         continue;
                     }
                     final Object value = val.getValue();
 
-                    parameters.add(new DefaultParameterDescriptor(_key, value.getClass(), null,value).createValue());
+                    parameters.add(
+                            new DefaultParameterDescriptor(_key, value.getClass(), null, value)
+                                    .createValue());
                 }
             }
 
             return (!parameters.isEmpty())
-            ? (GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()])
-            : null;
+                    ? (GeneralParameterValue[])
+                            parameters.toArray(new GeneralParameterValue[parameters.size()])
+                    : null;
         } else {
             return null;
         }
@@ -88,15 +87,15 @@ public class CoverageUtils {
         return getParameters(params, values, false);
     }
 
-    public static GeneralParameterValue[] getParameters(ParameterValueGroup params, Map values,
-        boolean readGeom) {
+    public static GeneralParameterValue[] getParameters(
+            ParameterValueGroup params, Map values, boolean readGeom) {
         final List<ParameterValue<?>> parameters = new ArrayList<ParameterValue<?>>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (params.values().size() > 0)) {
             final List<GeneralParameterValue> elements = params.values();
-            for (GeneralParameterValue elem: elements) {
-                final ParameterValue<?> val = (ParameterValue<?>)elem;
+            for (GeneralParameterValue elem : elements) {
+                final ParameterValue<?> val = (ParameterValue<?>) elem;
 
                 if (val != null) {
                     final ParameterDescriptor<?> descr = val.getDescriptor();
@@ -125,13 +124,16 @@ public class CoverageUtils {
                     //
                     // /////////////////////////////////////////////////////////
                     final Object value = CoverageUtils.getCvParamValue(_key, val, values);
-                    parameters.add(new DefaultParameterDescriptor(_key, descr.getValueClass(), null, value).createValue());
-                    
+                    parameters.add(
+                            new DefaultParameterDescriptor(_key, descr.getValueClass(), null, value)
+                                    .createValue());
                 }
             }
 
-            return (!parameters.isEmpty())? 
-            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): new GeneralParameterValue[0];
+            return (!parameters.isEmpty())
+                    ? (GeneralParameterValue[])
+                            parameters.toArray(new GeneralParameterValue[parameters.size()])
+                    : new GeneralParameterValue[0];
         } else {
             return new GeneralParameterValue[0];
         }
@@ -194,10 +196,9 @@ public class CoverageUtils {
      * @param paramValues
      * @param key
      * @param param
-     *
      */
-    public static Object getCvParamValue(final String key, ParameterValue param,
-        final List paramValues, final int index) {
+    public static Object getCvParamValue(
+            final String key, ParameterValue param, final List paramValues, final int index) {
         Object value = null;
 
         try {
@@ -229,15 +230,17 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value = (org.opengis.geometry.Envelope) new GeneralEnvelope(new double[] {
-                                        coords[0], coords[1]
-                                    }, new double[] { coords[2], coords[3] });
+                            value =
+                                    (org.opengis.geometry.Envelope)
+                                            new GeneralEnvelope(
+                                                    new double[] {coords[0], coords[1]},
+                                                    new double[] {coords[2], coords[3]});
                         }
                     }
                 }
             } else {
-                Class[] clArray = { getParamValue(paramValues, index).getClass() };
-                Object[] inArray = { getParamValue(paramValues, index) };
+                Class[] clArray = {getParamValue(paramValues, index).getClass()};
+                Object[] inArray = {getParamValue(paramValues, index)};
                 value = param.getValue().getClass().getConstructor(clArray).newInstance(inArray);
             }
 
@@ -246,7 +249,7 @@ public class CoverageUtils {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
             }
-            
+
             value = null;
 
             // errors.add("paramValue[" + i + "]",
@@ -265,7 +268,6 @@ public class CoverageUtils {
      * @param params
      * @param key
      * @param param
-     *
      */
     public static Object getCvParamValue(final String key, ParameterValue param, final Map params) {
         Object value = null;
@@ -294,15 +296,18 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value = (org.opengis.geometry.Envelope) new GeneralEnvelope(new double[] {
-                                        coords[0], coords[1]
-                                    }, new double[] { coords[2], coords[3] });
+                            value =
+                                    (org.opengis.geometry.Envelope)
+                                            new GeneralEnvelope(
+                                                    new double[] {coords[0], coords[1]},
+                                                    new double[] {coords[2], coords[3]});
                         }
                     }
                 }
-            } else if (key.equalsIgnoreCase(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName()
-                                                                                      .toString())) {
-                if ((params.get(key) != null) && params.get(key) instanceof String
+            } else if (key.equalsIgnoreCase(
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString())) {
+                if ((params.get(key) != null)
+                        && params.get(key) instanceof String
                         && (((String) params.get(key)).length() > 0)) {
                     String tmp = (String) params.get(key);
 
@@ -318,9 +323,11 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value = (org.opengis.geometry.Envelope) new GeneralEnvelope(new double[] {
-                                        coords[0], coords[1]
-                                    }, new double[] { coords[2], coords[3] });
+                            value =
+                                    (org.opengis.geometry.Envelope)
+                                            new GeneralEnvelope(
+                                                    new double[] {coords[0], coords[1]},
+                                                    new double[] {coords[2], coords[3]});
                         }
                     }
                 } else if ((params.get(key) != null)
@@ -334,44 +341,43 @@ public class CoverageUtils {
                     if (params.get(key) != null) {
                         value = Color.decode((String) params.get(key));
                     } else {
-                        Class[] clArray = { Color.class };
-                        Object[] inArray = { params.get(key) };
+                        Class[] clArray = {Color.class};
+                        Object[] inArray = {params.get(key)};
                         value = target.getConstructor(clArray).newInstance(inArray);
                     }
-                }else if (key.equalsIgnoreCase("BackgroundValues")) {
+                } else if (key.equalsIgnoreCase("BackgroundValues")) {
                     if (params.get(key) != null) {
                         String temp = (String) params.get(key);
                         String[] elements = temp.split(",");
                         final double[] backgroundValues = new double[elements.length];
-                        for(int i=0;i<elements.length;i++)
-                        	backgroundValues[i]=Double.valueOf(elements[i]);
-                        value=backgroundValues;
-                        
-                    } 
+                        for (int i = 0; i < elements.length; i++)
+                            backgroundValues[i] = Double.valueOf(elements[i]);
+                        value = backgroundValues;
+                    }
                 } else if (key.equalsIgnoreCase("InputImageThresholdValue")) {
                     if (params.get(key) != null) {
                         String temp = (String) params.get(key);
-                        value=Double.valueOf(temp);
-                        
-                    } 
+                        value = Double.valueOf(temp);
+                    }
                 } else if (key.equalsIgnoreCase("Filter")) {
-    	            	Object sfilter=params.get(key);
-    	            	if (sfilter!=null){
-    	            		if (sfilter instanceof String){
-    	            			value=ECQL.toFilter((String)sfilter);
-    	            		} else if (sfilter instanceof Filter){
-    	            			value=(Filter)sfilter;
-    	            		}
-    	        		} else {
-    	        			value=param.getValue();
-    	        		}
-            		 
+                    Object sfilter = params.get(key);
+                    if (sfilter != null) {
+                        if (sfilter instanceof String) {
+                            value = ECQL.toFilter((String) sfilter);
+                        } else if (sfilter instanceof Filter) {
+                            value = (Filter) sfilter;
+                        }
+                    } else {
+                        value = param.getValue();
+                    }
+
                 } else {
                     value = params.get(key);
-                    if(value != null) {
+                    if (value != null) {
                         Object converted = Converters.convert(value, target);
-                        if(converted == null) {
-                            throw new RuntimeException("Failed to convert " + value + " to " + target.getName());
+                        if (converted == null) {
+                            throw new RuntimeException(
+                                    "Failed to convert " + value + " to " + target.getName());
                         } else {
                             value = converted;
                         }
@@ -387,23 +393,24 @@ public class CoverageUtils {
 
         return value;
     }
-    
-    
-    
+
     /**
      * Merges the provided parameter in the read parameters, provided it's included in the specified
      * descriptors with one of the aliases
+     *
      * @param parameterDescriptors The parameter descriptors of the reader
      * @param readParameters The current set of reader parameters
      * @param value
      * @param parameterAliases
-     *
      */
-    public static GeneralParameterValue[] mergeParameter(List<GeneralParameterDescriptor> parameterDescriptors, 
-            GeneralParameterValue[] readParameters, Object value, String... parameterAliases) {
+    public static GeneralParameterValue[] mergeParameter(
+            List<GeneralParameterDescriptor> parameterDescriptors,
+            GeneralParameterValue[] readParameters,
+            Object value,
+            String... parameterAliases) {
         // setup a param name alias set
         Set<String> aliases = new HashSet<String>(Arrays.asList(parameterAliases));
-        
+
         // scan all the params looking for the one we want to add
         for (GeneralParameterDescriptor pd : parameterDescriptors) {
             // in case of match of any alias add a param value to the lot
@@ -411,19 +418,36 @@ public class CoverageUtils {
                 final ParameterValue pv = (ParameterValue) pd.createValue();
                 pv.setValue(value);
 
-                // add to the list
-                GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
-                System.arraycopy(readParameters, 0, readParametersClone, 0,
-                        readParameters.length);
-                readParametersClone[readParameters.length] = pv;
-                readParameters = readParametersClone;
+                // if it's in the list already, override
+                int existingPvIndex = -1;
+                for (int i = 0; i < readParameters.length && existingPvIndex < 0; i++) {
+                    GeneralParameterValue oldPv = readParameters[i];
+                    if (aliases.contains(oldPv.getDescriptor().getName().getCode())) {
+                        existingPvIndex = i;
+                    }
+                }
+
+                if (existingPvIndex >= 0) {
+                    GeneralParameterValue[] clone =
+                            new GeneralParameterValue[readParameters.length];
+                    System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
+                    clone[existingPvIndex] = pv;
+                    readParameters = clone;
+
+                } else {
+                    // add to the list
+                    GeneralParameterValue[] clone =
+                            new GeneralParameterValue[readParameters.length + 1];
+                    System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
+                    clone[readParameters.length] = pv;
+                    readParameters = clone;
+                }
 
                 // leave
                 break;
             }
         }
-        
+
         return readParameters;
     }
-     
 }

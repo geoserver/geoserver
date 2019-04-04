@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="470px" height="92px" viewBox="0 0 470 92" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>structure_rule_all</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="structure_rule_all" sketch:type="MSArtboardGroup">
+            <rect id="box" stroke="#4A4A4A" fill="#F2F2F2" sketch:type="MSShapeGroup" x="5" y="5" width="144" height="47" rx="4"></rect>
+            <text id="feature-style" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                <tspan x="31" y="17">feature-style</tspan>
+            </text>
+            <g id="feature_style" sketch:type="MSLayerGroup" transform="translate(9.000000, 10.000000)">
+                <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="border" stroke="#FFFFFF" fill="#F4D7BD" sketch:type="MSShapeGroup"></path>
+                <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="edge" stroke="#B1792C" sketch:type="MSShapeGroup"></path>
+            </g>
+            <g id="rule" sketch:type="MSLayerGroup" transform="translate(29.500000, 22.000000)">
+                <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="66" rx="5"></rect>
+                <text sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="27" y="15">rule</tspan>
+                </text>
+                <g id="rule-copy" transform="translate(6.000000, 5.000000)" sketch:type="MSShapeGroup">
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+            </g>
+            <g id="symbolizer" sketch:type="MSLayerGroup" transform="translate(57.000000, 42.000000)">
+                <rect id="symbolizer_box" stroke="#4A4A4A" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="163" height="20"></rect>
+                <text id="point" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="21" y="14">point</tspan>
+                </text>
+                <g id="point_icon-copy" transform="translate(8.000000, 9.000000)" stroke="#5D74BC" fill="#95B5E6" sketch:type="MSShapeGroup">
+                    <circle id="point_icon" cx="2" cy="2" r="2"></circle>
+                </g>
+            </g>
+            <g id="symbolizer-copy" sketch:type="MSLayerGroup" transform="translate(57.000000, 61.000000)">
+                <rect id="symbolizer_box" stroke="#4A4A4A" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="163" height="20"></rect>
+                <text id="text" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="21" y="14">text</tspan>
+                </text>
+                <g id="text_icon-copy" transform="translate(3.000000, 6.000000)" font-size="8" font-family="Proxima Nova" fill="#5D74BC" sketch:type="MSTextLayer" font-weight="526">
+                    <text id="text_icon">
+                        <tspan x="0" y="7">Abc</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

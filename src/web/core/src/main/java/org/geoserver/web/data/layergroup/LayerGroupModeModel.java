@@ -6,26 +6,18 @@
 package org.geoserver.web.data.layergroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.LayerGroupInfo;
 
-
-/**
- * Simple detachable model listing all the available LayerGroup modes.
- */
+/** Simple detachable model listing all the available LayerGroup modes. */
 public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroupInfo.Mode>> {
-    
+
     private static final long serialVersionUID = 1781202562325730121L;
 
     @Override
     protected List<LayerGroupInfo.Mode> load() {
-        List<LayerGroupInfo.Mode> modes = new ArrayList<LayerGroupInfo.Mode>();
-        modes.add(LayerGroupInfo.Mode.SINGLE);
-        modes.add(LayerGroupInfo.Mode.NAMED);
-        modes.add(LayerGroupInfo.Mode.CONTAINER);
-        modes.add(LayerGroupInfo.Mode.EO);        
-        return modes;
+        return new ArrayList<LayerGroupInfo.Mode>(Arrays.asList(LayerGroupInfo.Mode.values()));
     }
 }

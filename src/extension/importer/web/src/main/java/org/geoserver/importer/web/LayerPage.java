@@ -21,11 +21,10 @@ public class LayerPage extends ResourceConfigurationPage {
     @Override
     protected void doSave() {
         if (getPublishedInfo().getId() == null) {
-            //do not call super.doSave(), because this layer is not part of the catalog yet
+            // do not call super.doSave(), because this layer is not part of the catalog yet
 
             onSuccessfulSave();
-        }
-        else {
+        } else {
             super.doSave();
         }
     }
@@ -37,7 +36,7 @@ public class LayerPage extends ResourceConfigurationPage {
 
     @Override
     protected void onCancel() {
-        //TODO: cancel doesn't roll back any changes
+        // TODO: cancel doesn't roll back any changes
         setResponsePage(ImportPage.class, sourcePage);
     }
 }

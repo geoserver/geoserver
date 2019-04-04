@@ -7,12 +7,11 @@ package org.geoserver.wps.process;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
 import org.geoserver.platform.resource.Resource;
 
 /**
  * An implementation of RawData backed by a Resource
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ResourceRawData extends AbstractRawData {
@@ -41,12 +40,16 @@ public class ResourceRawData extends AbstractRawData {
 
     @Override
     public String toString() {
-        return "FileRawData [file=" + file + ", mimeType=" + mimeType + ", extension=" + extension
+        return "FileRawData [file="
+                + file
+                + ", mimeType="
+                + mimeType
+                + ", extension="
+                + extension
                 + "]";
     }
 
     public Resource getResource() {
         return file;
     }
-
 }

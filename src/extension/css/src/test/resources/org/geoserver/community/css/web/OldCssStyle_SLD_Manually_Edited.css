@@ -1,0 +1,6 @@
+[VTOTAL > 100] {
+  fill: #0000FF;
+  fill-opacity: 0.7;
+  stroke: #000000;
+  stroke-width: 0.5;
+}

@@ -7,28 +7,20 @@ package org.geoserver.wcs.response;
 
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
-import java.util.logging.Logger;
-
 import net.opengis.wcs11.GetCoverageType;
-
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.wcs.WCSInfo;
-import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the
- * job of encoding a WCS 1.1.1 Coverages document (for a single coverage with no
- * metadata)
- * 
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WCS
+ * 1.1.1 Coverages document (for a single coverage with no metadata)
+ *
  * @author Andrea Aime, TOPP
  */
 public class CoveragesTransformer extends TransformerBase {
-    private static final Logger LOGGER = Logging.getLogger(CoveragesTransformer.class.getPackage()
-            .getName());
 
     private static final String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
 
@@ -36,21 +28,16 @@ public class CoveragesTransformer extends TransformerBase {
 
     private static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private WCSInfo wcs;
-
     private GetCoverageType request;
 
     private String coverageLocation;
 
-    /**
-     * Creates a new WFSCapsTransformer object to be used when encoding the multipart output
-     */
-    public CoveragesTransformer(WCSInfo wcs, GetCoverageType request) {
-        this(wcs, request, "cid:theCoverage");
+    /** Creates a new WFSCapsTransformer object to be used when encoding the multipart output */
+    public CoveragesTransformer(GetCoverageType request) {
+        this(request, "cid:theCoverage");
     }
 
-    public CoveragesTransformer(WCSInfo wcs, GetCoverageType request, String coverageLocation) {
-        this.wcs = wcs;
+    public CoveragesTransformer(GetCoverageType request, String coverageLocation) {
         this.request = request;
         this.coverageLocation = coverageLocation;
         setNamespaceDeclarationEnabled(false);
@@ -61,30 +48,22 @@ public class CoveragesTransformer extends TransformerBase {
     }
 
     private class CoveragesTranslator extends TranslatorSupport {
-        /**
-         * Creates a new WFSCapsTranslator object.
-         * 
-         * @param handler
-         *            DOCUMENT ME!
-         */
+        /** Creates a new WFSCapsTranslator object. */
         public CoveragesTranslator(ContentHandler handler) {
             super(handler, null, null);
         }
 
         /**
          * Encode the object.
-         * 
-         * @param o
-         *            The Object to encode.
-         * 
-         * @throws IllegalArgumentException
-         *             if the Object is not encodeable.
+         *
+         * @param o The Object to encode.
+         * @throws IllegalArgumentException if the Object is not encodeable.
          */
         public void encode(Object o) throws IllegalArgumentException {
             try {
                 if (!(o instanceof CoverageInfo)) {
-                    throw new IllegalArgumentException(new StringBuffer(
-                            "Not a GetCapabilitiesType: ").append(o).toString());
+                    throw new IllegalArgumentException(
+                            new StringBuffer("Not a GetCapabilitiesType: ").append(o).toString());
                 }
 
                 CoverageInfo info = (CoverageInfo) o;
@@ -92,23 +71,24 @@ public class CoveragesTransformer extends TransformerBase {
                 final AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", WCS_URI);
 
-                attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "",
-                        "http://www.w3.org/1999/xlink");
-                attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "",
-                        "http://www.opengis.net/ogc");
-                attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "",
-                        "http://www.opengis.net/ows/1.1");
-                attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "",
-                        "http://www.opengis.net/gml");
+                attributes.addAttribute(
+                        "", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
+                attributes.addAttribute(
+                        "", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
+                attributes.addAttribute(
+                        "", "xmlns:ows", "xmlns:ows", "", "http://www.opengis.net/ows/1.1");
+                attributes.addAttribute(
+                        "", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
 
                 final String prefixDef = new StringBuffer("xmlns:").append(XSI_PREFIX).toString();
                 attributes.addAttribute("", prefixDef, prefixDef, "", XSI_URI);
 
-                final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
-                        .toString();
+                final String locationAtt =
+                        new StringBuffer(XSI_PREFIX).append(":schemaLocation").toString();
 
-                final String locationDef = buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsCoverages.xsd");
-                
+                final String locationDef =
+                        buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsCoverages.xsd");
+
                 attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
                 start("wcs:Coverages", attributes);
@@ -130,7 +110,5 @@ public class CoveragesTransformer extends TransformerBase {
             element("ows:Reference", "", attributes);
             end("wcs:Coverage");
         }
-
     }
-
 }

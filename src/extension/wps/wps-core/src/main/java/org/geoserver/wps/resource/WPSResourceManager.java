@@ -16,11 +16,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.parsers.ParserConfigurationException;
-
 import net.opengis.wps10.ExecuteType;
-
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -42,8 +39,8 @@ import org.geoserver.wps.resource.ProcessArtifactsStore.ArtifactType;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.util.logging.Logging;
 import org.geotools.wps.WPS;
-import org.geotools.xml.Encoder;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -56,32 +53,32 @@ import org.xml.sax.SAXException;
 /**
  * A WPS process has to deal with various temporary resources during the execution, be streamed and
  * stored inputs, Sextante temporary files, temporary feature types and so on.
- * 
- * This class manages the lifecycle of these resources, register them here to have their lifecycle
- * properly managed
- * 
- * The design is still very rough, I'm making this up as I go. The class will require modifications
- * to handle asynch process computations as well as resources with a timeout
- * 
+ *
+ * <p>This class manages the lifecycle of these resources, register them here to have their
+ * lifecycle properly managed
+ *
+ * <p>The design is still very rough, I'm making this up as I go. The class will require
+ * modifications to handle asynch process computations as well as resources with a timeout
+ *
  * @author Andrea Aime - GeoSolutions
- * 
- *         TODO: we need to have the process statuses to avoid deleting stuff that is being worked
- *         on by another machine
+ *     <p>TODO: we need to have the process statuses to avoid deleting stuff that is being worked on
+ *     by another machine
  */
-public class WPSResourceManager extends ProcessListenerAdapter implements DispatcherCallback,
-        ApplicationListener<ApplicationEvent>, ApplicationContextAware {
+public class WPSResourceManager extends ProcessListenerAdapter
+        implements DispatcherCallback,
+                ApplicationListener<ApplicationEvent>,
+                ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
-    ConcurrentHashMap<String, ExecutionResources> resourceCache = new ConcurrentHashMap<String, ExecutionResources>();
+    ConcurrentHashMap<String, ExecutionResources> resourceCache =
+            new ConcurrentHashMap<String, ExecutionResources>();
 
     ThreadLocal<String> executionId = new InheritableThreadLocal<String>();
 
     private ProcessArtifactsStore artifactsStore;
 
     static final class ExecutionResources {
-        /**
-         * Temporary resources used to parse inputs or during the process execution
-         */
+        /** Temporary resources used to parse inputs or during the process execution */
         List<WPSResource> temporary;
 
         /** Whether the execution is synchronous or asynch */
@@ -110,8 +107,6 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
     /**
      * Create a new unique id for the process. All resources linked to the process should use this
      * token to register themselves against the manager
-     * 
-     *
      */
     public String getExecutionId(Boolean synch) {
         String id = executionId.get();
@@ -130,7 +125,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * ProcessManagers should call this method every time they are running the process in a thread
      * other than the request thread, and that is not a child of it either (typical case is running
      * in a thread pool)
-     * 
+     *
      * @param executionId
      */
     void setCurrentExecutionId(String executionId) {
@@ -143,17 +138,14 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
 
     /**
      * Returns the executionId bound to this thread, if any
-     * 
-     * @param executionId
      *
+     * @param executionId
      */
     String getCurrentExecutionId() {
         return this.executionId.get();
     }
 
-    /**
-     * Clears the current execution id thread local
-     */
+    /** Clears the current execution id thread local */
     void clearExecutionId() {
         this.executionId.set(null);
     }
@@ -167,13 +159,12 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
             resources.temporary.add(resource);
         }
     }
-    
+
     /**
      * Returns a resource that will be used to store a process output as a "reference"
-     * 
+     *
      * @param executionId - can be null
      * @param fileName
-     *
      */
     public Resource getOutputResource(String executionId, String fileName) {
         executionId = getExecutionId(executionId);
@@ -181,13 +172,12 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         // no need to track this one, it will be cleaned up when
         return resource;
     }
-    
+
     /**
      * Returns the url to fetch a output resource using the GetExecutionResult call
-     * 
+     *
      * @param name The file name
      * @param mimeType the
-     *
      */
     public String getOutputResourceUrl(String name, String mimeType) {
         return getOutputResourceUrl(null, name, null, mimeType);
@@ -195,17 +185,16 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
 
     /**
      * Returns the url to fetch a output resource using the GetExecutionResult call
-     * 
+     *
      * @param executionId - optional, if you don't have it the resource manager will use its thread
-     *        local version
+     *     local version
      * @param name
      * @param baseUrl - optional, if you don't have it the resource manager will pick one from
-     *        Dispatcher.REQUEST
+     *     Dispatcher.REQUEST
      * @param mimeType
-     *
      */
-    public String getOutputResourceUrl(String executionId, String name, String baseUrl,
-            String mimeType) {
+    public String getOutputResourceUrl(
+            String executionId, String name, String baseUrl, String mimeType) {
         // create the link
         Map<String, String> kvp = new LinkedHashMap<String, String>();
         kvp.put("service", "WPS");
@@ -214,7 +203,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         kvp.put("executionId", getExecutionId(executionId));
         kvp.put("outputId", name);
         kvp.put("mimetype", mimeType);
-        if(baseUrl == null) {
+        if (baseUrl == null) {
             Operation op = Dispatcher.REQUEST.get().getOperation();
             ExecuteType execute = (ExecuteType) op.getParameters()[0];
             baseUrl = execute.getBaseUrl();
@@ -227,37 +216,37 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
     /**
      * Returns a resource that will be used to store some temporary file for processing sake, and
      * will mark it for deletion when the process ends
-     * 
+     *
      * @param executionId
      * @param fileName
-     *
      * @throws IOException
      */
     public Resource getTemporaryResource(String extension) throws IOException {
 
         String executionId = getExecutionId((Boolean) null);
-        Resource resource = artifactsStore.getArtifact(executionId, ArtifactType.Temporary, UUID
-                .randomUUID()
-                .toString() + extension);
+        Resource resource =
+                artifactsStore.getArtifact(
+                        executionId,
+                        ArtifactType.Temporary,
+                        UUID.randomUUID().toString() + extension);
         addResource(new WPSResourceResource(resource));
         return resource;
     }
 
     /**
      * Gets the stored response file for the specified execution id
-     * @param executionId
      *
+     * @param executionId
      */
     public Resource getStoredResponse(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Response, null);
     }
-    
+
     /**
      * Gets the stored request file for the specified execution id. It will be available only if the
      * process is executing asynchronously
-     * 
-     * @param executionId
      *
+     * @param executionId
      */
     public Resource getStoredRequest(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Request, null);
@@ -265,9 +254,8 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
 
     /**
      * Gets the stored request as a parsed object
-     * 
-     * @param executionId
      *
+     * @param executionId
      * @throws IOException
      */
     public ExecuteType getStoredRequestObject(String executionId) throws IOException {
@@ -287,9 +275,8 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
 
     /**
      * Stores the request in a binary resource for efficient later retrieval
-     * 
-     * @param executionId
      *
+     * @param executionId
      * @throws IOException
      */
     public void storeRequestObject(ExecuteType execute, String executionId) throws IOException {
@@ -321,23 +308,23 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
             resourceCache.remove(id);
         }
     }
-    
+
     public void finished(String executionId) {
         // cleanup the thread local, in case it has any id in it
         this.executionId.remove();
 
         // cleanup the temporary resources
         cleanProcess(executionId, false);
-       
+
         // mark the process as complete
         resourceCache.get(executionId).completionTime = System.currentTimeMillis();
     }
 
     /**
-     * Cleans up all the resources associated to a certain id. It is called automatically
-     * when the request ends for synchronous processes, for asynch ones it will be triggered
-     * by the process completion
-     * 
+     * Cleans up all the resources associated to a certain id. It is called automatically when the
+     * request ends for synchronous processes, for asynch ones it will be triggered by the process
+     * completion
+     *
      * @param id
      */
     public void cleanProcess(String id, boolean cancelled) {
@@ -347,8 +334,10 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
             try {
                 resource.delete();
             } catch (Throwable t) {
-                LOGGER.log(Level.WARNING,
-                        "Failed to clean up the WPS resource " + resource.getName(), t);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Failed to clean up the WPS resource " + resource.getName(),
+                        t);
             }
         }
 
@@ -374,8 +363,8 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         return null;
     }
 
-    public Response responseDispatched(Request request, Operation operation, Object result,
-            Response response) {
+    public Response responseDispatched(
+            Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
@@ -427,8 +416,13 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         if (resourceType == Type.RESOURCE && resource.lastmodified() < expirationThreshold) {
             result = resource.delete();
         } else if (resourceType == Type.DIRECTORY) {
+            long directoryModified = resource.lastmodified();
             for (Resource child : resource.list()) {
                 result &= cleanupResource(child, expirationThreshold);
+            }
+            // Cleanup the directory too if all the children have been cleanup
+            if (result && directoryModified < expirationThreshold) {
+                result &= resource.delete();
             }
         }
 
@@ -440,6 +434,4 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
         String executionId = event.getStatus().getExecutionId();
         cleanProcess(executionId, true);
     }
-
-
 }

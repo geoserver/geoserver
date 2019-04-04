@@ -88,7 +88,7 @@ For the common case of mere process selection a base class is provided, ``org.ge
 where the subclasses only have to double check if a certain process, specified by ``Name`` is allowed
 to be exposed or not.
 
-The GoeServer code base sports by default two implementation of a ``ProcessFilter``:
+The GeoServer code base provides (by default) two implementations of a ``ProcessFilter``:
 
 * ``org.geoserver.wps.UnsupportedParameterTypeProcessFilter``, which hides all the processes having an input or
   an output that the available ``ProcessParameterIO`` classes cannot handle

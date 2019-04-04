@@ -8,7 +8,6 @@ package org.geoserver.test.onlineTest.setup;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.test.onlineTest.support.DatabaseUtil;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
@@ -16,7 +15,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 
 /**
  * Postgis data setup for the data reference set online test
- * 
+ *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  */
 public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
@@ -30,9 +29,7 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
         this.script = this.getClass().getResourceAsStream("/RefDataSet/Postgis_Data_ref_set.sql");
     }
 
-    /**
-     * Returns PostgisNGDataStoreFactory
-     */
+    /** Returns PostgisNGDataStoreFactory */
     @Override
     public JDBCDataStoreFactory createDataStoreFactory() {
         return new PostgisNGDataStoreFactory();
@@ -50,13 +47,19 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
     // modifier
     private void setDataVersion(double version) throws Exception {
         this.run("DROP TABLE IF EXISTS public." + versiontbl);
-        this.run("CREATE TABLE public." + versiontbl + " ("
-                + "name character varying(100) NOT NULL, " + "version double precision,"
-                + "insert_date timestamp without time zone);");
-        this.run("insert into public." + versiontbl
-                + "(name,version,insert_date) values('Data reference set'," + version
-                + ",current_timestamp)");
-
+        this.run(
+                "CREATE TABLE public."
+                        + versiontbl
+                        + " ("
+                        + "name character varying(100) NOT NULL, "
+                        + "version double precision,"
+                        + "insert_date timestamp without time zone);");
+        this.run(
+                "insert into public."
+                        + versiontbl
+                        + "(name,version,insert_date) values('Data reference set',"
+                        + version
+                        + ",current_timestamp)");
     }
 
     @Override
@@ -83,5 +86,4 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
         fixture.put("dbtype", "postgisng");
         return fixture;
     }
-
 }

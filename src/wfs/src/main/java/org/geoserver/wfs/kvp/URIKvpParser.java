@@ -6,12 +6,11 @@
 package org.geoserver.wfs.kvp;
 
 import java.net.URI;
-
 import org.geoserver.ows.FlatKvpParser;
 
 /**
  * Kvp parser that parses to URI.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class URIKvpParser extends FlatKvpParser {
@@ -19,10 +18,9 @@ public class URIKvpParser extends FlatKvpParser {
     public URIKvpParser(String key) {
         super(key, URI.class);
     }
-    
+
     @Override
     protected Object parseToken(String token) throws Exception {
         return new URI(token);
     }
-
 }

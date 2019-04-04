@@ -3,7 +3,7 @@
 Paletted Images
 ===============
 
-Geoserver has the ability to output high quality 256 color images. This tutorial introduces you to the palette concepts, the various image generation options, and offers a quality/resource comparison of them in different situations.
+GeoServer has the ability to output high quality 256 color images. This tutorial introduces you to the palette concepts, the various image generation options, and offers a quality/resource comparison of them in different situations.
 
 What are Paletted Images?
 -------------------------
@@ -173,7 +173,7 @@ To give you an example when paletted images may not fit the bill, let's consider
 
    *PNG + custom palette (using the png8 output as the palette).*
 
-**Parameters**:``FORMAT=image/png``& ``palette=safe`` Size: 17KB | Map generation time: 0.15s
+**Parameters**:``FORMAT=image/png`` & ``palette=safe`` Size: 17KB | Map generation time: 0.15s
 
 .. figure:: dem-png-safe-palette.png
    :align: center

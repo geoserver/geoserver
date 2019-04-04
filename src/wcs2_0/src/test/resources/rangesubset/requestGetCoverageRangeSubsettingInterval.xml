@@ -6,13 +6,13 @@
     service="WCS" version="2.0.1">
     <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
     <wcs:Extension>    
-        <rsub:rangeSubset>  
-            <rsub:rangeItem>        
-                <rsub:rangeInterval>
+        <rsub:RangeSubset>  
+            <rsub:RangeItem>        
+                <rsub:RangeInterval>
                     <rsub:startComponent>RED_BAND</rsub:startComponent>
                     <rsub:endComponent>BLUE_BAND</rsub:endComponent>
-                </rsub:rangeInterval>
-            </rsub:rangeItem>        
-        </rsub:rangeSubset>
+                </rsub:RangeInterval>
+            </rsub:RangeItem>        
+        </rsub:RangeSubset>
     </wcs:Extension>
 </wcs:GetCoverage>

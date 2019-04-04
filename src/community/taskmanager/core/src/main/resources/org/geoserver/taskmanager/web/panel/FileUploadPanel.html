@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <wicket:head>
+        <style type="text/css">
+            .horizontal {
+                display: inline;
+            }
+
+        </style>
+    </wicket:head>
+</head>
+<body>
+<wicket:panel>
+        <div wicket:id="dialog"></div>
+        <span wicket:id="feedback"></span>
+        <fieldset>
+            <legend>
+                <wicket:message key="locationTitle"/>
+            </legend>
+            <div>
+                <label for="fileServiceSelection">
+                    <wicket:message key="fileServiceSelection"/>
+                </label>
+                <select id="fileServiceSelection"  wicket:id="fileServiceSelection" />
+                <div>
+                    <label for="folderSelection" class="horizontal">
+                        <wicket:message key="folderSelection"/>
+                    </label>
+                    <select id="folderSelection" wicket:id="folderSelection" />
+                    <a class="add-link" href="#" wicket:id="addNew">
+                        <wicket:message key="addNew"/>
+                    </a>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>
+                <wicket:message key="uploadTitle"/>
+            </legend>
+            <p>
+                <label for="fileInput">
+                    <wicket:message key="fileInput"/>
+                </label>
+                <input id="fileInput" wicket:id="fileInput" type="file"/>
+               <input id="checkbox" wicket:id="prepare" type="checkbox" class="checkbox inline" ></input>
+               <label for="prepare" class="inline">
+               	 	<wicket:message key="prepare"/>
+               </label>
+            </p>
+        </fieldset>
+</wicket:panel>
+</body>
+</html>

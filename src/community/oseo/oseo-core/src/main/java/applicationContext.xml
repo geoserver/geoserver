@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Open Source Geospatial Foundation. All rights reserved. This code is licensed under 
+  the GPL 2.0 license, available at the root application directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:sec="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+          http://www.springframework.org/schema/context 
+          http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+>
+
+  <!-- A way to avoid security wrapping of OpenSearchDataAccess -->
+  <bean id="openSearchSecureDataFactory" class="org.geoserver.opensearch.eo.OpenSearchSecureDataFactory" />
+  
+  <bean id="openSearchAccessProvider" class="org.geoserver.opensearch.eo.OpenSearchAccessProvider">
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <bean id="openSearchEoServiceTarget" class="org.geoserver.opensearch.eo.DefaultOpenSearchEoService"
+    lazy-init="false"
+  >
+    <constructor-arg ref="geoServer" />
+    <constructor-arg ref="openSearchAccessProvider" />
+  </bean>
+
+  <bean id="oseoLoader" class="org.geoserver.opensearch.eo.OSEOXStreamLoader">
+    <constructor-arg ref="resourceLoader" />
+  </bean>
+
+
+  <bean id="openSearchEoLogger" class="org.geoserver.ows.util.RequestObjectLogger">
+    <constructor-arg value="org.geoserver.opensearch.eo" />
+  </bean>
+
+  <bean id="openSearchEoService" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.opensearch.eo.OpenSearchEoService</value>
+    </property>
+    <property name="targetName">
+      <value>openSearchEoServiceTarget</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>openSearchEoLogger</value>
+        <value>oseoServiceInterceptor*</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="os-eo-1_0_0_ServiceDescriptor" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="oseo" />
+    <constructor-arg index="1" ref="openSearchEoService" />
+    <constructor-arg index="2" value="1.0" />
+    <constructor-arg index="3">
+      <list>
+        <value>description</value>
+        <value>search</value>
+        <value>metadata</value>
+        <value>quicklook</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- service exception handler -->
+  <bean id="opensearchEoExceptionHandler" class="org.geoserver.opensearch.eo.OSEOExceptionHandler">
+    <constructor-arg>
+      <list>
+        <ref bean="os-eo-1_0_0_ServiceDescriptor" />
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <!-- http url mapping -->
+  <bean id="oseoURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="mappings">
+      <props>
+        <prop key="/oseo">dispatcher</prop>
+        <prop key="/oseo/*">dispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- Dispatcher callback to force kvp parsing in absence of any kvp param -->
+  <bean id="oseoDispatcherCallback" class="org.geoserver.opensearch.eo.OSEODispatcherCallback" />
+  <!-- Filter to force service and version in case they are missing to avoid KVP parsing issues -->
+  <bean id="oseoServiceFilter" class="org.geoserver.opensearch.eo.OSEOFilter" />
+
+  <!-- kvp request readers -->
+  <bean id="oseoDescriptionRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.DescriptionRequestKvpReader" />
+  <bean id="oseoSearchRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader">
+    <constructor-arg ref="geoServer" />
+    <constructor-arg ref="openSearchEoService" />
+  </bean>
+  <bean id="oseoMetadataRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.MetadataRequestKvpReader" />
+  <bean id="oseoQuicklookRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.QuicklookRequestKvpReader" />
+
+  <!-- responses -->
+  <bean id="oseoDescriptionResponse" class="org.geoserver.opensearch.eo.response.DescriptionResponse">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  <bean id="oseoAtomSearchResponse" class="org.geoserver.opensearch.eo.response.AtomSearchResponse">
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="oseoMetadataResponse" class="org.geoserver.opensearch.eo.response.MetadataResponse"/>
+  <bean id="oseoQuicklookResponse" class="org.geoserver.opensearch.eo.response.QuicklookResponse"/>
+
+  <bean id="classpathDocPublisherMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
+        <prop key="/docs/**">classpathPublisher</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <bean id="oseoServiceVoter" class="org.geoserver.opensearch.eo.OpenSearchServiceVoter"/>
+
+</beans>

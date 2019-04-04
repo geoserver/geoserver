@@ -11,14 +11,13 @@ import org.geoserver.security.GeoServerUserGroupService;
 
 /**
  * {@link GeoServerAuthenticationProvider} configuration object.
- * <p>
- * The {@link #getUserGroupServiceName()} may be null if no {@link GeoServerUserGroupService} is 
+ *
+ * <p>The {@link #getUserGroupServiceName()} may be null if no {@link GeoServerUserGroupService} is
  * needed.
- * </p> 
  */
 public interface SecurityAuthProviderConfig extends SecurityNamedServiceConfig {
 
     public String getUserGroupServiceName();
-    public void setUserGroupServiceName(String userGroupServiceName);
 
+    public void setUserGroupServiceName(String userGroupServiceName);
 }

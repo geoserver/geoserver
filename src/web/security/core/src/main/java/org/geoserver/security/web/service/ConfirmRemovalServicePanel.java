@@ -8,7 +8,6 @@ package org.geoserver.security.web.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.web.AbstractConfirmRemovalPanel;
@@ -17,20 +16,20 @@ public class ConfirmRemovalServicePanel extends AbstractConfirmRemovalPanel<Serv
 
     private static final long serialVersionUID = 1L;
 
-    
     public ConfirmRemovalServicePanel(String id, List<ServiceAccessRule> roots) {
-        super(id, roots);        
+        super(id, roots);
     }
-    
+
     public ConfirmRemovalServicePanel(String id, ServiceAccessRule... roots) {
         this(id, Arrays.asList(roots));
     }
 
     @Override
-    protected String getConfirmationMessage(ServiceAccessRule object) throws Exception{
-        return  OwsUtils.property(object, "service", String.class) + "."
-                + OwsUtils.property(object, "method", String.class) + "="
+    protected String getConfirmationMessage(ServiceAccessRule object) throws Exception {
+        return OwsUtils.property(object, "service", String.class)
+                + "."
+                + OwsUtils.property(object, "method", String.class)
+                + "="
                 + OwsUtils.property(object, "roles", Set.class);
     }
-
 }

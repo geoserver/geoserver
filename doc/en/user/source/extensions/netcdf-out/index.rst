@@ -1,68 +1,70 @@
 .. _netcdf-out:
 
-NetCDF Output format
+NetCDF Output Format
 ====================
-This plugin brings in the ability to encode WCS 2.0.1 Multidimensional output as NetCDF files using the Unidata NetCDF Java library. 
+
+This plugin adds the ability to encode WCS 2.0.1 multidimensional output as a NetCDF file using the Unidata NetCDF Java library. 
 
 Getting a NetCDF output file
 ----------------------------
-Make sure to specify application/x-netcdf as value of the format parameter within the getCoverage request using the proper constant.
-As an instance: 
-http://localhost:8080/geoserver/wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=it.geosolutions__V&Format=application/x-netcdf...
 
+Request NetCDF output by specifying ``format=application/x-netcdf`` in a ``GetCoverage`` request::
+
+    http://localhost:8080/geoserver/wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageid=it.geosolutions__V&format=application/x-netcdf...
 
 Current limitations
 -------------------
 
-* Input coverages/slices should share the same bounding box (lon/lat coordinates are the same for the whole ND cube)
-* NetCDF output will be produced only when input coverages come from a StructuredGridCoverage2D reader (This will allows to query the GranuleSource to get the list of granules in order to setup dimensions slices for each sub-coverage)
+* Input coverages/slices should share the same bounding box (lon/lat coordinates are the same for the whole ND cube).
+* NetCDF output will be produced only when input coverages come from a StructuredGridCoverage2D reader (this allows to query the GranuleSource to get the list of granules in order to setup dimensions slices for each sub-coverage).
 
+NetCDF-4
+--------
 
-Supporting NetCDF4-Classic output file
---------------------------------------
-Starting with version 2.8 of GeoServer, NetCDF4-Classic output is supported in addition to NetCDF-3.
-NetCDF4-Classic leverages on the simpler data model of NetCDF-3 by supporting the HDF5-based storage capabilities of NetCDF-4. 
-See :ref:`Installing required NetCDF-4 Native libraries <nc4>` for more info on that.
+NetCDF-4 output is supported but requires native libraries (see :ref:`Installing required NetCDF-4 Native libraries <nc4>`). NetCDF-4 adds support for compression. Use ``format=application/x-netcdf4`` to request NetCDF-4 output.
 
-NetCDF Output customization
----------------------------
+Settings
+--------
 
-Global Settings configuration
-+++++++++++++++++++++++++++++
-Starting with version 2.8 of GeoServer it is possible to define a few global settings for the NetCDF output format. A new section will be added to the *Global Settings* page.
-
-.. figure:: netcdfoutsettings.png
-   :align: center
-
-   *NetCDF Output Global settings section*
-
-From this panel, you may configure:
-
-* Data Packing (*NONE*, *BYTE*, *SHORT*, *INT*)
-* Variable attributes
-* NetCDF4-Classic output specific parameters (they will be taken into account only in case the format specified in the WCS 2.0 GetCoverage request is application/x-netcdf4).
-
-Layer configuration
-++++++++++++++++++++
-With version 2.8 of GeoServer it is also possible to add more customization to the layer in order to specify some properties of the NetCDF Output.
-You will notice an additional tab to the layer configuration.
+NetCDF output settings can be configured for each raster layer. The similar section in the *Global Settings* page configures the default settings used for newly created raster layers.
 
 .. figure:: netcdfoutpanel.png
    :align: center
-
-   *NetCDF Output settings panel*
-
-.. note:: This tab will be initialized with the parameters defined in the *Global Settings* page. 
    
-From this panel, you may configure the same parameters as for the global panel and also other 2 Layer-specific parameters:
-
-* Output variable name. 
-* variable's unit of measure.
-
-.. note:: This panel will be available for Raster data only.
+* Variable Name (optional)
+    * Sets the NetCDF variable name.
+    * Does not change the layer name, which can be configured in the Data tab.
+* Variable Unit of Measure (optional)
+    * Sets the NetCDF ``uom`` attribute.
+* Data Packing
+    * Lossy compression by storing data in reduced precision.
+    * One of *NONE*, *BYTE*, *SHORT*, or *INT*.
+* NetCDF-4 Compression Level
+    * Lossless compression.
+    * Level is an integer from 0 (no compression, fastest) to 9 (most compression, slowest).
+* NetCDF-4 Chunk Shuffling
+    * Lossless byte reordering to improve compression.
+* Copy Variable Attributes from NetCDF/GRIB Source
+    * Most attributes are copied from the source NetCDF/GRIB variable.
+    * Some attributes such as ``coordinates`` and ``missing_value`` are skipped as these may no longer be valid.
+    * For an ImageMosaic, one granule is chosen as the source.
+* Copy Global Attributes from NetCDF/GRIB Source
+    * Attributes are copied from the source NetCDF/GRIB global attributes.
+    * For an ImageMosaic, one granule is chosen as the source.
+* Variable Attributes
+    * Values are encoded as integers or doubles if possible, otherwise strings.
+    * Values set here overwrite attributes set elsewhere, such as those copied from a source NetCDF/GRIB variable.
+* Global Attributes
+    * Values are encoded as integers or doubles if possible, otherwise strings.
+* Scalar Variables Copied from NetCDF/GRIB Source
+    * Source specifies the name of the source variable in a NetCDF file or the ``toolsUI`` view of a GRIB file; only scalar source variables are supported.
+    * Output specifies the name of the variable in the output NetCDF file.
+    * If only one of Source or Output is given, the other is taken as the same.
+    * Dimension is either blank to simply copy the source scalar from one granule, or the name of one output NetCDF dimension to cause values to be copied from multiple granules (such as those from an ImageMosaic over a non-spatial dimension) into a one-dimensional variable. The example above copies a single value from multiple ``reftime`` scalars into ``forecast_reference_time`` dimensioned by ``time`` in an ImageMosaic over time.
+    * For an ImageMosaic, one granule is chosen as the source for variable attributes.
 
 CF Standard names support
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 Note that the output name can also be chosen from the list of CF Standard names.
 Check `CF standard names <http://cfconventions.org/standard-names.html>`_ page for more info on it.

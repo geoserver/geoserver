@@ -23,7 +23,7 @@ Hostname and other useful packages
 
 Update the file ``/etc/hosts`` making sure that the ip addreses matches the name of the machine.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -32,7 +32,7 @@ Update the file ``/etc/hosts`` making sure that the ip addreses matches the name
 Configure the Java Virtual Environment
 ++++++++++++++++++++++++++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -68,7 +68,7 @@ Configure the Java Virtual Environment
 Installing Apache Tomcat
 ++++++++++++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -82,7 +82,7 @@ Installing Apache Tomcat
 
 Creating base template directory
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -114,7 +114,7 @@ Remember that you may change these ports in the file ``/var/lib/tomcat/geoserver
 
 Set the ownership of the ``geoserver/`` related directories to user tomcat
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -174,7 +174,7 @@ Deploy And Configure GeoServer
 
 **First deployment**
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -214,35 +214,57 @@ Deploy And Configure GeoServer
   
   $> vim /storage/data/remoteProcess.properties
   
-    # Default Properties
-    remoteProcessStubCycleSleepTime = 100
-    
-    # Specific kvps for {@link RemoteProcessClient) implementations
-    xmpp_server = localhost
-    xmpp_port = 5222
-    xmpp_manager_username = admin
-    xmpp_manager_password = R3m0T3wP5
-    
-    # domain and MUC service name of the XMPP Server
-    xmpp_domain = geoserver.org
-    xmpp_bus = conference
-    
-    # name, user and password of the management room
-    xmpp_management_channel = management
-    xmpp_management_channel_user = admin
-    xmpp_management_channel_pwd = R3m0T3wP5
-    
-    # comma separated list of available rooms for services. Those rooms names will be equal to the service and WPS Process namespace
-    # Avoid spaces
-    xmpp_service_channels = default
-    
-    # millis
-    xmpp_packet_reply_timeout = 5000
-    
-    # connection keep alive
-    xmpp_connection_ping_interval = 30000
-    xmpp_connection_ping_timeout = 10000
-    xmpp_connection_ping_initial_delay = 20000
+	# Default Properties
+	remoteProcessStubCycleSleepTime = 100
+
+	# Base path where uploaded files are stored
+	# . This is used only when a remote uploader is enabled on the Python
+	# . WPS Agent. This property represents the local base path (on the filesystem
+	# . of GeoServer) where to search for uploaded files.
+	# . If not file has been found here (or this option is not enabled), GeoServer
+	# . looks for absolute path and/or paths relative to the GEOSERVER DATA DIR.
+	#uploadedFilesBasePath = /tmp
+
+	# Full path to the template used to generate the OWS WMC Json output
+	# . This property is used only when a "application/owc" output type on
+	# . the Python WPS Agent.
+	#owc_wms_json_template = absolute_path/to/wmc_template.json
+
+	# Specific kvps for {@link RemoteProcessClient) implementations
+	xmpp_server = localhost
+	xmpp_server_embedded = false
+	xmpp_server_embedded_secure = true
+	xmpp_server_embedded_certificate_file = bogus_mina_tls.cert
+	xmpp_server_embedded_certificate_password = boguspw
+	xmpp_port = 5222
+
+	xmpp_manager_username = admin
+	xmpp_manager_password = R3m0T3wP5
+
+	# domain and MUC service name of the XMPP Server
+	xmpp_domain = geoserver.org
+	xmpp_bus = conference
+
+	# name, user and password of the management room
+	xmpp_management_channel = management
+	xmpp_management_channel_user = admin
+	xmpp_management_channel_pwd = R3m0T3wP5
+
+	# comma separated list of available rooms for services. Those rooms'names will be equal to the service and WPS Process namespace
+	# Avoid spaces
+	xmpp_service_channels = default,geosolutions
+
+	# millis
+	xmpp_packet_reply_timeout = 500
+
+	# connection keep alive
+	xmpp_connection_ping_interval = 30000
+	xmpp_connection_ping_timeout = 10000
+	xmpp_connection_ping_initial_delay = 20000
+
+	# Thresholds indicating overloaded resources
+	xmpp_cpu_perc_threshold = 82.5
+	xmpp_mem_perc_threshold = 84.6
     
   # Restart GeoServer
   

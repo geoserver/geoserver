@@ -4,23 +4,17 @@
 <body>
   <wicket:extend>
     <div class="page-pane button-group">
-        <form method="post" action="j_spring_security_check">
-              <ul>
-                <li>
-                  <label for="username"><wicket:message key="username">Username</wicket:message></label>
-                  <input id="username" type="text" name="username" wicket:id="username" value="" title="username" wicket:message="title:username"/>
-                </li>
-                <li>
-                  <label for="password"><wicket:message key="password">Password</wicket:message></label>
-                  <input id="password" type="password" name="password" value="" title="password" wicket:message="title:password"/>
-                </li>
-                <li>
-                  <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
-                  <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
-                </li>
-              </ul>
-            <button class="button-login positive icon" type="submit"><div><wicket:message key="login">Login</wicket:message></div></button>
-      </form>
+      <span wicket:id="loginforms">
+      	<form style="display: inline-block;" wicket:id="loginform" method="post" action="../j_spring_security_check">
+      		<button class="positive icon" type="submit">
+      			<div><img src="#" wicket:id="link.icon"/><!-- span wicket:id="link.label"></span --></div>
+      		</button>
+	        <script type="text/javascript">
+	            $('input, textarea').placeholder();
+	        </script>	      		
+      	</form>
+      </span>
+
     </div>
     </wicket:extend>
 </body>

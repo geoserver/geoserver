@@ -1,0 +1,78 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+    <form name="theForm">
+        <wicket:panel>
+            <h3><wicket:message key="mapmlSectionHeading">MapML Settings</wicket:message></h3>
+            <ul>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlLicenseSection">License Info</wicket:message></span>
+                        </legend>
+                        <ul>
+                            <li>
+                                <label for="licenseTitle"><wicket:message key="mapmlLicenseTitle">License Title</wicket:message></label>
+                                <input id="licenseTitle" wicket:id="licenseTitle" class="text" type="text"></input>
+                            </li>
+                            <li>
+                                <label for="licenseLink"><wicket:message key="mapmlLicenseLink">License Link</wicket:message></label>
+                                <input id="licenseLink" wicket:id="licenseLink" class="text" type="text"></input>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlTileSection">Tile Config</wicket:message></span>
+                        </legend>
+                        <ul class="choiceList">
+                            <li>
+                                <input id="useTiles" wicket:id="useTiles" type="checkbox"></input>
+                                <label for="useTiles"><wicket:message key="mapmlUseTiles">Use Tiles</wicket:message></label>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlShardSection">Sharding Config</wicket:message></span>
+                        </legend>
+                        <ul class="choiceList">
+                            <li>
+                                <input id="enableSharding" wicket:id="enableSharding" type="checkbox"></input>
+                                <label for="enableSharding"><wicket:message key="mapmlEnableSharding">Enable Sharding</wicket:message></label>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>
+                                <label for="shardList"><wicket:message key="mapmlShardList">Shard List (comma separated)</wicket:message></label>
+                                <input id="shardList" wicket:id="shardList" class="text" type="text"></input>
+                            </li>
+                            <li>
+                                <label for="shardServerPattern"><wicket:message key="mapmlShardServerPattern">Shard Server Pattern (include {s} as shard placeholder)</wicket:message></label>
+                                <input id="shardServerPattern" wicket:id="shardServerPattern" class="text" type="text"></input>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <legend>
+                            <span><wicket:message key="mapmlDimensionSection">Dimension Config</wicket:message></span>
+                        </legend>
+                        <ul>
+                            <li>
+                                <label for="dimension"><wicket:message key="mapmlDimension">Dimension</wicket:message></label>
+                                <select id="dimension" wicket:id="dimension"></select>
+                            </li>
+                         </ul>
+                    </fieldset>
+                </li>
+            </ul>
+        </wicket:panel>
+    </form>
+</body>
+</html>

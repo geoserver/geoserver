@@ -21,19 +21,25 @@ public class StatusBar extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    public StatusBar(final String id, final IModel<Number> limitModel,
-            final IModel<Number> progressModel, final IModel<String> progressMessageModel) {
+    public StatusBar(
+            final String id,
+            final IModel<Number> limitModel,
+            final IModel<Number> progressModel,
+            final IModel<String> progressMessageModel) {
         super(id);
         setOutputMarkupId(true);
-        add(new Behavior() {
-                private static final long serialVersionUID = -8058471260136015254L;
+        add(
+                new Behavior() {
+                    private static final long serialVersionUID = -8058471260136015254L;
 
-                @Override
-        	public void renderHead(Component component, IHeaderResponse response) {
-        		response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
-        	}
-        	
-        });
+                    @Override
+                    public void renderHead(Component component, IHeaderResponse response) {
+                        response.render(
+                                CssHeaderItem.forReference(
+                                        new PackageResourceReference(
+                                                StatusBar.class, "statusbar.css")));
+                    }
+                });
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");
         WebMarkupContainer excessBar = new WebMarkupContainer("statusBarExcess");
@@ -45,7 +51,7 @@ public class StatusBar extends Panel {
         int usedPercentage;
         int excessPercentage;
 
-        final int progressWidth = 200;// progress bar with, i.e. 100%
+        final int progressWidth = 200; // progress bar with, i.e. 100%
 
         if (excess > 0) {
             excessPercentage = (int) Math.round((excess * progressWidth) / used);
@@ -55,11 +61,16 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        usageBar.add(new AttributeModifier("style", new Model<String>("width: "
-                + usedPercentage + "px; left: 5px; border-left: inherit;")));
+        usageBar.add(
+                new AttributeModifier(
+                        "style",
+                        new Model<String>(
+                                "width: "
+                                        + usedPercentage
+                                        + "px; left: 5px; border-left: inherit;")));
 
-        String redStyle = "width: " + excessPercentage + "px; left: " + (5 + usedPercentage)
-                + "px;";
+        String redStyle =
+                "width: " + excessPercentage + "px; left: " + (5 + usedPercentage) + "px;";
         excessBar.add(new AttributeModifier("style", new Model<String>(redStyle)));
 
         add(usageBar);
@@ -69,5 +80,4 @@ public class StatusBar extends Panel {
         // TODO:make the argument models truly dynamic
         // add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
     }
-
 }

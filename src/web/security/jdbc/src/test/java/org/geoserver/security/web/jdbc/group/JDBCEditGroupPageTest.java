@@ -18,15 +18,15 @@ public class JDBCEditGroupPageTest extends EditGroupPageTest {
     }
 
     @Test
-    public void testFill() throws Exception{
+    public void testFill() throws Exception {
         doTestFill();
     }
-    
+
     @Test
     public void testReadOnlyUserGroupService() throws Exception {
         doTestReadOnlyUserGroupService();
     }
-    
+
     @Test
     public void testReadOnlyRoleService() throws Exception {
         doTestReadOnlyRoleService();
@@ -35,7 +35,7 @@ public class JDBCEditGroupPageTest extends EditGroupPageTest {
     void initializeForJDBC() throws Exception {
         initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
     }
-    
+
     @Override
     public String getRoleServiceName() {
         return "h2";
@@ -45,5 +45,4 @@ public class JDBCEditGroupPageTest extends EditGroupPageTest {
     public String getUserGroupServiceName() {
         return "h2";
     }
-
 }

@@ -19,8 +19,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     String addressDeliveryPoint;
 
-    @Deprecated
-    String addressElectronicMailAddress;
+    @Deprecated String addressElectronicMailAddress;
 
     String addressPostalCode;
 
@@ -41,7 +40,7 @@ public class ContactInfoImpl implements ContactInfo {
     String contactVoice;
 
     String onlineResource;
-    
+
     public String getId() {
         return id;
     }
@@ -86,7 +85,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressElectronicMailAddress() {
-        if( this.contactEmail != null && !this.contactEmail.isEmpty() ){
+        if (this.contactEmail != null && !this.contactEmail.isEmpty()) {
             // this field is deprecate use contactEmail if available
             return contactEmail;
         }
@@ -95,8 +94,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
-        if( this.contactEmail == null || this.contactEmail.isEmpty() ){
-         // this field is deprecate - migrate value to contactEmail if available
+        if (this.contactEmail == null || this.contactEmail.isEmpty()) {
+            // this field is deprecate - migrate value to contactEmail if available
             this.contactEmail = addressElectronicMailAddress;
         }
         this.addressElectronicMailAddress = addressElectronicMailAddress;
@@ -164,7 +163,6 @@ public class ContactInfoImpl implements ContactInfo {
 
     public void setContactPosition(String contactPosition) {
         this.contactPosition = contactPosition;
-
     }
 
     public String getContactVoice() {
@@ -174,11 +172,11 @@ public class ContactInfoImpl implements ContactInfo {
     public void setContactVoice(String contactVoice) {
         this.contactVoice = contactVoice;
     }
-    
+
     public String getOnlineResource() {
         return onlineResource;
     }
-    
+
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
     }
@@ -195,94 +193,67 @@ public class ContactInfoImpl implements ContactInfo {
         result = PRIME * result + ((addressType == null) ? 0 : addressType.hashCode());
         result = PRIME * result + ((contactEmail == null) ? 0 : contactEmail.hashCode());
         result = PRIME * result + ((contactFacsimile == null) ? 0 : contactFacsimile.hashCode());
-        result = PRIME * result + ((contactOrganization == null) ? 0 : contactOrganization.hashCode());
+        result =
+                PRIME * result
+                        + ((contactOrganization == null) ? 0 : contactOrganization.hashCode());
         result = PRIME * result + ((contactPerson == null) ? 0 : contactPerson.hashCode());
         result = PRIME * result + ((contactPosition == null) ? 0 : contactPosition.hashCode());
         result = PRIME * result + ((contactVoice == null) ? 0 : contactVoice.hashCode());
         result = PRIME * result + ((onlineResource == null) ? 0 : onlineResource.hashCode());
-        result = PRIME * result + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
+        result =
+                PRIME * result
+                        + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof ContactInfo))
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof ContactInfo)) return false;
         final ContactInfo other = (ContactInfo) obj;
         if (address == null) {
-            if (other.getAddress() != null)
-                return false;
-        } else if (!address.equals(other.getAddress()))
-            return false;
+            if (other.getAddress() != null) return false;
+        } else if (!address.equals(other.getAddress())) return false;
         if (addressCity == null) {
-            if (other.getAddressCity() != null)
-                return false;
-        } else if (!addressCity.equals(other.getAddressCity()))
-            return false;
+            if (other.getAddressCity() != null) return false;
+        } else if (!addressCity.equals(other.getAddressCity())) return false;
         if (addressCountry == null) {
-            if (other.getAddressCountry() != null)
-                return false;
-        } else if (!addressCountry.equals(other.getAddressCountry()))
-            return false;
+            if (other.getAddressCountry() != null) return false;
+        } else if (!addressCountry.equals(other.getAddressCountry())) return false;
         if (addressPostalCode == null) {
-            if (other.getAddressPostalCode() != null)
-                return false;
-        } else if (!addressPostalCode.equals(other.getAddressPostalCode()))
-            return false;
+            if (other.getAddressPostalCode() != null) return false;
+        } else if (!addressPostalCode.equals(other.getAddressPostalCode())) return false;
         if (addressState == null) {
-            if (other.getAddressState() != null)
-                return false;
-        } else if (!addressState.equals(other.getAddressState()))
-            return false;
+            if (other.getAddressState() != null) return false;
+        } else if (!addressState.equals(other.getAddressState())) return false;
         if (addressType == null) {
-            if (other.getAddressType() != null)
-                return false;
-        } else if (!addressType.equals(other.getAddressType()))
-            return false;
+            if (other.getAddressType() != null) return false;
+        } else if (!addressType.equals(other.getAddressType())) return false;
         if (contactEmail == null) {
-            if (other.getContactEmail() != null)
-                return false;
-        } else if (!contactEmail.equals(other.getContactEmail()))
-            return false;
+            if (other.getContactEmail() != null) return false;
+        } else if (!contactEmail.equals(other.getContactEmail())) return false;
         if (contactFacsimile == null) {
-            if (other.getContactFacsimile() != null)
-                return false;
-        } else if (!contactFacsimile.equals(other.getContactFacsimile()))
-            return false;
+            if (other.getContactFacsimile() != null) return false;
+        } else if (!contactFacsimile.equals(other.getContactFacsimile())) return false;
         if (contactOrganization == null) {
-            if (other.getContactOrganization() != null)
-                return false;
-        } else if (!contactOrganization.equals(other.getContactOrganization()))
-            return false;
+            if (other.getContactOrganization() != null) return false;
+        } else if (!contactOrganization.equals(other.getContactOrganization())) return false;
         if (contactPerson == null) {
-            if (other.getContactPerson() != null)
-                return false;
-        } else if (!contactPerson.equals(other.getContactPerson()))
-            return false;
+            if (other.getContactPerson() != null) return false;
+        } else if (!contactPerson.equals(other.getContactPerson())) return false;
         if (contactPosition == null) {
-            if (other.getContactPosition() != null)
-                return false;
-        } else if (!contactPosition.equals(other.getContactPosition()))
-            return false;
+            if (other.getContactPosition() != null) return false;
+        } else if (!contactPosition.equals(other.getContactPosition())) return false;
         if (contactVoice == null) {
-            if (other.getContactVoice()!= null)
-                return false;
-        } else if (!contactVoice.equals(other.getContactVoice()))
-            return false;
+            if (other.getContactVoice() != null) return false;
+        } else if (!contactVoice.equals(other.getContactVoice())) return false;
         if (onlineResource == null) {
-            if (other.getOnlineResource() != null)
-                return false;
-        } else if (!onlineResource.equals(other.getOnlineResource()))
-            return false;
+            if (other.getOnlineResource() != null) return false;
+        } else if (!onlineResource.equals(other.getOnlineResource())) return false;
         if (addressDeliveryPoint == null) {
-            if (other.getAddressDeliveryPoint() != null)
-                return false;
-        } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint()))
-            return false;
+            if (other.getAddressDeliveryPoint() != null) return false;
+        } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint())) return false;
         return true;
     }
 }

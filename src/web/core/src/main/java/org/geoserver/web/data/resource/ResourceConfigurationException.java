@@ -7,11 +7,7 @@ package org.geoserver.web.data.resource;
 
 import org.geoserver.platform.exception.GeoServerException;
 
-/**
- * Base class for exceptions used for validation errors in resource configuration 
- * 
- */
-
+/** Base class for exceptions used for validation errors in resource configuration */
 public class ResourceConfigurationException extends GeoServerException {
 
     public static final String CQL_ATTRIBUTE_NAME_NOT_FOUND_$1 = "CQL_ATTRIBUTE_NAME_NOT_FOUND";
@@ -20,6 +16,5 @@ public class ResourceConfigurationException extends GeoServerException {
         super(id);
         setId(id);
         setArgs(args);
-    } 
-
+    }
 }

@@ -55,14 +55,14 @@
 				uri="${activemq.transportConnectors.server.discoveryURI}" />
 		</networkConnectors>
 
-		<destinationInterceptors>
+		<!--destinationInterceptors>
 			<virtualDestinationInterceptor>
 				<virtualDestinations>
 					<virtualTopic name=">" prefix="Consumer.*.VirtualTopic."
 						selectorAware="false" />
 				</virtualDestinations>
 			</virtualDestinationInterceptor>
-		</destinationInterceptors>
+		</destinationInterceptors-->
 
 		<!-- Configure message persistence for the broker. The default persistence 
 			mechanism is the KahaDB store (identified by the kahaDB tag). For more information, 

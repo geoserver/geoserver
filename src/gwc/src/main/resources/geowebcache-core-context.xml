@@ -33,7 +33,7 @@
        
        You also need to uncomment gwcWMSConfig in the gwcTLDispatcher bean!
        -->
-  <!--bean id="gwcWMSConfig" class="org.geowebcache.config.GetCapabilitiesConfiguration">
+  <!--bean id="gwcWMSConfig" class="org.geowebcache.config.wms.GetCapabilitiesConfiguration">
   	<constructor-arg ref="gwcGridSetBroker">
     </constructor-arg>
     <constructor-arg value="http://demo.mapserver.org/cgi-bin/mapserv?map=/osgeo/mapserver/msautotest/world/world.map&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities">
@@ -64,6 +64,12 @@
     </description>
     <constructor-arg ref="gwcGridSetBroker"/>
   </bean>
+
+  <bean id="gwcBlobStoreAggregator" class="org.geowebcache.storage.BlobStoreAggregator">
+    <description>
+      BlobStoreAggregator serves up BlobStoreInfos from the available Configurations in the application context
+    </description>
+  </bean>
   
   <bean id="gwcDefaultStorageFinder" class="org.geowebcache.storage.DefaultStorageFinder">
   	<constructor-arg ref="gwcAppCtx" />
@@ -72,6 +78,7 @@
   <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
     <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
   </bean>
   
@@ -131,9 +138,11 @@
     <constructor-arg ref="gwcTLDispatcher"/>
     <constructor-arg ref="gwcGridSetBroker"/>
     <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
     <constructor-arg ref="gwcRuntimeStats"/>
     <property name="defaultStorageFinder" ref="gwcDefaultStorageFinder"/>
+    <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
     <property name="servletPrefix" value="gwc"/>
   </bean>
 	
@@ -158,6 +167,8 @@
   <bean id="noLock" class="org.geowebcache.locks.NoOpLockProvider"/>
 
   <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler" />
+
+  <bean id="gwcSecurityDispatcher" class="org.geowebcache.filter.security.SecurityDispatcher" />
 
   <bean id="memoryLock" class="org.geowebcache.locks.MemoryLockProvider"/>
   

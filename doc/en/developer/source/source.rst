@@ -424,7 +424,7 @@ More useful reading
 The content in this section is not intended to be a comprehensive introduction to git. There are many things not covered
 that are invaluable to day-to-day work with git. Some more useful info:
 
-* `10 useful git commands <http://about.digg.com/blog/10-useful-git-commands>`_
+* `10 useful git commands <http://webdeveloperplus.com/general/10-useful-advanced-git-commands/>`_
 * `Git stashing <http://git-scm.com/book/en/Git-Tools-Stashing>`_
 * `GeoTools git primer <http://docs.geotools.org/latest/developer/procedures/git.html>`_
 

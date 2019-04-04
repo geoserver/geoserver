@@ -7,11 +7,8 @@ package org.geoserver.netcdf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import javax.imageio.spi.ImageReaderSpi;
-
 import junit.framework.TestCase;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.io.netcdf.NetCDFFormat;
@@ -21,13 +18,11 @@ import org.geotools.test.TestData;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Simple test class for checking if netcdf data are supported.
- */
+/** Simple test class for checking if netcdf data are supported. */
 public class NetCDFDataTest extends TestCase {
 
     @Test
-    public void testFormatSupported() throws FileNotFoundException, IOException{
+    public void testFormatSupported() throws FileNotFoundException, IOException {
 
         // Selection of the input file
         File file = TestData.file(this, "2DLatLonCoverage.nc");
@@ -38,7 +33,7 @@ public class NetCDFDataTest extends TestCase {
         ImageReaderSpi spi = new NetCDFImageReaderSpi();
         Assert.assertTrue(spi.canDecodeInput(file));
     }
-    
+
     @Test
     public void testImage() throws FileNotFoundException, IOException {
         // Selection of the input file

@@ -9,28 +9,27 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.wms.xml.Dimension;
-import org.geotools.data.wms.xml.Extent;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.StyleImpl;
+import org.geotools.ows.wms.xml.Dimension;
+import org.geotools.ows.wms.xml.Extent;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
  * can apply it while performing the requests
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class SecuredWMSLayer extends Layer {
     Layer delegate;
 
     WrapperPolicy policy;
-    
+
     public SecuredWMSLayer(Layer delegate, WrapperPolicy policy) {
         this.delegate = delegate;
         this.policy = policy;
@@ -39,17 +38,17 @@ public class SecuredWMSLayer extends Layer {
     public WrapperPolicy getPolicy() {
         return policy;
     }
-    
+
     public boolean isQueryable() {
-        if(policy.getLimits() instanceof WMSAccessLimits) {
+        if (policy.getLimits() instanceof WMSAccessLimits) {
             WMSAccessLimits wl = (WMSAccessLimits) policy.getLimits();
-            if(!wl.isAllowFeatureInfo()) {
+            if (!wl.isAllowFeatureInfo()) {
                 return false;
             }
         }
         return delegate.isQueryable();
     }
-    
+
     public String toString() {
         return "SecuredLayer - " + delegate.toString();
     }
@@ -65,26 +64,19 @@ public class SecuredWMSLayer extends Layer {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         SecuredWMSLayer other = (SecuredWMSLayer) obj;
         if (delegate == null) {
-            if (other.delegate != null)
-                return false;
-        } else if (!delegate.equals(other.delegate))
-            return false;
+            if (other.delegate != null) return false;
+        } else if (!delegate.equals(other.delegate)) return false;
         if (policy == null) {
-            if (other.policy != null)
-                return false;
-        } else if (!policy.equals(other.policy))
-            return false;
+            if (other.policy != null) return false;
+        } else if (!policy.equals(other.policy)) return false;
         return true;
     }
-    
+
     // --------------------------------------------------------------------------------------
     // Purely delegated methods
     // --------------------------------------------------------------------------------------
@@ -280,7 +272,4 @@ public class SecuredWMSLayer extends Layer {
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
-
-    
-
 }

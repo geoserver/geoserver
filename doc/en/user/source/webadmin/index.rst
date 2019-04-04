@@ -40,7 +40,7 @@ The :ref:`Data` section contains configuration options for all the different dat
 
 * The :ref:`Layer Groups <data_webadmin_layergroups>` page displays a list of layer groups, with the ability to add, edit, and delete. Details include the associated workspace (if any).
 
-* The :ref:`Styles <data_webadmin_styles>` page displays a list of styles, with the ability to add, edit, and delete. Details include the associated workspace (if any).
+* The :ref:`Styles <styling_webadmin>` page displays a list of styles, with the ability to add, edit, and delete. Details include the associated workspace (if any).
 
 In each of these pages that contain a table, there are three different ways to locate an object: sorting, searching, and paging. To alphabetically sort a data type, click on the column header. For simple searching, enter the search criteria in the search box and hit Enter. And to page through the entries (25 at a time), use the arrow buttons located on the bottom and top of the table.
 
@@ -51,7 +51,7 @@ The :ref:`services` section is for configuring the services published by GeoServ
 
 * The :ref:`Web Coverage Service (WCS) <services_webadmin_wcs>` page manages metadata, resource limits, and SRS availability for WCS.
 
-* The :ref:`Web Feature Service (WCS) <services_webadmin_wfs>` page manages metadata, feature publishing, service level options, and data-specific output for WFS.
+* The :ref:`Web Feature Service (WFS) <services_webadmin_wfs>` page manages metadata, feature publishing, service level options, and data-specific output for WFS.
 
 * The :ref:`Web Map Service (WMS) <services_webadmin_wms>` page manages metadata, resource limits, SRS availability, and other data-specific output for WMS.
 

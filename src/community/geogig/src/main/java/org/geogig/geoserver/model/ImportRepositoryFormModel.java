@@ -5,16 +5,15 @@
 package org.geogig.geoserver.model;
 
 import java.net.URI;
-
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.ImportRepositoryFormBean;
 import org.geogig.geoserver.config.PostgresConfigBean;
 import org.geogig.geoserver.config.RepositoryInfo;
 
 /**
- * Data model for importing an existing GeoGig repository. This model essentially wraps a
- * {@link RepositoryInfo} and uses {@link ImportRepositoryFormBean} to hold the UI pieces that are
- * used to construct the repository location {@link java.net.URI}.
+ * Data model for importing an existing GeoGig repository. This model essentially wraps a {@link
+ * RepositoryInfo} and uses {@link ImportRepositoryFormBean} to hold the UI pieces that are used to
+ * construct the repository location {@link java.net.URI}.
  */
 public class ImportRepositoryFormModel implements IModel<ImportRepositoryFormBean> {
 
@@ -65,5 +64,4 @@ public class ImportRepositoryFormModel implements IModel<ImportRepositoryFormBea
         }
         bean = null;
     }
-
 }

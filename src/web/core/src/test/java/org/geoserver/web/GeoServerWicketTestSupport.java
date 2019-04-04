@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.util.Locale;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -36,18 +35,19 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         // prevent Wicket from bragging about us being in dev mode (and run
         // the tests as if we were in production all the time)
         System.setProperty("wicket.configuration", "deployment");
-        
+
         // make sure that we check the english i18n when needed
         Locale.setDefault(Locale.ENGLISH);
-        
-        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
+
+        GeoServerApplication app =
+                (GeoServerApplication) applicationContext.getBean("webApplication");
         tester = new WicketTester(app, false);
         app.init();
     }
 
     @After
     public void clearErrorMessages() {
-        if(tester != null && !tester.getFeedbackMessages(IFeedbackMessageFilter.ALL).isEmpty()) {
+        if (tester != null && !tester.getFeedbackMessages(IFeedbackMessageFilter.ALL).isEmpty()) {
             tester.cleanupFeedbackMessages();
         }
     }
@@ -58,25 +58,24 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         tester.destroy();
     }
 
-    public GeoServerApplication getGeoServerApplication(){
+    public GeoServerApplication getGeoServerApplication() {
         return GeoServerApplication.get();
     }
 
-    /**
-     * Logs in as administrator.
-     */
-    public void login(){
+    /** Logs in as administrator. */
+    public void login() {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
 
-    public void logout(){
-        login("anonymousUser","", "ROLE_ANONYMOUS");
+    public void logout() {
+        login("anonymousUser", "", "ROLE_ANONYMOUS");
     }
-    
+
     /**
      * Prints the specified component/page containment hierarchy to the standard output
-     * <p>
-     * Each line in the dump looks like: <componentId>(class) 'value'
+     *
+     * <p>Each line in the dump looks like: <componentId>(class) 'value'
+     *
      * @param c the component to be printed
      * @param dumpClass if enabled, the component classes are printed as well
      * @param dumpValue if enabled, the component values are printed as well
@@ -88,76 +87,81 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
         WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
     }
-    
-   /**
-    * Prints the specified component/page containment hierarchy to the standard output
-    * <p>
-    * Each line in the dump looks like: <componentId>(class) 'value'
-    * @param c the component to be printed
-    * @param dumpClass if enabled, the component classes are printed as well
-    * @param dumpValue if enabled, the component values are printed as well
-    */
-   public void print(Component c, boolean dumpClass, boolean dumpValue, boolean dumpPath) {
-       if (isQuietTests()) {
-           return;
-       }
 
-       WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
-   }
-    
     /**
-     * Finds the component whose model value equals to the specified content, and
-     * the component class is equal, subclass or implementor of the specified class
-     * @param root the component under which the search is to be performed
-     * @param content 
-     * @param componentClass the target class, or null if any component will do
+     * Prints the specified component/page containment hierarchy to the standard output
      *
+     * <p>Each line in the dump looks like: <componentId>(class) 'value'
+     *
+     * @param c the component to be printed
+     * @param dumpClass if enabled, the component classes are printed as well
+     * @param dumpValue if enabled, the component values are printed as well
      */
-    public Component findComponentByContent(MarkupContainer root, Object content, Class<?> componentClass) {
+    public void print(Component c, boolean dumpClass, boolean dumpValue, boolean dumpPath) {
+        if (isQuietTests()) {
+            return;
+        }
+
+        WicketHierarchyPrinter.print(c, dumpClass, dumpValue);
+    }
+
+    /**
+     * Finds the component whose model value equals to the specified content, and the component
+     * class is equal, subclass or implementor of the specified class
+     *
+     * @param root the component under which the search is to be performed
+     * @param content
+     * @param componentClass the target class, or null if any component will do
+     */
+    public Component findComponentByContent(
+            MarkupContainer root, Object content, Class<?> componentClass) {
         ComponentContentFinder finder = new ComponentContentFinder(content);
         root.visitChildren(componentClass, finder);
         return finder.candidate;
     }
-    
+
     class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
-        
+
         ComponentContentFinder(Object content) {
             this.content = content;
         }
-        
 
         @Override
         public void component(Component component, IVisit<Void> visit) {
-            if(content.equals(component.getDefaultModelObject())) {
+            if (content.equals(component.getDefaultModelObject())) {
                 this.candidate = component;
                 visit.stop();
             }
         }
-        
     }
-    
+
     /**
-     * Helper method to initialize a standalone WicketTester with the proper 
-     * customizations to do message lookups.
+     * Helper method to initialize a standalone WicketTester with the proper customizations to do
+     * message lookups.
      */
     public static void initResourceSettings(WicketTester tester) {
-        tester.getApplication().getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-        tester.getApplication().getResourceSettings().getStringResourceLoaders().add(0, new GeoServerStringResourceLoader());
+        tester.getApplication()
+                .getResourceSettings()
+                .setResourceStreamLocator(new GeoServerResourceStreamLocator());
+        tester.getApplication()
+                .getResourceSettings()
+                .getStringResourceLoaders()
+                .add(0, new GeoServerStringResourceLoader());
     }
-    
+
     /**
-     * Get Ajax Event Behavior attached to a component. 
-     * 
+     * Get Ajax Event Behavior attached to a component.
+     *
      * @param path path to component
      * @param event the name of the event
-     *
      */
     protected AjaxEventBehavior getAjaxBehavior(String path, String event) {
         for (Behavior b : tester.getComponentFromLastRenderedPage(path).getBehaviors()) {
-            if (b instanceof AjaxEventBehavior && ((AjaxEventBehavior) b).getEvent().equals(event)) {
-                return (AjaxEventBehavior) b;            
+            if (b instanceof AjaxEventBehavior
+                    && ((AjaxEventBehavior) b).getEvent().equals(event)) {
+                return (AjaxEventBehavior) b;
             }
         }
         return null;
@@ -165,22 +169,22 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     /**
      * Execute Ajax Event Behavior with attached value.
-     * 
+     *
      * @param path
      * @param event
      * @param value
      */
     protected void executeAjaxEventBehavior(String path, String event, String value) {
         String[] ids = path.split(":");
-        String id = ids[ids.length-1];
+        String id = ids[ids.length - 1];
         tester.getRequest().setParameter(id, value);
         tester.executeAjaxEvent(path, event);
     }
-    
+
     /**
-     * Sets the value of a form component that might not be included in a form (because maybe we 
-     * are using it via Ajax). By itself it just prepares the stage for a subsequent Ajax request 
-     * 
+     * Sets the value of a form component that might not be included in a form (because maybe we are
+     * using it via Ajax). By itself it just prepares the stage for a subsequent Ajax request
+     *
      * @param component The {@link FormComponent} whose value we are going to set
      * @param value The form value (as we'd set it in a HTML form)
      */

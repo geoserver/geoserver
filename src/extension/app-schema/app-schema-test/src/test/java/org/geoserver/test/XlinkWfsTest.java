@@ -8,14 +8,13 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
-
 import org.geotools.data.complex.AppSchemaDataAccess;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
  * WFS GetFeature to test integration of {@link AppSchemaDataAccess} with GeoServer.
- * 
+ *
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
 public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
@@ -25,9 +24,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         return new XlinkMockData();
     }
 
-    /**
-     * Test whether GetCapabilities returns wfs:WFS_Capabilities.
-     */
+    /** Test whether GetCapabilities returns wfs:WFS_Capabilities. */
     @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities");
@@ -35,9 +32,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("wfs:WFS_Capabilities", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test whether DescribeFeatureType returns xsd:schema.
-     */
+    /** Test whether DescribeFeatureType returns xsd:schema. */
     @Test
     public void testDescribeFeatureType() {
         Document doc = getAsDOM("wfs?request=DescribeFeatureType&typename=gsml:MappedFeature");
@@ -45,9 +40,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test whether GetFeature returns wfs:FeatureCollection.
-     */
+    /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
@@ -55,58 +48,78 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
     }
 
-    /**
-     * Test content of GetFeature response.
-     */
+    /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() {
-    	
-    	Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
-        
+
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+
         LOGGER.info("WFS testGetFeatureContent response:\n" + prettyString(doc));
 
         assertXpathCount(4, "//gsml:MappedFeature", doc);
 
         // mf1
-        assertXpathEvaluatesTo("GUNTHORPE FORMATION",
-                "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
-        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape/gml:Polygon/@srsName", doc);
-        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape//gml:posList", doc);
-        assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25699",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape/gml:Polygon/@srsName",
+                doc);
+        assertXpathEvaluatesTo(
+                "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape//gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:x-test:GeologicUnit:gu.25699",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/@xlink:href",
+                doc);
 
         // mf2
-        assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP",
-                "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
-        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName", doc);
-        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape//gml:posList", doc);
-        assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25678",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName",
+                doc);
+        assertXpathEvaluatesTo(
+                "52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape//gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:x-test:GeologicUnit:gu.25678",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/@xlink:href",
+                doc);
 
         // mf3
-        assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name",
+        assertXpathEvaluatesTo(
+                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName",
                 doc);
-        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName", doc);
-        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape//gml:posList", doc);
-        assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25678",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape//gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:x-test:GeologicUnit:gu.25678",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/@xlink:href",
+                doc);
 
         // mf4
-        assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name",
+        assertXpathEvaluatesTo(
+                "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName",
                 doc);
-        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName", doc);
-        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape//gml:posList", doc);
-        assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25682",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/@xlink:href", doc);
-
+        assertXpathEvaluatesTo(
+                "52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape//gml:posList",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:x-test:GeologicUnit:gu.25682",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/@xlink:href",
+                doc);
     }
-
 }

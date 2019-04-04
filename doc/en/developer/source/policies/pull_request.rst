@@ -49,8 +49,7 @@ Assuming that ``origin`` points to your github repo the the patch workflow then 
 
 #. For the release notes we ask that you open a `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ ticket linking to your pull request.
 
-   At this point the core developers will be notified of the pull request and review it at the earliest 
-convenience.
+   At this point the core developers will be notified of the pull request and review it at the earliest convenience.
 
 Core developers will :ref:`review` the patch and may require changes or improvements to it prior to it being accepted. It will be up to the submitter to amend the pull request and keep it alive until it gets merged. Please be patient as pull requests are often reviewed in spare time so turn-around can be a little slow.
 

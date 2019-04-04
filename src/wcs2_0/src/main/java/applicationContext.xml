@@ -113,6 +113,12 @@
     <property name="service" value="WCS" />
     <property name="version" value="2.0.1" />
   </bean>
+  <bean id="wcs201SortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
+    <constructor-arg ref="filterFactory"/>
+    <property name="service" value="WCS"/>
+    <property name="version" value="2.0.1" />
+  </bean>
+  
 
 
   <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader" />
@@ -141,7 +147,7 @@
     class="org.geoserver.wcs2_0.exception.OWS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
     <constructor-arg index="0">
       <list>
-        <ref local="wcsService-2.0" />
+        <ref bean="wcsService-2.0" />
       </list>
     </constructor-arg>
   </bean>

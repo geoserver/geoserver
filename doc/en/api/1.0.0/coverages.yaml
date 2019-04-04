@@ -1,0 +1,1297 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Coverages
+  description: A coverage is a raster data set which originates from a coverage store.
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /workspaces/{workspace}/coveragestores/{store}/coverages:
+    get:  
+      operationId: getWorkspaceCoverageStore
+      description: |
+        Get the coverages available for the provided workspace and data store.
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage data store
+          required: true
+          type: string
+        - name: list
+          description: |
+            If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+          in: query
+          required: false
+          type: string
+          enum:
+          - all
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      responses:
+        200:
+            description: Successful response containing the list of coverages.
+            schema:
+              type: object
+              properties:
+                coverages:
+                  type: object
+                  properties:
+                    coverage:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: The Name
+                          link:
+                            type: string
+                            description: The URL
+            examples:
+              application/json: |
+                {
+                  "coverages": {
+                    "coverage": [
+                      {
+                        "name": "sfdem",
+                        "href": "http://localhost:/geoserver/restng/workspaces/sf/coverages/sfdem.json"
+                      }
+                    ]
+                  }
+                }
+              text/xml: |
+                <coverages>
+                  <coverage>
+                    <name>sfdem</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:/geoserver/restng/workspaces/sf/coverages/sfdem.xml" type="application/atom+xml"/>
+                  </coverage>
+                </coverages>
+    post:
+      operationId: postWorkspaceCoverageStore
+      description: |
+        Create a new coverage, the underlying data store must exists.
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage data store
+          required: true
+          type: string
+        - name: coverage
+          in: body
+          description: The body of the coverage to POST
+          required: true
+          schema:
+            $ref: "#/definitions/CoverageInfo"
+      responses:
+        201:
+          description: The coverage was successfully created.
+          headers:
+            Location:
+              description: The location of the newly created coverage.
+              type: string        
+    put:
+      operationId: putWorkspaceCoverageStore
+      description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
+      responses:
+        405:
+          description: Method not allowed.
+    delete:
+      operationId: deleteWorkspaceCoverageStore
+      description: Invalid. Can only delete an individual coverage.
+      responses:
+        405:
+          description: Method not allowed.
+
+  /workspaces/{workspace}/coverages:
+      get:
+        operationId: getCoverageStore
+        description: |
+          Get the coverages available for the provided workspace.
+        parameters:
+          - name: workspace
+            in: path
+            description: The name of the workspace
+            required: true
+            type: string
+          - name: list
+            description: |
+              If the list parameter value is equal to "all" all the coverages available in the data source (even the non published ones) will be returned.
+            in: query
+            required: false
+            type: string
+            enum:
+            - all
+        produces:
+          - text/html
+          - application/xml
+          - application/json
+        responses:
+          200:
+              description: Successful response containing the list of coverages.
+              schema:
+                type: object
+                properties:
+                  coverages:
+                    type: object
+                    properties:
+                      coverage:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: The Name
+                            link:
+                              type: string
+                              description: The URL
+              examples:
+                application/json: |
+                  {
+                    "coverages": {
+                      "coverage": [
+                        {
+                          "name": "sfdem",
+                          "href": "http://localhost:/geoserver/restng/workspaces/sf/coverages/sfdem.json"
+                        }
+                      ]
+                    }
+                  }
+                text/xml: |
+                  <coverages>
+                    <coverage>
+                      <name>sfdem</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:/geoserver/restng/workspaces/sf/coverages/sfdem.xml" type="application/atom+xml"/>
+                    </coverage>
+                  </coverages>
+      post:
+        operationId: postCoverageStore
+        description: |
+          Create a new coverage, the coverage definition needs to reference a store.
+        parameters:
+          - name: workspace
+            in: path
+            description: The name of the workspace
+            required: true
+            type: string
+          - name: coverage
+            in: body
+            description: The body of the coverage to POST
+            required: true
+            schema:
+              $ref: "#/definitions/CoverageInfo"
+        responses:
+          201:
+            description: The coverage was successfully created.
+            headers:
+              Location:
+                description: The location of the newly created coverage.
+                type: string
+      put:
+        operationId: putCoverageStore
+        description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
+        responses:
+          405:
+            description: Method not allowed.
+      delete:
+        operationId: deleteCoverageStore
+        description: Invalid. Can only delete an individual coverage.
+        responses:
+          405:
+            description: Method not allowed.
+
+  /workspaces/{workspace}/coverages/{coverage}:
+      get:
+        operationId: getCoverage
+        description:  Get an individual coverage.
+        produces:
+          - text/html
+          - application/xml
+          - application/json
+        parameters:
+          - name: workspace
+            in: path
+            description: The name of the workspace
+            required: true
+            type: string
+          - name: coverage
+            in: path
+            description: The name of the coverage
+            required: true
+            type: string
+          - name: quietOnNotFound
+            in: query
+            description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+            type: boolean
+            required: false
+            default: false
+        responses:
+          200:
+            description: Succesful response containing coverage
+            schema:
+              type: object
+              properties:
+                featureType:
+                  $ref: "#/definitions/CoverageInfo"
+            examples:
+              application/json: |
+                {
+                    "coverage": {
+                        "abstract": "Digital elevation model for the Spearfish region.\r\n\r\nsfdem is a Tagged Image File Format with Geographic information",
+                        "defaultInterpolationMethod": "nearest neighbor",
+                        "description": "Generated from sfdem",
+                        "dimensions": {
+                            "coverageDimension": [
+                                {
+                                    "description": "GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]",
+                                    "name": "GRAY_INDEX",
+                                    "range": {
+                                        "max": -9.999999933815813e+36,
+                                        "min": -9.999999933815813e+36
+                                    }
+                                }
+                            ]
+                        },
+                        "enabled": true,
+                        "grid": {
+                            "@dimension": "2",
+                            "crs": "EPSG:26713",
+                            "range": {
+                                "high": "634 477",
+                                "low": "0 0"
+                            },
+                            "transform": {
+                                "scaleX": 30,
+                                "scaleY": -30,
+                                "shearX": 0,
+                                "shearY": 0,
+                                "translateX": 589995,
+                                "translateY": 4927995
+                            }
+                        },
+                        "interpolationMethods": {
+                            "string": [
+                                "nearest neighbor",
+                                "bilinear",
+                                "bicubic"
+                            ]
+                        },
+                        "keywords": {
+                            "string": [
+                                "WCS",
+                                "sfdem",
+                                "sfdem"
+                            ]
+                        },
+                        "latLonBoundingBox": {
+                            "crs": "EPSG:4326",
+                            "maxx": -103.62940739432703,
+                            "maxy": 44.5016011535299,
+                            "minx": -103.87108701853181,
+                            "miny": 44.370187074132616
+                        },
+                        "metadata": {
+                            "entry": {
+                                "$": "sfdem_sfdem",
+                                "@key": "dirName"
+                            }
+                        },
+                        "name": "sfdem",
+                        "namespace": {
+                            "href": "http://localhost:/geoserver/restng/namespaces/sf.json",
+                            "name": "sf"
+                        },
+                        "nativeBoundingBox": {
+                            "crs": {
+                                "$": "EPSG:26713",
+                                "@class": "projected"
+                            },
+                            "maxx": 609000,
+                            "maxy": 4928010,
+                            "minx": 589980,
+                            "miny": 4913700
+                        },
+                        "nativeCRS": {
+                            "$": "PROJCS[\"NAD27 / UTM zone 13N\", \n  GEOGCS[\"NAD27\", \n    DATUM[\"North American Datum 1927\", \n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \n      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], \n      AUTHORITY[\"EPSG\",\"6267\"]], \n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n    UNIT[\"degree\", 0.017453292519943295], \n    AXIS[\"Geodetic longitude\", EAST], \n    AXIS[\"Geodetic latitude\", NORTH], \n    AUTHORITY[\"EPSG\",\"4267\"]], \n  PROJECTION[\"Transverse_Mercator\"], \n  PARAMETER[\"central_meridian\", -105.0], \n  PARAMETER[\"latitude_of_origin\", 0.0], \n  PARAMETER[\"scale_factor\", 0.9996], \n  PARAMETER[\"false_easting\", 500000.0], \n  PARAMETER[\"false_northing\", 0.0], \n  UNIT[\"m\", 1.0], \n  AXIS[\"Easting\", EAST], \n  AXIS[\"Northing\", NORTH], \n  AUTHORITY[\"EPSG\",\"26713\"]]",
+                            "@class": "projected"
+                        },
+                        "nativeFormat": "GeoTIFF",
+                        "nativeName": "sfdem",
+                        "requestSRS": {
+                            "string": [
+                                "EPSG:26713"
+                            ]
+                        },
+                        "responseSRS": {
+                            "string": [
+                                "EPSG:26713"
+                            ]
+                        },
+                        "srs": "EPSG:26713",
+                        "store": {
+                            "@class": "coverageStore",
+                            "href": "http://localhost:/geoserver/restng/workspaces/sf/coveragestores/sfdem.json",
+                            "name": "sf:sfdem"
+                        },
+                        "supportedFormats": {
+                            "string": [
+                                "ARCGRID",
+                                "IMAGEMOSAIC",
+                                "GTOPO30",
+                                "GEOTIFF",
+                                "GIF",
+                                "PNG",
+                                "JPEG",
+                                "TIFF"
+                            ]
+                        },
+                        "title": "Spearfish elevation"
+                    }
+                }
+
+              application/xml: |
+                <coverage>
+                  <name>sfdem</name>
+                  <nativeName>sfdem</nativeName>
+                  <namespace>
+                    <name>sf</name>
+                    <atom:link href="http://localhost:8080/geoserver/restng/namespaces/sf.xml" rel="alternate" type="application/atom+xml" xmlns:atom="http://www.w3.org/2005/Atom"/>
+                  </namespace>
+                  <title>Spearfish elevation</title>
+                  <description>Generated from sfdem</description>
+                  <abstract>Digital elevation model for the Spearfish region.
+
+                sfdem is a Tagged Image File Format with Geographic information</abstract>
+                  <keywords>
+                    <string>WCS</string>
+                    <string>sfdem</string>
+                    <string>sfdem</string>
+                    <string>type\@language=fr\;\@vocabulary=test\;</string>
+                  </keywords>
+                  <nativeCRS class="projected">PROJCS[&quot;NAD27 / UTM zone 13N&quot;,
+                  GEOGCS[&quot;NAD27&quot;,
+                    DATUM[&quot;North American Datum 1927&quot;,
+                      SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]],
+                      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685],
+                      AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]],
+                    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
+                    UNIT[&quot;degree&quot;, 0.017453292519943295],
+                    AXIS[&quot;Geodetic longitude&quot;, EAST],
+                    AXIS[&quot;Geodetic latitude&quot;, NORTH],
+                    AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]],
+                  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]],
+                  PARAMETER[&quot;central_meridian&quot;, -105.0],
+                  PARAMETER[&quot;latitude_of_origin&quot;, 0.0],
+                  PARAMETER[&quot;scale_factor&quot;, 0.9996],
+                  PARAMETER[&quot;false_easting&quot;, 500000.0],
+                  PARAMETER[&quot;false_northing&quot;, 0.0],
+                  UNIT[&quot;m&quot;, 1.0],
+                  AXIS[&quot;Easting&quot;, EAST],
+                  AXIS[&quot;Northing&quot;, NORTH],
+                  AUTHORITY[&quot;EPSG&quot;,&quot;26713&quot;]]</nativeCRS>
+                  <srs>EPSG:26713</srs>
+                  <nativeBoundingBox>
+                    <minx>589980.0</minx>
+                    <maxx>609000.0</maxx>
+                    <miny>4913700.0</miny>
+                    <maxy>4928010.0</maxy>
+                    <crs class="projected">EPSG:26713</crs>
+                  </nativeBoundingBox>
+                  <latLonBoundingBox>
+                    <minx>-103.87108701853181</minx>
+                    <maxx>-103.62940739432703</maxx>
+                    <miny>44.370187074132616</miny>
+                    <maxy>44.5016011535299</maxy>
+                    <crs>EPSG:4326</crs>
+                  </latLonBoundingBox>
+                  <enabled>true</enabled>
+                  <metadata>
+                    <entry key="elevation">
+                      <dimensionInfo>
+                        <enabled>false</enabled>
+                      </dimensionInfo>
+                    </entry>
+                    <entry key="cacheAgeMax">10</entry>
+                    <entry key="time">
+                      <dimensionInfo>
+                        <enabled>false</enabled>
+                        <defaultValue/>
+                      </dimensionInfo>
+                    </entry>
+                    <entry key="cachingEnabled">true</entry>
+                    <entry key="dirName">sfdem_sfdem</entry>
+                  </metadata>
+                  <store class="coverageStore">
+                    <name>sf:sfdem</name>
+                    <atom:link href="http://localhost:8080/geoserver/restng/workspaces/sf/coveragestores/sfdem.xml" rel="alternate" type="application/atom+xml" xmlns:atom="http://www.w3.org/2005/Atom"/>
+                  </store>
+                  <nativeFormat>GeoTIFF</nativeFormat>
+                  <grid dimension="2">
+                    <range>
+                      <low>0 0</low>
+                      <high>634 477</high>
+                    </range>
+                    <transform>
+                      <scaleX>30.0</scaleX>
+                      <scaleY>-30.0</scaleY>
+                      <shearX>0.0</shearX>
+                      <shearY>0.0</shearY>
+                      <translateX>589995.0</translateX>
+                      <translateY>4927995.0</translateY>
+                    </transform>
+                    <crs>EPSG:26713</crs>
+                  </grid>
+                  <supportedFormats>
+                    <string>ARCGRID</string>
+                    <string>IMAGEMOSAIC</string>
+                    <string>GTOPO30</string>
+                    <string>GEOTIFF</string>
+                    <string>GIF</string>
+                    <string>PNG</string>
+                    <string>JPEG</string>
+                    <string>TIFF</string>
+                  </supportedFormats>
+                  <interpolationMethods>
+                    <string>nearest neighbor</string>
+                    <string>bilinear</string>
+                    <string>bicubic</string>
+                  </interpolationMethods>
+                  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+                  <dimensions>
+                    <coverageDimension>
+                      <name>GRAY_INDEX</name>
+                      <description>GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]</description>
+                      <range>
+                        <min>-9.999999933815813E36</min>
+                        <max>-9.999999933815813E36</max>
+                      </range>
+                    </coverageDimension>
+                  </dimensions>
+                  <requestSRS>
+                    <string>EPSG:26713</string>
+                  </requestSRS>
+                  <responseSRS>
+                    <string>EPSG:26713</string>
+                  </responseSRS>
+                </coverage>
+
+      post:
+            operationId: postCoverage
+            description: Invalid. Use POST on the coverages endpoint to add a new coverage, or PUT on an individual coverage to edit it.
+            responses:
+              405:
+                description: Method not allowed.
+      put:
+            operationId: putCoverage
+            description: Invalid. Use POST for adding a new coverage, or PUT on an individual coverage to edit that type.
+            responses:
+              405:
+                description: Method not allowed.
+      delete:
+            operationId: deleteCoverage
+            description: Invalid. Can only delete an individual coverage.
+            responses:
+              405:
+                description: Method not allowed.
+
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}:
+    get:    
+      operationId: getWorkspaceCoverage
+      description:  Get an individual coverage.
+      produces:
+        - text/html
+        - application/xml
+        - application/json
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage datastore
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string    
+        - name: quietOnNotFound
+          in: query
+          description: The quietOnNotFound parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
+          type: boolean
+          required: false
+          default: false
+      responses:
+        200:
+          description: Successful response containing coverage.
+          schema:
+            type: object
+            properties:
+              featureType:              
+                $ref: "#/definitions/CoverageInfo"
+          examples:
+            application/json: {
+                              "coverage": {
+                                  "abstract": "Digital elevation model for the Spearfish region.\r\n\r\nsfdem is a Tagged Image File Format with Geographic information",
+                                  "defaultInterpolationMethod": "nearest neighbor",
+                                  "description": "Generated from sfdem",
+                                  "dimensions": {
+                                      "coverageDimension": [
+                                          {
+                                              "description": "GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]",
+                                              "name": "GRAY_INDEX",
+                                              "range": {
+                                                  "max": -9.999999933815813e+36,
+                                                  "min": -9.999999933815813e+36
+                                              }
+                                          }
+                                      ]
+                                  },
+                                  "enabled": true,
+                                  "grid": {
+                                      "@dimension": "2",
+                                      "crs": "EPSG:26713",
+                                      "range": {
+                                          "high": "634 477",
+                                          "low": "0 0"
+                                      },
+                                      "transform": {
+                                          "scaleX": 30,
+                                          "scaleY": -30,
+                                          "shearX": 0,
+                                          "shearY": 0,
+                                          "translateX": 589995,
+                                          "translateY": 4927995
+                                      }
+                                  },
+                                  "interpolationMethods": {
+                                      "string": [
+                                          "nearest neighbor",
+                                          "bilinear",
+                                          "bicubic"
+                                      ]
+                                  },
+                                  "keywords": {
+                                      "string": [
+                                          "WCS",
+                                          "sfdem",
+                                          "sfdem"
+                                      ]
+                                  },
+                                  "latLonBoundingBox": {
+                                      "crs": "EPSG:4326",
+                                      "maxx": -103.62940739432703,
+                                      "maxy": 44.5016011535299,
+                                      "minx": -103.87108701853181,
+                                      "miny": 44.370187074132616
+                                  },
+                                  "metadata": {
+                                      "entry": {
+                                          "$": "sfdem_sfdem",
+                                          "@key": "dirName"
+                                      }
+                                  },
+                                  "name": "sfdem",
+                                  "namespace": {
+                                      "href": "http://localhost:/geoserver/restng/namespaces/sf.json",
+                                      "name": "sf"
+                                  },
+                                  "nativeBoundingBox": {
+                                      "crs": {
+                                          "$": "EPSG:26713",
+                                          "@class": "projected"
+                                      },
+                                      "maxx": 609000,
+                                      "maxy": 4928010,
+                                      "minx": 589980,
+                                      "miny": 4913700
+                                  },
+                                  "nativeCRS": {
+                                      "$": "PROJCS[\"NAD27 / UTM zone 13N\", \n  GEOGCS[\"NAD27\", \n    DATUM[\"North American Datum 1927\", \n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \n      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], \n      AUTHORITY[\"EPSG\",\"6267\"]], \n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n    UNIT[\"degree\", 0.017453292519943295], \n    AXIS[\"Geodetic longitude\", EAST], \n    AXIS[\"Geodetic latitude\", NORTH], \n    AUTHORITY[\"EPSG\",\"4267\"]], \n  PROJECTION[\"Transverse_Mercator\"], \n  PARAMETER[\"central_meridian\", -105.0], \n  PARAMETER[\"latitude_of_origin\", 0.0], \n  PARAMETER[\"scale_factor\", 0.9996], \n  PARAMETER[\"false_easting\", 500000.0], \n  PARAMETER[\"false_northing\", 0.0], \n  UNIT[\"m\", 1.0], \n  AXIS[\"Easting\", EAST], \n  AXIS[\"Northing\", NORTH], \n  AUTHORITY[\"EPSG\",\"26713\"]]",
+                                      "@class": "projected"
+                                  },
+                                  "nativeFormat": "GeoTIFF",
+                                  "nativeName": "sfdem",
+                                  "requestSRS": {
+                                      "string": [
+                                          "EPSG:26713"
+                                      ]
+                                  },
+                                  "responseSRS": {
+                                      "string": [
+                                          "EPSG:26713"
+                                      ]
+                                  },
+                                  "srs": "EPSG:26713",
+                                  "store": {
+                                      "@class": "coverageStore",
+                                      "href": "http://localhost:/geoserver/restng/workspaces/sf/coveragestores/sfdem.json",
+                                      "name": "sf:sfdem"
+                                  },
+                                  "supportedFormats": {
+                                      "string": [
+                                          "ARCGRID",
+                                          "IMAGEMOSAIC",
+                                          "GTOPO30",
+                                          "GEOTIFF",
+                                          "GIF",
+                                          "PNG",
+                                          "JPEG",
+                                          "TIFF"
+                                      ]
+                                  },
+                                  "title": "Spearfish elevation"
+                              }
+                          }
+
+            application/xml: |
+              <coverage>
+                <name>sfdem</name>
+                <nativeName>sfdem</nativeName>
+                <namespace>
+                  <name>sf</name>
+                  <atom:link href="http://localhost:8080/geoserver/restng/namespaces/sf.xml" rel="alternate" type="application/atom+xml" xmlns:atom="http://www.w3.org/2005/Atom"/>
+                </namespace>
+                <title>Spearfish elevation</title>
+                <description>Generated from sfdem</description>
+                <abstract>Digital elevation model for the Spearfish region.
+
+              sfdem is a Tagged Image File Format with Geographic information</abstract>
+                <keywords>
+                  <string>WCS</string>
+                  <string>sfdem</string>
+                  <string>sfdem</string>
+                  <string>type\@language=fr\;\@vocabulary=test\;</string>
+                </keywords>
+                <nativeCRS class="projected">PROJCS[&quot;NAD27 / UTM zone 13N&quot;,
+                GEOGCS[&quot;NAD27&quot;,
+                  DATUM[&quot;North American Datum 1927&quot;,
+                    SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]],
+                    TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685],
+                    AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]],
+                  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],
+                  UNIT[&quot;degree&quot;, 0.017453292519943295],
+                  AXIS[&quot;Geodetic longitude&quot;, EAST],
+                  AXIS[&quot;Geodetic latitude&quot;, NORTH],
+                  AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]],
+                PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]],
+                PARAMETER[&quot;central_meridian&quot;, -105.0],
+                PARAMETER[&quot;latitude_of_origin&quot;, 0.0],
+                PARAMETER[&quot;scale_factor&quot;, 0.9996],
+                PARAMETER[&quot;false_easting&quot;, 500000.0],
+                PARAMETER[&quot;false_northing&quot;, 0.0],
+                UNIT[&quot;m&quot;, 1.0],
+                AXIS[&quot;Easting&quot;, EAST],
+                AXIS[&quot;Northing&quot;, NORTH],
+                AUTHORITY[&quot;EPSG&quot;,&quot;26713&quot;]]</nativeCRS>
+                <srs>EPSG:26713</srs>
+                <nativeBoundingBox>
+                  <minx>589980.0</minx>
+                  <maxx>609000.0</maxx>
+                  <miny>4913700.0</miny>
+                  <maxy>4928010.0</maxy>
+                  <crs class="projected">EPSG:26713</crs>
+                </nativeBoundingBox>
+                <latLonBoundingBox>
+                  <minx>-103.87108701853181</minx>
+                  <maxx>-103.62940739432703</maxx>
+                  <miny>44.370187074132616</miny>
+                  <maxy>44.5016011535299</maxy>
+                  <crs>EPSG:4326</crs>
+                </latLonBoundingBox>
+                <enabled>true</enabled>
+                <metadata>
+                  <entry key="elevation">
+                    <dimensionInfo>
+                      <enabled>false</enabled>
+                    </dimensionInfo>
+                  </entry>
+                  <entry key="cacheAgeMax">10</entry>
+                  <entry key="time">
+                    <dimensionInfo>
+                      <enabled>false</enabled>
+                      <defaultValue/>
+                    </dimensionInfo>
+                  </entry>
+                  <entry key="cachingEnabled">true</entry>
+                  <entry key="dirName">sfdem_sfdem</entry>
+                </metadata>
+                <store class="coverageStore">
+                  <name>sf:sfdem</name>
+                  <atom:link href="http://localhost:8080/geoserver/restng/workspaces/sf/coveragestores/sfdem.xml" rel="alternate" type="application/atom+xml" xmlns:atom="http://www.w3.org/2005/Atom"/>
+                </store>
+                <nativeFormat>GeoTIFF</nativeFormat>
+                <grid dimension="2">
+                  <range>
+                    <low>0 0</low>
+                    <high>634 477</high>
+                  </range>
+                  <transform>
+                    <scaleX>30.0</scaleX>
+                    <scaleY>-30.0</scaleY>
+                    <shearX>0.0</shearX>
+                    <shearY>0.0</shearY>
+                    <translateX>589995.0</translateX>
+                    <translateY>4927995.0</translateY>
+                  </transform>
+                  <crs>EPSG:26713</crs>
+                </grid>
+                <supportedFormats>
+                  <string>ARCGRID</string>
+                  <string>IMAGEMOSAIC</string>
+                  <string>GTOPO30</string>
+                  <string>GEOTIFF</string>
+                  <string>GIF</string>
+                  <string>PNG</string>
+                  <string>JPEG</string>
+                  <string>TIFF</string>
+                </supportedFormats>
+                <interpolationMethods>
+                  <string>nearest neighbor</string>
+                  <string>bilinear</string>
+                  <string>bicubic</string>
+                </interpolationMethods>
+                <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+                <dimensions>
+                  <coverageDimension>
+                    <name>GRAY_INDEX</name>
+                    <description>GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]</description>
+                    <range>
+                      <min>-9.999999933815813E36</min>
+                      <max>-9.999999933815813E36</max>
+                    </range>
+                  </coverageDimension>
+                </dimensions>
+                <requestSRS>
+                  <string>EPSG:26713</string>
+                </requestSRS>
+                <responseSRS>
+                  <string>EPSG:26713</string>
+                </responseSRS>
+              </coverage>
+
+    post:
+      operationId: postWorkspaceCoverage
+      description: Invalid. Use POST on the coverages endpoint to add a new coverage, or PUT on an individual coverage to edit it.
+      responses:
+        405:
+          description: Method not allowed.
+    put:
+      operationId: putWorkspaceCoverage
+      description: Update an individual coverage
+      consumes:        
+        - application/xml
+        - text/xml
+        - application/json
+        - text/json
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage data store
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+        - name: coverage
+          in: body
+          description: The body of the coverage to PUT
+          required: true
+          schema:
+            $ref: "#/definitions/CoverageInfo"
+        - name: calculate
+          in: query
+          description: 'Comma-seperated list of optional fields to calculate. Optional fields include: "nativebbox", "latlonbbox".'
+          required: false
+          type: array
+          collectionFormat: csv
+          minItems: 0
+          maxItems: 2
+          items:
+            type: string
+            enum: [nativebbox,latlonbbox]
+      responses:
+        200:
+          description: The coverage was successfully updated.
+    delete:
+      operationId: deleteWorkspaceCoverage
+      description: Delete a coverage (optionally recursively deleting layers).
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage data store
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+        - name: recurse
+          type: boolean
+          in: query
+          required: false
+          description: The recurse controls recursive deletion. When set to true all stores containing the resource are also removed.
+          default: false
+      responses:
+        200:
+          description: Successfully deleted.
+
+definitions:
+  CoverageInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the resource. This name corresponds to the "published" name of the resource.
+      nativeName:
+        type: string
+        description: The native name of the resource. This name corresponds to the physical resource that feature type is derived from -- a shapefile name, a database table, etc...
+      namespace:
+        type: object
+        description: The namespace uri of the resource. Example would be an application schema namespace uri.
+        properties:
+          name:
+            type: string
+            description: The name of the namespace.
+          href:
+            type: string
+            readOnly: true
+            description: URL to the namespace.
+      title:
+        type: string
+        description: The title of the resource. This is usually something that is meant to be displayed in a user interface.
+      abstract:
+        type: string
+        description: A description of the resource. This is usually something that is meant to be displayed in a user interface.
+      defaultInterpolationMethod:
+        type: string
+        description: Default resampling (interpolation) method that will be used for this coverage.
+      keywords:
+        type: object
+        description: A collection of keywords associated with the resource.
+        properties:
+          string:
+            type: array
+            description: List of keyword values with internationalization and vocabulary
+            items:
+              type: string 
+              description: A single keyword value
+      metadatalinks:
+        type: object
+        description: Wraps a collection of metadata links for the resource.
+        properties:
+          metadataLink:
+            type: array
+            description: A collection of metadata links for the resource.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The MIME type 
+                metadataType:
+                  type: string
+                  description: The type of metadata, e.g. "FGDC"
+                content:
+                  type: string
+                  description: The link URL
+      dataLinks:
+        type: object
+        description: Wraps a collection of data links for the resource.
+        properties:
+          metadataLink:
+            type: array
+            description: A collection of data links for the resource.
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The MIME type 
+                content:
+                  type: string
+                  description: The link URL                  
+      nativeCRS:
+        type: string
+        description: The native coordinate reference system object of the resource.
+      srs:
+        type: string
+        description: Returns the identifier of coordinate reference system of the resource.
+      nativeBoundingBox:
+        type: object
+        description: Returns the bounds of the resource in its declared CRS.
+        properties:
+          minx:
+            type: number
+            description: The min x coordinate
+          maxx:
+            type: number
+            description: The max x coordinate
+          miny:
+            type: number
+            description: The min y coordinate
+          maxy:
+            type: number
+            description: The max y coordinate
+          crs:
+            type: string
+            description: The coordinate reference system object of the bounding box.
+      latLonBoundingBox:
+        type: object
+        description: The bounds of the resource in lat / lon. This value represents a "fixed value" and is not calulated on the underlying dataset.
+        properties:
+          minx:
+            type: number
+            description: The min x coordinate
+          maxx:
+            type: number
+            description: The max x coordinate
+          miny:
+            type: number
+            description: The min y coordinate
+          maxy:
+            type: number
+            description: The max y coordinate
+          crs:
+            type: string
+            description: The coordinate reference system object of the bounding box.                
+      metadata:
+        type: array
+        description:  A list of key/value metadata pairs.
+        items:
+          $ref: "#/definitions/MetadataEntry"
+      store:
+        type: object
+        description: The store the resource is a part of.
+        properties:
+          '@class':
+            type: string
+            description: The class of the store
+          name:
+            type: string
+            description: The name of the store
+          href:
+            type: string
+            description: URL to the data store
+      cqlFilter:
+        type: string
+        description: The ECQL string used as default feature type filter
+      maxFeatures:
+        type: integer
+        description: A cap on the number of features that a query against this type can return.
+      numDecimals:
+        type: number
+        description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
+      responseSRS:
+        type: object
+        description: The srs's that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
+        properties:
+          string:
+            type: string
+            description: The value of the srs
+      overridingServiceSRS:
+        type: boolean
+        description: True if this feature type info is overriding the WFS global SRS list
+      skipNumberMatched:
+        type: boolean
+        description: True if this feature type info is overriding the counting of numberMatched.
+      circularArcPresent:
+        type: boolean
+      linearizationTolerance:
+        type: number
+        description: Tolerance used to linearize this feature type, as an absolute value expressed in the geometries own CRS
+      attributes:
+        type: object
+        description: Wrapper for the derived set of attributes for the feature type.
+        properties:
+          attribute:
+            type: array
+            description: The derived set of attributes for the feature type.
+            items:
+              type: object
+              description: A single attribute
+              properties:
+                name:
+                  type: string
+                  description: "Name of the attribute."
+                minOccurs:
+                  type: integer
+                  description: "Minimum number of occurrences of the attribute."
+                maxOccurs:
+                  type: integer
+                  description: "Maximum number of occurrences of the attribute."
+                nillable:
+                  type: boolean
+                  description: "Flag indicating if null is an acceptable value for the attribute."
+                binding:
+                  type: string
+                  description: "The java class that values of this attribute are bound to."
+                length:
+                  type: integer
+                  description: Returns the length of this attribute. It's usually non null only for string and numeric types"
+      dimensions:
+        type: object
+        description: raster dimensions
+        properties:
+          coverageDimension:
+            type: array
+            items:
+              type: object
+              description: raster dimenion
+              properties:
+                description:
+                  type: string
+                  description: description of the raster dimension
+                name:
+                  type: string
+                  description: name of the dimension
+                range:
+                  type: object
+                  description: dimension range
+                  properties:
+                    max:
+                      type: number
+                      description: max range value
+                    min:
+                      type: number
+                      description: min range value
+      grid:
+        type: object
+        description: contains information about how to translate from the raster plan to a coordinate reference system
+        properties:
+          dimension:
+            type: string
+            description: cardinality of the raster plan
+          crs:
+            type: string
+            description: target coordinate system
+          range:
+            type: object
+            description: range of the raster plan
+            properties:
+              high:
+                type: string
+                description: max range values
+              low:
+                type: string
+                description: min range values
+          transform:
+            type: object
+            description: transformation definition
+            properties:
+              scaleX:
+                type: number
+                description: scale value to apply in X
+              scaleY:
+                type: number
+                description: scale value to apply in Y
+              shearX:
+                type: number
+                description: shear value to apply in X
+              shearY:
+                type: number
+                description: shear value to apply in Y
+              translateX:
+                type: number
+                description: translation to apply in X
+              translatexY:
+                type: number
+                description: translation to apply in Y
+          interpolationMethods:
+            type: object
+            description: available interporlations methods for this coverage
+            properties:
+              string:
+                type: array
+                items:
+                  type: string
+                  description: name of the interpolation method
+
+    example: {
+                 "coverage": {
+                     "abstract": "Digital elevation model for the Spearfish region.\r\n\r\nsfdem is a Tagged Image File Format with Geographic information",
+                     "defaultInterpolationMethod": "nearest neighbor",
+                     "description": "Generated from sfdem",
+                     "dimensions": {
+                         "coverageDimension": [
+                             {
+                                 "description": "GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]",
+                                 "name": "GRAY_INDEX",
+                                 "range": {
+                                     "max": -9.999999933815813e+36,
+                                     "min": -9.999999933815813e+36
+                                 }
+                             }
+                         ]
+                     },
+                     "enabled": true,
+                     "grid": {
+                         "@dimension": "2",
+                         "crs": "EPSG:26713",
+                         "range": {
+                             "high": "634 477",
+                             "low": "0 0"
+                         },
+                         "transform": {
+                             "scaleX": 30,
+                             "scaleY": -30,
+                             "shearX": 0,
+                             "shearY": 0,
+                             "translateX": 589995,
+                             "translateY": 4927995
+                         }
+                     },
+                     "interpolationMethods": {
+                         "string": [
+                             "nearest neighbor",
+                             "bilinear",
+                             "bicubic"
+                         ]
+                     },
+                     "keywords": {
+                         "string": [
+                             "WCS",
+                             "sfdem",
+                             "sfdem",
+                             "type\\@language=fr\\;\\@vocabulary=test\\;"
+                         ]
+                     },
+                     "latLonBoundingBox": {
+                         "crs": "EPSG:4326",
+                         "maxx": -103.62940739432703,
+                         "maxy": 44.5016011535299,
+                         "minx": -103.87108701853181,
+                         "miny": 44.370187074132616
+                     },
+                     "metadata": {
+                         "entry": [
+                             {
+                                 "@key": "elevation",
+                                 "dimensionInfo": {
+                                     "enabled": false
+                                 }
+                             },
+                             {
+                                 "$": "10",
+                                 "@key": "cacheAgeMax"
+                             },
+                             {
+                                 "@key": "time",
+                                 "dimensionInfo": {
+                                     "defaultValue": "",
+                                     "enabled": false
+                                 }
+                             },
+                             {
+                                 "$": "true",
+                                 "@key": "cachingEnabled"
+                             },
+                             {
+                                 "$": "sfdem_sfdem",
+                                 "@key": "dirName"
+                             }
+                         ]
+                     },
+                     "name": "sfdem",
+                     "namespace": {
+                         "href": "http://localhost:8075/geoserver/restng/namespaces/sf.json",
+                         "name": "sf"
+                     },
+                     "nativeBoundingBox": {
+                         "crs": {
+                             "$": "EPSG:26713",
+                             "@class": "projected"
+                         },
+                         "maxx": 609000,
+                         "maxy": 4928010,
+                         "minx": 589980,
+                         "miny": 4913700
+                     },
+                     "nativeCRS": {
+                         "$": "PROJCS[\"NAD27 / UTM zone 13N\", \n  GEOGCS[\"NAD27\", \n    DATUM[\"North American Datum 1927\", \n      SPHEROID[\"Clarke 1866\", 6378206.4, 294.9786982138982, AUTHORITY[\"EPSG\",\"7008\"]], \n      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], \n      AUTHORITY[\"EPSG\",\"6267\"]], \n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n    UNIT[\"degree\", 0.017453292519943295], \n    AXIS[\"Geodetic longitude\", EAST], \n    AXIS[\"Geodetic latitude\", NORTH], \n    AUTHORITY[\"EPSG\",\"4267\"]], \n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \n  PARAMETER[\"central_meridian\", -105.0], \n  PARAMETER[\"latitude_of_origin\", 0.0], \n  PARAMETER[\"scale_factor\", 0.9996], \n  PARAMETER[\"false_easting\", 500000.0], \n  PARAMETER[\"false_northing\", 0.0], \n  UNIT[\"m\", 1.0], \n  AXIS[\"Easting\", EAST], \n  AXIS[\"Northing\", NORTH], \n  AUTHORITY[\"EPSG\",\"26713\"]]",
+                         "@class": "projected"
+                     },
+                     "nativeFormat": "GeoTIFF",
+                     "nativeName": "sfdem",
+                     "requestSRS": {
+                         "string": [
+                             "EPSG:26713"
+                         ]
+                     },
+                     "responseSRS": {
+                         "string": [
+                             "EPSG:26713"
+                         ]
+                     },
+                     "srs": "EPSG:26713",
+                     "store": {
+                         "@class": "coverageStore",
+                         "href": "http://localhost:8075/geoserver/restng/workspaces/sf/coveragestores/sfdem.json",
+                         "name": "sf:sfdem"
+                     },
+                     "supportedFormats": {
+                         "string": [
+                             "ARCGRID",
+                             "IMAGEMOSAIC",
+                             "GTOPO30",
+                             "GEOTIFF",
+                             "GIF",
+                             "PNG",
+                             "JPEG",
+                             "TIFF"
+                         ]
+                     },
+                     "title": "Spearfish elevation"
+                 }
+             }
+  
+  MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+          enum:
+          - regionateStrategy
+          - regionateFeatureLimit
+          - cacheAgeMax
+          - cachingEnabled
+          - regionateAttribute
+          - indexingEnabled
+          - dirName
+          description: Key used for metadata entry, additional keys are added over time
+        '$':
+          title: text
+          type: string
+          description: Text value for provided key Valid text depends on key used. Example  {'@key'='cachingEnabled','$'='true'}.

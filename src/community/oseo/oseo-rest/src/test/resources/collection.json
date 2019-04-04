@@ -1,0 +1,33 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type":"Polygon",
+    "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+  },
+  "properties": {
+    "name": "TEST123",
+    "primary": true,
+    "timeStart" : "2012-04-23T18:25:43.511Z",
+    "timeEnd" : null,
+    "productCqlFilter" : null,
+    "masked" : false,
+    "eo:identifier" : "TEST123",
+    "eo:productType" : "S2MS1C",
+    "eo:platform" : "Sentinel-123",
+    "eo:platformSerialIdentifier" : "A",
+    "eo:instrument" : "MSI",
+    "eo:sensorType" : "OPTICAL",
+    "eo:compositeType" : null,
+    "eo:processingLevel" : "Level-1C",
+    "eo:orbitType" : "LEO",
+    "eo:spectralRange" : null,
+    "eo:wavelength" : null,
+    "eo:securityConstraints" : null,
+    "eo:dissemination" : null,
+    "eo:acquisitionStation" : null,
+    "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
+    "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
+    "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
+    "thumbnailHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
+  }
+}

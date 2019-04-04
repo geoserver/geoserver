@@ -9,16 +9,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
-
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONWriter;
 import org.geoserver.wps.ppio.CDataPPIO;
+import org.springframework.stereotype.Component;
 
 /**
  * PPIO that allows scripts to return a Map to be encoded as JSON.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
+@Component
 public class MapJSONPPIO extends CDataPPIO {
 
     protected MapJSONPPIO() {
@@ -29,14 +30,14 @@ public class MapJSONPPIO extends CDataPPIO {
     public void encode(Object value, OutputStream os) throws Exception {
         OutputStreamWriter writer = new OutputStreamWriter(os);
         JSONWriter w = new JSONWriter(writer);
-        
+
         encode((Map) value, w);
         writer.flush();
     }
 
-    void encode(Map<?,?> map, JSONWriter w) throws JSONException {
+    void encode(Map<?, ?> map, JSONWriter w) throws JSONException {
         w.object();
-        for (Map.Entry<?,?> e : map.entrySet()) {
+        for (Map.Entry<?, ?> e : map.entrySet()) {
             Object key = e.getKey();
             Object val = e.getValue();
 
@@ -45,13 +46,11 @@ public class MapJSONPPIO extends CDataPPIO {
 
             if (val instanceof Map) {
                 encode((Map) val, w);
-            }
-            else {
+            } else {
                 w.value(val);
             }
         }
         w.endObject();
-
     }
 
     @Override

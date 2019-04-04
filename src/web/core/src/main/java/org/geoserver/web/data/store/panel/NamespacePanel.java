@@ -13,24 +13,27 @@ import org.apache.wicket.model.PropertyModel;
 
 /**
  * A label + namespace dropdown form panel
- * 
+ *
  * @author Gabriel Roldan
  */
 @SuppressWarnings("serial")
 public class NamespacePanel extends Panel {
 
-    //private final DropDownChoice choice;
+    // private final DropDownChoice choice;
 
     private Label nsLabel;
-    
-    public NamespacePanel(final String componentId, final IModel selectedItemModel,
-            final IModel paramLabelModel, final boolean required) {
+
+    public NamespacePanel(
+            final String componentId,
+            final IModel selectedItemModel,
+            final IModel paramLabelModel,
+            final boolean required) {
         // make the value of the combo field the model of this panel, for easy
         // value retrieval
         super(componentId, selectedItemModel);
 
         // the label
-        String requiredMark = required ? " *" : ""; 
+        String requiredMark = required ? " *" : "";
         Label label = new Label("paramName", paramLabelModel.getObject() + requiredMark);
         add(label);
 
@@ -54,7 +57,7 @@ public class NamespacePanel extends Panel {
     }
 
     public Component getFormComponent() {
-        //return choice;
+        // return choice;
         return nsLabel;
     }
 }

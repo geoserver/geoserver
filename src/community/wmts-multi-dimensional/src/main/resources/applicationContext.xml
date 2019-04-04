@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="wmtsMultidimensionalExtension" class="org.geoserver.gwc.wmts.MultiDimensionalExtension">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="wms"/>
+        <constructor-arg ref="catalog"/>
+        <constructor-arg ref="gwcTLDispatcher"/>
+    </bean>
+
+    <bean id="multiDimLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+        <property name="id" value="multiDimLayerConfig"/>
+        <property name="titleKey" value="data.resource.config.multidim"/>
+        <property name="componentClass" value="org.geoserver.gwc.web.MultiDimLayerPanel"/>
+        <property name="supportedTypes">
+            <list>
+                <value>org.geoserver.catalog.FeatureTypeInfo</value>
+                <value>org.geoserver.catalog.CoverageInfo</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="multiDimAdminConfig" class="org.geoserver.web.services.AdminPagePanelInfo">
+        <description>Adds wmts-nd global configurations</description>
+        <property name="id" value="multiDimAdminConfig"/>
+        <property name="titleKey" value="data.resource.config.multidim"/>
+        <property name="componentClass" value="org.geoserver.gwc.web.MultiDimAdminPanel"/>
+        <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
+    </bean>
+
+</beans>

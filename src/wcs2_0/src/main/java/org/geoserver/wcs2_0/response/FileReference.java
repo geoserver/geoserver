@@ -33,8 +33,13 @@ class FileReference {
 
     @Override
     public String toString() {
-        return "FileReference [reference=" + reference + ", mimeType=" + mimeType
-                + ", conformanceClass=" + conformanceClass + "]";
+        return "FileReference [reference="
+                + reference
+                + ", mimeType="
+                + mimeType
+                + ", conformanceClass="
+                + conformanceClass
+                + "]";
     }
 
     @Override
@@ -49,29 +54,19 @@ class FileReference {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         FileReference other = (FileReference) obj;
         if (conformanceClass == null) {
-            if (other.conformanceClass != null)
-                return false;
-        } else if (!conformanceClass.equals(other.conformanceClass))
-            return false;
+            if (other.conformanceClass != null) return false;
+        } else if (!conformanceClass.equals(other.conformanceClass)) return false;
         if (mimeType == null) {
-            if (other.mimeType != null)
-                return false;
-        } else if (!mimeType.equals(other.mimeType))
-            return false;
+            if (other.mimeType != null) return false;
+        } else if (!mimeType.equals(other.mimeType)) return false;
         if (reference == null) {
-            if (other.reference != null)
-                return false;
-        } else if (!reference.equals(other.reference))
-            return false;
+            if (other.reference != null) return false;
+        } else if (!reference.equals(other.reference)) return false;
         return true;
     }
-
 }

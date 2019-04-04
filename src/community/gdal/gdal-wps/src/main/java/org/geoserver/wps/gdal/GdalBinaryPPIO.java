@@ -7,21 +7,19 @@ package org.geoserver.wps.gdal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.geoserver.wcs.response.GdalCoverageResponseDelegate;
 import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geotools.coverage.grid.GridCoverage2D;
 
-/**
- * Encode binary output parameter using gdal_translate command
- */
+/** Encode binary output parameter using gdal_translate command */
 public class GdalBinaryPPIO extends BinaryPPIO {
 
     private GdalCoverageResponseDelegate delegate;
     private String outputFormat;
     private String fileExtension;
 
-    protected GdalBinaryPPIO(String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
+    protected GdalBinaryPPIO(
+            String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
         super(GridCoverage2D.class, GridCoverage2D.class, mimeType);
         this.delegate = delegate;
         this.outputFormat = outputFormat;

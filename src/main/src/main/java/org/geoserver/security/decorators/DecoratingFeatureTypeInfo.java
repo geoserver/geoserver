@@ -8,7 +8,6 @@ package org.geoserver.security.decorators;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
@@ -23,9 +22,9 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.FeatureSource;
-import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
+import org.geotools.util.factory.Hints;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -33,12 +32,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
 /**
- * Delegates every method to the delegate feature type info. Subclasses will
- * override selected methods to perform their "decoration" job
- * 
+ * Delegates every method to the delegate feature type info. Subclasses will override selected
+ * methods to perform their "decoration" job
+ *
  * @author Andrea Aime
  */
-public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<FeatureTypeInfo> implements FeatureTypeInfo {
+public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<FeatureTypeInfo>
+        implements FeatureTypeInfo {
 
     public DecoratingFeatureTypeInfo(FeatureTypeInfo info) {
         super(info);
@@ -76,9 +76,9 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public Catalog getCatalog() {
         return delegate.getCatalog();
     }
-    
+
     public void setCatalog(Catalog catalog) {
-        delegate.setCatalog( catalog );
+        delegate.setCatalog(catalog);
     }
 
     public CoordinateReferenceSystem getCRS() {
@@ -92,7 +92,7 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public List<AttributeTypeInfo> attributes() throws IOException {
         return delegate.attributes();
     }
-    
+
     public FeatureType getFeatureType() throws IOException {
         return delegate.getFeatureType();
     }
@@ -137,10 +137,8 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public String getName() {
         return delegate.getName();
     }
-    
-    /**
-     * @see org.geoserver.catalog.ResourceInfo#getQualifiedName()
-     */
+
+    /** @see org.geoserver.catalog.ResourceInfo#getQualifiedName() */
     public Name getQualifiedName() {
         return delegate.getQualifiedName();
     }
@@ -161,9 +159,7 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getNativeName();
     }
 
-    /**
-     * @see org.geoserver.catalog.ResourceInfo#getQualifiedNativeName()
-     */
+    /** @see org.geoserver.catalog.ResourceInfo#getQualifiedNativeName() */
     public Name getQualifiedNativeName() {
         return delegate.getQualifiedNativeName();
     }
@@ -259,16 +255,16 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
-   
+
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
-    
+
     @Override
     public boolean isAdvertised() {
         return delegate.isAdvertised();
     }
-    
+
     @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
@@ -278,12 +274,12 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public List<String> getResponseSRS() {
         return delegate.getResponseSRS();
     }
-    
+
     @Override
     public boolean isOverridingServiceSRS() {
         return delegate.isOverridingServiceSRS();
     }
-    
+
     @Override
     public void setOverridingServiceSRS(boolean overridingServiceSRS) {
         delegate.setOverridingServiceSRS(overridingServiceSRS);
@@ -308,17 +304,17 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setLinearizationTolerance(Measure tolerance) {
         delegate.setLinearizationTolerance(tolerance);
     }
-    
+
     @Override
     public boolean isCircularArcPresent() {
-    	return delegate.isCircularArcPresent();
+        return delegate.isCircularArcPresent();
     }
-    
+
     @Override
     public void setCircularArcPresent(boolean enabled) {
-    	delegate.setCircularArcPresent(enabled);
+        delegate.setCircularArcPresent(enabled);
     }
-    
+
     @Override
     public String getCqlFilter() {
         return delegate.getCqlFilter();
@@ -329,4 +325,53 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         delegate.setCqlFilter(cqlFilter);
     }
 
+    @Override
+    public boolean getEncodeMeasures() {
+        return delegate.getEncodeMeasures();
+    }
+
+    @Override
+    public void setEncodeMeasures(boolean encodeMeasures) {
+        delegate.setEncodeMeasures(encodeMeasures);
+    }
+
+    @Override
+    public boolean getPadWithZeros() {
+        return delegate.getPadWithZeros();
+    }
+
+    @Override
+    public void setPadWithZeros(boolean padWithZeros) {
+        delegate.setPadWithZeros(padWithZeros);
+    }
+
+    @Override
+    public boolean getForcedDecimal() {
+        return delegate.getForcedDecimal();
+    }
+
+    @Override
+    public void setForcedDecimal(boolean forcedDecimal) {
+        delegate.setForcedDecimal(forcedDecimal);
+    }
+
+    @Override
+    public boolean isServiceConfiguration() {
+        return delegate.isServiceConfiguration();
+    }
+
+    @Override
+    public void setServiceConfiguration(boolean serviceConfiguration) {
+        delegate.setServiceConfiguration(serviceConfiguration);
+    }
+
+    @Override
+    public List<String> getDisabledServices() {
+        return delegate.getDisabledServices();
+    }
+
+    @Override
+    public void setDisabledServices(List<String> disabledServices) {
+        delegate.setDisabledServices(disabledServices);
+    }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2016 Open Source Geospatial Foundation. All rights reserved. 
+	This code is licensed under the GPL 2.0 license, available at the root application 
+	directory. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://www.springframework.org/schema/security" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+          http://www.springframework.org/schema/security/oauth2
+          http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd">
+
+	<bean class="org.geoserver.platform.ModuleStatusImpl">
+		<constructor-arg index="0" value="gs-sec-oauth2-github" />
+		<constructor-arg index="1" value="GeoServer Security OAuth2 GitHub" />
+	</bean>
+
+	<!-- OAuth2 Security Extension -->
+	<bean id="githubOAuth2TokenServices"
+		class="org.geoserver.security.oauth2.services.GitHubTokenServices">
+	</bean>
+
+	<bean id="githubOAuth2AuthenticationProvider"
+		class="org.geoserver.security.oauth2.GitHubOAuth2AuthenticationProvider">
+		<constructor-arg ref="authenticationManager" />
+		<constructor-arg value="githubOAuth2TokenServices" />
+		<constructor-arg value="githubOAuth2SecurityConfiguration" />
+		<constructor-arg value="githubOauth2RestTemplate" />
+	</bean>
+
+	<!-- ui auth provider panel info -->
+	<bean id="githubOAuth2AuthPanelInfo"
+		class="org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanelInfo">
+		<property name="id" value="security.GitHubOAuth2AuthProvider" />
+		<property name="shortTitleKey" value="GitHubOAuth2AuthProviderPanel.short" />
+		<property name="titleKey" value="GitHubOAuth2AuthProviderPanel.title" />
+		<property name="descriptionKey" value="GitHubOAuth2AuthProviderPanel.description" />
+	</bean>
+
+	<!-- login button -->
+ 	<bean id="githubFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+ 		<property name="id" value="githubFormLoginButton" />
+ 		<property name="titleKey" value="" />
+ 		<property name="descriptionKey" value="GitHubOAuth2AuthProviderPanel.description" />
+ 		<property name="componentClass" value="org.geoserver.web.security.oauth2.GitHubOAuth2AuthProviderPanel" />
+ 		<property name="name" value="github" />
+ 		<property name="icon" value="github.png" />
+ 		<property name="filterClass" value="org.geoserver.security.oauth2.GitHubOAuthAuthenticationFilter" />
+ 		<property name="loginPath" value="web/j_spring_oauth2_github_login" />
+ 	</bean>
+
+</beans>

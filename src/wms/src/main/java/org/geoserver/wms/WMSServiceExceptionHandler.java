@@ -8,10 +8,7 @@ package org.geoserver.wms;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
@@ -21,17 +18,16 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.AttributedString;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
@@ -45,58 +41,62 @@ import org.geotools.util.Version;
 /**
  * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
  * <code>ServiceExceptionReport</code> document.
+ *
  * <p>
- * <h3>Version</h3> By default this exception handler will output a
- * <code>ServiceExceptionReport</code> which is of version <code>1.2.0</code>. This may be overriden
- * with {@link #setVersion(String)}.
- * </p>
+ *
+ * <h3>Version</h3>
+ *
+ * By default this exception handler will output a <code>ServiceExceptionReport</code> which is of
+ * version <code>1.2.0</code>. This may be overriden with {@link #setVersion(String)}.
+ *
  * <p>
+ *
  * <h3>DTD and Schema</h3>
- * By default, no DTD or XML Schema reference will be included in the document. The methods
- * {@link #setDTDLocation(String)} and {@link #setSchemaLocation(String)} can be used to override
- * this behaviour. Only one of these methods should be set per instance of this class.
- * 
- * The supplied value should be relative to the web application context root.
- * </p>
+ *
+ * By default, no DTD or XML Schema reference will be included in the document. The methods {@link
+ * #setDTDLocation(String)} and {@link #setSchemaLocation(String)} can be used to override this
+ * behaviour. Only one of these methods should be set per instance of this class.
+ *
+ * <p>The supplied value should be relative to the web application context root.
+ *
  * <p>
+ *
  * <h3>Content Type</h3>
+ *
  * The default content type for the created document is <code>text/xml</code>, this can be
  * overridden with {@link #setContentType(String)}.
- * </p>
- * 
+ *
  * @author Justin Deoliveira
  * @author Gabriel Roldan
  * @author Carlo Cancellieri - GeoSolutions
- * 
  */
 public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
-    static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/png", "image/png8",
-            "image/gif", "image/jpeg"));
+    static final Set<String> FORMATS =
+            new HashSet<String>(
+                    Arrays.asList("image/png", "image/png8", "image/gif", "image/jpeg"));
 
-    /**
-     * Map from content type to ImageIO format name for {@link ImageIO#write}
-     */
-    static final Map<String, String> IMAGEIO_FORMATS = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put("image/png", "png");
-            put("image/png8", "png");
-            put("image/gif", "gif");
-            put("image/jpeg", "jpeg");
-        }
-    };
+    /** Map from content type to ImageIO format name for {@link ImageIO#write} */
+    static final Map<String, String> IMAGEIO_FORMATS =
+            new HashMap<String, String>() {
+                private static final long serialVersionUID = 1L;
+
+                {
+                    put("image/png", "png");
+                    put("image/png8", "png");
+                    put("image/gif", "gif");
+                    put("image/jpeg", "jpeg");
+                }
+            };
 
     private GeoServer geoServer;
 
     /**
      * Creates a new exception handler for WMS exceptions
-     * 
-     * @param services
-     *            the {@link WMSInfo}s this handler writes exceptions for
-     * @param geoServer
-     *            needed to know whether to write detailed exception reports or not (as per
-     *            {@code GeoServer.getGlobal().isVerbose()})
+     *
+     * @param services the {@link WMSInfo}s this handler writes exceptions for
+     * @param geoServer needed to know whether to write detailed exception reports or not (as per
+     *     {@code GeoServer.getGlobal().isVerbose()})
      */
     public WMSServiceExceptionHandler(List services, GeoServer geoServer) {
         super(services);
@@ -144,8 +144,15 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 bgcolor = (Color) request.getKvp().get("BGCOLOR");
                 transparent = (Boolean) request.getKvp().get("TRANSPARENT");
                 if (width > 0 && height > 0 && FORMATS.contains(format)) {
-                    handleImageException(exception, request, width, height, format, exceptions,
-                            bgcolor, transparent);
+                    handleImageException(
+                            exception,
+                            request,
+                            width,
+                            height,
+                            format,
+                            exceptions,
+                            bgcolor,
+                            transparent);
                     return;
                 } else {
                     // use default
@@ -170,35 +177,50 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 handleXmlException(exception, request);
             }
         } else {
-        	// use default
+            // use default
             handleXmlException(exception, request);
         }
     }
-    
+
     public static boolean isImageExceptionType(String exceptions) {
-        return "application/vnd.ogc.se_inimage".equals(exceptions) || "INIMAGE".equals(exceptions)
-                || "BLANK".equals(exceptions) || "application/vnd.ogc.se_blank".equals(exceptions);
+        return "application/vnd.ogc.se_inimage".equals(exceptions)
+                || "INIMAGE".equals(exceptions)
+                || "BLANK".equals(exceptions)
+                || "application/vnd.ogc.se_blank".equals(exceptions);
     }
-    
-    private void handleImageException(ServiceException exception, Request request, final int width,
-            final int height, final String format, String exceptionFormat, Color bgcolor, Boolean transparent) {
-       
-        if (("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat)) && bgcolor == null && Boolean.TRUE.equals(transparent)) {
+
+    private void handleImageException(
+            ServiceException exception,
+            Request request,
+            final int width,
+            final int height,
+            final String format,
+            String exceptionFormat,
+            Color bgcolor,
+            Boolean transparent) {
+
+        if (("BLANK".equals(exceptionFormat)
+                        || "application/vnd.ogc.se_blank".equals(exceptionFormat))
+                && bgcolor == null
+                && Boolean.TRUE.equals(transparent)) {
             bgcolor = new Color(0, 0, 0, 0);
         }
-        
+
         if (bgcolor == null) {
             bgcolor = Color.WHITE;
         }
-        
-        
+
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = (Graphics2D) img.getGraphics();
-        
+
         g.setColor(bgcolor);
+        g.addRenderingHints(
+                Collections.singletonMap(
+                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         g.fillRect(0, 0, img.getWidth(), img.getHeight());
-        
-        if (!("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat))) { //wms 1.3 only
+
+        if (!("BLANK".equals(exceptionFormat)
+                || "application/vnd.ogc.se_blank".equals(exceptionFormat))) { // wms 1.3 only
             g.setColor(Color.BLACK);
 
             // draw the exception text (give it a good offset so that it can be read
@@ -210,7 +232,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         g.dispose();
         try {
             final HttpServletResponse response = request.getHttpResponse();
-            if("image/png8".equals(format)) {
+            if ("image/png8".equals(format)) {
                 response.setContentType("image/png");
             } else {
                 response.setContentType(format);
@@ -219,30 +241,33 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             ImageIO.write(img, IMAGEIO_FORMATS.get(format), os);
             os.flush();
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
-                    e);
+            LOGGER.log(
+                    Level.INFO, "Problem writing exception information back to calling client:", e);
         }
     }
+
     public static boolean isPartialMapExceptionType(String exceptions) {
-        return "application/vnd.gs.wms_partial".equals(exceptions) 
+        return "application/vnd.gs.wms_partial".equals(exceptions)
                 || "PARTIALMAP".equals(exceptions);
     }
-    private void handlePartialMapException(ServiceException exception, Request request, String format) {
-        RenderedImageMap map = (RenderedImageMap) ((WMSPartialMapException)exception).getMap();
+
+    private void handlePartialMapException(
+            ServiceException exception, Request request, String format) {
+        RenderedImageMap map = (RenderedImageMap) ((WMSPartialMapException) exception).getMap();
         try {
             final HttpServletResponse response = request.getHttpResponse();
-            if("image/png8".equals(format)) {
+            if ("image/png8".equals(format)) {
                 response.setContentType("image/png");
             } else {
                 response.setContentType(format);
             }
-            
+
             final ServletOutputStream os = response.getOutputStream();
             ImageIO.write(map.getImage(), IMAGEIO_FORMATS.get(format), os);
             os.flush();
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
-                    e);
+            LOGGER.log(
+                    Level.INFO, "Problem writing exception information back to calling client:", e);
         }
     }
 
@@ -292,13 +317,13 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
         // xml schema location
         if ((schemaLocation != null) && (dtdLocation == null)) {
-            String fullSchemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()),
-                    schemaLocation);
+            String fullSchemaLocation =
+                    buildSchemaURL(baseURL(request.getHttpRequest()), schemaLocation);
 
             sb.append("xmlns=\"http://www.opengis.net/ogc\" ");
             sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-            sb.append("xsi:schemaLocation=\"http://www.opengis.net/ogc " + fullSchemaLocation
-                    + "\"");
+            sb.append(
+                    "xsi:schemaLocation=\"http://www.opengis.net/ogc " + fullSchemaLocation + "\"");
         }
 
         sb.append(">");
@@ -348,8 +373,8 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             // throw new RuntimeException(e);
             // Hmm, not much we can do here. I guess log the fact that we couldn't write out the
             // exception and be done with it...
-            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
-                    e);
+            LOGGER.log(
+                    Level.INFO, "Problem writing exception information back to calling client:", e);
         }
     }
 
@@ -383,17 +408,12 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
     /**
      * Paint the provided text onto the graphics wrapping words at the specified lineWidth.
-     * 
-     * @param g
-     *            the Graphics2D which will be used to draw the text
-     * @param text
-     *            the text to render
-     * @param lineWidth
-     *            the width of the area where words should be rendered
-     * @param startX
-     *            an offset from the left edge of the image to where text should start
-     * @param startY
-     *            an offset from the top edge of the image to where text should start
+     *
+     * @param g the Graphics2D which will be used to draw the text
+     * @param text the text to render
+     * @param lineWidth the width of the area where words should be rendered
+     * @param startX an offset from the left edge of the image to where text should start
+     * @param startY an offset from the top edge of the image to where text should start
      */
     void paintLines(Graphics2D g, String text, int lineWidth, int startX, int startY) {
         // split the text into lines, LineBreakMeasurer only lays out the single
@@ -431,7 +451,5 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 }
             }
         }
-
     }
-
 }

@@ -1,0 +1,56 @@
+<html>
+ <body>
+   <wicket:panel>
+    <ul>
+     <li>
+      <fieldset>
+        <ul>
+          <li>
+            <input id="layerDetailsCheck" type="checkbox" wicket:id="layerDetailsCheck" />
+            <label for="layerDetailsCheck"><wicket:message key="layerDetailsCheck"></wicket:message></label>
+          </li>            
+          <li>
+          <div id="layerDetailsContainer" wicket:id="layerDetailsContainer">
+            <ul>
+	          <li>
+	            <label for="layerType"><wicket:message key="layerType"></wicket:message></label>
+	            <select wicket:id="layerType" id="layerType" />
+	          </li>
+	          <li>
+	            <label for="defaultStyle"><wicket:message key="defaultStyle"></wicket:message></label>
+	            <select wicket:id="defaultStyle" id="defaultStyle" />
+	          </li>
+	          <li>
+	            <label for="allowedStyles"><wicket:message key="allowedStyles"></wicket:message></label>
+	            <span wicket:id="allowedStyles" id="allowedStyles"></span>
+	          </li>
+	          <li>
+	            <label for="cqlFilterRead"><wicket:message key="cqlFilterRead"></wicket:message></label>
+	            <textarea wicket:id="cqlFilterRead" id="cqlFilterRead" style="width: 50%; height:100px;"></textarea>
+	          </li>          
+	          <li>
+	            <label for="cqlFilterWrite"><wicket:message key="cqlFilterWrite"></wicket:message></label>
+	            <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite" style="width: 50%; height:100px;"></textarea>
+	          </li>
+	          <li>
+	            <label for="catalogMode"><wicket:message key="catalogMode"></wicket:message></label>
+	             <select wicket:id="catalogMode" id="catalogMode" />
+	          </li>
+	          <li>
+	            <label for="allowedArea"><wicket:message key="allowedArea"></wicket:message></label>
+	            <textarea wicket:id="allowedArea" id="allowedArea" style="width: 50%; height:100px;"></textarea>
+	          </li>
+	          <li>
+	             <label wicket:id="layerAttributesLabel"  for="layerAttributes"></label>
+	             <div wicket:id="layerAttributes" id="layerAttributes"></div>
+	          </li>
+	         </ul>  
+	       </div>
+	       </li>
+        </ul>
+      </fieldset>
+     </li>  
+    </ul>
+   </wicket:panel>
+ </body>
+</html>

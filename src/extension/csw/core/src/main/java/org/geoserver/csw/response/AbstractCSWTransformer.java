@@ -8,18 +8,15 @@ package org.geoserver.csw.response;
 import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.io.Writer;
-
 import javax.xml.transform.TransformerException;
-
 import net.opengis.cat.csw20.RequestBaseType;
-
 import org.geotools.xml.transform.TransformerBase;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Base class for CSW transformers
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractCSWTransformer extends TransformerBase {
@@ -34,7 +31,7 @@ public abstract class AbstractCSWTransformer extends TransformerBase {
         this.request = request;
         this.canonicalSchemaLocation = canonicalSchemaLocation;
     }
-    
+
     public void encode(CSWRecordsResult response, Writer writer) throws TransformerException {
         transform(response, writer);
     }
@@ -47,20 +44,21 @@ public abstract class AbstractCSWTransformer extends TransformerBase {
 
         protected void addAttribute(AttributesImpl attributes, String name, Object value) {
             if (value != null) {
-                attributes.addAttribute("", name, name, "",
+                attributes.addAttribute(
+                        "",
+                        name,
+                        name,
+                        "",
                         value instanceof String ? (String) value : String.valueOf(value));
             }
         }
 
-        protected  String cswSchemaLocation(String schema) {
+        protected String cswSchemaLocation(String schema) {
             if (canonicalSchemaLocation) {
                 return CSW_ROOT_LOCATION + schema;
             } else {
                 return buildSchemaURL(request.getBaseUrl(), "csw/2.0.2/" + schema);
             }
         }
-
-
     }
-
 }

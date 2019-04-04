@@ -7,6 +7,8 @@ package org.geoserver.wps.executor;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -17,9 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.opengis.wps10.ExecuteResponseType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.platform.GeoServerExtensions;
@@ -37,9 +37,9 @@ import org.geoserver.wps.process.GeoServerProcessors;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.data.Parameter;
+import org.geotools.data.util.SubProgressListener;
 import org.geotools.process.ProcessException;
 import org.geotools.process.ProcessFactory;
-import org.geotools.util.SubProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
@@ -53,12 +53,11 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
  * Manages the process runs for both synchronous and asynchronous processes
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
-public class WPSExecutionManager implements ApplicationContextAware,
-        ApplicationListener<ApplicationEvent> {
+public class WPSExecutionManager
+        implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOGGER = Logging.getLogger(WPSExecutionManager.class);
 
@@ -68,29 +67,19 @@ public class WPSExecutionManager implements ApplicationContextAware,
      */
     private ExecutorService executors = Executors.newCachedThreadPool();
 
-    /**
-     * Used to do run-time lookups of extension points
-     */
+    /** Used to do run-time lookups of extension points */
     ApplicationContext applicationContext;
 
-    /**
-     * The resource manager, the source of execution ids
-     */
+    /** The resource manager, the source of execution ids */
     private WPSResourceManager resourceManager;
 
-    /**
-     * The classes that will actually run the process once the inputs are parsed
-     */
-    private List<ProcessManager> processManagers;
+    /** The classes that will actually run the process once the inputs are parsed */
+    private volatile List<ProcessManager> processManagers;
 
-    /**
-     * Objects listening to the process lifecycles
-     */
+    /** Objects listening to the process lifecycles */
     private List<ProcessListener> listeners;
 
-    /**
-     * The HTTP connection timeout for remote resources
-     */
+    /** The HTTP connection timeout for remote resources */
     private int connectionTimeout;
 
     /**
@@ -99,27 +88,22 @@ public class WPSExecutionManager implements ApplicationContextAware,
      */
     private ProcessStatusTracker statusTracker;
 
-    /**
-     * The currently running processes
-     */
-    private Map<String, ProcessListenerNotifier> localProcesses = new ConcurrentHashMap<String, ProcessListenerNotifier>();
+    /** The currently running processes */
+    private Map<String, ProcessListenerNotifier> localProcesses =
+            new ConcurrentHashMap<String, ProcessListenerNotifier>();
 
-    /**
-     * The timer informing the status tracker of the currently executing processes
-     */
+    /** The timer informing the status tracker of the currently executing processes */
     private Timer heartbeatTimer;
 
-    /**
-     * The delay between one heartbeat and the next
-     */
+    /** The delay between one heartbeat and the next */
     private int heartbeatDelay;
 
-    /**
-     * Used to retrieve the current WPSInfo
-     */
+    /** Used to retrieve the current WPSInfo */
     private GeoServer geoServer;
 
-    public WPSExecutionManager(GeoServer geoServer, WPSResourceManager resourceManager,
+    public WPSExecutionManager(
+            GeoServer geoServer,
+            WPSResourceManager resourceManager,
             ProcessStatusTracker statusTracker) {
         this.resourceManager = resourceManager;
         this.statusTracker = statusTracker;
@@ -133,10 +117,9 @@ public class WPSExecutionManager implements ApplicationContextAware,
     /**
      * This call should only be used by process chaining to avoid deadlocking due to execution
      * threads starvation
-     * 
+     *
      * @param request
      * @param listener
-     *
      */
     Map<String, Object> submitChained(ExecuteRequest request, ProgressListener listener) {
         Name processName = request.getProcessName();
@@ -149,18 +132,17 @@ public class WPSExecutionManager implements ApplicationContextAware,
         float inputPercentage = inputsLongSteps * longStepPercentage;
         float executionPercentage = 100 - inputPercentage;
         inputs.setListener(new SubProgressListener(listener, inputPercentage));
-        ProgressListener executionListener = new SubProgressListener(listener, inputPercentage,
-                executionPercentage);
+        ProgressListener executionListener =
+                new SubProgressListener(listener, inputPercentage, executionPercentage);
         return processManager.submitChained(executionId, processName, inputs, executionListener);
     }
 
     /**
      * Process submission, not blocking. Returns an id that can be used to get the process status
      * and result later.
-     * 
-     * @param ExecuteType The request to be executed
-     * @param inputs The process inputs
-     * @return The execution id
+     *
+     * @param request The request to be executed
+     * @return The execution response
      * @throws ProcessException
      */
     public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
@@ -169,31 +151,71 @@ public class WPSExecutionManager implements ApplicationContextAware,
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);
-        LazyInputMap inputs = request.getProcessInputs(WPSExecutionManager.this);
-        ExecutionStatus status = new ExecutionStatus(processName, executionId,
-                request.isAsynchronous());
+        LazyInputMap inputs = request.getProcessInputs(this);
+        request.validateOutputs(inputs);
+        ExecutionStatus status =
+                new ExecutionStatus(processName, executionId, request.isAsynchronous());
         status.setRequest(request.getRequest());
         long maxExecutionTime = getMaxExecutionTime(synchronous);
         long maxTotalTime = getMaxTotalTime(synchronous);
-        Executor executor = new Executor(request, processManager, processName, inputs, synchronous,
-                status, resourceManager, maxExecutionTime, maxTotalTime);
+
+        // Estimate heuristically expiration dates, next status poll and estimated completion
+        WPSInfo wps = geoServer.getService(WPSInfo.class);
+
+        // Returns the resource expiration timeout (in seconds)
+        int resourceExpirationTimeout = wps.getResourceExpirationTimeout();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, resourceExpirationTimeout);
+        status.setExpirationDate(calendar.getTime());
+
+        // By default we estimate the completion as:
+        // "time elapsed / percentage completed"
+        // Therefore at this stage we cannot still have an idea about such estimation.
+        // We'll need to wait for the next poll / call to the ProcessListener
+        status.setEstimatedCompletion(null);
+
+        // By default, at the beginning, we'd suggest to make the next poll at least
+        // half of the maximum execution time (if > 0).
+        // Otherwise we will suggest a fixed number of 10 seconds for the next poll.
+        int nextPollTimeDelta = maxExecutionTime > 0 ? (int) maxExecutionTime / 2 : 10;
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, nextPollTimeDelta);
+        status.setNextPoll(new Date());
+        Executor executor =
+                new Executor(
+                        request,
+                        processManager,
+                        processName,
+                        inputs,
+                        synchronous,
+                        status,
+                        resourceManager,
+                        maxExecutionTime,
+                        maxTotalTime);
 
         ExecuteResponseType response;
         if (synchronous) {
             response = executor.call();
         } else {
-            LOGGER.log(Level.INFO, "Submitting new asynch process " + processName.getURI()
-                    + " with execution id " + executionId);
+            LOGGER.log(
+                    Level.INFO,
+                    "Submitting new asynch process "
+                            + processName.getURI()
+                            + " with execution id "
+                            + executionId);
             // building the response while the process is still "queued", will result in
             // ProcessAccepted in the response
             try {
                 resourceManager.storeRequestObject(request.getRequest(), executionId);
             } catch (IOException e) {
-                throw new WPSException("Failed to store original WPS request, which "
-                        + "will be needed to encode the output", e);
+                throw new WPSException(
+                        "Failed to store original WPS request, which "
+                                + "will be needed to encode the output",
+                        e);
             }
-            ExecuteResponseBuilder builder = new ExecuteResponseBuilder(request.getRequest(),
-                    applicationContext, status);
+            ExecuteResponseBuilder builder =
+                    new ExecuteResponseBuilder(request.getRequest(), applicationContext, status);
             response = builder.build();
             // now actually start the process
             executors.submit(executor);
@@ -238,22 +260,18 @@ public class WPSExecutionManager implements ApplicationContextAware,
             }
         }
 
-        throw new WPSException("Could not find a ProcessManager able to run this process: "
-                + processName);
+        throw new WPSException(
+                "Could not find a ProcessManager able to run this process: " + processName);
     }
 
-    /**
-     * Returns the HTTP connection timeout for remote resource fetching
-     * 
-     *
-     */
+    /** Returns the HTTP connection timeout for remote resource fetching */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
     /**
      * Sets the HTTP connection timeout for remote resource fetching
-     * 
+     *
      * @param connectionTimeout
      */
     public void setConnectionTimeout(int connectionTimeout) {
@@ -263,7 +281,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
     /**
      * Sets the heartbeat delay for the processes that are running (to make sure we tell the rest of
      * the cluster the process is actually still running, even if it does not update its status)
-     * 
+     *
      * @param i
      */
     public void setHeartbeatDelay(int heartbeatDelay) {
@@ -275,7 +293,6 @@ public class WPSExecutionManager implements ApplicationContextAware,
             heartbeatTimer = new Timer();
             heartbeatTimer.schedule(new HeartbeatTask(), heartbeatDelay);
         }
-
     }
 
     @Override
@@ -289,15 +306,15 @@ public class WPSExecutionManager implements ApplicationContextAware,
         if (event instanceof ContextRefreshedEvent) {
             if (executors == null) {
                 executors = Executors.newCachedThreadPool();
-            } else if (event instanceof ContextClosedEvent) {
-                executors.shutdownNow();
             }
+        } else if (event instanceof ContextClosedEvent) {
+            executors.shutdownNow();
         }
     }
 
     /**
      * Linearly runs input decoding, execution and output encoding
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     private final class Executor implements Callable<ExecuteResponseType> {
@@ -319,9 +336,16 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
         private long maxTotalTime;
 
-        private Executor(ExecuteRequest request, ProcessManager processManager, Name processName,
-                LazyInputMap inputs, boolean synchronous, ExecutionStatus status,
-                WPSResourceManager resources, long maxExecutionTime, long maxTotalTime) {
+        private Executor(
+                ExecuteRequest request,
+                ProcessManager processManager,
+                Name processName,
+                LazyInputMap inputs,
+                boolean synchronous,
+                ExecutionStatus status,
+                WPSResourceManager resources,
+                long maxExecutionTime,
+                long maxTotalTime) {
 
             this.request = request;
             this.processManager = processManager;
@@ -342,12 +366,13 @@ public class WPSExecutionManager implements ApplicationContextAware,
         }
 
         boolean hasComplexOutputs() {
-            ProcessFactory pf = GeoServerProcessors.createProcessFactory(request.getProcessName(), false);
-            Map<String, Parameter<?>> resultInfo = pf.getResultInfo(request.getProcessName(),
-                    inputs);
+            ProcessFactory pf =
+                    GeoServerProcessors.createProcessFactory(request.getProcessName(), false);
+            Map<String, Parameter<?>> resultInfo =
+                    pf.getResultInfo(request.getProcessName(), inputs);
             for (Parameter<?> param : resultInfo.values()) {
-                List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(param,
-                        applicationContext);
+                List<ProcessParameterIO> ppios =
+                        ProcessParameterIO.findAll(param, applicationContext);
                 for (ProcessParameterIO ppio : ppios) {
                     if (ppio instanceof ComplexPPIO) {
                         return true;
@@ -405,17 +430,22 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 inputs.setListener(new SubProgressListener(listener, 0, inputPercentage));
 
                 // submit
-                SubProgressListener executionListener = new SubProgressListener(listener,
-                        inputPercentage, executionPercentage);
+                SubProgressListener executionListener =
+                        new SubProgressListener(listener, inputPercentage, executionPercentage);
                 notifier.checkDismissed();
-                processManager.submit(status.getExecutionId(), status.getProcessName(), inputs,
-                        executionListener, status.isAsynchronous());
+                processManager.submit(
+                        status.getExecutionId(),
+                        status.getProcessName(),
+                        inputs,
+                        executionListener,
+                        status.isAsynchronous());
 
                 // grab the output (and get blocked waiting for it)
                 notifier.checkDismissed();
                 outputs = processManager.getOutput(status.getExecutionId(), -1);
                 if (status.getPhase() == ProcessState.RUNNING) {
-                    notifier.fireProgress(inputPercentage + executionPercentage,
+                    notifier.fireProgress(
+                            inputPercentage + executionPercentage,
                             "Execution completed, preparing to write response");
                 }
             } catch (ProcessDismissedException e) {
@@ -439,12 +469,16 @@ public class WPSExecutionManager implements ApplicationContextAware,
                     } else {
                         completedStatus.setPhase(ProcessState.FAILED);
                     }
-                    ExecuteResponseBuilder builder = new ExecuteResponseBuilder(
-                            status.getRequest(), applicationContext, completedStatus);
+                    ExecuteResponseBuilder builder =
+                            new ExecuteResponseBuilder(
+                                    status.getRequest(), applicationContext, completedStatus);
                     builder.setOutputs(outputs);
 
-                    ProgressListener outputListener = new SubProgressListener(listener,
-                            inputPercentage + executionPercentage, outputPercentage);
+                    ProgressListener outputListener =
+                            new SubProgressListener(
+                                    listener,
+                                    inputPercentage + executionPercentage,
+                                    outputPercentage);
                     result = builder.build(outputListener);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Failed writing out the results", e);
@@ -461,12 +495,15 @@ public class WPSExecutionManager implements ApplicationContextAware,
                         try {
                             // write out the final response to a file that will be kept there
                             // for GetExecutionStatus requests
-                            Resource output = resourceManager.getStoredResponse(status
-                                    .getExecutionId());
+                            Resource output =
+                                    resourceManager.getStoredResponse(status.getExecutionId());
                             try {
                                 if (status.getPhase() == ProcessState.RUNNING) {
-                                    notifier.fireProgress(inputPercentage + executionPercentage
-                                            + outputPercentage / 2, "Writing out response");
+                                    notifier.fireProgress(
+                                            inputPercentage
+                                                    + executionPercentage
+                                                    + outputPercentage / 2,
+                                            "Writing out response");
                                 }
                                 writeOutResponse(result, output);
                                 // just in case it got cancelled while we were writing the output
@@ -474,10 +511,12 @@ public class WPSExecutionManager implements ApplicationContextAware,
                             } catch (Exception e) {
                                 // maybe it was an exception during output encoding, try to write
                                 // out the error if possible
-                                LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
+                                LOGGER.log(
+                                        Level.SEVERE, "Request failed during output encoding", e);
                                 status.setException(e);
-                                ExecuteResponseBuilder builder = new ExecuteResponseBuilder(
-                                        status.getRequest(), applicationContext, status);
+                                ExecuteResponseBuilder builder =
+                                        new ExecuteResponseBuilder(
+                                                status.getRequest(), applicationContext, status);
                                 builder.setOutputs(null);
                                 result = builder.build();
                                 writeOutResponse(result, output);
@@ -485,9 +524,11 @@ public class WPSExecutionManager implements ApplicationContextAware,
                             }
                         } catch (Exception e) {
                             // ouch, this is bad, we can just log the output...
-                            LOGGER.log(Level.SEVERE,
+                            LOGGER.log(
+                                    Level.SEVERE,
                                     "Failed to write out the stored WPS response for executionId "
-                                            + status.getExecutionId(), e);
+                                            + status.getExecutionId(),
+                                    e);
                             notifier.fireFailed(e);
                             throw new WPSException("Execution failed while writing the outputs", e);
                         }
@@ -502,21 +543,23 @@ public class WPSExecutionManager implements ApplicationContextAware,
 
         void writeOutResponse(ExecuteResponseType response, Resource output) throws IOException {
             try (OutputStream os = output.out()) {
-                XmlObjectEncodingResponse encoder = new XmlObjectEncodingResponse(
-                        ExecuteResponseType.class, "ExecuteResponse", WPSConfiguration.class);
+                XmlObjectEncodingResponse encoder =
+                        new XmlObjectEncodingResponse(
+                                ExecuteResponseType.class,
+                                "ExecuteResponse",
+                                WPSConfiguration.class);
 
                 encoder.write(response, os, null);
                 LOGGER.log(Level.FINE, "Asynch process final response written to " + output.path());
             }
         }
-
     }
 
     /**
      * Touches the running processes, making sure we don't end up cleaning their resources by
      * mistake while they are still running (this is required for processes that are not reporting
      * progress)
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     private class HeartbeatTask extends TimerTask {
@@ -526,14 +569,12 @@ public class WPSExecutionManager implements ApplicationContextAware,
             for (String executionId : localProcesses.keySet()) {
                 statusTracker.touch(executionId);
             }
-
         }
-
     }
 
     /**
      * Cancels the execution of the given process, notifying the process managers if needs be
-     * 
+     *
      * @param executionId
      */
     public void cancel(String executionId) {
@@ -551,18 +592,17 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 status.setPhase(ProcessState.DISMISSING);
                 statusTracker.dismissing(new ProcessEvent(status, null, null));
             }
-            
+
             // did it manage to complete while we were notifying dismiss?
             status = statusTracker.getStatus(executionId);
-            if(!status.getPhase().isExecutionCompleted()) {
+            if (!status.getPhase().isExecutionCompleted()) {
                 return;
             }
-        } 
-        
+        }
+
         // alredy completed, clean it up
         ProcessEvent event = new ProcessEvent(status, null);
         statusTracker.dismissed(event);
         resourceManager.dismissed(event);
     }
-
 }

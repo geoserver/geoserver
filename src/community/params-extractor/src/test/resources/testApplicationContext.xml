@@ -6,8 +6,14 @@ application directory.
 -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    <bean id="dataDirectory" class="org.geoserver.platform.resource.FileSystemResourceStore">
+    <bean id="fileSystemResourceStore" class="org.geoserver.platform.resource.FileSystemResourceStore">
         <constructor-arg value="#{ systemProperties['java.io.tmpdir'] }/params-extractor-data-directory"/>
+    </bean>
+    <bean id="geoServerResourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+        <constructor-arg ref="fileSystemResourceStore"/>
+    </bean>
+    <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+        <constructor-arg ref="geoServerResourceLoader"/>
     </bean>
     <bean id="geoServerExtensions" class="org.geoserver.platform.GeoServerExtensions"/>
 </beans>

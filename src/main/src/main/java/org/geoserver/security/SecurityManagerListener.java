@@ -7,13 +7,11 @@ package org.geoserver.security;
 
 /**
  * Event listener for {@link GeoServerSecurityManager}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public interface SecurityManagerListener {
 
-    /**
-     * Event fired after a configuration change has been made.
-     */
+    /** Event fired after a configuration change has been made. */
     void handlePostChanged(GeoServerSecurityManager securityManager);
 }

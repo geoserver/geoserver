@@ -1,21 +1,24 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow.controller;
 
 import static org.junit.Assert.*;
 
 import javax.servlet.http.Cookie;
-
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
     @Test
     public void testCookieRateControl() {
-        RateFlowController controller = new RateFlowController(new OWSRequestMatcher(), 2,
-                Long.MAX_VALUE, 1000, new CookieKeyGenerator());
+        RateFlowController controller =
+                new RateFlowController(
+                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new CookieKeyGenerator());
 
         // run the first request
         Request firstRequest = buildCookieRequest(null);
@@ -23,8 +26,8 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         checkHeaders(firstRequest, "Any OGC request", 2, 1);
 
         // grab the cookie
-        Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies()[0];
+        Cookie cookie =
+                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -48,24 +51,26 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
     private void checkHeaders(Request request, String context, int limit, int remaining) {
         MockHttpServletResponse response = (MockHttpServletResponse) request.getHttpResponse();
         assertEquals(context, response.getHeader(RateFlowController.X_RATE_LIMIT_CONTEXT));
-        assertEquals(String.valueOf(limit),
-                response.getHeader(RateFlowController.X_RATE_LIMIT_LIMIT));
-        assertEquals(String.valueOf(remaining),
+        assertEquals(
+                String.valueOf(limit), response.getHeader(RateFlowController.X_RATE_LIMIT_LIMIT));
+        assertEquals(
+                String.valueOf(remaining),
                 response.getHeader(RateFlowController.X_RATE_LIMIT_REMAINING));
     }
 
     @Test
     public void testCookie429() {
-        RateFlowController controller = new RateFlowController(new OWSRequestMatcher(), 2,
-                Long.MAX_VALUE, 0, new CookieKeyGenerator());
+        RateFlowController controller =
+                new RateFlowController(
+                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new CookieKeyGenerator());
 
         // run the first request
         Request firstRequest = buildCookieRequest(null);
         assertTrue(controller.requestIncoming(firstRequest, Integer.MAX_VALUE));
 
         // grab the cookie
-        Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies()[0];
+        Cookie cookie =
+                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -78,13 +83,13 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         } catch (HttpErrorCodeException e) {
             assertEquals(429, e.getErrorCode());
         }
-
     }
 
     @Test
     public void testIpRateControl() {
-        RateFlowController controller = new RateFlowController(new OWSRequestMatcher(), 2,
-                Long.MAX_VALUE, 1000, new IpKeyGenerator());
+        RateFlowController controller =
+                new RateFlowController(
+                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new IpKeyGenerator());
 
         // run two requests
         Request request = buildIpRequest("127.0.0.1", "");
@@ -104,8 +109,9 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
     @Test
     public void testIp429() {
-        RateFlowController controller = new RateFlowController(new OWSRequestMatcher(), 2,
-                Long.MAX_VALUE, 0, new IpKeyGenerator());
+        RateFlowController controller =
+                new RateFlowController(
+                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new IpKeyGenerator());
 
         // run two requests
         Request request = buildIpRequest("127.0.0.1", "");
@@ -119,5 +125,4 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
             assertEquals(429, e.getErrorCode());
         }
     }
-
 }

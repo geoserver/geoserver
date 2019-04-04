@@ -12,13 +12,13 @@
 	<parent>
 		<groupId>org.geoserver.web</groupId>
 		<artifactId>gs-web-sec</artifactId>
-		<version>2.10-SNAPSHOT</version>
+		<version>2.16-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>gs-web-sec-ldap</artifactId>
 	<packaging>jar</packaging>
-	<version>2.10-SNAPSHOT</version>
+	<version>2.16-SNAPSHOT</version>
 	<name>Security UI LDAP Module</name>
 
   <dependencies>
@@ -46,11 +46,18 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>gs-security-tests</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
     <!--
-      bcprov-jdk14 must be before spring-ldap-test because the latter depends
+      bcprov-jdk15 must be before spring-ldap-test because the latter depends
       on apacheds-all, which repackages an unsigned bcprov-jdk5 security
       provider, which Oracle JDK 7 and 8 refuse to load, breaking the build on
-      those platforms. Placing the bcprov-jdk14 signed security provider here
+      those platforms. Placing the bcprov-jdk15 signed security provider here
       places it earlier on the classpath than the unsigned provider.
     -->
     <dependency>
@@ -62,6 +69,16 @@
       <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+          <exclusion>
+              <groupId>org.springframework.batch</groupId>
+              <artifactId>spring-batch-infrastructure</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>org.springframework.batch</groupId>
+              <artifactId>spring-batch-core</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>

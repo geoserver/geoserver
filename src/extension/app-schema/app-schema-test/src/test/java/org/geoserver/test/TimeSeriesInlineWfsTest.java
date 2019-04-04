@@ -8,55 +8,54 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
-import org.w3c.dom.Document;
-
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 /**
  * This is to test using isList to group multiple values as a concatenated single value without
  * feature chaining.
- * 
+ *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-
 public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
-    
+
     protected TimeSeriesInlineMockData createTestData() {
         // only the test data is different since the config is slightly different (not using feature
         // chaining)
         // but the test cases from TimeSeriesWfsTest are the same
         return new TimeSeriesInlineMockData();
-    }  
-       
-    /**
-     * Test subsetting timePositionList.
-     */
+    }
+
+    /** Test subsetting timePositionList. */
     @Test
     public void testTimePositionSubset() {
-        String xml = "<wfs:GetFeature "
-                + "service=\"WFS\" " //
-                + "version=\"1.1.0\" " //
-                + "outputFormat=\"gml32\" " //
-                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" " //
-                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
-                + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
-                + "xmlns:csml=\""
-                + TimeSeriesMockData.CSML_URI
-                + "\" " //
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
-                + "xsi:schemaLocation=\"" //
-                + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
-                + "\"" //
-                + ">" //
-                + "<wfs:Query typeName=\"csml:PointSeriesFeature\">"
-                + "    <ogc:Filter>"
-                + "        <ogc:PropertyIsBetween>"
-                + "             <ogc:PropertyName>csml:PointSeriesFeature/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList</ogc:PropertyName>"
-                + "             <ogc:LowerBoundary><ogc:Literal>1949-05-01</ogc:Literal></ogc:LowerBoundary>"
-                + "             <ogc:UpperBoundary><ogc:Literal>1949-09-01</ogc:Literal></ogc:UpperBoundary>"
-                + "        </ogc:PropertyIsBetween>" + "    </ogc:Filter>" + "</wfs:Query> "
-                + "</wfs:GetFeature>";
+        String xml =
+                "<wfs:GetFeature "
+                        + "service=\"WFS\" " //
+                        + "version=\"1.1.0\" " //
+                        + "outputFormat=\"gml32\" " //
+                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" " //
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                        + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
+                        + "xmlns:csml=\""
+                        + TimeSeriesMockData.CSML_URI
+                        + "\" " //
+                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
+                        + "xsi:schemaLocation=\"" //
+                        + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
+                        + "\"" //
+                        + ">" //
+                        + "<wfs:Query typeName=\"csml:PointSeriesFeature\">"
+                        + "    <ogc:Filter>"
+                        + "        <ogc:PropertyIsBetween>"
+                        + "             <ogc:PropertyName>csml:PointSeriesFeature/csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList</ogc:PropertyName>"
+                        + "             <ogc:LowerBoundary><ogc:Literal>1949-05-01</ogc:Literal></ogc:LowerBoundary>"
+                        + "             <ogc:UpperBoundary><ogc:Literal>1949-09-01</ogc:Literal></ogc:UpperBoundary>"
+                        + "        </ogc:PropertyIsBetween>"
+                        + "    </ogc:Filter>"
+                        + "</wfs:Query> "
+                        + "</wfs:GetFeature>";
         validate(xml);
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));
@@ -87,32 +86,34 @@ public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
     }
 
     @Override
-    /**
-     * Test filtering quantity list that is not feature chained.
-     */
+    /** Test filtering quantity list that is not feature chained. */
     @Test
     public void testQuantityListSubset() {
-        String xml = "<wfs:GetFeature "
-                + "service=\"WFS\" " //
-                + "version=\"1.1.0\" " //
-                + "outputFormat=\"gml32\" " //
-                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
-                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
-                + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
-                + "xmlns:csml=\""
-                + TimeSeriesMockData.CSML_URI
-                + "\" " //
-                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
-                + "xsi:schemaLocation=\"" //
-                + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
-                + "\"" //
-                + ">" //
-                + "<wfs:Query typeName=\"csml:PointSeriesFeature\">"
-                + "    <ogc:Filter>"
-                + "        <ogc:PropertyIsLike wildCard=\"*\" singleChar=\"#\" escapeChar=\"\\\">"
-                + "            <ogc:PropertyName>csml:PointSeriesFeature/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList</ogc:PropertyName>"
-                + "            <ogc:Literal>*16.2*</ogc:Literal>" + "        </ogc:PropertyIsLike>"
-                + "    </ogc:Filter>" + "</wfs:Query> " + "</wfs:GetFeature>";
+        String xml =
+                "<wfs:GetFeature "
+                        + "service=\"WFS\" " //
+                        + "version=\"1.1.0\" " //
+                        + "outputFormat=\"gml32\" " //
+                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                        + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
+                        + "xmlns:csml=\""
+                        + TimeSeriesMockData.CSML_URI
+                        + "\" " //
+                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
+                        + "xsi:schemaLocation=\"" //
+                        + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
+                        + "\"" //
+                        + ">" //
+                        + "<wfs:Query typeName=\"csml:PointSeriesFeature\">"
+                        + "    <ogc:Filter>"
+                        + "        <ogc:PropertyIsLike wildCard=\"*\" singleChar=\"#\" escapeChar=\"\\\">"
+                        + "            <ogc:PropertyName>csml:PointSeriesFeature/csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent/gml:QuantityList</ogc:PropertyName>"
+                        + "            <ogc:Literal>*16.2*</ogc:Literal>"
+                        + "        </ogc:PropertyIsLike>"
+                        + "    </ogc:Filter>"
+                        + "</wfs:Query> "
+                        + "</wfs:GetFeature>";
         validate(xml);
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info("WFS filter GetFeature response:\n" + prettyString(doc));

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage service="WCS" version="2.0.1"
+  xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:crs="http://www.opengis.net/spec/WCS_service-extension_crs/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd">
+
+  <wcs:CoverageId>nurc__mosaic</wcs:CoverageId>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>Long</wcs:Dimension>
+    <wcs:TrimLow>8</wcs:TrimLow>
+    <wcs:TrimHigh>10</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>Lat</wcs:Dimension>
+    <wcs:TrimLow>38.5</wcs:TrimLow>
+    <wcs:TrimHigh>43.5</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:Extension>
+    <crs:subsettingCrs>
+      http://www.opengis.net/def/crs/EPSG/0/4326
+    </crs:subsettingCrs>
+  </wcs:Extension>
+
+</wcs:GetCoverage>

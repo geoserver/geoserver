@@ -5,18 +5,15 @@
  */
 package org.geoserver.test;
 
-import org.w3c.dom.Document;
-
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 /**
  * Tests whether the use of special characters in a mapping name can be used for feature chaining
  * (using quotes in LinkElement).
- * 
+ *
  * @author Niels Charlier, Curtin University of Technology
- * 
  */
-
 public class MappingNameTest extends AbstractAppSchemaTestSupport {
 
     @Override
@@ -56,7 +53,5 @@ public class MappingNameTest extends AbstractAppSchemaTestSupport {
                 "value03",
                 "/wfs:FeatureCollection/gml:featureMember//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value[@codeSpace='codespace03']",
                 doc);
-
     }
-
 }

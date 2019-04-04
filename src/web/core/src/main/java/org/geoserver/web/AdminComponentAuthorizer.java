@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Authorizer that only allows access to the admin.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class AdminComponentAuthorizer implements ComponentAuthorizer {

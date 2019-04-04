@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ManifestLoader.AboutModel;
@@ -30,7 +29,7 @@ import org.springframework.util.Assert;
 
 /**
  * Tests for ManifestLoader, AboutModel and ManifestModel
- * 
+ *
  * @author Carlo Cancellieri - Geo-Solutions SAS
  */
 @Category(SystemTest.class)
@@ -74,10 +73,12 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         if (mm != null) {
             Assert.isTrue(mm.getName().matches(resourceName));
         } else {
-            LOGGER.log(Level.WARNING, "Unable to test with this resource name: " + resourceName
-                    + "\nNo resource found.");
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unable to test with this resource name: "
+                            + resourceName
+                            + "\nNo resource found.");
         }
-
     }
 
     @Test
@@ -87,15 +88,19 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         // extract first resource
         ManifestModel mm = resources.getManifests().first();
         if (mm == null) {
-            LOGGER.log(Level.WARNING, "Unable to test with this resource name: " + resourceName
-                    + "\nNo resource found.");
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unable to test with this resource name: "
+                            + resourceName
+                            + "\nNo resource found.");
             return;
         }
 
         // extract first property
         Iterator<Entry<String, String>> it = mm.getEntries().entrySet().iterator();
         if (!it.hasNext()) {
-            LOGGER.log(Level.WARNING,
+            LOGGER.log(
+                    Level.WARNING,
                     "Unable to test with this resource name which does not has properties.");
             return;
         }
@@ -127,15 +132,19 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         // extract first resource
         ManifestModel mm = resources.getManifests().first();
         if (mm == null) {
-            LOGGER.log(Level.WARNING, "Unable to test with this resource name: " + resourceName
-                    + "\nNo resource found.");
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unable to test with this resource name: "
+                            + resourceName
+                            + "\nNo resource found.");
             return;
         }
 
         // extract first property
         Iterator<Entry<String, String>> it = mm.getEntries().entrySet().iterator();
         if (!it.hasNext()) {
-            LOGGER.log(Level.WARNING,
+            LOGGER.log(
+                    Level.WARNING,
                     "Unable to test with this resource name which does not has properties.");
             return;
         }
@@ -174,11 +183,9 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * 
      * SubTests to check properties personalizations
-     * 
-     * @author Carlo Cancellieri - GeoSolutions
      *
+     * @author Carlo Cancellieri - GeoSolutions
      */
     @Category(SystemTest.class)
     @TestSetup(run = TestSetupFrequency.REPEAT)
@@ -189,15 +196,14 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         String propertyKey;
 
         @Override
-        protected void setUpTestData(SystemTestData testData) throws Exception {
-        }
-        
+        protected void setUpTestData(SystemTestData testData) throws Exception {}
+
         @Before
         public void paranoidCleanup() {
             // this file randomly shows up on the main module root and breaks the test
             // could not find where it's coming from, just going to remove it if it's there.
             File rootMonitor = new File(".", "manifest.properties");
-            if(rootMonitor.exists()) {
+            if (rootMonitor.exists()) {
                 rootMonitor.delete();
             }
         }
@@ -209,15 +215,19 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
             // extract first resource
             ManifestModel mm = resources.getManifests().first();
             if (mm == null) {
-                LOGGER.log(Level.WARNING, "Unable to test with this resource name: " + resourceName
-                        + "\nNo resource found.");
+                LOGGER.log(
+                        Level.WARNING,
+                        "Unable to test with this resource name: "
+                                + resourceName
+                                + "\nNo resource found.");
                 return;
             }
 
             // extract a property
             Iterator<Entry<String, String>> it = mm.getEntries().entrySet().iterator();
             if (!it.hasNext()) {
-                LOGGER.log(Level.WARNING,
+                LOGGER.log(
+                        Level.WARNING,
                         "Unable to test with this resource name which does not has properties.");
                 return;
             }
@@ -226,14 +236,17 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
             FileWriter writer = null;
             try {
-                properties = new File(testData.getDataDirectoryRoot(), ManifestLoader.PROPERTIES_FILE);
+                properties =
+                        new File(testData.getDataDirectoryRoot(), ManifestLoader.PROPERTIES_FILE);
 
                 writer = new FileWriter(properties);
-                writer.write(ManifestLoader.VERSION_ATTRIBUTE_INCLUSIONS + "=" + propertyKey + "\n");
+                writer.write(
+                        ManifestLoader.VERSION_ATTRIBUTE_INCLUSIONS + "=" + propertyKey + "\n");
                 writer.write(ManifestLoader.RESOURCE_ATTRIBUTE_EXCLUSIONS + "=" + propertyKey);
                 writer.flush();
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING,
+                LOGGER.log(
+                        Level.WARNING,
                         "Unable to write test data to:" + testData.getDataDirectoryRoot());
                 org.junit.Assert.fail(e.getLocalizedMessage());
             } finally {
@@ -289,6 +302,5 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 }
             }
         }
-
     }
 }

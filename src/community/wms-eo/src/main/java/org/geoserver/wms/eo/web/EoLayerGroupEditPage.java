@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.eo.web;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.StringResourceModel;
@@ -23,42 +22,47 @@ public class EoLayerGroupEditPage extends EoLayerGroupAbstractPage {
         String groupName = parameters.get(GROUP).toString();
         String wsName = parameters.get(WORKSPACE).toOptionalString();
 
-        LayerGroupInfo lg = wsName != null ? getCatalog().getLayerGroupByName(wsName, groupName) :  
-            getCatalog().getLayerGroupByName(groupName);
-        
-        if(lg == null) {
-            error(new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName).getString());
+        LayerGroupInfo lg =
+                wsName != null
+                        ? getCatalog().getLayerGroupByName(wsName, groupName)
+                        : getCatalog().getLayerGroupByName(groupName);
+
+        if (lg == null) {
+            error(
+                    new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName)
+                            .getString());
             doReturn(LayerGroupPage.class);
             return;
         }
-        
+
         initUI(lg);
 
         if (!isAuthenticatedAsAdmin()) {
-            Form f = (Form)get("form");
-    
-            //global layer groups only editable by full admin
+            Form f = (Form) get("form");
+
+            // global layer groups only editable by full admin
             if (lg.getWorkspace() == null) {
-                //disable all form components but cancel
-                f.visitChildren((component, visit) -> {
-                    if (!(component instanceof AbstractLink && "cancel".equals(component.getId()))) {
-                        component.setEnabled(false);
-                    }
-                    visit.dontGoDeeper();
-                });
+                // disable all form components but cancel
+                f.visitChildren(
+                        (component, visit) -> {
+                            if (!(component instanceof AbstractLink
+                                    && "cancel".equals(component.getId()))) {
+                                component.setEnabled(false);
+                            }
+                            visit.dontGoDeeper();
+                        });
                 f.get("save").setVisible(false);
-                
+
                 info(new StringResourceModel("globalLayerGroupReadOnly", this, null).getString());
             }
 
-            //always disable the workspace toggle
+            // always disable the workspace toggle
             f.get("workspace").setEnabled(false);
         }
     }
-    
+
     protected void onSubmit(LayerGroupInfo lg) {
-        getCatalog().save( lg );
+        getCatalog().save(lg);
         doReturn();
     }
-
 }

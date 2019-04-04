@@ -14,7 +14,9 @@ layouts are stored in a subdirectory called ``layouts`` in the :ref:`datadir` as
 Each layout file must have the extension ``.xml``.  Once a layout ``foo.xml`` is defined, users can request it by
 adding ``&format_options=layout:foo`` to the request parameters.
 
-Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements. 
+Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements.
+The order of the decoration elements is the order they are drawn so, in case they are overlapping, the first one will appear under the others.
+
 Each decoration element has several attributes:
 
 .. list-table::
@@ -73,6 +75,11 @@ document.
      - the background color for the text.  supports RGB or RGBA colors specified as hex values.
    * - ``fgcolor``
      - the color for the text and border.  follows the color specification from bgcolor.
+   * - ``format``
+     - the number format pattern, specified using Java own `DecimalFormat <https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_ syntax
+   * - ``formatLanguage``
+     - the language used to drive number formatting (applies only if also ``format`` is used), using a valid Java `Locale <https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html>`_
+     
 
 The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing the scale of the map in world units.  
 

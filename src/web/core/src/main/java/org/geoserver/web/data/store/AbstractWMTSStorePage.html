@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+  <ul>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
+        <div wicket:id="workspacePanel"></div>
+        <div wicket:id="namePanel"></div>
+        <div wicket:id="descriptionPanel"></div>
+        <div wicket:id="enabledPanel"></div>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="connectionInfo">Connection Info</wicket:message></span></legend>
+        <div wicket:id="capabilitiesURL"></div>
+        <div wicket:id="userNamePanel"></div>
+        <div wicket:id="passwordPanel"></div>
+        <div wicket:id="headerNamePanel"></div>
+        <div wicket:id="headerValuePanel"></div>
+        <div wicket:id="useConnectionPoolingPanel"></div>
+        <div wicket:id="maxConnectionsPanel"></div>
+        <div wicket:id="connectTimeoutPanel"></div>
+        <div wicket:id="readTimeoutPanel"></div>
+      </fieldset>
+    </li>
+  </ul>
+
+    <div wicket:id="feedback"></div>
+    <div class="button-group selfclear">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+  </form>
+  
+  <div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

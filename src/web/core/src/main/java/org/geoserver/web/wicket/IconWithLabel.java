@@ -13,9 +13,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  * A panel which encapsulates an image next to a label.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
- * 
  */
 @SuppressWarnings("serial")
 public class IconWithLabel extends Panel {
@@ -23,21 +22,17 @@ public class IconWithLabel extends Panel {
 
     protected Label label;
 
-    /**
-     * Constructs the panel with a link containing an image and a label.
-     */
-    public IconWithLabel(final String id, final PackageResourceReference imageRef,
+    /** Constructs the panel with a link containing an image and a label. */
+    public IconWithLabel(
+            final String id,
+            final PackageResourceReference imageRef,
             final IModel<String> labelModel) {
         super(id);
         add(image = new Image("image", imageRef));
         add(label = new Label("label", labelModel));
     }
 
-    /**
-     * Returns the image contained in this panel (allows playing with its attributes)
-     * 
-     *
-     */
+    /** Returns the image contained in this panel (allows playing with its attributes) */
     public Image getImage() {
         return image;
     }
@@ -45,11 +40,8 @@ public class IconWithLabel extends Panel {
     /**
      * Returns the label wrapped by the {@link IconWithLabel} panel (allows playing with its
      * attributes)
-     * 
-     *
      */
     public Label getLabel() {
         return label;
     }
-
 }

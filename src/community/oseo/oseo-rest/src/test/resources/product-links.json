@@ -1,0 +1,18 @@
+{
+  "links": [
+     {
+       "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+       "method": "GET",
+       "code": "GetCapabilities",
+       "type": "application/xml",
+       "href": "${BASE_URL}/SENTINEL2/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities"
+     },
+     {
+       "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+       "method": "GET",
+       "code": "GetMap",
+       "type": "image/jpeg",
+       "href": "${BASE_URL}/SENTINEL2/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=landsat8%3ALS8_RGB&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
+     }
+  ]
+}

@@ -9,20 +9,16 @@ import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
-/**
- * 
- * @author Niels Charlier
- * 
- */
+/** @author Niels Charlier */
 public class DataReferenceWmsOracleWithJoiningTest extends DataReferenceWmsOnlineTest {
 
     public DataReferenceWmsOracleWithJoiningTest() throws Exception {
         super();
-    }    
-    
+    }
+
     @Override
     protected AppSchemaWmsReferenceMockData createTestData() {
-    	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
+        AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("simplelithology", "styles/cgi-simplelithology-2008.sld");
         mockData.addStyle("stratchart", "styles/ics-stratchart-2008.sld");

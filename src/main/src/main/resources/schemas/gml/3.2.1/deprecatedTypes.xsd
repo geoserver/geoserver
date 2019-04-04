@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:deprecatedTypes:3.2.1">deprecatedTypes.xsd</appinfo>
-		<documentation>All global schema components that are part of the GML schema, but were deprecated. See Annex I.</documentation>
+		<documentation>All global schema components that are part of the GML schema, but were deprecated. See Annex I.
+			
+			GML is an OGC Standard.
+			Copyright (c) 2007,2010 Open Geospatial Consortium.
+			To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
 	<include schemaLocation="gml.xsd"/>
 	<element name="Null" type="gml:NilReasonType">

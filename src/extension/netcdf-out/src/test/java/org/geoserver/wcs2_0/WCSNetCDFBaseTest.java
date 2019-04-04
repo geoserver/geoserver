@@ -7,7 +7,6 @@ package org.geoserver.wcs2_0;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
@@ -21,13 +20,19 @@ public class WCSNetCDFBaseTest extends WCSKVPTestSupport {
         File projectionFileDir = new File(testData.getDataDirectoryRoot(), "user_projections");
         if (!projectionFileDir.mkdir()) {
             FileUtils.deleteDirectory(projectionFileDir);
-            assertTrue("Unable to create projection dir: " + projectionFileDir, projectionFileDir.mkdir());
+            assertTrue(
+                    "Unable to create projection dir: " + projectionFileDir,
+                    projectionFileDir.mkdir());
         }
-        testData.copyTo(getClass().getResourceAsStream(netcdfProjectionsDefinition), 
-            "user_projections/" + netcdfProjectionsDefinition);
+        testData.copyTo(
+                getClass().getResourceAsStream(netcdfProjectionsDefinition),
+                "user_projections/" + netcdfProjectionsDefinition);
         final File projectionFile = new File(projectionFileDir, netcdfProjectionsDefinition);
-        System.setProperty(NetCDFCRSAuthorityFactory.SYSTEM_DEFAULT_USER_PROJ_FILE, projectionFile.getCanonicalPath());
-        testData.copyTo(getClass().getResourceAsStream("reduced-cf-standard-name-table.xml"), "cf-standard-name-table.xml");
+        System.setProperty(
+                NetCDFCRSAuthorityFactory.SYSTEM_DEFAULT_USER_PROJ_FILE,
+                projectionFile.getCanonicalPath());
+        testData.copyTo(
+                getClass().getResourceAsStream("reduced-cf-standard-name-table.xml"),
+                "cf-standard-name-table.xml");
     }
-
 }

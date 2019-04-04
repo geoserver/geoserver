@@ -14,9 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -32,20 +30,20 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataStore;
 
 /**
  * Proxy for {@link CatalogInfo} concrete interfaces used to notify the local cluster member of
  * objects removed on another member.
- * <p>
- * The only methods proxied are {@link CatalogInfo#getId() getId()}, {@code getName()} for the ones
- * that have such a method, and {@link CatalogInfo#accept(CatalogVisitor)}.
- * <p>
- * {@code accept(CatalogVisitor)} is crucial for the {@link ResourcePool} catalog listener to be
- * able of disposing locally cached resources such as {@link DataStore} instances.
  *
+ * <p>The only methods proxied are {@link CatalogInfo#getId() getId()}, {@code getName()} for the
+ * ones that have such a method, and {@link CatalogInfo#accept(CatalogVisitor)}.
+ *
+ * <p>{@code accept(CatalogVisitor)} is crucial for the {@link ResourcePool} catalog listener to be
+ * able of disposing locally cached resources such as {@link DataStore} instances.
  */
 class RemovedObjectProxy implements InvocationHandler {
 
@@ -58,11 +56,16 @@ class RemovedObjectProxy implements InvocationHandler {
     private final Map<String, CatalogInfo> catalogCollaborators;
 
     private String nativeName;
-    
+
     public RemovedObjectProxy(String id, String name, Class<? extends Info> infoInterface) {
         this(id, name, infoInterface, null);
     }
-    public RemovedObjectProxy(String id, String name, Class<? extends Info> infoInterface, @Nullable String nativeName) {
+
+    public RemovedObjectProxy(
+            String id,
+            String name,
+            Class<? extends Info> infoInterface,
+            @Nullable String nativeName) {
         checkNotNull(id, "id");
         checkNotNull(name, "name");
         checkNotNull(infoInterface, "infoInterface");
@@ -74,16 +77,17 @@ class RemovedObjectProxy implements InvocationHandler {
         this.catalogCollaborators = new HashMap<String, CatalogInfo>();
     }
 
-	/**
-	 * Makes the proxy return a catalog object
-	 * @param property 
-	 * @param id
-	 */
+    /**
+     * Makes the proxy return a catalog object
+     *
+     * @param property
+     * @param id
+     */
     public void addCatalogCollaborator(String property, CatalogInfo info) {
-    	String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
-    	catalogCollaborators.put(accessor, info);
+        String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
+        catalogCollaborators.put(accessor, info);
     }
-    
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("getid".equalsIgnoreCase(method.getName())) {
@@ -98,11 +102,11 @@ class RemovedObjectProxy implements InvocationHandler {
         if ("accept".equals(method.getName())) {
             proxyVisitory(proxy, method, (CatalogVisitor) args[0]);
         }
-        
+
         if (catalogCollaborators.containsKey(method.getName())) {
-        	return catalogCollaborators.get(method.getName());
+            return catalogCollaborators.get(method.getName());
         }
-        
+
         Class<?> returnType = method.getReturnType();
         if (List.class.isAssignableFrom(returnType)) {
             return Collections.EMPTY_LIST;
@@ -122,12 +126,16 @@ class RemovedObjectProxy implements InvocationHandler {
             catalogVisitor.visit((FeatureTypeInfo) proxy);
         } else if (WMSLayerInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((WMSLayerInfo) proxy);
+        } else if (WMTSLayerInfo.class.equals(infoInterface)) {
+            catalogVisitor.visit((WMTSLayerInfo) proxy);
         } else if (CoverageStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((CoverageStoreInfo) proxy);
         } else if (DataStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((DataStoreInfo) proxy);
         } else if (WMSStoreInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((WMSStoreInfo) proxy);
+        } else if (WMTSStoreInfo.class.equals(infoInterface)) {
+            catalogVisitor.visit((WMTSStoreInfo) proxy);
         } else if (StyleInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((StyleInfo) proxy);
         } else if (LayerInfo.class.equals(infoInterface)) {
@@ -141,15 +149,18 @@ class RemovedObjectProxy implements InvocationHandler {
 
     @Override
     public String toString() {
-        return "RemovedObjectProxy[(" + infoInterface.getSimpleName() + "[id=" + id + ", name="
-                + name + "]]";
+        return "RemovedObjectProxy[("
+                + infoInterface.getSimpleName()
+                + "[id="
+                + id
+                + ", name="
+                + name
+                + "]]";
     }
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
-		
-	}
-
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
+    }
 }

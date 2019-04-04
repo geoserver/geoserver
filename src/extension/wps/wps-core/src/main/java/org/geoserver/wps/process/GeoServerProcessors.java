@@ -8,7 +8,6 @@ package org.geoserver.wps.process;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
@@ -21,9 +20,8 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * GeoServer replacement for GeoTools's {@link Processors} class, it allow {@link ProcessFilter} to
  * be taken into account before creating factories and processes
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class GeoServerProcessors implements ApplicationContextAware {
 
@@ -37,7 +35,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
     /**
      * Set of available ProcessFactory, each eventually wrapped or filtered out by the registered
      * {@link ProcessFilter}
-     * 
+     *
      * @return Set of ProcessFactory
      */
     public static Set<ProcessFactory> getProcessFactories() {
@@ -59,7 +57,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
         if (pf == null) {
             return null;
         }
-        if(filters != null) {
+        if (filters != null) {
             for (ProcessFilter filter : filters) {
                 pf = filter.filterFactory(pf);
                 if (pf == null) {
@@ -72,12 +70,12 @@ public class GeoServerProcessors implements ApplicationContextAware {
 
     /**
      * Look up a Factory by name of a process it supports.
-     * 
+     *
      * @param name Name of the Process you wish to work with
      * @param applyFilters Whether to apply the available {@link ProcessFilter} to the returned
-     *        factory, or not (if the code needs to check the original process factory by class name
-     *        for example, better not to apply the filters, which often wrap the factories to add
-     *        extra functionality)
+     *     factory, or not (if the code needs to check the original process factory by class name
+     *     for example, better not to apply the filters, which often wrap the factories to add extra
+     *     functionality)
      * @return ProcessFactory capable of creating an instanceof the named process
      */
     public static ProcessFactory createProcessFactory(Name name, boolean applyFilters) {
@@ -92,42 +90,42 @@ public class GeoServerProcessors implements ApplicationContextAware {
         }
         return pf;
     }
-    
+
     /**
      * Look up an implementation of the named process.
+     *
      * @param name Name of the Process to create
      * @return created process or null if not found
      */
-    public static Process createProcess(Name name){
-        ProcessFactory factory = createProcessFactory( name, false );
-        if( factory == null ) return null;
-        
+    public static Process createProcess(Name name) {
+        ProcessFactory factory = createProcessFactory(name, false);
+        if (factory == null) return null;
+
         return factory.create(name);
     }
-    
+
     /**
-     * Returns the process factory instance corresponding to the specified class. 
+     * Returns the process factory instance corresponding to the specified class.
+     *
      * @param factoryClass The factory to look for
      * @param applyFilters Whether to apply the registered {@link ProcessFilter} instances, or not
-     *
      */
     public static ProcessFactory getProcessFactory(Class factoryClass, boolean applyFilters) {
         Set<ProcessFactory> factories = Processors.getProcessFactories();
         for (ProcessFactory pf : factories) {
-            if(factoryClass.equals(pf.getClass())) {
-                if(!applyFilters) {
+            if (factoryClass.equals(pf.getClass())) {
+                if (!applyFilters) {
                     return pf;
                 } else {
                     // scan filters and let them wrap as necessary
                     pf = applyFilters(pf);
-                    
+
                     return pf;
                 }
             }
         }
-        
+
         // not found
         return null;
     }
-
 }

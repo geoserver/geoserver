@@ -7,35 +7,25 @@ package org.geoserver.platform;
 
 import java.lang.reflect.Method;
 
-
 /**
  * An operation descriptor providing metadata about a service operation.
- * <p>
- * An operation is identified by an id,service pair. Two operation
- * descriptors are considred equal if they have the same id, service pair.
- * </p>
+ *
+ * <p>An operation is identified by an id,service pair. Two operation descriptors are considred
+ * equal if they have the same id, service pair.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public final class Operation {
-    /**
-     * Unique identifier withing service of the operation.
-     */
+    /** Unique identifier withing service of the operation. */
     final String id;
 
-    /**
-     * Service this operation is a component of.
-     */
+    /** Service this operation is a component of. */
     final Service service;
 
-    /**
-     * The method implementing the operation
-     */
+    /** The method implementing the operation */
     final Method method;
 
-    /**
-     * Parameters of the operation
-     */
+    /** Parameters of the operation */
     final Object[] parameters;
 
     /**
@@ -45,7 +35,6 @@ public final class Operation {
      * @param service The service containing the operation, must not be <code>null</code>
      * @param method THe method implementing the operation.
      * @param parameters The parameters of the operation, may be <code>null</code>
-     *
      */
     public Operation(String id, Service service, Method method, Object[] parameters) {
         this.id = id;
@@ -62,30 +51,22 @@ public final class Operation {
         }
     }
 
-    /**
-     * @return The id of the operation.
-     */
+    /** @return The id of the operation. */
     public String getId() {
         return id;
     }
 
-    /**
-     * @return The service implementing the operation.
-     */
+    /** @return The service implementing the operation. */
     public Service getService() {
         return service;
     }
 
-    /**
-     * @return The method implementing the operation.
-     */
+    /** @return The method implementing the operation. */
     public Method getMethod() {
         return method;
     }
 
-    /**
-     * @return The parameters supplied to the operation
-     */
+    /** @return The parameters supplied to the operation */
     public Object[] getParameters() {
         return parameters;
     }

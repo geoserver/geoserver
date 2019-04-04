@@ -1,0 +1,128 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <table>
+    <thead>
+      <tr>
+          <th><span class="noshow"><wicket:message key="data">Data</wicket:message></span></th>
+          <th><span class="noshow"><wicket:message key="value">Value</wicket:message></span></th>
+          <th class="actions"><wicket:message key="action">Action</wicket:message></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="dataDir">datadir</wicket:message></th>
+          <td wicket:id="dataDir">/home/user/gs/dataDir</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="locks">Locks</wicket:message></th>
+          <td wicket:id="locks">0</td>
+          <td class="actions"><div class="button-group selfclear"><a href="#" wicket:id="free.locks"><wicket:message key="freeLocks">Free Locks</wicket:message></a></div></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="connections">Connections</wicket:message></th>
+          <td wicket:id="connections">17</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="memory">Memory</wicket:message></th>
+          <td wicket:id="memory">337825K</td>
+          <td class="actions"><div class="button-group selfclear"><a href="#" wicket:id="free.memory"><wicket:message key="freeMemory">Free Memory</wicket:message></a></div></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="jvmVersion">JVM Version</wicket:message></th>
+          <td><span wicket:id="jvm.version">Sun Microsystems Inc.: 1.6.0_03</span></td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="javaRenderer">Java Rendering Engine</wicket:message></th>
+          <td wicket:id="renderer">N/A</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="availableFonts">fonts</wicket:message></th>
+          <td><span wicket:id="fontCount"></span><a href="#" wicket:id="show.fonts"><wicket:message key="availableFontsList">Available Fonts</wicket:message></a></td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="NativeJAIAvailable">Native JAI</wicket:message></th>
+          <td wicket:id="jai.available">true</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="NativeJAIImageIOAvailable">Native JAI ImageIO</wicket:message></th>
+          <td wicket:id="jai.imageio.available">true</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="jaiMemMax">JAI Memory Capacity</wicket:message></th>
+          <td wicket:id="jai.memory.available">466048K</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="jaiMemUsed">JAI Memory Used</wicket:message></th>
+          <td wicket:id="jai.memory.used">0K</td>
+          <td class="actions"><div class="button-group selfclear"><a href="#" wicket:id="free.memory.jai"><wicket:message key="freeMemory">Free Memory</wicket:message></a></div></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="jaiMemThres">JAI Memory Threshold</wicket:message></th>
+          <td wicket:id="jai.memory.threshold">75.0%</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="jaiTileThreads">JAI Tile Threads</wicket:message></th>
+          <td wicket:id="jai.tile.threads">7</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="jaiTilePrio">JAI Thread Priority</wicket:message></th>
+          <td wicket:id="jai.tile.priority">5 (1 - Min, 5 - Normal; 10 - Max)</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="corePoolSize">ThreadPoolExecutor Core Pool Size</wicket:message></th>
+          <td wicket:id="coverage.corepoolsize">5</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="maxPoolSize">ThreadPoolExecutor Max Pool Size</wicket:message></th>
+          <td wicket:id="coverage.maxpoolsize">10</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="keepAliveTime">ThreadPoolExecutor Keep Alive Time (ms)</wicket:message></th>
+          <td wicket:id="coverage.keepalivetime">30000</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="updateSequence">Update Sequence</wicket:message></th>
+          <td wicket:id="updateSequence">N/A</td>
+          <td class="actions"></td>
+      </tr>
+      <tr class="odd">
+          <th scope="row"><wicket:message key="resourceCache">Resource Cache</wicket:message></th>
+          <td></td>
+          <td class="actions">
+            <div class="button-group selfclear">
+              <a href="#" wicket:id="clear.resourceCache"><wicket:message key="clear">Clear</wicket:message>
+              </a>
+            </div>
+          </td>
+      </tr>
+      <tr class="even">
+          <th scope="row"><wicket:message key="catalogConfig">Catalog and configuration</wicket:message></th>
+          <td></td>
+          <td class="actions">
+            <div class="button-group selfclear">
+              <a href="#" wicket:id="reload.catalogConfig"><wicket:message key="reload">Reload</wicket:message>
+              </a>
+            </div>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+</wicket:panel>
+</body>
+</html>

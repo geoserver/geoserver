@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -26,7 +25,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wps.resource.WPSResourceManager;
-import org.geotools.data.DataUtilities;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.process.ProcessException;
@@ -36,6 +34,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -50,23 +49,17 @@ public class MBTilesProcess implements GSProcess {
 
     private static final Logger LOGGER = Logging.getLogger(MBTilesProcess.class);
 
-    /**
-     * GeoServer catalog
-     */
+    /** GeoServer catalog */
     private Catalog catalog;
 
-    /**
-     * {@link WPSResourceManager} used for cleaning temporary files
-     */
+    /** {@link WPSResourceManager} used for cleaning temporary files */
     private WPSResourceManager resources;
 
-    /**
-     * {@link MBTilesGetMapOutputFormat} instance used for creating the MBTiles file
-     */
+    /** {@link MBTilesGetMapOutputFormat} instance used for creating the MBTiles file */
     private MBTilesGetMapOutputFormat mapOutput;
 
-    public MBTilesProcess(Catalog catalog, MBTilesGetMapOutputFormat mapOutput,
-            WPSResourceManager storage) {
+    public MBTilesProcess(
+            Catalog catalog, MBTilesGetMapOutputFormat mapOutput, WPSResourceManager storage) {
         this.resources = storage;
         this.mapOutput = mapOutput;
         this.catalog = catalog;
@@ -81,31 +74,98 @@ public class MBTilesProcess implements GSProcess {
                 return tempDir;
             }
         }
-        throw new IllegalStateException("Failed to create directory within " + TEMP_DIR_ATTEMPTS
-                + " attempts (tried " + baseName + "0 to " + baseName + (TEMP_DIR_ATTEMPTS - 1)
-                + ')');
+        throw new IllegalStateException(
+                "Failed to create directory within "
+                        + TEMP_DIR_ATTEMPTS
+                        + " attempts (tried "
+                        + baseName
+                        + "0 to "
+                        + baseName
+                        + (TEMP_DIR_ATTEMPTS - 1)
+                        + ')');
     }
 
     @DescribeResult(name = "mbtile", description = "Link to Compiled MBTiles File")
     public URL execute(
-            @DescribeParameter(name = "layers", description = "Name of the input layer", collectionType = String.class) Collection<String> layerz,
+            @DescribeParameter(
+                        name = "layers",
+                        description = "Name of the input layer",
+                        collectionType = String.class
+                    )
+                    Collection<String> layerz,
             @DescribeParameter(name = "format", description = "Tiles format") String format,
-            @DescribeParameter(name = "boundingbox", description = "Bounding Box of the final MBTile", min = 0) ReferencedEnvelope boundingbox,
-            @DescribeParameter(name = "filename", description = "Name of the .mbtile file", min = 0) String filename,
-            @DescribeParameter(name = "path", description = "Path to the directory where the .mbtile file can be stored ", min = 0) URL path,
-            @DescribeParameter(name = "minZoom", description = "Minimum Zoom level to generate", min = 0) Integer minZoom,
-            @DescribeParameter(name = "maxZoom", description = "Maximum Zoom level to generate", min = 0) Integer maxZoom,
-            @DescribeParameter(name = "minRow", description = "Minimum Row to generate", min = 0) Integer minRow,
-            @DescribeParameter(name = "maxRow", description = "Maximum Row to generate", min = 0) Integer maxRow,
-            @DescribeParameter(name = "minColumn", description = "Minimum Column to generate", min = 0) Integer minColumn,
-            @DescribeParameter(name = "maxColumn", description = "Maximum Column to generate", min = 0) Integer maxColumn,
-            @DescribeParameter(name = "bgColor", description = "Background color", min = 0) String bgColor,
-            @DescribeParameter(name = "transparency", description = "Transparency enabled or not", min = 0, defaultValue = "false") Boolean transparency,
-            @DescribeParameter(name = "styleNames", description = "Name of the styles to use", min = 0, collectionType = String.class) Collection<String> styleNames,
-            @DescribeParameter(name = "stylePath", description = "Path of the style to use", min = 0) URL stylePath,
-            @DescribeParameter(name = "styleBody", description = "Body of the style to use", min = 0) String styleBody)
-            throws IOException { 
-        
+            @DescribeParameter(
+                        name = "boundingbox",
+                        description = "Bounding Box of the final MBTile",
+                        min = 0
+                    )
+                    ReferencedEnvelope boundingbox,
+            @DescribeParameter(name = "filename", description = "Name of the .mbtile file", min = 0)
+                    String filename,
+            @DescribeParameter(
+                        name = "path",
+                        description = "Path to the directory where the .mbtile file can be stored ",
+                        min = 0
+                    )
+                    URL path,
+            @DescribeParameter(
+                        name = "minZoom",
+                        description = "Minimum Zoom level to generate",
+                        min = 0
+                    )
+                    Integer minZoom,
+            @DescribeParameter(
+                        name = "maxZoom",
+                        description = "Maximum Zoom level to generate",
+                        min = 0
+                    )
+                    Integer maxZoom,
+            @DescribeParameter(name = "minRow", description = "Minimum Row to generate", min = 0)
+                    Integer minRow,
+            @DescribeParameter(name = "maxRow", description = "Maximum Row to generate", min = 0)
+                    Integer maxRow,
+            @DescribeParameter(
+                        name = "minColumn",
+                        description = "Minimum Column to generate",
+                        min = 0
+                    )
+                    Integer minColumn,
+            @DescribeParameter(
+                        name = "maxColumn",
+                        description = "Maximum Column to generate",
+                        min = 0
+                    )
+                    Integer maxColumn,
+            @DescribeParameter(name = "bgColor", description = "Background color", min = 0)
+                    String bgColor,
+            @DescribeParameter(
+                        name = "transparency",
+                        description = "Transparency enabled or not",
+                        min = 0,
+                        defaultValue = "false"
+                    )
+                    Boolean transparency,
+            @DescribeParameter(
+                        name = "styleNames",
+                        description = "Name of the styles to use",
+                        min = 0,
+                        collectionType = String.class
+                    )
+                    Collection<String> styleNames,
+            @DescribeParameter(
+                        name = "stylePath",
+                        description = "Path of the style to use",
+                        min = 0
+                    )
+                    URL stylePath,
+            @DescribeParameter(
+                        name = "styleBody",
+                        description = "Body of the style to use",
+                        min = 0
+                    )
+                    String styleBody)
+            throws IOException {
+
         // Extract the filename if present
         String name;
 
@@ -117,9 +177,9 @@ public class MBTilesProcess implements GSProcess {
         } else {
             throw new ProcessException("Layers parameter is empty");
         }
-        
+
         // Initial check on the layers and styleNames size
-        if(styleNames != null && styleNames.size() != layerz.size()){
+        if (styleNames != null && styleNames.size() != layerz.size()) {
             throw new ProcessException("Layers and styleNames must have the same size");
         }
 
@@ -128,7 +188,7 @@ public class MBTilesProcess implements GSProcess {
 
         String outputResourceName = name + ".mbtiles";
         if (path != null) {
-            File urlToFile = DataUtilities.urlToFile(path);
+            File urlToFile = URLs.urlToFile(path);
             urlToFile.mkdirs();
             file = new File(urlToFile, outputResourceName);
         } else {
@@ -139,7 +199,8 @@ public class MBTilesProcess implements GSProcess {
         // Create the MBTile file
         MBTilesFile mbtile = new MBTilesFile(file, true);
         try {
-            // Initialize the MBTile file in order to avoid exceptions when accessing the geoPackage file
+            // Initialize the MBTile file in order to avoid exceptions when accessing the geoPackage
+            // file
             mbtile.init();
 
             // Create the GetMap request to use
@@ -288,10 +349,10 @@ public class MBTilesProcess implements GSProcess {
 
         // Add to storage only if it is a temporary file
         if (path != null) {
-            return DataUtilities.fileToURL(file);
+            return URLs.fileToUrl(file);
         } else {
-            return new URL(resources.getOutputResourceUrl(outputResourceName,
-                    "application/x-mbtiles"));
+            return new URL(
+                    resources.getOutputResourceUrl(outputResourceName, "application/x-mbtiles"));
         }
     }
 }

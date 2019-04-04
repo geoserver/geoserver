@@ -1,0 +1,13 @@
+{
+  "version": 8,
+  "name": "${colorName} line",
+  "layers": [
+      {
+          "id": "${colorName} line",
+          "type": "line",
+          "paint": {
+              "line-color": "${colorCode}",
+          }
+      }
+  ]
+}

@@ -79,8 +79,8 @@
   <bean id="wcs111ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
     <constructor-arg index="0">
       <list>
-        <ref local="wcsService-1.1.0" />
-        <ref local="wcsService-1.1.1" />
+        <ref bean="wcsService-1.1.0" />
+        <ref bean="wcsService-1.1.1" />
       </list>
     </constructor-arg>
   </bean>
@@ -100,7 +100,9 @@
 
   <bean id="wcs111GridBaseCRSKvpParser" class="org.geoserver.wcs.kvp.GridBaseCRSKvpParser" />
 
-  <bean id="wcs111TimeSequenceKvpParser" class="org.geoserver.wcs.kvp.TimeSequenceKvpParser" />
+  <bean id="wcs111TimeSequenceKvpParser" class="org.geoserver.wcs.kvp.TimeSequenceKvpParser" >
+    <constructor-arg ref="geoServer"/>
+  </bean>
 
   <bean id="wcs111GridTypeKvpParser" class="org.geoserver.wcs.kvp.GridTypeKvpParser" />
 
@@ -116,7 +118,6 @@
 
   <bean id="wcs111DescribeCoverageKvpReader"
     class="org.geoserver.wcs.kvp.DescribeCoverageKvpRequestReader">
-    <constructor-arg index="0" ref="catalog" />
   </bean>
 
   <bean id="wcs111GetCoverageRequestReader"

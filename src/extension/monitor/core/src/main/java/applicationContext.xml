@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd" 
-    default-autowire="byName">
-
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd" >
+    
     <!-- monitor daos -->
     <bean id="memMonitorDAO" class="org.geoserver.monitor.MemoryMonitorDAO"/>
     
@@ -34,50 +37,7 @@
     </bean>
     
     <!-- rest bindings -->
-    <bean id="requestResource" class="org.geoserver.monitor.rest.RequestResource" scope="prototype">
-      <constructor-arg ref="monitor"/>
-    </bean>
-    <bean id="requestResourceFinder" class="org.geoserver.rest.BeanResourceFinder">
-      <constructor-arg value="requestResource"/>
-    </bean>
-    
-    <bean id="owsRequestResource" class="org.geoserver.monitor.rest.OwsRequestResource" scope="prototype">
-      <constructor-arg ref="monitor"/>
-    </bean>
-    <bean id="owsRequestResourceFinder" class="org.geoserver.rest.BeanResourceFinder">
-      <constructor-arg value="owsRequestResource"/>
-    </bean>
-    
-    <bean id="monitorRestMappings" class="org.geoserver.rest.RESTMapping">
-      <property name="routes">
-       <map>
-       <entry>
-          <key><value>/monitor/requests/ows</value></key>
-          <value>owsRequestResourceFinder</value>
-        </entry>
-        <entry>
-          <key><value>/monitor/requests/ows.{format}</value></key>
-          <value>owsRequestResourceFinder</value>
-        </entry>
-        <entry>
-          <key><value>/monitor/requests/ows/{request}.{format}</value></key>
-          <value>owsRequestResourceFinder</value>
-        </entry>
-       <entry>
-          <key><value>/monitor/requests</value></key>
-          <value>requestResourceFinder</value>
-        </entry>
-        <entry>
-          <key><value>/monitor/requests.{format}</value></key>
-          <value>requestResourceFinder</value>
-        </entry>
-        <entry>
-          <key><value>/monitor/requests/{request}.{format}</value></key>
-          <value>requestResourceFinder</value>
-        </entry>
-       </map>
-      </property>
-    </bean>
+   <context:component-scan base-package="org.geoserver.monitor.rest"/>
     
     <!-- ows dispatcher callback for ows specific stuff -->
     <bean id="monitorOwsCallback" class="org.geoserver.monitor.ows.MonitorCallback">

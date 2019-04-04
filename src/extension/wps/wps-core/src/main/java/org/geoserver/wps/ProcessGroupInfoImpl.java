@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.geoserver.catalog.MetadataMap;
 import org.geotools.process.ProcessFactory;
 
@@ -71,10 +70,10 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
         clone.setEnabled(enabled);
         clone.setFactoryClass(factoryClass);
         clone.setRoles(roles);
-        if(filteredProcesses != null) {
+        if (filteredProcesses != null) {
             clone.setFilteredProcesses(new ArrayList<ProcessInfo>(filteredProcesses));
-        } 
-        if(metadata != null) {
+        }
+        if (metadata != null) {
             clone.metadata = new MetadataMap(new HashMap<String, Serializable>(metadata));
         }
 
@@ -88,7 +87,7 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     @Override
     public void setRoles(List<String> roles) {
-        this.roles = roles;        
+        this.roles = roles;
     }
 
     @Override
@@ -105,36 +104,23 @@ public class ProcessGroupInfoImpl implements ProcessGroupInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         ProcessGroupInfoImpl other = (ProcessGroupInfoImpl) obj;
-        if (enabled != other.enabled)
-            return false;
+        if (enabled != other.enabled) return false;
         if (factoryClass == null) {
-            if (other.factoryClass != null)
-                return false;
-        } else if (!factoryClass.equals(other.factoryClass))
-            return false;
+            if (other.factoryClass != null) return false;
+        } else if (!factoryClass.equals(other.factoryClass)) return false;
         if (filteredProcesses == null) {
-            if (other.filteredProcesses != null)
-                return false;
-        } else if (!filteredProcesses.equals(other.filteredProcesses))
-            return false;
+            if (other.filteredProcesses != null) return false;
+        } else if (!filteredProcesses.equals(other.filteredProcesses)) return false;
         if (metadata == null) {
-            if (other.metadata != null)
-                return false;
-        } else if (!metadata.equals(other.metadata))
-            return false;
+            if (other.metadata != null) return false;
+        } else if (!metadata.equals(other.metadata)) return false;
         if (roles == null) {
-            if (other.roles != null)
-                return false;
-        } else if (!roles.equals(other.roles))
-            return false;
+            if (other.roles != null) return false;
+        } else if (!roles.equals(other.roles)) return false;
         return true;
     }
-
 }

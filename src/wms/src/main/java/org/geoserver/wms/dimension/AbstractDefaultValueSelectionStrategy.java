@@ -6,39 +6,39 @@
 package org.geoserver.wms.dimension;
 
 import java.util.Date;
-
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geotools.feature.type.DateUtil;
 
 /**
- *
  * Abstract parent class for DefaultValueSelectionStrategy implementations.
- * 
- * @author Ilkka Rinne / Spatineo Inc. for Finnish Meteorological Institute
  *
+ * @author Ilkka Rinne / Spatineo Inc. for Finnish Meteorological Institute
  */
-public abstract class AbstractDefaultValueSelectionStrategy implements DimensionDefaultValueSelectionStrategy {  
-    
-    @Override    
+public abstract class AbstractDefaultValueSelectionStrategy
+        implements DimensionDefaultValueSelectionStrategy {
+
+    @Override
     /**
-     * Formats the dimension default value for the capabilities file
-     * as ISO 8601 DateTime for TIME and as a number for ELEVATION.
-     * Assumes that getDefaultValue returns a single value, classes handling ranges have to override this method
+     * Formats the dimension default value for the capabilities file as ISO 8601 DateTime for TIME
+     * and as a number for ELEVATION. Assumes that getDefaultValue returns a single value, classes
+     * handling ranges have to override this method
      */
-    public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
+    public String getCapabilitiesRepresentation(
+            ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         String retval = null;
-        if (dimensionName.equals(ResourceInfo.TIME)){
-            Date dateValue = (Date) getDefaultValue(resource, dimensionName, dimensionInfo, Date.class);
-            if(dateValue == null) {
+        if (dimensionName.equals(ResourceInfo.TIME)) {
+            Date dateValue =
+                    (Date) getDefaultValue(resource, dimensionName, dimensionInfo, Date.class);
+            if (dateValue == null) {
                 return DimensionDefaultValueSetting.TIME_CURRENT;
             }
             retval = DateUtil.serializeDateTime(dateValue.getTime(), true);
-        }
-        else if (dimensionName.equals(ResourceInfo.ELEVATION)){
-            Number numberValue = (Number) getDefaultValue(resource, dimensionName, dimensionInfo, Number.class);
-            if(numberValue == null) {
+        } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
+            Number numberValue =
+                    (Number) getDefaultValue(resource, dimensionName, dimensionInfo, Number.class);
+            if (numberValue == null) {
                 return "0";
             }
             retval = numberValue.toString();

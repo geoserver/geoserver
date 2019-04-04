@@ -5,9 +5,7 @@
  */
 package org.geoserver.catalog;
 
-/**
- * Enumeration for type of published object.
- */
+/** Enumeration for type of published object. */
 public enum PublishedType {
     VECTOR {
         public Integer getCode() {
@@ -18,12 +16,11 @@ public enum PublishedType {
         public Integer getCode() {
             return 1;
         }
-    }, 
+    },
     REMOTE {
         public Integer getCode() {
             return 2;
         }
-        
     },
     WMS {
         public Integer getCode() {
@@ -34,8 +31,12 @@ public enum PublishedType {
         public Integer getCode() {
             return 4;
         }
+    },
+    WMTS {
+        public Integer getCode() {
+            return 5;
+        }
     };
-    
-    
+
     public abstract Integer getCode();
 }

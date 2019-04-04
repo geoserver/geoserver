@@ -8,15 +8,12 @@ package org.geoserver.catalog.event;
 import org.geoserver.catalog.CatalogInfo;
 
 /**
- * Event for the addition of an object to the catalog. 
+ * Event for the addition of an object to the catalog.
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public interface CatalogAddEvent extends CatalogEvent {
 
-    /**
-     * the object that was added.
-     */
+    /** the object that was added. */
     CatalogInfo getSource();
 }

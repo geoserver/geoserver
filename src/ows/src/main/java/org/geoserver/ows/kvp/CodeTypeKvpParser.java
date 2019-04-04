@@ -7,14 +7,12 @@ package org.geoserver.ows.kvp;
 
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
-
 import org.geoserver.ows.KvpParser;
 
 /**
  * Generic KVP parser for {@link CodeType} objects
- * 
+ *
  * @author Andrea Aime - TOPP
- * 
  */
 public class CodeTypeKvpParser extends KvpParser {
 
@@ -33,5 +31,4 @@ public class CodeTypeKvpParser extends KvpParser {
         result.setValue(value);
         return result;
     }
-
 }

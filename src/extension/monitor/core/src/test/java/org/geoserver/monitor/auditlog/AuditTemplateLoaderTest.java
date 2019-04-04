@@ -6,13 +6,12 @@ package org.geoserver.monitor.auditlog;
 
 import static org.junit.Assert.*;
 
+import freemarker.template.Configuration;
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.template.TemplateUtils;
 import org.junit.Test;
-
-import freemarker.template.Configuration;
 
 public class AuditTemplateLoaderTest {
 
@@ -20,9 +19,9 @@ public class AuditTemplateLoaderTest {
     public void testLoadDefaultTemplates() throws IOException {
         GeoServerResourceLoader rloader = new GeoServerResourceLoader(new File("./target"));
         AuditTemplateLoader tloader = new AuditTemplateLoader(rloader);
-        Configuration config = new Configuration();
+        Configuration config = TemplateUtils.getSafeConfiguration();
         config.setTemplateLoader(tloader);
-        
+
         assertNotNull(config.getTemplate("header.ftl"));
         assertNotNull(config.getTemplate("content.ftl"));
         assertNotNull(config.getTemplate("footer.ftl"));

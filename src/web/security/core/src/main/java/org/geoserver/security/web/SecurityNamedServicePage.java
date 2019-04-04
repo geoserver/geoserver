@@ -7,9 +7,7 @@ package org.geoserver.security.web;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -19,11 +17,11 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Base page for SecurityNamedServiceConfig new and edit pages.
- * 
+ *
  * @author Justin Deoliveira, OpenGeo
  */
-public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig> 
-    extends AbstractSecurityPage {
+public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
+        extends AbstractSecurityPage {
 
     /** logger */
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.web.security");
@@ -31,11 +29,10 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
     /** current config panel */
     protected SecurityNamedServicePanel<T> panel;
 
-    public SecurityNamedServicePage() {
-    }
+    public SecurityNamedServicePage() {}
 
     protected StringResourceModel createTitleModel(Class serviceClass) {
-        return new StringResourceModel(serviceClass.getName()+".title", new Model());
+        return new StringResourceModel(serviceClass.getName() + ".title", new Model());
     }
 
     protected StringResourceModel createTitleModel(SecurityNamedServicePanelInfo panelInfo) {
@@ -50,11 +47,15 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
         return new StringResourceModel(panelInfo.getShortTitleKey(), new Model());
     }
 
-    protected SecurityNamedServicePanel<T> createPanel(String id, 
-        SecurityNamedServicePanelInfo panelInfo, IModel<T> config) {
+    protected SecurityNamedServicePanel<T> createPanel(
+            String id, SecurityNamedServicePanelInfo panelInfo, IModel<T> config) {
         try {
-            SecurityNamedServicePanel panel = (SecurityNamedServicePanel<T>) 
-                panelInfo.getComponentClass().getConstructor(String.class, IModel.class).newInstance(id, config);
+            SecurityNamedServicePanel panel =
+                    (SecurityNamedServicePanel<T>)
+                            panelInfo
+                                    .getComponentClass()
+                                    .getConstructor(String.class, IModel.class)
+                                    .newInstance(id, config);
             return panel;
         } catch (Exception e) {
             throw new WicketRuntimeException(e);
@@ -68,8 +69,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
             doReturn();
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving config", e);
-            feedbackPanel.error(e);
+            error(e);
         }
     }
 }
-

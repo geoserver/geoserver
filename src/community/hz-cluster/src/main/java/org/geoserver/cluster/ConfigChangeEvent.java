@@ -7,12 +7,11 @@ package org.geoserver.cluster;
 
 import static com.google.common.base.Objects.equal;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -27,6 +26,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -41,6 +42,8 @@ import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
+import org.geoserver.catalog.impl.WMTSLayerInfoImpl;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
@@ -52,75 +55,67 @@ import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
 
-import com.google.common.base.Objects;
-
 /**
- * Event for 
- * @author Justin Deoliveira, OpenGeo
+ * Event for
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ConfigChangeEvent extends Event {
 
-    static Map<Class<? extends Info>,Class<? extends Info>> INTERFACES = new HashMap<Class<? extends Info>,Class<? extends Info>>();
+    static Map<Class<? extends Info>, Class<? extends Info>> INTERFACES =
+            new HashMap<Class<? extends Info>, Class<? extends Info>>();
+
     static {
         INTERFACES.put(GeoServerInfoImpl.class, GeoServerInfo.class);
         INTERFACES.put(SettingsInfoImpl.class, SettingsInfo.class);
         INTERFACES.put(LoggingInfoImpl.class, LoggingInfo.class);
         INTERFACES.put(ContactInfoImpl.class, ContactInfo.class);
         INTERFACES.put(AttributionInfoImpl.class, AttributionInfo.class);
-        
-        //catalog
+
+        // catalog
         INTERFACES.put(CatalogImpl.class, Catalog.class);
         INTERFACES.put(NamespaceInfoImpl.class, NamespaceInfo.class);
         INTERFACES.put(WorkspaceInfoImpl.class, WorkspaceInfo.class);
         INTERFACES.put(DataStoreInfoImpl.class, DataStoreInfo.class);
         INTERFACES.put(WMSStoreInfoImpl.class, WMSStoreInfo.class);
+        INTERFACES.put(WMTSStoreInfoImpl.class, WMTSStoreInfo.class);
         INTERFACES.put(CoverageStoreInfoImpl.class, CoverageStoreInfo.class);
         INTERFACES.put(StyleInfoImpl.class, StyleInfo.class);
-        INTERFACES.put(FeatureTypeInfoImpl.class, FeatureTypeInfo.class );
+        INTERFACES.put(FeatureTypeInfoImpl.class, FeatureTypeInfo.class);
         INTERFACES.put(CoverageInfoImpl.class, CoverageInfo.class);
         INTERFACES.put(WMSLayerInfoImpl.class, WMSLayerInfo.class);
+        INTERFACES.put(WMTSLayerInfoImpl.class, WMTSLayerInfo.class);
         INTERFACES.put(MetadataLinkInfoImpl.class, MetadataLinkInfo.class);
         INTERFACES.put(LayerInfoImpl.class, LayerInfo.class);
-        INTERFACES.put(LayerGroupInfoImpl.class, LayerGroupInfo.class );
-        
+        INTERFACES.put(LayerGroupInfoImpl.class, LayerGroupInfo.class);
     }
-    
+
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        ADD, REMOVE, MODIFY
+        ADD,
+        REMOVE,
+        MODIFY,
+        POST_MODIFY
     }
 
-    /**
-     * id of object
-     */
+    /** id of object */
     String id;
 
-    /**
-     * name of object
-     */
+    /** name of object */
     String name;
 
-    /**
-     * name of workspace qualifying the object
-     */
+    /** name of workspace qualifying the object */
     String workspaceId;
-    
-    /**
-     * id of Store object if the modified object was a Resource
-     */
+
+    /** id of Store object if the modified object was a Resource */
     String storeId;
 
-    /**
-     * class of object
-     */
+    /** class of object */
     Class<? extends Info> clazz;
 
-    /**
-     * type of config change
-     */
+    /** type of config change */
     Type type;
 
     private String nativeName;
@@ -142,16 +137,21 @@ public class ConfigChangeEvent extends Event {
             sb.append('(').append(source).append(") ");
         }
 
-        sb.append("[uuid:").append(getUUID()).append(", object id:").append(id).append(", name:")
-                .append(name).append("]");
+        sb.append("[uuid:")
+                .append(getUUID())
+                .append(", object id:")
+                .append(id)
+                .append(", name:")
+                .append(name)
+                .append("]");
         return sb.toString();
     }
 
     /**
-     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and
-     * {@link #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it
-     * can be a proxy class and id/name/type are good enough anyways (given ids are unique, no two
-     * objects of different class can have the same id).
+     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
+     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
+     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
+     * different class can have the same id).
      */
     @Override
     public boolean equals(Object o) {
@@ -161,12 +161,12 @@ public class ConfigChangeEvent extends Event {
         ConfigChangeEvent e = (ConfigChangeEvent) o;
         return equal(id, e.id) && equal(type, e.type);
     }
-    
+
     /**
-     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and
-     * {@link #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it
-     * can be a proxy class and id/name/type are good enough anyways (given ids are unique, no two
-     * objects of different class can have the same id).
+     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
+     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
+     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
+     * different class can have the same id).
      */
     @Override
     public int hashCode() {
@@ -188,7 +188,7 @@ public class ConfigChangeEvent extends Event {
     public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
     }
-    
+
     public String getStoreId() {
         return storeId;
     }
@@ -203,23 +203,23 @@ public class ConfigChangeEvent extends Event {
 
     public Class<? extends Info> getObjectInterface() {
         Class<? extends Info> clazz = INTERFACES.get(getObjectClass());
-        
-        // There are several different ServiceInfo subtypes and it's an extension point 
+
+        // There are several different ServiceInfo subtypes and it's an extension point
         // so don't check for specific classes
-        if(clazz==null && ServiceInfo.class.isAssignableFrom(getObjectClass())){
+        if (clazz == null && ServiceInfo.class.isAssignableFrom(getObjectClass())) {
             clazz = ServiceInfo.class;
         }
-        
+
         // Fall back, mostly here to support EasyMock test objects in unit tests.
-        if(clazz==null) {
-            for(Class<? extends Info> realClazz: INTERFACES.values()) {
-                if(realClazz.isAssignableFrom(getObjectClass())) {
-                    clazz=realClazz;
+        if (clazz == null) {
+            for (Class<? extends Info> realClazz : INTERFACES.values()) {
+                if (realClazz.isAssignableFrom(getObjectClass())) {
+                    clazz = realClazz;
                     break;
                 }
             }
         }
-        
+
         return clazz;
     }
 
@@ -230,7 +230,7 @@ public class ConfigChangeEvent extends Event {
     public void setNativeName(String nativeName) {
         this.nativeName = nativeName;
     }
-    
+
     @Nullable
     public String getNativeName() {
         return nativeName;

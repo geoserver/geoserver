@@ -1,0 +1,21 @@
+title: 'YSLD Cook Book: Optimized and styled label'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#FF0000'
+        stroke-width: 1
+    - text:
+        label: ${name}
+        fill-color: '#000000'
+        font-family: Arial
+        font-size: 10
+        font-style: normal
+        font-weight: bold
+        placement: line
+        offset: 0
+        x-followLine: true
+        x-maxAngleDelta: 90
+        x-maxDisplacement: 400
+        x-repeat: 150

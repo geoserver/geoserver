@@ -15,7 +15,6 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
     protected String adminRoleName;
     protected String groupAdminRoleName;
 
-
     public JDBCRoleServiceConfig() {
         super();
     }
@@ -33,7 +32,7 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
 
     @Override
     public void setAdminRoleName(String name) {
-        adminRoleName=name;
+        adminRoleName = name;
     }
 
     @Override
@@ -63,5 +62,4 @@ public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }
-
 }

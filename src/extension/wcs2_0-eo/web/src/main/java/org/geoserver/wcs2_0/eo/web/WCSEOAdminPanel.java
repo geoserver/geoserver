@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs2_0.eo.web;
 
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -18,14 +22,16 @@ public class WCSEOAdminPanel extends AdminPagePanel {
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
 
-        CheckBox enabled = new CheckBox("enabled", new MapModel(metadata,
-                WCSEOMetadata.ENABLED.key));
+        CheckBox enabled =
+                new CheckBox("enabled", new MapModel(metadata, WCSEOMetadata.ENABLED.key));
         add(enabled);
-        
-        TextField<Integer> defaultCount = new TextField<Integer>("defaultCount", new MapModel(metadata,
-                WCSEOMetadata.COUNT_DEFAULT.key), Integer.class);
+
+        TextField<Integer> defaultCount =
+                new TextField<Integer>(
+                        "defaultCount",
+                        new MapModel(metadata, WCSEOMetadata.COUNT_DEFAULT.key),
+                        Integer.class);
         defaultCount.add(RangeValidator.minimum(1));
         add(defaultCount);
     }
-
 }

@@ -11,7 +11,6 @@ This section describes most of the extensions available for GeoServer. Other dat
    :maxdepth: 1
 
    controlflow/index
-   css/index
    dxf/index   
    excel
    grib/grib
@@ -26,5 +25,11 @@ This section describes most of the extensions available for GeoServer. Other dat
    ogr
    printing/index
    querylayer/index
+   vectortiles/index
    xslt/index
    wcs20eo/index
+   mongodb/index
+   sldservice/index
+   geofence/index
+   geofence-server/index
+

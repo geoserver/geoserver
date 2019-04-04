@@ -65,7 +65,9 @@ In the following table the whole set of GetLegendGraphic parameters that can be 
    * - *LANGUAGE*
      - Optional
      - Allows setting labels language for style titles and rules titles; needs a correctly localized SLD to work properly; if labels are not available in the requested language, the default text will be used; look at :ref:`sld_language` for further details.
-     
+
+.. _get_legend_graphic_options:
+
 Controlling legend appearance with LEGEND_OPTIONS
 -------------------------------------------------
 
@@ -84,12 +86,14 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **bgColor (hex)** background color for the generated legend, values are expressed in ``0xRRGGBB`` format
     - **dpi (integer)** sets the DPI for the current request, in the same way as it is supported by GetMap. Setting a DPI larger than 91 (the default) makes all fonts, symbols and line widths grow without changing the current scale, making it possible to get a high resolution version of the legend suitable for inclusion in printouts 
     - **forceLabels** "on" means labels will always be drawn, even if only one rule is available. "off" means labels will never be drawn, even if multiple rules are available. Off by default.
+    - **labelMargin** margin (in pixels) to use between icons and labels.
     - **layout** sets icons layout to be **vertical** (default) or **horizontal**.
     - **columnheight** enables **multicolumn** layout when layout is **vertical**. Each column height is limited by the columnheight value (in pixels).
     - **rowwidth** enables **multirow** layout when layout is **horizontal**. Each row width is limited by the rowwidth value (in pixels).
     - **columns** enables **multicolumn** layout when layout is **vertical**. The value is the maximum columns number of legend. The rows used are equal to the next greater integer of <total of icons>/<number of columns>.
     - **rows** enables **multirow** layout when layout is **horizontal**. The value is the the maximum rows number of legend. The columns used are equal to the next greater integer of <total of icons>/<number of rows>.
     - **grouplayout** Orientation of groups of layer, possible values are **horizontal** and **vertical** (default if not specified).
+    - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the :ref:`dedicated section <content-dependent>`.
     
 
 Here is a sample request sporting most the options::
@@ -141,6 +145,7 @@ The producer for the raster legend will make use of this elements in order to bu
     - the height of each row is set to the maximum height of the single elements
     - the width of each row is set to the sum of the width of the various elements plus the various paddings
     - **dx,dy** the spaces between elements and rows are set to the 15% of the requested width and height. Notice that **dy** is ignored for the colormaps of type **ramp** since they must create a continuous color strip.
+    - **absoluteMargins** true/false, used to change the uom of **dx** from percentage (when false) to a fixed number of pixels (when true).
     - **mx,my** the margins from the border of the legends are set to the 1.5% of the total size of the legend
 
 Just to jump right to the conclusions (which is a bad practice I know, but no one is perfect ), here below I am adding an image of a sample legend with all the various options at work. The request that generated it is the following::
@@ -215,3 +220,351 @@ CQL Expressions and ENV
 
 If cql expressions are used in ColorMapEntry attributes (see :ref:`here <sld_reference_rastersymbolizer_colormap_cql>`) to create a dynamic color map taking values
 from ENV, the same ENV parameters used for GetMap can be given to GetLegendGraphic to get the desired legend entries.
+
+.. _content-dependent:
+
+Content dependent legends
+'''''''''''''''''''''''''
+
+GeoServer allows building content dependent legend, that is, legends whose contents depend on the currently displayed map.
+In order to support it the GetLegendGraphic call needs the following extra parameters:
+
+  * BBOX
+  * SRS or CRS (depending on the WMS version, SRS for 1.1.1 and CRS for 1.3.0)
+  * SRCWITH and SRCHEIGHT, the size of the reference map (width and height already have a different meaning in GetLegendGraphic)
+  
+Other parameters can also be added to better match the GetMap request, for example, it is recommended to mirror 
+filtering vendor parameters such as, for example, CQL_FILTER,FILTER,FEATUREID,TIME,ELEVATION.
+
+Content dependent evaluation is enabled via the following LEGEND_OPTIONS parameters:
+ 
+  *  countMatched: adds the number of features matching the particular rule at the end of the rule label (requires visible labels to work). Applicable only to vector layers.
+  
+More approaches may be added in future (e.g., making rules that are not matching any feature disappear).
+
+For example, let's assume the following layout is added to GeoServer (``legend.xml`` to be placed in ``GEOSERVER_DATA_DIR/layouts``)::
+
+  <layout>
+      <decoration type="legend" affinity="top,right" offset="0,0" size="auto"/>
+  </layout>
+
+This will make a legend appear in the GetMap response. The following preview request uses the layout to embed a legend and activates
+feature counting in it::
+
+  http://localhost:8080/geoserver/topp/wms?service=WMS&version=1.1.0&request=GetMap&layers=topp:states&styles=&bbox=-124.73142200000001,24.955967,-66.969849,49.371735&width=768&height=330&srs=EPSG:4326&format=application/openlayers&format_options=layout:legend&legend_options=countMatched:true;fontAntiAliasing:true
+  
+The result will look as follows:
+
+.. figure:: img/states-all.png
+   :align: center 
+
+   *Embedded legend, full map*
+  
+.. figure:: img/states-four.png
+   :align: center 
+
+   *Embedded legend, four states*
+
+.. figure:: img/states-one.png
+   :align: center 
+
+   *Embedded legend, single state*
+
+The same can be achieved using a stand-alone GetLegendGraphic request::
+
+  http://localhost:8080/geoserver/topp/wms?service=WMS&version=1.1.0&request=GetLegendGraphic&width=20&height=20&layer=topp:states&bbox=-124.73142200000001,24.955967,-66.969849,49.371735&srcwidth=768&srcheight=330&srs=EPSG:4326&format=image/png&legend_options=countMatched:true;fontAntiAliasing:true
+  
+.. figure:: img/legend-all.png
+   :align: center 
+
+   *Direct legend request*
+
+
+JSON Output Format
+------------------
+
+Since version 2.15.0 it has been possible to use **application/json**
+as an output format in GetLegendGraphic requests. This allows a JSON
+aware client to receive a JSON representation of the legend graphic to
+use for its own rendering requirements.
+
+A simple http request can be used::
+
+  http://localhost:9000/geoserver/wms?service=WMS&version=1.1.0&request=GetLegendGraphic&layer=topp:states&format=application/json
+
+Which returns a JSON response:
+
+.. code:: javascript 
+
+  {"Legend": [{
+    "layerName": "states",
+    "title": "USA Population",
+    "rules":   [
+          {
+        "title": "< 2M",
+        "filter": "[PERSONS < '2000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#4DFF4D",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "2M - 4M",
+        "filter": "[PERSONS BETWEEN '2000000' AND '4000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#FF4D4D",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "> 4M",
+        "filter": "[PERSONS > '4000000']",
+        "symbolizers": [{"Polygon":       {
+          "fill": "#4D4DFF",
+          "fill-opacity": "0.7"
+        }}]
+      },
+          {
+        "title": "Boundary",
+        "symbolizers":       [
+          {"Line":         {
+            "stroke": "#000000",
+            "stroke-width": "0.2",
+            "stroke-opacity": "1",
+            "stroke-linecap": "butt",
+            "stroke-linejoin": "miter"
+          }},
+          {"Text":         {
+            "label": "[STATE_ABBR]",
+            "fonts": [          {
+              "font-family": ["Times New Roman"],
+              "font-style": "Normal",
+              "font-weight": "normal",
+              "font-size": "14"
+            }],
+            "label-placement":           {
+              "x-anchor": "0.5",
+              "y-anchor": "0.5",
+              "rotation": "0.0"
+            }
+          }}
+        ]
+      }
+    ]
+  }]}
+
+This JSON contains an array of Legends (one for each layer requested) and 
+each legend contains some metadata about the legend and an array of ``rule`` 
+objects for each rule with in the feature type of the style. Each ``rule`` 
+contains the metadata associated with the rule, any ``filter`` element and an array
+of ``symbolizer`` objects. 
+
+Filters and Expressions
+'''''''''''''''''''''''
+
+Filters are encoded using :ref:`ECQL <filter_ecql_reference>`, a rule with an
+ElseFilter has an element "ElseFilter" set to the value "true". Expressions are 
+also encoded in ECQL (wrapped in []) when encountered in the style. 
+
+Symbolizers
+'''''''''''
+
++ PointSymbolizer
+
+  A point symbolizer will be represented as a series of elements containing
+  metadata and an array of ``graphics`` symbols (see :ref:`here <sld_reference_graphic>`) , these can be well known ``marks`` or
+  external graphics. The point symbolizer also provides an "url" element which
+  allows a client to make a request back to GeoServer to fetch a png image of
+  the point symbol.
+
+
+  .. code:: javascript
+
+    {"Point":     {
+        "title": "title",
+        "abstract": "abstract",
+        "url": "http://localhost:9000/geoserver/kml/icon/capitals?0.0.0=",
+        "size": "6",
+        "opacity": "1.0",
+        "rotation": "0.0",
+        "graphics": [      {
+          "mark": "circle",
+          "fill": "#FFFFFF",
+          "fill-opacity": "1.0",
+          "stroke": "#000000",
+          "stroke-width": "2",
+          "stroke-opacity": "1",
+          "stroke-linecap": "butt",
+          "stroke-linejoin": "miter"
+        }]}}
+
++ LineSymbolizer
+
+  A line symbolizer is represented as a list of metadata elements and the :ref:`stroke
+  parameters <sld_reference_linesymbolizer_css>`, it is possible for there to be a :ref:`graphic-stroke <sld_reference_linesymbolizer_graphicstroke>` element too.
+
+  .. code:: javascript
+
+    {"Line":     {
+      "stroke": "#AA3333",
+      "stroke-width": "2",
+      "stroke-opacity": "1",
+      "stroke-linecap": "butt",
+      "stroke-linejoin": "miter"
+    }}
+
+
+    {"Line":       {
+        "graphic-stroke":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "6",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "square",
+            "fill": "#FFFF00",
+            "fill-opacity": "1.0"
+          }]
+        },
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "perpendicular-offset": "10"
+      }}  
+
++ PolygonSymbolizer
+
+  A polygon symbolizer contains :ref:`stroke
+  parameters <sld_reference_linesymbolizer_css>` and :ref:`fill 
+  parameters <sld_reference_fill>`. 
+
+  .. code:: javascript
+
+      {"Polygon":       {
+        "stroke": "#000000",
+        "stroke-width": "0.5",
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "fill": "#0099CC",
+        "fill-opacity": "1.0"
+      }}
+
+  Or a graphic stroke and/or a graphic fill (as described above).
+
+  .. code:: javascript
+
+      {"Polygon":       {
+        "graphic-stroke":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "6",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "square",
+            "fill": "#FFFF00",
+            "fill-opacity": "1.0"
+          }]
+        },
+        "stroke-opacity": "1",
+        "stroke-linecap": "butt",
+        "stroke-linejoin": "miter",
+        "graphic-fill":         {
+          "url": "http://local-test:8080/geoserver/kml/icon/Default Styler",
+          "size": "4",
+          "opacity": "0.4",
+          "rotation": "[(rotation*-1)]",
+          "graphics": [          {
+            "mark": "circle",
+            "fill": "#FFFFFF",
+            "fill-opacity": "1.0"
+          }]
+        }}}
+
+
++ RasterSymbolizer
+
+  Raster symbolizers contain a ``colormap`` with an array of ``entries``, each entry
+  contains a ``label``, ``quantity`` and ``color`` element.
+
+  .. code:: javascript 
+
+    {"Raster":   {
+      "colormap":     {
+        "entries":       [
+                  {
+            "label": "values",
+            "quantity": "0",
+            "color": "#AAFFAA"
+          },
+                  {
+            "quantity": "1000",
+            "color": "#00FF00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1200",
+            "color": "#FFFF00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1400",
+            "color": "#FF7F00"
+          },
+                  {
+            "label": "values",
+            "quantity": "1600",
+            "color": "#BF7F3F"
+          },
+                  {
+            "label": "values",
+            "quantity": "2000",
+            "color": "#000000"
+          }
+        ],
+        "type": "ramp"
+      },
+      "opacity": "1.0"
+    }}
+
++ TextSymbolizer
+
+  A text symbolizer contains a ``label`` expression, followed by an array of ``fonts``
+  and a ``label-placement`` object containing details of how the label is
+  placed.
+
+  .. code:: javascript
+
+		{"Text":         {
+			"label": "[STATE_ABBR]",
+			"fonts": [          {
+				"font-family": ["Times New Roman"],
+				"font-style": "Normal",
+				"font-weight": "normal",
+				"font-size": "14"
+			}],
+			"label-placement":           {
+				"x-anchor": "0.5",
+				"y-anchor": "0.5",
+				"rotation": "0.0"
+			}
+		}}
+
+
+Vendor Options
+''''''''''''''
+
+In any case where one or more vendor options is included in the symbolizer there
+will be a ``vendor-options`` element included in the output. This object will
+include one line for each vendor option.
+
+.. code:: javascript
+
+  "vendor-options": {
+    "labelAllGroup": "true",
+    "spaceAround": "10",
+    "followLine": "true",
+    "autoWrap": "50"
+  }
+
+

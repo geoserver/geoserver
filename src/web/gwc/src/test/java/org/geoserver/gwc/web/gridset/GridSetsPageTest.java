@@ -12,6 +12,7 @@ public class GridSetsPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testPageLoad() {
+        login();
         GridSetsPage page = new GridSetsPage();
 
         tester.startPage(page);

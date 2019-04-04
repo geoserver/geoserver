@@ -7,7 +7,6 @@ package org.geoserver.cluster.server;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
-
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.events.ToggleType;
@@ -15,21 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer implementations
- * 
+ * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer
+ * implementations
+ *
  * @see {@link JMSApplicationListener}
- * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- * 
  */
 public abstract class JMSAbstractProducer extends JMSApplicationListener {
 
-    @Autowired
-    public JMSFactory jmsFactory;
+    @Autowired public JMSFactory jmsFactory;
 
-    /**
-     * @return the jmsTemplate
-     */
+    /** @return the jmsTemplate */
     public final JmsTemplate getJmsTemplate() {
         final ConnectionFactory cf = jmsFactory.getConnectionFactory(config.getConfigurations());
         if (cf == null) {
@@ -48,9 +43,8 @@ public abstract class JMSAbstractProducer extends JMSApplicationListener {
 
     /**
      * Constructor
-     * 
+     *
      * @param topicTemplate the getJmsTemplate() object used to send message to the topic queue
-     * 
      */
     public JMSAbstractProducer() {
         super(ToggleType.MASTER);

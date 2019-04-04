@@ -9,10 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptFileWatcher;
@@ -25,34 +23,31 @@ import org.opengis.util.ProgressListener;
 
 /**
  * Implementation of {@link Process} backed by a script.
- * <p>
- * This class does its work by delegating all methods to the {@link WpsHook} interface. This 
- * class maintains a link to the backing script {@link File} and uses a {@link FileWatcher} to 
- * detect changes to the underlying script. When changed a new {@link ScriptEngine} is created and 
- * the underlying script is reloaded. 
- * </p>
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>This class does its work by delegating all methods to the {@link WpsHook} interface. This
+ * class maintains a link to the backing script {@link File} and uses a {@link FileWatcher} to
+ * detect changes to the underlying script. When changed a new {@link ScriptEngine} is created and
+ * the underlying script is reloaded.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ScriptProcess implements Process {
 
-    /**
-     * The name of the input that, by convention, receives the StatusMonitor
-     */
+    /** The name of the input that, by convention, receives the StatusMonitor */
     static final String MONITOR = "monitor";
 
-    /** process name*/
+    /** process name */
     Name name;
-    
+
     /** watcher for file changes */
     ScriptFileWatcher fw;
-    
+
     /** script manager */
     ScriptManager scriptMgr;
 
     /** the hook for interacting with the script */
     WpsHook hook;
-    
+
     ScriptProcess(Name name, Resource script, ScriptManager scriptMgr) {
         this.name = name;
         this.scriptMgr = scriptMgr;
@@ -60,7 +55,7 @@ public class ScriptProcess implements Process {
         hook = scriptMgr.lookupWpsHook(script);
         fw = new ScriptFileWatcher(script, scriptMgr);
     }
-    
+
     @Deprecated
     ScriptProcess(Name name, File script, ScriptManager scriptMgr) {
         this.name = name;
@@ -121,5 +116,4 @@ public class ScriptProcess implements Process {
             throw new ProcessException(e);
         }
     }
-
 }

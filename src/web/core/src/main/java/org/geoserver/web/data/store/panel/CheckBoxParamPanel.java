@@ -14,7 +14,7 @@ import org.apache.wicket.model.IModel;
 
 /**
  * A simple label + checkbox panel
- * 
+ *
  * @author Gabriel Roldan
  * @todo: extend {@link FormComponentPanel} instead
  */
@@ -23,7 +23,7 @@ public class CheckBoxParamPanel extends Panel implements ParamPanel {
     private static final long serialVersionUID = -8587266542399491587L;
 
     private CheckBox checkBox;
-    
+
     public CheckBoxParamPanel(final String id, final IModel model, final IModel paramLabelModel) {
         super(id, model);
         Label label = new Label("paramName", paramLabelModel);
@@ -31,8 +31,8 @@ public class CheckBoxParamPanel extends Panel implements ParamPanel {
         add(label);
         add(checkBox);
     }
-    
-    public FormComponent<Boolean> getFormComponent(){
+
+    public FormComponent<Boolean> getFormComponent() {
         return checkBox;
     }
 }

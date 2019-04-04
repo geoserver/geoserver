@@ -7,12 +7,11 @@ package org.geoserver.wps.validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.validation.Validator;
 
 /**
  * Validation related utilites
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class Validators {
@@ -20,11 +19,9 @@ public class Validators {
     /**
      * Returns a clone of the validators collection where none of the validators implementing one of
      * the specified filter classes is available
-     * 
-     *
      */
-    public static List<Validator> filterOutClasses(Collection<Validator> validators,
-            Class... filteredClasses) {
+    public static List<Validator> filterOutClasses(
+            Collection<Validator> validators, Class... filteredClasses) {
         if (validators == null) {
             return null;
         }
@@ -51,9 +48,8 @@ public class Validators {
     /**
      * Returning the most restrictive size limit in the {@link MaxSizeValidator} contained in the
      * validators collection, or -1 if there is no limit
-     * 
-     * @param validators
      *
+     * @param validators
      */
     public static int getMaxSizeMB(Collection<Validator> validators) {
         int maxSize = Integer.MAX_VALUE;

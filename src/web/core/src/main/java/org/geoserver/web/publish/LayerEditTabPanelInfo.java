@@ -8,9 +8,8 @@ import org.geoserver.catalog.LayerInfo;
 
 /**
  * Information about panels plugged into additional tabs on layer edit page.
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class LayerEditTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
 
@@ -20,5 +19,4 @@ public class LayerEditTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> 
     public Class<LayerInfo> getPublishedInfoClass() {
         return LayerInfo.class;
     }
-
 }

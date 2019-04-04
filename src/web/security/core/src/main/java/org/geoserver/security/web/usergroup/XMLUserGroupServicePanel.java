@@ -13,7 +13,7 @@ import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 
 /**
  * Configuration panel for {@link XMLUserGroupService}.
- *  
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class XMLUserGroupServicePanel extends UserGroupServicePanel<XMLUserGroupServiceConfig> {

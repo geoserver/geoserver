@@ -1,0 +1,26 @@
+<assembly>
+  <id>monitor-hibernate-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-monitor-hibernate-*.jar</include>
+        <include>antlr-2.7.6.jar</include>
+        <include>asm-3.1.jar</include>
+        <include>dom4j-*.jar</include>
+        <include>ejb3-*.jar</include>
+        <include>ehcache-*.jar</include>
+        <include>hibernate*.jar</include>
+        <include>jta-*.jar</include>
+        <include>persistence-api*.jar</include>
+        <include>spring-orm-*jar</include>
+        <include>javassist-*jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

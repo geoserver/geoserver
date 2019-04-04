@@ -6,7 +6,6 @@
 package org.geoserver.wcs.web.demo;
 
 import java.awt.geom.AffineTransform;
-
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -22,14 +21,14 @@ import org.apache.wicket.model.PropertyModel;
  */
 public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
 
-    Double scaleX,shearX,originX,scaleY,shearY,originY;
+    Double scaleX, shearX, originX, scaleY, shearY, originY;
     private WebMarkupContainer originXContainer;
     private WebMarkupContainer shearXContainer;
     private WebMarkupContainer originYContainer;
     private WebMarkupContainer shearYContainer;
     private WebMarkupContainer newline;
 
-    public AffineTransformPanel(String id ) {
+    public AffineTransformPanel(String id) {
         super(id);
 
         initComponents();
@@ -59,12 +58,12 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         shearYContainer = new WebMarkupContainer("shearYContainer");
         add(shearYContainer);
 
-        add( new TextField( "scaleX", new PropertyModel(this, "scaleX")) );
-        shearXContainer.add( new TextField( "shearX", new PropertyModel(this, "shearX")) );
-        originXContainer.add( new TextField( "originX", new PropertyModel(this, "originX")) );
-        add( new TextField( "scaleY", new PropertyModel(this, "scaleY")) );
-        shearYContainer.add( new TextField( "shearY", new PropertyModel(this, "shearY")) );
-        originYContainer.add( new TextField( "originY", new PropertyModel(this, "originY")) );
+        add(new TextField("scaleX", new PropertyModel(this, "scaleX")));
+        shearXContainer.add(new TextField("shearX", new PropertyModel(this, "shearX")));
+        originXContainer.add(new TextField("originX", new PropertyModel(this, "originX")));
+        add(new TextField("scaleY", new PropertyModel(this, "scaleY")));
+        shearYContainer.add(new TextField("shearY", new PropertyModel(this, "shearY")));
+        originYContainer.add(new TextField("originY", new PropertyModel(this, "originY")));
     }
 
     @Override
@@ -75,7 +74,7 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
 
     private void updateFields() {
         AffineTransform at = getModelObject();
-        if(at != null) {
+        if (at != null) {
             this.scaleX = at.getScaleX();
             this.shearX = at.getShearX();
             this.originX = at.getTranslateX();
@@ -85,26 +84,35 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         }
     }
 
-    public AffineTransformPanel setReadOnly( final boolean readOnly ) {
-        visitChildren(TextField.class, (component, visit) -> {
-            component.setEnabled( !readOnly );
-        });
+    public AffineTransformPanel setReadOnly(final boolean readOnly) {
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    component.setEnabled(!readOnly);
+                });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).processInput();
+                });
 
         // update the grid envelope
-        if(isResolutionModeEnabled() && scaleX != null && scaleY != null) {
+        if (isResolutionModeEnabled() && scaleX != null && scaleY != null) {
             setConvertedInput(AffineTransform.getScaleInstance(scaleX, scaleY));
-        } else if(scaleX != null && shearX != null && originX != null &&
-           scaleY != null && shearY != null && originY != null) {
-            setConvertedInput(new AffineTransform(scaleX, shearX, shearY, scaleY, originX, originY));
+        } else if (scaleX != null
+                && shearX != null
+                && originX != null
+                && scaleY != null
+                && shearY != null
+                && originY != null) {
+            setConvertedInput(
+                    new AffineTransform(scaleX, shearX, shearY, scaleY, originX, originY));
         } else {
             setConvertedInput(null);
         }
@@ -115,13 +123,16 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).clearInput();
+                });
     }
 
     /**
      * Turns the editor in a pure resolution editor
+     *
      * @param enabled
      */
     public void setResolutionModeEnabled(boolean enabled) {

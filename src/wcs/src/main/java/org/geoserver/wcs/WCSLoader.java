@@ -6,7 +6,6 @@
 package org.geoserver.wcs;
 
 import java.util.Map;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.LegacyServiceLoader;
 import org.geoserver.config.util.LegacyServicesReader;
@@ -14,9 +13,8 @@ import org.geotools.util.Version;
 
 /**
  * Configuration loader for Web Coverage Service.
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public class WCSLoader extends LegacyServiceLoader<WCSInfo> {
 
@@ -39,6 +37,5 @@ public class WCSLoader extends LegacyServiceLoader<WCSInfo> {
         return wcs;
     }
 
-    public void save(WCSInfo service, GeoServer gs) throws Exception {
-    }
+    public void save(WCSInfo service, GeoServer gs) throws Exception {}
 }

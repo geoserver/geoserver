@@ -6,23 +6,22 @@
 package org.geoserver.script;
 
 import java.io.Serializable;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
-
 import org.geoserver.script.app.AppHook;
 import org.geoserver.script.function.FunctionHook;
 import org.geoserver.script.wfs.WfsTxHook;
 import org.geoserver.script.wps.WpsHook;
+import org.springframework.stereotype.Component;
 
 /**
  * Base class for script plugins.
- * <p>
- * Instances of this class must be registered in the application context.
- * </p>
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>Instances of this class must be registered in the application context.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
+@Component
 public abstract class ScriptPlugin implements Serializable {
 
     String extension;
@@ -30,8 +29,8 @@ public abstract class ScriptPlugin implements Serializable {
 
     /**
      * Constructor.
-     * 
-     * @param extension The associated extension for the plugin. 
+     *
+     * @param extension The associated extension for the plugin.
      * @param factoryClass The associated jsr-223 script engine factory class.
      */
     protected ScriptPlugin(String extension, Class<? extends ScriptEngineFactory> factoryClass) {
@@ -39,61 +38,50 @@ public abstract class ScriptPlugin implements Serializable {
         this.scriptEngineFactoryClass = factoryClass;
     }
 
-    public void init(ScriptManager scriptMgr) throws Exception {
-    }
+    public void init(ScriptManager scriptMgr) throws Exception {}
 
-    /**
-     * The associated extension for the script plugin, examples: "py", "js", "rb", etc... 
-     */
+    /** The associated extension for the script plugin, examples: "py", "js", "rb", etc... */
     public String getExtension() {
         return extension;
     }
 
-    /**
-     * The id of the script plugin, examples: "python", "javascript", "ruby", etc...
-     */
+    /** The id of the script plugin, examples: "python", "javascript", "ruby", etc... */
     public abstract String getId();
 
     /**
-     * The id of the script plugin, meant for display, examples: "Python", "JavaScript", "Ruby", 
+     * The id of the script plugin, meant for display, examples: "Python", "JavaScript", "Ruby",
      * etc...
      */
     public abstract String getDisplayName();
 
     /**
      * The value of the mode parameter to use for the CodeMirror editor.
-     * <p>
-     * Subclasses may override, the default for this method is to return {@link #getId()}.
-     * </p>
+     *
+     * <p>Subclasses may override, the default for this method is to return {@link #getId()}.
      */
     public String getEditorMode() {
         return getId();
     }
 
-    /**
-     * The associated script engine factory for the script plugin.
-     */
+    /** The associated script engine factory for the script plugin. */
     public Class<? extends ScriptEngineFactory> getScriptEngineFactoryClass() {
         return scriptEngineFactoryClass;
     }
 
     /**
      * Callback to initialize a new script engine.
-     * <p>
-     * This method is called whenever a new script engine is created and before any scripts are 
-     * created. Plugins may use this method to set up any context they wish to make avialable to 
+     *
+     * <p>This method is called whenever a new script engine is created and before any scripts are
+     * created. Plugins may use this method to set up any context they wish to make avialable to
      * scripts running in the engine. This default implementation does nothing.
-     * </p>
      */
-    public void initScriptEngine(ScriptEngine engine) {
-    }
+    public void initScriptEngine(ScriptEngine engine) {}
 
     /**
      * Creates the hook for "app" requests.
-     * <p>
-     * This default implementation returns <code>null</code>, subclass should override in order to 
-     * implement a custom app hook.
-     * </p>
+     *
+     * <p>This default implementation returns <code>null</code>, subclass should override in order
+     * to implement a custom app hook.
      */
     public AppHook createAppHook() {
         return new AppHook(this);
@@ -101,10 +89,9 @@ public abstract class ScriptPlugin implements Serializable {
 
     /**
      * Creates the hook for wps processes.
-     * <p>
-     * This default implementation returns <code>null</code>, subclass should override in order to 
-     * implement a custom hook.
-     * </p>
+     *
+     * <p>This default implementation returns <code>null</code>, subclass should override in order
+     * to implement a custom hook.
      */
     public WpsHook createWpsHook() {
         return new WpsHook(this);
@@ -112,10 +99,9 @@ public abstract class ScriptPlugin implements Serializable {
 
     /**
      * Creates the hook for functions.
-     * <p>
-     * This default implementation returns <code>null</code>, subclass should override in order to 
-     * implement a custom hook.
-     * </p>
+     *
+     * <p>This default implementation returns <code>null</code>, subclass should override in order
+     * to implement a custom hook.
      */
     public FunctionHook createFunctionHook() {
         return new FunctionHook(this);
@@ -123,10 +109,9 @@ public abstract class ScriptPlugin implements Serializable {
 
     /**
      * Creates the hook for WFS transactions.
-     * <p>
-     * This default implementation returns a default implementation, subclass should override in 
+     *
+     * <p>This default implementation returns a default implementation, subclass should override in
      * order to implement a custom hook.
-     * </p>
      */
     public WfsTxHook createWfsTxHook() {
         return new WfsTxHook(this);

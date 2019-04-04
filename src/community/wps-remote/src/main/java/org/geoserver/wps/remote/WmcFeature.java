@@ -6,26 +6,19 @@ package org.geoserver.wps.remote;
 
 /**
  * Pojo to pass the attributes of a Web Mapping Context Output format.
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class WmcFeature {
 
-    public WmcFeature() {
+    public WmcFeature() {}
 
-    }
-
-    /**
-     * @return the type
-     */
+    /** @return the type */
     public String getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
+    /** @param type the type to set */
     public void setType(String type) {
         this.type = type;
     }
@@ -58,186 +51,133 @@ public class WmcFeature {
 
     private String owcProperties;
 
-    /**
-     * @return the srs
-     */
+    /** @return the srs */
     public String getSrs() {
         return srs;
     }
 
-    /**
-     * @param srs the srs to set
-     */
+    /** @param srs the srs to set */
     public void setSrs(String srs) {
         this.srs = srs;
     }
 
-    /**
-     * @return the bbox
-     */
+    /** @return the bbox */
     public String getBbox() {
         return bbox;
     }
 
-    /**
-     * @param bbox the bbox to set
-     */
+    /** @param bbox the bbox to set */
     public void setBbox(String bbox) {
         this.bbox = bbox;
     }
 
-    /**
-     * @return the layers
-     */
+    /** @return the layers */
     public String getLayers() {
         return layers;
     }
 
-    /**
-     * @param layers the layers to set
-     */
+    /** @param layers the layers to set */
     public void setLayers(String layers) {
         this.layers = layers;
     }
 
-    /**
-     * @return the styles
-     */
+    /** @return the styles */
     public String getStyles() {
         return styles;
     }
 
-    /**
-     * @param styles the styles to set
-     */
+    /** @param styles the styles to set */
     public void setStyles(String styles) {
         this.styles = styles;
     }
 
-    /**
-     * @return the geometryCoords
-     */
+    /** @return the geometryCoords */
     public String getGeometryCoords() {
         return geometryCoords;
     }
 
-    /**
-     * @param geometryCoords the geometryCoords to set
-     */
+    /** @param geometryCoords the geometryCoords to set */
     public void setGeometryCoords(String geometryCoords) {
         this.geometryCoords = geometryCoords;
     }
 
-    /**
-     * @return the name
-     */
+    /** @return the name */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    /** @param name the name to set */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the title
-     */
+    /** @return the title */
     public String getTitle() {
         return title;
     }
 
-    /**
-     * @param title the title to set
-     */
+    /** @param title the title to set */
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return the description
-     */
+    /** @return the description */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
+    /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the getMapBaseUrl
-     */
+    /** @return the getMapBaseUrl */
     public String getGetMapBaseUrl() {
         return getMapBaseUrl;
     }
 
-    /**
-     * @param getMapBaseUrl the getMapBaseUrl to set
-     */
+    /** @param getMapBaseUrl the getMapBaseUrl to set */
     public void setGetMapBaseUrl(String getMapBaseUrl) {
         this.getMapBaseUrl = getMapBaseUrl;
     }
 
-    /**
-     * @return the lastUpdated
-     */
+    /** @return the lastUpdated */
     public String getLastUpdated() {
         return lastUpdated;
     }
 
-    /**
-     * @param lastUpdated the lastUpdated to set
-     */
+    /** @param lastUpdated the lastUpdated to set */
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    /**
-     * @return the workspace
-     */
+    /** @return the workspace */
     public String getWorkspace() {
         return workspace;
     }
 
-    /**
-     * @param workspace the workspace to set
-     */
+    /** @param workspace the workspace to set */
     public void setWorkspace(String workspace) {
         this.workspace = workspace;
     }
 
-    /**
-     * @return the latLonBbox
-     */
+    /** @return the latLonBbox */
     public String getLatLonBbox() {
         return latLonBbox;
     }
 
-    /**
-     * @param latLonBbox the latLonBbox to set
-     */
+    /** @param latLonBbox the latLonBbox to set */
     public void setLatLonBbox(String latLonBbox) {
         this.latLonBbox = latLonBbox;
     }
 
-    /**
-     * @return the owcProperties
-     */
+    /** @return the owcProperties */
     public String getOwcProperties() {
         return owcProperties;
     }
 
-    /**
-     * @param owcProperties the owcProperties to set
-     */
+    /** @param owcProperties the owcProperties to set */
     public void setOwcProperties(String owcProperties) {
         this.owcProperties = owcProperties;
     }
-
 }

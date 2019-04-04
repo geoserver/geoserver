@@ -1,0 +1,384 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer WMS Stores
+  description: A WMS store is a store whose source is another WMS. Also known as "Cascading WMS" or "Exernal WMS".
+
+paths:
+
+  /workspaces/{workspace}/wmsstores:
+
+    get:
+      operationId: getWMSStores
+      summary: Get a list of WMS stores
+      description: Displays a list of all WMS stores on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/rest/workspaces/{workspace}/wmsstores.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSStoresList"
+          examples:
+            application/xml: |
+              <wmsStores>
+                <wmsStore>
+                  <name>altgs</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.xml" type="application/xml"/>
+                </wmsStore>
+              </wmsStores>
+            
+            application/json: |
+              {"wmsStores":
+                {"wmsStore": [
+                  {"name":"altgs",
+                   "href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"}]}}
+            
+
+    post:
+      operationId: postWMSStores
+      summary: Add a new WMS store
+      description: Adds a new WMS store entry to the server.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the worskpace containing the WMS store.
+          type: string
+        - $ref: "#/parameters/WMSStorePost"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: URL where the newly created store can be found
+              type: string
+        401:
+          description: Unauthorized
+
+    put:
+      operationId: putWMSStores
+      description: Invalid. Use POST for adding a new WMS store, or PUT on /workspaces/{workspace}/wmsstores/{wmsstore} to edit an existing WMS store.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteWMSStores
+      description: Invalid. Use /workspaces/{workspace}/wmsstores/{wmsstore} instead.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/wmsstores/{store}:
+
+    get:
+      operationId: getWMSStore
+      summary: Retrieve a WMS store in a given workspace
+      description: Displays a representation of the WMS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/wmsstores/{store}.xml" for XML). Defaults to HTML representation.
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the workspace containing the WMS store.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - name: quietOnNotFound
+          in: query
+          required: false
+          description: When set to true, avoids to log an Exception when the WMS store is not present. Note that 404 status code will be returned anyway.
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WMSStoreInfo"
+          examples:
+            application/json: |
+              {"wmsStore": {
+                "name":"altgs",
+                "type":"WMS",
+                "enabled":true,
+                "workspace": {"name":"cite", "href":"http://localhost:8080/geoserver/rest/workspaces/cite.json"},
+                "metadata": {"entry":{"@key":"useConnectionPooling","$":"true"}},
+                "_default":false,
+                "capabilitiesURL":"http://localhost:8081/geoserver/wms?request=GetCapabilities",
+                "maxConnections":6,
+                "readTimeout":60,
+                "connectTimeout":30,
+                "wmsLayers":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers.json"}}
+            
+            application/xml: |
+              <wmsStore>
+                <name>altgs</name>
+                <type>WMS</type>
+                <enabled>true</enabled>
+                <workspace>
+                  <name>cite</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite.xml" type="application/xml"/>
+                </workspace>
+                <metadata>
+                  <entry key="useConnectionPooling">true</entry>
+                </metadata>
+                <__default>false</__default>
+                <capabilitiesURL>http://localhost:8081/geoserver/wms?request=GetCapabilities</capabilitiesURL>
+                <maxConnections>6</maxConnections>
+                <readTimeout>60</readTimeout>
+                <connectTimeout>30</connectTimeout>
+                <wmsLayers>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers.xml" type="application/xml"/>
+                </wmsLayers>
+              </wmsStore>
+            
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postWMSStore
+      description: Invalid. Use POST on /workspaces/{workspace}/WMSstores for adding a new WMS store, or PUT on /workspaces/{workspace}/WMSstores/{store} to edit/upload an existing WMS store.
+      responses:
+        401:
+          description: Unauthorized
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWMSStore
+      summary: Modify a single WMS store.
+      description: Modifies a single WMS store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: The name of the worskpace containing the WMS stores.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: The name of the store to be retrieved
+          type: string
+        - $ref: "#/parameters/WMSStorePut"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The WMS store was successfully updated.
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteWMSStore
+      summary: Delete WMS store
+      description: Deletes a WMS store
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace containing the WMS store.
+          type: string
+        - name: store
+          in: path
+          required: true
+          description: Name of the WMS store
+          type: string
+        - name: recurse
+          in: query
+          required: false
+          description: When set to true all resources contained in the store are also removed.
+          default: false
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+parameters:
+  WMSStorePost:
+    name: WMSStoreBody
+    description: |
+      WMS store body information to upload.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmsStore>
+          <name>remote</name>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+        </wmsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmsStore": {
+            "name": "remote",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"
+          }
+        }
+        ```
+
+
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMSStoreInfo"
+  WMSStorePut:
+    name: WMSStoreBody
+    description: |
+      WMS store body information to upload.
+      For a PUT, only values which should be changed need to be included.
+
+      Examples:
+      - application/xml:
+
+        ```
+        <wmsStore>
+          <description>A wms store</description>
+          <enabled>true</enabled>
+          <__default>true</__default>
+          <capabilitiesUrl>http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities</capabilitiesUrl>
+          <user>admin</user>
+          <password>geoserver</password>
+          <maxConnections>6</maxConnections>
+          <readTimeout>60</readTimeout>
+          <connectTimeout>30</connectTimeout>
+        </wmsStore>
+        ```
+
+      - application/json:
+
+        ```
+        {
+          "wmsStore": {
+            "description": "A wms store",
+            "enabled": "true",
+            "_default": "true",
+            "capabilitiesUrl": "http://demo.geoserver.org/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities",
+            "user": "admin",
+            "password": "geoserver",
+            "maxConnections": "6",
+            "readTimeout": "60",
+            "connectTimeout": "30"
+          }
+        }
+        ```
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/WMSStoreInfo"
+
+definitions:
+
+  WMSStoresList:
+    title: wmsStores
+    type: array
+    items:
+      $ref: '#/definitions/WMSStoresListItem'
+
+  WMSStoresListItem:
+    title: wmsStore
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of WMS Store
+      link:
+        type: string
+        description: URL to WMS store representation
+
+  WMSStoreInfo:
+    type: object
+    title: wmsStore
+    xml:
+      name: wmsStore
+    properties:
+      name:
+        type: string
+        description: Name of the WMS store
+      description:
+        type: string
+        description: Description of the WMS store
+      type:
+        type: string
+        description: Type of store. Set to WMS.
+      enabled:
+        type: boolean
+        description: Whether the store is enabled
+      workspace:
+        type: object
+        description: Workspace containing the store
+        required: [name]
+        properties:
+          name: 
+            type: string
+            description: Name of the workspace
+          link:
+            type: string
+            description: Link to the workspace representation
+      metadata:
+        type: object
+        description: Miscellaneous configuration details about the WMS store
+        properties:
+          entry:
+            type: object
+            properties:
+              '@key':
+                type: string
+                enum:
+                - useConnectionPooling
+                description: Set to useConnectionPooling
+              text:
+                type: boolean
+                description: Whether connection pooling is enabled
+      __default__:
+          type: boolean
+          description: Whether the store is the default store of the workspace
+      capabilitiesURL:
+        type: string
+        description: Location of the WMS capabilities URL where the store originates
+      user:
+        type: string
+        description: User name to use when connecting to the remote WMS
+      password:
+        type: string
+        description: Password or hash to use when connecting to the remote WMS
+      maxConnections:
+        type: number
+        description: Maximum number of simultaneous connections to use
+      readTimeout:
+        type: string
+        description: Time in seconds before read time out
+      connectTimeout:
+        type: string
+        description: Time in seconds before connection time out
+      wmsLayers:
+        type: array
+        items:
+          type: object
+          properties:
+            link:
+              type: string
+              description: Link to the WMS layers representation

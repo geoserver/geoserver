@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved. 
+    This code is licensed under the GPL 2.0 license, available at the root application 
+    directory. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.16-SNAPSHOT</version>
+    </parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-monitor-hibernate</artifactId>
+    <packaging>jar</packaging>
+    <name>Monitor Hibernate Extension</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-monitor-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.genericdao</groupId>
+            <artifactId>dao</artifactId>
+            <version>1.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.persistence</groupId>
+                    <artifactId>persistence-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.genericdao</groupId>
+            <artifactId>search-jpa-hibernate</artifactId>
+            <version>${hibernate-generic-dao-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernatespatial</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>${hibernate-spatial-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernatespatial</groupId>
+            <artifactId>hibernate-spatial-h2-geodb</artifactId>
+            <version>${hibernate-spatial-h2-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opengeo</groupId>
+            <artifactId>geodb</artifactId>
+            <version>${opengeo-geodb.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geoserver.extension</groupId>
+            <artifactId>gs-monitor-core</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <properties>
+        <test.exclude.pattern>**/HibernateMonitorDAOTest.*</test.exclude.pattern>
+    </properties>
+
+</project>

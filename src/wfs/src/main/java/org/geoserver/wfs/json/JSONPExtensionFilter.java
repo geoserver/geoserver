@@ -8,14 +8,12 @@ package org.geoserver.wfs.json;
 import org.geoserver.platform.NameExclusionFilter;
 
 /**
- * 
  * Filter to disable/enable JsonP output format
- * 
+ *
  * @author carlo cancellieri - GeoSolutions
- * 
  */
-public class JSONPExtensionFilter extends NameExclusionFilter implements
-        org.geoserver.platform.ExtensionFilter {
+public class JSONPExtensionFilter extends NameExclusionFilter
+        implements org.geoserver.platform.ExtensionFilter {
 
     public JSONPExtensionFilter(String beanId) {
         super();

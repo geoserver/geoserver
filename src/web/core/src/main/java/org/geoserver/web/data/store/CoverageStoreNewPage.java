@@ -6,9 +6,7 @@
 package org.geoserver.web.data.store;
 
 import java.util.logging.Level;
-
 import javax.management.RuntimeErrorException;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -18,17 +16,15 @@ import org.opengis.coverage.grid.Format;
 
 /**
  * Supports coverage store configuration
- * 
+ *
  * @author Andrea Aime
  * @author Gabriel Roldan
  */
 public class CoverageStoreNewPage extends AbstractCoverageStorePage {
 
     /**
-     * 
-     * @param coverageFactoryName
-     *            the {@link Format#getName() name} of the format to create a new raster coverage
-     *            for
+     * @param coverageFactoryName the {@link Format#getName() name} of the format to create a new
+     *     raster coverage for
      */
     public CoverageStoreNewPage(final String coverageFactoryName) {
         Catalog catalog = getCatalog();
@@ -43,13 +39,15 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
     }
 
     @Override
-    protected void onSave(final CoverageStoreInfo info, AjaxRequestTarget target) throws IllegalArgumentException {
+    protected void onSave(final CoverageStoreInfo info, AjaxRequestTarget target)
+            throws IllegalArgumentException {
         final Catalog catalog = getCatalog();
 
         /*
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
+        CoverageStoreInfo expandedStore = getCatalog().getResourcePool().clone(info, true);
         CoverageStoreInfo savedStore = catalog.getFactory().createCoverageStore();
 
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
@@ -58,11 +56,10 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
             // GeoServer Env substitution; validate first
-            clone(info, savedStore);
-            catalog.validate(savedStore, false).throwIfInvalid();
-            
-            // GeoServer Env substitution; fore to *AVOID* resolving env placeholders...
-            clone(info, savedStore, false);
+            catalog.validate(expandedStore, false).throwIfInvalid();
+
+            // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
+            savedStore = catalog.getResourcePool().clone(info, false);
             // ... and save
             catalog.save(savedStore);
         } catch (RuntimeException e) {
@@ -74,20 +71,19 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         onSuccessfulSave(info, catalog, savedStore);
     }
 
-    protected void onSuccessfulSave(final CoverageStoreInfo info, final Catalog catalog,
-            CoverageStoreInfo savedStore) {
+    protected void onSuccessfulSave(
+            final CoverageStoreInfo info, final Catalog catalog, CoverageStoreInfo savedStore) {
         // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
         // coverage while the getotools coverage api does not allow for more than one
         NewLayerPage layerChooserPage;
-        CoverageStoreInfo expandedStore = getCatalog().getFactory().createCoverageStore();
         try {
-            clone(savedStore, expandedStore);
-            layerChooserPage = new NewLayerPage(expandedStore.getId());
+            catalog.getResourcePool().clone(savedStore, true);
+            // The ID is assigned by the catalog and therefore cannot be cloned
+            layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Getting list of coverages for saved store " + info.getURL(), e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.
-            try {// be extra cautious
-                catalog.remove(expandedStore);
+            try { // be extra cautious
                 catalog.remove(savedStore);
             } catch (RuntimeErrorException shouldNotHappen) {
                 LOGGER.log(Level.WARNING, "Can't remove CoverageStoreInfo after adding it!", e);
@@ -98,5 +94,4 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
 
         setResponsePage(layerChooserPage);
     }
-
 }

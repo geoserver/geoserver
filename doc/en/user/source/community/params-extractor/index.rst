@@ -1,7 +1,7 @@
 .. _community_params_extractor:
 
 Parameters Extractor
-===============
+====================
 
 This module allow us to entering specific request parameters as URL path fragments instead of using the query string.
 For example, we want to be able to apply a cql_filter using a URL in the following form::
@@ -156,3 +156,11 @@ Follow a print screen of the rules management UI with all the rules previously d
    *Rules management UI*
 
 Note that the first rule (the advanced one) is not active.
+
+REST API
+--------
+
+The rules and echo parameters can also be managed by means of a REST API found at 
+``geoserver/rest/params-extractor``. Documentation for it is available in 
+:api:`Swagger format <params-extractor.yaml>`
+

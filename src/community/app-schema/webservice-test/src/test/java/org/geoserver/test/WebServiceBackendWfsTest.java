@@ -10,8 +10,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.geoserver.test.WebServiceBackendMockData;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Test;
@@ -20,20 +18,18 @@ import org.w3c.dom.Document;
 /**
  * WFS GetFeature to test integration of {@link AppSchemaDataAccess} with web service backend with
  * GeoServer.
- * 
+ *
  * @author Rini Angreani, CSIRO Earth Science and Resource Engineering
  */
-public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {    
+public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
 
-	@Override
-	protected AbstractAppSchemaMockData createTestData() {
-		return new WebServiceBackendMockData();
-	}
+    @Override
+    protected AbstractAppSchemaMockData createTestData() {
+        return new WebServiceBackendMockData();
+    }
 
-    /**
-     * Test whether GetCapabilities returns wfs:WFS_Capabilities.
-     */
-	@Test
+    /** Test whether GetCapabilities returns wfs:WFS_Capabilities. */
+    @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -58,17 +54,18 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * Test whether DescribeFeatureType returns xsd:schema, and if the contents are correct. When no
      * type name specified, it should return imports for all name spaces involved. If type name is
      * specified, it should return imports of GML type and the type's top level schema.
-     * 
+     *
      * @throws IOException
      */
-	@Test
+    @Test
     public void testDescribeFeatureType() throws IOException {
-        /**
-         * gsml:MappedFeature
-         */
-        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
-        LOGGER.info("WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
-                + prettyString(doc));
+        /** gsml:MappedFeature */
+        Document doc =
+                getAsDOM(
+                        "wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
+        LOGGER.info(
+                "WFS DescribeFeatureType, typename=gsml:MappedFeature response:\n"
+                        + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         // check target name space is encoded and is correct
         assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_URI, "//@targetNamespace", doc);
@@ -78,29 +75,31 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
         // otherwise it's invalid to import twice
         assertXpathCount(0, "//xsd:import", doc);
         // GSML schemaLocation
-        assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
-                "//xsd:include/@schemaLocation", doc);
+        assertXpathEvaluatesTo(
+                AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
+                "//xsd:include/@schemaLocation",
+                doc);
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
 
-        /**
-         * gsml:GeologicUnit
-         */
+        /** gsml:GeologicUnit */
         doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:GeologicUnit");
-        LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
-                + prettyString(doc));
+        LOGGER.info(
+                "WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
+                        + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_URI, "//@targetNamespace", doc);
         assertXpathCount(1, "//xsd:include", doc);
         assertXpathCount(0, "//xsd:import", doc);
         // GSML schemaLocation
-        assertXpathEvaluatesTo(AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
-                "//xsd:include/@schemaLocation", doc);
+        assertXpathEvaluatesTo(
+                AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL,
+                "//xsd:include/@schemaLocation",
+                doc);
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
-
     }
 
     /**
@@ -108,7 +107,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * data access with property files backend, but it chains GeologicUnit from a web service
      * backend.
      */
-	@Test
+    @Test
     public void testMappedFeature() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -146,16 +145,19 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
         }
 
         // check for duplicate gml:id
-        assertXpathCount(1,
-                "//gsml:GeologicUnit[@gml:id='lithostratigraphic.unit.1679161041155866313']", doc);
+        assertXpathCount(
+                1,
+                "//gsml:GeologicUnit[@gml:id='lithostratigraphic.unit.1679161041155866313']",
+                doc);
     }
 
     /**
      * Test content of GetFeature response for GeologicUnit with web service backend. It feature
-     * chains observationMethod which is a normal app-schema data access with property files backend.
-     * It also feature chains CompositionPart which is another app-schema data access with web service.
+     * chains observationMethod which is a normal app-schema data access with property files
+     * backend. It also feature chains CompositionPart which is another app-schema data access with
+     * web service.
      */
-	@Test
+    @Test
     public void testGeologicUnit() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
@@ -163,47 +165,60 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(3, "//gsml:GeologicUnit", doc);
         checkSchemaLocation(doc);
 
-        /**
-         * First Geologic Unit
-         */
+        /** First Geologic Unit */
         String id = "lithostratigraphic.unit.1679161021439131319";
         assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[1]/@gml:id", doc);
 
         // description
-        assertXpathEvaluatesTo("Test description 1", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 1",
+                "//gsml:GeologicUnit[@gml:id='" + id + "']/gml:description",
+                doc);
 
         // observation method from properties file by feature chaining
-        assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("value01", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
-                + "[@codeSpace='codespace01']", doc);
+        assertXpathCount(
+                1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
+        assertXpathEvaluatesTo(
+                "value01",
+                "//gsml:GeologicUnit[@gml:id='"
+                        + id
+                        + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
+                        + "[@codeSpace='codespace01']",
+                doc);
 
         // composition part from another web service by feature chaining
         assertXpathCount(0, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:composition", doc);
 
-        /**
-         * Second Geologic Unit
-         */
-
+        /** Second Geologic Unit */
         id = "lithostratigraphic.unit.1679161041155866313";
         assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[2]/@gml:id", doc);
 
         // description
-        assertXpathEvaluatesTo("Test description 1", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 1",
+                "//gsml:GeologicUnit[@gml:id='" + id + "']/gml:description",
+                doc);
 
         // observation method from properties file by feature chaining
-        assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("value02", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
-                + "[@codeSpace='codespace02']", doc);
+        assertXpathCount(
+                1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
+        assertXpathEvaluatesTo(
+                "value02",
+                "//gsml:GeologicUnit[@gml:id='"
+                        + id
+                        + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
+                        + "[@codeSpace='codespace02']",
+                doc);
 
         // composition part from another web service by feature chaining
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:composition", doc);
 
-        assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gsml:composition/gsml:CompositionPart/gsml:lithology", doc);
+        assertXpathCount(
+                1,
+                "//gsml:GeologicUnit[@gml:id='"
+                        + id
+                        + "']/gsml:composition/gsml:CompositionPart/gsml:lithology",
+                doc);
 
         assertXpathEvaluatesTo(
                 "167916112856013567",
@@ -233,27 +248,36 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                         + "']/gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/gml:description",
                 doc);
 
-        /**
-         * Third Geologic Unit
-         */
+        /** Third Geologic Unit */
         id = "lithostratigraphic.unit.1679161021439938381";
         assertXpathEvaluatesTo(id, "(//gsml:GeologicUnit)[3]/@gml:id", doc);
 
         // description
-        assertXpathEvaluatesTo("Test description 2", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 2",
+                "//gsml:GeologicUnit[@gml:id='" + id + "']/gml:description",
+                doc);
 
         // observation method from properties file by feature chaining
-        assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("value03", "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
-                + "[@codeSpace='codespace03']", doc);
+        assertXpathCount(
+                1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:observationMethod", doc);
+        assertXpathEvaluatesTo(
+                "value03",
+                "//gsml:GeologicUnit[@gml:id='"
+                        + id
+                        + "']/gsml:observationMethod/gsml:CGI_TermValue/gsml:value"
+                        + "[@codeSpace='codespace03']",
+                doc);
 
         // composition part from another web service by feature chaining
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='" + id + "']/gsml:composition", doc);
 
-        assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='" + id
-                + "']/gsml:composition/gsml:CompositionPart/gsml:lithology", doc);
+        assertXpathCount(
+                2,
+                "//gsml:GeologicUnit[@gml:id='"
+                        + id
+                        + "']/gsml:composition/gsml:CompositionPart/gsml:lithology",
+                doc);
 
         // testing lithology as multi valued properties from the backend
         assertXpathEvaluatesTo(
@@ -329,15 +353,19 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Check schema location
-     * 
+     *
      * @param doc
      */
     private void checkSchemaLocation(Document doc) {
         String schemaLocation = evaluate("/wfs:FeatureCollection/@xsi:schemaLocation", doc);
-        String gsmlLocation = AbstractAppSchemaMockData.GSML_URI + " "
-                + AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL;
-        String wfsLocation = org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE + " "
-                + org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION;
+        String gsmlLocation =
+                AbstractAppSchemaMockData.GSML_URI
+                        + " "
+                        + AbstractAppSchemaMockData.GSML_SCHEMA_LOCATION_URL;
+        String wfsLocation =
+                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE
+                        + " "
+                        + org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION;
         if (schemaLocation.startsWith(AbstractAppSchemaMockData.GSML_URI)) {
             // GSML schema location was encoded first
             assertEquals(gsmlLocation + " " + wfsLocation, schemaLocation);
@@ -349,88 +377,188 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Check mf1 content are encoded correctly
-     * 
+     *
      * @param id
      * @param doc
      */
     private void checkMf1Content(String id, Document doc) {
-        assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
         // specification lithostratigraphic.unit.1679161021439131319
-        assertXpathEvaluatesTo("lithostratigraphic.unit.1679161021439131319",
-                "//gsml:MappedFeature[@gml:id='" + id
-                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
+        assertXpathEvaluatesTo(
+                "lithostratigraphic.unit.1679161021439131319",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                doc);
         // description
-        assertXpathEvaluatesTo("Test description 1", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 1",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:description",
+                doc);
         // name, there should only be one
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo("Unit Name1248396531312 UC1248396531312 description name",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo("gsv:NameSpace", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name/@codeSpace", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name",
+                doc);
+        assertXpathEvaluatesTo(
+                "Unit Name1248396531312 UC1248396531312 description name",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name",
+                doc);
+        assertXpathEvaluatesTo(
+                "gsv:NameSpace",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name/@codeSpace",
+                doc);
         // feature link shouldn't appear as it's not in the schema
-        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
+        assertXpathCount(
+                0,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK",
+                doc);
         // purpose
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:purpose", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:purpose",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose",
+                doc);
         // rank should be missing as it doesn't exist from the backend for this one
-        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:rank", doc);
+        assertXpathCount(
+                0,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:rank",
+                doc);
 
         // observation method
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
-                + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:observationMethod",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
+                        + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']",
+                doc);
     }
 
     /**
      * Check mf2 content are encoded correctly
-     * 
+     *
      * @param id
      * @param doc
      */
     private void checkMf2Content(String id, Document doc) {
-        assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "MERCIA MUDSTONE GROUP",
+                "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name",
+                doc);
         // lithostratigraphic.unit.1679161041155866313
-        assertXpathEvaluatesTo("lithostratigraphic.unit.1679161041155866313",
-                "//gsml:MappedFeature[@gml:id='" + id
-                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
+        assertXpathEvaluatesTo(
+                "lithostratigraphic.unit.1679161041155866313",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                doc);
         // description
-        assertXpathEvaluatesTo("Test description 1", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 1",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:description",
+                doc);
         // name
-        assertXpathCount(2, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo("Unit Name1233811724109 UC1233811724109 description name",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name[1]", doc);
-        assertXpathEvaluatesTo("gsv:NameSpace", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name[1]/@codeSpace", doc);
-        assertXpathEvaluatesTo("urn:cgi:feature:GSV:1679161041155866313",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name[2]", doc);
-        assertXpathEvaluatesTo("gsv:NameSpace", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name[2]/@codeSpace", doc);
+        assertXpathCount(
+                2,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name",
+                doc);
+        assertXpathEvaluatesTo(
+                "Unit Name1233811724109 UC1233811724109 description name",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[1]",
+                doc);
+        assertXpathEvaluatesTo(
+                "gsv:NameSpace",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[1]/@codeSpace",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:cgi:feature:GSV:1679161041155866313",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[2]",
+                doc);
+        assertXpathEvaluatesTo(
+                "gsv:NameSpace",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[2]/@codeSpace",
+                doc);
         // feature link shouldn't appear as it's not in the schema
-        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
+        assertXpathCount(
+                0,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK",
+                doc);
         // purpose
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:purpose", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:purpose",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose",
+                doc);
         // rank
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:rank", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:rank",
+                doc);
         assertXpathEvaluatesTo(
                 "",
                 "//gsml:MappedFeature[@gml:id='"
@@ -439,70 +567,132 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // observation method
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
-                + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:observationMethod",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
+                        + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']",
+                doc);
     }
 
     /**
      * Check mf3 content are encoded correctly
-     * 
+     *
      * @param id
      * @param doc
      */
     private void checkMf3Content(String id, Document doc) {
-        assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
         // lithostratigraphic.unit.1679161041155866313
-        assertXpathEvaluatesTo("#lithostratigraphic.unit.1679161041155866313",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/@xlink:href", doc);
+        assertXpathEvaluatesTo(
+                "#lithostratigraphic.unit.1679161041155866313",
+                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/@xlink:href",
+                doc);
         // make sure nothing else is encoded
-        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathCount(
+                0,
+                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit",
+                doc);
     }
 
     /**
      * Check mf4 content are encoded correctly
-     * 
+     *
      * @param id
      * @param doc
      */
     private void checkMf4Content(String id, Document doc) {
-        assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gml:name", doc);
+        assertXpathEvaluatesTo(
+                "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
         // lithostratigraphic.unit.1679161021439938381
-        assertXpathEvaluatesTo("lithostratigraphic.unit.1679161021439938381",
-                "//gsml:MappedFeature[@gml:id='" + id
-                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
+        assertXpathEvaluatesTo(
+                "lithostratigraphic.unit.1679161021439938381",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                doc);
         // description
-        assertXpathEvaluatesTo("Test description 2", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:description", doc);
+        assertXpathEvaluatesTo(
+                "Test description 2",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:description",
+                doc);
         // name
-        assertXpathCount(2, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo("Unit Name1248396020281 UC1248396020281 description name 2",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name[1]", doc);
-        assertXpathEvaluatesTo("gsv:NameSpace", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name[1]/@codeSpace", doc);
-        assertXpathEvaluatesTo("urn:cgi:feature:GSV:1679161021439938381",
-                "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name[2]", doc);
-        assertXpathEvaluatesTo("gsv:NameSpace", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name[2]/@codeSpace", doc);
+        assertXpathCount(
+                2,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name",
+                doc);
+        assertXpathEvaluatesTo(
+                "Unit Name1248396020281 UC1248396020281 description name 2",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[1]",
+                doc);
+        assertXpathEvaluatesTo(
+                "gsv:NameSpace",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[1]/@codeSpace",
+                doc);
+        assertXpathEvaluatesTo(
+                "urn:cgi:feature:GSV:1679161021439938381",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[2]",
+                doc);
+        assertXpathEvaluatesTo(
+                "gsv:NameSpace",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gml:name[2]/@codeSpace",
+                doc);
         // feature link shouldn't appear as it's not in the schema
-        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK", doc);
+        assertXpathCount(
+                0,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/FEATURE_LINK",
+                doc);
         // purpose
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:purpose", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:purpose",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:purpose",
+                doc);
         // rank
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:rank", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:rank",
+                doc);
         assertXpathEvaluatesTo(
                 "",
                 "//gsml:MappedFeature[@gml:id='"
@@ -511,11 +701,19 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // observation method
-        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification"
-                + "/gsml:GeologicUnit/gsml:observationMethod", doc);
-        assertXpathEvaluatesTo("CONSTANT", "//gsml:MappedFeature[@gml:id='" + id
-                + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
-                + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']", doc);
+        assertXpathCount(
+                1,
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification"
+                        + "/gsml:GeologicUnit/gsml:observationMethod",
+                doc);
+        assertXpathEvaluatesTo(
+                "CONSTANT",
+                "//gsml:MappedFeature[@gml:id='"
+                        + id
+                        + "']/gsml:specification/gsml:GeologicUnit/gsml:observationMethod"
+                        + "/gsml:CGI_TermValue/gsml:value[@codeSpace='gsv:NameSpace']",
+                doc);
     }
-
 }

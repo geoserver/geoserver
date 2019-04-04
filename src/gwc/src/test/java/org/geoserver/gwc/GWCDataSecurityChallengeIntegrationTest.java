@@ -12,9 +12,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -30,8 +28,8 @@ public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class,
-                applicationContext);
+        DataAccessRuleDAO dao =
+                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
@@ -47,15 +45,18 @@ public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
 
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections
-                .singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList(
+                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test
     public void testDirectWMSIntegration() throws Exception {
-        String path = "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png" + "&layers="
-                + getLayerId(MockData.LAKES) + "&srs=EPSG:4326"
-                + "&width=256&height=256&styles=&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        String path =
+                "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                        + "&layers="
+                        + getLayerId(MockData.LAKES)
+                        + "&srs=EPSG:4326"
+                        + "&width=256&height=256&styles=&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
         MockHttpServletResponse response;
 
         // Try first as anonymous user, which should be disallowed.

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <context:component-scan base-package="org.geoserver.taskmanager.beans"/>
+    <context:component-scan base-package="org.geoserver.taskmanager.fileservice"/>
+
+    <!--H2 setup -->
+    <bean class="org.geoserver.taskmanager.external.impl.H2DbSourceImpl">
+        <property name="name" value="testsourcedb"/>
+        <property name="path" value="mem"/>
+        <property name="db" value="testsourcedb"/>
+        <property name="createDBSqlResource" value="classpath:h2/dbsource/create-source.sql"/>
+    </bean>
+    <bean class="org.geoserver.taskmanager.external.impl.H2DbSourceImpl">
+        <property name="name" value="testtargetdb"/>
+        <property name="path" value="mem"/>
+        <property name="db" value="testtargetdb"/>
+        <property name="createDBSqlResource" value="classpath:h2/dbtarget/create-target.sql"/>
+        <property name="createDataSqlResource" value=""/>
+    </bean>
+    <!-- for pub test, postgres -->
+    <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
+        <property name="name" value="mypostgresdb" />
+        <property name="host" value="localhost" />
+        <property name="db" value="mydb" />
+        <property name="schema" value="gw_beleid" />
+        <property name="username" value="postgres" />
+        <property name="password" value="postgres" />
+    </bean>     
+    <!-- for pub test, jndi -->
+    <bean class="org.geoserver.taskmanager.external.impl.PostgisJndiDbSourceImpl">
+        <property name="name" value="myjndidb" />
+        <property name="jndiName" value="myjndi" />
+        <property name="schema" value="gw_beleid" />
+        <property name="targetJndiNames">
+            <map>
+                <entry key="mygs" value="mytargetjndi" />
+            </map>
+        </property>        
+    </bean> 
+
+    <!-- postgis databases for testing task on you local machine-->
+
+   <!-- <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
+		<property name="name" value="testsourcedb" />
+		<property name="host" value="localhost" />
+		<property name="db" value="testsourcedb" />
+		<property name="username" value="postgres" />
+		<property name="password" value="postgres" />
+	</bean>
+
+    <bean class="org.geoserver.taskmanager.external.impl.PostgisDbSourceImpl">
+        <property name="name" value="testtargetdb" />
+        <property name="host" value="localhost" />
+        <property name="db" value="testtargetdb" />
+        <property name="username" value="postgres" />
+        <property name="password" value="postgres" />
+    </bean>-->
+
+    <!-- external geoserver for testing -->
+    <bean class="org.geoserver.taskmanager.external.impl.ExternalGSImpl">
+        <property name="name" value="mygs"/>
+        <property name="url" value="http://localhost:9090/geoserver"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="geoserver"/>
+    </bean>
+
+    <!--File Services-->
+    <bean class="org.geoserver.taskmanager.external.impl.FileServiceImpl">
+        <property name="rootFolder" value="/tmp"/>
+        <property name="name" value="temp-directory"/>
+        <property name="description" value="Temporary Directory"/>
+    </bean>
+
+</beans>

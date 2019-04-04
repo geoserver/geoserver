@@ -6,7 +6,6 @@
 package org.geoserver.web.data.resource;
 
 import java.math.BigDecimal;
-
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -58,19 +57,27 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         updateFields();
 
         final RangeValidator<Integer> validator = new RangeValidator<Integer>(0, Integer.MAX_VALUE);
-        add(new TextField<Integer>("years", new PropertyModel<Integer>(this, "years"))
-                .add(validator));
-        add(new TextField<Integer>("months", new PropertyModel<Integer>(this, "months"))
-                .add(validator));
-        add(new TextField<Integer>("weeks", new PropertyModel<Integer>(this, "weeks"))
-                .add(validator));
-        add(new TextField<Integer>("days", new PropertyModel<Integer>(this, "days")).add(validator));
-        add(new TextField<Integer>("hours", new PropertyModel<Integer>(this, "hours"))
-                .add(validator));
-        add(new TextField<Integer>("minutes", new PropertyModel<Integer>(this, "minutes"))
-                .add(validator));
-        add(new TextField<Integer>("seconds", new PropertyModel<Integer>(this, "seconds"))
-                .add(validator));
+        add(
+                new TextField<Integer>("years", new PropertyModel<Integer>(this, "years"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("months", new PropertyModel<Integer>(this, "months"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("weeks", new PropertyModel<Integer>(this, "weeks"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("days", new PropertyModel<Integer>(this, "days"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("hours", new PropertyModel<Integer>(this, "hours"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("minutes", new PropertyModel<Integer>(this, "minutes"))
+                        .add(validator));
+        add(
+                new TextField<Integer>("seconds", new PropertyModel<Integer>(this, "seconds"))
+                        .add(validator));
     }
 
     @Override
@@ -82,7 +89,7 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
     private void updateFields() {
         final BigDecimal modelObject = getModelObject();
         long time;
-        if(modelObject != null) {
+        if (modelObject != null) {
             time = modelObject.longValue();
         } else {
             time = 0;
@@ -104,12 +111,20 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
 
     @Override
     public void convertInput() {
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).processInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).processInput();
+                });
 
-        long time = seconds * secondMS + minutes * minuteMS + hours * hourMS + days * dayMS + weeks
-                * weekMS + months * monthMS + years * yearMS;
+        long time =
+                seconds * secondMS
+                        + minutes * minuteMS
+                        + hours * hourMS
+                        + days * dayMS
+                        + weeks * weekMS
+                        + months * monthMS
+                        + years * yearMS;
         setConvertedInput(new BigDecimal(time));
     }
 
@@ -118,9 +133,10 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(TextField.class, (component, visit) -> {
-            ((TextField) component).clearInput();
-        });
+        visitChildren(
+                TextField.class,
+                (component, visit) -> {
+                    ((TextField) component).clearInput();
+                });
     }
-
 }

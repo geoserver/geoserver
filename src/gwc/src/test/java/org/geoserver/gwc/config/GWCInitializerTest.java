@@ -16,9 +16,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -39,9 +40,6 @@ import org.geoserver.wms.WMSInfoImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 public class GWCInitializerTest {
 
@@ -87,7 +85,7 @@ public class GWCInitializerTest {
         when(geoServer.getService(eq(WMSInfo.class))).thenReturn(null);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layer = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));
@@ -131,7 +129,6 @@ public class GWCInitializerTest {
 
         assertFalse(wmsInfo.getMetadata().containsKey(GWCInitializer.WMS_INTEGRATION_ENABLED_KEY));
         verify(geoServer).save(same(wmsInfo));
-
     }
 
     @Test
@@ -145,7 +142,7 @@ public class GWCInitializerTest {
         when(configPersister.getConfig()).thenReturn(defaults);
 
         // let the catalog have something to initialize
-        LayerInfo layer = mockLayer("testLayer", new String[]{}, PublishedType.RASTER);
+        LayerInfo layer = mockLayer("testLayer", new String[] {}, PublishedType.RASTER);
         LayerGroupInfo group = mockGroup("testGroup", layer);
         when(rawCatalog.getLayers()).thenReturn(Lists.newArrayList(layer));
         when(rawCatalog.getLayerGroups()).thenReturn(Lists.newArrayList(group));

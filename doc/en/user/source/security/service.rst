@@ -57,6 +57,7 @@ Used in conjunction, these two rules grant anonymous access to GetCapabilities a
 
 Note this example does not specify whether a user accessing Transactions would also have access to GetFeature.
 
+.. _security_service_rest:
 
 REST services
 -------------

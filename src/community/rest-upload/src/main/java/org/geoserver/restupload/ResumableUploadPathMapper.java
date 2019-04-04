@@ -7,7 +7,6 @@ package org.geoserver.restupload;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.GeoServerExtensions;
@@ -18,13 +17,12 @@ import org.geoserver.rest.util.RESTUtils;
 
 /**
  * {@link RESTUploadPathMapperImpl} implementation for the resumable REST upload
- * 
- * @author Nicola Lagomarsini
  *
+ * @author Nicola Lagomarsini
  */
 public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
-    
-    private final static String DEFAULT_ROOT_DIRECTORY = "data";
+
+    private static final String DEFAULT_ROOT_DIRECTORY = "data";
 
     private String sourcePath;
 
@@ -33,8 +31,13 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
     }
 
     @Override
-    public void mapItemPath(String workspace, String store, Map<String, String> storeParams,
-            StringBuilder itemPath, String sourcePath) throws IOException {
+    public void mapItemPath(
+            String workspace,
+            String store,
+            Map<String, String> storeParams,
+            StringBuilder itemPath,
+            String sourcePath)
+            throws IOException {
         super.mapItemPath(workspace, store, storeParams, itemPath, sourcePath);
         if (!canExecute(sourcePath.toString())) {
             return;
@@ -63,11 +66,10 @@ public class ResumableUploadPathMapper extends RESTUploadPathMapperImpl {
         Boolean canExecute = false;
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource tmpUploadFolder = loader.get(sourcePath);
-        if (FilenameUtils.normalize(itemPath).startsWith(
-                FilenameUtils.normalize(tmpUploadFolder.toString()))) {
+        if (FilenameUtils.normalize(itemPath)
+                .startsWith(FilenameUtils.normalize(tmpUploadFolder.toString()))) {
             canExecute = true;
         }
         return canExecute;
     }
-
 }

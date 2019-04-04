@@ -98,7 +98,7 @@
   
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject">
-        <ref local="roleFilter"/>
+        <ref bean="roleFilter"/>
     </property>
     <property name="targetMethod">
         <value>initializeFromConfig</value>
@@ -159,5 +159,9 @@
   <bean id="operationCallback"
     class="org.geoserver.security.OperationSecurityCallback">
     <constructor-arg ref="serviceRulesDao"/>
+  </bean>
+  
+  <bean id="bruteForceListener" class="org.geoserver.security.BruteForceListener">
+    <constructor-arg ref="geoServerSecurityManager"/>
   </bean>
 </beans>

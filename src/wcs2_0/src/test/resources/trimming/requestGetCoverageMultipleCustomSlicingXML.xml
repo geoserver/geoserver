@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0" xmlns:crs="http://www.opengis.net/wcs/crs/1.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 
+                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"
+  service="WCS" version="2.0.1">
+  <wcs:CoverageId>${coverageId}</wcs:CoverageId>
+  <wcs:DimensionSlice>
+    <wcs:Dimension>Time</wcs:Dimension>
+    <wcs:SlicePoint>${slicePointTime}</wcs:SlicePoint>
+  </wcs:DimensionSlice>
+  <wcs:DimensionSlice>
+    <wcs:Dimension>Elevation</wcs:Dimension>
+    <wcs:SlicePoint>${slicePointElevation}</wcs:SlicePoint>
+  </wcs:DimensionSlice>
+  <wcs:DimensionSlice>
+    <wcs:Dimension>${CustomOne}</wcs:Dimension>
+    <wcs:SlicePoint>${slicePointCustomOne}</wcs:SlicePoint>
+  </wcs:DimensionSlice>
+  <wcs:DimensionSlice>
+    <wcs:Dimension>${CustomTwo}</wcs:Dimension>
+    <wcs:SlicePoint>${slicePointCustomTwo}</wcs:SlicePoint>
+  </wcs:DimensionSlice>
+  <wcs:format>image/tiff</wcs:format>
+</wcs:GetCoverage>

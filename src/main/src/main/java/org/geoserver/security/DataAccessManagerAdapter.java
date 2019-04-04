@@ -7,7 +7,6 @@ package org.geoserver.security;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -15,6 +14,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -22,9 +22,8 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Adapts a {@link DataAccessManager} to the {@link ResourceAccessManager} interface
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
     static final Logger LOGGER = Logging.getLogger(DataAccessManagerAdapter.class);
@@ -33,7 +32,7 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
 
     /**
      * Builds a new adapter
-     * 
+     *
      * @param delegate
      */
     public DataAccessManagerAdapter(DataAccessManager delegate) {
@@ -56,13 +55,17 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
         return buildLimits(resource.getClass(), readFilter, writeFilter);
     }
 
-    DataAccessLimits buildLimits(Class<? extends ResourceInfo> resourceClass, Filter readFilter, Filter writeFilter) {
+    DataAccessLimits buildLimits(
+            Class<? extends ResourceInfo> resourceClass, Filter readFilter, Filter writeFilter) {
         CatalogMode mode = delegate.getMode();
 
         // allow the secure catalog to avoid any kind of wrapping if there are no limits
         if ((readFilter == null || readFilter == Filter.INCLUDE)
-                && (writeFilter == null || writeFilter == Filter.INCLUDE
-                        || WMSLayerInfo.class.isAssignableFrom(resourceClass) || CoverageInfo.class.isAssignableFrom(resourceClass))) {
+                && (writeFilter == null
+                        || writeFilter == Filter.INCLUDE
+                        || WMSLayerInfo.class.isAssignableFrom(resourceClass)
+                        || WMTSLayerInfo.class.isAssignableFrom(resourceClass)
+                        || CoverageInfo.class.isAssignableFrom(resourceClass))) {
             return null;
         }
 
@@ -73,8 +76,11 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
             return new CoverageAccessLimits(mode, readFilter, null, null);
         } else if (WMSLayerInfo.class.isAssignableFrom(resourceClass)) {
             return new WMSAccessLimits(mode, readFilter, null, true);
+        } else if (WMTSLayerInfo.class.isAssignableFrom(resourceClass)) {
+            return new WMTSAccessLimits(mode, readFilter, null);
         } else {
-            LOGGER.log(Level.INFO,
+            LOGGER.log(
+                    Level.INFO,
                     "Warning, adapting to generic access limits for unrecognized resource type "
                             + resourceClass);
             return new DataAccessLimits(mode, readFilter);
@@ -85,12 +91,12 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
         boolean readable = delegate.canAccess(user, workspace, AccessMode.READ);
         boolean writable = delegate.canAccess(user, workspace, AccessMode.WRITE);
         boolean adminable = delegate.canAccess(user, workspace, AccessMode.ADMIN);
-        
+
         CatalogMode mode = delegate.getMode();
 
         if (readable && writable) {
             if (AdminRequest.get() == null) {
-                //not admin request, read+write means full acesss
+                // not admin request, read+write means full acesss
                 return null;
             }
         }
@@ -99,13 +105,11 @@ public class DataAccessManagerAdapter extends AbstractResourceAccessManager {
 
     @SuppressWarnings("deprecation")
     @Override
-    public Filter getSecurityFilter(Authentication user,
-            Class<? extends CatalogInfo> clazz) {
-        
-        if(delegate.getMode()==CatalogMode.CHALLENGE)
+    public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+
+        if (delegate.getMode() == CatalogMode.CHALLENGE)
             // If we're in CHALLENGE mode, everything should be visible
             return Predicates.acceptAll();
-        else
-            return super.getSecurityFilter(user, clazz);
+        else return super.getSecurityFilter(user, clazz);
     }
 }

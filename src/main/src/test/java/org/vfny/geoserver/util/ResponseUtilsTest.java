@@ -5,24 +5,22 @@
  */
 package org.vfny.geoserver.util;
 
-import org.easymock.classextension.EasyMock;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
+
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.impl.DataLinkInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.URLMangler;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-
-import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
-import org.geoserver.catalog.DataLinkInfo;
-import org.geoserver.catalog.impl.DataLinkInfoImpl;
-import static org.junit.Assert.*;
 
 public class ResponseUtilsTest {
 
@@ -30,14 +28,16 @@ public class ResponseUtilsTest {
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
         expect(settings.getProxyBaseUrl()).andReturn(proxyBaseUrl).anyTimes();
         replay(settings);
-        
+
         GeoServer geoServer = createNiceMock(GeoServer.class);
+        expect(geoServer.getGlobal()).andReturn(new GeoServerInfoImpl());
         expect(geoServer.getSettings()).andReturn(settings).anyTimes();
         replay(geoServer);
-        
+
         ProxifyingURLMangler mangler = new ProxifyingURLMangler(geoServer);
         ApplicationContext appContext = createNiceMock(ApplicationContext.class);
-        expect(appContext.getBeanNamesForType(URLMangler.class)).andReturn(new String[]{"mangler"});
+        expect(appContext.getBeanNamesForType(URLMangler.class))
+                .andReturn(new String[] {"mangler"});
         expect(appContext.getBean("mangler")).andReturn(mangler).anyTimes();
         replay(appContext);
         GeoServerExtensionsHelper.init(appContext);
@@ -54,7 +54,7 @@ public class ResponseUtilsTest {
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
         link.setContent("http://bar.com/geoserver/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/geoserver");
         assertEquals(link.getContent(), url);
     }
 
@@ -64,7 +64,7 @@ public class ResponseUtilsTest {
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
         link.setContent("/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyMetadataLink(link, "http://localhost/geoserver");
         assertEquals("http://foo.org/geoserver/metadata.xml?foo=bar", url);
     }
 
@@ -84,7 +84,7 @@ public class ResponseUtilsTest {
         DataLinkInfo link = new DataLinkInfoImpl();
         link.setContent("http://bar.com/geoserver/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/geoserver");
         assertEquals(link.getContent(), url);
     }
 
@@ -94,7 +94,7 @@ public class ResponseUtilsTest {
         DataLinkInfo link = new DataLinkInfoImpl();
         link.setContent("/metadata.xml?foo=bar");
 
-        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/gesoserver");
+        String url = ResponseUtils.proxifyDataLink(link, "http://localhost/geoserver");
         assertEquals("http://foo.org/geoserver/metadata.xml?foo=bar", url);
     }
 

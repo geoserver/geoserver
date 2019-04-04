@@ -9,29 +9,21 @@ import java.io.Serializable;
 
 /**
  * Base class for all AccessLimits declared by a {@link ResourceAccessManager}
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class AccessLimits implements Serializable {
     private static final long serialVersionUID = 8521276966116962954L;
-    
-    /**
-     * Gets the catalog mode for this layer
-     */
+
+    /** Gets the catalog mode for this layer */
     CatalogMode mode;
 
-    /**
-     * Builds a generic AccessLimits
-     */
+    /** Builds a generic AccessLimits */
     public AccessLimits(CatalogMode mode) {
         this.mode = mode;
     }
 
-    /**
-     * The catalog mode for this layer
-     * 
-     *
-     */
+    /** The catalog mode for this layer */
     public CatalogMode getMode() {
         return mode;
     }
@@ -46,21 +38,13 @@ public class AccessLimits implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         AccessLimits other = (AccessLimits) obj;
         if (mode == null) {
-            if (other.mode != null)
-                return false;
-        } else if (!mode.equals(other.mode))
-            return false;
+            if (other.mode != null) return false;
+        } else if (!mode.equals(other.mode)) return false;
         return true;
     }
-    
-    
-    
 }

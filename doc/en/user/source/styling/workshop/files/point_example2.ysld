@@ -1,0 +1,71 @@
+define: &point
+  size: ${10-(SCALERANK/2)}
+  symbols:
+  - mark:
+      shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
+      stroke-color: 'black'
+      stroke-width: 1
+      fill-color: 'gray'
+  x-labelObstacle: true
+define: &label
+  label: ${NAME}
+  fill-color: 'black'
+  font-family: Arial
+  font-size: 10
+  font-style: normal
+  font-weight: normal
+  placement: point
+  anchor: [0.5, 0]
+  displacement: [0, '${''10'' - SCALERANK / ''2''}']
+  priority: ${'10' - LABELRANK}
+  x-maxDisplacement: 90
+  x-spaceAround: 2
+rules:
+- filter: ${SCALERANK < '7'}
+  scale: ['4000000.0', '8000000.0']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- filter: ${SCALERANK < '5'}
+  scale: ['8000000.0', '1.7E7']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- filter: ${SCALERANK < '4'}
+  scale: ['1.7E7', '3.5E7']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- filter: ${SCALERANK < '3'}
+  scale: ['3.5E7', '7.0E7']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- filter: ${SCALERANK < '2'}
+  scale: ['7.0E7', '1.4E8']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- filter: ${SCALERANK < '1'}
+  scale: ['1.4E8', max]
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label
+- scale: [min, '4000000.0']
+  symbolizers:
+  - point:
+      <<: *point
+  - text:
+      <<: *label

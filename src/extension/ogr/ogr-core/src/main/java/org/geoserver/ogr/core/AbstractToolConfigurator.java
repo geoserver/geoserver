@@ -4,13 +4,14 @@
  */
 package org.geoserver.ogr.core;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.extended.NamedMapConverter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -22,14 +23,11 @@ import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.extended.NamedMapConverter;
-
 /**
  * Loads the tool configuration file and configures the output formats accordingly.
  *
  * <p>Also keeps tabs on the configuration file, reloading it as needed.
- * 
+ *
  * @author Andrea Aime, GeoSolutions
  * @author Stefano Costa, GeoSolutions
  */
@@ -43,38 +41,32 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     protected Resource configFile;
 
     // ConfigurationPoller
-    protected ResourceListener listener = new ResourceListener() {
-        public void changed(ResourceNotification notify) {
-            loadConfiguration();
-        }
-    };
+    protected ResourceListener listener =
+            new ResourceListener() {
+                public void changed(ResourceNotification notify) {
+                    loadConfiguration();
+                }
+            };
 
-    /**
-     * @param formatConverter the format converter tool
-     */
-    public AbstractToolConfigurator(FormatConverter formatConverter, ToolWrapperFactory wrapperFactory) {
+    /** @param formatConverter the format converter tool */
+    public AbstractToolConfigurator(
+            FormatConverter formatConverter, ToolWrapperFactory wrapperFactory) {
         this.of = formatConverter;
         this.wrapperFactory = wrapperFactory;
 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         configFile = loader.get(getConfigurationFile());
         loadConfiguration();
-        configFile.addListener( listener );
+        configFile.addListener(listener);
     }
 
-    /**
-     * @return the name of the tool configuration file, relative to GeoServer's data directory.
-     */
+    /** @return the name of the tool configuration file, relative to GeoServer's data directory. */
     protected abstract String getConfigurationFile();
 
-    /**
-     * @return the tool's default configuration
-     */
+    /** @return the tool's default configuration */
     protected abstract ToolConfiguration getDefaultConfiguration();
 
-    /**
-     * Loads configuration from file, if any; otherwise, loads internal defaults.
-     */
+    /** Loads configuration from file, if any; otherwise, loads internal defaults. */
     public void loadConfiguration() {
         // start with the default configuration, override if we can load the file
         ToolConfiguration configuration = getDefaultConfiguration();
@@ -83,19 +75,24 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
                 InputStream in = configFile.in();
                 try {
                     XStream xstream = buildXStream();
-                    configuration = (ToolConfiguration) xstream.fromXML( in);
-                }
-                finally {
+                    configuration = (ToolConfiguration) xstream.fromXML(in);
+                } finally {
                     in.close();
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error reading the " + getConfigurationFile() + " configuration file", e);
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Error reading the " + getConfigurationFile() + " configuration file",
+                    e);
         }
 
         if (configuration == null) {
-            LOGGER.log(Level.INFO,
-                            "Could not find/load the " + getConfigurationFile() + " configuration file, using internal defaults");
+            LOGGER.log(
+                    Level.INFO,
+                    "Could not find/load the "
+                            + getConfigurationFile()
+                            + " configuration file, using internal defaults");
             configuration = getDefaultConfiguration();
         }
 
@@ -105,7 +102,9 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         }
 
         // let's load the configuration
-        ToolWrapper wrapper = wrapperFactory.createWrapper(configuration.getExecutable(), configuration.getEnvironment());
+        ToolWrapper wrapper =
+                wrapperFactory.createWrapper(
+                        configuration.getExecutable(), configuration.getEnvironment());
         Set<String> supported = wrapper.getSupportedFormats();
         of.setExecutable(configuration.getExecutable());
         of.setEnvironment(configuration.getEnvironment());
@@ -114,41 +113,47 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
             if (supported.contains(format.getToolFormat())) {
                 toBeAdded.add(format);
             } else {
-                LOGGER.severe("Skipping '" + format.getGeoserverFormat() + "' as its tool format '"
-                        + format.getToolFormat() + "' is not among the ones supported by "
-                        + configuration.getExecutable());
+                LOGGER.severe(
+                        "Skipping '"
+                                + format.getGeoserverFormat()
+                                + "' as its tool format '"
+                                + format.getToolFormat()
+                                + "' is not among the ones supported by "
+                                + configuration.getExecutable());
             }
         }
         // update configured formats at once, potentially alleviating locking overhead
         of.replaceFormats(toBeAdded);
     }
 
-    /**
-     * Builds and configures the XStream used for de-serializing the configuration
-     *
-     */
+    /** Builds and configures the XStream used for de-serializing the configuration */
     protected XStream buildXStream() {
         XStream xstream = new SecureXStream();
         xstream.alias("ToolConfiguration", ToolConfiguration.class);
         xstream.alias("Format", Format.class);
-        xstream.allowTypes(new Class[] { ToolConfiguration.class, Format.class });
+        xstream.allowTypes(new Class[] {ToolConfiguration.class, Format.class});
         xstream.allowTypeHierarchy(FormatAdapter.class);
         xstream.addImplicitCollection(Format.class, "options", "option", String.class);
-        NamedMapConverter environmentConverter = new NamedMapConverter(xstream
-                .getMapper(), "variable", "name", String.class, "value", String.class,
-                true, true, xstream.getConverterLookup());
+        NamedMapConverter environmentConverter =
+                new NamedMapConverter(
+                        xstream.getMapper(),
+                        "variable",
+                        "name",
+                        String.class,
+                        "value",
+                        String.class,
+                        true,
+                        true,
+                        xstream.getConverterLookup());
         xstream.registerConverter(environmentConverter);
 
         return xstream;
     }
 
-    /**
-     * Kill all threads on web app context shutdown to avoid permgen leaks
-     */
+    /** Kill all threads on web app context shutdown to avoid permgen leaks */
     public void onApplicationEvent(ContextClosedEvent event) {
-        if( configFile != null ){
+        if (configFile != null) {
             configFile.removeListener(listener);
         }
     }
-
 }

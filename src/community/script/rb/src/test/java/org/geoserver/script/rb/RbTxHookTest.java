@@ -13,5 +13,4 @@ public class RbTxHookTest extends WfsTxHookTest {
     public String getExtension() {
         return "rb";
     }
-
 }

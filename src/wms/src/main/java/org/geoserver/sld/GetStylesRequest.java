@@ -6,7 +6,6 @@
 package org.geoserver.sld;
 
 import java.util.List;
-
 import org.geoserver.wms.WMSRequest;
 
 public class GetStylesRequest extends WMSRequest {
@@ -34,5 +33,4 @@ public class GetStylesRequest extends WMSRequest {
     public void setLayers(List<String> layers) {
         this.layers = layers;
     }
-
 }

@@ -9,7 +9,7 @@ import org.springframework.validation.Errors;
 
 /**
  * Check there are not too many instances of the input
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class MultiplicityValidator implements WPSInputValidator {
@@ -34,8 +34,12 @@ public class MultiplicityValidator implements WPSInputValidator {
         if (target instanceof Collection && maxInstances > 0) {
             int size = ((Collection) target).size();
             if (size > maxInstances) {
-                errors.reject(CODE, "Input has been provided in too many values, found " + size
-                        + " but the maximum accepted amount is " + maxInstances);
+                errors.reject(
+                        CODE,
+                        "Input has been provided in too many values, found "
+                                + size
+                                + " but the maximum accepted amount is "
+                                + maxInstances);
             }
         }
     }
@@ -73,16 +77,11 @@ public class MultiplicityValidator implements WPSInputValidator {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         MultiplicityValidator other = (MultiplicityValidator) obj;
-        if (maxInstances != other.maxInstances)
-            return false;
+        if (maxInstances != other.maxInstances) return false;
         return true;
     }
-
 }

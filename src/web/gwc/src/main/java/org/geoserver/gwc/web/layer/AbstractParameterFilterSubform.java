@@ -13,29 +13,28 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 
 /**
  * Subform for a ParameterFilter
- * @author Kevin Smith, OpenGeo
  *
+ * @author Kevin Smith, OpenGeo
  */
-public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> extends FormComponentPanel<T> {
+public abstract class AbstractParameterFilterSubform<T extends ParameterFilter>
+        extends FormComponentPanel<T> {
 
     private static final long serialVersionUID = -213688039804104263L;
 
-    public AbstractParameterFilterSubform(String id,
-            IModel<T> model) {
+    public AbstractParameterFilterSubform(String id, IModel<T> model) {
         super(id, model);
     }
 
-    
     @Override
     public void convertInput() {
-        visitChildren((component, visit) -> {
-            if (component instanceof FormComponent) {
-                FormComponent<?> formComponent = (FormComponent<?>) component;
-                formComponent.processInput();
-            }
-        });
+        visitChildren(
+                (component, visit) -> {
+                    if (component instanceof FormComponent) {
+                        FormComponent<?> formComponent = (FormComponent<?>) component;
+                        formComponent.processInput();
+                    }
+                });
         T filter = getModelObject();
         setConvertedInput(filter);
     }
-
 }

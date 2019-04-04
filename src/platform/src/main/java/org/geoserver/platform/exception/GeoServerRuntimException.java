@@ -9,7 +9,6 @@ package org.geoserver.platform.exception;
  * Base class for runtime exceptions whose messages can be localized.
  *
  * @see GeoServerException
- * 
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerRuntimException extends RuntimeException implements IGeoServerException {
@@ -19,10 +18,10 @@ public class GeoServerRuntimException extends RuntimeException implements IGeoSe
 
     /** id for the exception, used to locate localized message for the exception */
     String id;
-    
+
     /** arguments to pass into the localized exception message */
     Object[] args;
-    
+
     /** localized message */
     String message;
 
@@ -62,22 +61,22 @@ public class GeoServerRuntimException extends RuntimeException implements IGeoSe
     public void setArgs(Object... args) {
         this.args = args;
     }
-    
+
     public GeoServerRuntimException args(Object... args) {
         setArgs(args);
         return this;
     }
-    
+
     @Override
     public String getMessage() {
         if (id == null) {
             return super.getMessage();
         }
-    
+
         String localized = GeoServerExceptions.localize(this);
         return localized != null ? localized : super.getMessage();
     }
-    
+
     void setMessage(String message) {
         this.message = message;
     }

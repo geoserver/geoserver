@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+   <wicket:link>
+      <link rel="stylesheet" href="styleTaskManager.css" type="text/css">
+   </wicket:link>
+</wicket:head> 
+<body>
+	<wicket:extend>
+		<div wicket:id="dialog"></div>
+		
+		<div wicket:id="init" class="important"><wicket:message key="init"></wicket:message></div>
+
+		<div wicket:id="notvalidated" class="important">
+		<wicket:message key="notvalidated"></wicket:message></div>
+
+		<form wicket:id="configurationForm">	  		  	  
+		  	 <fieldset>		
+		  	 	<ul>
+		  	 	 <li>
+			  	 	 <label for="name"><wicket:message key="name"/></label>
+		             <input id="name" wicket:id="name" type="text" class="text" />
+		             
+		             <label for="workspace"><wicket:message key="workspace"/></label>
+		             <select id="workspace" wicket:id="workspace"></select>
+		            		  			            	
+				  	 <label for="description"><wicket:message key="descriptionField"/></label>
+		             <input id="description" wicket:id="description" type="text" class="text" />             
+				 </li>
+				 <li>
+					 <h4><wicket:message key="attributes"/></h4>
+					
+					 <div wicket:id="attributesPanel"></div>
+				 </li>
+				 <li>
+					 <h4><wicket:message key="tasks"/></h4>
+					 
+					 <ul class="links-above-table">
+						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+					 </ul>
+					
+					 <div wicket:id="tasksPanel"></div>
+					 
+					 <h4><wicket:message key="batches"/></h4>
+					 
+					 <div wicket:id="batchesPanel"></div>
+					 
+                     <div class="button-group selfclear">
+                        <a href="#" wicket:id="save"><wicket:message key="save"/></a>
+                        <a href="#" wicket:id="apply"><wicket:message key="apply"/></a>
+                        <a href="#" wicket:id="cancel"><wicket:message key="cancel"/></a>
+                     </div>
+				</li>
+			</ul>     
+			</fieldset>
+		</form>
+
+	</wicket:extend>
+</body>
+</html>

@@ -11,7 +11,7 @@ An example of an ImageMap adding tooltips to a map:
 
 .. code-block:: xml
 
-   <img src="..." usemap="#mymap/>
+   <img src="..." usemap="#mymap"/>
    <map name="mymap">
         <area shape="poly" coords="536,100 535,100 534,101 533,101 532,102"  title="This is a tooltip"/>
         <area shape="poly" coords="518,113 517,114 516,115 515,114"  title="Another tooltip"/>
@@ -21,7 +21,7 @@ An example of an ImageMap adding links to a map:
 
 .. code-block:: xml
 
-   <img src="..." usemap="#mymap/>
+   <img src="..." usemap="#mymap"/>
    <map name="mymap">
         <area shape="poly" coords="536,100 535,100 534,101 533,101 532,102"  href="http://www.mylink.com"/>
         <area shape="poly" coords="518,113 517,114 516,115 515,114"  href="http://www.mylink2.com"/>
@@ -31,7 +31,7 @@ A more complex example adding interactive behaviour on mouse events:
 
 .. code-block:: xml
 
-   <img src="..." usemap="#mymap/>
+   <img src="..." usemap="#mymap"/>
    <map name="mymap">
         <area shape="poly" coords="536,100 535,100 534,101 533,101 532,102"  onmouseover="onOver('<featureid>')" onmouseout="onOut('<featureid>')"/>
         <area shape="poly" coords="518,113 517,114 516,115 515,114"   onmouseover="onOver('<featureid>')" onmouseout="onOut('<featureid>')"/>

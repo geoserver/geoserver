@@ -5,15 +5,13 @@
  */
 package org.geoserver.mbtiles;
 
-import static org.junit.Assert.*;
 import static org.geoserver.data.test.MockData.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
@@ -23,24 +21,21 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
+import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
- * 
  * Test For WMS GetMap Output Format for MBTiles
- * 
- * @author Niels Charlier
  *
+ * @author Niels Charlier
  */
 public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
 
@@ -60,16 +55,17 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testTileEntries() throws Exception {
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent.getRequest().setBbox(
-            new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent
+                .getRequest()
+                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
-        
+
         WebMap map = format.produceMap(mapContent);
         MBTilesFile mbtiles = createMbTilesFiles(map);
-        
+
         MBTilesMetadata metadata = mbtiles.loadMetaData();
-        
+
         assertEquals("World_Lakes", metadata.getName());
         assertEquals("0", metadata.getVersion());
         assertEquals("World, null", metadata.getDescription());
@@ -79,7 +75,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
         assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
         assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
-        
+
         assertEquals(1, mbtiles.numberOfTiles());
 
         MBTilesFile.TileIterator tiles = mbtiles.tiles();
@@ -90,16 +86,17 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         assertEquals(512, e.getTileRow());
         assertNotNull(e.getData());
         tiles.close();
-        
+
         mbtiles.close();
     }
-    
+
     @Test
     public void testTileEntriesWithAddTiles() throws Exception {
         // Create a getMap request
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent.getRequest().setBbox(
-            new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent
+                .getRequest()
+                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
         // Create a temporary file for the mbtiles
@@ -110,7 +107,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         format.addTiles(mbtiles, mapContent.getRequest(), null);
         // Ensure everything is correct
         MBTilesMetadata metadata = mbtiles.loadMetaData();
-        
+
         assertEquals("World_Lakes", metadata.getName());
         assertEquals("0", metadata.getVersion());
         assertEquals("World, null", metadata.getDescription());
@@ -120,7 +117,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
         assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
         assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
-        
+
         assertEquals(1, mbtiles.numberOfTiles());
 
         MBTilesFile.TileIterator tiles = mbtiles.tiles();
@@ -137,7 +134,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
-    public void testDifferentBbox() throws NoSuchAuthorityCodeException, FactoryException{
+    public void testDifferentBbox() throws NoSuchAuthorityCodeException, FactoryException {
         // Instantiate a request
         GetMapRequest req = new GetMapRequest();
         // Define CRS
@@ -154,12 +151,12 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         // Ensure that the 2 generated bbox are not the same so that they are not cached
         double tolerance = 0.1d;
         assertNotSame(bounds1, bounds2);
-        assertNotEquals(bounds1.getMinX(),bounds2.getMinX(), tolerance );
-        assertNotEquals(bounds1.getMinY(),bounds2.getMinY(), tolerance );
-        assertNotEquals(bounds1.getMaxX(),bounds2.getMaxX(), tolerance );
-        assertNotEquals(bounds1.getMaxY(),bounds2.getMaxY(), tolerance );
+        assertNotEquals(bounds1.getMinX(), bounds2.getMinX(), tolerance);
+        assertNotEquals(bounds1.getMinY(), bounds2.getMinY(), tolerance);
+        assertNotEquals(bounds1.getMaxX(), bounds2.getMaxX(), tolerance);
+        assertNotEquals(bounds1.getMaxY(), bounds2.getMaxY(), tolerance);
     }
-    
+
     MBTilesFile createMbTilesFiles(WebMap map) throws IOException {
         assertTrue(map instanceof RawMap);
 
@@ -167,18 +164,18 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         File f = File.createTempFile("temp", ".mbtiles", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         rawMap.writeTo(fout);
-        fout.flush(); 
+        fout.flush();
         fout.close();
-        
+
         return new MBTilesFile(f);
     }
 
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
         GetMapRequest request = super.createGetMapRequest(layerNames);
-        request.setBbox(new Envelope(-180,180,-90,90));
+        request.setBbox(new Envelope(-180, 180, -90, 90));
         return request;
     };
-    
+
     WMSMapContent createMapContent(QName... layers) throws IOException {
         GetMapRequest mapRequest = createGetMapRequest(layers);
         WMSMapContent map = new WMSMapContent(mapRequest);
@@ -187,5 +184,4 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         }
         return map;
     }
-   
 }

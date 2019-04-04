@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd.spring-beans.dtd">
-<!-- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
+<!-- Copyright (C) 2014-2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
   under the GPL 2.0 license, available at the root application directory. -->
 
 <beans>
@@ -13,4 +13,20 @@
   <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback">
     <constructor-arg ref="GIFMapResponse" />
   </bean>
+  
+  <bean id="ncWmsGetTimeSeriesResponse" class="org.geoserver.wms.ncwms.GetTimeSeriesResponse">
+        <constructor-arg ref="wms"/>
+  </bean>
+  
+  <bean id="ncWmsService" class="org.geoserver.wms.ncwms.NcWmsService">
+        <constructor-arg ref="wms"/>
+  </bean>
+  
+  <bean id="ncWmsServiceCallback" class="org.geoserver.wms.ncwms.NcWmsServiceCallback">
+    <constructor-arg ref="ncWmsService"/>
+  </bean>
+  
+  <bean id="ncWmsInitializer" class="org.geoserver.wms.ncwms.NcWmsInitializer">
+  </bean>
+
 </beans>

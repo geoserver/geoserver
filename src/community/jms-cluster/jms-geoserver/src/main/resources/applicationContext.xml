@@ -13,7 +13,7 @@
                            http://activemq.apache.org/schema/core
                            http://activemq.apache.org/schema/core/activemq-core.xsd">
 
-	<context:component-scan base-package="it.geosoutions.geoserver.jms" />
+	<context:component-scan base-package="org.geoserver.cluster" />
 	<context:annotation-config />
 	
     <bean id="clusterHomePageContentProvider" 
@@ -28,26 +28,8 @@
 	<bean id="JMSActiveMQEmbeddedBrokerConfiguration"
 		class="org.geoserver.cluster.impl.ActiveMQEmbeddedBrokerConfiguration" />
 
-	<!-- REST INTERFACE -->
-
-	<bean id="jmsRestConfigMapping" class="org.geoserver.rest.RESTMapping">
-		<property name="routes">
-			<map>
-				<entry>
-					<key>
-						<value>/cluster</value>
-					</key>
-					<value>JMSResourceFinder</value>
-				</entry>
-			</map>
-		</property>
-	</bean>
-	
-	<bean id="JMSResourceFinder"
-		class="org.geoserver.cluster.impl.rest.ClusterResourceFinder" />
-		
 	<bean id="JMSController"
-		class="org.geoserver.cluster.impl.rest.Controller" />
+				class="org.geoserver.cluster.impl.rest.Controller" />
 
 	<!-- CONFIGURATION EXTENSIONS -->
 
@@ -113,6 +95,8 @@
 		depends-on="catalog" lazy-init="true">
 		<constructor-arg index="0" ref="rawCatalog" />
 		<constructor-arg index="1" ref="JMSPublisher" />
+		<constructor-arg index="2" ref="resourceLoader" />
+		<constructor-arg index="3" ref="dataDirectory" />
 	</bean>
 
 	<bean id="JMSConfigurationListener"
@@ -136,6 +120,7 @@
 		<constructor-arg index="0" value="-1" />
 		<constructor-arg index="1" ref="rawCatalog" />
 		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="resourceLoader" />
 	</bean>
 
 	<bean id="JMSCatalogAddEventHandlerSPI"
@@ -188,6 +173,14 @@
 
 	<bean id="JMSLoggingHandlerSPI"
 		class="org.geoserver.cluster.impl.handlers.configuration.JMSLoggingHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="geoServer" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
+
+	<bean id="JMSSettingsHandlerSPI"
+		  class="org.geoserver.cluster.impl.handlers.configuration.JMSSettingsHandlerSPI">
 		<constructor-arg index="0" value="1" />
 		<constructor-arg index="1" ref="geoServer" />
 		<constructor-arg index="2" ref="JMSXstream" />

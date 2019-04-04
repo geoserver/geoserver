@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    <!-- geoserver service loader used to test service related events -->
+    <bean id="jmsTestServiceLoader" class="org.geoserver.cluster.impl.handlers.configuration.JmsTestServiceLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+    <!-- listener that will receive published jms events and make them available to tests -->
+    <bean id="JmsEventsListener" class="org.geoserver.cluster.JmsEventsListener"/>
+    <!-- register the jms events listeners above -->
+    <bean id="JMSContainer" class="org.geoserver.cluster.client.JMSContainer"
+          destroy-method="shutdown" depends-on="JMSActiveMQFactory">
+        <constructor-arg index="0" ref="JMSConfiguration" />
+        <constructor-arg index="1" ref="JmsEventsListener" />
+    </bean>
+</beans>

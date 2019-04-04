@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.threadlocals;
 
 import static org.junit.Assert.assertNotEquals;
@@ -9,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.junit.After;
 import org.junit.Before;
 
@@ -17,9 +20,8 @@ import org.junit.Before;
  * Base class for {@link ThreadLocalTransfer} tests. Just implement a ThreadLocalTransferCallable
  * and call {@link #testThreadLocalTransfer(ThreadLocalTransferCallable)} to have the thread local
  * transfer be tested for proper transfer and cleanup.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public abstract class AbstractThreadLocalTransferTest {
 
@@ -74,6 +76,5 @@ public abstract class AbstractThreadLocalTransferTest {
         abstract void assertThreadLocalCleaned();
 
         abstract void assertThreadLocalApplied();
-
     };
 }

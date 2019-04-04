@@ -19,6 +19,20 @@
               </se:GraphicFill>
             </se:Fill>
           </se:PolygonSymbolizer>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:GraphicFill>
+                <se:Graphic>
+                  <se:Mark>
+                    <se:WellKnownName>file://images/square16.svg</se:WellKnownName>
+                    <se:Fill>
+                      <se:SvgParameter name="fill">0xFF0000</se:SvgParameter>
+                    </se:Fill>
+                  </se:Mark>
+                </se:Graphic>
+              </se:GraphicFill>
+            </se:Fill>
+          </se:PolygonSymbolizer>
         </se:Rule>
       </se:FeatureTypeStyle>
     </UserStyle>

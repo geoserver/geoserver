@@ -14,13 +14,10 @@ import org.opengis.filter.Filter;
 
 /**
  * Makes sure disabled layers/resources cannot be accessed from outside regardless of the service
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class DisabledResourceFilter extends AbstractCatalogFilter {
-
-    static final Filter ENABLED_FILTER = Predicates.equal("enabled", true);
 
     private boolean shouldApplyFilter() {
         Request request = Dispatcher.REQUEST.get();
@@ -30,18 +27,24 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
 
     @Override
     public Filter getSecurityFilter(Class<? extends CatalogInfo> clazz) {
-        if (shouldApplyFilter() && LayerInfo.class.isAssignableFrom(clazz)
-                || ResourceInfo.class.isAssignableFrom(clazz)) {
-            return ENABLED_FILTER;
-        } else {
-            return Filter.INCLUDE;
+        if (shouldApplyFilter()) {
+            if (LayerInfo.class.isAssignableFrom(clazz)) {
+                return Predicates.and(
+                        Predicates.equal("enabled", true),
+                        Predicates.equal("resource.enabled", true),
+                        Predicates.equal("resource.store.enabled", true));
+            } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
+                return Predicates.and(
+                        Predicates.equal("enabled", true), Predicates.equal("store.enabled", true));
+            }
         }
+        return Filter.INCLUDE;
     }
 
     @Override
     public boolean hideLayer(LayerInfo layer) {
         if (shouldApplyFilter()) {
-            return !layer.isEnabled();
+            return !layer.enabled();
         }
         return false;
     }
@@ -49,7 +52,7 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
     @Override
     public boolean hideResource(ResourceInfo resource) {
         if (shouldApplyFilter()) {
-            return !resource.isEnabled();
+            return !resource.enabled();
         }
         return false;
     }

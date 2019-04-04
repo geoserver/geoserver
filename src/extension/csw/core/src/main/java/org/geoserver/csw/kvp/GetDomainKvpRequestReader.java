@@ -8,14 +8,12 @@ package org.geoserver.csw.kvp;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.cat.csw20.GetDomainType;
 
 /**
  * GetDomain KVP request reader
- * 
+ *
  * @author Andrea Aime, GeoSolutions
  */
 public class GetDomainKvpRequestReader extends CSWKvpRequestReader {

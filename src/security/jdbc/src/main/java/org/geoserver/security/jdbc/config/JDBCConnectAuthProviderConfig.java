@@ -10,13 +10,13 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
- * Extension of {@link SecurityNamedServiceConfig} for authentication providers
- * checking username/password with a JDBC connect.
+ * Extension of {@link SecurityNamedServiceConfig} for authentication providers checking
+ * username/password with a JDBC connect.
  *
  * @author christian
  */
-public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfig 
-    implements SecurityAuthProviderConfig{
+public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfig
+        implements SecurityAuthProviderConfig {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,9 +24,7 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     private String connectURL;
     private String userGroupServiceName;
 
-
-    public JDBCConnectAuthProviderConfig() {
-    }
+    public JDBCConnectAuthProviderConfig() {}
 
     public JDBCConnectAuthProviderConfig(JDBCConnectAuthProviderConfig other) {
         super(other);
@@ -37,35 +35,28 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
 
     /**
      * The JDBC driver class name.
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getDriverClassName() {
         return driverClassName;
     }
 
-    /**
-     * Sets the JDBC driver class name.
-     * 
-     */
+    /** Sets the JDBC driver class name. */
     public void setDriverClassName(String driverClassName) {
         this.driverClassName = driverClassName;
     }
 
     /**
-     * The JDBC url with which to obtain a database connection with.  
-     * <p>
-     * Used only if {@link #isJndi()} is false.
-     * </p>
+     * The JDBC url with which to obtain a database connection with.
+     *
+     * <p>Used only if {@link #isJndi()} is false.
      */
     public String getConnectURL() {
         return connectURL;
     }
 
-    /**
-     * The JDBC url with which to obtain a database connection with.
-     */
+    /** The JDBC url with which to obtain a database connection with. */
     public void setConnectURL(String connectURL) {
         this.connectURL = connectURL;
     }
@@ -79,5 +70,4 @@ public class JDBCConnectAuthProviderConfig extends BaseSecurityNamedServiceConfi
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }
-
 }

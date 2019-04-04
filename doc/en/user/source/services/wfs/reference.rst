@@ -17,7 +17,7 @@ The WFS standard defines the framework for providing access to, and supporting t
 Operations
 ----------
 
-All versions of WFS support the these operations: 
+All versions of WFS support these operations: 
 
 .. list-table::
    :widths: 20 80
@@ -224,7 +224,7 @@ This request will execute a GetFeature request for a given layer ``namespace:fea
      request=GetFeature&
      typeNames=namespace:featuretype
 
-Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
+Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output, you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -292,7 +292,7 @@ For a single property from just one feature, use both ``featureID`` and ``proper
      featureID=feature&
      propertyName=attribute
 
-For more than one property from a single feature, use a comma-seaprated list of values for ``propertyName``::
+For more than one property from a single feature, use a comma-separated list of values for ``propertyName``::
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -332,7 +332,7 @@ In practice, few clients support this operation.
 Transaction
 ~~~~~~~~~~~
 
-The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
+The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned, and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
 
 More information on the syntax of transactions can be found in the `WFS specification <http://www.opengeospatial.org/standards/wfs>`_ and in the :ref:`GeoServer sample requests <demos>`.
 
@@ -487,7 +487,7 @@ DescribeStoredQueries
 A **DescribeStoredQuery** operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.
 
 
-This example describes the exsting stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById``::
+This example describes the existing stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById``::
 
   http://example.com/geoserver/wfs?
     request=DescribeStoredQueries&

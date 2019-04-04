@@ -17,51 +17,53 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
-/**
- * A page listing data access rules, allowing for removal, addition and linking to an edit page
- */
+/** A page listing data access rules, allowing for removal, addition and linking to an edit page */
 @SuppressWarnings("serial")
 public class ServiceAccessRulePage extends AbstractSecurityPage {
 
     private GeoServerTablePanel<ServiceAccessRule> rules;
-    
+
     private SelectionServiceRemovalLink removal;
 
     public ServiceAccessRulePage() {
-                
+
         ServiceAccessRuleProvider provider = new ServiceAccessRuleProvider();
-        add(rules = new GeoServerTablePanel<ServiceAccessRule>("table", provider, true) {
+        add(
+                rules =
+                        new GeoServerTablePanel<ServiceAccessRule>("table", provider, true) {
 
-            @Override
-            protected Component getComponentForProperty(String id, IModel<ServiceAccessRule> itemModel,
-                    Property<ServiceAccessRule> property) {
-                if (property == ServiceAccessRuleProvider.RULEKEY) {
-                    return editRuleLink(id, itemModel, property);
-                }
-                if (property == ServiceAccessRuleProvider.ROLES) {
-                    return new Label(id, property.getModel(itemModel));
-                }
-                throw new RuntimeException("Uknown property " + property);
-            }
-            
-            @Override
-            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                removal.setEnabled(rules.getSelection().size() > 0);
-                target.add(removal);
-            }
-        });
+                            @Override
+                            protected Component getComponentForProperty(
+                                    String id,
+                                    IModel<ServiceAccessRule> itemModel,
+                                    Property<ServiceAccessRule> property) {
+                                if (property == ServiceAccessRuleProvider.RULEKEY) {
+                                    return editRuleLink(id, itemModel, property);
+                                }
+                                if (property == ServiceAccessRuleProvider.ROLES) {
+                                    return new Label(id, property.getModel(itemModel));
+                                }
+                                throw new RuntimeException("Uknown property " + property);
+                            }
+
+                            @Override
+                            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                                removal.setEnabled(rules.getSelection().size() > 0);
+                                target.add(removal);
+                            }
+                        });
         rules.setOutputMarkupId(true);
-        
-        setHeaderPanel(headerPanel());
 
+        setHeaderPanel(headerPanel());
     }
-    
+
     protected Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<NewServiceAccessRulePage>(
-                "addNew", NewServiceAccessRulePage.class));
+        header.add(
+                new BookmarkablePageLink<NewServiceAccessRulePage>(
+                        "addNew", NewServiceAccessRulePage.class));
 
         // the removal button
         header.add(removal = new SelectionServiceRemovalLink("removeSelected", rules, dialog));
@@ -76,10 +78,9 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                setResponsePage(new EditServiceAccessRulePage((ServiceAccessRule) getDefaultModelObject()));
+                setResponsePage(
+                        new EditServiceAccessRulePage((ServiceAccessRule) getDefaultModelObject()));
             }
-
         };
     }
-
 }

@@ -17,5 +17,4 @@ public class WFSFactoryExtension extends ServiceFactoryExtension<WFSInfo> {
     public <T> T create(Class<T> clazz) {
         return (T) new WFSInfoImpl();
     }
-
 }

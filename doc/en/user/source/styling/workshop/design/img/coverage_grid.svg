@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="580px" height="304px" viewBox="0 0 580 304" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>coverage_grid</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="coverage_grid" sketch:type="MSArtboardGroup">
+            <path d="M84.125,297.082611 L301.906426,297.082601 C301.906426,297.082601 311.616411,287.061777 315.496094,265.550781 C319.375777,244.039786 314.389669,233.874987 315.496094,221.734375 C316.602519,209.593763 315.533851,209.971648 321.679688,197.699219 C327.825525,185.426789 324.114683,182.020025 339.199219,174.402344 C354.283755,166.784662 379.5,168.5 379.5,168.5 C379.5,168.5 416.41931,158.43805 437.219025,168.5 C458.018739,178.561951 461.89203,179.07384 460.53125,207.699219 C459.170472,236.324597 432.605469,265.550781 432.605469,265.550781 L427.679688,297.082611 L492.867188,297.082611 L492.867188,12.2539062 L437.219029,12.2539062 C437.219029,12.2539062 432.418334,21.8794841 422.347656,36.21875 C412.276979,50.5580161 402.610916,61.7865279 400.622121,64.3628935 L396.644531,69.515625 C396.644531,69.515625 390.350878,90.8497561 373.347656,102.402344 C356.344436,113.954933 344.875209,113.667203 327.199219,116.699219 C309.523229,119.731235 305.963115,124.425766 290,116.699219 C274.036883,108.972673 275.941384,98.0427821 269.125,88.5898438 C262.308617,79.1369053 266.847266,86.5550788 255.976562,69.515625 C245.10586,52.476171 239.03336,46.0776941 235.050781,35.1796875 C231.068203,24.2816808 235.050781,12.2539062 235.050781,12.2539062 L84.125,12.2539062 L84.125,297.082611 Z" id="Path-20-copy-2" stroke="#000000" sketch:type="MSShapeGroup"></path>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="257" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="287" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="257" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="269" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="203" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="185" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="167" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="149" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="131" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="251" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="437" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="203" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="185" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="167" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="149" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="131" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="233" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="437" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="203" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="185" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="167" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="149" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="131" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="215" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="437" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="203" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="185" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="167" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="149" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="131" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="197" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="437" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="203" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="185" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="167" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="149" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="131" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="179" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="419" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="383" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="365" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="347" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="329" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="203" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="185" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="167" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="149" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#D7E8F1" sketch:type="MSShapeGroup" x="131" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="161" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="419" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="383" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="365" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="347" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="329" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="203" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="185" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="167" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="149" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="131" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="143" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="419" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="383" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="365" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="347" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="329" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="311" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="293" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="257" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="239" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="221" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="203" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="185" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="167" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="149" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="131" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="113" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D2E3" sketch:type="MSShapeGroup" x="95" y="125" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="455" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="437" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="419" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="383" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="365" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="347" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="275" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="257" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="107" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="455" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="437" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="419" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="383" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="275" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="257" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="89" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="455" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="437" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#B0D1E4" sketch:type="MSShapeGroup" x="419" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="275" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="257" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="71" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="419" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="401" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="275" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="257" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="239" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="53" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="419" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="275" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="257" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="239" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="35" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="473" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="455" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="437" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="419" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="401" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="383" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="365" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="347" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="329" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="311" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="293" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="275" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="257" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" sketch:type="MSShapeGroup" x="239" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="221" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="203" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="185" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="167" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="149" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="131" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="113" y="17" width="8" height="8"></rect>
+            <rect id="Rectangle-18" stroke="#979797" fill="#7EB4D2" sketch:type="MSShapeGroup" x="95" y="17" width="8" height="8"></rect>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="470px" height="134px" viewBox="0 0 470 134" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>structure_feature_style</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="structure_feature_style" sketch:type="MSArtboardGroup">
+            <rect id="box" stroke="#4A4A4A" fill="#F2F2F2" sketch:type="MSShapeGroup" x="7" y="5" width="143" height="122" rx="4"></rect>
+            <text id="feature-style" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                <tspan x="33" y="17">feature-style</tspan>
+            </text>
+            <g id="feature_style" sketch:type="MSLayerGroup" transform="translate(11.000000, 10.000000)">
+                <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="border" stroke="#FFFFFF" fill="#F4D7BD" sketch:type="MSShapeGroup"></path>
+                <path d="M0.754882812,6.50254149 L5.75488281,0.423348942 L16.5048828,0.423348942 L11.5048828,6.50254149 L0.754882812,6.50254149 Z" id="edge" stroke="#B1792C" sketch:type="MSShapeGroup"></path>
+            </g>
+            <text id="name" sketch:type="MSTextLayer" font-family="Arial" font-size="10" font-weight="normal" fill="#000000">
+                <tspan x="33" y="28">name</tspan>
+                <tspan x="33" y="39">title</tspan>
+                <tspan x="33" y="50">abstract</tspan>
+            </text>
+            <g id="rule" sketch:type="MSLayerGroup" transform="translate(32.500000, 57.000000)">
+                <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="21" rx="5"></rect>
+                <text sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="28.1824818" y="14">rule</tspan>
+                </text>
+                <g id="rule-copy" transform="translate(6.262774, 4.000000)" sketch:type="MSShapeGroup">
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+            </g>
+            <g id="rule-copy-2" sketch:type="MSLayerGroup" transform="translate(32.500000, 77.000000)">
+                <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="21" rx="5"></rect>
+                <text id="rule" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="28.1824818" y="14">rule</tspan>
+                </text>
+                <g id="rule-copy" transform="translate(6.262774, 4.000000)" sketch:type="MSShapeGroup">
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+            </g>
+            <g id="rule-copy-3" sketch:type="MSLayerGroup" transform="translate(32.500000, 97.000000)">
+                <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="21" rx="5"></rect>
+                <text id="rule" sketch:type="MSTextLayer" font-family="Arial" font-size="12" font-weight="bold" fill="#000000">
+                    <tspan x="28.1824818" y="14">rule</tspan>
+                </text>
+                <g id="rule-copy" transform="translate(6.262774, 4.000000)" sketch:type="MSShapeGroup">
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M7.09110273,0.0048828125 C7.09110273,0.0048828125 0.70449367,3.7069664 0.70449367,5.87154961 C0.70449367,8.03613281 7.09110273,12.0048828 7.09110273,12.0048828 L13.4684786,5.87154961 L7.09110273,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

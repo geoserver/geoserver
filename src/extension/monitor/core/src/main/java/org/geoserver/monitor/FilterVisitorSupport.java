@@ -5,37 +5,31 @@
  */
 package org.geoserver.monitor;
 
-
 /**
  * Base class for filter visitors.
- * <p>
- * Subclasses should override the {@link #handleFilter(Filter)} and 
- * {@link #handleComposite(CompositeFilter, String)} methods.
- * </p>
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * <p>Subclasses should override the {@link #handleFilter(Filter)} and {@link
+ * #handleComposite(CompositeFilter, String)} methods.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class FilterVisitorSupport implements FilterVisitor {
 
     public void visit(Filter f) {
         if (f instanceof And) {
-            handleComposite((And)f, "AND");
-        }
-        else if (f instanceof Or) {
-            handleComposite((Or)f, "OR");
-        }
-        else {
+            handleComposite((And) f, "AND");
+        } else if (f instanceof Or) {
+            handleComposite((Or) f, "OR");
+        } else {
             handleFilter(f);
         }
     }
-    
+
     protected void handleComposite(CompositeFilter f, String type) {
         for (Filter fil : f.getFilters()) {
             fil.accept(this);
         }
     }
-    
-    protected void handleFilter(Filter f) {
-    }
+
+    protected void handleFilter(Filter f) {}
 }

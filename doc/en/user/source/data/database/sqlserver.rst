@@ -33,14 +33,13 @@ GeoServer files
 Microsoft files
 ```````````````
 
-#. Navigate to `Microsoft's JDBC driver for SQL Server and SQL Azure download page <http://www.microsoft.com/download/en/details.aspx?id=19847>`_.
+#. Navigate to the download page for `Microsoft JDBC Drivers for SQL Server <https://www.microsoft.com/en-us/download/details.aspx?id=11774>`_.
 
-#. Extract the contents of the archive
+#. Extract the contents of the archive.
 
-#. If you are running Java 6 or above, copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
-   If you are running Java 5 instead (supported up to GeoServer 2.1.x) copy the file ``sqljdbc.jar`` to the ``WEB-INF/lib`` directory
+#. Copy the file ``sqljdbc4.jar`` to the ``WEB-INF/lib`` directory of the GeoServer installation.
 
-#. For GeoServer installed on Windows, copy ``auth\x86\sqljdbc_auth.dll`` and ``xa\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``
+#. If GeoServer is installed on Windows, additionally copy ``auth\x86\sqljdbc_auth.dll`` and ``xa\x86\sqljdbc_xa.dll`` to ``C:\Windows\System32``.
 
 Adding a SQL Server database
 ----------------------------

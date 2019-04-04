@@ -6,21 +6,18 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geotools.data.ows.Layer;
+import org.geotools.ows.wms.Layer;
 import org.opengis.util.ProgressListener;
 
 @SuppressWarnings("serial")
 public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
-    
-    protected WMSLayerInfoImpl() {
-    }
-    
+    protected WMSLayerInfoImpl() {}
+
     public WMSLayerInfoImpl(Catalog catalog) {
         super(catalog);
     }
@@ -37,5 +34,4 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public WMSStoreInfo getStore() {
         return (WMSStoreInfo) super.getStore();
     }
-
 }

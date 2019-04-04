@@ -8,35 +8,29 @@ package org.geoserver.security.xml;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 
 /**
- * Extension of {@link FileBasedSecurityServiceConfig} in which the underlying file stored as XML. 
- * 
+ * Extension of {@link FileBasedSecurityServiceConfig} in which the underlying file stored as XML.
+ *
  * @author christian
  */
-public class XMLSecurityServiceConfig  extends FileBasedSecurityServiceConfig {
+public class XMLSecurityServiceConfig extends FileBasedSecurityServiceConfig {
 
     private static final long serialVersionUID = 1L;
     private boolean validating;
 
-    public XMLSecurityServiceConfig() {
-    }
+    public XMLSecurityServiceConfig() {}
 
     public XMLSecurityServiceConfig(XMLSecurityServiceConfig other) {
         super(other);
         validating = other.isValidating();
     }
 
-    /**
-     * Flag activating/deactivating xml schema validation.
-     */
+    /** Flag activating/deactivating xml schema validation. */
     public boolean isValidating() {
         return validating;
     }
 
-    /**
-     * Sets flag activating/deactivating xml schema validation.
-     */
+    /** Sets flag activating/deactivating xml schema validation. */
     public void setValidating(boolean validating) {
         this.validating = validating;
     }
-
 }

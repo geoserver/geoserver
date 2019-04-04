@@ -1,9 +1,13 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs2_0.kvp;
+
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -11,27 +15,27 @@ import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * Testing {@link GMLCoverageResponseDelegate}
- * 
- * @author Simone Giannecchini, GeoSolutions SAS
  *
+ * @author Simone Giannecchini, GeoSolutions SAS
  */
 public class GMLGetCoverageKVPTest extends WCSTestSupport {
 
-    private final static double DELTA = 1E-6;
+    private static final double DELTA = 1E-6;
 
-    @Test 
+    @Test
     public void gmlFormat() throws Exception {
-        MockHttpServletResponse response = 
-            getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-        "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
 
         assertEquals("application/gml+xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));     
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
     }
 
     @Test
@@ -61,8 +65,10 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
         }
         catalog.save(c);
 
-        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
         Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String name = xpath.evaluate("//swe:field/@name", dom);
         assertEquals("Band1", name);

@@ -15,10 +15,8 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * 
  * @author Kevin Smith, Boundless
  * @author Niels Charlier
- *
  */
 @Ignore
 public class PostgresJDBCResourceTheoryTest extends AbstractJDBCResourceTheoryTest {
@@ -29,19 +27,18 @@ public class PostgresJDBCResourceTheoryTest extends AbstractJDBCResourceTheoryTe
     protected JDBCResourceStore getStore() {
         return store;
     }
-    
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
-       
+
+    @Rule public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
     public void setUp() throws Exception {
         support = new PostgresTestSupport();
-        
+
         standardData();
-        
+
         JDBCResourceStoreProperties config = mockConfig(true, false);
         replay(config);
-        
+
         store = new JDBCResourceStore(support.getDataSource(), config);
         store.setLockProvider(new NullLockProvider());
         store.setCache(new SimpleResourceCache(folder.getRoot()));

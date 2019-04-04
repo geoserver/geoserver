@@ -23,7 +23,7 @@ import sys, os, string
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.todo']
+extensions = ['sphinx.ext.todo', 'sphinx.ext.extlinks']
 
 todo_include_todos = True
 
@@ -39,18 +39,18 @@ master_doc = 'index'
 # General substitutions.
 project = u'GeoServer'
 manual = u'Developer Manual'
-copyright = u'2016, Open Source Geospatial Foundation'
+copyright = u'2018, Open Source Geospatial Foundation'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.10'
+version = '2.16'
 # The full version, including alpha/beta/rc tags.
-release = '2.10-SNAPSHOT'
+release = '2.16-SNAPSHOT'
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.10.x'
+   release = '2.16.x'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -84,6 +84,23 @@ exclude_patterns = [
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Options for extlinks
+#
+# :website:`license <License>`
+# :geos:`1234`
+# :wiki:`Proposals`
+# -----------------------------------
+
+extlinks = { 
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s',''),
+    'website': ('http://geoserver.org/%s',''),
+    'user': ('http://docs.geoserver.org/latest/en/user/%s',''),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s',''),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
+    'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
+    'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
+    'api': ('http://docs.geoserver.org/latest/en/api/#/latest/en/api/1.0.0/%s','')
+}
 
 # Options for HTML output
 # -----------------------

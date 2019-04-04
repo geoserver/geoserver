@@ -1,0 +1,90 @@
+<!--
+ (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+
+ <parent>
+  <groupId>org.geoserver</groupId>
+  <artifactId>community</artifactId>
+  <version>2.16-SNAPSHOT</version>
+ </parent>
+
+ <groupId>org.geoserver.community</groupId>
+ <artifactId>gs-qos</artifactId>
+ <packaging>jar</packaging>
+ <version>2.16-SNAPSHOT</version>
+ <name>GeoServer Quality of Service GetCapabilities module</name>
+
+ <dependencies>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-main</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-wms</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-wfs</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+  <groupId>org.geoserver.web</groupId>
+   <artifactId>gs-web-core</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-gwc</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-main</artifactId>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.web</groupId>
+   <artifactId>gs-web-core</artifactId>
+   <classifier>tests</classifier>
+   <scope>test</scope>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-test</artifactId>
+    <scope>test</scope>
+  </dependency>
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <scope>test</scope>
+	</dependency>
+  <dependency>
+    <groupId>xmlunit</groupId>
+    <artifactId>xmlunit</artifactId>
+    <version>1.6</version>
+    <scope>test</scope>
+  </dependency>
+	<dependency>
+	    <groupId>org.easymock</groupId>
+	    <artifactId>easymock</artifactId>
+	    <version>3.6</version>
+	    <scope>test</scope>
+	</dependency>
+ </dependencies>
+</project>

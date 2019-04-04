@@ -5,61 +5,59 @@
  */
 package org.geoserver.cluster.impl.events;
 
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.DispatcherCallback;
 import org.geotools.util.logging.Logging;
-import org.restlet.Restlet;
-import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 public class RestDispatcherCallback implements DispatcherCallback {
-    final static java.util.logging.Logger LOGGER = Logging.getLogger(RestDispatcherCallback.class);
+    static final java.util.logging.Logger LOGGER = Logging.getLogger(RestDispatcherCallback.class);
 
-    private static final ThreadLocal<List<Parameter>> parameters = new ThreadLocal<List<Parameter>>();
+    private static final ThreadLocal<Map<String, String>> parameters = new ThreadLocal<>();
 
-    public static List<Parameter> getParameters() {
+    public static Map<String, String> getParameters() {
         return parameters.get();
     }
 
     @Override
-    public void init(Request request, Response response) {
-
-        if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            final Iterator<Parameter> it = request.getResourceRef().getQueryAsForm().iterator();
-            while (it.hasNext()) {
-                Parameter p = it.next();
-                if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
-                    LOGGER.info("Registering incoming parameter: " + p.toString());
-                }
-            }
+    public void init(HttpServletRequest request, HttpServletResponse response) {
+        // get request parameters
+        Map<String, String> parameters =
+                request.getParameterMap()
+                        .entrySet()
+                        .stream()
+                        .map(
+                                entry -> {
+                                    String[] values = entry.getValue();
+                                    String value =
+                                            values == null || values.length == 0 ? null : values[0];
+                                    return new SimpleEntry<>(entry.getKey(), value);
+                                })
+                        .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+        // log request parameters
+        if (LOGGER.isLoggable(Level.FINE)) {
+            parameters
+                    .keySet()
+                    .forEach(
+                            parameter ->
+                                    LOGGER.info("Registering incoming parameter: " + parameter));
         }
-        parameters.set(request.getResourceRef().getQueryAsForm());
-
-        // check purge parameter to determine if the underlying file
-        // should be deleted
-        // boolean purge = (p != null) ? Boolean.parseBoolean(p) : false;
-        // catalog.getResourcePool().deleteStyle(s, purge);
-
-        // LOGGER.info( "DELETE style " + style);
-
+        // set local parameters
+        this.parameters.set(parameters);
     }
 
     @Override
-    public void dispatched(Request request, Response response, Restlet restlet) {
-
-    }
-
-    @Override
-    public void exception(Request request, Response response, Exception error) {
-
-    }
+    public void dispatched(
+            HttpServletRequest request, HttpServletResponse response, Object handler) {}
 
     @Override
-    public void finished(Request request, Response response) {
+    public void exception(
+            HttpServletRequest request, HttpServletResponse response, Exception error) {}
 
-    }
-
+    @Override
+    public void finished(HttpServletRequest request, HttpServletResponse response) {}
 }

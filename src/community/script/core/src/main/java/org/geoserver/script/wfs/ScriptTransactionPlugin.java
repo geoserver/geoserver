@@ -5,20 +5,18 @@
  */
 package org.geoserver.script.wfs;
 
-import java.io.File;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.Nullable;
-
 import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
-
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.wfs.TransactionEvent;
@@ -27,17 +25,17 @@ import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
+import org.springframework.stereotype.Component;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
-
+@Component
 public class ScriptTransactionPlugin implements TransactionPlugin {
 
     static Logger LOGGER = Logging.getLogger(ScriptTransactionPlugin.class);
 
     ScriptManager scriptMgr;
 
-    SoftValueHashMap<Resource, ScriptTxDelegate> delegates = new SoftValueHashMap<Resource, ScriptTxDelegate>(); 
+    SoftValueHashMap<Resource, ScriptTxDelegate> delegates =
+            new SoftValueHashMap<Resource, ScriptTxDelegate>();
 
     public ScriptTransactionPlugin(ScriptManager scriptMgr) {
         this.scriptMgr = scriptMgr;
@@ -48,43 +46,40 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
         TransactionDetail details = details(event.getRequest());
         details.update(event);
 
-        foreach(delegates(), new Function<ScriptTxDelegate, Void>() {
-            @Override
-            public Void apply(@Nullable ScriptTxDelegate input) {
-                TransactionEventType type = event.getType();
-                if (type == TransactionEventType.PRE_INSERT) {
-                    input.preInsert(event);
-                }
-                else if (type == TransactionEventType.POST_INSERT) {
-                    input.postInsert(event);
-                }
-                else if (type == TransactionEventType.PRE_UPDATE) {
-                    input.preUpdate(event);
-                }
-                else if (type == TransactionEventType.POST_UPDATE) {
-                    input.postUpdate(event);
-                }
-                else if (type == TransactionEventType.PRE_DELETE) {
-                    input.preDelete(event);
-                }
-                else {
-                    //TODO: POST_DELETE
-                }
+        foreach(
+                delegates(),
+                new Function<ScriptTxDelegate, Void>() {
+                    @Override
+                    public Void apply(@Nullable ScriptTxDelegate input) {
+                        TransactionEventType type = event.getType();
+                        if (type == TransactionEventType.PRE_INSERT) {
+                            input.preInsert(event);
+                        } else if (type == TransactionEventType.POST_INSERT) {
+                            input.postInsert(event);
+                        } else if (type == TransactionEventType.PRE_UPDATE) {
+                            input.preUpdate(event);
+                        } else if (type == TransactionEventType.POST_UPDATE) {
+                            input.postUpdate(event);
+                        } else if (type == TransactionEventType.PRE_DELETE) {
+                            input.preDelete(event);
+                        } else {
+                            // TODO: POST_DELETE
+                        }
 
-                return null;
-            }
-        });
+                        return null;
+                    }
+                });
     }
 
     void foreach(Iterator<ScriptTxDelegate> it, Function<ScriptTxDelegate, Void> f) {
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             f.apply(it.next());
         }
     }
 
     @Override
     public TransactionType beforeTransaction(TransactionType request) throws WFSException {
-        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext();) {
+        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext(); ) {
             ScriptTxDelegate delegate = it.next();
             request = delegate.beforeTransaction(request);
         }
@@ -93,15 +88,16 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
 
     @Override
     public void beforeCommit(TransactionType request) throws WFSException {
-        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext();) {
+        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext(); ) {
             ScriptTxDelegate delegate = it.next();
             delegate.beforeCommit(request);
         }
     }
 
     @Override
-    public void afterTransaction(TransactionType request, TransactionResponseType result, boolean committed) {
-        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext();) {
+    public void afterTransaction(
+            TransactionType request, TransactionResponseType result, boolean committed) {
+        for (Iterator<ScriptTxDelegate> it = delegates(); it.hasNext(); ) {
             ScriptTxDelegate delegate = it.next();
             delegate.afterTransaction(request, result, committed);
         }
@@ -109,7 +105,7 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
 
     @Override
     public int getPriority() {
-        //return normal priority for now... we may want to up this or scan through all the scripts
+        // return normal priority for now... we may want to up this or scan through all the scripts
         // and return whatever the highest priority is
         return 0;
     }
@@ -130,15 +126,17 @@ public class ScriptTransactionPlugin implements TransactionPlugin {
             files = scriptMgr.wfsTx().list();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error listing files in wfs/tx directory", e);
-            return Iterators.emptyIterator();
+            return Collections.emptyIterator();
         }
 
-        return Iterators.transform(files.iterator(), new Function<Resource, ScriptTxDelegate>() {
-            @Override
-            public ScriptTxDelegate apply(@Nullable Resource input) {
-                return delegate(input);
-            }
-        }); 
+        return Iterators.transform(
+                files.iterator(),
+                new Function<Resource, ScriptTxDelegate>() {
+                    @Override
+                    public ScriptTxDelegate apply(@Nullable Resource input) {
+                        return delegate(input);
+                    }
+                });
     }
 
     ScriptTxDelegate delegate(Resource f) {

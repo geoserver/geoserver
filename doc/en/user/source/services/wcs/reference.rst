@@ -45,10 +45,8 @@ The **GetCapabilities** operation is a request to a WCS server for a list of wha
 
 A typical GetCapabilities request would look like this (at URL ``http://www.example.com/wcs``):
 
-Using a GET request (standard HTTP):
+Using a GET request (standard HTTP)::
 
-.. code-block:: xml
- 
    http://www.example.com/wcs?
    service=wcs&
    AcceptVersions=1.1.0&

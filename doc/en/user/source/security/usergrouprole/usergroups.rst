@@ -3,7 +3,7 @@
 Users and Groups
 ================
 
-The definition of a GeoServer **user** is similar to most security systems. Although the correct Java term is **principle**—a principle being a human being, computer, software system, and so on—the term **user** is adopted throughout the GeoServer documentation. For each user the following information is maintained:
+The definition of a GeoServer **user** is similar to most security systems. Although the correct Java term is **principal**—a principal being a human being, computer, software system, and so on—the term **user** is adopted throughout the GeoServer documentation. For each user the following information is maintained:
 
 * User name
 * :ref:`Password <security_passwd>` (optionally stored :ref:`encrypted <security_passwd_encryption>`)

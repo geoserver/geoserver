@@ -1,0 +1,19 @@
+<assembly>
+  <id>vectortiles-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-vectortiles*.jar</include>
+        <include>java-vector-tile*.jar</include>
+        <include>gson*.jar</include>
+        <include>protobuf-java*.jar</include>
+      </includes>      
+    </fileSet>
+  </fileSets>
+</assembly>

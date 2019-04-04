@@ -7,7 +7,6 @@ package org.geoserver.web.resources;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.wicket.model.IModel;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
@@ -15,34 +14,29 @@ import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 
 /**
- * 
- * Model with information about which nodes are expanded and which aren't.
- * By keeping a single object for this information, there can be several instances of the same node that are consistent in their
- * expanded state.
- * 
- * @author Niels Charlier
+ * Model with information about which nodes are expanded and which aren't. By keeping a single
+ * object for this information, there can be several instances of the same node that are consistent
+ * in their expanded state.
  *
+ * @author Niels Charlier
  */
 public class ResourceExpandedStates implements Serializable {
-    
+
     private static final long serialVersionUID = 8635581624445593893L;
-    
+
     protected Set<String> expanded = new HashSet<String>();
-    
+
     public IModel<Boolean> getResourceExpandedState(Resource res) {
         return new ResourceExpandedState(res);
     }
-    
-    /**
-     * The model for a single resource node
-     *
-     */
+
+    /** The model for a single resource node */
     protected class ResourceExpandedState implements IModel<Boolean>, ResourceListener {
-        
+
         private static final long serialVersionUID = 4995246395674902150L;
-        
+
         protected Resource resource;
-        
+
         public ResourceExpandedState(Resource resource) {
             this.resource = resource;
         }
@@ -73,13 +67,12 @@ public class ResourceExpandedStates implements Serializable {
         @Override
         public void changed(ResourceNotification notify) {
             for (Event event : notify.events()) {
-                if (event.getKind() == ResourceNotification.Kind.ENTRY_DELETE && event.getPath().equals(resource.name())) {
-                    //clean up deleted resources
+                if (event.getKind() == ResourceNotification.Kind.ENTRY_DELETE
+                        && event.getPath().equals(resource.name())) {
+                    // clean up deleted resources
                     expanded.remove(resource.path());
                 }
             }
         }
-        
     }
-
 }

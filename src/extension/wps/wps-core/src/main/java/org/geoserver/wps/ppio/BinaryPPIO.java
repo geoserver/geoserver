@@ -5,17 +5,17 @@
  */
 package org.geoserver.wps.ppio;
 
-
 /**
- * Process parameter input / output for objects which are represented as binary streams (base64 encoding required when
- * embeeding them in the XML)
- *  
+ * Process parameter input / output for objects which are represented as binary streams (base64
+ * encoding required when embeeding them in the XML)
+ *
  * @author Andrea Aime, OpenGEO
  */
 public abstract class BinaryPPIO extends ComplexPPIO {
 
-	protected BinaryPPIO(Class externalType, Class internalType, String mimeType) {
-		super(externalType, internalType, mimeType);
-	}
+    public static final String QUALITY_KEY = "quality";
 
+    protected BinaryPPIO(Class externalType, Class internalType, String mimeType) {
+        super(externalType, internalType, mimeType);
+    }
 }

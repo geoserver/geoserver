@@ -9,9 +9,8 @@ import org.geoserver.platform.GeoServerExtensions;
 
 /**
  * Base class for classes implementing factory extension points.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class ScriptFactory {
 
@@ -28,7 +27,7 @@ public class ScriptFactory {
 
     /*
      * method to lookup script manager lazily, we do this because this factory is created as part
-     * of the SPI plugin process, which happens before spring context creation. We don't store the 
+     * of the SPI plugin process, which happens before spring context creation. We don't store the
      * script manager in cases where it is looked up for testing reasons in which we don't want
      * the singleton factory to hold on to old instances of the script manager.
      */
@@ -36,7 +35,7 @@ public class ScriptFactory {
         if (scriptMgr != null) {
             return scriptMgr;
         }
-        
+
         return GeoServerExtensions.bean(ScriptManager.class);
     }
 }

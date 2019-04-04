@@ -5,9 +5,8 @@
  */
 package org.geoserver.security;
 
+import java.util.List;
 import javax.annotation.Nullable;
-
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -19,9 +18,9 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Provides the {@link SecureCatalogImpl} with directives on what the specified user can access.
- * <p>
- * Implementations should extend from {@link AbstractResourceAccessManager}.
- * </p>
+ *
+ * <p>Implementations should extend from {@link AbstractResourceAccessManager}.
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public interface ResourceAccessManager {
@@ -29,41 +28,52 @@ public interface ResourceAccessManager {
     /**
      * Returns the access limits for the workspace and stores included in it. For specific resource
      * access and published resource access see the other two methods
-     * 
+     *
      * @param user
      * @param workspace
      * @return The access limits for this workspace, or null if there are no limits
      */
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace);
 
-    /**
-     * Returns the access limits for the specified layer, or null if there are no limits.
-     */
+    /** Returns the access limits for the specified layer, or null if there are no limits. */
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer);
 
     /**
-     * Returns the access limits for the specified resource, or null if there are no limits.
+     * Returns the access limits for the specified layer accessed via the groups listed as
+     * containers (will be an empty list for direct access), or null if there are no limits.
      */
+    public default DataAccessLimits getAccessLimits(
+            Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+        return getAccessLimits(user, layer);
+    }
+
+    /** Returns the access limits for the specified resource, or null if there are no limits. */
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource);
 
-    /**
-     * Returns the access limits for the specified style, or null if there are no limits.
-     */
+    /** Returns the access limits for the specified style, or null if there are no limits. */
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style);
 
-    /**
-     * Returns the access limits for the specified layer group, or null if there are no limits.
-     */
+    /** Returns the access limits for the specified layer group, or null if there are no limits. */
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup);
-    
+
     /**
-     * Returns a filter selecting only the objects authorized by the manager.  May return 
-     * {@code null} in which case the caller is responsible for building a filter based on calls to
-     * the manager's other methods.
+     * Returns the access limits for the specified layer group accessed via the groups listed as
+     * containers (will be an empty list for direct access), or null if there are no limits, or null
+     * if there are no limits.
+     */
+    public default LayerGroupAccessLimits getAccessLimits(
+            Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
+        return getAccessLimits(user, layerGroup);
+    }
+
+    /**
+     * Returns a filter selecting only the objects authorized by the manager. May return {@code
+     * null} in which case the caller is responsible for building a filter based on calls to the
+     * manager's other methods.
+     *
      * @param user
      * @param clazz
-     *
      */
-    public @Nullable Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz);
-
+    public @Nullable Filter getSecurityFilter(
+            Authentication user, final Class<? extends CatalogInfo> clazz);
 }

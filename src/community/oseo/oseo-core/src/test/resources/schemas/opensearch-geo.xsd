@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mind this is not an official schema, but still useful for testing -->
+<xs:schema targetNamespace="http://a9.com/-/opensearch/extensions/geo/1.0/"
+  elementFormDefault="qualified" xmlns="http://a9.com/-/opensearch/extensions/geo/1.0/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="uid" type="xs:string" />
+</xs:schema>

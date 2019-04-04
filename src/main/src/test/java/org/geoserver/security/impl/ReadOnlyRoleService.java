@@ -5,11 +5,10 @@
  */
 package org.geoserver.security.impl;
 
-
 public class ReadOnlyRoleService extends MemoryRoleService {
 
     public ReadOnlyRoleService() {
-        super();            
+        super();
     }
 
     @Override

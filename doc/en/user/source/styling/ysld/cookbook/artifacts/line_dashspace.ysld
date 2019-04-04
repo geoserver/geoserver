@@ -1,0 +1,18 @@
+name: Default Styler
+title: 'YSLD Cook Book: Dash/Space line'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#333333'
+        stroke-width: 1
+        stroke-dasharray: 4 6
+        stroke-graphic-stroke:
+          size: 4
+          symbols:
+          - mark:
+              shape: circle
+              stroke-color: '#333333'
+              stroke-width: 1
+              fill-color: '#666666'

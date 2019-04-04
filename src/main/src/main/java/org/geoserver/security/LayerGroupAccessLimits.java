@@ -5,14 +5,10 @@
  */
 package org.geoserver.security;
 
-/**
- * Access limits to a layer group.
- */
-
+/** Access limits to a layer group. */
 public class LayerGroupAccessLimits extends AccessLimits {
 
     public LayerGroupAccessLimits(CatalogMode mode) {
         super(mode);
     }
-
 }

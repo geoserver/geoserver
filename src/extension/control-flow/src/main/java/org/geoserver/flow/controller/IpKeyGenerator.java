@@ -5,12 +5,11 @@
 package org.geoserver.flow.controller;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.ows.Request;
 
 /**
  * Returns the IP address as the user key
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class IpKeyGenerator implements KeyGenerator {
@@ -20,5 +19,4 @@ public class IpKeyGenerator implements KeyGenerator {
         HttpServletRequest httpRequest = request.getHttpRequest();
         return IpFlowController.getRemoteAddr(httpRequest);
     }
-
 }

@@ -5,20 +5,19 @@
  */
 package org.geoserver.cluster;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.UUID;
 
-import com.google.common.base.Objects;
-
 /**
- * Base class for events to be signalled across the cluster.  Carries an identifier for the 
+ * Base class for events to be signalled across the cluster. Carries an identifier for the
  * originating node which will be implementation specific.
  */
 public class Event implements Serializable {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
-    
+
     Serializable source;
 
     private UUID uuid;
@@ -33,6 +32,7 @@ public class Event implements Serializable {
 
     /**
      * Set an identifier for the node on which the event originates.
+     *
      * @param source
      */
     public void setSource(Serializable source) {
@@ -41,6 +41,7 @@ public class Event implements Serializable {
 
     /**
      * Get an identifier of the node on which the event originated.
+     *
      * @param source
      */
     public Serializable getSource() {
@@ -51,7 +52,7 @@ public class Event implements Serializable {
     public String toString() {
         return new StringBuilder("Event[").append(source).append(']').toString();
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hashCode(Event.class, source);

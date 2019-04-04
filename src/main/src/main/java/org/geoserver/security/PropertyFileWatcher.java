@@ -12,16 +12,15 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
-
 /**
- * A simple class to support reloadable property files. Watches last modified
- * date on the specified file, and allows to read a Properties out of it.
+ * A simple class to support reloadable property files. Watches last modified date on the specified
+ * file, and allows to read a Properties out of it.
  *
  * @author Andrea Aime
  */
@@ -29,13 +28,14 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
     public PropertyFileWatcher(Resource resource) {
         super(resource);
     }
+
     @Deprecated
     public PropertyFileWatcher(File file) {
         super(file);
     }
     /**
      * Read properties from file.
-     * 
+     *
      * @return properties from file, or null if file does not exist yet
      * @throws IOException
      */
@@ -49,7 +49,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         p.load(in);
         return p;
     }
-    
+
     public boolean isStale() {
         return isModified();
     }
@@ -58,20 +58,19 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
      * Subclass of Properties that maintains order by actually storing keys in an underlying
      * LinkedHashMap.
      */
-    public class LinkedProperties extends Properties {
+    public static class LinkedProperties extends Properties {
 
         private static final long serialVersionUID = 1L;
 
         private Map<Object, Object> linkMap = new LinkedHashMap<Object, Object>();
 
-        public LinkedProperties() {
-        }
-        
+        public LinkedProperties() {}
+
         public LinkedProperties(Properties defaults) {
             super(defaults);
             this.linkMap.putAll(defaults);
         }
-        
+
         @Override
         public synchronized Object put(Object key, Object value) {
             return linkMap.put(key, value);
@@ -93,12 +92,12 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         }
 
         @Override
-        public String getProperty(String key) {
+        public synchronized String getProperty(String key) {
             return (String) linkMap.get(key);
         }
 
         @Override
-        public String getProperty(String key, String defaultValue) {
+        public synchronized String getProperty(String key, String defaultValue) {
             return (String) (linkMap.containsKey(key) ? linkMap.get(key) : defaultValue);
         }
 
@@ -106,7 +105,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         public synchronized boolean contains(Object value) {
             return linkMap.containsValue(value);
         }
-        
+
         @Override
         public boolean containsValue(Object value) {
             return linkMap.containsValue(value);
@@ -131,12 +130,12 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         public Set<Map.Entry<Object, Object>> entrySet() {
             return linkMap.entrySet();
         }
-        
+
         @Override
         public synchronized void clear() {
             linkMap.clear();
         }
-        
+
         @Override
         public synchronized boolean containsKey(Object key) {
             return linkMap.containsKey(key);
@@ -152,6 +151,17 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
             return linkMap.toString();
         }
 
-    }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            LinkedProperties that = (LinkedProperties) o;
+            return Objects.equals(linkMap, that.linkMap);
+        }
 
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), linkMap);
+        }
+    }
 }

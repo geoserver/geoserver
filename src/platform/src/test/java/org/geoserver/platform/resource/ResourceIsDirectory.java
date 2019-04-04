@@ -10,19 +10,18 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
 public class ResourceIsDirectory extends BaseMatcher<Resource> {
-    
+
     @Override
     public boolean matches(Object item) {
-        if(item instanceof Resource) {
-            Resource res = (Resource)item;
-            return res.getType()==Type.DIRECTORY;
+        if (item instanceof Resource) {
+            Resource res = (Resource) item;
+            return res.getType() == Type.DIRECTORY;
         }
         return false;
     }
-    
+
     @Override
     public void describeTo(Description description) {
         description.appendText("directory resource");
     }
-    
 }

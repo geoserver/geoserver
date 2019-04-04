@@ -7,52 +7,40 @@ package org.vfny.geoserver.servlets;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OutputStrategyFactory;
 import org.geoserver.ows.ServiceStrategy;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.exception.GeoServerException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.vfny.geoserver.util.PartialBufferedOutputStream2;
 
-
 public class ServiceStrategyFactory implements OutputStrategyFactory, ApplicationContextAware {
     /** Class logger */
-    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
+    static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
-    /**
-     * GeoServer configuratoin
-     */
+    /** GeoServer configuratoin */
     GeoServer geoServer;
 
-    /**
-     * The application context
-     */
+    /** The application context */
     ApplicationContext context;
 
-    /**
-     * The default service strategy
-     */
+    /** The default service strategy */
     String serviceStrategy;
 
-    /**
-     * The default buffer size when the partial buffer strategy is used
-     */
+    /** The default buffer size when the partial buffer strategy is used */
     int partialBufferSize = PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE;
 
     public ServiceStrategyFactory(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
 
-    public void setApplicationContext(ApplicationContext context)
-        throws BeansException {
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
 
@@ -69,7 +57,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
     }
 
     public ServiceStrategy createOutputStrategy(HttpServletResponse response) {
-        //If verbose exceptions is on then lets make sure they actually get the
+        // If verbose exceptions is on then lets make sure they actually get the
         // exception by using the file strategy.
         ServiceStrategy theStrategy = null;
 
@@ -93,8 +81,10 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         try {
             theStrategy = (ServiceStrategy) theStrategy.clone();
         } catch (CloneNotSupportedException e) {
-            LOGGER.log(Level.SEVERE,
-                "Programming error found, service strategies should be cloneable, " + e, e);
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Programming error found, service strategies should be cloneable, " + e,
+                    e);
             throw new RuntimeException("Found a strategy that does not support cloning...", e);
         }
 
@@ -108,15 +98,21 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
                         partialBufferSize = Integer.valueOf(size).intValue();
 
                         if (partialBufferSize <= 0) {
-                            LOGGER.warning("Invalid partial buffer size, defaulting to "
-                                + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE + " (was "
-                                + partialBufferSize + ")");
+                            LOGGER.warning(
+                                    "Invalid partial buffer size, defaulting to "
+                                            + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
+                                            + " (was "
+                                            + partialBufferSize
+                                            + ")");
                             partialBufferSize = 0;
                         }
                     } catch (NumberFormatException nfe) {
-                        LOGGER.warning("Invalid partial buffer size, defaulting to "
-                            + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE + " (was "
-                            + partialBufferSize + ")");
+                        LOGGER.warning(
+                                "Invalid partial buffer size, defaulting to "
+                                        + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
+                                        + " (was "
+                                        + partialBufferSize
+                                        + ")");
                         partialBufferSize = 0;
                     }
                 }

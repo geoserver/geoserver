@@ -10,21 +10,21 @@ import org.geoserver.data.test.MockData;
 
 /**
  * Mock data for testing GEOT-4567: using String constants in idExpression with joining.
- * 
- * Inspired by {@link MockData}.
- * 
+ *
+ * <p>Inspired by {@link MockData}.
+ *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-
 public class StringConstantIdMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureStringConstantId.xml",
-                "MappedFeaturePropertyfile.properties", "GeologicUnit.properties");
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeatureStringConstantId.xml",
+                "MappedFeaturePropertyfile.properties",
+                "GeologicUnit.properties");
     }
-
 }

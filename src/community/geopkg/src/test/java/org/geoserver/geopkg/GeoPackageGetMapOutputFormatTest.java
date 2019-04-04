@@ -5,15 +5,17 @@
  */
 package org.geoserver.geopkg;
 
+import static org.geoserver.data.test.MockData.LAKES;
+import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.*;
-import static org.geoserver.data.test.MockData.*;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
-
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;
@@ -22,17 +24,17 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.geopkg.Tile;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 /**
- * 
  * Test For WMS GetMap Output Format for GeoPackage
- * 
- * @author Justin Deoliveira, Boundless
  *
+ * @author Justin Deoliveira, Boundless
  */
 public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
@@ -52,18 +54,50 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testTileEntries() throws Exception {
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent.getRequest().setBbox(
-            new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
-        mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
-        mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
-        
+        mapContent
+                .getRequest()
+                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+
         WebMap map = format.produceMap(mapContent);
         GeoPackage geopkg = createGeoPackage(map);
 
         assertTrue(geopkg.features().isEmpty());
-        assertTrue(geopkg.rasters().isEmpty());
         assertEquals(1, geopkg.tiles().size());
         assertNotNull(geopkg.tile("World_Lakes"));
+    }
+
+    @Test
+    /*
+     * From the OGC GeoPackage Specification [1]:
+     *
+     * "The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix at any zoom
+     * level, regardless of the actual availability of that tile"
+     *
+     * [1]: http://www.geopackage.org/spec/#tile_matrix
+     */
+    public void testTopLeftTile() throws Exception {
+        WMSMapContent mapContent = createMapContent(WORLD);
+        mapContent.getRequest().setBbox(new Envelope(-180, 180, -90, 90));
+
+        WebMap map = format.produceMap(mapContent);
+        GeoPackage geopkg = createGeoPackage(map);
+
+        assertTrue(geopkg.features().isEmpty());
+        assertEquals(1, geopkg.tiles().size());
+
+        Tile topLeftTile = geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
+
+        /*
+        FileOutputStream fous = new FileOutputStream("toplefttile.png");
+        fous.write(topLeftTile.getData());
+        fous.flush();
+        fous.close();
+        */
+
+        BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
+
+        ImageAssert.assertEquals(
+                URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {
@@ -73,35 +107,35 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         File f = File.createTempFile("temp", ".gpkg", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         rawMap.writeTo(fout);
-        fout.flush(); 
+        fout.flush();
         fout.close();
-        
+
         return new GeoPackage(f);
-//        File f = File.createTempFile("geopkg", "zip", new File("target"));
-//        FileOutputStream fout = new FileOutputStream(f);
-//        rawMap.writeTo(fout);
-//        fout.flush(); 
-//        fout.close();
-//
-//        File g = File.createTempFile("geopkg", "db", new File("target"));
-//        g.delete();
-//        g.mkdir();
-//
-//        IOUtils.decompress(f, g);
-//        return new GeoPackage(g.listFiles(new FileFilter() {
-//            @Override
-//            public boolean accept(File file) {
-//                return file.getName().endsWith(".geopackage");
-//            }
-//        })[0]);
+        //        File f = File.createTempFile("geopkg", "zip", new File("target"));
+        //        FileOutputStream fout = new FileOutputStream(f);
+        //        rawMap.writeTo(fout);
+        //        fout.flush();
+        //        fout.close();
+        //
+        //        File g = File.createTempFile("geopkg", "db", new File("target"));
+        //        g.delete();
+        //        g.mkdir();
+        //
+        //        IOUtils.decompress(f, g);
+        //        return new GeoPackage(g.listFiles(new FileFilter() {
+        //            @Override
+        //            public boolean accept(File file) {
+        //                return file.getName().endsWith(".geopackage");
+        //            }
+        //        })[0]);
     }
 
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
         GetMapRequest request = super.createGetMapRequest(layerNames);
-        request.setBbox(new Envelope(-180,180,-90,90));
+        request.setBbox(new Envelope(-180, 180, -90, 90));
         return request;
     };
-    
+
     WMSMapContent createMapContent(QName... layers) throws IOException {
         GetMapRequest mapRequest = createGetMapRequest(layers);
         WMSMapContent map = new WMSMapContent(mapRequest);

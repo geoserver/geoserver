@@ -4,26 +4,24 @@
  */
 package org.geoserver.inspire;
 
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wms.WMSInfo;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
-import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 import static org.geoserver.inspire.InspireTestSupport.assertInspireCommonScenario1Response;
 import static org.geoserver.inspire.InspireTestSupport.assertInspireMetadataUrlResponse;
 import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
+
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport {
 
@@ -36,7 +34,7 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
     protected abstract String getLanguage();
 
     protected abstract String getAlternateMetadataType();
-    
+
     protected abstract ServiceInfo getServiceInfo();
 
     protected abstract String getInspireNameSpace();
@@ -50,7 +48,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         clearInspireMetadata(metadata);
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        final NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        final NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
@@ -65,7 +64,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        final NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        final NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
@@ -80,12 +80,14 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
         String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation");
         assertSchemaLocationContains(schemaLocation, getInspireNameSpace(), getInspireSchema());
         final Element extendedCaps = (Element) nodeList.item(0);
-        assertInspireCommonScenario1Response(extendedCaps, getMetadataUrl(), getMetadataType(), getLanguage());
+        assertInspireCommonScenario1Response(
+                extendedCaps, getMetadataUrl(), getMetadataType(), getLanguage());
     }
 
     @Test
@@ -100,8 +102,12 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         getGeoServer().save(serviceInfo);
         getGeoServer().reload();
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
-        assertEquals("Number of INSPIRE ExtendedCapabilities elements after settings reload", 1, nodeList.getLength());
+        NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        assertEquals(
+                "Number of INSPIRE ExtendedCapabilities elements after settings reload",
+                1,
+                nodeList.getLength());
     }
 
     // Test ExtendedCapabilities is not produced if required settings missing
@@ -115,7 +121,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        final NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        final NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 
@@ -130,7 +137,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
         nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MediaType");
         assertEquals("Number of MediaType elements", 0, nodeList.getLength());
@@ -149,7 +157,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 1, nodeList.getLength());
     }
 
@@ -162,7 +171,8 @@ public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport
         metadata.put(LANGUAGE.key, getLanguage());
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(getGetCapabilitiesRequestPath());
-        final NodeList nodeList = dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
+        final NodeList nodeList =
+                dom.getElementsByTagNameNS(getInspireNameSpace(), "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
     }
 

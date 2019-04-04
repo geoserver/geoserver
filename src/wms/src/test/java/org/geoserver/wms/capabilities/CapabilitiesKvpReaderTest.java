@@ -8,7 +8,6 @@ package org.geoserver.wms.capabilities;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
-
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.junit.Before;
@@ -45,7 +44,6 @@ public class CapabilitiesKvpReaderTest {
     /**
      * 1.0 "WMTVER" parameter supplied instead of "VERSION"? Version negotiation should agree on
      * 1.1.1
-     * 
      */
     @SuppressWarnings("unchecked")
     @Test

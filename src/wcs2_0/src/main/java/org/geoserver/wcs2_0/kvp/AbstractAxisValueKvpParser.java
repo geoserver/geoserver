@@ -7,12 +7,11 @@ package org.geoserver.wcs2_0.kvp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.geoserver.ows.KvpParser;
 
 /**
  * Base class for parsing axis(value)[,axis(value)]* syntax
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractAxisValueKvpParser<T> extends KvpParser {
@@ -27,7 +26,7 @@ public abstract class AbstractAxisValueKvpParser<T> extends KvpParser {
 
         List<T> results = new ArrayList<T>();
         int base = 0;
-        for (;;) {
+        for (; ; ) {
             // search the open parenthesis
             int idxOpen = spec.indexOf("(", base);
             if (idxOpen == -1) {

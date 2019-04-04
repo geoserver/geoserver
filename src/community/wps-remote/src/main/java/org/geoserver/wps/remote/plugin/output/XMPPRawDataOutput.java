@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.remote.plugin.output;
 
+import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -36,101 +36,179 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.template.TemplateUtils;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.process.StringRawData;
 import org.geoserver.wps.remote.WmcFeature;
 import org.geoserver.wps.remote.plugin.XMPPClient;
+import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-
 /**
  * Actual implementation of a RAW DATA Output Type
- * 
- * @author Alessio Fabiani, GeoSolutions
  *
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class XMPPRawDataOutput implements XMPPOutputType {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging
-            .getLogger(XMPPRawDataOutput.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPRawDataOutput.class.getPackage().getName());
 
     @Override
-    public Object accept(XMPPOutputVisitor visitor, Object value, String type, String pID,
-            String baseURL, XMPPClient xmppClient, boolean publish, String name, String title,
-            String description, String defaultStyle, String targetWorkspace, String metadata)
-                    throws Exception {
-        return visitor.visit(this, value, type, pID, baseURL, xmppClient, publish, name, title,
-                description, defaultStyle, targetWorkspace, metadata);
+    public Object accept(
+            XMPPOutputVisitor visitor,
+            Object value,
+            String type,
+            String pID,
+            String baseURL,
+            XMPPClient xmppClient,
+            boolean publish,
+            String name,
+            String title,
+            String description,
+            String defaultStyle,
+            String targetWorkspace,
+            String metadata)
+            throws Exception {
+        return visitor.visit(
+                this,
+                value,
+                type,
+                pID,
+                baseURL,
+                xmppClient,
+                publish,
+                name,
+                title,
+                description,
+                defaultStyle,
+                targetWorkspace,
+                metadata);
     }
 
     @Override
-    public Object produceOutput(Object value, String type, String pID, String baseURL,
-            XMPPClient xmppClient, boolean publish, String name, String title, String description,
-            String defaultStyle, String targetWorkspace, String metadata) throws Exception {
+    public Object produceOutput(
+            Object value,
+            String type,
+            String pID,
+            String baseURL,
+            XMPPClient xmppClient,
+            boolean publish,
+            String name,
+            String title,
+            String description,
+            String defaultStyle,
+            String targetWorkspace,
+            String metadata)
+            throws Exception {
 
-        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] " + value + " - type:" + type
-                + " - pID:" + pID + " - name:" + name + " - title:" + title + " - description:"
-                + description + " - style:" + defaultStyle + " - workspace:" + targetWorkspace
-                + " - metadata:" + metadata);
+        LOGGER.finest(
+                "[XMPP Raw Data Output - ProduceOutput] "
+                        + value
+                        + " - type:"
+                        + type
+                        + " - pID:"
+                        + pID
+                        + " - name:"
+                        + name
+                        + " - title:"
+                        + title
+                        + " - description:"
+                        + description
+                        + " - style:"
+                        + defaultStyle
+                        + " - workspace:"
+                        + targetWorkspace
+                        + " - metadata:"
+                        + metadata);
 
         if (XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type) != null) {
             Object sample = ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[2];
 
             if (sample instanceof StreamRawData) {
-                final String fileName = FilenameUtils.getBaseName(((String) value)) + "_" + pID
-                        + "." + ((StreamRawData) sample).getFileExtension();
+                final String fileName =
+                        FilenameUtils.getBaseName(((String) value))
+                                + "_"
+                                + pID
+                                + "."
+                                + ((StreamRawData) sample).getFileExtension();
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StreamRawData:" + fileName);
 
-                value = new StreamRawData(((StreamRawData) sample).getMimeType(),
-                        new FileInputStream(((String) value)),
-                        ((StreamRawData) sample).getFileExtension());
+                value =
+                        new StreamRawData(
+                                ((StreamRawData) sample).getMimeType(),
+                                new FileInputStream(((String) value)),
+                                ((StreamRawData) sample).getFileExtension());
                 if (publish) {
                     final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
-                    FileUtils.copyInputStreamToFile(((StreamRawData) value).getInputStream(),
-                            tempFile);
+                    FileUtils.copyInputStreamToFile(
+                            ((StreamRawData) value).getInputStream(), tempFile);
 
                     try {
-                        xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
-                                defaultStyle, targetWorkspace, metadata);
+                        xmppClient.importLayer(
+                                tempFile,
+                                type,
+                                null,
+                                name + "_" + pID,
+                                title,
+                                description,
+                                defaultStyle,
+                                targetWorkspace,
+                                metadata);
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING,
+                        LOGGER.log(
+                                Level.WARNING,
                                 "There was an issue while trying to automatically publish the Layer into the Catalog!",
                                 e);
                     }
 
                     // need to re-open the stream
-                    value = new StreamRawData(((StreamRawData) sample).getMimeType(),
-                            new FileInputStream(tempFile),
-                            ((StreamRawData) sample).getFileExtension());
+                    value =
+                            new StreamRawData(
+                                    ((StreamRawData) sample).getMimeType(),
+                                    new FileInputStream(tempFile),
+                                    ((StreamRawData) sample).getFileExtension());
                 }
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
 
                 return value;
             } else if (sample instanceof ResourceRawData) {
-                final String fileName = FilenameUtils.getBaseName(((String) value)) + "_" + pID
-                        + "." + ((ResourceRawData) sample).getFileExtension();
+                final String fileName =
+                        FilenameUtils.getBaseName(((String) value))
+                                + "_"
+                                + pID
+                                + "."
+                                + ((ResourceRawData) sample).getFileExtension();
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
-                value = new ResourceRawData(Files.asResource(new File(((String) value))),
-                        ((ResourceRawData) sample).getMimeType(),
-                        ((ResourceRawData) sample).getFileExtension());
+                File outputFile = getOutputFile(xmppClient, (String) value);
+                value =
+                        new ResourceRawData(
+                                Files.asResource(outputFile),
+                                ((ResourceRawData) sample).getMimeType(),
+                                ((ResourceRawData) sample).getFileExtension());
                 if (publish) {
-                    final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
-                    FileUtils.copyFile(((ResourceRawData) value).getResource().file(), tempFile);
-
                     try {
-                        xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
-                                defaultStyle, targetWorkspace, metadata);
+                        LayerInfo layer =
+                                xmppClient.importLayer(
+                                        outputFile,
+                                        type,
+                                        null,
+                                        name + "_" + pID,
+                                        title,
+                                        description,
+                                        defaultStyle,
+                                        targetWorkspace,
+                                        metadata);
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING,
+                        LOGGER.log(
+                                Level.WARNING,
                                 "There was an issue while trying to automatically publish the Layer into the Catalog!",
                                 e);
                     }
@@ -144,13 +222,35 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StringRawData:" + type);
 
                 if (type.equals("application/owc")) {
-                    value = encodeAsPlainOWCMapContext(value, type, pID, baseURL, xmppClient,
-                            publish, name + "_" + pID, title, description, defaultStyle,
-                            targetWorkspace, metadata);
+                    value =
+                            encodeAsPlainOWCMapContext(
+                                    value,
+                                    type,
+                                    pID,
+                                    baseURL,
+                                    xmppClient,
+                                    publish,
+                                    name + "_" + pID,
+                                    title,
+                                    description,
+                                    defaultStyle,
+                                    targetWorkspace,
+                                    metadata);
                 } else {
-                    value = encodeAsPlainRawData(value, type, pID, baseURL, xmppClient, publish,
-                            name + "_" + pID, title, description, defaultStyle, targetWorkspace,
-                            metadata);
+                    value =
+                            encodeAsPlainRawData(
+                                    value,
+                                    type,
+                                    pID,
+                                    baseURL,
+                                    xmppClient,
+                                    publish,
+                                    name + "_" + pID,
+                                    title,
+                                    description,
+                                    defaultStyle,
+                                    targetWorkspace,
+                                    metadata);
                 }
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
@@ -162,6 +262,57 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return null;
     }
 
+    private File getOutputFile(XMPPClient xmppClient, String value) throws IOException {
+        final File file = new File(value);
+        if (file != null && file.exists() && file.canRead() && file.isFile()) {
+            return file;
+        } else {
+            try {
+                // 1. try first if they are present on "uploadedFilesBasePath"
+                if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
+                    final String uploadedFilesBasePath =
+                            xmppClient.getConfiguration().get("uploadedFilesBasePath");
+                    final File uploadedFile =
+                            new File(
+                                    new File(uploadedFilesBasePath).getCanonicalPath(),
+                                    com.google.common.io.Files.simplifyPath(value));
+
+                    if (uploadedFile != null
+                            &&
+                            /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
+                            && uploadedFile.canRead()
+                            && uploadedFile.isFile()) {
+                        return uploadedFile;
+                    }
+                }
+
+                // 2. check if the file has stored on the GeoServer Data Dir
+                File uploadedFile = new File(value);
+                if (uploadedFile != null
+                        &&
+                        /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
+                        && uploadedFile.canRead()
+                        && uploadedFile.isFile()) {
+                    return uploadedFile;
+                }
+
+                uploadedFile =
+                        xmppClient.getGeoServer().getCatalog().getResourceLoader().find(value);
+                if (uploadedFile != null
+                        &&
+                        /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists()
+                        && uploadedFile.canRead()
+                        && uploadedFile.isFile()) {
+                    return uploadedFile;
+                }
+            } catch (Exception e) {
+                throw new IOException("Produced Output file is not reachable!", e);
+            }
+        }
+
+        throw new IOException("Produced Output file is not accessible!");
+    }
+
     /**
      * @param value
      * @param type
@@ -169,39 +320,63 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param baseURL
      * @param xmppClient
      * @param publish
-     *
      * @throws IOException
      */
-    private Object encodeAsPlainRawData(Object value, String type, String pID, String baseURL,
-            XMPPClient xmppClient, boolean publish, String name, String title, String description,
-            String defaultStyle, String targetWorkspace, String metadata) throws IOException {
-        final String extension = ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP
-                .get(type))[4]);
+    private Object encodeAsPlainRawData(
+            Object value,
+            String type,
+            String pID,
+            String baseURL,
+            XMPPClient xmppClient,
+            boolean publish,
+            String name,
+            String title,
+            String description,
+            String defaultStyle,
+            String targetWorkspace,
+            String metadata)
+            throws IOException {
+        final String extension =
+                ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[4]);
         final String fileName = "wps-remote-str-rawdata_" + pID + extension;
-        final String content = FileUtils.readFileToString(new File((String) value));
+        final File outputFile = getOutputFile(xmppClient, (String) value);
+        final String content = FileUtils.readFileToString(outputFile);
 
         LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:" + fileName);
 
-        value = new StringRawData(content,
-                ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
-                        .split(",")[0]);
+        value =
+                new StringRawData(
+                        content,
+                        ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
+                                .split(",")[0]);
         if (publish) {
             final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
 
-            LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
-                    + tempFile.getAbsolutePath());
+            LOGGER.finest(
+                    "[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
+                            + tempFile.getAbsolutePath());
 
             FileUtils.writeStringToFile(tempFile, ((StringRawData) value).getData());
+            FileUtils.waitFor(tempFile, 5);
 
             String wsName = xmppClient.getGeoServer().getCatalog().getDefaultWorkspace().getName();
-            DataStoreInfo h2DataStore = xmppClient.createH2DataStore(wsName,
-                    FilenameUtils.getBaseName(fileName));
+            DataStoreInfo h2DataStore =
+                    xmppClient.createH2DataStore(wsName, FilenameUtils.getBaseName(fileName));
 
             try {
-                xmppClient.importLayer(tempFile, type, h2DataStore, name + "_" + pID, title, description,
-                        defaultStyle, targetWorkspace, metadata);
+                xmppClient.importLayer(
+                        tempFile,
+                        type,
+                        h2DataStore,
+                        name + "_" + pID,
+                        title,
+                        description,
+                        defaultStyle,
+                        targetWorkspace,
+                        metadata);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING,
+                LOGGER.log(
+                        Level.WARNING,
                         "There was an issue while trying to automatically publish the Layer into the Catalog!",
                         e);
             }
@@ -216,32 +391,80 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param baseURL
      * @param xmppClient
      * @param publish
-     *
      * @throws IOException
      */
-    private Object encodeAsPlainOWCMapContext(Object value, String type, String pID, String baseURL,
-            XMPPClient xmppClient, boolean publish, String name, String title, String description,
-            String defaultStyle, String targetWorkspace, String metadata) throws IOException {
+    private Object encodeAsPlainOWCMapContext(
+            Object value,
+            String type,
+            String pID,
+            String baseURL,
+            XMPPClient xmppClient,
+            boolean publish,
+            String name,
+            String title,
+            String description,
+            String defaultStyle,
+            String targetWorkspace,
+            String metadata)
+            throws IOException {
         String[] layerToPublish = ((String) value).split(";");
         String[] styles = (defaultStyle != null ? defaultStyle.split(";") : null);
         String[] workspaces = (targetWorkspace != null ? targetWorkspace.split(";") : null);
 
-        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainOWCMapContext:"
-                + layerToPublish);
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainOWCMapContext:" + value);
 
         List<LayerInfo> wmc = new ArrayList<LayerInfo>();
 
         if (layerToPublish != null && layerToPublish.length > 0) {
-            final Catalog catalog = xmppClient.getGeoServer().getCatalog();
+            final GeoServer geoServer = xmppClient.getGeoServer();
+            final Catalog catalog = geoServer.getCatalog();
 
             for (int fi = 0; fi < layerToPublish.length; fi++) {
                 final String layerBaseName = layerToPublish[fi];
                 final String layerStyle = styles[fi];
                 final String layerWorkspace = workspaces[fi];
 
-                LayerInfo layerInfo = catalog.getLayerByName(layerBaseName + "_" + pID);
+                LOGGER.finest(
+                        "[XMPP Raw Data Output - ProduceOutput] looking for LayerInfo:"
+                                + layerBaseName
+                                + "_"
+                                + pID);
+
+                LayerInfo layerInfo =
+                        (catalog.getLayerByName(layerBaseName + "_" + pID) != null
+                                ? catalog.getLayerByName(layerBaseName + "_" + pID)
+                                : catalog.getLayerByName(
+                                        new NameImpl(layerWorkspace, layerBaseName + "_" + pID)));
+
+                if (layerInfo == null) {
+                    LOGGER.warning(
+                            "[XMPP Raw Data Output - ProduceOutput] cuold not find LayerInfo ["
+                                    + layerBaseName
+                                    + "_"
+                                    + pID
+                                    + "]... going to scan the whole Catalog!");
+                    for (LayerInfo layer : catalog.getLayers()) {
+                        LOGGER.info(
+                                "[XMPP Raw Data Output - ProduceOutput] looking for LayerInfo:"
+                                        + layer.getName());
+                        if (layer.getName().contains(layerBaseName)
+                                && layer.getName().contains(pID)) {
+                            LOGGER.info(
+                                    "[XMPP Raw Data Output - ProduceOutput] found candidate LayerInfo:"
+                                            + layer.getName());
+                            layerInfo = layer;
+                            break;
+                        }
+                    }
+                }
 
                 if (layerInfo != null) {
+                    LOGGER.finest(
+                            "[XMPP Raw Data Output - ProduceOutput] found LayerInfo:"
+                                    + layerBaseName
+                                    + "_"
+                                    + pID);
+
                     if (layerStyle.trim().length() > 0) {
                         StyleInfo style = catalog.getStyleByName(layerStyle);
 
@@ -253,10 +476,12 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     if (layerWorkspace.trim().length() > 0) {
                         WorkspaceInfo workspace = catalog.getWorkspaceByName(layerWorkspace);
 
-                        NamespaceInfo namespace = catalog
-                                .getNamespace(layerInfo.getResource().getNamespace().getId());
-                        if (workspace != null && (!workspace.getName().equals(namespace.getPrefix())
-                                || namespace == null)) {
+                        NamespaceInfo namespace =
+                                catalog.getNamespace(
+                                        layerInfo.getResource().getNamespace().getId());
+                        if (workspace != null
+                                && (!workspace.getName().equals(namespace.getPrefix())
+                                        || namespace == null)) {
                             namespace = catalog.getNamespaceByPrefix(workspace.getName());
                             if (namespace != null) {
                                 layerInfo.getResource().setNamespace(namespace);
@@ -265,6 +490,14 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     }
 
                     wmc.add(layerInfo);
+                    LOGGER.finest(
+                            "[XMPP Raw Data Output - ProduceOutput] added LayerInfo:" + layerInfo);
+                } else {
+                    LOGGER.finest(
+                            "[XMPP Raw Data Output - ProduceOutput] could not find any LayerInfo:"
+                                    + layerBaseName
+                                    + "_"
+                                    + pID);
                 }
             }
         }
@@ -273,15 +506,19 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     }
 
     /**
-     * 
      * @param xmppClient
      * @param wmc
      * @param baseURL
-     *
      * @throws IOException
      */
-    private Object getWmc(XMPPClient xmppClient, List<LayerInfo> wmc, String type, String pID,
-            String baseURL, String metadata) throws IOException {
+    private Object getWmc(
+            XMPPClient xmppClient,
+            List<LayerInfo> wmc,
+            String type,
+            String pID,
+            String baseURL,
+            String metadata)
+            throws IOException {
         final String wmcTemplatePath = xmppClient.getConfiguration().get("owc_wms_json_template");
 
         LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] wmcTemplatePath:" + wmcTemplatePath);
@@ -299,8 +536,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     featureList.put(layer.getId(), feature);
 
                     if (renderingArea == null) {
-                        renderingArea = new ReferencedEnvelope(
-                                layer.getResource().getLatLonBoundingBox());
+                        renderingArea =
+                                new ReferencedEnvelope(layer.getResource().getLatLonBoundingBox());
                     } else {
                         renderingArea.expandToInclude(layer.getResource().getLatLonBoundingBox());
                     }
@@ -311,8 +548,11 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                 // process the template and stream out the result
                 content = FileUtils.readFileToString(new File(wmcTemplatePath));
-                Template template = new Template("name", new StringReader(content),
-                        new Configuration());
+                Template template =
+                        new Template(
+                                "name",
+                                new StringReader(content),
+                                TemplateUtils.getSafeConfiguration());
 
                 template.setOutputEncoding("UTF-8");
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();
@@ -331,18 +571,18 @@ public class XMPPRawDataOutput implements XMPPOutputType {
             }
         }
 
-        StringRawData value = new StringRawData(content,
-                ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
-                        .split(",")[0]);
+        StringRawData value =
+                new StringRawData(
+                        content,
+                        ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
+                                .split(",")[0]);
         return value;
     }
 
     /**
-     * 
      * @param xmppClient
      * @param baseURL
      * @param layer
-     *
      */
     private static WmcFeature wrapFeature(XMPPClient xmppClient, String baseURL, LayerInfo layer) {
         GeoServer geoserver = xmppClient.getGeoServer();
@@ -373,13 +613,19 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         ft.setLastUpdated(sdf.format(new Date()));
 
         Map<String, String> kvps = new HashMap<String, String>();
-        String baseUrl = ResponseUtils.buildURL(baseURL, "/" + ft.getWorkspace() + "/ows/", kvps,
-                URLType.SERVICE);
+        String baseUrl =
+                ResponseUtils.buildURL(
+                        baseURL, "/" + ft.getWorkspace() + "/ows/", kvps, URLType.SERVICE);
         ft.setGetMapBaseUrl(canonicUrl(baseUrl));
 
         MetadataMap layerMetadata = layer.getMetadata();
-        String owcProperties = owcTemplate(ft, (String) (layerMetadata.containsKey("owc_properties")
-                ? layerMetadata.get("owc_properties") : ""));
+        String owcProperties =
+                owcTemplate(
+                        ft,
+                        (String)
+                                (layerMetadata.containsKey("owc_properties")
+                                        ? layerMetadata.get("owc_properties")
+                                        : ""));
         ft.setOwcProperties(owcProperties);
 
         // TODO Handle dimensions
@@ -390,10 +636,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     }
 
     /**
-     * 
      * @param ft
      * @param string
-     *
      */
     private static String owcTemplate(WmcFeature ft, String srcMetadata) {
         String trgMetadata = srcMetadata;
@@ -413,14 +657,9 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return trgMetadata;
     }
 
-    /**
-     * 
-     * @param refEnvelope
-     *
-     */
+    /** @param refEnvelope */
     private static String bboxToJSON(ReferencedEnvelope refEnvelope) {
-        if (refEnvelope == null)
-            return "[[]]";
+        if (refEnvelope == null) return "[[]]";
         // "[[[-2,45],[8,45],[8,55],[-2,55],[-2,45]]]"
         double minx = refEnvelope.getLowerCorner().getOrdinate(0);
         double miny = refEnvelope.getLowerCorner().getOrdinate(1);
@@ -432,11 +671,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 + "],[" + minx + "," + maxy + "],[" + minx + "," + miny + "]]]";
     }
 
-    /**
-     * 
-     * @param refEnvelope
-     *
-     */
+    /** @param refEnvelope */
     private static String bboxToString(ReferencedEnvelope refEnvelope) {
         double minx = refEnvelope.getLowerCorner().getOrdinate(0);
         double miny = refEnvelope.getLowerCorner().getOrdinate(1);
@@ -448,11 +683,10 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     }
 
     /**
-     * Makes sure the url does not end with "/", otherwise we would have URL lik "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't
-     * digest them...
-     * 
-     * @param baseUrl
+     * Makes sure the url does not end with "/", otherwise we would have URL lik
+     * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
      *
+     * @param baseUrl
      */
     private static String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {
@@ -461,5 +695,4 @@ public class XMPPRawDataOutput implements XMPPOutputType {
             return baseUrl;
         }
     }
-
 }

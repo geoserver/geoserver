@@ -7,22 +7,19 @@
 package org.geoserver.security.filter;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
  * J2EE Authentication Filter
- * 
- * @author mcr
  *
+ * @author mcr
  */
-public class GeoServerRequestHeaderAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter {
-    
-    private String principalHeaderAttribute;
+public class GeoServerRequestHeaderAuthenticationFilter
+        extends GeoServerPreAuthenticatedUserNameFilter {
 
+    private String principalHeaderAttribute;
 
     public String getPrincipalHeaderAttribute() {
         return principalHeaderAttribute;
@@ -35,15 +32,14 @@ public class GeoServerRequestHeaderAuthenticationFilter extends GeoServerPreAuth
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
-                        
-        RequestHeaderAuthenticationFilterConfig authConfig = 
+
+        RequestHeaderAuthenticationFilterConfig authConfig =
                 (RequestHeaderAuthenticationFilterConfig) config;
         setPrincipalHeaderAttribute(authConfig.getPrincipalHeaderAttribute());
     }
 
-    
     @Override
     protected String getPreAuthenticatedPrincipalName(HttpServletRequest request) {
         return request.getHeader(getPrincipalHeaderAttribute());
-    }     
+    }
 }

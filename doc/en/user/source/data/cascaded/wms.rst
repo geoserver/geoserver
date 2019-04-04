@@ -76,5 +76,3 @@ Layers served through an external WMS have some, but not all of the functionalit
 * GetLegendGraphic requests aren't supported.
 
 * Image format cannot be specified.  GeoServer will attempt to request PNG images, and if that fails will use the remote server's default image format.
-
-* Authentication for the remote WMS isn't supported.  The remote WMS must be unsecured.

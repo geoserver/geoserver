@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.web.repository;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -17,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.swing.filechooser.FileSystemView;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.MetaDataKey;
@@ -51,12 +50,10 @@ import org.geoserver.web.wicket.browser.FileBreadcrumbs;
 import org.geoserver.web.wicket.browser.FileProvider;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 
-import com.google.common.collect.Lists;
-
 /**
  * A geogig directory file chooser compoenent
- * <p>
- * Adapted from {@link GeoServerFileChooser}
+ *
+ * <p>Adapted from {@link GeoServerFileChooser}
  */
 public class DirectoryChooser extends Panel {
 
@@ -65,6 +62,7 @@ public class DirectoryChooser extends Panel {
     private final IModel<DirectoryFilter> fileFilter = new Model<>(new DirectoryFilter());
 
     static File USER_HOME = null;
+
     static {
         // try to safely determine the user home location
         try {
@@ -81,10 +79,11 @@ public class DirectoryChooser extends Panel {
         }
     }
 
-    private static final MetaDataKey<File> LAST_VISITED_DIRECTORY = new MetaDataKey<File>() {
+    private static final MetaDataKey<File> LAST_VISITED_DIRECTORY =
+            new MetaDataKey<File>() {
 
-        private static final long serialVersionUID = 1L;
-    };
+                private static final long serialVersionUID = 1L;
+            };
 
     private FileBreadcrumbs breadcrumbs;
 
@@ -100,10 +99,12 @@ public class DirectoryChooser extends Panel {
         this(contentId, directory, true);
     }
 
-    public DirectoryChooser(final String contentId, IModel<File> initialDirectory,
+    public DirectoryChooser(
+            final String contentId,
+            IModel<File> initialDirectory,
             final boolean makeRepositoriesSelectable) {
         super(contentId, initialDirectory);
-        getSession().bind();// so we can store the last visited directory as a session object
+        getSession().bind(); // so we can store the last visited directory as a session object
         this.makeRepositoriesSelectable = makeRepositoriesSelectable;
 
         if (initialDirectory.getObject() == null) {
@@ -167,63 +168,69 @@ public class DirectoryChooser extends Panel {
         setDefaultModel(initialDirectory);
 
         // the root chooser
-        final DropDownChoice<File> choice = new DropDownChoice<>("roots", new Model<>(
-                selectionRoot), new Model<ArrayList<File>>(roots), new FileRootsRenderer());
-        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
-            private static final long serialVersionUID = -1113141016446727615L;
+        final DropDownChoice<File> choice =
+                new DropDownChoice<>(
+                        "roots",
+                        new Model<>(selectionRoot),
+                        new Model<ArrayList<File>>(roots),
+                        new FileRootsRenderer());
+        choice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+                    private static final long serialVersionUID = -1113141016446727615L;
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                File selection = (File) choice.getModelObject();
-                breadcrumbs.setRootFile(selection);
-                updateFileBrowser(selection, target);
-            }
-
-        });
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        File selection = (File) choice.getModelObject();
+                        breadcrumbs.setRootFile(selection);
+                        updateFileBrowser(selection, target);
+                    }
+                });
         choice.setOutputMarkupId(true);
         add(choice);
 
         // the breadcrumbs
-        breadcrumbs = new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot),
-                initialDirectory) {
-            private static final long serialVersionUID = 3637173832581301482L;
+        breadcrumbs =
+                new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot), initialDirectory) {
+                    private static final long serialVersionUID = 3637173832581301482L;
 
-            @Override
-            protected void pathItemClicked(File file, AjaxRequestTarget target) {
-                updateFileBrowser(file, target);
-            }
-
-        };
+                    @Override
+                    protected void pathItemClicked(File file, AjaxRequestTarget target) {
+                        updateFileBrowser(file, target);
+                    }
+                };
         breadcrumbs.setOutputMarkupId(true);
         add(breadcrumbs);
 
         // the file tables
-        directoryListingTable = new DirectoryDataView("fileTable", new FileProvider(
-                initialDirectory), this.makeRepositoriesSelectable) {
+        directoryListingTable =
+                new DirectoryDataView(
+                        "fileTable",
+                        new FileProvider(initialDirectory),
+                        this.makeRepositoriesSelectable) {
 
-            private static final long serialVersionUID = -1559299096797421815L;
+                    private static final long serialVersionUID = -1559299096797421815L;
 
-            @Override
-            protected void linkNameClicked(File file, AjaxRequestTarget target) {
-                updateFileBrowser(file, target);
-            }
-
-        };
+                    @Override
+                    protected void linkNameClicked(File file, AjaxRequestTarget target) {
+                        updateFileBrowser(file, target);
+                    }
+                };
         directoryListingTable.setOutputMarkupId(true);
         directoryListingTable.setFileFilter(fileFilter);
         add(directoryListingTable);
 
-        accepdDirectoryLink = new AjaxLink<File>("ok", this.directory) {
-            private static final long serialVersionUID = 1L;
+        accepdDirectoryLink =
+                new AjaxLink<File>("ok", this.directory) {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                // must of been set by #directoryClicked()
-                File dir = getModelObject();
-                getSession().setMetaData(LAST_VISITED_DIRECTORY, dir);
-                directorySelected(dir, target);
-            }
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        // must of been set by #directoryClicked()
+                        File dir = getModelObject();
+                        getSession().setMetaData(LAST_VISITED_DIRECTORY, dir);
+                        directorySelected(dir, target);
+                    }
+                };
         add(accepdDirectoryLink);
         accepdDirectoryLink.setVisible(!this.makeRepositoriesSelectable);
     }
@@ -239,6 +246,7 @@ public class DirectoryChooser extends Panel {
 
     /**
      * Called when a file name is clicked. By default it does nothing
+     *
      * @param file
      * @param target
      */
@@ -249,7 +257,7 @@ public class DirectoryChooser extends Panel {
     /**
      * Action undertaken as a directory is clicked. Default behavior is to drill down into the
      * directory.
-     * 
+     *
      * @param file
      * @param target
      */
@@ -268,10 +276,8 @@ public class DirectoryChooser extends Panel {
     }
 
     private boolean isSubfile(File root, File selection) {
-        if (selection == null || "".equals(selection.getPath()))
-            return false;
-        if (selection.equals(root))
-            return true;
+        if (selection == null || "".equals(selection.getPath())) return false;
+        if (selection.equals(root)) return true;
 
         return isSubfile(root, selection.getParentFile());
     }
@@ -279,7 +285,7 @@ public class DirectoryChooser extends Panel {
     /**
      * Set the file table fixed height. Set it to null if you don't want fixed height with overflow,
      * and to a valid CSS measure if you want it instead. Default value is "25em"
-     * 
+     *
      * @param height
      */
     public void setFileTableHeight(String height) {
@@ -294,8 +300,8 @@ public class DirectoryChooser extends Panel {
             if (f == USER_HOME) {
                 return new ParamResourceModel("userHome", DirectoryChooser.this).getString();
             } else {
-                GeoServerResourceLoader loader = GeoServerExtensions
-                        .bean(GeoServerResourceLoader.class);
+                GeoServerResourceLoader loader =
+                        GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
                 if (f.equals(loader.getBaseDirectory())) {
                     return new ParamResourceModel("dataDirectory", DirectoryChooser.this)
@@ -304,8 +310,8 @@ public class DirectoryChooser extends Panel {
             }
 
             try {
-                final String displayName = FileSystemView.getFileSystemView().getSystemDisplayName(
-                        f);
+                final String displayName =
+                        FileSystemView.getFileSystemView().getSystemDisplayName(f);
                 if (displayName != null && displayName.length() > 0) {
                     return displayName;
                 }
@@ -332,54 +338,55 @@ public class DirectoryChooser extends Panel {
         }
     }
 
-    static abstract class DirectoryDataView extends Panel {
+    abstract static class DirectoryDataView extends Panel {
 
-        private static final PackageResourceReference FOLDER = new PackageResourceReference(
-                GeoServerBasePage.class, "img/icons/silk/folder.png");
+        private static final PackageResourceReference FOLDER =
+                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/folder.png");
 
-        private static final PackageResourceReference GEOGIG_FOLDER = new PackageResourceReference(
-                DirectoryDataView.class, "../geogig_16x16_babyblue.png");
+        private static final PackageResourceReference GEOGIG_FOLDER =
+                new PackageResourceReference(
+                        DirectoryDataView.class, "../geogig_16x16_babyblue.png");
 
         private static final long serialVersionUID = -2932107412054607607L;
 
         private final boolean allowSelectingRepositories;
 
-        private final IConverter FILE_NAME_CONVERTER = new StringConverter() {
+        private final IConverter FILE_NAME_CONVERTER =
+                new StringConverter() {
 
-            private static final long serialVersionUID = 2050812486536366790L;
+                    private static final long serialVersionUID = 2050812486536366790L;
 
-            @Override
-            public String convertToString(Object value, Locale locale) {
-                File file = (File) value;
-                if (file.isDirectory()) {
-                    if (RepositoryManager.isGeogigDirectory(file)) {
-                        return file.getName();
+                    @Override
+                    public String convertToString(Object value, Locale locale) {
+                        File file = (File) value;
+                        if (file.isDirectory()) {
+                            if (RepositoryManager.isGeogigDirectory(file)) {
+                                return file.getName();
+                            }
+                            return file.getName() + "/";
+                        } else {
+                            return file.getName();
+                        }
                     }
-                    return file.getName() + "/";
-                } else {
-                    return file.getName();
-                }
-            }
+                };
 
-        };
+        private static final IConverter FILE_LASTMODIFIED_CONVERTER =
+                new StringConverter() {
 
-        private static final IConverter FILE_LASTMODIFIED_CONVERTER = new StringConverter() {
+                    private static final long serialVersionUID = 7862772890388011374L;
 
-            private static final long serialVersionUID = 7862772890388011374L;
-
-            @Override
-            public String convertToString(Object value, Locale locale) {
-                File file = (File) value;
-                long lastModified = file.lastModified();
-                if (lastModified == 0L)
-                    return null;
-                else {
-                    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-                            .format(new Date(file.lastModified()));
-                }
-            }
-
-        };
+                    @Override
+                    public String convertToString(Object value, Locale locale) {
+                        File file = (File) value;
+                        long lastModified = file.lastModified();
+                        if (lastModified == 0L) return null;
+                        else {
+                            return DateFormat.getDateTimeInstance(
+                                            DateFormat.MEDIUM, DateFormat.SHORT)
+                                    .format(new Date(file.lastModified()));
+                        }
+                    }
+                };
 
         private SortableDataProvider<File, String> provider;
 
@@ -388,7 +395,9 @@ public class DirectoryChooser extends Panel {
         private String tableHeight = "25em";
 
         @SuppressWarnings("unchecked")
-        public DirectoryDataView(final String id, final FileProvider fileProvider,
+        public DirectoryDataView(
+                final String id,
+                final FileProvider fileProvider,
                 final boolean allowSelectingRepositories) {
             super(id);
             this.provider = fileProvider;
@@ -416,92 +425,106 @@ public class DirectoryChooser extends Panel {
                 }
             }
 
-            DataView<File> fileTable = new DataView<File>("files", fileProvider) {
-                private static final long serialVersionUID = 1345694542339080271L;
-
-                @Override
-                protected void populateItem(final Item<File> item) {
-                    // odd/even alternate style
-                    item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even"
-                            : "odd"));
-
-                    final File file = item.getModelObject();
-                    final boolean isGeogigDirectory = RepositoryManager.isGeogigDirectory(file);
-                    PackageResourceReference icon = isGeogigDirectory ? GEOGIG_FOLDER : FOLDER;
-                    item.add(new Image("icon", icon));
-
-                    // navigation/selection links
-                    AjaxFallbackLink<File> link = new AjaxFallbackLink<File>("nameLink") {
-                        private static final long serialVersionUID = -644973941443812893L;
+            DataView<File> fileTable =
+                    new DataView<File>("files", fileProvider) {
+                        private static final long serialVersionUID = 1345694542339080271L;
 
                         @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            linkNameClicked((File) item.getModelObject(), target);
-                        }
+                        protected void populateItem(final Item<File> item) {
+                            // odd/even alternate style
+                            item.add(
+                                    AttributeModifier.replace(
+                                            "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
+                            final File file = item.getModelObject();
+                            final boolean isGeogigDirectory =
+                                    RepositoryManager.isGeogigDirectory(file);
+                            PackageResourceReference icon =
+                                    isGeogigDirectory ? GEOGIG_FOLDER : FOLDER;
+                            item.add(new Image("icon", icon));
+
+                            // navigation/selection links
+                            AjaxFallbackLink<File> link =
+                                    new AjaxFallbackLink<File>("nameLink") {
+                                        private static final long serialVersionUID =
+                                                -644973941443812893L;
+
+                                        @Override
+                                        public void onClick(AjaxRequestTarget target) {
+                                            linkNameClicked((File) item.getModelObject(), target);
+                                        }
+                                    };
+                            Label nameLabel =
+                                    new Label("name", item.getModel()) {
+
+                                        private static final long serialVersionUID =
+                                                -4028081066393114129L;
+
+                                        @Override
+                                        public IConverter getConverter(Class type) {
+                                            return FILE_NAME_CONVERTER;
+                                        }
+                                    };
+                            link.add(nameLabel);
+
+                            final Map<File, File> existing = existingPaths;
+                            File canonicalFile;
+                            try {
+                                canonicalFile = file.getCanonicalFile();
+                            } catch (IOException e) {
+                                canonicalFile = file;
+                            }
+
+                            final boolean alreadyImported =
+                                    isGeogigDirectory && existing.containsKey(canonicalFile);
+                            if (isGeogigDirectory) {
+                                if (alreadyImported) {
+                                    link.setEnabled(false);
+                                    File dupicate = existing.get(canonicalFile);
+                                    nameLabel.add(
+                                            AttributeModifier.replace(
+                                                    "title",
+                                                    new ParamResourceModel(
+                                                                    "DirectoryChooser$DirectoryDataView.repoExists",
+                                                                    DirectoryDataView.this,
+                                                                    dupicate.getAbsolutePath())
+                                                            .getObject()));
+                                } else {
+                                    link.setEnabled(
+                                            DirectoryDataView.this.allowSelectingRepositories);
+                                }
+                            }
+
+                            item.add(link);
+
+                            // last modified and size labels
+                            item.add(
+                                    new Label("lastModified", item.getModel()) {
+
+                                        private static final long serialVersionUID =
+                                                -4706544449170830483L;
+
+                                        @Override
+                                        public IConverter getConverter(Class type) {
+                                            return FILE_LASTMODIFIED_CONVERTER;
+                                        }
+                                    });
+                        }
                     };
-                    Label nameLabel = new Label("name", item.getModel()) {
 
-                        private static final long serialVersionUID = -4028081066393114129L;
+            fileContent =
+                    new WebMarkupContainer("fileContent") {
+
+                        private static final long serialVersionUID = -4197754944388542068L;
 
                         @Override
-                        public IConverter getConverter(Class type) {
-                            return FILE_NAME_CONVERTER;
+                        protected void onComponentTag(ComponentTag tag) {
+                            if (tableHeight != null) {
+                                tag.getAttributes()
+                                        .put("style", "overflow:auto; height:" + tableHeight);
+                            }
                         }
                     };
-                    link.add(nameLabel);
-
-                    final Map<File, File> existing = existingPaths;
-                    File canonicalFile;
-                    try {
-                        canonicalFile = file.getCanonicalFile();
-                    } catch (IOException e) {
-                        canonicalFile = file;
-                    }
-
-                    final boolean alreadyImported = isGeogigDirectory
-                            && existing.containsKey(canonicalFile);
-                    if (isGeogigDirectory) {
-                        if (alreadyImported) {
-                            link.setEnabled(false);
-                            File dupicate = existing.get(canonicalFile);
-                            nameLabel.add(AttributeModifier.replace("title",
-                                    new ParamResourceModel(
-                                            "DirectoryChooser$DirectoryDataView.repoExists",
-                                            DirectoryDataView.this, dupicate.getAbsolutePath())
-                                            .getObject()));
-                        } else {
-                            link.setEnabled(DirectoryDataView.this.allowSelectingRepositories);
-                        }
-                    }
-
-                    item.add(link);
-
-                    // last modified and size labels
-                    item.add(new Label("lastModified", item.getModel()) {
-
-                        private static final long serialVersionUID = -4706544449170830483L;
-
-                        @Override
-                        public IConverter getConverter(Class type) {
-                            return FILE_LASTMODIFIED_CONVERTER;
-                        }
-                    });
-                }
-
-            };
-
-            fileContent = new WebMarkupContainer("fileContent") {
-
-                private static final long serialVersionUID = -4197754944388542068L;
-
-                @Override
-                protected void onComponentTag(ComponentTag tag) {
-                    if (tableHeight != null) {
-                        tag.getAttributes().put("style", "overflow:auto; height:" + tableHeight);
-                    }
-                }
-            };
 
             fileContent.add(fileTable);
 
@@ -510,7 +533,7 @@ public class DirectoryChooser extends Panel {
 
         protected abstract void linkNameClicked(File file, AjaxRequestTarget target);
 
-        private static abstract class StringConverter implements IConverter {
+        private abstract static class StringConverter implements IConverter {
 
             private static final long serialVersionUID = -6464669942374870999L;
 

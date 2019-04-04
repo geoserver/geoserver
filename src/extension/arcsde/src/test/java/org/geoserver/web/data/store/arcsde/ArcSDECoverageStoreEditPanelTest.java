@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -40,10 +39,7 @@ import org.geotools.arcsde.session.SessionWrapper;
 import org.geotools.arcsde.session.UnavailableConnectionException;
 import org.junit.Test;
 
-/**
- * 
- * @author Gabriel Roldan
- */
+/** @author Gabriel Roldan */
 public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport {
 
     private Page page;
@@ -53,7 +49,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
     private Form<CoverageStoreInfo> editForm;
 
     @SuppressWarnings("unchecked")
-	private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
+    private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
         final Catalog catalog = getCatalog();
         storeInfo = catalog.getFactory().createCoverageStore();
         storeInfo.setDescription("fake arcsde store");
@@ -71,24 +67,30 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         page = new CoverageStoreEditPage(storeId);
         tester.startPage(page);
 
-        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm =
+                (Form<CoverageStoreInfo>)
+                        tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
-        ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
-                .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
+        ArcSDECoverageStoreEditPanel panel =
+                (ArcSDECoverageStoreEditPanel)
+                        tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
 
         return panel;
     }
 
     @SuppressWarnings("unchecked")
-	private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
+    private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
         login();
         page = new CoverageStoreNewPage(ArcSDERasterFormat.getInstance().getName());
         tester.startPage(page);
 
-        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm =
+                (Form<CoverageStoreInfo>)
+                        tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
-        ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
-                .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
+        ArcSDECoverageStoreEditPanel panel =
+                (ArcSDECoverageStoreEditPanel)
+                        tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
 
         return panel;
     }
@@ -105,8 +107,8 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         editForm.setModel(new Model<CoverageStoreInfo>(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
 
-        StoreEditPanel storeEditPanel = StoreExtensionPoints.getStoreEditPanel("id", editForm,
-                storeInfo, app);
+        StoreEditPanel storeEditPanel =
+                StoreExtensionPoints.getStoreEditPanel("id", editForm, storeInfo, app);
         assertNotNull(storeEditPanel);
         assertTrue(storeEditPanel instanceof ArcSDECoverageStoreEditPanel);
     }
@@ -140,27 +142,29 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // this is a TextParamPanel instead of a RasterTableSelectionPanel when editing instead of
         // adding
         tester.assertComponent(base + "tableNamePanel", TextParamPanel.class);
-        tester.assertModelValue(base + "tableNamePanel:border:border_body:paramValue", "FAKE.TABLE");
+        tester.assertModelValue(
+                base + "tableNamePanel:border:border_body:paramValue", "FAKE.TABLE");
     }
 
-    /**
-     * Connection parameters are not properly set and the refresh raster tables button is hit
-     */
+    /** Connection parameters are not properly set and the refresh raster tables button is hit */
     @Test
     public void testRefreshRasterTableListBadConnectionParams() {
         startPanelForNewStore();
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
         final String base = "rasterStoreForm:parametersPanel:";
-        RasterTableSelectionPanel tableChooserPanel = (RasterTableSelectionPanel) tester
-                .getComponentFromLastRenderedPage(base + "tableNamePanel");
+        RasterTableSelectionPanel tableChooserPanel =
+                (RasterTableSelectionPanel)
+                        tester.getComponentFromLastRenderedPage(base + "tableNamePanel");
 
-        tableChooserPanel.setSessionFactory(new ISessionPoolFactory() {
+        tableChooserPanel.setSessionFactory(
+                new ISessionPoolFactory() {
 
-            public ISessionPool createPool(final ArcSDEConnectionConfig config) throws IOException {
-                throw new IOException("can't connect for some reason");
-            }
-        });
+                    public ISessionPool createPool(final ArcSDEConnectionConfig config)
+                            throws IOException {
+                        throw new IOException("can't connect for some reason");
+                    }
+                });
 
         // print(page, true, true);
         // simulate clicking on the refresh button
@@ -184,62 +188,68 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
         final String base = "rasterStoreForm:parametersPanel:";
-        RasterTableSelectionPanel tableChooserPanel = (RasterTableSelectionPanel) tester
-                .getComponentFromLastRenderedPage(base + "tableNamePanel");
+        RasterTableSelectionPanel tableChooserPanel =
+                (RasterTableSelectionPanel)
+                        tester.getComponentFromLastRenderedPage(base + "tableNamePanel");
 
-        final List<String> rasterColumns = Arrays.asList("FAKE.TABLE1", "FAKE.TABLE2",
-                "FAKE.TABLE3");
+        final List<String> rasterColumns =
+                Arrays.asList("FAKE.TABLE1", "FAKE.TABLE2", "FAKE.TABLE3");
 
-        tableChooserPanel.setSessionFactory(new ISessionPoolFactory() {
+        tableChooserPanel.setSessionFactory(
+                new ISessionPoolFactory() {
 
-            public ISessionPool createPool(final ArcSDEConnectionConfig config) throws IOException {
-                return new ISessionPool() {
-                    public ISession getSession() throws IOException, UnavailableConnectionException {
-                        return getSession(true);
-                    }
-                    public ISession getSession(final boolean transactional) throws IOException, UnavailableConnectionException {
-                        return new SessionWrapper(null) {
-                            @Override
-                            public List<String> getRasterColumns() throws IOException {
-                                return rasterColumns;
+                    public ISessionPool createPool(final ArcSDEConnectionConfig config)
+                            throws IOException {
+                        return new ISessionPool() {
+                            public ISession getSession()
+                                    throws IOException, UnavailableConnectionException {
+                                return getSession(true);
                             }
 
-                            @Override
-                            public void dispose() {
+                            public ISession getSession(final boolean transactional)
+                                    throws IOException, UnavailableConnectionException {
+                                return new SessionWrapper(null) {
+                                    @Override
+                                    public List<String> getRasterColumns() throws IOException {
+                                        return rasterColumns;
+                                    }
+
+                                    @Override
+                                    public void dispose() {
+                                        // do nothing
+                                    }
+                                };
+                            }
+
+                            public boolean isClosed() {
+                                return false;
+                            }
+
+                            public int getPoolSize() {
+                                return 1;
+                            }
+
+                            public int getInUseCount() {
+                                return 0;
+                            }
+
+                            public ArcSDEConnectionConfig getConfig() {
+                                return config;
+                            }
+
+                            public int getAvailableCount() {
+                                return 1;
+                            }
+
+                            public void close() {
                                 // do nothing
                             }
                         };
                     }
-
-                    public boolean isClosed() {
-                        return false;
-                    }
-
-                    public int getPoolSize() {
-                        return 1;
-                    }
-
-                    public int getInUseCount() {
-                        return 0;
-                    }
-
-                    public ArcSDEConnectionConfig getConfig() {
-                        return config;
-                    }
-
-                    public int getAvailableCount() {
-                        return 1;
-                    }
-
-                    public void close() {
-                        // do nothing
-                    }
-                };
-            }
-        });
+                });
         final String dropDownPath = base + "tableNamePanel:border:border_body:rasterTable";
-        final DropDownChoice<?> choice = (DropDownChoice<?>) tester
-                .getComponentFromLastRenderedPage(dropDownPath);
+        final DropDownChoice<?> choice =
+                (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(dropDownPath);
         assertTrue(choice.getChoices().isEmpty());
 
         // simulate clicking on the refresh button

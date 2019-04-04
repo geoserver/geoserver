@@ -1,12 +1,11 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.params.extractor;
 
-import org.geoserver.data.util.IOUtils;
-import org.geoserver.platform.resource.FileSystemResourceStore;
-import org.geoserver.platform.resource.ResourceStore;
-import org.junit.After;
-import org.junit.Before;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,17 +15,26 @@ import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
+import org.geoserver.data.util.IOUtils;
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.ResourceStore;
+import org.junit.After;
+import org.junit.Before;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 abstract class TestSupport {
 
-    private static final File TEST_DIRECTORY = new File(System.getProperty("java.io.tmpdir"), "params-extractor-data-directory");
+    private static final File TEST_DIRECTORY =
+            new File(System.getProperty("java.io.tmpdir"), "params-extractor-data-directory");
 
-    protected static final ApplicationContext APPLICATION_CONTEXT = new FileSystemXmlApplicationContext("file:" +
-            TestSupport.class.getClassLoader().getResource("testApplicationContext.xml").getFile());
+    protected static final ApplicationContext APPLICATION_CONTEXT =
+            new FileSystemXmlApplicationContext(
+                    "file:"
+                            + TestSupport.class
+                                    .getClassLoader()
+                                    .getResource("testApplicationContext.xml")
+                                    .getFile());
 
     protected ResourceStore resourceStore;
 
@@ -49,7 +57,8 @@ abstract class TestSupport {
         }
     }
 
-    protected static void doWork(String resourcePath, Consumer<InputStream> consumer) throws Exception {
+    protected static void doWork(String resourcePath, Consumer<InputStream> consumer)
+            throws Exception {
         URL resource = EchoParametersDaoTest.class.getClassLoader().getResource(resourcePath);
         assertThat(resource, notNullValue());
         File file = new File(resource.getFile());
@@ -96,7 +105,10 @@ abstract class TestSupport {
     }
 
     protected EchoParameter findEchoParameter(String id, List<EchoParameter> rules) {
-        return rules.stream().filter(echoParameter -> echoParameter.getId().equals(id)).findFirst().orElse(null);
+        return rules.stream()
+                .filter(echoParameter -> echoParameter.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     protected Rule findRule(String id, List<Rule> rules) {

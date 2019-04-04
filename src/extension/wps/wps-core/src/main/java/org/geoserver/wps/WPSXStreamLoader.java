@@ -6,10 +6,27 @@
 
 package org.geoserver.wps;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -23,21 +40,8 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
-import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
-import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Service loader for the Web Processing Service
@@ -46,6 +50,11 @@ import com.thoughtworks.xstream.mapper.Mapper;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
+
+    static final Logger LOGGER = Logging.getLogger(WPSXStreamLoader.class);
+
+    static final ProcessGroupInfo PROCESS_GROUP_ERROR = new ProcessGroupInfoImpl();
+
     public WPSXStreamLoader(GeoServerResourceLoader resourceLoader) {
         super(resourceLoader, "wps");
     }
@@ -78,17 +87,23 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         xs.registerConverter(new NameConverter());
         ClassAliasingMapper mapper = new ClassAliasingMapper(xs.getMapper());
         mapper.addClassAlias("role", String.class);
-        xs.registerLocalConverter(ProcessGroupInfoImpl.class, "roles", new CollectionConverter(
-                mapper));
+        xs.registerLocalConverter(
+                ProcessGroupInfoImpl.class, "roles", new CollectionConverter(mapper));
         xs.registerLocalConverter(ProcessInfoImpl.class, "roles", new CollectionConverter(mapper));
-        xs.registerLocalConverter(ProcessInfoImpl.class, "validators",
+        xs.registerLocalConverter(
+                ProcessInfoImpl.class,
+                "validators",
                 new XStreamPersister.MultimapConverter(mapper));
+        xs.registerLocalConverter(
+                WPSInfoImpl.class, "processGroups", new WPSCollectionConverter(mapper));
         xs.alias("maxSizeValidator", MaxSizeValidator.class);
         xs.alias("maxMultiplicityValidator", MultiplicityValidator.class);
         xs.alias("rangeValidator", NumberRangeValidator.class);
-        xs.registerLocalConverter(NumberRangeValidator.class, "range",
+        xs.registerLocalConverter(
+                NumberRangeValidator.class,
+                "range",
                 new NumberRangeConverter(xs.getMapper(), xs.getReflectionProvider()));
-        
+
         xs.allowTypeHierarchy(ProcessGroupInfo.class);
         xs.allowTypeHierarchy(WPSInputValidator.class);
     }
@@ -136,8 +151,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                             ((ProcessInfoImpl) pi).setRoles(new ArrayList<String>());
                         }
                         if (pi.getValidators() == null) {
-                            Multimap<String, WPSInputValidator> validators = ArrayListMultimap
-                                    .create();
+                            Multimap<String, WPSInputValidator> validators =
+                                    ArrayListMultimap.create();
                             ((ProcessInfoImpl) pi).setValidators(validators);
                         }
                         if (pi.getMetadata() == null) {
@@ -154,10 +169,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         return service;
     }
 
-    /**
-     * Converter for {@link Name}
-     *
-     */
+    /** Converter for {@link Name} */
     public static class NameConverter extends AbstractSingleValueConverter {
 
         @Override
@@ -182,7 +194,6 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 return new NameImpl(prefix, local);
             }
         }
-
     }
 
     /**
@@ -202,33 +213,43 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public Object doUnmarshal(Object result, HierarchicalStreamReader reader,
-                UnmarshallingContext context) {
-            ProcessGroupInfo converted = (ProcessGroupInfo) super.doUnmarshal(result, reader,
-                    context);
+        public Object doUnmarshal(
+                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+            try {
+                ProcessGroupInfo converted =
+                        (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
 
-            if (converted.getFilteredProcesses() != null) {
-                List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
-                for (Object fp : converted.getFilteredProcesses()) {
-                    if (fp instanceof NameImpl) {
-                        NameImpl ni = (NameImpl) fp;
-                        ProcessInfo pi = new ProcessInfoImpl();
-                        pi.setName(ni);
-                        pi.setEnabled(false);
-                        newFilteredProcesses.add(pi);
-                    } else {
-                        break;
+                if (converted.getFilteredProcesses() != null) {
+                    List<ProcessInfo> newFilteredProcesses = new ArrayList<ProcessInfo>();
+                    for (Object fp : converted.getFilteredProcesses()) {
+                        if (fp instanceof NameImpl) {
+                            NameImpl ni = (NameImpl) fp;
+                            ProcessInfo pi = new ProcessInfoImpl();
+                            pi.setName(ni);
+                            pi.setEnabled(false);
+                            newFilteredProcesses.add(pi);
+                        } else {
+                            break;
+                        }
+                    }
+                    if (!newFilteredProcesses.isEmpty()) {
+                        converted.getFilteredProcesses().clear();
+                        converted.getFilteredProcesses().addAll(newFilteredProcesses);
                     }
                 }
-                if (!newFilteredProcesses.isEmpty()) {
-                    converted.getFilteredProcesses().clear();
-                    converted.getFilteredProcesses().addAll(newFilteredProcesses);
+
+                return converted;
+            } catch (ConversionException e) {
+                LOGGER.log(Level.WARNING, "Error unmarshaling WPS Process Group", e);
+                List<String> expectedHierarchy =
+                        Arrays.asList("wps", "processGroups", "processGroup");
+                while (!expectedHierarchy.contains(reader.getNodeName())) {
+                    // Abort parsing this process group, and reset the reader to a safe state
+                    reader.moveUp();
                 }
+                return PROCESS_GROUP_ERROR;
             }
-
-            return converted;
         }
-
     }
 
     public static class NumberRangeConverter extends ReflectionConverter {
@@ -243,8 +264,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public void marshal(Object source, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
+        public void marshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             NumberRange<?> range = (NumberRange<?>) source;
             writer.startNode("minValue");
             writer.setValue(String.valueOf(range.getMinValue()));
@@ -275,7 +296,33 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
             NumberRange<Double> range = new NumberRange<>(Double.class, min, max);
             return range;
         }
-
     }
 
+    /**
+     * {@link CollectionConverter} variant used with {@link ProcessGroupConverter} to handle errors
+     * thrown by unresolvable process handler classes.
+     */
+    public static class WPSCollectionConverter extends CollectionConverter {
+
+        public WPSCollectionConverter(Mapper mapper) {
+            super(mapper);
+        }
+
+        public WPSCollectionConverter(Mapper mapper, Class type) {
+            super(mapper, type);
+        }
+
+        @Override
+        protected void addCurrentElementToCollection(
+                HierarchicalStreamReader reader,
+                UnmarshallingContext context,
+                Collection collection,
+                Collection target) {
+            Object item = this.readItem(reader, context, collection);
+            // Remove anything that threw an error upon deserialization
+            if (!PROCESS_GROUP_ERROR.equals(item)) {
+                target.add(item);
+            }
+        }
+    }
 }

@@ -4,13 +4,11 @@
  */
 package org.geoserver.params.extractor;
 
-import org.geotools.util.logging.Logging;
-
 import java.net.URLDecoder;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geotools.util.logging.Logging;
 
 public final class Rule {
 
@@ -20,28 +18,38 @@ public final class Rule {
     private final Boolean activated;
     private final Integer position;
     private final String match;
-    private final Optional<String> activation;
+    private final String activation;
     private final String parameter;
     private final String transform;
-    private final Optional<Integer> remove;
-    private final Optional<String> combine;
+    private final Integer remove;
+    private final String combine;
 
     private final Pattern matchPattern;
-    private final Optional<Pattern> activationPattern;
+    private final Pattern activationPattern;
 
-    public Rule(String id, Boolean activated, Integer position, String match, String activation, String parameter,
-                String transform, Integer remove, String combine, Pattern matchPattern, Pattern activationPattern) {
+    public Rule(
+            String id,
+            Boolean activated,
+            Integer position,
+            String match,
+            String activation,
+            String parameter,
+            String transform,
+            Integer remove,
+            String combine,
+            Pattern matchPattern,
+            Pattern activationPattern) {
         this.id = id;
         this.activated = activated;
         this.position = position;
         this.match = match;
-        this.activation = Optional.ofNullable(activation);
+        this.activation = activation;
         this.parameter = parameter;
         this.transform = transform;
-        this.remove = Optional.ofNullable(remove);
-        this.combine = Optional.ofNullable(combine);
+        this.remove = remove;
+        this.combine = combine;
         this.matchPattern = matchPattern;
-        this.activationPattern = Optional.ofNullable(activationPattern);
+        this.activationPattern = activationPattern;
     }
 
     public UrlTransform apply(UrlTransform urlTransform) {
@@ -50,8 +58,8 @@ public final class Rule {
             return urlTransform;
         }
         Utils.debug(LOGGER, "Start applying rule %s to URL '%s'.", id, urlTransform);
-        if (activationPattern.isPresent()) {
-            if (!activationPattern.get().matcher(urlTransform.getOriginalRequestUri()).matches()) {
+        if (activationPattern != null) {
+            if (!activationPattern.matcher(urlTransform.getOriginalRequestUri()).matches()) {
                 Utils.debug(LOGGER, "Rule %s doesn't apply to URL '%s'.", id, urlTransform);
                 return urlTransform;
             }
@@ -61,8 +69,9 @@ public final class Rule {
             Utils.debug(LOGGER, "Rule %s doesn't match URL '%s'.", id, urlTransform);
             return urlTransform;
         }
-        urlTransform.removeMatch(matcher.group(remove.orElse(1)));
-        urlTransform.addParameter(parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine);
+        urlTransform.removeMatch(matcher.group(remove != null ? remove : 1));
+        urlTransform.addParameter(
+                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine);
         return urlTransform;
     }
 
@@ -83,7 +92,7 @@ public final class Rule {
     }
 
     public String getActivation() {
-        return activation.orElse(null);
+        return activation;
     }
 
     public String getParameter() {
@@ -95,10 +104,10 @@ public final class Rule {
     }
 
     public Integer getRemove() {
-        return remove.orElse(null);
+        return remove;
     }
 
     public String getCombine() {
-        return combine.orElse(null);
+        return combine;
     }
 }

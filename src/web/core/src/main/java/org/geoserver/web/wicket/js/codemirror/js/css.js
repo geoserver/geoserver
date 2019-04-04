@@ -679,12 +679,12 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   });
 
   CodeMirror.defineMIME("text/x-less", {
-    mediaTypes: mediaTypes,
-    mediaFeatures: mediaFeatures,
+    mediaTypes: [],
+    mediaFeatures: [],
     propertyKeywords: propertyKeywords,
     nonStandardPropertyKeywords: nonStandardPropertyKeywords,
     colorKeywords: colorKeywords,
-    valueKeywords: valueKeywords,
+    valueKeywords: [],
     fontProperties: fontProperties,
     allowNested: true,
     tokenHooks: {
@@ -712,6 +712,63 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     },
     name: "css",
     helperType: "less"
+  });
+  
+  // Definition of GeoCSS
+  
+  var geoPropertyKeywords_ = [ "fill","fill-geometry","fill-mime","fill-opacity","fill-rotation",
+    "fill-size","font-family","font-fill","font-size","font-style","font-weight","geometry","fill-label-obstacle",
+    "graphic-margin","label-all-group","label-allow-overruns","label-auto-wrap","label-conflict-resolution",
+    "label-fit-goodness","label-follow-line","label-force-ltr","label-group","label-max-angle-delta",
+    "label-max-displacement","label-min-group-distance","label-padding","label-priority",
+    "label-remove-overlaps","label-repeat","label-underline-text","mark-label-obstacle","random",
+    "random-rotation","random-seed","random-symbol-count","random-tile-size","shield-margin",
+    "shield-resize", "stroke-label-obstacle","halo-color",
+    "halo-opacity","halo-radius","label","label-anchor","label-geometry","label-offset","label-rotation","label-z-index",
+    "mark","mark-geometry","mark-mime","mark-rotation","mark-size" ,"raster-channels","raster-color-map",
+    "raster-color-map-type","raster-contrast-enhancement","raster-gamma","raster-geometry","raster-opacity",
+    "raster-z-index","rotation","shield","shield-mime","size","sort-by","sort-by-group","stroke","stroke-dasharray",
+    "stroke-dashoffset","stroke-geometry","stroke-linecap","stroke-linejoin","stroke-mime","stroke-offset",
+    "stroke-opacity","stroke-repeat","stroke-rotation","stroke-size","stroke-width","transform", "z-index", "composite", 
+    "composite-base" ],
+    geoPropertyKeywords = keySet(geoPropertyKeywords_);
+    
+  var geoValueKeywords_ = [ "auto","bevel","color-map-entry(","false","free","grid","histogram","image/jpeg","image/png"
+    ,"image/svg+xml","intervals","italic","miter","none","normal","normalize","oblique","proportional","ramp","repeat",
+    "round","stipple","stretch","symbol(","true","url(","values", "hsl(", "saturate(", "desaturate(", "darken(", "lighten(", "spin(",
+    "mix(", "tint(", "shade(", "grayscale(", "constrast(" ],
+    geoValueKeywords = keySet(geoValueKeywords_);
+  
+  CodeMirror.defineMIME("text/geocss", {
+    mediaTypes: keySet([]),
+    mediaFeatures: keySet([]),
+    propertyKeywords: geoPropertyKeywords,
+    colorKeywords: colorKeywords,
+    valueKeywords: geoValueKeywords,
+    fontProperties: keySet([]),
+    allowNested: true,
+    tokenHooks: {
+      "/": function(stream, state) {
+        if (stream.eat("/")) {
+          stream.skipToEnd();
+          return ["comment", "comment"];
+        } else if (stream.eat("*")) {
+          state.tokenize = tokenCComment;
+          return tokenCComment(stream, state);
+        } else {
+          return ["operator", "operator"];
+        }
+      },
+      "@": function(stream) {
+        if (stream.match(/^(mode)\b/, false)) return false;
+        stream.eatWhile(/[\w\\\-]/);
+        if (stream.match(/^\s*:/, false))
+          return ["variable-2", "variable-definition"];
+        return ["variable-2", "variable"];
+      }
+    },
+    name: "css",
+    helperType: "geocss"
   });
 
 });

@@ -8,7 +8,6 @@ package org.geoserver.security.web.role;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -19,18 +18,17 @@ import org.geoserver.web.GeoServerApplication;
 
 /**
  * Drop down choice widget for {@link GeoServerRoleService} configurations.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class RoleServiceChoice extends DropDownChoice<String> {
 
     public RoleServiceChoice(String id) {
-        super(id,new RoleServiceNamesModel(), new RoleServiceChoiceRenderer());
+        super(id, new RoleServiceNamesModel(), new RoleServiceChoiceRenderer());
     }
 
     public RoleServiceChoice(String id, IModel<String> model) {
-        super(id, model, new RoleServiceNamesModel(), new RoleServiceChoiceRenderer()); 
+        super(id, model, new RoleServiceNamesModel(), new RoleServiceChoiceRenderer());
     }
 
     static class RoleServiceNamesModel implements IModel<List<String>> {
@@ -39,8 +37,9 @@ public class RoleServiceChoice extends DropDownChoice<String> {
 
         RoleServiceNamesModel() {
             try {
-                this.serviceNames = new ArrayList(
-                    GeoServerApplication.get().getSecurityManager().listRoleServices());
+                this.serviceNames =
+                        new ArrayList(
+                                GeoServerApplication.get().getSecurityManager().listRoleServices());
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
@@ -57,7 +56,7 @@ public class RoleServiceChoice extends DropDownChoice<String> {
 
         @Override
         public void detach() {
-            //do nothing
+            // do nothing
         }
 
         @Override
@@ -69,9 +68,10 @@ public class RoleServiceChoice extends DropDownChoice<String> {
     static class RoleServiceChoiceRenderer extends ChoiceRenderer<String> {
         @Override
         public Object getDisplayValue(String object) {
-            //do a resource lookup
+            // do a resource lookup
             return new ResourceModel(object, object).getObject();
         }
+
         @Override
         public String getIdValue(String object, int index) {
             return object;

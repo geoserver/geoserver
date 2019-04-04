@@ -1,0 +1,27 @@
+<assembly>
+  <id>sec-oauth2-geonode-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-sec-oauth2-core*</include>
+        <include>gs-sec-oauth2-geonode*</include>
+        <include>spring-security*</include>
+        <include>spring-security-oauth2*</include>
+        <include>commons-codec*</include>
+        <include>jackson*</include>
+        <include>jettison*</include>
+        <include>json*</include>
+        <include>org.json*</include>
+        <include>spring-aop*</include>
+        <include>spring-context*</include>
+        <include>spring-webmvc*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

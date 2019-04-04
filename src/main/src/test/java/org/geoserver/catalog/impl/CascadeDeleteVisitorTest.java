@@ -5,18 +5,18 @@
  */
 package org.geoserver.catalog.impl;
 
-
-import static org.easymock.EasyMock.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-
-import static org.geoserver.data.test.CiteTestData.*;
-import static org.junit.Assert.*;
+import static org.geoserver.data.test.CiteTestData.BRIDGES;
+import static org.geoserver.data.test.CiteTestData.BUILDINGS;
+import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
+import static org.geoserver.data.test.CiteTestData.FORESTS;
+import static org.geoserver.data.test.CiteTestData.LAKES;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-
-
+import java.util.List;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -45,14 +45,17 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         if (style != null) {
             catalog.remove(style);
         }
-        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        LayerGroupInfo group = catalog.getLayerGroupByName(NEST_GROUP);
+        if (group != null) {
+            catalog.remove(group);
+        }
+        group = catalog.getLayerGroupByName(LAKES_GROUP);
         if (group != null) {
             catalog.remove(group);
         }
 
         setupExtras(getTestData(), catalog);
     }
-
 
     @Test
     public void testCascadeLayer() {
@@ -68,14 +71,29 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         assertEquals(2, group.getLayers().size());
         assertFalse(group.getLayers().contains(layer));
     }
-    
+
+    @Test
+    public void testCascadeLayerGroup() {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo layerGroup = catalog.getLayerGroupByName(LAKES_GROUP);
+        assertNotNull(layerGroup);
+
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
+        visitor.visit(layerGroup);
+
+        LayerGroupInfo nestedGroup = catalog.getLayerGroupByName(NEST_GROUP);
+        assertNotNull(nestedGroup);
+        assertEquals(1, nestedGroup.getLayers().size());
+        assertEquals(1, nestedGroup.getStyles().size());
+    }
+
     @Test
     public void testCascadeLayerDuplicate() {
         Catalog catalog = getCatalog();
         String name = toString(LAKES);
         LayerInfo layer = catalog.getLayerByName(name);
         assertNotNull(layer);
-        
+
         LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
         group.getLayers().add(layer);
         group.getStyles().add(null);
@@ -92,14 +110,15 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
     @Test
     public void testCascadeStore() {
         Catalog catalog = getCatalog();
-        DataStoreInfo store = (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES))
-                .getResource().getStore();
+        DataStoreInfo store =
+                (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES)).getResource().getStore();
         new CascadeDeleteVisitor(catalog).visit(store);
 
         // that store actually holds all layers, so check we got empty
         assertEquals(0, catalog.count(LayerInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(ResourceInfo.class, Filter.INCLUDE));
         assertEquals(0, catalog.count(StoreInfo.class, Filter.INCLUDE));
+        List<LayerGroupInfo> groups = catalog.getLayerGroups();
         assertEquals(0, catalog.count(LayerGroupInfo.class, Filter.INCLUDE));
     }
 

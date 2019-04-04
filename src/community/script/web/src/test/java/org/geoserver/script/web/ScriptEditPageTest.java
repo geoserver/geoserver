@@ -10,12 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.HiddenField;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.script.ScriptManager;
@@ -23,8 +19,6 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 public class ScriptEditPageTest extends GeoServerWicketTestSupport {
 
@@ -74,6 +68,6 @@ public class ScriptEditPageTest extends GeoServerWicketTestSupport {
         form.setValue("contents:editorContainer:editorParent:editor", "");
         form.submit();
         tester.assertRenderedPage(ScriptEditPage.class);
-        tester.assertErrorMessages(new String[] { "Field 'contents' is required." });
+        tester.assertErrorMessages(new String[] {"Field 'contents' is required."});
     }
 }

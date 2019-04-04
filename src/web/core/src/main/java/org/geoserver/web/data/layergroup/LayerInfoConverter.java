@@ -6,11 +6,9 @@
 package org.geoserver.web.data.layergroup;
 
 import java.util.Locale;
-
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerApplication;
-
 
 public class LayerInfoConverter implements IConverter<LayerInfo> {
 
@@ -25,5 +23,5 @@ public class LayerInfoConverter implements IConverter<LayerInfo> {
     public String convertToString(LayerInfo obj, Locale locale) {
         if (obj == null) return "";
         else return ((LayerInfo) obj).prefixedName();
-    } 
+    }
 }

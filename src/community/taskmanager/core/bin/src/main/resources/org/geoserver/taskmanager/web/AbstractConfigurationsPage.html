@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+   <wicket:link>
+      <link rel="stylesheet" href="styleTaskManager.css" type="text/css">
+   </wicket:link>
+</wicket:head>    
+<body>
+	<wicket:extend>
+		<div wicket:id="dialog"></div>
+
+		<ul class="links-above-table">
+			<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+			<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+			<li><a class="copy-link" href="#" wicket:id="copySelected"><wicket:message key="copySelected" /></a></li>			
+		</ul>
+
+		<div wicket:id="configurationsPanel"></div>
+	</wicket:extend>
+</body>
+</html>

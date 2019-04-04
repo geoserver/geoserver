@@ -68,7 +68,7 @@
         <!-- note: we use depends to ensure that all datastore plugins are 
              loaded from the spring container before processing hte catalog -->
      
-    <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="extensions">
+    <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="configurationLock">
          <property name="resourceLoader" ref="resourceLoader"/>  
     </bean>
     <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">
@@ -85,6 +85,7 @@
         <constructor-arg ref="advertisedCatalog" />
     </bean>
     <bean id="disabledResourceFilter" class="org.geoserver.security.DisabledResourceFilter"/>
+    <bean id="disabledServiceResourceFilter" class="org.geoserver.security.DisabledServiceResourceFilter"/>
     
     <!-- Switch this when you want to enable the secure catalog by default -->
     <!--alias name="secureCatalog" alias="catalog"/-->
@@ -161,6 +162,7 @@
   
   <!-- resource pool initializer -->
   <bean id="resourcePoolInitializer" class="org.geoserver.catalog.ResourcePoolInitializer">
+      <constructor-arg ref="entityResolverProvider"/>
   </bean>
   
   <!-- security wrapper factories  -->
@@ -228,7 +230,7 @@
   <bean id="owsDispatcherLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
     <constructor-arg value="ows"/>
   </bean>
-  
+
   <!-- xstream persister factory -->
   <bean id="xstreamPersisterFactory" class="org.geoserver.config.util.XStreamPersisterFactory"/>
 
@@ -265,6 +267,7 @@
   <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
   <bean id="localPublishedTransfer" class="org.geoserver.threadlocals.LocalPublishedThreadLocalTransfer"/>
   <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
+  <bean id="envVariableTransfer" class="org.geoserver.threadlocals.EnvVarThreadLocalTransfer"/>
 
   <!-- default style handlers -->
   <bean id="sldHandler" class="org.geoserver.catalog.SLDHandler"/>
@@ -279,7 +282,20 @@
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
   
   <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
-  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+  <!-- The depends-on is important to avoid circularities, when a depends-on is setup a bean does not
+       start creation until the bean it depends onto is created. This ensures GeoServer post-processing
+       inside GeoServerLoader ends up causing the initialization of entityResolverProvider instead of the 
+       opposite, via the ResourcePoolInitializer, and breaks the circularity that would otherwise happen -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">
     <constructor-arg ref="geoServer"/>
   </bean>
+  
+  <bean id="capabilitiesCachingHeadersCallback" class="org.geoserver.config.CapabilitiesCacheHeadersCallback">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+  
+  <bean id="serviceResourceProvider" class="org.geoserver.catalog.ServiceResourceProvider">
+  	<constructor-arg ref="geoServer"/>
+  </bean>
+  
 </beans>

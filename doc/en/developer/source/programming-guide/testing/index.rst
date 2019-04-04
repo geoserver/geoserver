@@ -93,7 +93,7 @@ expensive operation so a full system test should be used only as a last resort.
 Developers are encouraged to consider a straight unit or mock tests before resorting to a 
 full system test.
 
-In GeoServer system tests extend from the ``org.geoserver.test.GeoServerSystemTest`` class.
+In GeoServer system tests extend from the ``org.geoserver.test.GeoServerSystemTestSupport`` class.
 The general lifecycle of a system test goes through the following states:
 
 #. System initialization
@@ -204,7 +204,7 @@ setUpTestData
 ~~~~~~~~~~~~~
 
 This callback method is invoked before the system has been created. It is meant to provide the
-test with a way to configure what configuration gets created in the Geoserver data directory 
+test with a way to configure what configuration gets created in the GeoServer data directory 
 for the test. By default the test setup will create a standard set of vector layers. This 
 method is where that should be changed, for instance to indicate that the test requires that
 raster layers be created as well. For example:
@@ -288,6 +288,176 @@ but the onTestSetup is not re-executed. The proper way to this initialization wo
           this.catalog = getCatalog();
       }
   }
+  
+System Test Data
+^^^^^^^^^^^^^^^^
+
+The GeoServer system test will create a data directory with a standard set of 
+vector layers. The contents of this data directory are as follows:
+
+Workspaces
+~~~~~~~~~~
+
+.. list-table::
+   :widths: 1 3 1 1
+   :header-rows: 1
+
+   * - Workspace
+     - URI
+     - Layer Count
+     - Default?
+   * - cdf
+     - http://www.opengis.net/cite/data
+     - 8
+     -
+   * - cgf
+     - http://www.opengis.net/cite/geometry
+     - 6
+     -
+   * - cite
+     - http://www.opengis.net/cite
+     - 12
+     -
+   * - gs
+     - http://geoserver.org
+     - 0
+     - Yes
+   * - sf
+     - http://cite.opengeospatial.org/gmlsf
+     - 3
+     -
+
+Stores and Layers
+~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :widths: 2 2 3 3
+   :header-rows: 1
+
+   * - Workspace
+     - Store
+     - Layer Name
+     - Default Style
+   * - cdf
+     - cdf
+     - Deletes
+     - Default
+   * - cdf
+     - cdf
+     - Fifteen
+     - Default
+   * - cdf
+     - cdf
+     - Inserts
+     - Default
+   * - cdf
+     - cdf
+     - Locks
+     - Default
+   * - cdf
+     - cdf
+     - Nulls
+     - Default
+   * - cdf
+     - cdf
+     - Other
+     - Default
+   * - cdf
+     - cdf
+     - Seven
+     - Default
+   * - cdf
+     - cdf
+     - Updates
+     - Default
+   * - cgf
+     - cgf
+     - Lines
+     - Default
+   * - cgf
+     - cgf
+     - MLines
+     - Default
+   * - cgf
+     - cgf
+     - MPoints
+     - Default
+   * - cgf
+     - cgf
+     - MPolygons
+     - Default
+   * - cgf
+     - cgf
+     - Points
+     - Default
+   * - cgf
+     - cgf
+     - Polygons
+     - Default
+   * - cite
+     - cite
+     - BasicPolygons
+     - BasicPolygons
+   * - cite
+     - cite
+     - Bridges
+     - Bridges
+   * - cite
+     - cite
+     - Buildings
+     - Buildings
+   * - cite
+     - cite
+     - DividedRoutes
+     - DividedRoutes
+   * - cite
+     - cite
+     - Forests
+     - Forests
+   * - cite
+     - cite
+     - Geometryless
+     - Default
+   * - cite
+     - cite
+     - Lakes
+     - Lakes
+   * - cite
+     - cite
+     - MapNeatline
+     - MapNeatLine
+   * - cite
+     - cite
+     - NamedPlaces
+     - NamedPlaces
+   * - cite
+     - cite
+     - Ponds
+     - Ponds
+   * - cite
+     - cite
+     - RoadSegments
+     - RoadSegments
+   * - cite
+     - cite
+     - Streams
+     - Streams
+   * - sf
+     - sf
+     - AgregateGeoFeature
+     - Default
+   * - sf
+     - sf
+     - GenericEntity
+     - Default
+   * - sf
+     - sf
+     - PrimitiveGeoFeature
+     - Default
+
+.. note::
+   The ``gs`` workspace contains no layers. It is typically used as the 
+   workspace for layers that are added by test cases.
 
 Writing Mock Tests
 ------------------

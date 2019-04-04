@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+-->
+<html xmlns:wicket="http://wicket.apache.org">
+<body>
+<wicket:panel>
+
+<input type="hidden" wicket:id="recorder"/>
+
+<div class="palette-choices">
+	<span wicket:id="availableHeader" class="palette-header">[available header]</span>
+	<div><select wicket:id="choices">[choices]</select></div>
+</div>
+
+<div class="palette-buttons">
+	<div>
+		<button type="button" wicket:id="addButton" class="palette-add"><div></div></button>
+		<button type="button" wicket:id="removeButton" class="palette-remove"><div></div></button>
+		<button type="button" wicket:id="moveUpButton" class="palette-up"><div></div></button>
+		<button type="button" wicket:id="moveDownButton" class="palette-down"><div></div></button>
+		<button type="button" wicket:id="addAllButton" class="palette-addAll"><div></div></button>
+		<button type="button" wicket:id="removeAllButton" class="palette-removeAll"><div></div></button>
+	</div>
+</div>
+
+<div class="palette-selected">
+	<span wicket:id="selectedHeader" class="palette-header">[selected header]</span>
+	<div><select wicket:id="selection">[selection]</select></div>
+</div>
+
+<div class="palette-clearer">
+</div>
+
+</wicket:panel>
+</body>
+</html>

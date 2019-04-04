@@ -77,7 +77,6 @@ sfdem is a Tagged Image File Format with Geographic information</abstract>
   <supportedFormats>
     <string>ARCGRID</string>
     <string>IMAGEMOSAIC</string>
-    <string>GTOPO30</string>
     <string>GEOTIFF</string>
     <string>GIF</string>
     <string>PNG</string>

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -28,8 +27,9 @@ public class GeoPackageMimeTypeTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // Getting the wms outputformats available
-        Component component = tester
-                .getComponentFromLastRenderedPage("table:listContainer:items:1:itemProperties:4:component:menu:wmsFormats");
+        Component component =
+                tester.getComponentFromLastRenderedPage(
+                        "table:listContainer:items:1:itemProperties:4:component:menu:wmsFormats");
         assertNotNull(component);
         assertTrue(component instanceof RepeatingView);
         // Get the list of all the format

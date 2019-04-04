@@ -21,13 +21,13 @@ DESC="GeoServer daemon"
 NAME=geoserver
 JAVA_HOME=/usr/lib/jvm/java-6-sun
 JAVA_OPTS="-Xms128m -Xmx512m"
-DAEMON="$JAVA_HOME/bin/java"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
+DAEMON="$JAVA_HOME/bin/java"
 DAEMON_ARGS="$JAVA_OPTS $DEBUG_OPTS -DGEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR -Djava.awt.headless=true -jar start.jar"
 
 # Load the VERBOSE setting and other rcS variables

@@ -17,8 +17,7 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
 
     protected String toBeEncrypted;
 
-    public MemoryRoleServiceConfigImpl() {
-    }
+    public MemoryRoleServiceConfigImpl() {}
 
     public MemoryRoleServiceConfigImpl(MemoryRoleServiceConfigImpl other) {
         super(other);
@@ -42,7 +41,7 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
 
     @Override
     public void setAdminRoleName(String name) {
-        adminRoleName=name;
+        adminRoleName = name;
     }
 
     public String getGroupAdminRoleName() {
@@ -52,5 +51,4 @@ public class MemoryRoleServiceConfigImpl extends BaseSecurityNamedServiceConfig
     public void setGroupAdminRoleName(String groupAdminRoleName) {
         this.groupAdminRoleName = groupAdminRoleName;
     }
-
 }

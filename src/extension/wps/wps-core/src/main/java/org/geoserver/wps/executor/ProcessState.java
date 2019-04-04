@@ -1,24 +1,20 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.executor;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * The various states in which the execution of a process can find itself into
- */
+/** The various states in which the execution of a process can find itself into */
 public enum ProcessState {
-    /**
-     * Queued for execution, not yet started
-     */
+    /** Queued for execution, not yet started */
     QUEUED(false),
-    /**
-     * Execution undergoing
-     */
+    /** Execution undergoing */
     RUNNING(false, QUEUED),
-    /**
-     * Execution completed successfully, (full output encoding included)
-     */
+    /** Execution completed successfully, (full output encoding included) */
     SUCCEEDED(true, RUNNING),
 
     /**
@@ -26,9 +22,7 @@ public enum ProcessState {
      */
     DISMISSING(false, QUEUED, RUNNING),
 
-    /**
-     * The process failed during execution/output encoding
-     */
+    /** The process failed during execution/output encoding */
     FAILED(true, QUEUED, RUNNING, DISMISSING);
 
     private boolean executionCompleted;
@@ -43,8 +37,6 @@ public enum ProcessState {
     /**
      * True if this state represents a process whose execution is completed (either succesfully, or
      * not)
-     * 
-     *
      */
     public boolean isExecutionCompleted() {
         return executionCompleted;
@@ -52,12 +44,10 @@ public enum ProcessState {
 
     /**
      * Checks if a certain state comes before this one in the status workflow
-     * 
-     * @param predecessor
      *
+     * @param predecessor
      */
     public boolean isValidSuccessor(ProcessState predecessor) {
         return predecessor == this || predecessors.contains(predecessor);
     }
-
 }

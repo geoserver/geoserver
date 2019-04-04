@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 /**
  * Returns only visible files whose name ends with the specified extension
+ *
  * @author Andrea Aime
  */
 @SuppressWarnings("serial")
@@ -19,7 +20,8 @@ public class ExtensionFileFilter implements FileFilter, Serializable {
 
     /**
      * Builds a file filter for the specified extension
-     * @param extension an extension, e.g., ".txt"
+     *
+     * @param extensions an extension, e.g., ".txt"
      */
     public ExtensionFileFilter(String... extensions) {
         this.extensions = new String[extensions.length];
@@ -29,22 +31,21 @@ public class ExtensionFileFilter implements FileFilter, Serializable {
     }
 
     public boolean accept(File pathname) {
-        if(pathname.isFile()) {
+        if (pathname.isFile()) {
             String name = pathname.getName().toUpperCase();
             for (String extension : extensions) {
-                if(name.endsWith(extension)) {
+                if (name.endsWith(extension)) {
                     return true;
                 }
             }
             return false;
         }
-        if(!pathname.isDirectory()) {
+        if (!pathname.isDirectory()) {
             return false;
         }
-        if(pathname.isHidden()) {
+        if (pathname.isHidden()) {
             return false;
         }
         return true;
     }
-    
 }

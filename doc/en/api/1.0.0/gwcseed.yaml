@@ -1,0 +1,134 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoWebCache Seeding and Truncating
+  description: A layer is a published resource (feature type or coverage).
+schemes:
+- http
+host: localhost:8080
+basePath: /geoserver/gwc/rest
+paths:
+  /seed.json:
+    get:
+      operationId: seedGet
+      summary: Query's currently running GWC task
+      description: Query's and returns a json array of the status for all currently running task. Requires json extension in the request. The array contains a set of long in the following order:[tiles processed, total number of tiles to process, number of remaining tiles, Task ID, Task status].
+        The returned task status will be one of -1 = ABORTED, 0 = PENDING, 1 = RUNNING, 2 = DONE
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              {"long-array-array":[
+                [364832,2761733810,998564,16,1],
+                [373472,2761733810,975448,17,1],
+                [363760,2761733810,1001509,18,1]
+              ]}
+  /seed/{layer}.{format}:
+    get:
+      operationId: layerSeedGet
+      summary: Query's the currently running GWC task for a given layer
+      description: Returns HTML of the GeoWebCache Seed ui page or a json array of the status for currently running task of a given layer if using json extension. The json array contains a set of long in the following order:[tiles processed, total number of tiles to process, number of remaining tiles, Task ID, Task status]
+      produces:
+        - application/json
+        - application/html
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: The name of the layer to query GWC task.
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: Based on format, the request will return an application/html or application/json response.
+          type: string
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json: |
+              {"long-array-array":[
+                [364832,2761733810,998564,16,1],
+                [373472,2761733810,975448,17,1],
+              ]}
+            text/html: |
+              <html>
+                <title>GWC Seed Form</title>
+                <body> {contents of GeoWebCache Seed Form} <body>
+              </html>
+        400:
+          description: Bad Request
+    post:
+      operationId: layerSeedPost
+      summary: Issue a seed, reseed or truncate task request
+      description: Executes an issue to seed, reseed or truncate task request for a layer and returns HTML UI page of running GWC tasks and tasks to execute.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: The name of the layer to query GWC task.
+          type: string
+        - name: requestBody
+          in: body
+          description: The updated layer definition.
+          schema:
+            $ref: "#/definitions/seedRequest"
+      consumes:
+        - application/json
+        - application/xml
+      responses:
+        201:
+          description: Successfully created seed, reseed, or truncate request
+        400:
+          description: Bad Request
+
+definitions:
+  seedRequest:
+    title: seedRequest
+    type: object
+    properties:
+        name:
+          type: string
+          description: name of the layer to seed, reseed, or truncate.
+        bounds:
+          type: object
+          description: A set of coordinates describing the bounds of the seed layer.
+          properties:
+            'coords':
+              type: object
+              items:
+                properties:
+                  'double':
+                    type: array
+                    items:
+                      type: number
+        gridSetId:
+          type: string
+          description: The projection used for the layer.
+        zoomStart:
+          type: integer
+          description: The zoom level to start seeding.
+        zoomStop:
+          type: integer
+          description: The zoom level to stop seeding.
+        type:
+          type: string
+          enum: [seed, reseed, truncate]
+          description: Type can be seed (add tiles), reseed (replace tiles), or truncate (remove tiles).
+        threadCount:
+          type: integer
+          description: Number of seeding threads to run in parallel. If type is truncate only one thread will be used regardless of this parameter.
+        parameters:
+          type: object
+          description: The filter parameters used for the requested layer
+          properties:
+              'entry':
+                type: object
+                description: A set of strings used to describe what filters to use
+                properties:
+                  'string':
+                    type: string

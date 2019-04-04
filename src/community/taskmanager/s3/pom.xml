@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- set parent pom to taskmanager pom -->
+    <parent>
+        <groupId>org.geoserver.community</groupId>
+        <artifactId>gs-taskmanager</artifactId>
+        <version>2.16-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-taskmanager-s3</artifactId>
+    <packaging>jar</packaging>
+    <version>2.16-SNAPSHOT</version>
+
+    <name>GeoServer Task Manager S3</name>
+    <description>
+        GeoServer Task Manager S3
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-taskmanager-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--S3 support-->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.36</version>
+        </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.geoserver</groupId>
+            <artifactId>gs-main</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geoserver.community</groupId>
+            <artifactId>gs-taskmanager-core</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <!--S3 support for tests-->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-s3-geotiff</artifactId>
+            <scope>test</scope>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+        
+</project>
+

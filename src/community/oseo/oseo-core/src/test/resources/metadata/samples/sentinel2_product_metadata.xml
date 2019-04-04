@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eop:EarthObservation xmlns:eop="http://www.opengis.net/eop/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:atm="http://www.opengis.net/atm/2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dclite4g="http://xmlns.com/2008/dclite4g#" xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:georss="http://www.georss.org/georss" xmlns:gml_old="http://www.opengis.net/gml"
+  xmlns:gpodeop="http://www.genesi-dr.eu/spec/opensearch/extensions/eop/1.0/" xmlns:ical="http://www.w3.org/2002/12/cal/ical#"
+  xmlns:om="http://www.opengis.net/om/2.0" xmlns:opt="http://www.opengis.net/opt/2.0" xmlns:os="http://a9.com/-/spec/opensearch/1.1/"
+  xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:sar="http://www.opengis.net/sar/2.0" xmlns:swe="http://www.opengis.net/swe/1.0"
+  xmlns:urlencoder="java.net.URLEncoder" xmlns:ws="http://dclite4g.xmlns.com/ws.rdf#" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="ID00N10001"
+  xsi:schemaLocation="http://www.opengis.net/eop/2.0 https://svn.opengeospatial.org/ogc-projects/cite/scripts/wcseo/1.0/tags/r1/resources/omeo/eop.xsd"
+>
+  <om:phenomenonTime>
+    <gml:TimePeriod gml:id="ID01N10001">
+      <gml:beginPosition>2016-12-06T01:37:12.000Z</gml:beginPosition>
+      <gml:endPosition>2016-12-06T01:37:12.000Z</gml:endPosition>
+    </gml:TimePeriod>
+  </om:phenomenonTime>
+  <om:resultTime />
+  <om:procedure />
+  <om:observedProperty nilReason="inapplicable" />
+  <om:featureOfInterest>
+    <eop:Footprint gml:id="ID02N10001">
+      <eop:multiExtentOf>
+        <gml:MultiSurface gml:id="ID04N10001" srsName="EPSG:4326">
+          <gml:surfaceMembers>
+            <gml:Polygon gml:id="ID05N10001">
+              <gml:exterior>
+                <gml:LinearRing>
+                  <gml:posList srsDimension="2">-25.302805695489 127.01338743705
+                    -25.31346832119 128.1038678987 -26.304850168247 128.09637786313 -26.293708299453
+                    126.99679369858 -25.302805695489 127.01338743705 -25.302805695489
+                    127.01338743705</gml:posList>
+                </gml:LinearRing>
+              </gml:exterior>
+            </gml:Polygon>
+          </gml:surfaceMembers>
+        </gml:MultiSurface>
+      </eop:multiExtentOf>
+    </eop:Footprint>
+  </om:featureOfInterest>
+  <om:result>
+    <eop:EarthObservationResult gml:id="ID06N10001">
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>QUICKLOOK</eop:type>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326</eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <ows:ServiceReference
+              xlink:href="https://peps.cnes.fr/quicklook/2016/12/06/S2A/S2A_OPER_PRD_MSIL1C_PDMC_20161206T141954_R031_V20161206T013712_20161206T013712_quicklook.jpg"
+            >
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:product>
+        <eop:ProductInformation>
+          <eop:fileName>
+            <ows:ServiceReference
+              xlink:href="https://peps.cnes.fr/resto/collections/S2/5a65a9f2-124d-5020-8284-ebbe6d53bb10/download"
+            >
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:ProductInformation>
+      </eop:product>
+    </eop:EarthObservationResult>
+  </om:result>
+  <eop:metaDataProperty>
+    <eop:EarthObservationMetaData>
+      <eop:identifier>5a65a9f2-124d-5020-8284-ebbe6d53bb10</eop:identifier>
+      <eop:parentIdentifier>S2</eop:parentIdentifier>
+      <eop:acquisitionType>NOMINAL</eop:acquisitionType>
+      <eop:status>ARCHIVED</eop:status>
+    </eop:EarthObservationMetaData>
+  </eop:metaDataProperty>
+</eop:EarthObservation>

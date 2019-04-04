@@ -6,23 +6,18 @@
 
 package org.geoserver.test;
 
-/**
- * 
- * @author Niels Charlier, Curtin University of Technology
- * 
- */
-
+/** @author Niels Charlier, Curtin University of Technology */
 public class MappingNameMockData extends AbstractAppSchemaMockData {
 
-    /**
-     * @see org.geoserver.test.AbstractAppSchemaMockData#addContent()
-     */
+    /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureWithHyphen.xml",
-                "MappedFeature.properties", "ObservationMethodWithHyphen.xml",
+        addFeatureType(
+                GSML_PREFIX,
+                "MappedFeature",
+                "MappedFeatureWithHyphen.xml",
+                "MappedFeature.properties",
+                "ObservationMethodWithHyphen.xml",
                 "ObservationMethod.properties");
-
     }
-
 }

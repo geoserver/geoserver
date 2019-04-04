@@ -6,23 +6,20 @@
 package org.vfny.geoserver.servlets;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * This can be mapped to every URL we don't want to serve even if located in
- * public folder of the web application
+ * This can be mapped to every URL we don't want to serve even if located in public folder of the
+ * web application
  *
  * @author aaime
- *
  */
 public class FileHiderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         response.sendError(404);
     }
 }

@@ -48,5 +48,4 @@ public class WatermarkInfoImpl implements WatermarkInfo {
     public void setURL(String url) {
         this.url = url;
     }
-
 }

@@ -1,0 +1,948 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: OpenSearch for EO search index access
+  description: Allows to manipulate the OpenSearch for EO index
+host: localhost:8080
+basePath: /geoserver/rest/oseo/
+
+paths:
+  /collections:
+    get:
+      description: Retrieves a list of all available collections (names and links)
+      parameters:
+      - name: offset
+        in: query
+        description: First element for paged responses
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: Number of elements in page
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "collections" : [
+                      {
+                        "name" : "SENTINEL1",
+                        "href" : "http://host:port/geoserver/rest/oseo/collections/SENTINEL1.json",
+                        "search": "http://host:port/geoserver/oseo/description?parentId=SENTINEL1"
+                      },
+                      {
+                        "name" : "SENTINEL2",
+                        "href" : "http://host:port/geoserver/rest/oseo/collections/SENTINEL2.json",
+                        "search": "http://host:port/geoserver/oseo/description?parentId=SENTINEL2"
+                      }
+                  ]
+              }
+    post:
+      description: |
+        Creates a new collection via its search attributes and ogc links. 
+        The zip format accepts a set of files creating the collection in a single shot, and will contain the following files: 
+        * collection.json: the list of searchable attributes, the format is the same as the one returned by a GET on a collection, the "*HRef" properties should be omitted. 
+        * description.html: the HTML description for the collection
+        * metadata.xml: the ISO metadata for the collection
+        * thumbnail.png: the collection thumbnail (ignored at the time of writing)
+        * owsLinks.json: the list of OWS links, in the same JSON format as the associated resource
+        A creation with ZIP is recommend for speed and consistency sake.
+      parameters:
+      - name: ogc_publish
+        in: query
+        description: When set to true, instructs GeoServer to automatically publish the collection as a layer in the location GeoServer
+        type: boolean
+        required: false
+      - name: workspace
+        in: query
+        description: workspace where the collection will be published (if missing the default workspace will be used)
+        required: false
+        type: string
+      - name: layer
+        in: query
+        description: layer name used when publishing the collection (if missing the collection name will be used)
+        type: string
+      consumes:
+      - application/json
+      - application/zip
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: The location of the newly created collection
+              type: string
+        400:
+          description: If any error is found in the collection json payload
+        409:
+          description: Returned if the target collection or layer is already there
+  /collections/{collection}:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Retrieves a collection search attributes and its ogc links
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success. The response contains cross links to ogcLinks/metadata/description/thumnail sub-resources.
+          examples:
+            application/json: |
+              {
+                "type": "Feature",
+                "geometry": {
+                  "type":"Polygon",
+                  "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+                },
+                "properties": {
+                  "name": "SENTINEL2",
+                  "primary": true,
+                  "timeStart" : "2012-04-23T18:25:43.511Z",
+                  "timeEnd" : null,
+                  "productcqlfilter" : null,
+                  "masked" : false,
+                  "eo:identifier" : "SENTINEL2",
+                  "eo:productType" : "S2MS1C",
+                  "eo:platform" : "Sentinel-2",
+                  "eo:platformSerialIdentifier" : "A",
+                  "eo:instrument" : "MSI",
+                  "eo:sensorType" : "OPTICAL",
+                  "eo:compositeType" : null,
+                  "eo:processingLevel" : "Level-1C",
+                  "eo:orbitType" : "LEO",
+                  "eo:spectralRange" : null,
+                  "eo:wavelength" : null,
+                  "eo:securityConstraints" : null,
+                  "eo:dissemination" : null,
+                  "eo:acquisitionStation" : null,
+                  "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/ogcLinks",
+                  "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/metadata",
+                  "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/description",
+                  "thumbnailHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/thumbnail"
+                }
+              }
+        404:
+          description: The specified collection cannot be found
+    put:
+      description: Updates a collection search attributes
+      consumes:
+      - application/json
+      responses:
+        200:
+          description: Success
+        400:
+          description: If any error is found in the json payload (details will be provided in the error message)
+        404:
+          description: The specified collection cannot be found
+    delete:
+      parameters:
+      - name: keepMetadata
+        in: query
+        description: When present and set to true, makes GeoServer un-publish the collection (removal of OGC links, removal of associated layer) without removing the metadata. The collection remains searchable.
+        type: boolean
+      description: Deletes a collection and everything inside it
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection cannot be found
+
+  /collections/{collection}/metadata:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns the ISO metadata of this collection
+      produces:
+      - application/xml
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified collection cannot be found
+    put:
+      description: Updates/creates a collection ISO metadata
+      consumes:
+      - application/xml
+      responses:
+        200:
+          description: Success
+        400:
+          description: The metadata is not a match for the target schema
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the product metadata
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection cannot be found
+  /collections/{collection}/description:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns the HTML description of this collection
+      produces:
+      - text/html
+      responses:
+        200:
+          description: Success
+          examples:
+            text/html: |
+              <table xmlns="">
+                <tr valign="top">
+                  <td>
+                    <b>Title</b>
+                  </td>
+                  <td>Sentinel-2</td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <b>Description</b>
+                  </td>
+                  <td>The SENTINEL-2 mission is a land monitoring constellation of two satellites each equipped with a MSI (Multispectral Imager) instrument covering 13 spectral bands providing high resolution optical imagery (i.e., 10m, 20m, 60 m) every 10 days with one satellite and 5 days with two satellites.</td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <b>Type</b>
+                  </td>
+                  <td>Collection</td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <b>Date</b>
+                  </td>
+                  <td>2015-06-23T00:00:00Z/</td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <b>Media Type</b>
+                  </td>
+                  <td>
+                    <a href="${ATOM_URL}" title="ATOM format">ATOM</a>
+                  </td>
+                </tr>
+                <tr valign="top">
+                  <td>
+                    <b>Metadata</b>
+                  </td>
+                  <td>
+                    <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
+                  </td>
+                </tr>
+              </table>
+        404:
+          description: The specified collection cannot be found
+    put:
+      description: Updates/creates a collection HTML description
+      consumes:
+      - text/html
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the collection HTML description
+      responses:
+        200:
+          description: OK
+        400:
+          description: Returned if the target collection or layer is already there
+        404:
+          description: The specified product cannot be found
+  /collections/{collection}/ogcLinks:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns the list of OGC links
+      produces:
+      - text/html
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "links": [
+                   {
+                     "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+                     "method": "GET",
+                     "code": "GetCapabilities",
+                     "type": "application/xml",
+                     "href": "${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities"
+                   },
+                   {
+                     "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+                     "method": "GET",
+                     "code": "GetMap",
+                     "type": "image/jpeg",
+                     "href": "${BASE_URL}/landsat8/LS8_RGB/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=landsat8%3ALS8_RGB&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
+                   }
+                ]
+              }
+        404:
+          description: The specified collection cannot be found
+    put:
+      description: Updates/creates a collection OGC links
+      consumes:
+      - text/html
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload does not match the expected structure (
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the collection OGC links
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified product cannot be found
+  /collections/{collection}/thumbnail:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns the thumbnail of this collection
+      produces:
+      - image/png
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified product cannot be found
+    put:
+      description: Updates/creates a collection thumbnail
+      consumes:
+      - image/png
+      - image/jpeg
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the collection thumbnail
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection cannot be found
+  /collections/{collection}/layer:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      deprecated: true
+      description: Returns the current publishing configuration for the layer (or 404 if no configuration is currently in use)
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "workspace": "gs",
+                "layer": "test123",
+                "separateBands": true,
+                "bands": [
+                      "B02",
+                      "B03",
+                      "B04",
+                      "B08"
+                  ],
+                  "browseBands": [
+                      "B08",
+                      "B03",
+                      "B02"
+                  ],
+                "heterogeneousCRS": true,
+                "mosaicCRS": "EPSG:4326",
+                "defaultLayer": true
+              }        
+        404:
+          description: The specified collection or publishing configuration cannot be found
+    put:
+      deprecated: true
+      description: Removes the previous publshing configuration and replaces with a new one, creating along the mosaic configuration, store, layer and style as described
+      consumes:
+      - application/json
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload does not match the expected structure
+        404:
+          description: The specified collection cannot be found
+    delete:
+      deprecated: true
+      description: Removes the mosaic configuration, store, layer and style associated to this collection
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection or publishing configuration cannot be found
+  /collections/{collection}/layers:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns the list of collection layers
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "workspace": "gs",
+                "layer": "test123",
+                "separateBands": true,
+                "bands": [
+                      "B02",
+                      "B03",
+                      "B04",
+                      "B08"
+                  ],
+                  "browseBands": [
+                      "B08",
+                      "B03",
+                      "B02"
+                  ],
+                "heterogeneousCRS": true,
+                "mosaicCRS": "EPSG:4326"
+              }  
+        404:
+          description: The specified collection cannot be found
+  /collections/{collection}/layers/{layer}:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: layer
+      in: path
+      description: Identifier of the layer
+      required: true
+      type: string
+    get:
+      description: Returns the list of collection layers
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "layers": [
+                  {
+                    "name": "test123-layer1",
+                    "href": "http://localhost:8080/geoserver/rest/oseo/collections/TEST123/layers/test123-layer1"
+                  },
+                  {
+                    "name": "test123-layer2",
+                    "href": "http://localhost:8080/geoserver/rest/oseo/collections/TEST123/layers/test123-layer2"
+                  }
+                ]
+              }
+        404:
+          description: The specified collection or layer cannot be found
+    put:
+      description: Updates/creates a collection layer publishing configuration
+      consumes:
+      - application/json
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified collection cannot be found
+    delete:
+      description: Removes the collection layer configuration
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection or layer cannot be found
+  /collections/{collection}/products:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    get:
+      description: Returns a paged list of all available products
+      parameters:
+      - name: offset
+        in: query
+        description: First element for paged responses
+        required: false
+        type: integer
+        default: 0
+      - name: limit
+        in: query
+        description: Number of elements in page
+        required: false
+        type: integer
+        default: 10
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "products" : [
+                      {
+                        "id" : "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                        "href" : "http://host:port/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                        "rss": "http://host:port/geoserver/oseo/search?uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04"
+                      },
+                      {
+                        "id" : "S2A_OPER_MSI_L1C_TL_SGS__20161207T162012_A007627_T31TCG_N02.04",
+                        "href" : "http://host:port/geoserver/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20161207T162012_A007627_T31TCG_N02.04",
+                        "rss": "http://host:port/geoserver/oseo/search?uid=S2A_OPER_MSI_L1C_TL_SGS__20161207T162012_A007627_T31TCG_N02.04"
+                      }
+                ]
+              }
+        404:
+          description: The specified collection cannot be found
+    post:
+      description: |
+        Creates a new product via its search attributes and ogc links. The zip format accepts 
+        a set of files creating the collection in a single shot, and will contain the following files: 
+        * product.json: the list of searchable attributes and eventual OGC links
+        * description.html: the HTML description for the product
+        * metadata.xml: the O&M metadata for the collection
+        * thumbnail.png: the product thumbnail (can also have jpeg or jpg extension)
+        * owsLinks.json: the list of OWS links, in the same JSON format as the associated resource 
+        * granules.json: the list of granules, in the same JSON format as the associated resource
+        The JSON format is the same as the one returned by a GET on an existing product, the "*Href" properties should be omitted 
+      consumes:
+      - application/json
+      - application/zip
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: The location of the newly created collection
+              type: string
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified collection cannot be found
+        409:
+          description: Returned if the target collection or layer is already there
+  /collections/{collection}/products/{product}:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: |
+        Retrieves a product search attributes, ogc links and granules.
+        The response contains cross links to ogcLinks/metadata/description/thumnail/granules sub-resources, when the same JSON is used o create a new collection the associated can be omitted, or if everything needs to be put in the JSON, the associated representations can be inlined instead (the thumbnail image can be BASE64 encded). A creation with ZIP is recommend.
+      produces:
+      - application/json
+      - application/xml
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              {
+                "type": "Feature",
+                "geometry": {
+                    "type":"Polygon",
+                    "coordinates":[[[-180,-90],[180,-90],[180,90],[-180,90],[-180, -90]]]
+                },
+                "properties": {
+                  "eop:identifier" : "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04",
+                  "timeStart" : "2016-09-29T18:59:02Z",
+                  "timeEnd" : "2016-09-29T18:59:02Z",
+                  "originalPackageLocation" : "/var/data/sentinel2/2017/04/23/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04.zip",
+                  "thumbnailURL" : null,
+                  "quicklookURL" : null,
+                  "eop:parentIdentifier" : "SENTINEL2",
+                  "eop:productionStatus" : null,
+                  "eop:acquisitionType" : "NOMINAL",
+                  "eop:orbitNumber" : 65,
+                  "eop:orbitDirection" : "DESCENDING",
+                  "eop:track" : null,
+                  "eop:frame" : null,
+                  "eop:spwathIdentifier" : null,
+                  "opt:cloudCover" : 0,
+                  "opt:snowCover" : null,
+                  "eop:productQualityStatus" : null,
+                  "eop:productQualityDegradationStatus" : null,
+                  "eo:processorName" : null,
+                  "eop:processingCenter" : null,
+                  "eop:creationDate" : "2016-09-29T18:59:02Z",
+                  "eop:modificationDate" : null,
+                  "eop:processingDate" : null,
+                  "eop:sensorMode" : null,
+                  "eop:archivingCenter" : "DPA"
+                  "eop:processingMode" : "DATA_DRIVEN",
+                  "eop:availabilityTime" : null,
+                  "eop:acquisitionStation" : null,
+                  "eop:acquisitionSubtype" : null,
+                  "eop:startTimeFromAscendingNode" : null,
+                  "eop:completionTimeFromAscendingNode" : null,
+                  "eop:illuminationAzimuthAngle" : null,
+                  "eop:illuminationZenithAngle" : null,
+                  "eop:illuminationElevationAngle" : null,
+                  "sar:polarisationMode" : null,
+                  "sar:polarisationChannels" : null,
+                  "sar:antennaLookDirection" : null,
+                  "sar:minimumIncidenceAngle" : null,
+                  "sar:maximumIncidenceAngle" : null,
+                  "sar:dopplerFrequency" : null,
+                  "sar:incidenceAngleVariation" : null,
+                  "eop:resolution" : null,
+                  "ogcLinksHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ogcLinks",
+                  "metadataHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04metadata",
+                  "descriptionHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/description",
+                  "thumbnailHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/thumbnail",
+                  "granulesHref": "http://host:port/geoserver/rest/oseo/collection/SENTINEL2/prodcuts/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/granules"
+                }
+              }
+        404:
+          description: The specified product cannot be found
+    put:
+      description: Updates a product search attributes and OGC links
+      consumes:
+      - application/json
+      - application/xml
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified product cannot be found
+    delete:
+      description: Deletes a product and everything inside it
+      parameters:
+      - name: keepMetadata
+        in: query
+        description: When present and set to true, makes GeoServer un-publish the product (removal of OGC links, direct download location and granule references) without removing the metadata. The product remains searchable.
+        type: boolean
+      responses:
+        200:
+          description: OK
+  /collections/{collection}/products/{product}/metadata:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: Returns the O&M metadata of this product
+      produces:
+      - application/xml
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified product cannot be found
+    put:
+      description: Updates/creates a product O&M metadata
+      consumes:
+      - application/xml
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified product cannot be found
+    delete:
+      description: Removes the product metadata
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified product cannot be found
+  /collections/{collection}/products/{product}/description:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: Returns the HTML description of this product
+      produces:
+      - text/html
+      responses:
+        200:
+          description: Success
+          examples:
+            text/html: |
+              <table xmlns="">
+                  <tr>
+                      <td valign="top" width="10%">
+                          <a href="${QUICKLOOK_URL}" target="_blank" title="View quicklook image">
+                              <img align="left" border="0" height="66" hspace="8" src="${THUMB_URL}" width="66" />
+                          </a>
+                      </td>
+                      <td valign="top" width="90%">
+                          <table>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Date </b>
+                                  </td>
+                                  <td>2016-01-17T10:10:30.743Z / 2016-01-17T10:10:30.743Z</td>
+                              </tr>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Media Type</b>
+                                  </td>
+                                  <td>
+                                      <a href="${ATOM_URL}" title="Atom format">ATOM</a>
+                                  </td>
+                              </tr>
+                              <tr valign="top">
+                                  <td>
+                                      <b>Metadata </b>
+                                  </td>
+                                  <td>
+                                      <a href="${OM_METADATA_URL}" title="O&amp;M format">O&amp;M</a>
+                                  </td>
+                              </tr>
+                          </table>
+                      </td>
+                  </tr>
+              </table>
+        404:
+          description: The specified product cannot be found
+    put:
+      description: Updates/creates a product HTML description
+      consumes:
+      - text/html
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified product cannot be found
+    delete:
+      description: Removes the product HTML description
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified product cannot be found
+  /collections/{collection}/products/{product}/thumbnail:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: Returns the thumbnail of this product
+      produces:
+      - image/png
+      - image/jpeg
+      responses:
+        200:
+          description: Success
+        404:
+          description: The specified product cannot be found
+    put:
+      description: Updates/creates a product thumbnail
+      consumes:
+      - image/png
+      - image/jpeg
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified product cannot be found
+    delete:
+      description: Removes the product thumbnail
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified product cannot be found
+  /collections/{collection}/products/{product}/ogcLinks:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: Returns the list of a product OGC links
+      produces:
+      - text/html
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json: |
+              [
+               {
+                 "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+                 "method": "GET",
+                 "code": "GetCapabilities",
+                 "type": "application/xml",
+                 "href": "${BASE_URL}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities"
+               },
+               {
+                 "offering": "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
+                 "method": "GET",
+                 "code": "GetMap",
+                 "type": "image/jpeg",
+                 "href": "${BASE_URL}/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&STYLES&LAYERS=SENTINEL2-TCI&SRS=EPSG%3A4326&WIDTH=800&HEIGHT=600&BBOX=-180%2C-90%2C180%2C90"
+               }
+              ]
+        404:
+          description: The specified collection or product cannot be found
+    put:
+      description: Updates/creates a products OGC links
+      consumes:
+      - text/json
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified collection or product cannot be found
+    delete:
+      description: Removes the product OGC links
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection or product cannot be found
+  /collections/{collection}/products/{product}/granules:
+    parameters:
+    - name: collection
+      in: path
+      description: Identifier of the collection
+      required: true
+      type: string
+    - name: product
+      in: path
+      description: Identifier of the product
+      required: true
+      type: string
+    get:
+      description: Returns the list of a product granules
+      produces:
+      - text/json
+      responses:
+        200:
+          description: Success, returns the granules for the given product as a GeoJSON collection
+          examples:
+            application/json: |
+              {
+                "type": "FeatureCollection",
+                "features": [
+                  {
+                    "type": "Feature",
+                    "geometry": {
+                      "type": "Polygon",
+                       "coordinate":[[[11.4772,40.5362],[11.5145,41.5243],[10.199,41.5456],[10.1811,40.5567],[11.4772,40.5362]]]
+                    },
+                    "properties": {
+                      "gid": 19,
+                      "location": "/efs/geoserver_data/coverages/sentinel/california/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01.tif"
+                    },
+                    "id": "GRANULE.19"
+                  }
+                ]
+              }
+        404:
+          description: The specified collection or product cannot be found
+    put:
+      description: Updates/creates a product granules
+      consumes:
+      - text/html
+      responses:
+        200:
+          description: Success
+        400:
+          description: The payload provided does not match the expected structure (error message will provide details)
+        404:
+          description: The specified collection or product cannot be found
+    delete:
+      description: Removes the product OGC links
+      responses:
+        200:
+          description: OK
+        404:
+          description: The specified collection or product cannot be found

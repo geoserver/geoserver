@@ -14,80 +14,100 @@ import javax.xml.xpath.XPathFactory;
 
 /**
  * This class provides precompiled XPath Expressions
- * 
- * 
- * @author christian
  *
+ * @author christian
  */
-public class RoleXMLXpath_1_0  extends RoleXMLXpath {
+public class RoleXMLXpath_1_0 extends RoleXMLXpath {
 
-    /**
-     * 
-     * Singleton, the implementation is stateless
-     */
-    public final static RoleXMLXpath_1_0 Singleton = new RoleXMLXpath_1_0();
-    
+    /** Singleton, the implementation is stateless */
+    public static final RoleXMLXpath_1_0 Singleton = new RoleXMLXpath_1_0();
 
-    /**
-     * XML name space context for user/group store
-     */
+    /** XML name space context for user/group store */
     protected XPathExpression roleListExpression;
+
     protected XPathExpression parentExpression;
     protected XPathExpression roleNameExpression;
     protected XPathExpression rolePropertiesExpression;
     protected XPathExpression propertyNameExpression;
     protected XPathExpression propertyValueExpression;
-    protected XPathExpression userRolesExpression;   
+    protected XPathExpression userRolesExpression;
     protected XPathExpression userNameExpression;
     protected XPathExpression userRolRefsExpression;
     protected XPathExpression userRolRefNameExpression;
-    protected XPathExpression groupRolesExpression;   
+    protected XPathExpression groupRolesExpression;
     protected XPathExpression groupNameExpression;
     protected XPathExpression groupRolRefsExpression;
     protected XPathExpression groupRolRefNameExpression;
 
-    
-    
-    
-    
-    /**
-     * Constructor is protected, use the static Singleton instance
-     */
+    /** Constructor is protected, use the static Singleton instance */
     protected RoleXMLXpath_1_0() {
-        
-                           
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xpath= factory.newXPath();
-        xpath.setNamespaceContext(this.rrContext);
-        //versionExpression = compile(xpath,"/"+E_USERREGISTRY+"["+A_VERSION_UR + "]");
-        
-        roleListExpression=compile(xpath,"/"+NSP_RR+":"+E_ROLEREGISTRY_RR+
-                                         "/"+NSP_RR+":"+E_ROLELIST_RR+
-                                         "/"+NSP_RR+":"+E_ROLE_RR);
-        parentExpression=compileRelativeAttribute(xpath, A_PARENTID_RR,NSP_RR);
-        roleNameExpression=compileRelativeAttribute(xpath, A_ROLEID_RR,NSP_RR);
-        
-        rolePropertiesExpression=compile(xpath,NSP_RR+":"+E_PROPERTY_RR);
-        propertyNameExpression=compileRelativeAttribute(xpath, A_PROPERTY_NAME_RR,NSP_RR);
-        propertyValueExpression=compile(xpath,"text()");
-        
-        userRolesExpression=compile(xpath,"/"+NSP_RR+":"+E_ROLEREGISTRY_RR+
-                                          "/"+NSP_RR+":"+E_USERLIST_RR+
-                                          "/"+NSP_RR+":"+E_USERROLES_RR);   
-        userNameExpression=compileRelativeAttribute(xpath, A_USERNAME_RR,NSP_RR);
-        userRolRefsExpression=compile(xpath,NSP_RR+":"+E_ROLEREF_RR);
-        userRolRefNameExpression=compileRelativeAttribute(xpath, A_ROLEREFID_RR,NSP_RR);
-        
-        groupRolesExpression=compile(xpath,"/"+NSP_RR+":"+E_ROLEREGISTRY_RR+
-                                           "/"+NSP_RR+":"+E_GROUPLIST_RR+
-                                           "/"+NSP_RR+":"+E_GROUPROLES_RR);   
-        groupNameExpression=compileRelativeAttribute(xpath, A_GROUPNAME_RR,NSP_RR);
-        groupRolRefsExpression=compile(xpath,NSP_RR+":"+E_ROLEREF_RR);
-        groupRolRefNameExpression=compileRelativeAttribute(xpath, A_ROLEREFID_RR,NSP_RR);
 
-        
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        xpath.setNamespaceContext(this.rrContext);
+        // versionExpression = compile(xpath,"/"+E_USERREGISTRY+"["+A_VERSION_UR + "]");
+
+        roleListExpression =
+                compile(
+                        xpath,
+                        "/"
+                                + NSP_RR
+                                + ":"
+                                + E_ROLEREGISTRY_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_ROLELIST_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_ROLE_RR);
+        parentExpression = compileRelativeAttribute(xpath, A_PARENTID_RR, NSP_RR);
+        roleNameExpression = compileRelativeAttribute(xpath, A_ROLEID_RR, NSP_RR);
+
+        rolePropertiesExpression = compile(xpath, NSP_RR + ":" + E_PROPERTY_RR);
+        propertyNameExpression = compileRelativeAttribute(xpath, A_PROPERTY_NAME_RR, NSP_RR);
+        propertyValueExpression = compile(xpath, "text()");
+
+        userRolesExpression =
+                compile(
+                        xpath,
+                        "/"
+                                + NSP_RR
+                                + ":"
+                                + E_ROLEREGISTRY_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_USERLIST_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_USERROLES_RR);
+        userNameExpression = compileRelativeAttribute(xpath, A_USERNAME_RR, NSP_RR);
+        userRolRefsExpression = compile(xpath, NSP_RR + ":" + E_ROLEREF_RR);
+        userRolRefNameExpression = compileRelativeAttribute(xpath, A_ROLEREFID_RR, NSP_RR);
+
+        groupRolesExpression =
+                compile(
+                        xpath,
+                        "/"
+                                + NSP_RR
+                                + ":"
+                                + E_ROLEREGISTRY_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_GROUPLIST_RR
+                                + "/"
+                                + NSP_RR
+                                + ":"
+                                + E_GROUPROLES_RR);
+        groupNameExpression = compileRelativeAttribute(xpath, A_GROUPNAME_RR, NSP_RR);
+        groupRolRefsExpression = compile(xpath, NSP_RR + ":" + E_ROLEREF_RR);
+        groupRolRefNameExpression = compileRelativeAttribute(xpath, A_ROLEREFID_RR, NSP_RR);
     }
-    
+
     public XPathExpression getRoleListExpression() {
         return roleListExpression;
     }
@@ -143,5 +163,4 @@ public class RoleXMLXpath_1_0  extends RoleXMLXpath {
     public XPathExpression getGroupRolRefNameExpression() {
         return groupRolRefNameExpression;
     }
-        
 }

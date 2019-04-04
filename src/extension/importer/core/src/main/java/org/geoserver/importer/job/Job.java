@@ -22,4 +22,3 @@ public abstract class Job<V> implements Callable<V> {
 
     protected abstract V call(ProgressMonitor monitor) throws Exception;
 }
-

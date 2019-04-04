@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.10-SNAPSHOT</version>
+    <version>2.16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -15,14 +15,20 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-RC3</geogig.version>
+    <geogig.version>1.3-SNAPSHOT</geogig.version>
     <jline.version>2.12</jline.version>
-    <mockito.version>1.8.5</mockito.version>
+    <mockito.version>2.23.0</mockito.version>
     <logback.version>1.1.2</logback.version>
     <cucumber-java.version>1.2.4</cucumber-java.version>
+    <hikaricp.version>2.4.2</hikaricp.version>
   </properties>
 
   <repositories>
+    <repository>
+      <id>repo.locationtech.org</id>
+      <name>GeoGig Repository</name>
+      <url>https://repo.locationtech.org/content/repositories/geogig/</url>
+    </repository>
     <repository>
       <id>oracle</id>
       <name>Oracles Maven Repository</name>
@@ -46,11 +52,6 @@
     </dependency>
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-cli</artifactId>
-      <version>${geogig.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-geotools</artifactId>
       <version>${geogig.version}</version>
     </dependency>
@@ -65,16 +66,14 @@
       <version>${geogig.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-osm</artifactId>
-      <version>${geogig.version}</version>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${hikaricp.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-postgres</artifactId>
-      <version>${geogig.version}</version>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
     </dependency>
-
     <!--
       The following are geotools dependencies that geogig uses but we declare explicitly
       here with a provided scope, since we excluded all geotools transitive dependencies
@@ -90,43 +89,36 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-sqlserver</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-oracle</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>${gt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -145,13 +137,11 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -162,25 +152,21 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
-      <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -203,6 +189,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -247,6 +238,13 @@
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-web-api-functional-tests</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-api</artifactId>
       <version>${geogig.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -309,13 +307,24 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+      <version>4.5.5</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -364,5 +373,69 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <!-- Profile to build in RocksDB backend module. This profile is active by default. -->
+      <id>geogig-rocksdb</id>
+      <activation>
+        <property>
+          <name>disableRocksDBBackend</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.locationtech.geogig</groupId>
+          <artifactId>geogig-rocksdb</artifactId>
+          <version>${geogig.version}</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <!-- Profile to build in PostgreSQL backend module. This profile is active by default. -->
+      <id>geogig-postgresql</id>
+      <activation>
+        <property>
+          <name>disablePostgreSQLBackend</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.locationtech.geogig</groupId>
+          <artifactId>geogig-postgres</artifactId>
+          <version>${geogig.version}</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>process-resources</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+	      <replace dir="${project.build.outputDirectory}/org/geogig/geoserver/config" encoding="UTF-8">
+                  <include name="module_version.properties"/> 
+                  <replacefilter token="@project.version@" value="${project.version}"/>
+                  <replacefilter token="@build.revision@" value="${build.commit.id}"/>
+                  <replacefilter token="@build.timestamp@" value="${build.timestamp}"/>
+                </replace>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

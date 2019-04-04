@@ -20,8 +20,8 @@
 [dimension(geometry)=0] {
     mark: symbol(square);
     mark-size: 6px;
+    :mark {
+        fill: ${colorCode};
+    }
 }
 
-:mark {
-    fill: ${colorCode};
-}

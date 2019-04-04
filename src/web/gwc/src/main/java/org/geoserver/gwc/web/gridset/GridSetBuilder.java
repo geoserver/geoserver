@@ -6,7 +6,6 @@
 package org.geoserver.gwc.web.gridset;
 
 import java.util.List;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geowebcache.GeoWebCacheException;
@@ -15,6 +14,7 @@ import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetFactory;
 import org.geowebcache.grid.SRS;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 class GridSetBuilder {
@@ -25,8 +25,8 @@ class GridSetBuilder {
         CoordinateReferenceSystem crs = checkNotNull(info.getCrs(), "CRS is not set");
         String epsgCode = checkNotNull(CRS.toSRS(crs, false), "EPSG code not found for CRS");
         if (!epsgCode.startsWith("EPSG:")) {
-            throw new IllegalStateException("EPSG code didn't resolve to a EPSG:XXX identifier: "
-                    + epsgCode);
+            throw new IllegalStateException(
+                    "EPSG code didn't resolve to a EPSG:XXX identifier: " + epsgCode);
         }
 
         SRS srs;
@@ -41,12 +41,19 @@ class GridSetBuilder {
             throw new IllegalArgumentException("Bounds can't be null");
         }
         if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-            throw new IllegalArgumentException("Bounds can't be empty. Witdh: " + bounds.getWidth()
-                    + ". Height: " + bounds.getHeight());
+            throw new IllegalArgumentException(
+                    "Bounds can't be empty. Witdh: "
+                            + bounds.getWidth()
+                            + ". Height: "
+                            + bounds.getHeight());
         }
 
-        BoundingBox extent = new BoundingBox(bounds.getMinimum(0), bounds.getMinimum(1),
-                bounds.getMaximum(0), bounds.getMaximum(1));
+        BoundingBox extent =
+                new BoundingBox(
+                        bounds.getMinimum(0),
+                        bounds.getMinimum(1),
+                        bounds.getMaximum(0),
+                        bounds.getMaximum(1));
 
         boolean alignTopLeft = info.isAlignTopLeft();
 
@@ -62,16 +69,35 @@ class GridSetBuilder {
         }
         String[] scaleNames = scaleNames(levels);
 
-        final Double metersPerUnit = checkNotNull(info.getMetersPerUnit(),
-                "Meters per unit not set");
+        final Double metersPerUnit =
+                checkNotNull(info.getMetersPerUnit(), "Meters per unit not set");
         final double pixelSize = GridSetFactory.DEFAULT_PIXEL_SIZE_METER;
         final int tileWidth = info.getTileWidth();
         final int tileHeight = info.getTileHeight();
-        final boolean yCoordinateFirst = false;
-
-        GridSet gridSet = GridSetFactory.createGridSet(name, srs, extent, alignTopLeft,
-                resolutions, scaleDenoms, metersPerUnit, pixelSize, scaleNames, tileWidth,
-                tileHeight, yCoordinateFirst);
+        // if CRS axis order is NORTH_EAST (y,x) set to true, else false
+        boolean yCoordinateFirst = false;
+        try {
+            CoordinateReferenceSystem crsNoForceOrder = CRS.decode("urn:ogc:def:crs:" + epsgCode);
+            yCoordinateFirst = CRS.getAxisOrder(crsNoForceOrder) == CRS.AxisOrder.NORTH_EAST;
+        } catch (FactoryException e) {
+            throw new IllegalStateException(
+                    "EPSG code didn't resolve to a EPSG:XXX identifier: " + epsgCode);
+        }
+        // create GridSet
+        GridSet gridSet =
+                GridSetFactory.createGridSet(
+                        name,
+                        srs,
+                        extent,
+                        alignTopLeft,
+                        resolutions,
+                        scaleDenoms,
+                        metersPerUnit,
+                        pixelSize,
+                        scaleNames,
+                        tileWidth,
+                        tileHeight,
+                        yCoordinateFirst);
 
         gridSet.setDescription(info.getDescription());
 

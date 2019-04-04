@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!--  
+		Map producers and responses
+	 -->
+  <!--  
+    <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.topojson.TopoJSONMapOutputFormat">
+    </bean>
+   -->
+  
+  <bean id="wmsTopoJSONBuilderFactory" class="org.geoserver.wms.topojson.TopoJSONBuilderFactory">
+  </bean>
+  
+  <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
+    <property name="clipToMapBounds" value="true">
+      <description>Use geometries clipped to tile bounds
+      Clipping is set to false since OL3 does not yet have a way to deal with clipped geometries.
+      It should be set to true once OL3 knows what to do with clipped geometries.
+      </description>
+    </property>
+    <property name="transformToScreenCoordinates" value="true">
+      <description>The topoJSON map builder expects geometries in screen coordinates</description>
+    </property>
+    <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
+    </property>
+  </bean>
+
+  <bean id="wmsGeoJsonBuilderFactory" class="org.geoserver.wms.geojson.GeoJsonBuilderFactory">
+  </bean>
+
+  <bean id="wmsGeoJsonMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wmsGeoJsonBuilderFactory" />
+    <property name="clipToMapBounds" value="true"/>
+    <property name="transformToScreenCoordinates" value="false">
+      <description>The geoJson map builder expects geometries in map coordinates</description>
+    </property>
+     <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
+    </property>
+  </bean>
+    
+  <bean id="wmsMapBoxBuilderFactory" class="org.geoserver.wms.mapbox.MapBoxTileBuilderFactory">
+  </bean>
+
+  <bean id="wmsMapBoxMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
+    <constructor-arg ref="wmsMapBoxBuilderFactory"/>
+    <property name="clipToMapBounds" value="true" />
+    <property name="transformToScreenCoordinates" value="true" />
+     <property name="overSamplingFactor" value="2.0">
+      <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>
+    </property>
+  </bean>
+  
+
+</beans>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="152px" height="173px" viewBox="0 0 152 173" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>LineStringStrok_CSS</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LineStringStrok_CSS">
+            <g id="Stroke" transform="translate(3.000000, 1.000000)">
+                <rect id="Backdrop" stroke="#979797" fill="#FFFFFF" x="0" y="0" width="147" height="170"></rect>
+                <polyline id="LineString" stroke="#1414DC" stroke-width="2" stroke-dasharray="5,3" points="28.21875 84.6796875 60.109375 69.625 88.3671875 84.6796875 116.996094 128.882812"></polyline>
+                <g id="Callout" transform="translate(71.000000, 45.000000)">
+                    <path d="M24.5,14.5 L8.5,14.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
+                    <text id="Label" font-family="ProximaNova-Light, Proxima Nova" font-size="12" font-weight="300" fill="#000000">
+                        <tspan x="0" y="11">stroke: blue</tspan>
+                    </text>
+                    <path d="M16.5,14.5 L8.5,33.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
+                </g>
+                <g id="Callout-copy" transform="translate(8.000000, 79.000000)">
+                    <path d="M41.5,42.5 L25.5,42.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
+                    <text id="Label" font-family="ProximaNova-Light, Proxima Nova" font-size="12" font-weight="300" fill="#000000">
+                        <tspan x="0" y="55">stroke-width: 2</tspan>
+                        <tspan x="0" y="70">stroke-dasharray: 5 2</tspan>
+                    </text>
+                    <path d="M33.5,0.5 L33.5,40.5" id="Line" stroke="#000000" stroke-linecap="square"></path>
+                </g>
+                <text font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="57.676" y="19">Stroke</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

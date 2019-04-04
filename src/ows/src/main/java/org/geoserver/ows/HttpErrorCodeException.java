@@ -7,20 +7,20 @@ package org.geoserver.ows;
 
 /**
  * An exception thrown by a service to report back an http error code.
- * <p>
- * Instances of this exception are recognized by the dispatcher. The {@link #getErrorCode()}
- * is used to set  
- * </p>
- * @author Justin Deoliveira, The Open Planning Project
  *
+ * <p>Instances of this exception are recognized by the dispatcher. The {@link #getErrorCode()} is
+ * used to set
+ *
+ * @author Justin Deoliveira, The Open Planning Project
  */
 public class HttpErrorCodeException extends RuntimeException {
 
-    /**
-     * the error code
-     */
+    /** the error code */
     final int errorCode;
-    
+
+    /** optional value for Content-Type header */
+    String contentType;
+
     public HttpErrorCodeException(int errorCode) {
         super();
         this.errorCode = errorCode;
@@ -43,5 +43,14 @@ public class HttpErrorCodeException extends RuntimeException {
 
     public int getErrorCode() {
         return errorCode;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public HttpErrorCodeException setContentType(String contentType) {
+        this.contentType = contentType;
+        return this;
     }
 }

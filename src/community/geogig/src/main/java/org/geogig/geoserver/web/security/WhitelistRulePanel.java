@@ -6,10 +6,10 @@ package org.geogig.geoserver.web.security;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -27,8 +27,6 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
-
-import com.google.common.collect.ImmutableList;
 
 public class WhitelistRulePanel extends GeoServerTablePanel<WhitelistRule> {
 
@@ -64,8 +62,8 @@ public class WhitelistRulePanel extends GeoServerTablePanel<WhitelistRule> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Component getComponentForProperty(String id, final IModel<WhitelistRule> model,
-            Property<WhitelistRule> property) {
+    public Component getComponentForProperty(
+            String id, final IModel<WhitelistRule> model, Property<WhitelistRule> property) {
         if (property == WhitelistRulesProvider.NAME) {
             return new Label(id, property.getModel(model));
         } else if (property == WhitelistRulesProvider.PATTERN) {
@@ -75,49 +73,65 @@ public class WhitelistRulePanel extends GeoServerTablePanel<WhitelistRule> {
             @SuppressWarnings("deprecation")
             Fragment fragment = new Fragment(id, "image.cell", this);
             if (rule.isRequireSSL()) {
-                fragment.add(new Image("display", new PackageResourceReference(getClass(), "../lock.png")));
+                fragment.add(
+                        new Image(
+                                "display",
+                                new PackageResourceReference(getClass(), "../lock.png")));
             } else {
-                fragment.add(new Image("display", new PackageResourceReference(getClass(),
-                        "../lock_open.png")));
+                fragment.add(
+                        new Image(
+                                "display",
+                                new PackageResourceReference(getClass(), "../lock_open.png")));
             }
             return fragment;
         } else if (property == WhitelistRulesProvider.EDIT) {
-            ImageAjaxLink link = new ImageAjaxLink(id, new PackageResourceReference(
-                    GeoServerApplication.class, "img/icons/silk/pencil.png")) {
+            ImageAjaxLink link =
+                    new ImageAjaxLink(
+                            id,
+                            new PackageResourceReference(
+                                    GeoServerApplication.class, "img/icons/silk/pencil.png")) {
 
-                private static final long serialVersionUID = 4467715973193154831L;
+                        private static final long serialVersionUID = 4467715973193154831L;
 
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    window.setInitialHeight(360);
-                    window.setInitialWidth(400);
-                    window.setTitle(new Model<>("Edit whitelist rule"));
-                    window.setContent(new WhitelistRuleEditor(window.getContentId(), model, window,
-                            WhitelistRulePanel.this, false));
-                    window.show(target);
-                }
-            };
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            window.setInitialHeight(360);
+                            window.setInitialWidth(400);
+                            window.setTitle(new Model<>("Edit whitelist rule"));
+                            window.setContent(
+                                    new WhitelistRuleEditor(
+                                            window.getContentId(),
+                                            model,
+                                            window,
+                                            WhitelistRulePanel.this,
+                                            false));
+                            window.show(target);
+                        }
+                    };
             return link;
         } else if (property == WhitelistRulesProvider.REMOVE) {
             final WhitelistRule rule = (WhitelistRule) model.getObject();
-            ImageAjaxLink link = new ImageAjaxLink(id, new PackageResourceReference(
-                    GeoServerApplication.class, "img/icons/silk/delete.png")) {
+            ImageAjaxLink link =
+                    new ImageAjaxLink(
+                            id,
+                            new PackageResourceReference(
+                                    GeoServerApplication.class, "img/icons/silk/delete.png")) {
 
-                private static final long serialVersionUID = 9069782618988848563L;
+                        private static final long serialVersionUID = 9069782618988848563L;
 
-                @Override
-                protected void onClick(AjaxRequestTarget target) {
-                    provider.remove(rule);
-                    provider.save();
-                    target.add(WhitelistRulePanel.this);
-                }
-            };
+                        @Override
+                        protected void onClick(AjaxRequestTarget target) {
+                            provider.remove(rule);
+                            provider.save();
+                            target.add(WhitelistRulePanel.this);
+                        }
+                    };
             // link.getImage().add(new AttributeModifier("alt", true, new
             // ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
             return link;
         } else {
-            throw new IllegalArgumentException("Property " + property
-                    + " is not associated with this component.");
+            throw new IllegalArgumentException(
+                    "Property " + property + " is not associated with this component.");
         }
     }
 
@@ -151,8 +165,8 @@ public class WhitelistRulePanel extends GeoServerTablePanel<WhitelistRule> {
         @Override
         protected List<WhitelistRule> getItems() {
             if (rules == null) {
-                ConfigStore configStore = (ConfigStore) GeoServerExtensions
-                        .bean("geogigConfigStore");
+                ConfigStore configStore =
+                        (ConfigStore) GeoServerExtensions.bean("geogigConfigStore");
                 try {
                     rules = new ArrayList<>(configStore.getWhitelist());
                 } catch (IOException e) {
@@ -168,14 +182,13 @@ public class WhitelistRulePanel extends GeoServerTablePanel<WhitelistRule> {
 
         private static final Property<WhitelistRule> NAME = new BeanProperty<>("Name", "name");
 
-        private static final Property<WhitelistRule> PATTERN = new BeanProperty<>("Pattern",
-                "pattern");
+        private static final Property<WhitelistRule> PATTERN =
+                new BeanProperty<>("Pattern", "pattern");
 
-        private static final Property<WhitelistRule> REQUIRE_SSL = new BeanProperty<>(
-                "Require SSL", "requireSSL");
+        private static final Property<WhitelistRule> REQUIRE_SSL =
+                new BeanProperty<>("Require SSL", "requireSSL");
 
-        private static final List<Property<WhitelistRule>> PROPERTIES = ImmutableList.of(
-                NAME, PATTERN, REQUIRE_SSL, EDIT, REMOVE);
-
+        private static final List<Property<WhitelistRule>> PROPERTIES =
+                ImmutableList.of(NAME, PATTERN, REQUIRE_SSL, EDIT, REMOVE);
     }
 }

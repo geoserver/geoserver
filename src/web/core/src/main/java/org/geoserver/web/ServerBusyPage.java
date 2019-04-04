@@ -8,13 +8,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
-/**
- * Displays a message suggesting the user to login or to elevate his privileges
- */
+/** Displays a message suggesting the user to login or to elevate his privileges */
 public class ServerBusyPage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
     public ServerBusyPage() {
-        IModel model = new ResourceModel( "ServerBusyPage.serverBusyMessage" );
+        IModel model = new ResourceModel("ServerBusyPage.serverBusyMessage");
         add(new Label("serverBusyMessage", model));
     }
 }

@@ -6,14 +6,11 @@
 package org.geoserver.wms;
 
 import java.util.Map;
-
 import org.geoserver.ows.Dispatcher;
-import org.geotools.util.Version;
 
 /**
  * Defines a general Request type and provides accessor methods for universal request information.
- * 
- * 
+ *
  * @author Rob Hranac, TOPP
  * @author Chris Holmes, TOPP
  * @author Gabriel Roldan
@@ -27,9 +24,7 @@ public abstract class WMSRequest {
 
     private Map<String, String> rawKvp;
 
-    /**
-     * flag indicating if the request is get
-     */
+    /** flag indicating if the request is get */
     protected boolean get;
 
     protected String request;
@@ -40,9 +35,8 @@ public abstract class WMSRequest {
 
     /**
      * Creates the new request with the given operation name
-     * 
-     * @param request
-     *            name of the request, (Example, GetCapabiliites)
+     *
+     * @param request name of the request, (Example, GetCapabiliites)
      */
     protected WMSRequest(final String request) {
         setRequest(request);
@@ -52,9 +46,9 @@ public abstract class WMSRequest {
      * Tells whether the originating request used HTTP GET method or not; may be useful, for
      * example, to determine if client can do HTTP caching and then set the corresponding response
      * headers.
-     * 
+     *
      * @return {@code true} if the originating HTTP request used HTTP GET method, {@code false}
-     *         otherwise
+     *     otherwise
      */
     public boolean isGet() {
         return get;
@@ -86,7 +80,7 @@ public abstract class WMSRequest {
 
     /**
      * Set by {@link Dispatcher}
-     * 
+     *
      * @param baseUrl
      */
     public void setBaseUrl(final String baseUrl) {
@@ -97,24 +91,17 @@ public abstract class WMSRequest {
         return this.baseUrl;
     }
 
-    /**
-     * Gets the raw kvp parameters which were used to create the request.
-     */
+    /** Gets the raw kvp parameters which were used to create the request. */
     public Map<String, String> getRawKvp() {
         return rawKvp;
     }
 
-    /**
-     * Setter for the 'WMTVER' parameter, which is an alias for 'VERSION'.
-     * 
-     */
+    /** Setter for the 'WMTVER' parameter, which is an alias for 'VERSION'. */
     public void setWmtVer(String version) {
         setVersion(version);
     }
 
-    /**
-     * @return the HTTP request charset, may be {@code null}
-     */
+    /** @return the HTTP request charset, may be {@code null} */
     public String getRequestCharset() {
         return requestCharset;
     }

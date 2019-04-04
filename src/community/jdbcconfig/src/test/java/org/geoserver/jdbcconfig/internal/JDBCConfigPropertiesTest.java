@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.internal;
 
 import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir;
@@ -12,27 +16,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resources;
-import org.geotools.data.DataUtilities;
+import org.geotools.util.URLs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class JDBCConfigPropertiesTest {
-    
+
     protected static final String CONFIG_FILE = "jdbcconfig.properties";
-            
+
     protected static final String CONFIG_SYSPROP = "jdbcconfig.properties";
-    
+
     protected static final String JDBCURL_SYSPROP = "jdbcconfig.jdbcurl";
-    
+
     protected static final String INITDB_SYSPROP = "jdbcconfig.initdb";
-    
+
     protected static final String IMPORT_SYSPROP = "jdbcconfig.import";
 
     GeoServerResourceLoader loader;
@@ -56,22 +59,24 @@ public class JDBCConfigPropertiesTest {
         assertTrue(props.isInitDb());
         assertTrue(props.isImport());
 
-        //assert files copied over
+        // assert files copied over
         assertNotNull(loader.find("jdbcconfig", "jdbcconfig.properties"));
         assertNotNull(loader.find("jdbcconfig", "scripts", "initdb.postgres.sql"));
-        
-        //assert file location are accessible
+
+        // assert file location are accessible
         assertNotNull(factory.getFileLocations());
-        
-        //assert configuration can be stored successfully on another resource loader
+
+        // assert configuration can be stored successfully on another resource loader
         File tmpDir = org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir();
         Resources.directory(Files.asResource(tmpDir).get("jdbcconfig"), true);
-        
+
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(tmpDir);
         factory.saveConfiguration(resourceLoader);
-        
-        assertEquals(factory.getFileLocations().size(), 
-                (resourceLoader.find("jdbcconfig").list().length-1)+(resourceLoader.find("jdbcconfig/scripts").list().length) );
+
+        assertEquals(
+                factory.getFileLocations().size(),
+                (resourceLoader.find("jdbcconfig").list().length - 1)
+                        + (resourceLoader.find("jdbcconfig/scripts").list().length));
     }
 
     private File createDummyConfigFile() throws IOException {
@@ -101,8 +106,7 @@ public class JDBCConfigPropertiesTest {
             assertEquals("bar", props.getProperty("foo"));
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
-        }
-        finally {
+        } finally {
             System.clearProperty(CONFIG_SYSPROP);
         }
     }
@@ -111,7 +115,7 @@ public class JDBCConfigPropertiesTest {
     public void testLoadFromURL() throws Exception {
         File configFile = createDummyConfigFile();
 
-        System.setProperty(CONFIG_SYSPROP, DataUtilities.fileToURL(configFile).toString());
+        System.setProperty(CONFIG_SYSPROP, URLs.fileToUrl(configFile).toString());
         try {
             JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
@@ -119,8 +123,7 @@ public class JDBCConfigPropertiesTest {
             assertEquals("bar", props.getProperty("foo"));
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
-        }
-        finally {
+        } finally {
             System.clearProperty(CONFIG_SYSPROP);
         }
     }
@@ -130,16 +133,15 @@ public class JDBCConfigPropertiesTest {
         System.setProperty(JDBCURL_SYSPROP, "jdbc:h2:nofile");
         System.setProperty(INITDB_SYSPROP, "false");
         System.setProperty(IMPORT_SYSPROP, "false");
-        
+
         try {
             JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
-    
+
             assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
-        }
-        finally {
+        } finally {
             System.clearProperty(JDBCURL_SYSPROP);
             System.clearProperty(INITDB_SYSPROP);
             System.clearProperty(IMPORT_SYSPROP);
@@ -152,6 +154,8 @@ public class JDBCConfigPropertiesTest {
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
         props.setJdbcUrl("jdbc:h2:file:${GEOSERVER_DATA_DIR}");
 
-        assertThat(props.getJdbcUrl().get(), containsString(loader.getBaseDirectory().getAbsolutePath()));
+        assertThat(
+                props.getJdbcUrl().get(),
+                containsString(loader.getBaseDirectory().getAbsolutePath()));
     }
 }

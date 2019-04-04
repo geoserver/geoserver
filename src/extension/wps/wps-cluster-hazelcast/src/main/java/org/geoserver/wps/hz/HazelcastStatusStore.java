@@ -1,5 +1,17 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.hz;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.HazelcastInstanceAware;
+import com.hazelcast.core.IMap;
+import com.hazelcast.map.EntryBackupProcessor;
+import com.hazelcast.map.EntryProcessor;
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.TruePredicate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.beanutils.BeanComparator;
 import org.geoserver.wps.CompositeComparator;
 import org.geoserver.wps.ProcessStatusStore;
@@ -27,28 +38,16 @@ import org.opengis.filter.sort.SortOrder;
 import org.opengis.filter.temporal.After;
 import org.opengis.filter.temporal.Before;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.HazelcastInstanceAware;
-import com.hazelcast.core.IMap;
-import com.hazelcast.map.EntryBackupProcessor;
-import com.hazelcast.map.EntryProcessor;
-import com.hazelcast.query.PagingPredicate;
-import com.hazelcast.query.Predicate;
-import com.hazelcast.query.TruePredicate;
-
 /**
  * A Hazelcast based implementation of the {@link ProcessStatusStore} interface
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class HazelcastStatusStore implements ProcessStatusStore {
 
     static final Logger LOGGER = Logging.getLogger(HazelcastStatusStore.class);
 
-    /**
-     * Name of the distributed map that will hold the process statuses
-     */
+    /** Name of the distributed map that will hold the process statuses */
     public static final String EXECUTION_STATUS_MAP = "wpsExecutionStatusMap";
 
     private static FilterCapabilities FILTER_CAPABILITIES;
@@ -66,9 +65,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         FILTER_CAPABILITIES.addType(Before.class);
     }
 
-    /**
-     * The distributed map holding the various statuses
-     */
+    /** The distributed map holding the various statuses */
     IMap<String, ExecutionStatus> statuses;
 
     public HazelcastStatusStore(HazelcastLoader loader) {
@@ -91,11 +88,15 @@ public class HazelcastStatusStore implements ProcessStatusStore {
                 ProcessState previousPhase = oldStatus.getPhase();
                 ProcessState currPhase = status.getPhase();
                 if (!currPhase.isValidSuccessor(previousPhase)) {
-                    throw new WPSException("Cannot switch process status from " + previousPhase
-                            + " to " + currPhase);
+                    throw new WPSException(
+                            "Cannot switch process status from "
+                                    + previousPhase
+                                    + " to "
+                                    + currPhase);
                 }
-                succeded = statuses.replace(status.getExecutionId(), oldStatus,
-                        new ExecutionStatus(status));
+                succeded =
+                        statuses.replace(
+                                status.getExecutionId(), oldStatus, new ExecutionStatus(status));
             } else {
                 ExecutionStatus previous = statuses.put(status.getExecutionId(), status);
                 succeded = previous == null;
@@ -126,8 +127,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         Predicate predicate = filterPredicate.predicate;
         Filter postFilter = filterPredicate.postFilter;
 
-        Map<String, Object> results = statuses.executeOnEntries(new RemovingEntryProcessor(
-                postFilter), predicate);
+        Map<String, Object> results =
+                statuses.executeOnEntries(new RemovingEntryProcessor(postFilter), predicate);
         int removedCount = results.size();
         return removedCount;
     }
@@ -141,11 +142,10 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         Predicate predicate = filterPredicate.predicate;
         Filter postFilter = filterPredicate.postFilter;
 
-        
         // Two cases here: if we have post-filtering we are going to run an entry processor,
         // to filter in the cluster and accumulate, otherwise we are going to run the predicate
         // on the cluster and page if we need/can
-        if(postFilter != null && postFilter != Filter.INCLUDE) {
+        if (postFilter != null && postFilter != Filter.INCLUDE) {
             FilteringEntryProcessor filterProcessor = new FilteringEntryProcessor(postFilter);
             Map<String, Object> entries = statuses.executeOnEntries(filterProcessor);
             List<ExecutionStatus> result = new ArrayList(entries.values());
@@ -199,8 +199,12 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         }
     }
 
-    private List<ExecutionStatus> postProcessResults(Query query, int maxFeatures,
-            int startIndex, boolean needsSorting, List<ExecutionStatus> result) {
+    private List<ExecutionStatus> postProcessResults(
+            Query query,
+            int maxFeatures,
+            int startIndex,
+            boolean needsSorting,
+            List<ExecutionStatus> result) {
         if (needsSorting) {
             Comparator<ExecutionStatus> comparator = getComparator("", query.getSortBy());
             Collections.sort(result, comparator);
@@ -228,8 +232,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
             if (sort == SortBy.NATURAL_ORDER) {
                 comparators.add(new BeanComparator(prefix + "creationTime"));
             } else if (sort == SortBy.REVERSE_ORDER) {
-                comparators.add(Collections
-                        .reverseOrder(new BeanComparator(prefix + "creationTime")));
+                comparators.add(
+                        Collections.reverseOrder(new BeanComparator(prefix + "creationTime")));
             } else {
                 String property = sort.getPropertyName().getPropertyName();
                 Comparator comparator = new BeanComparator(prefix + property);
@@ -249,9 +253,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
     /**
      * Splits an OGC filter into a Hazelcast predicate and post-query Filter
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
-     * 
      */
     private static class FilterPredicate {
         Filter postFilter;
@@ -261,8 +264,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
         public FilterPredicate(Filter filter) {
             try {
                 // split the filter
-                PostPreProcessFilterSplittingVisitor splitter = new PostPreProcessFilterSplittingVisitor(
-                        FILTER_CAPABILITIES, null, null);
+                PostPreProcessFilterSplittingVisitor splitter =
+                        new PostPreProcessFilterSplittingVisitor(FILTER_CAPABILITIES, null, null);
                 filter.accept(splitter, null);
                 postFilter = splitter.getFilterPost();
                 Filter preFilter = splitter.getFilterPre();
@@ -271,8 +274,9 @@ public class HazelcastStatusStore implements ProcessStatusStore {
                     predicate = TruePredicate.INSTANCE;
                 } else {
                     FilterToCriteria transformer = new FilterToCriteria();
-                    predicate = (Predicate<String, ExecutionStatus>) preFilter.accept(transformer,
-                            null);
+                    predicate =
+                            (Predicate<String, ExecutionStatus>)
+                                    preFilter.accept(transformer, null);
                 }
             } catch (Exception e) {
                 // the translation might not work since the predicate model is more limited than
@@ -287,8 +291,8 @@ public class HazelcastStatusStore implements ProcessStatusStore {
      * Base class for {@link EntryProcessor} that need to carry around a OGC filter, which is not
      * serializable
      */
-    private static abstract class AbstractFilteringEntryProcessor implements
-            EntryProcessor<String, ExecutionStatus> {
+    private abstract static class AbstractFilteringEntryProcessor
+            implements EntryProcessor<String, ExecutionStatus> {
         private static final long serialVersionUID = -912785821605141531L;
 
         transient Filter filter;
@@ -319,16 +323,14 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
     /**
      * Evaluates a filter on map entries, and removes them on match
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
-     * 
      */
-    private static class RemovingEntryProcessor extends AbstractFilteringEntryProcessor implements
-            HazelcastInstanceAware {
+    private static class RemovingEntryProcessor extends AbstractFilteringEntryProcessor
+            implements HazelcastInstanceAware {
 
         private static final long serialVersionUID = 4683730449542722338L;
         transient IMap<String, ExecutionStatus> map;
-
 
         public RemovingEntryProcessor(Filter filter) {
             super(filter);
@@ -348,14 +350,12 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
             return null;
         }
-
     }
 
     /**
      * Evaluates a filter on map entries, and returns them
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
-     * 
      */
     private static class FilteringEntryProcessor extends AbstractFilteringEntryProcessor {
 
@@ -373,19 +373,17 @@ public class HazelcastStatusStore implements ProcessStatusStore {
 
             return null;
         }
-
     }
 
     @Override
     public boolean supportsPredicate() {
-        // 
+        //
         return true;
     }
 
     @Override
     public boolean supportsPaging() {
-        
+
         return true;
     }
-
 }

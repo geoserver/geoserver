@@ -5,9 +5,8 @@
  */
 package org.geoserver.util;
 
-import java.io.Serializable;
-
 import com.google.common.cache.Cache;
+import java.io.Serializable;
 
 public interface CacheProvider {
 

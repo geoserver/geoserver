@@ -10,7 +10,7 @@ import org.geoserver.catalog.NamespaceInfo;
 
 /**
  * Simple choice renderer for {@link NamespaceInfo}
- * 
+ *
  * @author Gabriel Roldan
  */
 public class NamespaceChoiceRenderer extends ChoiceRenderer<NamespaceInfo> {
@@ -18,18 +18,13 @@ public class NamespaceChoiceRenderer extends ChoiceRenderer<NamespaceInfo> {
     private static final long serialVersionUID = 1L;
 
     @Override
-    /**
-     * @see ChoiceRenderer#getDisplayValue(Object)
-     */
-
+    /** @see ChoiceRenderer#getDisplayValue(Object) */
     public Object getDisplayValue(NamespaceInfo nsInfo) {
         String displayValue = nsInfo.getPrefix() + ": <" + nsInfo.getURI() + ">";
         return displayValue;
     }
 
-    /**
-     * @see ChoiceRenderer#getIdValue(Object, int)
-     */
+    /** @see ChoiceRenderer#getIdValue(Object, int) */
     @Override
     public String getIdValue(NamespaceInfo object, int index) {
         return object.getId();

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
@@ -33,11 +32,9 @@ import org.vfny.geoserver.util.DataStoreUtils;
 
 /**
  * Represents a type of data and encapsulates I/O operations.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
-
 public abstract class DataFormat implements Serializable {
 
     /** serialVersionUID */
@@ -45,30 +42,32 @@ public abstract class DataFormat implements Serializable {
 
     static Logger LOG = Logging.getLogger(DataFormat.class);
 
-    /**
-     * looks up a format based on file extension.
-     */
+    /** looks up a format based on file extension. */
     public static DataFormat lookup(File file) {
-        FileData fileData = new FileData(file); 
+        FileData fileData = new FileData(file);
         for (DataFormat df : GeoServerExtensions.extensions(DataFormat.class)) {
             try {
                 if (df.canRead(fileData)) {
                     return df;
                 }
             } catch (IOException e) {
-                LOG.log(Level.FINER, String.format("Error checking if format %s can read file %s, " +
-                    df.getName(), file.getPath()), e);
+                LOG.log(
+                        Level.FINER,
+                        String.format(
+                                "Error checking if format %s can read file %s, " + df.getName(),
+                                file.getPath()),
+                        e);
             }
         }
 
-        //look for a datastore that can handle the file
+        // look for a datastore that can handle the file
         String ext = FilenameUtils.getExtension(file.getName());
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory(ext);
         if (factory != null) {
             return new DataStoreFormat(factory);
         }
 
-        //look for a gridformat that can handle the file
+        // look for a gridformat that can handle the file
         Set<AbstractGridFormat> formats = GridFormatFinder.findFormats(file);
         AbstractGridFormat format = null;
         // in the case of 2 formats, let's ensure any ambiguity that cannot
@@ -76,7 +75,7 @@ public abstract class DataFormat implements Serializable {
         // the first format that is found being returned (and this can vary
         // to to hashing in the set)
         if (formats.size() > 1) {
-            for (AbstractGridFormat f: formats) {
+            for (AbstractGridFormat f : formats) {
                 // prefer GeoTIFF over WorldImageFormat
                 if ("GeoTIFF".equals(f.getName())) {
                     format = f;
@@ -92,23 +91,22 @@ public abstract class DataFormat implements Serializable {
         if (format != null && !(format instanceof UnknownFormat)) {
             return new GridFormat(format);
         }
-        
+
         return null;
     }
 
-    /**
-     * Looks up a format based on a set of connection parameters. 
-     */
-    public static DataFormat lookup(Map<String,Serializable> params) {
+    /** Looks up a format based on a set of connection parameters. */
+    public static DataFormat lookup(Map<String, Serializable> params) {
         DataStoreFactorySpi factory = (DataStoreFactorySpi) DataStoreUtils.aquireFactory(params);
         if (factory != null) {
             return new DataStoreFormat(factory);
         }
         return null;
     }
-    
+
     /**
      * Converts an absolute URL to a resource to be relative to the data directory if applicable.
+     *
      * @return The relative path, or the original path if it does not contain the data directory
      */
     protected String relativeDataFileURL(String url, Catalog catalog) {
@@ -117,26 +115,25 @@ public abstract class DataFormat implements Serializable {
         }
         File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
         File f = Files.url(baseDirectory, url);
-  
-        return f == null ? url : "file:"+Paths.convert(baseDirectory, f);
+
+        return f == null ? url : "file:" + Paths.convert(baseDirectory, f);
     }
 
     public abstract String getName();
 
     public abstract boolean canRead(ImportData data) throws IOException;
 
-    public abstract StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) 
-        throws IOException;
+    public abstract StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
+            throws IOException;
 
-    public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) 
-        throws IOException;
+    public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
+            throws IOException;
 
     /**
      * Returns a File from the ImportData, assuming the import data itself is a FileData (a class
      * cast exception will happen otherwise)
-     * 
-     * @param data
      *
+     * @param data
      */
     protected File getFileFromData(ImportData data) {
         assert data instanceof FileData;
@@ -144,5 +141,4 @@ public abstract class DataFormat implements Serializable {
         File file = fileData.getFile();
         return file;
     }
-
 }

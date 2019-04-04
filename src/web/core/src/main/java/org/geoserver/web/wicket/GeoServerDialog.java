@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import java.io.Serializable;
 import java.util.Arrays;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -110,18 +109,20 @@ public class GeoServerDialog extends Panel {
         window.setContent(new ContentsPage(userPanel));
 
         // make sure close == cancel behavior wise
-        window.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+        window.setCloseButtonCallback(
+                new ModalWindow.CloseButtonCallback() {
 
-            public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-                return delegate.onCancel(target);
-            }
-        });
-        window.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+                    public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+                        return delegate.onCancel(target);
+                    }
+                });
+        window.setWindowClosedCallback(
+                new ModalWindow.WindowClosedCallback() {
 
-            public void onClose(AjaxRequestTarget target) {
-                delegate.onClose(target);
-            }
-        });
+                    public void onClose(AjaxRequestTarget target) {
+                        delegate.onClose(target);
+                    }
+                });
 
         // show the window
         this.delegate = delegate;
@@ -133,24 +134,26 @@ public class GeoServerDialog extends Panel {
      *
      * @param heading The heading of the information topic.
      * @param messages A list of models, displayed each as a separate paragraphs, containing the
-     *   information dialog content.
+     *     information dialog content.
      */
-    public void showInfo(AjaxRequestTarget target, final IModel<String> heading,
+    public void showInfo(
+            AjaxRequestTarget target,
+            final IModel<String> heading,
             @SuppressWarnings("unchecked") final IModel<String>... messages) {
-        window.setPageCreator(new ModalWindow.PageCreator() {
-            public Page createPage() {
-                return new InfoPage(heading, messages);
-            }
-        });
+        window.setPageCreator(
+                new ModalWindow.PageCreator() {
+                    public Page createPage() {
+                        return new InfoPage(heading, messages);
+                    }
+                });
         window.show(target);
     }
 
     /**
      * Forcibly closes the dialog.
-     * <p>
-     * Note that calling this method does not result in any {@link DialogDelegate} callbacks being
-     * called.
-     * </p>
+     *
+     * <p>Note that calling this method does not result in any {@link DialogDelegate} callbacks
+     * being called.
      */
     public void close(AjaxRequestTarget target) {
         window.close(target);
@@ -158,9 +161,7 @@ public class GeoServerDialog extends Panel {
         userPanel = null;
     }
 
-    /**
-     * Submits the dialog.
-     */
+    /** Submits the dialog. */
     public void submit(AjaxRequestTarget target) {
         submit(target, userPanel);
     }
@@ -171,34 +172,26 @@ public class GeoServerDialog extends Panel {
         }
     }
 
-    /**
-     * Submit link that will forward to the {@link DialogDelegate}
-     *
-     *
-     */
+    /** Submit link that will forward to the {@link DialogDelegate} */
     AjaxSubmitLink sumbitLink(Component contents) {
-        AjaxSubmitLink link = new AjaxSubmitLink("submit") {
+        AjaxSubmitLink link =
+                new AjaxSubmitLink("submit") {
 
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                submit(target, (Component) this.getDefaultModelObject());
-            }
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        submit(target, (Component) this.getDefaultModelObject());
+                    }
 
-            @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                delegate.onError(target, form);
-            }
-
-        };
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        delegate.onError(target, form);
+                    }
+                };
         link.setDefaultModel(new Model<Component>(contents));
         return link;
     }
 
-    /**
-     * Link that will forward to the {@link DialogDelegate}
-     *
-     *
-     */
+    /** Link that will forward to the {@link DialogDelegate} */
     Component cancelLink() {
         return new AjaxLink<Void>("cancel") {
 
@@ -209,14 +202,13 @@ public class GeoServerDialog extends Panel {
                     delegate = null;
                 }
             }
-
         };
     }
 
     /**
      * This represents the contents of the dialog.
-     * <p>
-     * As of wicket 1.3.6 it still has to be a page, see
+     *
+     * <p>As of wicket 1.3.6 it still has to be a page, see
      * http://www.nabble.com/Nesting-ModalWindow-td19925848.html for details (ajax submit buttons
      * won't work with a panel)
      */
@@ -232,29 +224,32 @@ public class GeoServerDialog extends Panel {
             form.add(cancelLink());
             form.setDefaultButton(submit);
         }
-
     }
 
     protected class InfoPage extends WebPage {
         @SafeVarargs
         public InfoPage(IModel<String> title, IModel<String>... messages) {
             add(new Label("title", title));
-            add(new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
-                @Override
-                protected void populateItem(ListItem<IModel<String>> item) {
-                    item.add(new Label("message", item.getModelObject()).setEscapeModelStrings(false));
-                }
-            });
+            add(
+                    new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
+                        @Override
+                        protected void populateItem(ListItem<IModel<String>> item) {
+                            item.add(
+                                    new Label("message", item.getModelObject())
+                                            .setEscapeModelStrings(false));
+                        }
+                    });
         }
     }
 
     /**
      * A {@link DialogDelegate} provides the bits needed to actually open a dialog:
+     *
      * <ul>
-     * <li>a content pane, that will be hosted inside a {@link Form}</li>
-     * <li>a behavior for the OK button</li>
-     * <li>an eventual behavior for the Cancel button (the base implementation just returns true to
-     * make the window close)</li>
+     *   <li>a content pane, that will be hosted inside a {@link Form}
+     *   <li>a behavior for the OK button
+     *   <li>an eventual behavior for the Cancel button (the base implementation just returns true
+     *       to make the window close)
      */
     public abstract static class DialogDelegate implements Serializable {
 
@@ -262,23 +257,25 @@ public class GeoServerDialog extends Panel {
          * Builds the contents for this dialog
          *
          * @param id
-         *
          */
         protected abstract Component getContents(String id);
 
         /**
-         * Called when the form inside the dialog breaks. By default adds all feedback
-         * panels to the target
+         * Called when the form inside the dialog breaks. By default adds all feedback panels to the
+         * target
          *
          * @param target
          * @param form
          */
         public void onError(final AjaxRequestTarget target, Form<?> form) {
-            form.getPage().visitChildren(IFeedback.class, (component, visit) -> {
-                if (component.getOutputMarkupId()) {
-                    target.add(component);
-                }
-            });
+            form.getPage()
+                    .visitChildren(
+                            IFeedback.class,
+                            (component, visit) -> {
+                                if (component.getOutputMarkupId()) {
+                                    target.add(component);
+                                }
+                            });
         }
 
         /**
@@ -313,5 +310,4 @@ public class GeoServerDialog extends Panel {
     public void setResizable(boolean resizable) {
         window.setResizable(resizable);
     }
-
 }

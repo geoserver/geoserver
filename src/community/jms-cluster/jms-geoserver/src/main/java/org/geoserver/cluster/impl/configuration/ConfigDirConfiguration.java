@@ -6,9 +6,7 @@
 package org.geoserver.cluster.impl.configuration;
 
 import java.io.IOException;
-
 import javax.annotation.PostConstruct;
-
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.JMSConfigurationExt;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -17,21 +15,19 @@ import org.geoserver.platform.resource.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 
  * Configuration class used to override the default config dir (GEOSERVER_DATA_DIR/cluster/)
- * 
+ *
  * @author carlo cancellieri - GeoSolutions SAS
- * 
  */
-final public class ConfigDirConfiguration implements JMSConfigurationExt {
+public final class ConfigDirConfiguration implements JMSConfigurationExt {
 
-    @Autowired
-    GeoServerResourceLoader loader;
+    @Autowired GeoServerResourceLoader loader;
 
     public static final String CONFIGDIR_KEY = "CLUSTER_CONFIG_DIR";
 
     /**
      * Override the global config dir
+     *
      * @throws IOException
      */
     @PostConstruct
@@ -57,5 +53,4 @@ final public class ConfigDirConfiguration implements JMSConfigurationExt {
     public boolean override(JMSConfiguration config) throws IOException {
         return config.override(CONFIGDIR_KEY, JMSConfiguration.getConfigPathDir().toString());
     }
-
 }

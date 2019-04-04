@@ -10,16 +10,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.DefaultValueConfiguration;
 import org.geoserver.wms.dimension.DefaultValueConfiguration.DefaultValuePolicy;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestSupport {
 
@@ -41,24 +39,33 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
     @Before
     public void setupRequest() {
         layerId = getLayerId(TIME_ELEVATION_CUSTOM);
-        baseFeatureInfo = "wms?service=WMS&version=1.1.0&request=GetFeatureInfo" + "&layers="
-                + layerId + "&styles=&bbox=-180,-90,180,90&width=180&height=90"
-                + "&srs=EPSG:4326&format=image/png" + "&query_layers=" + layerId
-                + "&feature_count=50";
+        baseFeatureInfo =
+                "wms?service=WMS&version=1.1.0&request=GetFeatureInfo"
+                        + "&layers="
+                        + layerId
+                        + "&styles=&bbox=-180,-90,180,90&width=180&height=90"
+                        + "&srs=EPSG:4326&format=image/png"
+                        + "&query_layers="
+                        + layerId
+                        + "&feature_count=50";
     }
 
     /**
      * Ensures there is at most one feature at the specified location, and returns its feature id
-     * 
+     *
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
      * @param x
      * @param y
      * @param layerName TODO
-     *
      */
     Double getValueAt(String baseFeatureInfo, int x, int y) throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo
-                + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        baseFeatureInfo
+                                + "&info_format=application/vnd.ogc.gml&x="
+                                + x
+                                + "&y="
+                                + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
         Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String sCount = xpath.evaluate("count(//" + layerId + ")", doc);
@@ -76,12 +83,22 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
 
     @Test
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.TIME, DimensionPresentation.LIST,
-                null, null, null);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, "custom", DimensionPresentation.LIST, null,
-                null, null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM, "custom", DimensionPresentation.LIST, null, null, null);
 
         // we should be getting nothing at all, the three defaults do not fit
         assertNull(getValueAt(baseFeatureInfo, 90, 45));
@@ -89,15 +106,26 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
 
     @Test
     public void testTimeCustomDomainRestriction() throws Exception {
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.TIME, DimensionPresentation.LIST,
-                null, null, null);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null,
-                null, null);
-        setupDynamicDimensions(TIME_ELEVATION_CUSTOM, new DefaultValueConfiguration(
-                ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN), new DefaultValueConfiguration(
-                CUSTOM, DefaultValuePolicy.LIMIT_DOMAIN));
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null, null, null);
+        setupDynamicDimensions(
+                TIME_ELEVATION_CUSTOM,
+                new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN),
+                new DefaultValueConfiguration(CUSTOM, DefaultValuePolicy.LIMIT_DOMAIN));
 
         // elevation defaults to 0, the other two should follow
         assertEquals(0, getValueAt(baseFeatureInfo, 90, 45), 0d);
@@ -121,16 +149,28 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
 
     @Test
     public void testTimeExpression() throws Exception {
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.TIME, DimensionPresentation.LIST,
-                null, null, null);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null,
-                null, null);
-        String expression = "if_then_else(equalTo(CUSTOM, 'AB1'), '2008-10-31', Concatenate('2008-11-0', round(strSubstringStart(CUSTOM, 2) - 1)))";
-        setupDynamicDimensions(TIME_ELEVATION_CUSTOM, new DefaultValueConfiguration(CUSTOM,
-                DefaultValuePolicy.LIMIT_DOMAIN), new DefaultValueConfiguration(ResourceInfo.TIME,
-                expression));
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null, null, null);
+        String expression =
+                "if_then_else(equalTo(CUSTOM, 'AB1'), '2008-10-31', Concatenate('2008-11-0', round(strSubstringStart(CUSTOM, 2) - 1)))";
+        setupDynamicDimensions(
+                TIME_ELEVATION_CUSTOM,
+                new DefaultValueConfiguration(CUSTOM, DefaultValuePolicy.LIMIT_DOMAIN),
+                new DefaultValueConfiguration(ResourceInfo.TIME, expression));
 
         // elevation defaults to 0, the other two should follow
         assertEquals(0, getValueAt(baseFeatureInfo, 90, 45), 0d);
@@ -154,16 +194,27 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
 
     @Test
     public void testCustomDomainExpression() throws Exception {
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, ResourceInfo.TIME, DimensionPresentation.LIST,
-                null, null, null);
-        setupRasterDimension(TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null,
-                null, null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.ELEVATION,
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null);
+        setupRasterDimension(
+                TIME_ELEVATION_CUSTOM, CUSTOM_KEY, DimensionPresentation.LIST, null, null, null);
         String expression = "Concatenate('AB', round(elevation + 1))";
-        setupDynamicDimensions(TIME_ELEVATION_CUSTOM, new DefaultValueConfiguration(
-                ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN), new DefaultValueConfiguration(
-                CUSTOM, expression));
+        setupDynamicDimensions(
+                TIME_ELEVATION_CUSTOM,
+                new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN),
+                new DefaultValueConfiguration(CUSTOM, expression));
 
         // elevation defaults to 0, the other two should follow
         assertEquals(0, getValueAt(baseFeatureInfo, 90, 45), 0d);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="580px" height="176px" viewBox="0 0 580 176" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>TextSymbolizer</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-1">
+            <feMorphology radius="2" in="SourceAlpha" operator="dilate" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="0" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="TextSymbolizer" sketch:type="MSArtboardGroup">
+            <g id="Grid" sketch:type="MSLayerGroup" transform="translate(13.000000, 8.000000)" stroke="#979797" stroke-width="2">
+                <rect id="Rectangle-1" fill="#010240" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="153"></rect>
+                <path d="M146.5,31 L0.5,31" id="Line" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M146.5,61 L0.5,61" id="Line-copy" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M146.5,91 L0.5,91" id="Line-copy-2" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M146.5,121 L0.5,121" id="Line-copy-3" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M28,1.51689189 L28,153.483108" id="Line" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M58,1.51689189 L58,153.483108" id="Line-copy" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M88,1.51689189 L88,153.483108" id="Line-copy-2" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M118,1.51689189 L118,153.483108" id="Line-copy-3" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            </g>
+            <g id="Vertext-Data" sketch:type="MSLayerGroup" transform="translate(66.000000, 82.000000)" stroke="#000000" fill="#FFFFFF">
+                <circle id="Oval-1-copy-4" sketch:type="MSShapeGroup" cx="4.5" cy="4.5" r="4.5"></circle>
+            </g>
+            <g id="Default" sketch:type="MSLayerGroup" transform="translate(172.000000, 8.000000)">
+                <rect id="Rectangle-1" stroke="#979797" sketch:type="MSShapeGroup" x="0" y="0" width="147" height="153"></rect>
+                <text id="(SLD-Default)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="13" font-weight="260" sketch:alignment="middle" fill="#000000">
+                    <tspan x="38.334" y="12">(SLD Default)</tspan>
+                </text>
+                <g id="Callout" transform="translate(69.000000, 38.000000)">
+                    <path d="M24.5,14.5 L8.5,14.5" id="Line" stroke="#000000" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                    <text id="Label" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="13" font-weight="260" fill="#000000">
+                        <tspan x="0" y="12">font-size: 10</tspan>
+                    </text>
+                    <path d="M16.5,14.5 L8.5,33.5" id="Line" stroke="#000000" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                </g>
+            </g>
+            <text id="Label" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="20" font-weight="526" fill="#000000">
+                <tspan x="193" y="103">Portland</tspan>
+            </text>
+            <rect id="Rectangle-1-copy-2" stroke="#979797" fill="#D4D4D4" sketch:type="MSShapeGroup" x="333" y="8" width="147" height="153"></rect>
+            <text id="polulated_places.sld" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="13" font-weight="260" sketch:alignment="middle" fill="#000000">
+                <tspan x="348.7215" y="20">polulated_places.sld</tspan>
+            </text>
+            <g id="Callout" sketch:type="MSLayerGroup" transform="translate(391.000000, 46.000000)">
+                <path d="M24.5,14.5 L8.5,14.5" id="Line" stroke="#000000" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <text id="Label" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="13" font-weight="260" fill="#000000">
+                    <tspan x="0" y="12">font-size: 10</tspan>
+                </text>
+                <path d="M16.5,14.5 L8.5,33.5" id="Line" stroke="#000000" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            </g>
+            <text id="Halo" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="13" font-weight="260" fill="#000000">
+                <tspan x="393" y="117">Halo</tspan>
+                <tspan x="393" y="133">radius: 1</tspan>
+                <tspan x="393" y="149">fill: white</tspan>
+            </text>
+            <text id="Label" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="24" font-weight="526" fill="#FFFFFF">
+                <tspan x="24" y="93">Portland</tspan>
+            </text>
+            <path d="M355.76,100 L355.76,95.02 L359.28,95.02 C362.06,95.02 363.64,93.1 363.64,90.84 C363.64,88.58 362.08,86.66 359.28,86.66 L353.42,86.66 L353.42,100 L355.76,100 Z M358.96,92.96 L355.76,92.96 L355.76,88.72 L358.96,88.72 C360.28,88.72 361.24,89.56 361.24,90.84 C361.24,92.12 360.28,92.96 358.96,92.96 Z M369.58,100.24 C372.68,100.24 374.56,97.94 374.56,95.16 C374.56,92.4 372.68,90.1 369.58,90.1 C366.52,90.1 364.62,92.4 364.62,95.16 C364.62,97.94 366.52,100.24 369.58,100.24 Z M369.58,98.38 C367.8,98.38 366.8,96.88 366.8,95.16 C366.8,93.46 367.8,91.96 369.58,91.96 C371.38,91.96 372.38,93.46 372.38,95.16 C372.38,96.88 371.38,98.38 369.58,98.38 Z M378.78,100 L378.78,93.42 C379.2,92.74 380.38,92.14 381.26,92.14 C381.52,92.14 381.74,92.16 381.92,92.2 L381.92,90.12 C380.66,90.12 379.5,90.84 378.78,91.76 L378.78,90.34 L376.68,90.34 L376.68,100 L378.78,100 Z M386.52,100.24 C387.5,100.24 388.12,99.98 388.5,99.62 L388,98.04 C387.84,98.22 387.46,98.38 387.06,98.38 C386.46,98.38 386.14,97.9 386.14,97.24 L386.14,92.18 L388.1,92.18 L388.1,90.34 L386.14,90.34 L386.14,87.7 L384.04,87.7 L384.04,90.34 L382.44,90.34 L382.44,92.18 L384.04,92.18 L384.04,97.76 C384.04,99.36 384.9,100.24 386.52,100.24 Z M392.1,100 L392.1,86.66 L390,86.66 L390,100 L392.1,100 Z M402.82,100 L402.82,93.6 C402.82,91 400.94,90.1 398.8,90.1 C397.26,90.1 395.86,90.6 394.74,91.66 L395.6,93.12 C396.44,92.3 397.38,91.9 398.46,91.9 C399.8,91.9 400.72,92.58 400.72,93.7 L400.72,95.14 C400.02,94.32 398.9,93.9 397.6,93.9 C396.02,93.9 394.24,94.82 394.24,97.04 C394.24,99.18 396.02,100.24 397.6,100.24 C398.88,100.24 400,99.78 400.72,98.96 L400.72,100 L402.82,100 Z M398.42,98.8 C397.24,98.8 396.36,98.12 396.36,97.08 C396.36,96.02 397.24,95.34 398.42,95.34 C399.34,95.34 400.24,95.68 400.72,96.34 L400.72,97.8 C400.24,98.46 399.34,98.8 398.42,98.8 Z M414.16,100 L414.16,93.2 C414.16,91.22 413.12,90.1 411.04,90.1 C409.52,90.1 408.28,90.9 407.64,91.66 L407.64,90.34 L405.54,90.34 L405.54,100 L407.64,100 L407.64,93.26 C408.12,92.6 409.04,91.96 410.12,91.96 C411.3,91.96 412.06,92.46 412.06,93.96 L412.06,100 L414.16,100 Z M425.78,100 L425.78,86.66 L423.68,86.66 L423.68,91.68 C422.9,90.66 421.78,90.1 420.58,90.1 C418.08,90.1 416.28,92.06 416.28,95.18 C416.28,98.36 418.1,100.24 420.58,100.24 C421.82,100.24 422.94,99.64 423.68,98.68 L423.68,100 L425.78,100 Z M421.18,98.38 C419.52,98.38 418.46,97.04 418.46,95.18 C418.46,93.3 419.52,91.96 421.18,91.96 C422.18,91.96 423.2,92.54 423.68,93.26 L423.68,97.1 C423.2,97.82 422.18,98.38 421.18,98.38 Z" id="Label" fill="#000000" filter="url(#filter-1)" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

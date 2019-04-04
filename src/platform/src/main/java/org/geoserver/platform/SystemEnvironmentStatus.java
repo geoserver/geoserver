@@ -6,8 +6,8 @@
 package org.geoserver.platform;
 
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class SystemEnvironmentStatus implements ModuleStatus {
 
@@ -44,8 +44,8 @@ public class SystemEnvironmentStatus implements ModuleStatus {
     @Override
     public Optional<String> getMessage() {
         StringBuffer result = new StringBuffer();
-        for (Iterator<Entry<String, String>> it = System.getenv().entrySet().iterator(); it
-                .hasNext();) {
+        for (Iterator<Entry<String, String>> it = System.getenv().entrySet().iterator();
+                it.hasNext(); ) {
             Entry<String, String> entry = it.next();
             result.append(entry.getKey().toString() + "=" + entry.getValue().toString() + "\n");
         }
@@ -56,5 +56,4 @@ public class SystemEnvironmentStatus implements ModuleStatus {
     public Optional<String> getDocumentation() {
         return Optional.empty();
     }
-
 }

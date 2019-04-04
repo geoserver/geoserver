@@ -30,13 +30,17 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
-    /**
-     * Just a smoke test to make sure the page loads as expected
-     */
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
+
+    /** Just a smoke test to make sure the page loads as expected */
     @Test
     public void testPageLoad() {
         GridSetNewPage page = new GridSetNewPage(new PageParameters());
@@ -79,7 +83,8 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
         GWC mediator = GWC.get();
         GridSetBroker gridSetBroker = mediator.getGridSetBroker();
-        assertTrue(gridSetBroker.getNames().toString(),
+        assertTrue(
+                gridSetBroker.getNames().toString(),
                 gridSetBroker.getNames().contains("customWGS84"));
 
         GridSet check = gridSetBroker.get("EPSG:4326");
@@ -104,8 +109,8 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("gridSetForm:crs:srs", "blur");
         // print(page, true, true);
 
-        Component computeBounds = tester
-                .getComponentFromLastRenderedPage("gridSetForm:computeBounds");
+        Component computeBounds =
+                tester.getComponentFromLastRenderedPage("gridSetForm:computeBounds");
         assertTrue(computeBounds.isEnabled());
 
         // hard to trigger an click event for a GeoServerAjaxSubmitLink, to invoking directly
@@ -114,22 +119,34 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
         {
             BoundingBox expected = gridSetBroker.get("EPSG:900913").getOriginalExtent();
-            Double minx = ((DecimalTextField) tester
-                    .getComponentFromLastRenderedPage("gridSetForm:bounds:minX")).getModelObject();
-            Double miny = ((DecimalTextField) tester
-                    .getComponentFromLastRenderedPage("gridSetForm:bounds:minY")).getModelObject();
-            Double maxx = ((DecimalTextField) tester
-                    .getComponentFromLastRenderedPage("gridSetForm:bounds:maxX")).getModelObject();
-            Double maxy = ((DecimalTextField) tester
-                    .getComponentFromLastRenderedPage("gridSetForm:bounds:maxY")).getModelObject();
+            Double minx =
+                    ((DecimalTextField)
+                                    tester.getComponentFromLastRenderedPage(
+                                            "gridSetForm:bounds:minX"))
+                            .getModelObject();
+            Double miny =
+                    ((DecimalTextField)
+                                    tester.getComponentFromLastRenderedPage(
+                                            "gridSetForm:bounds:minY"))
+                            .getModelObject();
+            Double maxx =
+                    ((DecimalTextField)
+                                    tester.getComponentFromLastRenderedPage(
+                                            "gridSetForm:bounds:maxX"))
+                            .getModelObject();
+            Double maxy =
+                    ((DecimalTextField)
+                                    tester.getComponentFromLastRenderedPage(
+                                            "gridSetForm:bounds:maxY"))
+                            .getModelObject();
 
-            assertEquals(expected.getMinX(), minx, 1.0E-2);// cm resolution
+            assertEquals(expected.getMinX(), minx, 1.0E-2); // cm resolution
             assertEquals(expected.getMinY(), miny, 1.0E-2);
             assertEquals(expected.getMaxX(), maxx, 1.0E-2);
             assertEquals(expected.getMaxY(), maxy, 1.0E-2);
 
-            EnvelopePanel envPanel = (EnvelopePanel) tester
-                    .getComponentFromLastRenderedPage("gridSetForm:bounds");
+            EnvelopePanel envPanel =
+                    (EnvelopePanel) tester.getComponentFromLastRenderedPage("gridSetForm:bounds");
             assertNotNull(envPanel.getModelObject());
 
             ft.setValue("bounds:minX", "-1000000");
@@ -139,9 +156,9 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         }
 
         ft.setValue("tileWidth:border:border_body:paramValue", "512");
-        
+
         ft.setValue("tileHeight:border:border_body:paramValue", "512");
-        
+
         // add zoom levels
         final int numLevels = 6;
         for (int i = 0; i < numLevels; i++) {
@@ -153,7 +170,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         }
 
         // print(page, true, true);
-        
+
         ft.setValue("name:border:border_body:paramValue", gridsetName);
         ft.setValue("description", "sample description");
         // submit
@@ -162,11 +179,11 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
         tester.assertNoErrorMessage();
 
-        assertTrue(gridSetBroker.getNames().toString(),
+        assertTrue(
+                gridSetBroker.getNames().toString(),
                 gridSetBroker.getNames().contains(gridsetName));
 
         GridSet created = gridSetBroker.get(gridsetName);
         assertEquals(numLevels, created.getNumLevels());
     }
-
 }

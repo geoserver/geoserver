@@ -6,7 +6,6 @@
 package org.geoserver.wfs.kvp.v2_0;
 
 import net.opengis.wfs20.ResultTypeType;
-
 import org.geoserver.ows.KvpParser;
 import org.geotools.util.Version;
 
@@ -22,5 +21,4 @@ public class ResultTypeKvpParser extends KvpParser {
     public Object parse(String value) throws Exception {
         return ResultTypeType.get(value.toLowerCase());
     }
-
 }

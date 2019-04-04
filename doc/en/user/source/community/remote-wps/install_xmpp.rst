@@ -21,7 +21,7 @@ Setting up PostgreSQL database backend
 
 For the purposes of running a private XMPP communication platform, we can safely stick with PostgreSQL 9.2 which is stable and comes in CentOS 7 by default.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -43,7 +43,7 @@ Postgres installation is now up and running, lets proceed with setting up the sp
 
 For full administration access, switch to postgres user.
 
-.. code-block:: shell
+.. code-block:: bash
 
   su postgres
   
@@ -60,7 +60,7 @@ For full administration access, switch to postgres user.
   
 Postgres user is secured with the new password. Lets put authentication methods in practice and force every application or shell login to prompt for these passwords.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as postgres
   
@@ -85,7 +85,7 @@ Postgres user is secured with the new password. Lets put authentication methods 
   
 Go back from postgres shell (Ctrl+D) and restart postgresql service as root.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -96,7 +96,7 @@ Download and install Openfire from Ignite Realtime
 
 Since OpenFire RPM package is not included in any major RHEL / CentOS / Fedora distribution repositories, it must be downloaded directly from Ignite Realtime website.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -110,7 +110,7 @@ Since OpenFire RPM package is not included in any major RHEL / CentOS / Fedora d
   
 Enable the openfire service and start it
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -180,10 +180,14 @@ The initial setup is now complete. Log into the system using the newly created *
 
 Move to the ``Server Certificates`` section of the ``Server Settings`` tab panel. 
 
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
+
   .. figure:: images/openfire009.jpg
     :align: center
 
 Make sure that the self-signed certificates have been correctly generated and click on ``here`` in order to restart the server
+
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
 
   .. figure:: images/openfire010.jpg
     :align: center
@@ -191,6 +195,8 @@ Make sure that the self-signed certificates have been correctly generated and cl
 The same section now shows the server certificates and won't ask for another restart unless the certificates are generated again.
 
 Update the ``Security Settings`` in order to allow the server accepting self-signed certificates on secured connections.
+
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
 
   .. figure:: images/openfire011.jpg
     :align: center
@@ -214,7 +220,7 @@ Double check that the channels have been correctly created and they appear in th
 
 *Restart GeoServer*
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -239,7 +245,7 @@ By default the TCP Ports where the XMPP Server is listening for incoming connect
 
 In order to do that issue the following commands:
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -259,7 +265,7 @@ Those steps are not mandatory and the procedure may change accordingly to the fi
 
 In order to install Apache HTTPD Server proceed as follows:
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -278,7 +284,7 @@ In order to install Apache HTTPD Server proceed as follows:
 
 *Selinux*, enabled by default, needs to be instructed to allow http network connections. This can be done by running the command:
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -293,7 +299,7 @@ The following procedures are not mandatory and the final deployment on the produ
 
 The setup and initial configuration of the NFS packages can be done by following the next procedure:
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -310,36 +316,48 @@ The setup and initial configuration of the NFS packages can be done by following
 
 Creating and exposing a shared folder is possible by following the next steps:
 
-.. code-block:: shell
+1. as root
 
-  # as root
+2. Create the physical folder structure to be exposed via the Network Filesystem
 
-  # 1. Create the physical folder structure to be exposed via the Network Filesystem
+  .. code-block:: bash
 
-  $> mkdir /share
-  $> mkdir /share/xmpp_data
-  $> mkdir /share/xmpp_data/output
-  $> mkdir /share/xmpp_data/resource_dir
+     $> mkdir /share
+     $> mkdir /share/xmpp_data
+     $> mkdir /share/xmpp_data/output
+     $> mkdir /share/xmpp_data/resource_dir
 
-  # 2. Modify the rights in order to allow
-  $> chmod -Rf 777 /share
+3. Modify the rights in order to allow
+
+   .. code-block:: bash
   
-  # 3. Once the physical folder is ready it must be exposed via the ``exports``
-  $> vi /etc/exports
+      $> chmod -Rf 777 /share
+  
+3. Once the physical folder is ready it must be exposed via the ``exports``
 
-     # write settings for NFS exports
+  .. code-block:: bash
+
+     $> vi /etc/exports
+
+4. write settings for NFS exports
+
+  .. code-block:: bash
+
      /share host_ip/24(rw,no_root_squash)
 
-  # 4. Restart the NFS services
-  $> systemctl start rpcbind nfs-server
+4. Restart the NFS services
+
+  .. code-block:: bash
+
+     $> systemctl start rpcbind nfs-server
   
-  $> systemctl enable rpcbind nfs-server
+     $> systemctl enable rpcbind nfs-server
 
 .. note:: The **host_ip** must be the one of the host exposing the shared folder.
 
 *Selinux*, enabled by default, needs to be instructed to allow NFS connections. This can be done by running the following commands:
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   

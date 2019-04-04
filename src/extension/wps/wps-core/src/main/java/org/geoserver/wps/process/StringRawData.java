@@ -7,14 +7,12 @@ package org.geoserver.wps.process;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 
 /**
  * Raw data backed by a simple java {@link String}
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
 public class StringRawData extends AbstractRawData {
 
@@ -32,8 +30,13 @@ public class StringRawData extends AbstractRawData {
 
     @Override
     public String toString() {
-        return "StringRawData [data=" + data + ", mimeType=" + mimeType + ", extension="
-                + extension + "]";
+        return "StringRawData [data="
+                + data
+                + ", mimeType="
+                + mimeType
+                + ", extension="
+                + extension
+                + "]";
     }
 
     public String getData() {
@@ -44,5 +47,4 @@ public class StringRawData extends AbstractRawData {
     public String getFileExtension() {
         return "txt";
     }
-
 }

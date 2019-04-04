@@ -10,10 +10,7 @@ import javax.servlet.Filter;
 /**
  * Marks all filters that {@link SpringDelegatingFilter} will pick up from the Spring application
  * context and run against each servlet request
- * 
- * @author Andrea Aime - GeoSolutions
  *
+ * @author Andrea Aime - GeoSolutions
  */
-public interface GeoServerFilter extends Filter {
-
-}
+public interface GeoServerFilter extends Filter {}

@@ -9,21 +9,18 @@ package org.geoserver.security.config;
 import java.io.Serializable;
 
 /**
- * 
  * Common base interface for all security configuration classes.
- * 
+ *
  * @author christian
-
  */
 public interface SecurityConfig extends Serializable {
-    
+
     /**
-     * Clone of a Security Config allowing expansion of placeholders through
-     * GeoServerEnvironment helper.
-     * 
+     * Clone of a Security Config allowing expansion of placeholders through GeoServerEnvironment
+     * helper.
+     *
      * @param allowEnvParametrization
      * @return
      */
     public SecurityConfig clone(boolean allowEnvParametrization);
-
 }

@@ -9,23 +9,24 @@ import java.util.Iterator;
 
 /**
  * Data access interface for persisting imports.
- * 
+ *
  * @todo refactor various queries into query object
  * @author Justin Deoliveira, OpenGeo
  */
 public interface ImportStore {
 
     public interface ImportVisitor {
-        void visit (ImportContext context);
+        void visit(ImportContext context);
     }
 
     String getName();
 
     void init();
-    
+
     /**
-     * Negotiate an ID and reserver the spot for an import.
-     * The returned ID will be equal to or greater than the proposal.
+     * Negotiate an ID and reserver the spot for an import. The returned ID will be equal to or
+     * greater than the proposal.
+     *
      * @param id the non-null proposed ID
      * @return the negotiated id
      */
@@ -46,7 +47,7 @@ public interface ImportStore {
     Iterator<ImportContext> iterator(String sortBy);
 
     Iterator<ImportContext> allNonCompleteImports();
-    
+
     Iterator<ImportContext> importsByUser(String user);
 
     void query(ImportVisitor visitor);

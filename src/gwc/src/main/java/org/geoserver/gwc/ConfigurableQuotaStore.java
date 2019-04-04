@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.gwc;
 
 import java.util.Collection;
@@ -5,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
-
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.storage.PageStats;
@@ -19,7 +22,7 @@ import org.geowebcache.diskquota.storage.TileSetVisitor;
 /**
  * A {@link QuotaStore} delegating to another instance of {@link QuotaStore}, and allowing the
  * delegate to be changed at runtime.
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class ConfigurableQuotaStore implements QuotaStore {
@@ -31,7 +34,7 @@ public class ConfigurableQuotaStore implements QuotaStore {
     public void setStore(QuotaStore delegate) {
         this.delegate = delegate;
     }
-    
+
     public QuotaStore getStore() {
         return delegate;
     }
@@ -84,12 +87,14 @@ public class ConfigurableQuotaStore implements QuotaStore {
         delegate.accept(visitor);
     }
 
-    public void addToQuotaAndTileCounts(TileSet tileSet, Quota quotaDiff,
-            Collection<PageStatsPayload> tileCountDiffs) throws InterruptedException {
+    public void addToQuotaAndTileCounts(
+            TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
+            throws InterruptedException {
         delegate.addToQuotaAndTileCounts(tileSet, quotaDiff, tileCountDiffs);
     }
 
-    public Future<List<PageStats>> addHitsAndSetAccesTime(Collection<PageStatsPayload> statsUpdates) {
+    public Future<List<PageStats>> addHitsAndSetAccesTime(
+            Collection<PageStatsPayload> statsUpdates) {
         return delegate.addHitsAndSetAccesTime(statsUpdates);
     }
 
@@ -113,4 +118,8 @@ public class ConfigurableQuotaStore implements QuotaStore {
         delegate.close();
     }
 
+    @Override
+    public void deleteParameters(String layerName, String parametersId) {
+        delegate.deleteParameters(layerName, parametersId);
+    }
 }

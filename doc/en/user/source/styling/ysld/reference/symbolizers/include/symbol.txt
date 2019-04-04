@@ -1,0 +1,18 @@
+.. list-table::
+   :class: non-responsive
+   :header-rows: 1
+   :stub-columns: 1
+   :widths: 20 10 50 20
+
+   * - Property
+     - Required?
+     - Description
+     - Default value
+   * - ``geometry``
+     - No
+     - Specifies which attribute to use as the geometry.
+     - First geometry attribute found (usually named ``geom`` or ``the_geom``)
+   * - ``uom``
+     - No
+     - Unit of measure used for width calculations
+     - pixel

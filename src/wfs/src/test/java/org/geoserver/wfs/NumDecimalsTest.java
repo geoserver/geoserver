@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class NumDecimalsTest extends WFSTestSupport {
-    
+
     @Before
     public void resetNumDecimals() {
         Catalog cat = getCatalog();
@@ -29,25 +29,27 @@ public class NumDecimalsTest extends WFSTestSupport {
         cat.save(ft2);
     }
 
-	@Test
+    @Test
     public void testDefaults() throws Exception {
-        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
-        runAssertions(dom,3);
+        Document dom =
+                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        runAssertions(dom, 3);
     }
 
     @Test
     public void testGlobal() throws Exception {
-    	Catalog cat = getCatalog();
+        Catalog cat = getCatalog();
         FeatureTypeInfo ft = cat.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         ft.setNumDecimals(-1);
         cat.save(ft);
-        
+
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setNumDecimals(1);
         getGeoServer().save(global);
-        
-        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
-        runAssertions(dom,1);
+
+        Document dom =
+                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        runAssertions(dom, 1);
     }
 
     @Test
@@ -56,9 +58,10 @@ public class NumDecimalsTest extends WFSTestSupport {
         FeatureTypeInfo ft = cat.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         ft.setNumDecimals(1);
         cat.save(ft);
-        
-        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
-        runAssertions(dom,1);
+
+        Document dom =
+                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        runAssertions(dom, 1);
     }
 
     @Test
@@ -68,14 +71,16 @@ public class NumDecimalsTest extends WFSTestSupport {
         FeatureTypeInfo ft2 = cat.getFeatureTypeByName("sf", "AggregateGeoFeature");
         ft1.setNumDecimals(3);
         cat.save(ft1);
-            
+
         ft2.setNumDecimals(1);
         cat.save(ft2);
-        
-        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008,AggregateGeoFeature.f009&version=1.0.0");
+
+        Document dom =
+                getAsDOM(
+                        "wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008,AggregateGeoFeature.f009&version=1.0.0");
         runAssertions(dom, 3);
     }
-    
+
     void runAssertions(Document dom, int numdecimals) throws Exception {
         NodeList nl = dom.getElementsByTagName("gml:coordinates");
         for (int x = 0; x < nl.getLength(); x++) {
@@ -85,7 +90,7 @@ public class NumDecimalsTest extends WFSTestSupport {
                 String[] coord = tuples[i].split(",");
                 for (int j = 0; j < coord.length; j++) {
                     int dot = coord[j].indexOf('.');
-                    assertEquals( numdecimals, coord[j].substring(dot+1).length());
+                    assertEquals(numdecimals, coord[j].substring(dot + 1).length());
                 }
             }
         }

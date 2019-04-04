@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
@@ -33,19 +32,18 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class BDBImportStoreTest extends ImporterTestSupport {
 
-
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         List<Object[]> result = new ArrayList<>();
-        result.add(new Object[] { "serial", BindingType.SERIAL });
-        result.add(new Object[] { "xstream", BindingType.XSTREAM });
+        result.add(new Object[] {"serial", BindingType.SERIAL});
+        result.add(new Object[] {"xstream", BindingType.XSTREAM});
 
         return result;
     }
 
     BDBImportStore store;
     File dbRoot;
-    
+
     private BindingType bindingType;
 
     public BDBImportStoreTest(String name, BindingType bindingType) {
@@ -59,20 +57,20 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         store.init();
         dbRoot = new File(importer.getImportRoot(), "bdb");
     }
-    
+
     // in order to test this, run once, then change the serialVersionUID of ImportContext2
     @Test
     public void testSerialVersionUIDChange() throws Exception {
-        Importer imp =  new Importer(null) {
+        Importer imp =
+                new Importer(null) {
 
-            @Override
-            public File getImportRoot() {
-                File root = new File("target");
-                root.mkdirs();
-                return root;
-            }
-            
-        };
+                    @Override
+                    public File getImportRoot() {
+                        File root = new File("target");
+                        root.mkdirs();
+                        return root;
+                    }
+                };
         ImportContext ctx = new ImportContext2();
         ctx.setState(ImportContext.State.PENDING);
         ctx.setUser("fooboo");
@@ -80,19 +78,19 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         try {
             store.init();
             store.add(ctx);
-            
+
             Iterator<ImportContext> iterator = store.iterator();
             while (iterator.hasNext()) {
                 ctx = iterator.next();
                 assertEquals("fooboo", ctx.getUser());
             }
-            
+
             store.add(ctx);
-        } finally {        
+        } finally {
             store.destroy();
         }
     }
-    
+
     public static class ImportContext2 extends ImportContext {
         private static final long serialVersionUID = 12345;
     }
@@ -102,18 +100,18 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         ImportContext context = importer.createContext(new Directory(dir));
 
-        assertEquals(1,context.getTasks().size());
+        assertEquals(1, context.getTasks().size());
         for (int i = 0; i < context.getTasks().size(); i++) {
             assertNotNull(context.getTasks().get(i).getStore());
             assertNotNull(context.getTasks().get(i).getStore().getCatalog());
         }
-        
+
         // @todo commented these out as importer.createContext adds to the store
-//        assertNull(context.getId());
+        //        assertNull(context.getId());
 
         CountingVisitor cv = new CountingVisitor();
-//        store.query(cv);
-//        assertEquals(0, cv.getCount());
+        //        store.query(cv);
+        //        assertEquals(0, cv.getCount());
 
         store.add(context);
         assertNotNull(context.getId());
@@ -125,15 +123,15 @@ public class BDBImportStoreTest extends ImporterTestSupport {
 
         store.query(cv);
         assertEquals(1, cv.getCount());
-        
+
         SearchingVisitor sv = new SearchingVisitor(context.getId());
         store.query(sv);
         assertTrue(sv.isFound());
-        
+
         importer.reattach(context2);
 
         // ensure various transient bits are set correctly on deserialization
-        assertEquals(1,context2.getTasks().size());
+        assertEquals(1, context2.getTasks().size());
         for (int i = 0; i < context2.getTasks().size(); i++) {
             assertNotNull(context2.getTasks().get(i).getStore());
             assertNotNull(context2.getTasks().get(i).getStore().getCatalog());
@@ -177,33 +175,31 @@ public class BDBImportStoreTest extends ImporterTestSupport {
     }
 
     @Test
-    public void testDatabaseRecovery() throws Exception {
-        
-    }
-    
+    public void testDatabaseRecovery() throws Exception {}
+
     @Test
     public void testIDManagement() throws Exception {
         // verify base - first one is zero
         ImportContext zero = new ImportContext();
         store.add(zero);
-        assertEquals(new Long(0), zero.getId());
+        assertEquals(Long.valueOf(0), zero.getId());
 
         // try for zero again (less than current case - client out of sync)
         Long advanceId = store.advanceId(0L);
-        assertEquals(new Long(1), advanceId);
+        assertEquals(Long.valueOf(1), advanceId);
 
         // and again for current (equals current case - normal mode)
         advanceId = store.advanceId(2L);
-        assertEquals(new Long(2), advanceId);
+        assertEquals(Long.valueOf(2), advanceId);
 
         // now jump ahead (client advances case - server out of sync)
         advanceId = store.advanceId(666L);
-        assertEquals(new Long(666), advanceId);
+        assertEquals(Long.valueOf(666), advanceId);
 
         // the next created import should be one higher
         ImportContext dumby = new ImportContext();
         store.add(dumby);
-        assertEquals(new Long(667), dumby.getId());
+        assertEquals(Long.valueOf(667), dumby.getId());
     }
 
     class SearchingVisitor implements ImportVisitor {
@@ -213,11 +209,13 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         SearchingVisitor(long id) {
             this.id = id;
         }
+
         public void visit(ImportContext context) {
             if (context.getId().longValue() == id) {
                 found = true;
             }
         }
+
         public boolean isFound() {
             return found;
         }
@@ -226,8 +224,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
     @After
     public void destroyStore() throws Exception {
         store.destroy();
-        // clean up the databse       
+        // clean up the databse
         FileUtils.deleteDirectory(dbRoot);
-        
     }
 }

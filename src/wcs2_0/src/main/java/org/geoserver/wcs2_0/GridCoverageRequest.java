@@ -7,21 +7,19 @@ package org.geoserver.wcs2_0;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.media.jai.Interpolation;
-
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Class representing the coverage request in terms that can be directly applied to the internal
  * GridCoverage2D/GridReader model
- * 
+ *
  * @author Andrea Aime - GeoSolutions
- * 
  */
 public class GridCoverageRequest {
 
@@ -42,6 +40,8 @@ public class GridCoverageRequest {
     OverviewPolicy overviewPolicy;
 
     Filter filter;
+
+    List<SortBy> sortBy;
 
     public WCSEnvelope getSpatialSubset() {
         return spatialSubset;
@@ -99,6 +99,14 @@ public class GridCoverageRequest {
         this.filter = filter;
     }
 
+    public List<SortBy> getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(List<SortBy> sortBy) {
+        this.sortBy = sortBy;
+    }
+
     public Map<String, List<Object>> getDimensionsSubset() {
         return dimensionsSubset;
     }
@@ -124,66 +132,48 @@ public class GridCoverageRequest {
         result = prime * result + ((filter == null) ? 0 : filter.hashCode());
         result = prime * result + ((outputCRS == null) ? 0 : outputCRS.hashCode());
         result = prime * result + ((overviewPolicy == null) ? 0 : overviewPolicy.hashCode());
-        result = prime * result
-                + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
+        result =
+                prime * result
+                        + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
         result = prime * result + ((spatialSubset == null) ? 0 : spatialSubset.hashCode());
-        result = prime * result
-                + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
+        result =
+                prime * result
+                        + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
         result = prime * result + ((temporalSubset == null) ? 0 : temporalSubset.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         GridCoverageRequest other = (GridCoverageRequest) obj;
         if (dimensionsSubset == null) {
-            if (other.dimensionsSubset != null)
-                return false;
-        } else if (!dimensionsSubset.equals(other.dimensionsSubset))
-            return false;
+            if (other.dimensionsSubset != null) return false;
+        } else if (!dimensionsSubset.equals(other.dimensionsSubset)) return false;
         if (elevationSubset == null) {
-            if (other.elevationSubset != null)
-                return false;
-        } else if (!elevationSubset.equals(other.elevationSubset))
-            return false;
+            if (other.elevationSubset != null) return false;
+        } else if (!elevationSubset.equals(other.elevationSubset)) return false;
         if (filter == null) {
-            if (other.filter != null)
-                return false;
-        } else if (!filter.equals(other.filter))
-            return false;
+            if (other.filter != null) return false;
+        } else if (!filter.equals(other.filter)) return false;
         if (outputCRS == null) {
-            if (other.outputCRS != null)
-                return false;
-        } else if (!outputCRS.equals(other.outputCRS))
-            return false;
-        if (overviewPolicy != other.overviewPolicy)
-            return false;
+            if (other.outputCRS != null) return false;
+        } else if (!outputCRS.equals(other.outputCRS)) return false;
+        if (overviewPolicy != other.overviewPolicy) return false;
         if (spatialInterpolation == null) {
-            if (other.spatialInterpolation != null)
-                return false;
-        } else if (!spatialInterpolation.equals(other.spatialInterpolation))
-            return false;
+            if (other.spatialInterpolation != null) return false;
+        } else if (!spatialInterpolation.equals(other.spatialInterpolation)) return false;
         if (spatialSubset == null) {
-            if (other.spatialSubset != null)
-                return false;
-        } else if (!spatialSubset.equals(other.spatialSubset))
-            return false;
+            if (other.spatialSubset != null) return false;
+        } else if (!spatialSubset.equals(other.spatialSubset)) return false;
         if (temporalInterpolation == null) {
-            if (other.temporalInterpolation != null)
-                return false;
-        } else if (!temporalInterpolation.equals(other.temporalInterpolation))
-            return false;
+            if (other.temporalInterpolation != null) return false;
+        } else if (!temporalInterpolation.equals(other.temporalInterpolation)) return false;
         if (temporalSubset == null) {
-            if (other.temporalSubset != null)
-                return false;
-        } else if (!temporalSubset.equals(other.temporalSubset))
-            return false;
+            if (other.temporalSubset != null) return false;
+        } else if (!temporalSubset.equals(other.temporalSubset)) return false;
         return true;
     }
 }

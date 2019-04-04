@@ -11,15 +11,14 @@ import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 public class ReprojectTransform extends AbstractTransform implements InlineVectorTransform {
-    
+
     private static final long serialVersionUID = 1L;
 
     CoordinateReferenceSystem source, target;
@@ -50,27 +49,28 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
         this.target = target;
     }
 
-    public SimpleFeatureType apply(ImportTask task, DataStore dataStore,
-            SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(
+            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
 
-        //update the layer metadata
+        // update the layer metadata
         ResourceInfo r = task.getLayer().getResource();
         r.setNativeCRS(target);
         r.setSRS(CRS.lookupIdentifier(target, true));
         if (r.getNativeBoundingBox() != null) {
             r.setNativeBoundingBox(r.getNativeBoundingBox().transform(target, true));
         }
-        //retype the schema
+        // retype the schema
         return SimpleFeatureTypeBuilder.retype(featureType, target);
     }
 
-    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(
+            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         if (transform == null) {
-            //compute the reprojection transform
+            // compute the reprojection transform
             CoordinateReferenceSystem source = this.source;
             if (source == null) {
-                //try to determine source crs from data
+                // try to determine source crs from data
                 source = oldFeature.getType().getCoordinateReferenceSystem();
             }
 

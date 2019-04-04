@@ -11,10 +11,10 @@ package org.geoserver.wps.process;
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 import java.awt.RenderingHints.Key;
 import java.util.Map;
 import java.util.Set;
-
 import org.geotools.data.Parameter;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
@@ -77,25 +77,22 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
     public boolean supportsProgress(Name name) {
         return delegate.supportsProgress(name);
     }
-    
-    /**
-     * Returns the original process factory
-     *
-     */
+
+    /** Returns the original process factory */
     public ProcessFactory getDelegate() {
         return delegate;
     }
 
     /**
-     * Returns the innermost delegate, this method can be used to check what the original factory was
-     *
+     * Returns the innermost delegate, this method can be used to check what the original factory
+     * was
      */
     public ProcessFactory getInnermostDelegate() {
         ProcessFactory pf = delegate;
-        while(pf instanceof DelegatingProcessFactory) {
+        while (pf instanceof DelegatingProcessFactory) {
             pf = ((DelegatingProcessFactory) pf).delegate;
         }
-        
+
         return pf;
     }
 }

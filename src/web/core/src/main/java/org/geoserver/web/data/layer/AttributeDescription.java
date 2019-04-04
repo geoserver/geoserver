@@ -11,34 +11,47 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 @SuppressWarnings("serial")
 class AttributeDescription implements Serializable {
 
-    static final List<Class<?>> BINDINGS = Arrays.asList(String.class, Boolean.class, Integer.class,
-            Long.class, Float.class, Double.class, Date.class, Time.class, Timestamp.class,
-            Geometry.class, Point.class, LineString.class, Polygon.class, MultiPoint.class,
-            MultiLineString.class, MultiPolygon.class, GeometryCollection.class);
-    
+    static final List<Class<?>> BINDINGS =
+            Arrays.asList(
+                    String.class,
+                    Boolean.class,
+                    Integer.class,
+                    Long.class,
+                    Float.class,
+                    Double.class,
+                    Date.class,
+                    Time.class,
+                    Timestamp.class,
+                    Geometry.class,
+                    Point.class,
+                    LineString.class,
+                    Polygon.class,
+                    MultiPoint.class,
+                    MultiLineString.class,
+                    MultiPolygon.class,
+                    GeometryCollection.class);
+
     static final CoordinateReferenceSystem WGS84;
-    
+
     static {
         try {
             WGS84 = CRS.decode("EPSG:4326");
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -55,9 +68,8 @@ class AttributeDescription implements Serializable {
 
     /**
      * Returns the localized named of the attribute type
-     * 
-     * @param binding
      *
+     * @param binding
      */
     static String getLocalizedName(Class<?> binding) {
         if (binding == null) {

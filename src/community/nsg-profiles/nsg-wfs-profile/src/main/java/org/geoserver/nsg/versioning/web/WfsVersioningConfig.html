@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<form name="theForm">
+    <wicket:panel>
+        <h3>
+            <wicket:message key="wfsVersioning">WFS Versioning</wicket:message>
+        </h3>
+        <ul>
+            <li>
+                <div class="choiceItem">
+                    <input type="checkbox" wicket:id="versioningActivateCheckBox"/>
+                    <label wicket:id="versioningActivateCheckBoxLabel"></label>
+                </div>
+            </li>
+            <li>
+                <label wicket:id="idAttributeChoiceLabel"></label>
+            </li>
+            <li>
+                <select class="select" wicket:id="idAttributeChoice"></select>
+            </li>
+            <li>
+                <label wicket:id="timeAttributeChoiceLabel"></label>
+            </li>
+            <li>
+                <select class="select" wicket:id="timeAttributeChoice"></select>
+            </li>
+        </ul>
+    </wicket:panel>
+</form>
+</body>
+</html>

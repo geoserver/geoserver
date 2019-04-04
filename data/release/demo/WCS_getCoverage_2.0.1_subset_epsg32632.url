@@ -1,0 +1,1 @@
+wcs?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&CoverageId=nurc__mosaic&subset=http://www.opengis.net/def/axis/OGC/0/E(412801.12,580844.55)&subset=http://www.opengis.net/def/axis/OGC/0/N(4261767.16,4816827.04)&SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/32632&OUTPUTCRS=http://www.opengis.net/def/crs/EPSG/0/32632

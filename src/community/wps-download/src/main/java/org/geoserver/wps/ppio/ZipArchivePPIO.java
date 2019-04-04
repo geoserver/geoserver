@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -25,7 +24,7 @@ import org.geotools.util.logging.Logging;
 
 /**
  * Handles input and output of feature collections as zipped files.
- * 
+ *
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  * @author Simone Giannecchini, GeoSolutions SAS
  */
@@ -33,14 +32,14 @@ public class ZipArchivePPIO extends BinaryPPIO {
 
     public static final String ZIP = "zip";
 
-    private final static Logger LOGGER = Logging.getLogger(ZipArchivePPIO.class);
+    private static final Logger LOGGER = Logging.getLogger(ZipArchivePPIO.class);
 
     /** Parameter indicating the compression level to use */
     private int compressionLevel;
 
     /**
      * Instantiates a new zip archive ppio.
-     * 
+     *
      * @param resources the resources
      */
     public ZipArchivePPIO(int compressionLevel) {
@@ -55,10 +54,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
         }
     }
 
-    /**
-     * Default constructor using ZipOutputStream.STORED compression level.
-     * 
-     */
+    /** Default constructor using ZipOutputStream.STORED compression level. */
     public ZipArchivePPIO() {
         this(ZipOutputStream.STORED);
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -68,7 +64,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
 
     /**
      * Encodes the output file.
-     * 
+     *
      * @param output the output
      * @param os the os
      * @throws Exception the exception
@@ -126,8 +122,10 @@ public class ZipArchivePPIO extends BinaryPPIO {
                 }
             } else {
                 // error
-                throw new IllegalArgumentException("Unable to zip provided output. Output-->"
-                        + output != null ? output.getClass().getCanonicalName() : "null");
+                throw new IllegalArgumentException(
+                        "Unable to zip provided output. Output-->" + output != null
+                                ? output.getClass().getCanonicalName()
+                                : "null");
             }
         }
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -138,7 +136,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
 
     /**
      * Gets the file extension.
-     * 
+     *
      * @return the file extension
      */
     @Override
@@ -148,10 +146,10 @@ public class ZipArchivePPIO extends BinaryPPIO {
 
     /**
      * This method zip the provided file to the provided {@link ZipOutputStream}.
-     * 
-     * <p>
-     * It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable file.
-     * 
+     *
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
+     * not a readable file.
+     *
      * @param file the {@link File} to zip
      * @param zipout the {@link ZipOutputStream} to write to
      * @throws IOException in case something bad happen
@@ -160,23 +158,23 @@ public class ZipArchivePPIO extends BinaryPPIO {
         // copy file by reading 4k at a time (faster than buffered reading)
         byte[] buffer = new byte[4096];
         zipFileInternal(file, zipout, buffer);
-
     }
 
     /**
      * This method tells us if the provided {@link File} is a Zip File.
-     * 
-     * <p>
-     * It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable file.
-     * 
+     *
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
+     * not a readable file.
+     *
      * @param file the {@link File} to check for zip
      * @throws IOException in case something bad happen
      */
     public static boolean isZpFile(File file) {
         if (file == null || !file.exists() || !file.canRead()) {
             throw new IllegalArgumentException(
-                    "Provided File is not valid and/or reqadable! --> File:" + file != null ? file
-                            .getAbsolutePath() : "null");
+                    "Provided File is not valid and/or reqadable! --> File:" + file != null
+                            ? file.getAbsolutePath()
+                            : "null");
         }
         // Check if the file is a directory
         if (file.isDirectory()) {
@@ -207,10 +205,10 @@ public class ZipArchivePPIO extends BinaryPPIO {
 
     /**
      * This method zip the provided file to the provided {@link ZipOutputStream}.
-     * 
-     * <p>
-     * It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable file.
-     * 
+     *
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
+     * not a readable file.
+     *
      * @param file the {@link File} to zip
      * @param zipout the {@link ZipOutputStream} to write to
      * @param buffer the buffer to use for reading/writing
@@ -220,8 +218,9 @@ public class ZipArchivePPIO extends BinaryPPIO {
             throws IOException {
         if (file == null || !file.exists() || !file.canRead()) {
             throw new IllegalArgumentException(
-                    "Provided File is not valid and/or reqadable! --> File:" + file != null ? file
-                            .getAbsolutePath() : "null");
+                    "Provided File is not valid and/or reqadable! --> File:" + file != null
+                            ? file.getAbsolutePath()
+                            : "null");
         }
 
         final ZipEntry entry = new ZipEntry(FilenameUtils.getName(file.getAbsolutePath()));

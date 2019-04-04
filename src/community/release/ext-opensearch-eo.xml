@@ -1,0 +1,19 @@
+<assembly>
+  <id>opensearch-eo-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gs-*oseo*.jar</include>
+        <include>gt-brewer*.jar</include>
+        <include>*jackson-databin*</include>
+        <include>*jackson-annotations*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

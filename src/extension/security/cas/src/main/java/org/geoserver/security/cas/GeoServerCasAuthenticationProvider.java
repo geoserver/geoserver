@@ -7,7 +7,6 @@
 package org.geoserver.security.cas;
 
 import java.util.logging.Logger;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -22,7 +21,7 @@ import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 
 /**
  * Security provider for CAS
- * 
+ *
  * @author mcr
  */
 public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
@@ -33,12 +32,11 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
     protected ProxyGrantingTicketCallbackFilter pgtCallback;
     protected ProxyGrantingTicketStorage pgtStorage;
 
-    public GeoServerCasAuthenticationProvider(ProxyGrantingTicketCallbackFilter pgtCallback, 
-        ProxyGrantingTicketStorage pgtStorage) {
+    public GeoServerCasAuthenticationProvider(
+            ProxyGrantingTicketCallbackFilter pgtCallback, ProxyGrantingTicketStorage pgtStorage) {
         this.pgtCallback = pgtCallback;
         this.pgtStorage = pgtStorage;
     }
-    
 
     public GeoServerCasAuthenticationProvider(ProxyGrantingTicketStorage pgtStorage) {
         this.pgtStorage = pgtStorage;
@@ -59,27 +57,24 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerCasAuthenticationFilter(pgtStorage);
     }
-    
+
     @Override
     public SecurityConfigValidator createConfigurationValidator(
             GeoServerSecurityManager securityManager) {
         return new CasFilterConfigValidator(securityManager);
     }
-    
+
     @Override
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
-        
-        if ( filterChain.getRequestChainByName(PROXYRECEPTORCHAIN) != null)
-            return;
-        
-        RequestFilterChain casChain = 
-            new ConstantFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
-                    GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN+"/");
+
+        if (filterChain.getRequestChainByName(PROXYRECEPTORCHAIN) != null) return;
+
+        RequestFilterChain casChain =
+                new ConstantFilterChain(
+                        GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
+                        GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN + "/");
         casChain.setFilterNames(pgtCallback.getName());
         casChain.setName(PROXYRECEPTORCHAIN);
-        filterChain.getRequestChains().add(0,casChain);
+        filterChain.getRequestChains().add(0, casChain);
     }
-
-
-
 }

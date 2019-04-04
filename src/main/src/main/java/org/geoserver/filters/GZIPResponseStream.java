@@ -6,16 +6,16 @@ package org.geoserver.filters;
 
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * A simple streaming gzipping servlet output stream wrapper
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class GZIPResponseStream extends ServletOutputStream {
+    protected final ServletOutputStream delegateStream;
     protected GZIPOutputStream gzipstream = null;
 
     protected boolean closed = false;
@@ -23,7 +23,8 @@ public class GZIPResponseStream extends ServletOutputStream {
     public GZIPResponseStream(HttpServletResponse response) throws IOException {
         super();
         closed = false;
-        gzipstream = new GZIPOutputStream(response.getOutputStream(), 4096, true);
+        delegateStream = response.getOutputStream();
+        gzipstream = new GZIPOutputStream(delegateStream, 4096, true);
     }
 
     public void close() throws IOException {
@@ -35,10 +36,9 @@ public class GZIPResponseStream extends ServletOutputStream {
     }
 
     public void flush() throws IOException {
-        if (closed) {
-            throw new IOException("Cannot flush a closed output stream");
+        if (!closed) {
+            gzipstream.flush();
         }
-        gzipstream.flush();
     }
 
     public void write(int b) throws IOException {
@@ -62,5 +62,4 @@ public class GZIPResponseStream extends ServletOutputStream {
     public boolean closed() {
         return (this.closed);
     }
-
 }

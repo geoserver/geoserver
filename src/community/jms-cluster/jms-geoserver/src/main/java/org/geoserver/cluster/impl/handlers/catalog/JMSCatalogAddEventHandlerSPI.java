@@ -5,37 +5,29 @@
  */
 package org.geoserver.cluster.impl.handlers.catalog;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.events.ToggleSwitch;
 
-import com.thoughtworks.xstream.XStream;
+/** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
+public class JMSCatalogAddEventHandlerSPI extends JMSCatalogEventHandlerSPI {
 
-/**
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
- *
- */
-public class JMSCatalogAddEventHandlerSPI extends JMSCatalogEventHandlerSPI{
-	
-	public JMSCatalogAddEventHandlerSPI(final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
-		super(priority,cat,xstream,producer);
-	}
+    public JMSCatalogAddEventHandlerSPI(
+            final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
+        super(priority, cat, xstream, producer);
+    }
 
-	@Override
-	public boolean canHandle(final Object event) {
-		if (event instanceof CatalogAddEvent)
-			return true;
-		else
-			return false;
-	}
+    @Override
+    public boolean canHandle(final Object event) {
+        if (event instanceof CatalogAddEvent) return true;
+        else return false;
+    }
 
-	@Override
-	public JMSEventHandler<String,CatalogEvent> createHandler() {
-		return new JMSCatalogAddEventHandler(catalog,xstream,this.getClass(),producer);
-	}
-
-
+    @Override
+    public JMSEventHandler<String, CatalogEvent> createHandler() {
+        return new JMSCatalogAddEventHandler(catalog, xstream, this.getClass(), producer);
+    }
 }

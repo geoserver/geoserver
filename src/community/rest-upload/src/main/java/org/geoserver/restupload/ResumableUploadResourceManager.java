@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -37,7 +36,6 @@ import org.restlet.resource.Representation;
  *
  * @author Nicola Lagomarsini
  */
-
 public class ResumableUploadResourceManager {
     /** LOGGER class */
     private static final Logger LOGGER = Logging.getLogger(ResumableUploadResourceManager.class);
@@ -62,8 +60,11 @@ public class ResumableUploadResourceManager {
     }
 
     public Boolean hasAnyResource() {
-        Collection<File> files = FileUtils.listFiles(tmpUploadFolder.dir(), new WildcardFileFilter(
-                "*.*"), TrueFileFilter.INSTANCE);
+        Collection<File> files =
+                FileUtils.listFiles(
+                        tmpUploadFolder.dir(),
+                        new WildcardFileFilter("*.*"),
+                        TrueFileFilter.INSTANCE);
         return (files.size() != 0);
     }
 
@@ -81,8 +82,8 @@ public class ResumableUploadResourceManager {
             try {
                 raf = new RandomAccessFile(resource.getFile(), "rw");
                 outputChannel = raf.getChannel();
-                writtenBytes = IOUtils.copyToFileChannel(256 * 1024, source, outputChannel,
-                        startPosition);
+                writtenBytes =
+                        IOUtils.copyToFileChannel(256 * 1024, source, outputChannel, startPosition);
             } finally {
                 try {
                     if (raf != null) {
@@ -103,11 +104,15 @@ public class ResumableUploadResourceManager {
     }
 
     /**
-     * Executes validations on resume parameters to check
-     * if successive start position index matches actual partial file length
+     * Executes validations on resume parameters to check if successive start position index matches
+     * actual partial file length
      */
-    public Boolean validateUpload(String uploadId, Long totalByteToUpload, Long startPosition,
-            Long endPosition, Long totalFileSize) {
+    public Boolean validateUpload(
+            String uploadId,
+            Long totalByteToUpload,
+            Long startPosition,
+            Long endPosition,
+            Long totalFileSize) {
         Boolean validated = false;
         ResumableUploadResource uploadResource = getResource(uploadId);
         if (uploadResource != null && uploadResource.getFile().exists()) {
@@ -118,9 +123,7 @@ public class ResumableUploadResourceManager {
         return validated;
     }
 
-    /**
-     * Create new temporary file for this uploadId
-     */
+    /** Create new temporary file for this uploadId */
     public void clearUpload(String uploadId) {
         ResumableUploadResource resource = getResource(uploadId);
         if (resource != null) {
@@ -129,12 +132,16 @@ public class ResumableUploadResourceManager {
     }
 
     /**
-     * Deletes all the file from temporary folder which aren't modified from more than expirationThreshold
+     * Deletes all the file from temporary folder which aren't modified from more than
+     * expirationThreshold
      */
     public void cleanExpiredResources(long expirationThreshold) {
-        Collection<File> files = FileUtils.listFiles(tmpUploadFolder.dir(), new WildcardFileFilter(
-                "*.*"), TrueFileFilter.INSTANCE);
-        for (Iterator<File> i = files.iterator(); i.hasNext();) {
+        Collection<File> files =
+                FileUtils.listFiles(
+                        tmpUploadFolder.dir(),
+                        new WildcardFileFilter("*.*"),
+                        TrueFileFilter.INSTANCE);
+        for (Iterator<File> i = files.iterator(); i.hasNext(); ) {
             File file = i.next();
             if (file.lastModified() < expirationThreshold) {
                 file.delete();
@@ -147,8 +154,8 @@ public class ResumableUploadResourceManager {
     }
 
     /**
-     * Executes the mapping to move uploaded file from temporary folder to REST upload root
-     * Creates the sidecar file
+     * Executes the mapping to move uploaded file from temporary folder to REST upload root Creates
+     * the sidecar file
      */
     public String uploadDone(String uploadId) throws IOException {
         ResumableUploadResource resource = getResource(uploadId);
@@ -156,24 +163,31 @@ public class ResumableUploadResourceManager {
         String destinationPath = getDestinationPath(uploadId);
         StringBuilder remappingPath = new StringBuilder(destinationPath);
         String tempFile = resource.getFile().getCanonicalPath();
-        RESTUtils.remapping(null, FilenameUtils.getBaseName(destinationPath),
-                remappingPath, tempFile, storeParams);
-        //Move file to remapped path
+        RESTUtils.remapping(
+                null,
+                FilenameUtils.getBaseName(destinationPath),
+                remappingPath,
+                tempFile,
+                storeParams);
+        // Move file to remapped path
         Resource destinationFile = Resources.fromPath(remappingPath.toString());
         // Fill file
-        IOUtils.copyStream(new FileInputStream(resource.getFile()), destinationFile.out(), true, true);
+        IOUtils.copyStream(
+                new FileInputStream(resource.getFile()), destinationFile.out(), true, true);
         resource.delete();
-        // Add temporary sidecar file to mark upload completion, it will be cleared after expirationThreshold
+        // Add temporary sidecar file to mark upload completion, it will be cleared after
+        // expirationThreshold
         getSideCarFile(uploadId).createNewFile();
         return destinationPath.toString();
     }
 
     /**
      * Checks if upload with uploadId is terminated:</br>
+     *
      * <ul>
-     * <li>if resource exists in temp folder the upload is not terminate
-     * <li>if sidecar file exists in temp folder the upload is terminated
-     * <li>if no resource or sidecar is found the resource is unknown
+     *   <li>if resource exists in temp folder the upload is not terminate
+     *   <li>if sidecar file exists in temp folder the upload is terminated
+     *   <li>if no resource or sidecar is found the resource is unknown
      * </ul>
      */
     public Boolean isUploadDone(String uploadId) throws IOException, IllegalStateException {
@@ -189,12 +203,13 @@ public class ResumableUploadResourceManager {
         }
     }
 
-
-    //Return relative path of uploaded file
+    // Return relative path of uploaded file
     private String getDestinationPath(String uploadId) throws IOException {
         ResumableUploadResource resource = getResource(uploadId);
-        String fileName = resource.getFile().getCanonicalPath()
-                .replaceAll(tmpUploadFolder.dir().getCanonicalPath(), "");
+        String fileName =
+                resource.getFile()
+                        .getCanonicalPath()
+                        .replaceAll(tmpUploadFolder.dir().getCanonicalPath(), "");
         fileName = fileName.replaceAll("_" + uploadId, "");
         fileName = fileName.replaceAll("^/", "");
         return fileName;
@@ -202,15 +217,19 @@ public class ResumableUploadResourceManager {
 
     // Create a sidecar file associated to uploadId
     private File getSideCarFile(String uploadId) throws IOException {
-        String sidecarPath = FilenameUtils.concat(tmpUploadFolder.dir().getCanonicalPath(),
-                uploadId + ".sidecar");
+        String sidecarPath =
+                FilenameUtils.concat(
+                        tmpUploadFolder.dir().getCanonicalPath(), uploadId + ".sidecar");
         return new File(sidecarPath);
     }
 
     // Find resource with specific uploadId into temp folder
     private ResumableUploadResource getResource(String uploadId) throws IllegalStateException {
-        Collection<File> files = FileUtils.listFiles(tmpUploadFolder.dir(), new WildcardFileFilter(
-                "*_" + uploadId + ".*"), TrueFileFilter.INSTANCE);
+        Collection<File> files =
+                FileUtils.listFiles(
+                        tmpUploadFolder.dir(),
+                        new WildcardFileFilter("*_" + uploadId + ".*"),
+                        TrueFileFilter.INSTANCE);
         if (files.size() == 1) {
             return new ResumableUploadResource(uploadId, files.iterator().next());
         }
@@ -222,8 +241,12 @@ public class ResumableUploadResourceManager {
 
     // Create a file by append uploadId to filePath with "_" separator
     private void createUploadResource(String filePath, String uploadId) throws IOException {
-        String tempPath = FilenameUtils.removeExtension(filePath) + "_" + uploadId + "."
-                + FilenameUtils.getExtension(filePath);
+        String tempPath =
+                FilenameUtils.removeExtension(filePath)
+                        + "_"
+                        + uploadId
+                        + "."
+                        + FilenameUtils.getExtension(filePath);
         tempPath = tempPath.replaceAll("^/", "");
         tempPath = FilenameUtils.concat(tmpUploadFolder.dir().getCanonicalPath(), tempPath);
         try {
@@ -272,6 +295,5 @@ public class ResumableUploadResourceManager {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
-
     }
 }

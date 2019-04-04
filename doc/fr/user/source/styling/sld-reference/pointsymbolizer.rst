@@ -56,7 +56,7 @@ Within the ``<Mark>`` tag, there are also additional tags:
      - **Required?**
      - **Description**
    * - ``<WellKnownName>``
-     - Yes
+     - No
      - The name of the common shape.  Options are ``circle``, ``square``, ``triangle``, ``star``, ``cross``, or ``x``.  Default is ``square``.
    * - ``<Fill>``
      - No (when using ``<Stroke>``)

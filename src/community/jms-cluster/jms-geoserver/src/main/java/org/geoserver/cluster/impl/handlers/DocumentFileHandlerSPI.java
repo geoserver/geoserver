@@ -5,36 +5,32 @@
  */
 package org.geoserver.cluster.impl.handlers;
 
+import com.thoughtworks.xstream.XStream;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
 
-import com.thoughtworks.xstream.XStream;
-
 /**
  * Handler which is able to handle DocumentFile objects.
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
+ * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
-public class DocumentFileHandlerSPI extends JMSEventHandlerSPI<String,DocumentFile> {
-	
-	final XStream xstream;
-	
-	public DocumentFileHandlerSPI(final int priority, final XStream xstream) {
-		super(priority);
-		this.xstream=xstream;
-	}
+public class DocumentFileHandlerSPI extends JMSEventHandlerSPI<String, DocumentFile> {
 
-	@Override
-	public boolean canHandle(final Object jdom) {
-		if (jdom instanceof DocumentFile)
-			return true;
-		else
-			return false;
-	}
+    final XStream xstream;
 
-	@Override
-	public JMSEventHandler<String,DocumentFile> createHandler() {
-		return new DocumentFileHandler(xstream,DocumentFileHandlerSPI.class);
-	}
+    public DocumentFileHandlerSPI(final int priority, final XStream xstream) {
+        super(priority);
+        this.xstream = xstream;
+    }
+
+    @Override
+    public boolean canHandle(final Object jdom) {
+        if (jdom instanceof DocumentFile) return true;
+        else return false;
+    }
+
+    @Override
+    public JMSEventHandler<String, DocumentFile> createHandler() {
+        return new DocumentFileHandler(xstream, DocumentFileHandlerSPI.class);
+    }
 }

@@ -8,9 +8,8 @@ import java.util.Map;
 
 /**
  * Bean that includes the configurations parameters for the remote process factory and client
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class RemoteProcessFactoryConfiguration {
 
@@ -24,39 +23,32 @@ public class RemoteProcessFactoryConfiguration {
     private final Map<String, String> configKvPs;
 
     /** Constructor */
-    public RemoteProcessFactoryConfiguration(long remoteProcessStubCycleSleepTime,
-            Map<String, String> configKvPs) {
+    public RemoteProcessFactoryConfiguration(
+            long remoteProcessStubCycleSleepTime, Map<String, String> configKvPs) {
         this.remoteProcessStubCycleSleepTime = remoteProcessStubCycleSleepTime;
 
         this.configKvPs = configKvPs;
     }
 
-    /**
-     * @return the remoteProcessStubCycleSleepTime
-     */
+    /** @return the remoteProcessStubCycleSleepTime */
     public long getRemoteProcessStubCycleSleepTime() {
         return remoteProcessStubCycleSleepTime;
     }
 
-    /**
-     * @param remoteProcessStubCycleSleepTime the remoteProcessStubCycleSleepTime to set
-     */
+    /** @param remoteProcessStubCycleSleepTime the remoteProcessStubCycleSleepTime to set */
     public void setRemoteProcessStubCycleSleepTime(long remoteProcessStubCycleSleepTime) {
         this.remoteProcessStubCycleSleepTime = remoteProcessStubCycleSleepTime;
     }
 
-    /**
-     * @return the configKvPs
-     */
+    /** @return the configKvPs */
     public Map<String, String> getConfigKvPs() {
         return configKvPs;
     }
 
     /**
      * A method to access generic parsed property keys from the properties configuration file
-     * 
-     * @param prop
      *
+     * @param prop
      */
     public String get(String prop) {
         return (configKvPs != null ? configKvPs.get(prop) : null);
@@ -66,8 +58,8 @@ public class RemoteProcessFactoryConfiguration {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("RemoteProcessFactoryConfiguration [remoteProcessStubCycleSleepTime=")
-                .append(remoteProcessStubCycleSleepTime).append("]");
+                .append(remoteProcessStubCycleSleepTime)
+                .append("]");
         return builder.toString();
     }
-
 }

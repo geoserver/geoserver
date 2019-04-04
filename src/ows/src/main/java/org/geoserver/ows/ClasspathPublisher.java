@@ -5,30 +5,15 @@
  */
 package org.geoserver.ows;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.geoserver.ows.util.EncodingInfo;
-import org.geoserver.ows.util.XmlCharsetDetector;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Controller which publishes files through a web interface from the classpath
- * <p>
- * To use this controller, it should be mapped to a particular url in the url mapping of the spring
- * dispatcher servlet. Example:
- * 
+ *
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
+ * spring dispatcher servlet. Example:
+ *
  * <pre>
  * <code>
  *   &lt;bean id="filePublisher" class="org.geoserver.ows.FilePublisher"/&gt;
@@ -43,7 +28,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  *   &lt;/bean&gt;
  * </code>
  * </pre>
- * 
+ *
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime - GeoSolutions
  */
@@ -52,9 +37,9 @@ public class ClasspathPublisher extends AbstractURLPublisher {
 
     /**
      * Creates the new classpath publisher.
-     * 
-     * @param clazz the class used to perform classpath lookups with
-     *        {@link Class#getResource(String)}
+     *
+     * @param clazz the class used to perform classpath lookups with {@link
+     *     Class#getResource(String)}
      */
     public ClasspathPublisher(Class clazz) {
         this.clazz = clazz;
@@ -80,5 +65,4 @@ public class ClasspathPublisher extends AbstractURLPublisher {
         }
         return url;
     }
-
 }

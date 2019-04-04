@@ -16,11 +16,10 @@ public class GeoServerFactoryExtensionTest extends WPSTestSupport {
         // do nothing, we don't need data for this test
         testData.setUpSecurity();
     }
-    
+
     @Test
     public void testWPSFactoryExtension() {
         WPSInfo info = getGeoServer().getFactory().create(WPSInfo.class);
         assertNotNull(info);
     }
-    
 }

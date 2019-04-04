@@ -14,7 +14,7 @@ Running the Python WPS Agent
 
 In order to start the RemoteWPS Python Wrapper, we need to run an instance of the ``wpsagent.py`` using the configuration files defined at section :ref:`extensions_wps_remote_install_python`
 
-.. code-block:: shell
+.. code-block:: bash
 
   $> cd C:\work\RemoteWPS
   
@@ -68,7 +68,7 @@ The main window shows the received XMPP messages and the actions taken according
 
 On GeoServer side, it is possible to follow the process execution by following the messages sent via XMPP to the GeoServer logs
 
-.. code-block:: shell
+.. code-block:: bash
 
   $> tail -F -n 200 /storage/data/logs/geoserver.log
   

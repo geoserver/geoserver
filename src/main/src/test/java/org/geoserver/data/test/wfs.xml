@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:sf="http://www.openplans.org/spearfish" xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:ows="http://www.opengis.net/ows" xmlns:tiger="http://www.census.gov"
+	xmlns:topp="http://www.openplans.org/topp" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberOfFeatures="90"
+	timeStamp="2017-05-30T15:48:20.791Z"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://raspberrypi:8080/geoserver/schemas/wfs/1.1.0/wfs.xsd http://www.openplans.org/spearfish http://raspberrypi:8080/geoserver/wfs?service=WFS&amp;version=1.1.0&amp;request=DescribeFeatureType&amp;typeName=sf%3Abugsites">
+	<gml:featureMembers>
+		<sf:bugsites gml:id="bugsites.1">
+			<sf:the_geom>
+				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:26713"
+					srsDimension="2">
+					<gml:pos>590232 4915039</gml:pos>
+				</gml:Point>
+			</sf:the_geom>
+			<sf:cat>1</sf:cat>
+			<sf:str1>Beetle site</sf:str1>
+		</sf:bugsites>
+		<sf:bugsites gml:id="bugsites.2">
+			<sf:the_geom>
+				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:26713"
+					srsDimension="2">
+					<gml:pos>590430 4915204</gml:pos>
+				</gml:Point>
+			</sf:the_geom>
+			<sf:cat>2</sf:cat>
+			<sf:str1>Beetle site</sf:str1>
+		</sf:bugsites>
+		<sf:bugsites gml:id="bugsites.3">
+			<sf:the_geom>
+				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:26713"
+					srsDimension="2">
+					<gml:pos>590529 4914625</gml:pos>
+				</gml:Point>
+			</sf:the_geom>
+			<sf:cat>3</sf:cat>
+			<sf:str1>Beetle site</sf:str1>
+		</sf:bugsites>
+	</gml:featureMembers>
+</wfs:FeatureCollection>

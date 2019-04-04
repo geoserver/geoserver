@@ -10,7 +10,7 @@ import org.apache.wicket.model.IModel;
 
 public class DelegatingModel<T> implements IModel<T> {
     private static final long serialVersionUID = -5182376836143803511L;
-    
+
     Component myComponent;
 
     public DelegatingModel(Component c) {

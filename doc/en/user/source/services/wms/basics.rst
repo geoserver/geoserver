@@ -38,7 +38,7 @@ The major differences between versions 1.1.1 and 1.3.0 are:
 Axis Ordering
 -------------
 
-The WMS 1.3 specification mandates that the axis ordering for geographic 
+The WMS 1.3.0 specification mandates that the axis ordering for geographic 
 coordinate systems defined in the EPSG database be *latitude/longitude*, or *y/x*. 
 This is contrary to the fact that most spatial data is usually in 
 *longitude/latitude*, or *x/y*. 
@@ -47,9 +47,9 @@ be reversed for ``SRS`` values which are geographic coordinate systems.
 
 For example, consider the WMS 1.1 request using the WGS84 SRS (EPSG:4326):: 
 
-   geoserver/wms?VERSION=1.1.1&REQUEST=GetMap&SRS=epsg:4326&BBOX=-180,-90.180,90&...
+   geoserver/wms?VERSION=1.1.1&REQUEST=GetMap&SRS=epsg:4326&BBOX=-180,-90,180,90&...
 
-The equivalent WMS 1.3 request is::
+The equivalent WMS 1.3.0 request is::
 
    geoserver/wms?VERSION=1.3.0&REQUEST=GetMap&CRS=epsg:4326&BBOX=-90,-180,90,180&...
 

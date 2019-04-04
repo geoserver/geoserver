@@ -5,13 +5,10 @@
  */
 package org.geoserver.wms.map.png;
 
+import ar.com.hjg.pngj.FilterType;
 import it.geosolutions.imageio.plugins.png.PNGWriter;
-
 import java.awt.image.RenderedImage;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.ImageWorker;
@@ -19,21 +16,16 @@ import org.geotools.map.Layer;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.Style;
-import org.geotools.util.logging.Logging;
-
-import ar.com.hjg.pngj.FilterType;
 
 /**
  * Encodes the image in PNG using the PNGJ library
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class PNGJWriter {
 
-    private static final Logger LOGGER = Logging.getLogger(PNGJWriter.class);
-
-    public RenderedImage writePNG(RenderedImage image, OutputStream outStream, float quality,
-            WMSMapContent mapContent) {
+    public RenderedImage writePNG(
+            RenderedImage image, OutputStream outStream, float quality, WMSMapContent mapContent) {
         // what kind of scaline filtering are we going to use?
         FilterType filterType = getFilterType(mapContent);
         // Creation of a new PNGWriter object
@@ -41,28 +33,30 @@ public class PNGJWriter {
         // Check if a Scanline is supported by the writer
         boolean isScanlineSupported = writer.isScanlineSupported(image);
         // If it is not supported, then the image is rescaled to bytes
-        if(!isScanlineSupported){
-            image = new ImageWorker(image).rescaleToBytes().forceComponentColorModel().getRenderedImage();           
+        if (!isScanlineSupported) {
+            image =
+                    new ImageWorker(image)
+                            .rescaleToBytes()
+                            .forceComponentColorModel()
+                            .getRenderedImage();
         }
-        
+
         RenderedImage output = null;
         // Image writing
         try {
-            output =  writer.writePNG(image, outStream, quality, filterType);
+            output = writer.writePNG(image, outStream, quality, filterType);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to encode the PNG", e);
-            throw new ServiceException(e);
+            throw new ServiceException("Failed to encode the PNG", e);
         }
-        
+
         return output;
     }
 
     /**
      * SUB filtering is useful for raster images with "high" variation, otherwise we go for NONE,
      * empirically it provides better compression at lower effort
-     * 
-     * @param mapContent
      *
+     * @param mapContent
      */
     private FilterType getFilterType(WMSMapContent mapContent) {
         RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();
@@ -86,7 +80,7 @@ public class PNGJWriter {
     /**
      * Check if the style contains a "high change" raster symbolizer, that is, one that generates a
      * continuous set of values for which SUB filtering provides better results
-     * 
+     *
      * @author Andrea Aime - GeoSolutions
      */
     class RasterSymbolizerVisitor extends AbstractStyleVisitor {
@@ -105,5 +99,4 @@ public class PNGJWriter {
             }
         }
     }
-
 }

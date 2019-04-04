@@ -13,5 +13,4 @@ public class RbProcessTest extends ScriptProcessTest {
     public String getExtension() {
         return "rb";
     }
-
 }

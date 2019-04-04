@@ -7,7 +7,6 @@ package org.geoserver.security.decorators;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
@@ -17,17 +16,16 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
- * 
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
+ *
  * @author Andrea Aime - TOPP
- * 
  * @param <T>
  * @param <F>
  */
-public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feature> extends
-        AbstractDecorator<DataAccess<T, F>> implements DataAccess<T, F> {
-    
+public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feature>
+        extends AbstractDecorator<DataAccess<T, F>> implements DataAccess<T, F> {
+
     public DecoratingDataAccess(DataAccess<T, F> delegate) {
         super(delegate);
     }

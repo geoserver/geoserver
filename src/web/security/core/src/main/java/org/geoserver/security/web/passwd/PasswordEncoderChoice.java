@@ -7,7 +7,6 @@ package org.geoserver.security.web.passwd;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
@@ -17,27 +16,30 @@ import org.geoserver.web.GeoServerApplication;
 
 /**
  * Drop down choice widget for {@link GeoServerPasswordEncoder} configurations.
- * 
- * @author Justin Deoliveira, OpenGeo
  *
+ * @author Justin Deoliveira, OpenGeo
  */
 public class PasswordEncoderChoice extends DropDownChoice<String> {
 
     public PasswordEncoderChoice(String id) {
-        super(id,new PasswordEncoderNamesModel(), new PasswordEncoderChoiceRenderer());
+        super(id, new PasswordEncoderNamesModel(), new PasswordEncoderChoiceRenderer());
     }
 
     public PasswordEncoderChoice(String id, IModel<String> model) {
-        super(id, model, new PasswordEncoderNamesModel(), new PasswordEncoderChoiceRenderer()); 
+        super(id, model, new PasswordEncoderNamesModel(), new PasswordEncoderChoiceRenderer());
     }
 
     public PasswordEncoderChoice(String id, List<GeoServerPasswordEncoder> encoders) {
         super(id, new PasswordEncoderNamesModel(encoders), new PasswordEncoderChoiceRenderer());
     }
 
-    public PasswordEncoderChoice(String id, IModel<String> model, 
-        List<GeoServerPasswordEncoder> encoders) {
-        super(id, model, new PasswordEncoderNamesModel(encoders), new PasswordEncoderChoiceRenderer());
+    public PasswordEncoderChoice(
+            String id, IModel<String> model, List<GeoServerPasswordEncoder> encoders) {
+        super(
+                id,
+                model,
+                new PasswordEncoderNamesModel(encoders),
+                new PasswordEncoderChoiceRenderer());
     }
 
     static class PasswordEncoderNamesModel implements IModel<List<String>> {
@@ -62,7 +64,7 @@ public class PasswordEncoderChoice extends DropDownChoice<String> {
 
         @Override
         public void detach() {
-            //do nothing
+            // do nothing
         }
 
         @Override
@@ -74,9 +76,10 @@ public class PasswordEncoderChoice extends DropDownChoice<String> {
     static class PasswordEncoderChoiceRenderer extends ChoiceRenderer<String> {
         @Override
         public Object getDisplayValue(String object) {
-            //do a resource lookup
+            // do a resource lookup
             return new ResourceModel(object, object).getObject();
         }
+
         @Override
         public String getIdValue(String object, int index) {
             return object;

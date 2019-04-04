@@ -7,33 +7,32 @@ package org.geoserver.filters;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * A wrapper making sure the servlet container will never see a flush call once the output stream
- * is closed
- *  
+ * A wrapper making sure the servlet container will never see a flush call once the output stream is
+ * closed
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class FlushSafeResponse extends HttpServletResponseWrapper implements HttpServletResponse {
-    
+
     ServletOutputStream os = null;
 
     public FlushSafeResponse(HttpServletResponse response) {
         super(response);
     }
-    
+
     @Override
     public synchronized ServletOutputStream getOutputStream() throws IOException {
-        if(os == null) {
-            os = new FlushSafeServletOutputStream(super.getOutputStream()); 
+        if (os == null) {
+            os = new FlushSafeServletOutputStream(super.getOutputStream());
         }
         return os;
     }
-    
+
     static class FlushSafeServletOutputStream extends ServletOutputStream {
 
         OutputStream delegate;
@@ -60,7 +59,7 @@ class FlushSafeResponse extends HttpServletResponseWrapper implements HttpServle
 
         @Override
         public void flush() throws IOException {
-            if(!closed) {
+            if (!closed) {
                 delegate.flush();
             }
         }
@@ -71,5 +70,4 @@ class FlushSafeResponse extends HttpServletResponseWrapper implements HttpServle
             delegate.close();
         }
     }
-
 }

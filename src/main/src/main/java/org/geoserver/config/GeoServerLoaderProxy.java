@@ -14,37 +14,35 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * A proxy for {@link GeoServerLoader} that loads the actual loader instance based on 
- * the spring context.
- * <p>
- * This method will first attempt to lookup an instance of {@link GeoServerLoader} in the spring
- * context and if none found will fall back on {@link DefaultGeoServerLoader}.
- * </p>
- * 
- * @author Justin Deoliveira, OpenGeo
+ * A proxy for {@link GeoServerLoader} that loads the actual loader instance based on the spring
+ * context.
  *
+ * <p>This method will first attempt to lookup an instance of {@link GeoServerLoader} in the spring
+ * context and if none found will fall back on {@link DefaultGeoServerLoader}.
+ *
+ * @author Justin Deoliveira, OpenGeo
  */
-public class GeoServerLoaderProxy implements BeanPostProcessor, DisposableBean, ApplicationContextAware {
+public class GeoServerLoaderProxy
+        implements BeanPostProcessor,
+                DisposableBean,
+                ApplicationContextAware,
+                GeoServerReinitializer {
 
-    /**
-     * resource loader
-     */
+    /** resource loader */
     protected GeoServerResourceLoader resourceLoader;
-    
-    /**
-     * the actual loader
-     */
+
+    /** the actual loader */
     GeoServerLoader loader;
-    
+
     public GeoServerLoaderProxy(GeoServerResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
-    
+
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.loader = lookupGeoServerLoader(applicationContext);
         loader.setApplicationContext(applicationContext);
     }
-    
+
     public Object postProcessAfterInitialization(Object bean, String beanName)
             throws BeansException {
         if (loader != null) {
@@ -66,12 +64,13 @@ public class GeoServerLoaderProxy implements BeanPostProcessor, DisposableBean, 
             loader.reload();
         }
     }
+
     public void destroy() throws Exception {
         if (loader != null) {
             loader.destroy();
         }
     }
-    
+
     protected GeoServerLoader lookupGeoServerLoader(ApplicationContext appContext) {
         GeoServerLoader loader = GeoServerExtensions.bean(GeoServerLoader.class, appContext);
         if (loader == null) {
@@ -80,5 +79,8 @@ public class GeoServerLoaderProxy implements BeanPostProcessor, DisposableBean, 
         return loader;
     }
 
-
+    @Override
+    public void initialize(GeoServer geoServer) throws Exception {
+        loader.initializeDefaultStyles(geoServer.getCatalog());
+    }
 }

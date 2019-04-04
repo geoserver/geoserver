@@ -7,42 +7,63 @@ package org.geoserver.wps.remote;
 import java.util.Map;
 
 /**
- * Interface allowing a {@link RemoteProcess} instance to listen to the {@link RemoteProcessClient} messages.
- * 
+ * Interface allowing a {@link RemoteProcess} instance to listen to the {@link RemoteProcessClient}
+ * messages.
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public interface RemoteProcessClientListener {
-    
+
     /**
      * Returns the assigned unique @param pId of the {@link RemoteProcess}
-     * 
+     *
      * @return
      */
     public String getPID();
 
     /**
-     * Sets the progress of the {@link RemoteProcess} associated to the remote service with the unique @param pId
-     * 
+     * Sets the progress of the {@link RemoteProcess} associated to the remote service with the
+     * unique @param pId
+     *
      * @param pId
      * @param progress
      */
     public void progress(final String pId, final Double progress);
 
     /**
-     * Completes of the {@link RemoteProcess} associated to the remote service with the unique @param pId
-     * 
+     * Gets the progress of the {@link RemoteProcess} associated to the remote service with the
+     * unique @param pId
+     *
+     * @param pId
+     * @return progress
+     */
+    double getProgress(String pId);
+
+    /**
+     * Completes of the {@link RemoteProcess} associated to the remote service with the
+     * unique @param pId
+     *
      * @param pId
      * @param outputs
      */
     public void complete(final String pId, final Object outputs);
 
     /**
-     * Raise an Exception to the {@link RemoteProcess} associated to the remote service with the unique @param pId
-     * 
+     * Raise an Exception to the {@link RemoteProcess} associated to the remote service with the
+     * unique @param pId
+     *
      * @param pId
      * @param cause
      * @param metadata
      */
     public void exceptionOccurred(final String pId, Exception cause, Map<String, Object> metadata);
+
+    /**
+     * Expose a log message to the {@link RemoteProcess} progress listener associated to the remote
+     * service with the unique @param pId
+     *
+     * @param pId
+     * @param logMessage
+     */
+    public void setTask(final String pId, final String logMessage);
 }

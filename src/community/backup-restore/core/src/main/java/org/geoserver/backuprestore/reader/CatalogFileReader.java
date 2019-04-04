@@ -25,10 +25,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -42,13 +42,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.UnexpectedInputException;
@@ -62,14 +60,15 @@ import org.springframework.util.StringUtils;
 
 /**
  * Item reader for reading XML input based on StAX.
- * 
- * It extracts fragments from the input XML document which correspond to records for processing. The fragments are wrapped with StartDocument and
- * EndDocument events so that the fragments can be further processed like standalone XML documents.
- * 
- * The implementation is <b>not</b> thread-safe.
- * 
- * Code based on original {@link StaxEventItemReader} by Robert Kasanicky.
- * 
+ *
+ * <p>It extracts fragments from the input XML document which correspond to records for processing.
+ * The fragments are wrapped with StartDocument and EndDocument events so that the fragments can be
+ * further processed like standalone XML documents.
+ *
+ * <p>The implementation is <b>not</b> thread-safe.
+ *
+ * <p>Code based on original {@link StaxEventItemReader} by Robert Kasanicky.
+ *
  * @author Robert Kasanicky
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -91,9 +90,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
 
     private boolean strict = true;
 
-    public CatalogFileReader(Class<T> clazz, Backup backupFacade,
-            XStreamPersisterFactory xStreamPersisterFactory) {
-        super(clazz, backupFacade, xStreamPersisterFactory);
+    public CatalogFileReader(Class<T> clazz, Backup backupFacade) {
+        super(clazz, backupFacade);
     }
 
     @Override
@@ -104,9 +102,9 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * In strict mode the reader will throw an exception on {@link #open(org.springframework.batch.item.ExecutionContext)} if the input resource does
-     * not exist.
-     * 
+     * In strict mode the reader will throw an exception on {@link
+     * #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
+     *
      * @param strict false by default
      */
     public void setStrict(boolean strict) {
@@ -118,50 +116,49 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         this.resource = resource;
     }
 
-    /**
-     * @param fragmentRootElementName name of the root element of the fragment
-     */
+    /** @param fragmentRootElementName name of the root element of the fragment */
     public void setFragmentRootElementName(String fragmentRootElementName) {
-        setFragmentRootElementNames(new String[] { fragmentRootElementName });
+        setFragmentRootElementNames(new String[] {fragmentRootElementName});
     }
 
-    /**
-     * @param fragmentRootElementNames list of the names of the root element of the fragment
-     */
+    /** @param fragmentRootElementNames list of the names of the root element of the fragment */
     public void setFragmentRootElementNames(String[] fragmentRootElementNames) {
         this.fragmentRootElementNames = new ArrayList<QName>();
         for (String fragmentRootElementName : fragmentRootElementNames) {
-            this.fragmentRootElementNames
-                    .add(parseFragmentRootElementName(fragmentRootElementName));
+            this.fragmentRootElementNames.add(
+                    parseFragmentRootElementName(fragmentRootElementName));
         }
     }
 
     /**
-     * Ensure that all required dependencies for the ItemReader to run are provided after all properties have been set.
-     * 
+     * Ensure that all required dependencies for the ItemReader to run are provided after all
+     * properties have been set.
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     * @throws IllegalArgumentException if the Resource, FragmentDeserializer or FragmentRootElementName is null, or if the root element is empty.
+     * @throws IllegalArgumentException if the Resource, FragmentDeserializer or
+     *     FragmentRootElementName is null, or if the root element is empty.
      * @throws IllegalStateException if the Resource does not exist.
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notEmpty(fragmentRootElementNames, "The FragmentRootElementNames must not be empty");
         for (QName fragmentRootElementName : fragmentRootElementNames) {
-            Assert.hasText(fragmentRootElementName.getLocalPart(),
+            Assert.hasText(
+                    fragmentRootElementName.getLocalPart(),
                     "The FragmentRootElementNames must not contain empty elements");
         }
     }
 
     /**
      * Responsible for moving the cursor before the StartElement of the fragment root.
-     * 
-     * This implementation simply looks for the next corresponding element, it does not care about element nesting. You will need to override this
-     * method to correctly handle composite fragments.
-     * 
+     *
+     * <p>This implementation simply looks for the next corresponding element, it does not care
+     * about element nesting. You will need to override this method to correctly handle composite
+     * fragments.
+     *
      * @return <code>true</code> if next fragment was found, <code>false</code> otherwise.
-     * 
-     * @throws NonTransientResourceException if the cursor could not be moved. This will be treated as fatal and subsequent calls to read will return
-     *         null.
+     * @throws NonTransientResourceException if the cursor could not be moved. This will be treated
+     *     as fatal and subsequent calls to read will return null.
      */
     protected boolean moveCursorToNextFragment(XMLEventReader reader) {
         try {
@@ -179,7 +176,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                 reader.nextEvent();
             }
         } catch (XMLStreamException e) {
-            return logValidationExceptions((T) null,
+            return logValidationExceptions(
+                    (T) null,
                     new NonTransientResourceException("Error while reading from event reader", e));
         }
     }
@@ -233,9 +231,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         }
     }
 
-    /**
-     * Move to next fragment and map it to item.
-     */
+    /** Move to next fragment and map it to item. */
     @Override
     protected T doRead() throws Exception {
         T item = null;
@@ -259,12 +255,13 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     @SuppressWarnings("unchecked")
                     T mappedFragment = (T) unmarshal(StaxUtils.getSource(fragmentReader));
                     item = mappedFragment;
-                    
                     try {
                         firePostRead(item, resource);
                     } catch (IOException e) {
-                        logValidationExceptions((ValidationResult) null, new UnexpectedInputException(
-                                "Could not write data.  The file may be corrupt.", e));
+                        logValidationExceptions(
+                                (ValidationResult) null,
+                                new UnexpectedInputException(
+                                        "Could not write data.  The file may be corrupt.", e));
                     }
                 } finally {
                     fragmentReader.markFragmentProcessed();
@@ -278,20 +275,23 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * This is the core of the Class. The XML fragment will be unmarshalled via the GeoServer {@link XStreamPersister}.
-     * 
+     * This is the core of the Class. The XML fragment will be unmarshalled via the GeoServer {@link
+     * XStreamPersister}.
+     *
      * @param source
      * @return
      * @throws TransformerException
      * @throws XMLStreamException
+     * @throws UnsupportedEncodingException
      */
-    private Object unmarshal(Source source) throws TransformerException, XMLStreamException {
-        TransformerFactory tf = new com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl();
+    private Object unmarshal(Source source)
+            throws TransformerException, XMLStreamException, UnsupportedEncodingException {
+        TransformerFactory tf =
+                new com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl();
         Transformer t = tf.newTransformer();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Result result = new StreamResult(os);
         t.transform(source, result);
-
         return this.getXp().fromXML(new ByteArrayInputStream(os.toByteArray()));
     }
 
@@ -307,10 +307,12 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                 readToEndFragment(fragmentName);
             } catch (NoSuchElementException e) {
                 if (itemIndex == (i + 1)) {
-                    // we can presume a NoSuchElementException on the last item means the EOF was reached on the last run
+                    // we can presume a NoSuchElementException on the last item means the EOF was
+                    // reached on the last run
                     return;
                 } else {
-                    // if NoSuchElementException occurs on an item other than the last one, this indicates a problem
+                    // if NoSuchElementException occurs on an item other than the last one, this
+                    // indicates a problem
                     logValidationExceptions((T) null, e);
                 }
             }
@@ -349,7 +351,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         for (QName fragmentRootElementName : fragmentRootElementNames) {
             if (fragmentRootElementName.getLocalPart().equals(name.getLocalPart())) {
                 if (!StringUtils.hasText(fragmentRootElementName.getNamespaceURI())
-                        || fragmentRootElementName.getNamespaceURI()
+                        || fragmentRootElementName
+                                .getNamespaceURI()
                                 .equals(name.getNamespaceURI())) {
                     return true;
                 }
@@ -367,5 +370,4 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         }
         return new QName(nameSpace, name, "");
     }
-
 }

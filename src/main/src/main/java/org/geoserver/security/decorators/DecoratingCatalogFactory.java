@@ -23,18 +23,19 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
 /**
- * 
- * Delegates all methods to the provided delegate. Suclasses will override
- * methods in order to perform their decoration work
- * 
- * @author Niels Charlier
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to
+ * perform their decoration work
  *
+ * @author Niels Charlier
  */
-public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> implements CatalogFactory {
+public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory>
+        implements CatalogFactory {
 
     public DecoratingCatalogFactory(CatalogFactory delegate) {
         super(delegate);
@@ -48,6 +49,11 @@ public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> 
     @Override
     public WMSStoreInfo createWebMapServer() {
         return delegate.createWebMapServer();
+    }
+
+    @Override
+    public WMTSStoreInfo createWebMapTileServer() {
+        return delegate.createWebMapTileServer();
     }
 
     @Override
@@ -83,6 +89,11 @@ public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> 
     @Override
     public WMSLayerInfo createWMSLayer() {
         return delegate.createWMSLayer();
+    }
+
+    @Override
+    public WMTSLayerInfo createWMTSLayer() {
+        return delegate.createWMTSLayer();
     }
 
     @Override
@@ -134,5 +145,4 @@ public class DecoratingCatalogFactory extends AbstractDecorator<CatalogFactory> 
     public <T> T create(Class<T> clazz) {
         return delegate.create(clazz);
     }
-
 }

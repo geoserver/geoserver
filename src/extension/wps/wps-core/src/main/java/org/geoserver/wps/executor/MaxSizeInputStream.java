@@ -6,13 +6,12 @@ package org.geoserver.wps.executor;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.io.input.CountingInputStream;
 import org.geoserver.wps.WPSException;
 
 /**
  * Input stream wrapper that ensures we won't read more than maxSize bytes for a given input
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 class MaxSizeInputStream extends CountingInputStream {
@@ -49,14 +48,17 @@ class MaxSizeInputStream extends CountingInputStream {
         checkSize();
 
         return result;
-
     }
 
     private void checkSize() {
         if (getByteCount() > maxSize) {
-            throw new WPSException("Exceeded maximum input size of " + maxSize
-                    + " bytes while reading input " + inputId, "NoApplicableCode", inputId);
+            throw new WPSException(
+                    "Exceeded maximum input size of "
+                            + maxSize
+                            + " bytes while reading input "
+                            + inputId,
+                    "NoApplicableCode",
+                    inputId);
         }
     }
-
 }

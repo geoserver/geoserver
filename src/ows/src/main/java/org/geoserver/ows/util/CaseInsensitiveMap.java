@@ -14,7 +14,6 @@ import java.util.TreeMap;
  * Map decorator which makes String keys case-insensitive.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class CaseInsensitiveMap implements Map {
     Map delegate = new TreeMap();
@@ -91,9 +90,21 @@ public class CaseInsensitiveMap implements Map {
 
         return key;
     }
-    
+
     @Override
     public String toString() {
         return delegate.toString();
+    }
+
+    /**
+     * Wraps a map in case insensitive one.
+     *
+     * <p>If the instance is already a case insensitive map it is returned as is.
+     */
+    public static Map wrap(Map other) {
+        if (other instanceof CaseInsensitiveMap) {
+            return other;
+        }
+        return new CaseInsensitiveMap(other);
     }
 }

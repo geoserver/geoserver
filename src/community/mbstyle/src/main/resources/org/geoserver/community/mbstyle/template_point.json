@@ -1,0 +1,13 @@
+{
+  "version": 8,
+  "name": "${colorName} circle",
+  "layers": [
+      {
+          "id": "${colorName} circle",
+          "type": "circle",
+          "paint": {
+              "circle-color": "${colorCode}",
+          }
+      }
+  ]
+}

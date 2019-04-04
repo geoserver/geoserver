@@ -1,0 +1,22 @@
+<assembly>
+  <id>taskmanager-core-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-taskmanager-core*.jar</include>
+        <include>*geoserver-manager*.jar</include>
+        <include>hibernate-core*.jar</include>
+        <include>hibernate-commons*.jar</include>
+        <include>hibernate-jpa*.jar</include>
+        <include>*quartz*.jar</include>
+        <include>*postgis*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

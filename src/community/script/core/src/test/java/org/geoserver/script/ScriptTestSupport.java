@@ -6,9 +6,7 @@
 package org.geoserver.script;
 
 import java.io.File;
-
 import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 
@@ -33,5 +31,4 @@ public abstract class ScriptTestSupport extends TestCase {
     protected void tearDown() throws Exception {
         FileUtils.deleteQuietly(dir);
     }
-
 }

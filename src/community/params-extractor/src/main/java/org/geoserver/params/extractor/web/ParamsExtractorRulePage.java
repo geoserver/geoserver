@@ -4,6 +4,9 @@
  */
 package org.geoserver.params.extractor.web;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.markup.html.form.*;
@@ -14,55 +17,58 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.web.GeoServerSecuredPage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
     public ParamsExtractorRulePage(Optional<RuleModel> optionalRuleModel) {
-        CompoundPropertyModel<RuleModel> simpleRuleModel = new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel()));
-        CompoundPropertyModel<RuleModel> complexRuleModel = new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel()));
-        CompoundPropertyModel<RuleModel> echoParameterModel = new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel(true)));
+        CompoundPropertyModel<RuleModel> simpleRuleModel =
+                new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel()));
+        CompoundPropertyModel<RuleModel> complexRuleModel =
+                new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel()));
+        CompoundPropertyModel<RuleModel> echoParameterModel =
+                new CompoundPropertyModel<>(optionalRuleModel.orElse(new RuleModel(true)));
         Form<RuleModel> form = new Form<>("form");
         add(form);
         List<WrappedTab> tabs = new ArrayList<>();
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().isEchoOnly()) {
-            tabs.add(new WrappedTab("Echo Parameter", echoParameterModel) {
-                public Panel getPanel(String panelId) {
-                    return new EchoParameterPanel(panelId, echoParameterModel);
-                }
-            });
+            tabs.add(
+                    new WrappedTab("Echo Parameter", echoParameterModel) {
+                        public Panel getPanel(String panelId) {
+                            return new EchoParameterPanel(panelId, echoParameterModel);
+                        }
+                    });
         }
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getPosition() != null) {
-            tabs.add(new WrappedTab("Basic Rule", simpleRuleModel) {
-                public Panel getPanel(String panelId) {
-                    return new SimpleRulePanel(panelId, simpleRuleModel);
-                }
-            });
+            tabs.add(
+                    new WrappedTab("Basic Rule", simpleRuleModel) {
+                        public Panel getPanel(String panelId) {
+                            return new SimpleRulePanel(panelId, simpleRuleModel);
+                        }
+                    });
         }
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getMatch() != null) {
-            tabs.add(new WrappedTab("Advanced Rule", complexRuleModel) {
-                public Panel getPanel(String panelId) {
-                    return new ComplexRulePanel(panelId, complexRuleModel);
-                }
-            });
+            tabs.add(
+                    new WrappedTab("Advanced Rule", complexRuleModel) {
+                        public Panel getPanel(String panelId) {
+                            return new ComplexRulePanel(panelId, complexRuleModel);
+                        }
+                    });
         }
         AjaxTabbedPanel tabbedPanel = new AjaxTabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
-        form.add(new SubmitLink("save") {
-            @Override
-            public void onSubmit() {
-                try {
-                    WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
-                    RuleModel ruleModel = selectedTab.getModel().getObject();
-                    RulesModel.saveOrUpdate(ruleModel);
-                    doReturn(ParamsExtractorConfigPage.class);
-                } catch (Exception exception) {
-                    error(exception);
-                }
-            }
-        });
+        form.add(
+                new SubmitLink("save") {
+                    @Override
+                    public void onSubmit() {
+                        try {
+                            WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
+                            RuleModel ruleModel = selectedTab.getModel().getObject();
+                            RulesModel.saveOrUpdate(ruleModel);
+                            doReturn(ParamsExtractorConfigPage.class);
+                        } catch (Exception exception) {
+                            error(exception);
+                        }
+                    }
+                });
         form.add(new BookmarkablePageLink("cancel", ParamsExtractorConfigPage.class));
     }
 

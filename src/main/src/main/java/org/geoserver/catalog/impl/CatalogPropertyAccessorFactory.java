@@ -6,21 +6,18 @@
 package org.geoserver.catalog.impl;
 
 import org.geoserver.catalog.Info;
-import org.geotools.factory.Hints;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.filter.expression.PropertyAccessorFactory;
+import org.geotools.util.factory.Hints;
 
-/**
- * Property accessor for GeoServer {@link Info} configuration objects.
- * 
- */
+/** Property accessor for GeoServer {@link Info} configuration objects. */
 public class CatalogPropertyAccessorFactory implements PropertyAccessorFactory {
 
     private static final CatalogPropertyAccessor INSTANCE = new CatalogPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target,
-            Hints hints) {
+    public PropertyAccessor createPropertyAccessor(
+            Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (Info.class.isAssignableFrom(type)) {
             return INSTANCE;
         }

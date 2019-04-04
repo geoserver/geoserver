@@ -5,36 +5,34 @@
  */
 package org.geoserver.importer.transform;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import static junit.framework.Assert.assertEquals;
 import org.geoserver.importer.ImportTask;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-/**
- *
- * @author Ian Schneider <ischneider@boundlessgeo.com>
- */
+/** @author Ian Schneider <ischneider@boundlessgeo.com> */
 public class TransformTest {
 
     SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
 
     @Test
     public void testDateFormatTransform() throws Exception {
-        SimpleFeature f = transform(new DateFormatTransform("date", null),
-                "date", String.class, "1980-09-10"
-        );
+        SimpleFeature f =
+                transform(
+                        new DateFormatTransform("date", null), "date", String.class, "1980-09-10");
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime((Date) f.getAttribute("date"));
         assertEquals(1980, cal.get(GregorianCalendar.YEAR));
@@ -44,9 +42,8 @@ public class TransformTest {
 
     @Test
     public void testIntegerFieldToDateTransform() throws Exception {
-        SimpleFeature f = transform(new IntegerFieldToDateTransform("number"),
-                "number", Integer.class, 1999
-        );
+        SimpleFeature f =
+                transform(new IntegerFieldToDateTransform("number"), "number", Integer.class, 1999);
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime((Date) f.getAttribute("number"));
         assertEquals(1999, cal.get(GregorianCalendar.YEAR));
@@ -56,9 +53,12 @@ public class TransformTest {
 
     @Test
     public void testNumberFormatTransform() throws Exception {
-        SimpleFeature f = transform(new NumberFormatTransform("number", Double.class),
-                "number", String.class, "1234.5678"
-        );
+        SimpleFeature f =
+                transform(
+                        new NumberFormatTransform("number", Double.class),
+                        "number",
+                        String.class,
+                        "1234.5678");
         assertEquals(1234.5678, f.getAttribute("number"));
     }
 
@@ -68,23 +68,28 @@ public class TransformTest {
         sftb.setName("ft");
         sftb.add("geom", Geometry.class, CRS.decode("EPSG:4326"));
         SimpleFeatureType type = sftb.buildFeatureType();
-        SimpleFeature f = transformType(new ReprojectTransform(crs), (SimpleFeatureType) type,
-                    new GeometryFactory().createPoint(new Coordinate(1d, 1d))
-        );
+        SimpleFeature f =
+                transformType(
+                        new ReprojectTransform(crs),
+                        (SimpleFeatureType) type,
+                        new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
         Point p = (Point) f.getAttribute("geom");
         assertEquals(111319.49079327357, p.getX());
         assertEquals(111325.14286638486, p.getY());
     }
 
-    private SimpleFeature transform(InlineVectorTransform transform, Object... values) throws Exception {
+    private SimpleFeature transform(InlineVectorTransform transform, Object... values)
+            throws Exception {
         Object[] args = new Object[values.length / 3];
-        for (int i = 0; i < values.length; i+=3) {
+        for (int i = 0; i < values.length; i += 3) {
             args[i] = values[i + 2];
         }
         return transformType(transform, buildType(values), args);
     }
 
-    private SimpleFeature transformType(InlineVectorTransform transform, SimpleFeatureType type, Object... values) throws Exception {
+    private SimpleFeature transformType(
+            InlineVectorTransform transform, SimpleFeatureType type, Object... values)
+            throws Exception {
         transform.init();
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(type);
         SimpleFeature orig = sfb.buildFeature("x22", values);

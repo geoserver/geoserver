@@ -7,9 +7,7 @@ package org.geoserver.wfs.json;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
 public class JSONTypeTest extends TestCase {
@@ -29,7 +27,6 @@ public class JSONTypeTest extends TestCase {
         // disable JsonP
         JSONType.setJsonpEnabled(false);
         assertFalse(JSONType.useJsonp(JSONType.jsonp));
-
     }
 
     @Test
@@ -59,5 +56,4 @@ public class JSONTypeTest extends TestCase {
 
         assertEquals("functionName", JSONType.getCallbackFunction(kvp));
     }
-
 }

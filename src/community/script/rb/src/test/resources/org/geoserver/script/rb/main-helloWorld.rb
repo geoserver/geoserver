@@ -1,3 +1,4 @@
 def run(request, response)
-  response.setEntity("Hello World!", org.restlet.data.MediaType::TEXT_PLAIN)
+    response.getWriter().write("Hello World!")
+    response.setContentType("text/plain")
 end

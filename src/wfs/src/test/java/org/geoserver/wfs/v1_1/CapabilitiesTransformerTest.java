@@ -16,10 +16,8 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.util.ErrorHandler;
 import org.geoserver.util.ReaderUtils;
 import org.geoserver.wfs.CapabilitiesTransformer;
@@ -41,35 +39,42 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
 
     @Test
     public void test() throws Exception {
-    	GetCapabilitiesType request = request();
-        CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+        GetCapabilitiesType request = request();
+        CapabilitiesTransformer tx =
+                new CapabilitiesTransformer.WFS1_1(
+                        getWFS(),
+                        request.getBaseUrl(),
+                        getCatalog(),
+                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 
-        InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(output
-                .toByteArray()));
+        InputStreamReader reader =
+                new InputStreamReader(new ByteArrayInputStream(output.toByteArray()));
 
-        File f = new File("../web/src/main/webapp/schemas/wfs/1.1.0/wfs.xsd" );
-        if ( !f.exists() ) {
+        File f = new File("../web/src/main/webapp/schemas/wfs/1.1.0/wfs.xsd");
+        if (!f.exists()) {
             return;
         }
-        
+
         ErrorHandler handler = new ErrorHandler(logger, Level.WARNING);
         // use the schema embedded in the web module
-        ReaderUtils.validate(reader, handler, WFS.NAMESPACE,
-                "../web/src/main/webapp/schemas/wfs/1.1.0/wfs.xsd");
+        ReaderUtils.validate(
+                reader, handler, WFS.NAMESPACE, "../web/src/main/webapp/schemas/wfs/1.1.0/wfs.xsd");
 
         assertTrue(handler.errors.isEmpty());
-
     }
 
-    /**
-     * see GEOS-2461
-     */
+    /** see GEOS-2461 */
     @Test
     public void testDefaultOutputFormat() throws Exception {
-    	GetCapabilitiesType request = request();
-        CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+        GetCapabilitiesType request = request();
+        CapabilitiesTransformer tx =
+                new CapabilitiesTransformer.WFS1_1(
+                        getWFS(),
+                        request.getBaseUrl(),
+                        getCatalog(),
+                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 
@@ -78,41 +83,54 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
         // XpathEngine xpath = XMLUnit.newXpathEngine();
 
         final String expected = "text/xml; subtype=gml/3.1.1";
-        String xpathExpr = "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='DescribeFeatureType']"
-                + "/ows:Parameter[@name='outputFormat']/ows:Value";
+        String xpathExpr =
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='DescribeFeatureType']"
+                        + "/ows:Parameter[@name='outputFormat']/ows:Value";
         assertXpathEvaluatesTo(expected, xpathExpr, dom);
 
-        xpathExpr = "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='GetFeature']"
-                + "/ows:Parameter[@name='outputFormat']/ows:Value";
+        xpathExpr =
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='GetFeature']"
+                        + "/ows:Parameter[@name='outputFormat']/ows:Value";
         assertXpathEvaluatesTo(expected, xpathExpr, dom);
 
-        xpathExpr = "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='GetFeatureWithLock']"
-                + "/ows:Parameter[@name='outputFormat']/ows:Value";
+        xpathExpr =
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='GetFeatureWithLock']"
+                        + "/ows:Parameter[@name='outputFormat']/ows:Value";
         assertXpathEvaluatesTo(expected, xpathExpr, dom);
 
-        xpathExpr = "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='Transaction']"
-                + "/ows:Parameter[@name='inputFormat']/ows:Value";
+        xpathExpr =
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/ows:Operation[@name='Transaction']"
+                        + "/ows:Parameter[@name='inputFormat']/ows:Value";
         assertXpathEvaluatesTo(expected, xpathExpr, dom);
     }
 
     @Test
     public void testContactInfo() throws Exception {
         GetCapabilitiesType request = request();
-        CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+        CapabilitiesTransformer tx =
+                new CapabilitiesTransformer.WFS1_1(
+                        getWFS(),
+                        request.getBaseUrl(),
+                        getCatalog(),
+                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
 
         Document dom = super.dom(new ByteArrayInputStream(output.toByteArray()));
 
-        String xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:IndividualName";
+        String xpathExpr =
+                "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:IndividualName";
         assertXpathExists(xpathExpr, dom);
         assertXpathEvaluatesTo("Andrea Aime", xpathExpr, dom);
 
-        xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:DeliveryPoint";
+        xpathExpr =
+                "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:DeliveryPoint";
         assertXpathExists(xpathExpr, dom);
-        assertXpathEvaluatesTo("1600 Pennsylvania Ave NW, Washington DC 20500, United States", xpathExpr, dom);
+        assertXpathEvaluatesTo(
+                "1600 Pennsylvania Ave NW, Washington DC 20500, United States", xpathExpr, dom);
 
-        xpathExpr = "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress";
+        xpathExpr =
+                "//wfs:WFS_Capabilities/ows:ServiceProvider/ows:ServiceContact/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress";
         assertXpathExists(xpathExpr, dom);
         assertXpathEvaluatesTo("andrea@geoserver.org", xpathExpr, dom);
     }

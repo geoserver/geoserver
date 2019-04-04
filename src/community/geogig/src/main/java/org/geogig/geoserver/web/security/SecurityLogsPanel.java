@@ -7,7 +7,6 @@ package org.geogig.geoserver.web.security;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,20 +34,19 @@ public class SecurityLogsPanel extends GeoServerTablePanel<LogEvent> {
 
     private static final long serialVersionUID = 5957961031378924960L;
 
-    private static final EnumMap<Severity, PackageResourceReference> SEVERITY_ICONS = new EnumMap<>(
-            Severity.class);
+    private static final EnumMap<Severity, PackageResourceReference> SEVERITY_ICONS =
+            new EnumMap<>(Severity.class);
+
     static {
-        final PackageResourceReference infoIcon = new PackageResourceReference(
-                GeoServerBasePage.class,
-                "img/icons/silk/information.png");
+        final PackageResourceReference infoIcon =
+                new PackageResourceReference(
+                        GeoServerBasePage.class, "img/icons/silk/information.png");
 
-        final PackageResourceReference successIcon = new PackageResourceReference(
-                GeoServerBasePage.class,
-                "img/icons/silk/accept.png");
+        final PackageResourceReference successIcon =
+                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/accept.png");
 
-        final PackageResourceReference errorIcon = new PackageResourceReference(
-                GeoServerBasePage.class,
-                "img/icons/silk/error.png");
+        final PackageResourceReference errorIcon =
+                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
         SEVERITY_ICONS.put(Severity.DEBUG, infoIcon);
         SEVERITY_ICONS.put(Severity.INFO, successIcon);
         SEVERITY_ICONS.put(Severity.ERROR, errorIcon);
@@ -56,13 +54,11 @@ public class SecurityLogsPanel extends GeoServerTablePanel<LogEvent> {
 
     private final ModalWindow popupWindow;
 
-    /**
-     * Only to be used by {@link #logStore()}
-     */
+    /** Only to be used by {@link #logStore()} */
     private transient LogStore logStore;
 
     public SecurityLogsPanel(final String id) {
-        super(id, new LogEventProvider(), false/* selectable */);
+        super(id, new LogEventProvider(), false /* selectable */);
         super.setSelectable(false);
         super.setSortable(true);
         super.setFilterable(true);
@@ -80,8 +76,10 @@ public class SecurityLogsPanel extends GeoServerTablePanel<LogEvent> {
     }
 
     @Override
-    protected Component getComponentForProperty(final String id,
-            @SuppressWarnings("rawtypes") IModel<LogEvent> itemModel, Property<LogEvent> property) {
+    protected Component getComponentForProperty(
+            final String id,
+            @SuppressWarnings("rawtypes") IModel<LogEvent> itemModel,
+            Property<LogEvent> property) {
 
         LogEvent item = (LogEvent) itemModel.getObject();
         if (property == LogEventProvider.SEVERITY) {
@@ -107,24 +105,24 @@ public class SecurityLogsPanel extends GeoServerTablePanel<LogEvent> {
             return new Label(id, messageModel);
         }
 
-        SimpleAjaxLink<LogEvent> link = new SimpleAjaxLink<LogEvent>(id, new Model<>(item),
-                messageModel) {
+        SimpleAjaxLink<LogEvent> link =
+                new SimpleAjaxLink<LogEvent>(id, new Model<>(item), messageModel) {
 
-            private static final long serialVersionUID = 1242472443848716943L;
+                    private static final long serialVersionUID = 1242472443848716943L;
 
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                LogEvent event = getModelObject();
-                long eventId = event.getEventId();
-                LogStore logStore = logStore();
-                String stackTrace = logStore.getStackTrace(eventId);
-                popupWindow.setInitialHeight(525);
-                popupWindow.setInitialWidth(855);
-                popupWindow.setContent(new StackTracePanel(popupWindow.getContentId(), stackTrace));
-                popupWindow.show(target);
-            }
-
-        };
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        LogEvent event = getModelObject();
+                        long eventId = event.getEventId();
+                        LogStore logStore = logStore();
+                        String stackTrace = logStore.getStackTrace(eventId);
+                        popupWindow.setInitialHeight(525);
+                        popupWindow.setInitialWidth(855);
+                        popupWindow.setContent(
+                                new StackTracePanel(popupWindow.getContentId(), stackTrace));
+                        popupWindow.show(target);
+                    }
+                };
         return link;
     }
 
@@ -163,22 +161,23 @@ public class SecurityLogsPanel extends GeoServerTablePanel<LogEvent> {
 
         static final Property<LogEvent> TIMESTAMP = new BeanProperty<>("timestamp", "timestamp");
 
-        static final Property<LogEvent> REPOSITORY = new BeanProperty<>("repository",
-                "repositoryURL");
+        static final Property<LogEvent> REPOSITORY =
+                new BeanProperty<>("repository", "repositoryURL");
 
         static final Property<LogEvent> USER = new BeanProperty<>("user", "user");
 
         static final Property<LogEvent> MESSAGE = new BeanProperty<>("message", "message");
 
-        final List<Property<LogEvent>> PROPERTIES = Arrays.asList(/* EVENT_ID, */
-        SEVERITY, TIMESTAMP, REPOSITORY, USER, MESSAGE);
+        final List<Property<LogEvent>> PROPERTIES =
+                Arrays.asList(
+                        /* EVENT_ID, */
+                        SEVERITY, TIMESTAMP, REPOSITORY, USER, MESSAGE);
 
         // private transient List<LogEvent> items;
 
         private transient LogStore logStore;
 
-        public LogEventProvider() {
-        }
+        public LogEventProvider() {}
 
         private LogStore logStore() {
             if (logStore == null) {

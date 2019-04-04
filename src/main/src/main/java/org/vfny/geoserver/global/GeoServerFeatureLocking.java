@@ -6,7 +6,6 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
-
 import org.geotools.data.DataSourceException;
 import org.geotools.data.FeatureLock;
 import org.geotools.data.FeatureLocking;
@@ -16,21 +15,15 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
-
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
  *
- * <p>
- * Support FeatureSource decorator for FeatureTypeInfo that takes care of
- * mapping the FeatureTypeInfo's FeatureSource with the schema and definition
- * query configured for it.
- * </p>
+ * <p>Support FeatureSource decorator for FeatureTypeInfo that takes care of mapping the
+ * FeatureTypeInfo's FeatureSource with the schema and definition query configured for it.
  *
- * <p>
- * Because GeoServer requires that attributes always be returned in the same
- * order we need a way to smoothly inforce this. Could we use this class to do
- * so? It would need to support writing and locking though.
- * </p>
+ * <p>Because GeoServer requires that attributes always be returned in the same order we need a way
+ * to smoothly inforce this. Could we use this class to do so? It would need to support writing and
+ * locking though.
  *
  * @author Gabriel Roldan
  * @version $Id$
@@ -42,7 +35,8 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @param locking GeoTools2 FeatureSource
      * @param settings Settings for this store
      */
-    GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking, Settings settings) {
+    GeoServerFeatureLocking(
+            FeatureLocking<SimpleFeatureType, SimpleFeature> locking, Settings settings) {
         super(locking, settings);
     }
 
@@ -51,15 +45,11 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     }
 
     /**
-     * <p>
      * Description ...
-     * </p>
      *
      * @param lock
-     *
-     * @throws UnsupportedOperationException DOCUMENT ME!
-     *
-     * @see org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
+     * @see
+     *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
      */
     public void setFeatureLock(FeatureLock lock) {
         if (source instanceof FeatureLocking) {
@@ -69,16 +59,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param query DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     * @throws DataSourceException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures(Query query) throws IOException {
         if (source instanceof FeatureLocking) {
             return ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).lockFeatures(query);
@@ -90,11 +71,11 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     //    /**
     //     * A custom hack for PostgisFeatureLocking?
     //     *
-    //     * @param feature DOCUMENT ME!
+
     //     *
-    //     * @return DOCUMENT ME!
+
     //     *
-    //     * @throws IOException DOCUMENT ME!
+
     //     */
     //    public int lockFeature(Feature feature) throws IOException {
     //        if (source instanceof PostgisFeatureLocking) {
@@ -104,48 +85,24 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     //        throw new IOException("FeatureTypeConfig does not support single FeatureLock");
     //    }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param filter DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 
         return locking().lockFeatures(filter);
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public int lockFeatures() throws IOException {
         return locking().lockFeatures();
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public void unLockFeatures() throws IOException {
         locking().lockFeatures();
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param filter DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
+    /** */
     public void unLockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 

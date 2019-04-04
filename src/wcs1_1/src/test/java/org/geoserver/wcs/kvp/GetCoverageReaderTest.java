@@ -16,12 +16,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import net.opengis.wcs11.AxisSubsetType;
 import net.opengis.wcs11.FieldSubsetType;
 import net.opengis.wcs11.GetCoverageType;
 import net.opengis.wcs11.RangeSubsetType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.CaseInsensitiveMap;
@@ -89,7 +87,6 @@ public class GetCoverageReaderTest extends WCSTestSupport {
             fail("This time all mandatory params where provided?");
             assertEquals("MissingParameterValue", e.getCode());
         }
-
     }
 
     @Test
@@ -118,13 +115,14 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("store", "false");
         raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
 
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(layerId, getCoverage.getIdentifier().getValue());
         assertEquals("image/tiff", getCoverage.getOutput().getFormat());
         assertFalse(getCoverage.getOutput().isStore());
-        assertEquals("urn:ogc:def:crs:EPSG:6.6:4326", getCoverage.getOutput().getGridCRS()
-                .getGridBaseCRS());
+        assertEquals(
+                "urn:ogc:def:crs:EPSG:6.6:4326",
+                getCoverage.getOutput().getGridCRS().getGridBaseCRS());
     }
 
     @Test
@@ -153,21 +151,24 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
 
         raw.put("gridType", GridType.GT2dGridIn2dCrs.getXmlConstant());
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
-        assertEquals(GridType.GT2dGridIn2dCrs.getXmlConstant(), getCoverage.getOutput()
-                .getGridCRS().getGridType());
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        assertEquals(
+                GridType.GT2dGridIn2dCrs.getXmlConstant(),
+                getCoverage.getOutput().getGridCRS().getGridType());
 
         raw.put("gridType", GridType.GT2dSimpleGrid.getXmlConstant());
         getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
-        assertEquals(GridType.GT2dSimpleGrid.getXmlConstant(), getCoverage.getOutput().getGridCRS()
-                .getGridType());
+        assertEquals(
+                GridType.GT2dSimpleGrid.getXmlConstant(),
+                getCoverage.getOutput().getGridCRS().getGridType());
 
         // try with different case
         raw.put("gridType", GridType.GT2dSimpleGrid.getXmlConstant().toUpperCase());
         getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
-        assertEquals(GridType.GT2dSimpleGrid.getXmlConstant(), getCoverage.getOutput().getGridCRS()
-                .getGridType());
+        assertEquals(
+                GridType.GT2dSimpleGrid.getXmlConstant(),
+                getCoverage.getOutput().getGridCRS().getGridType());
 
         raw.put("gridType", GridType.GT2dGridIn3dCrs.getXmlConstant());
         try {
@@ -197,15 +198,17 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
 
         raw.put("GridCS", GridCS.GCSGrid2dSquare.getXmlConstant());
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
-        assertEquals(GridCS.GCSGrid2dSquare.getXmlConstant(), getCoverage.getOutput().getGridCRS()
-                .getGridCS());
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        assertEquals(
+                GridCS.GCSGrid2dSquare.getXmlConstant(),
+                getCoverage.getOutput().getGridCRS().getGridCS());
 
         raw.put("GridCS", GridCS.GCSGrid2dSquare.getXmlConstant().toUpperCase());
         getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
-        assertEquals(GridCS.GCSGrid2dSquare.getXmlConstant(), getCoverage.getOutput().getGridCRS()
-                .getGridCS());
+        assertEquals(
+                GridCS.GCSGrid2dSquare.getXmlConstant(),
+                getCoverage.getOutput().getGridCRS().getGridCS());
 
         raw.put("GridCS", "Hoolabaloola");
         try {
@@ -226,8 +229,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
         raw.put("GridOrigin", "10.5,-30.2");
 
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] origin = (Double[]) getCoverage.getOutput().getGridCRS().getGridOrigin();
         assertEquals(2, origin.length);
         assertEquals(0, Double.compare(10.5, (double) origin[0]));
@@ -263,8 +266,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
         raw.put("GridOffsets", "10.5,-30.2");
         raw.put("GridType", GridType.GT2dSimpleGrid.getXmlConstant());
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(),
-                parseKvp(raw), raw);
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] offsets = (Double[]) getCoverage.getOutput().getGridCRS().getGridOffsets();
         assertEquals(2, offsets.length);
         assertEquals(0, Double.compare(10.5, (double) offsets[0]));
@@ -289,39 +292,29 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         }
     }
 
-    /**
-     * Tests Bicubic (also called cubic) interpolation with a RangeSubset.
-     *
-     */
+    /** Tests Bicubic (also called cubic) interpolation with a RangeSubset. */
     @Test
     public void testInterpolationBicubic() throws Exception {
         this.testRangeSubset("cubic");
     }
 
-    /**
-     * Tests Bilinear (also called linear) interpolation with a RangeSubset.
-     *
-     */
+    /** Tests Bilinear (also called linear) interpolation with a RangeSubset. */
     @Test
     public void testInterpolationBilinear() throws Exception {
         this.testRangeSubset("linear");
     }
 
-    /**
-     * Tests Nearest neighbor (also called nearest) interpolation with a RangeSubset.
-     *
-     */
+    /** Tests Nearest neighbor (also called nearest) interpolation with a RangeSubset. */
     @Test
     public void testInterpolationNearest() throws Exception {
         this.testRangeSubset("nearest");
     }
 
-    protected Map parseKvp(Map /* <String,String> */raw) throws Exception {
+    protected Map parseKvp(Map /* <String,String> */ raw) throws Exception {
         // parse like the dispatcher but make sure we don't change the original map
         HashMap input = new HashMap(raw);
         List<Throwable> errors = KvpUtils.parse(input);
-        if (errors != null && errors.size() > 0)
-            throw (Exception) errors.get(0);
+        if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
@@ -329,7 +322,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     protected Map caseInsensitiveKvp(HashMap input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map result = new HashMap();
-        for (Iterator it = input.keySet().iterator(); it.hasNext();) {
+        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
             String key = (String) it.next();
             result.put(key.toUpperCase(), input.get(key));
         }
@@ -350,7 +343,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
         raw.put("rangeSubset", "BlueMarble:" + interpolation + "[Bands[Red_band]]");
 
-        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage =
+                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         RangeSubsetType rs = getCoverage.getRangeSubset();
         FieldSubsetType field = (FieldSubsetType) rs.getFieldSubset().get(0);
         AxisSubsetType axis = (AxisSubsetType) field.getAxisSubset().get(0);
@@ -369,5 +363,4 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
         assertEquals(field.getInterpolationType(), interpolation);
     }
-
 }

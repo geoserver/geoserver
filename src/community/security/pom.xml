@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.16-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-security</artifactId>
+  <packaging>pom</packaging>
+  <version>2.16-SNAPSHOT</version>
+  <name>GeoServer Security Community Modules</name>
+
+  <profiles>
+
+    <profile>
+      <id>oauth2-google</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>oauth2-google</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>oauth2-github</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>oauth2-github</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>oauth2-geonode</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>oauth2-geonode</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>keycloak</id>
+      <modules>
+        <module>keycloak</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>oauth2-openid-connect</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>oauth2-openid-connect</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>oauth2-all</id>
+      <modules>
+        <module>oauth2-core</module>
+        <module>oauth2-google</module>
+        <module>oauth2-github</module>
+        <module>oauth2-geonode</module>
+        <module>oauth2-openid-connect</module>
+      </modules>
+    </profile>
+    
+  </profiles>
+
+  <modules>
+    <!-- module>web</module -->
+  </modules>
+</project>

@@ -24,23 +24,24 @@ public class StorePageTest extends GeoServerWicketTestSupport {
     public void init() {
         login();
         tester.startPage(StorePage.class);
-        
+
         // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
     @Test
     public void testLoad() {
         tester.assertRenderedPage(StorePage.class);
         tester.assertNoErrorMessage();
-        
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         Catalog catalog = getCatalog();
         assertEquals(dv.size(), catalog.getStores(StoreInfo.class).size());
         IDataProvider dataProvider = dv.getDataProvider();
-        
+
         // Ensure the data provider is an instance of StoreProvider
         assertTrue(dataProvider instanceof StoreProvider);
-        
+
         // Cast to StoreProvider
         StoreProvider provider = (StoreProvider) dataProvider;
 
@@ -56,8 +57,9 @@ public class StorePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StoreInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StoreInfo> list = catalog.list(StoreInfo.class, Filter.INCLUDE, 0, 1,
-                Predicates.sortBy("name", true));
+        CloseableIterator<StoreInfo> list =
+                catalog.list(
+                        StoreInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
         assertTrue(list.hasNext());
         StoreInfo expected = list.next();
 

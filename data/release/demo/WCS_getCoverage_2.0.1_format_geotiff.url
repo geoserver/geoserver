@@ -1,0 +1,1 @@
+wcs?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&CoverageId=nurc__mosaic&compression=LZW&tiling=true&tileheight=256&tilewidth=256

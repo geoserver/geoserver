@@ -1,0 +1,26 @@
+{
+	"workspace": "gs",
+	"layer": "test123",
+	"separateBands": true,
+	"bands": [
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8,
+		9,
+		10,
+		11,
+		12
+	],
+	"browseBands": [
+		4,
+		3,
+		2
+	],
+	"heterogeneousCRS": true,
+	"mosaicCRS": "EPSG:4326"
+}

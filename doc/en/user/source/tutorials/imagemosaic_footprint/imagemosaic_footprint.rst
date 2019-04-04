@@ -161,13 +161,19 @@ The **footprints.properties** file is::
 Raster Masking
 ------------------------
 
-From 2.8.x version, GeoServer is able to support also Raster Masks. Those masks can be internal or external, adding the **.msk** extension to the file name, for each file. Those files also should have the same size as the image they are masking.
+From 2.8.x version, GeoServer is able to support also Raster Masks. Those masks can be internal or external (in which case the mask files should use the **.msk** extension), for each file. It is crucial that mask files should have the same pixel size, georeferencing and CRS as the image they are masking.
 
 It must be pointed out that external/internal masks may have overviews like the related original images.
 
 More information about Mask bands may be found at the `GDAL Mask Band Page <http://trac.osgeo.org/gdal/wiki/rfc15_nodatabitmask>`_
 
-.. note :: Raster masking is supported for GeoTiff format only and it does not take into account inset definition.
+.. note :: Raster masking is supported for GeoTiff format only and it does not take into account inset definition. The same support is used for ImageMosaic or ImagePyramids made of GeoTiff files.
+
+A **footprints.properties** file that would exploit raster masks would be as follows::
+
+	footprint_source=raster
+	
+.. note:: Raster masks do not support to control inset.
 
 Below you may find an example of configuring a Mosaic with Raster masks:
 
@@ -196,3 +202,31 @@ Step 4: Check the result
 Go to :menuselection:`LayerPreview --> rastermask --> OpenLayers`. The result should be changed now.
 
 .. figure:: img/footprint_transparent.png
+
+
+Multilevel Geometry Masking
+---------------------------
+
+From 2.14.x version, GeoServer is able to support also multilevel overviews geometries (A geometry footprint for each overview, being stored on a separate sidecar file).
+
+
+A **footprints.properties** file that would exploit multiple WKB sidecar files would be as follows::
+
+	footprint_source=multisidecar
+	footprintLoaderSPI=org.geotools.coverage.grid.io.footprint.WKBLoaderSPI
+	overviewsFootprintLoaderSPI=org.geotools.coverage.grid.io.footprint.WKBLoaderSPI
+	overviewsRoiInRasterSpace=True
+	overviewsSuffixFormat=_%d
+	
+Notes:
+	
+	* *footprintLoaderSPI*: Contains the fully qualified name of the SPI implementation for main footprint loading (Optional property. When not specified, the proper footprint loader will be automatically found by scanning the available SPIs). Currently supported values are:
+
+		* org.geotools.coverage.grid.io.footprint.WKBLoaderSPI for WKB overviews
+		* org.geotools.coverage.grid.io.footprint.WKTLoaderSPI for WKT overviews
+		* org.geotools.gce.imagemosaic.catalog.ShapeFileLoaderSPI for Shapefile overviews
+	* *overviewsFootprintLoaderSPI*: Contains the fully qualified name of the SPI implementation for overviews footprints loading (Optional property. When not specified, same loader as footprintLoaderSpi will be used if provided);
+	* *overviewsRoiInRasterSpace*: Specifies whether the overviews ROI footprint geometrys are in raster space or model space coordinates. (Optional property. Default is False, meaning that overviews footprints are in model space);
+	* *overviewsSuffixFormat*: Specifies the String format syntax used to define the suffix of the overviews footprints file name. (Optional property. Default is \_%d). To give an example, if granule file is R1C1.tif and related 1st overview footprint is stored into R1C1_1.wkt, overviewsSuffixFormat should be \_%d. In case 1st overview footprint is stored into R1C1-Ov1.wkt, overviewsSuffixFormat should be -Ov%d.
+
+Same steps of previous section are required to configure an ImageMosaic layer with footprint management.

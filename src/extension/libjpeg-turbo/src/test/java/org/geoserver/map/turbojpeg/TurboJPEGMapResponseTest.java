@@ -5,44 +5,39 @@
  */
 package org.geoserver.map.turbojpeg;
 
-
 import java.util.Collection;
-
-import org.junit.Assert;
-
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Specific {@link RenderedImageMapResponse} for JPEG using LibJPEGTurbo.
- * 
+ *
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Daniele Romagnoli, GeoSolutions SAS
- *
  */
 public class TurboJPEGMapResponseTest extends WMSTestSupport {
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
-        return new RenderedImageMapOutputFormat("image/jpeg",new String[]{"image/jpeg"}, getWMS());
+        return new RenderedImageMapOutputFormat(
+                "image/jpeg", new String[] {"image/jpeg"}, getWMS());
     }
-    
-    /**
-     * Make sure we find the {@link TurboJPEGMapResponse}.
-     */
+
+    /** Make sure we find the {@link TurboJPEGMapResponse}. */
     @Test
-    public void testFindTurboJPEGMapResponse(){
-        
+    public void testFindTurboJPEGMapResponse() {
+
         // look for the turbojpegmapresponses
         final Collection<RenderedImageMapResponse> responses = getWMS().getAvailableMapResponses();
-        for(RenderedImageMapResponse response:responses){
-            if(response instanceof TurboJPEGMapResponse){
+        for (RenderedImageMapResponse response : responses) {
+            if (response instanceof TurboJPEGMapResponse) {
                 return;
             }
         }
-        
+
         // we did not find it
-        Assert.assertFalse("Unable to find TurboJPEGMapResponse",false);
+        Assert.assertFalse("Unable to find TurboJPEGMapResponse", false);
     }
 }

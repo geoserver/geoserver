@@ -10,17 +10,17 @@ When the INSPIRE extension has been properly installed, the :ref:`services_webad
 
 .. note:: If you do not see this content in the service configuration pages, the INSPIRE extension may not be installed properly.  Reread the section on :ref:`inspire_installing` and verify that the correct file was saved to the correct directory.
 
-Extended WMS configuration
---------------------------
+Extended WMS and WMTS configuration
+-----------------------------------
 
-INSPIRE-specific configuration is accessed on the main :ref:`services_webadmin_wms` page in the :ref:`web_admin`. This is accessed by clicking on the :guilabel:`WMS` link on the sidebar.
+INSPIRE-specific configuration is accessed on the main :ref:`services_webadmin_wms` or WMTS settings page in the :ref:`web_admin`. This is accessed by clicking on the :guilabel:`WMS` or :guilabel:`WMTS` link on the sidebar.
 
-.. note:: You must be logged in as an administrator to edit WMS configuration.
+.. note:: You must be logged in as an administrator to edit WMS or WMTS configuration.
 
-Once on the WMS configuration page, there will be a block titled :guilabel:`INSPIRE`. If you enable the checkbox shown above this section will have three additional settings:
+Once on the service configuration page, there will be a block titled :guilabel:`INSPIRE`. If you enable the checkbox shown above this section will have three additional settings:
 
 * :guilabel:`Language` combo box, for setting the Supported, Default, and Response languages
-* :guilabel:`Service Metadata URL` field, a URL containing the location of the metadata associated with the WMS
+* :guilabel:`Service Metadata URL` field, a URL containing the location of the metadata associated with the service
 * :guilabel:`Service Metadata Type` combo box, for detailing whether the metadata came from a CSW (Catalog Service) or a standalone metadata file
 
 .. figure:: images/inspire.png
@@ -28,7 +28,7 @@ Once on the WMS configuration page, there will be a block titled :guilabel:`INSP
 
    *INSPIRE-related options*
 
-After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the WMS 1.3.0 capabilities document.
+After clicking :guilabel:`Submit` on this page, any changes will be immediately reflected in the services (WMS 1.3.0 or WMTS 1.0.0) capabilities document.
 
 .. note:: At the time of writing the `INSPIRE Schemas <http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd>`_ only allow 23 choices for :guilabel:`Language`. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in :geos:`issue 7388 <7388>`, the INSPIRE Schemas seem to be at fault. If you have some other language you want adding to the list then please :ref:`raise the issue <getting_involved>`.
 
@@ -38,12 +38,12 @@ After clicking :guilabel:`Submit` on this page, any changes will be immediately 
 
 .. note:: Currently GeoServer does not offer the ability to configure alternate languages, as there is no way for an administrator to configure multiple responses.  There is an :geos:`open issue <4502>` on the GeoServer issue tracker that we are hoping to secure funding for.  If you are interested in implementing or funding this improvement, please raise the issue on the :ref:`GeoServer mailing list <getting_involved>`.
 
-Extended WMS Capabilities
--------------------------
+Extended WMS and WMTS Capabilities
+----------------------------------
 
 .. note:: The INSPIRE extension only modifies the WMS 1.3.0 response, so please make sure that you are viewing the correct capabilities document.
 
-The WMS 1.3.0 capabilities document will contain two additional entries in the ``xsi:schemaLocation`` of the root ``<WMS_Capabilities>`` tag once the INSPIRE extension is installed:
+The WMS 1.3.0 and WMTS 1.0.0 capabilities document will contain two additional entries in the ``xsi:schemaLocation`` of the root ``<WMS_Capabilities>`` tag once the INSPIRE extension is installed:
 
 * ``http://inspire.ec.europa.eu/schemas/inspire_vs/1.0``
 * ``http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd``
@@ -72,6 +72,8 @@ With the example values shown in the above configuration panel, this block would
     <inspire_common:Language>eng</inspire_common:Language>
    </inspire_common:ResponseLanguage>
   </inspire_vs:ExtendedCapabilities>
+
+ISNPIRE recommends that every layer offered by a INSPIRE WMTS should use the InspireCRS84Quad grid set which is already configured in GeoServer, but is up to the user to select it when publishing a INSPIRE WMTS layer. 
 
 Extended WFS and WCS configuration
 ----------------------------------

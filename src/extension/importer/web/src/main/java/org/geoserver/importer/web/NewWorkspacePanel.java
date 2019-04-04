@@ -1,10 +1,9 @@
-/* (c) 2014, 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer.web;
-
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -18,8 +17,6 @@ import org.geoserver.web.wicket.XMLNameValidator;
 
 @SuppressWarnings("serial")
 class NewWorkspacePanel extends Panel {
-
-    
 
     String workspace;
 
@@ -42,10 +39,10 @@ class NewWorkspacePanel extends Panel {
         public void validate(IValidatable<String> iv) {
             String value = iv.getValue();
             if (GeoServerApplication.get().getCatalog().getWorkspaceByName(value) != null) {
-                iv.error(new ValidationError("NewWorkspacePanel.duplicateWorkspace")
-                .setVariable("workspace", value));
+                iv.error(
+                        new ValidationError("NewWorkspacePanel.duplicateWorkspace")
+                                .setVariable("workspace", value));
             }
         }
     }
-
 }

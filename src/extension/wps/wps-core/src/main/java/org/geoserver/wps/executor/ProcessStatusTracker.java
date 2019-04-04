@@ -4,9 +4,9 @@
  */
 package org.geoserver.wps.executor;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.MemoryProcessStatusStore;
@@ -25,13 +25,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * A listener that tracks the evolution of process execution and stores it in a
- * {@link ProcessStatusStore}
- * 
+ * A listener that tracks the evolution of process execution and stores it in a {@link
+ * ProcessStatusStore}
+ *
  * @author Andrea Aime - GeoSolutions
  */
-public class ProcessStatusTracker implements ApplicationContextAware, ProcessListener,
-        ExtensionPriority {
+public class ProcessStatusTracker
+        implements ApplicationContextAware, ProcessListener, ExtensionPriority {
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
@@ -41,8 +41,8 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ProcessStatusStore store = GeoServerExtensions.bean(ProcessStatusStore.class,
-                applicationContext);
+        ProcessStatusStore store =
+                GeoServerExtensions.bean(ProcessStatusStore.class, applicationContext);
         if (store == null) {
             store = new MemoryProcessStatusStore();
         }
@@ -52,17 +52,17 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     @Override
     public void submitted(ProcessEvent event) throws WPSException {
-        if(store == null) {
+        if (store == null) {
             return;
         }
-        
+
         store.save(event.getStatus());
     }
 
     /**
      * Custom method that updates the status last updated field without touching anything else, to
      * make sure we let the cluster know the process is still running
-     * 
+     *
      * @param executionId
      * @throws WPSException
      */
@@ -125,11 +125,14 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
 
     public void cleanExpiredStatuses(long expirationThreshold) {
         Date date = new Date(expirationThreshold);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         Not completionTimenotNull = FF.not(FF.isNull(FF.property("completionTime")));
-        Filter completionTimeExpired = FF.before(FF.property("completionTime"), FF.literal(date));
+        Filter completionTimeExpired =
+                FF.before(FF.property("completionTime"), FF.literal(format.format(date)));
         Filter completionTimeFilter = FF.and(completionTimenotNull, completionTimeExpired);
         Not lastUpdatedNotNull = FF.not(FF.isNull(FF.property("lastUpdated")));
-        Filter lastUpdatedExpired = FF.before(FF.property("lastUpdated"), FF.literal(date));
+        Filter lastUpdatedExpired =
+                FF.before(FF.property("lastUpdated"), FF.literal(format.format(date)));
         Filter lastUpdatedFilter = FF.and(lastUpdatedNotNull, lastUpdatedExpired);
         And filter = FF.and(completionTimeFilter, lastUpdatedFilter);
         store.remove(filter);
@@ -142,13 +145,11 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
     /**
      * Removes the execution status for the given id, and returns its value, if found, or null, if
      * not found
-     * 
-     * @param executionId
      *
+     * @param executionId
      */
     public ExecutionStatus remove(String executionId) {
         return store.remove(executionId);
-
     }
 
     @Override
@@ -157,5 +158,4 @@ public class ProcessStatusTracker implements ApplicationContextAware, ProcessLis
         // to make sure that when a status changes, all other listener has done its job
         return ExtensionPriority.LOWEST;
     }
-
 }

@@ -6,16 +6,14 @@
 package org.geoserver.csw;
 
 import net.opengis.cat.csw20.CapabilitiesType;
-
 import org.geoserver.csw.store.CatalogStore;
 
 /**
  * The CSW GetCapabilities decorator extension interface
- * 
+ *
  * @author Alessio Fabiani - GeoSolutions
  */
 public interface CapabilitiesDecorator {
 
     CapabilitiesType decorate(CapabilitiesType caps, CatalogStore store);
-    
 }

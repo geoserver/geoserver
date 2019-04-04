@@ -9,20 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 
 /**
- * The default implementation for GeneralizationInfosProvider,
- * reading the info from an XML file.
- * 
- * The xml schema file is "/geninfos_1.0.xsd"
- * 
+ * The default implementation for GeneralizationInfosProvider, reading the info from an XML file.
+ *
+ * <p>The xml schema file is "/geninfos_1.0.xsd"
+ *
  * @author Christian Mueller
  */
-public class GeneralizationInfosProviderImpl extends
-        org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
+public class GeneralizationInfosProviderImpl
+        extends org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
 
     protected URL deriveURLFromSourceObject(Object source) throws IOException {
         if (source == null) {
@@ -31,11 +29,12 @@ public class GeneralizationInfosProviderImpl extends
 
         if (source instanceof String) {
             String path = (String) source;
-            
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+
+            GeoServerResourceLoader loader =
+                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
             File f = loader.url(path);
             URL url = null;
-            if (f!= null && f.exists()) {
+            if (f != null && f.exists()) {
                 url = f.toURI().toURL();
             } else {
                 url = new URL(path);

@@ -9,27 +9,26 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.geoserver.security.AccessMode;
 
 /**
  * Represents a data access rule: identifies a workspace, a layer, an access mode, and the set of
  * roles that are allowed to access it
+ *
  * <p>Mind, two rules are considered equal if the address the same data, if you need full
- * comparison, use {@link #equalsExact(DataAccessRule)}</p>
+ * comparison, use {@link #equalsExact(DataAccessRule)}
  */
 @SuppressWarnings("serial")
 public class DataAccessRule implements Comparable<DataAccessRule>, Serializable {
 
-    /**
-     * Any layer, or any workspace, or any role
-     */
+    /** Any layer, or any workspace, or any role */
     public static final String ANY = "*";
+
     public static DataAccessRule READ_ALL = new DataAccessRule(ANY, ANY, AccessMode.READ);
     public static DataAccessRule WRITE_ALL = new DataAccessRule(ANY, ANY, AccessMode.WRITE);
 
-    String workspace;
+    String root;
 
     String layer;
 
@@ -37,50 +36,62 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
 
     Set<String> roles;
 
-    /**
-     * Builds a new rule
-     */
-    public DataAccessRule(String workspace, String layer, AccessMode accessMode, Set<String> roles) {
+    boolean globalGroupRule;
+
+    /** Builds a new rule */
+    public DataAccessRule(String root, String layer, AccessMode accessMode, Set<String> roles) {
         super();
-        this.workspace = workspace;
+        this.root = root;
         this.layer = layer;
+        this.globalGroupRule = (layer == null);
         this.accessMode = accessMode;
-        if (roles == null)
-            this.roles = new HashSet<String>();
-        else
-            this.roles = new HashSet<String>(roles);
-    }
-    
-    /**
-     * Builds a new rule
-     */
-    public DataAccessRule(String workspace, String layer, AccessMode accessMode, String... roles) {
-        this(workspace, layer, accessMode, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+        if (roles == null) this.roles = new HashSet<String>();
+        else this.roles = new HashSet<String>(roles);
     }
 
-    /**
-     * Copy constructor
-     */
+    /** Builds a new rule */
+    public DataAccessRule(String root, String layer, AccessMode accessMode, String... roles) {
+        this(
+                root,
+                layer,
+                accessMode,
+                roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+    }
+
+    /** Copy constructor */
     public DataAccessRule(DataAccessRule other) {
-        this.workspace = other.workspace;
+        this.root = other.root;
         this.layer = other.layer;
         this.accessMode = other.accessMode;
+        this.globalGroupRule = other.globalGroupRule;
         this.roles = new HashSet<String>(other.roles);
     }
 
-    /**
-     * Builds the default rule: *.*.r=*
-     */
+    /** Builds the default rule: *.*.r=* */
     public DataAccessRule() {
         this(ANY, ANY, AccessMode.READ);
     }
 
-    public String getWorkspace() {
-        return workspace;
+    public String getRoot() {
+        return root;
     }
 
+    public void setRoot(String root) {
+        this.root = root;
+    }
+
+    /**
+     * @deprecated Use getRoot(), the rule root can now be a workspace or a global layer group name
+     */
+    public String getWorkspace() {
+        return root;
+    }
+
+    /**
+     * @deprecated Use setRoot(), the rule root can now be a workspace or a global layer group name
+     */
     public void setWorkspace(String workspace) {
-        this.workspace = workspace;
+        this.root = workspace;
     }
 
     public String getLayer() {
@@ -103,21 +114,26 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
         return roles;
     }
 
-    /**
-     * Returns the key for the current rule. No other rule should have the same
-     * 
-     *
-     */
-    public String getKey() {
-        return workspace + "." + layer + "." + accessMode.getAlias();
+    public boolean isGlobalGroupRule() {
+        return globalGroupRule;
     }
-    
-    /**
-     * Returns the list of roles as a comma separated string for this rule
-     *
-     */
+
+    public void setGlobalGroupRule(boolean globalGroupRule) {
+        this.globalGroupRule = globalGroupRule;
+    }
+
+    /** Returns the key for the current rule. No other rule should have the same */
+    public String getKey() {
+        if (globalGroupRule) {
+            return root + "." + accessMode.getAlias();
+        } else {
+            return root + "." + layer + "." + accessMode.getAlias();
+        }
+    }
+
+    /** Returns the list of roles as a comma separated string for this rule */
     public String getValue() {
-        if(roles.isEmpty()) {
+        if (roles.isEmpty()) {
             return DataAccessRule.ANY;
         } else {
             StringBuffer sb = new StringBuffer();
@@ -127,7 +143,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
             }
             sb.setLength(sb.length() - 1);
             return sb.toString();
-        } 
+        }
     }
 
     /**
@@ -135,65 +151,51 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      * and if anything else is equal, read comes before write
      */
     public int compareTo(DataAccessRule other) {
-        int compareWs = compareCatalogItems(workspace, other.workspace);
-        if (compareWs != 0)
-            return compareWs;
+        int compareRoot = compareCatalogItems(root, other.root);
+        if (compareRoot != 0) return compareRoot;
 
         int compareLayer = compareCatalogItems(layer, other.layer);
-        if (compareLayer != 0)
-            return compareLayer;
+        if (compareLayer != 0) return compareLayer;
 
-        if (accessMode.equals(other.accessMode))
-            return 0;
-        else
-            return accessMode.equals(AccessMode.READ) ? -1 : 1;
+        if (accessMode.equals(other.accessMode)) return 0;
+        else return accessMode.equals(AccessMode.READ) ? -1 : 1;
     }
 
-    /**
-     * Equality based on ws/layer/mode only
-     */
+    /** Equality based on ws/layer/mode only */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof DataAccessRule))
-            return false;
+        if (!(obj instanceof DataAccessRule)) return false;
 
         return 0 == compareTo((DataAccessRule) obj);
     }
-    
-    /**
-     * Full equality, roles included
-     */
+
+    /** Full equality, roles included */
     public boolean equalsExact(DataAccessRule obj) {
-        if(0 != compareTo(obj))
-            return false;
-        else
-            return roles.equals(obj.roles);
+        if (0 != compareTo(obj)) return false;
+        else return roles.equals(obj.roles);
     }
 
-    /**
-     * Hashcode based on wfs/layer/mode only
-     */
+    /** Hashcode based on wfs/layer/mode only */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(workspace).append(layer).append(accessMode.getAlias())
+        return new HashCodeBuilder()
+                .append(root)
+                .append(layer)
+                .append(accessMode.getAlias())
                 .toHashCode();
     }
 
-    /**
-     * Generic string comparison that considers the use of {@link #ANY}
-     */
+    /** Generic string comparison that considers the use of {@link #ANY} */
     public int compareCatalogItems(String item, String otherItem) {
-        if (item.equals(otherItem))
-            return 0;
-        else if (ANY.equals(item))
-            return -1;
-        else if (ANY.equals(otherItem))
-            return 1;
-        else
-            return item.compareTo(otherItem);
-
+        if (item == null) {
+            return otherItem != null ? -1 : 0;
+        }
+        if (item.equals(otherItem)) return 0;
+        else if (ANY.equals(item)) return -1;
+        else if (ANY.equals(otherItem)) return 1;
+        else return item.compareTo(otherItem);
     }
-    
+
     @Override
     public String toString() {
         return getKey() + "=" + getValue();

@@ -6,27 +6,21 @@
 package org.geoserver.wcs.kvp;
 
 import java.util.Map;
-
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.Wcs10Factory;
-
-import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 /**
  * Describe coverage kvp reader TODO: check if this reader class is really necessary
- * 
+ *
  * @author Alessio Fabiani, GeoSolutions
- * 
  */
 public class Wcs10DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
-    private Catalog catalog;
 
-    public Wcs10DescribeCoverageKvpRequestReader(Catalog catalog) {
+    public Wcs10DescribeCoverageKvpRequestReader() {
         super(DescribeCoverageType.class, Wcs10Factory.eINSTANCE);
-        this.catalog = catalog;
     }
 
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
@@ -36,8 +30,10 @@ public class Wcs10DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         DescribeCoverageType describeCoverage = (DescribeCoverageType) request;
         // if not specified, throw a resounding exception (by spec)
         if (!describeCoverage.isSetVersion())
-            throw new WcsException("Version has not been specified",
-                    WcsExceptionCode.MissingParameterValue, "version");
+            throw new WcsException(
+                    "Version has not been specified",
+                    WcsExceptionCode.MissingParameterValue,
+                    "version");
 
         return request;
     }

@@ -8,11 +8,8 @@ package org.geoserver.grib;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import javax.imageio.spi.ImageReaderSpi;
-
 import junit.framework.TestCase;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.io.grib.GRIBFormat;
@@ -23,14 +20,13 @@ import org.geotools.test.TestData;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Simple test class for checking if grib data are supported.
- */
+/** Simple test class for checking if grib data are supported. */
 public class GribDataTest extends TestCase {
 
     @Test
-    public void testFormatSupported() throws FileNotFoundException, IOException{
-        // Check if the Grib Library is available by calling the NetCDFUtilities.isGribAvailable() method
+    public void testFormatSupported() throws FileNotFoundException, IOException {
+        // Check if the Grib Library is available by calling the NetCDFUtilities.isGribAvailable()
+        // method
         Assert.assertTrue(NetCDFUtilities.isGribAvailable());
         // Selection of the input file
         File file = TestData.file(this, "sampleGrib.grb2");
@@ -41,7 +37,7 @@ public class GribDataTest extends TestCase {
         ImageReaderSpi spi = new NetCDFImageReaderSpi();
         Assert.assertTrue(spi.canDecodeInput(file));
     }
-    
+
     @Test
     public void testImage() throws FileNotFoundException, IOException {
         // Selection of the input file

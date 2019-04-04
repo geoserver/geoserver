@@ -9,23 +9,21 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-
 public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
-    
+
     public void test() throws Exception {
         File data = getTestData().getDataDirectoryRoot();
-        
+
         File templates = new File(data, "templates");
-        
+
         File featureTypes = new File(data, "featureTypes");
-        
+
         File featureType1 = new File(featureTypes, "ft1");
         featureType1.mkdir();
 
@@ -33,16 +31,16 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
         featureType2.mkdir();
 
         GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(getClass(),resources);
+        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(getClass(), resources);
 
-        //test a path relative to templates
+        // test a path relative to templates
         File expected = new File(templates, "1.ftl");
         expected.createNewFile();
 
         File actual = (File) templateLoader.findTemplateSource("1.ftl");
         assertEquals(expected.getCanonicalPath(), actual.getCanonicalPath());
 
-        //test a path relative to featureTypes
+        // test a path relative to featureTypes
         expected = new File(featureType1, "2.ftl");
         expected.createNewFile();
 
@@ -52,18 +50,19 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
         actual = (File) templateLoader.findTemplateSource("2.ftl");
         assertNull(actual);
 
-        //test loading relative to class
+        // test loading relative to class
         Object source = templateLoader.findTemplateSource("FeatureSimple.ftl");
         assertNotNull(source);
         assertFalse(source instanceof File);
         templateLoader.getReader(source, "UTF-8");
-        
     }
-    
+
     public void testRemoteType() throws Exception {
-        SimpleFeatureType ft = DataUtilities.createType("remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
+        SimpleFeatureType ft =
+                DataUtilities.createType(
+                        "remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
         GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        GeoServerTemplateLoader loader = new GeoServerTemplateLoader(getClass(),resources);
+        GeoServerTemplateLoader loader = new GeoServerTemplateLoader(getClass(), resources);
         loader.setFeatureType(ft);
         loader.findTemplateSource("header.ftl");
     }

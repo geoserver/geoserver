@@ -7,20 +7,14 @@ package org.geoserver.catalog;
 
 /**
  * The presentation mode for time/elevation lists
- * 
+ *
  * @author Simone Giannecchini - GeoSolutions
  */
 public enum DimensionPresentation {
-    /**
-     * List of possible values
-     */
+    /** List of possible values */
     LIST,
-    /**
-     * Start, end and resolution
-     */
+    /** Start, end and resolution */
     DISCRETE_INTERVAL,
-    /**
-     * Start and end, all possible values in between are valid
-     */
+    /** Start and end, all possible values in between are valid */
     CONTINUOUS_INTERVAL;
 }

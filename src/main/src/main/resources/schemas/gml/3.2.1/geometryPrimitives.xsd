@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="3.2.1">
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="3.2.1.2">
 	<annotation>
 		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryPrimitives:3.2.1">geometryPrimitives.xsd</appinfo>
 		<documentation>See ISO/DIS 19136 Clause 11.
 Beside the "simple" geometric primitives specified in the previous Clause, this Clause specifies additional primitives to describe real world situations which require a more expressive geometry model.
-</documentation>
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
 	</annotation>
+	<include schemaLocation="gml.xsd"/>
 	<include schemaLocation="geometryBasic2d.xsd"/>
 	<complexType name="CurveType">
 		<complexContent>
@@ -649,10 +654,6 @@ If provided, the aggregationType attribute shall have the value "sequence".</doc
 				<complexType>
 					<sequence>
 						<element name="Row" maxOccurs="unbounded">
-						    <!-- gave this type a name temporarily for purposes of schema
-						         generation, but having it in place causes validation
-						         errors -->
-							<!--complexType name="PointGrid_rows_RowType"-->
 							<complexType>
 								<group ref="gml:geometricPositionListGroup"/>
 							</complexType>

@@ -11,6 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,9 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.annotation.Nullable;
-
 import org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
@@ -54,6 +57,8 @@ import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.RevFeature;
 import org.locationtech.geogig.model.RevFeatureType;
 import org.locationtech.geogig.model.RevTree;
+import org.locationtech.geogig.model.impl.RevFeatureBuilder;
+import org.locationtech.geogig.model.impl.RevFeatureTypeBuilder;
 import org.locationtech.geogig.plumbing.FindTreeChild;
 import org.locationtech.geogig.plumbing.ResolveGeogigDir;
 import org.locationtech.geogig.plumbing.RevObjectParse;
@@ -66,9 +71,10 @@ import org.locationtech.geogig.porcelain.ConfigOp.ConfigAction;
 import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
-import org.locationtech.geogig.repository.GeoGIG;
-import org.locationtech.geogig.repository.GlobalContextBuilder;
+import org.locationtech.geogig.repository.FeatureInfo;
 import org.locationtech.geogig.repository.WorkingTree;
+import org.locationtech.geogig.repository.impl.GeoGIG;
+import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
 import org.locationtech.geogig.test.TestPlatform;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -79,21 +85,32 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 public class GeoGigTestData extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeoGigTestData.class);
 
-    private TemporaryFolder tmpFolder;
+    private final TemporaryFolder tmpFolder;
 
     private GeoGIG geogig;
 
     private File repoDir;
+
+    public GeoGigTestData(TemporaryFolder tmpFolder) {
+        if (tmpFolder == null) {
+            this.tmpFolder = new TemporaryFolder();
+            try {
+                this.tmpFolder.create();
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        } else {
+            this.tmpFolder = tmpFolder;
+        }
+    }
+
+    public GeoGigTestData() {
+        this(null);
+    }
 
     @Override
     protected void before() throws Throwable {
@@ -101,9 +118,11 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder();
-        tmpFolder.create();
         this.geogig = createRepository(repoName);
+    }
+
+    public void setUp(String repoName, File root) throws Exception {
+        this.geogig = createRepository(repoName, root);
     }
 
     @Override
@@ -119,7 +138,9 @@ public class GeoGigTestData extends ExternalResource {
             }
         } finally {
             RepositoryManager.close();
-            tmpFolder.delete();
+            if (tmpFolder != null) {
+                tmpFolder.delete();
+            }
         }
     }
 
@@ -134,6 +155,19 @@ public class GeoGigTestData extends ExternalResource {
 
         TestPlatform testPlatform = new TestPlatform(repoDir);
         testPlatform.setUserHome(dataDirectory);
+        GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
+        Context context = GlobalContextBuilder.builder().build();
+        GeoGIG Geogig = new GeoGIG(context);
+
+        return Geogig;
+    }
+
+    public GeoGIG createRepository(String name, File root) {
+        repoDir = new File(root, name);
+        Assert.assertTrue(repoDir.mkdir());
+
+        TestPlatform testPlatform = new TestPlatform(repoDir);
+        testPlatform.setUserHome(root);
         GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
         Context context = GlobalContextBuilder.builder().build();
         GeoGIG Geogig = new GeoGIG(context);
@@ -161,8 +195,11 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public GeoGigTestData config(String key, String value) {
-        run(geogig.command(ConfigOp.class).setAction(ConfigAction.CONFIG_SET).setName(key)
-                .setValue(value));
+        run(
+                geogig.command(ConfigOp.class)
+                        .setAction(ConfigAction.CONFIG_SET)
+                        .setName(key)
+                        .setValue(value));
         return this;
     }
 
@@ -221,15 +258,15 @@ public class GeoGigTestData extends ExternalResource {
 
     /**
      * Inserts features in the working tree under the given parent tree path.
-     * <p>
-     * The parent tree must exist. The {@code featureSpecs} are of the form {@code  featureSpec := 
+     *
+     * <p>The parent tree must exist. The {@code featureSpecs} are of the form {@code featureSpec :=
      * <id>=<attname>:<value>[;<attname>:<value>]+} . The parsing routine is as naive as it can be
      * so do not use any '=', ':', or ';' in the values.
-     * <p>
-     * An empty value string is assumed to mean {@code null}. Any {@code <attname>} not provided
+     *
+     * <p>An empty value string is assumed to mean {@code null}. Any {@code <attname>} not provided
      * (wrt. its type) will be left as {@code null} in the built feature.
-     * <p>
-     * An {@code <attname>} that doesn't exist in the feature type throws an unchecked exception.
+     *
+     * <p>An {@code <attname>} that doesn't exist in the feature type throws an unchecked exception.
      */
     public GeoGigTestData insert(String parentTreePath, String... featureSpecs) {
         SimpleFeatureType type = getType(parentTreePath);
@@ -248,8 +285,11 @@ public class GeoGigTestData extends ExternalResource {
                 AttributeDescriptor descriptor = type.getDescriptor(att);
                 Class<?> binding = descriptor.getType().getBinding();
                 Object value = Converters.convert(sval, binding);
-                checkArgument(sval == null || value != null, "Unable to convert value '%s' to %s",
-                        sval, binding.getName());
+                checkArgument(
+                        sval == null || value != null,
+                        "Unable to convert value '%s' to %s",
+                        sval,
+                        binding.getName());
                 fb.set(att, value);
             }
             SimpleFeature feature = fb.buildFeature(fid);
@@ -262,7 +302,12 @@ public class GeoGigTestData extends ExternalResource {
     public GeoGigTestData insert(String parentTreePath, Feature... features) {
         WorkingTree workingTree = geogig.getContext().workingTree();
         for (Feature feature : features) {
-            workingTree.insert(parentTreePath, feature);
+            RevFeatureType type = RevFeatureTypeBuilder.build(feature.getType());
+            geogig.getRepository().objectDatabase().put(type);
+            String path = NodeRef.appendChild(parentTreePath, feature.getIdentifier().getID());
+            FeatureInfo info =
+                    FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), path);
+            workingTree.insert(info);
         }
         return this;
     }
@@ -273,25 +318,40 @@ public class GeoGigTestData extends ExternalResource {
         Map<String, Map<String, String>> specs = Maps.newHashMap();
         for (String spec : featureSpecs) {
             String[] split = spec.split("=");
-            checkArgument(split.length == 2, "invalid feature spec. Expected '%s', got '%s'",
-                    format, spec);
+            checkArgument(
+                    split.length == 2,
+                    "invalid feature spec. Expected '%s', got '%s'",
+                    format,
+                    spec);
             String fid = split[0];
-            checkArgument(!isNullOrEmpty(fid), "invalid feature fid. Expected '%s', got '%s'",
-                    format, spec);
-            checkArgument(!specs.containsKey(fid), "Duplicate fid '%s' in feature spec '%s'", fid,
+            checkArgument(
+                    !isNullOrEmpty(fid),
+                    "invalid feature fid. Expected '%s', got '%s'",
+                    format,
+                    spec);
+            checkArgument(
+                    !specs.containsKey(fid),
+                    "Duplicate fid '%s' in feature spec '%s'",
+                    fid,
                     Arrays.asList(featureSpecs));
             String atts = split[1];
             String[] attSpecs = atts.split(";");
             Map<String, String> attributes = Maps.newHashMap();
             for (String attSpec : attSpecs) {
                 String[] attval = attSpec.split(":");
-                checkArgument(attval.length == 2,
-                        "invalid attribute spec '%s'. Expected '%s', got '%s'", attSpec, format,
+                checkArgument(
+                        attval.length == 2,
+                        "invalid attribute spec '%s'. Expected '%s', got '%s'",
+                        attSpec,
+                        format,
                         spec);
                 String attName = attval[0];
-                checkArgument(!isNullOrEmpty(attName),
+                checkArgument(
+                        !isNullOrEmpty(attName),
                         "empty attribute name in attribute spec '%s'. Expected '%s', got '%s'",
-                        attSpec, format, spec);
+                        attSpec,
+                        format,
+                        spec);
                 String attValue = attval[1];
                 if (isNullOrEmpty(attValue)) {
                     attValue = null;
@@ -308,18 +368,25 @@ public class GeoGigTestData extends ExternalResource {
         Context context = geogig.getContext();
 
         List<NodeRef> featureTypeTrees = context.workingTree().getFeatureTypeTrees();
-        List<String> treeNames = Lists.transform(featureTypeTrees, new Function<NodeRef, String>() {
-            @Override
-            public String apply(NodeRef input) {
-                return input.path();
-            }
-        });
+        List<String> treeNames =
+                Lists.transform(
+                        featureTypeTrees,
+                        new Function<NodeRef, String>() {
+                            @Override
+                            public String apply(NodeRef input) {
+                                return input.path();
+                            }
+                        });
         for (int i = 0; i < treeNames.size(); i++) {
             String treeName = treeNames.get(i);
             if (treeName.equals(parentTreePath)) {
                 ObjectId metadataId = featureTypeTrees.get(i).getMetadataId();
-                RevFeatureType revType = ((Optional<RevFeatureType>) run(
-                        geogig.command(RevObjectParse.class).setObjectId(metadataId))).get();
+                RevFeatureType revType =
+                        ((Optional<RevFeatureType>)
+                                        run(
+                                                geogig.command(RevObjectParse.class)
+                                                        .setObjectId(metadataId)))
+                                .get();
                 SimpleFeatureType featureType = (SimpleFeatureType) revType.type();
                 return featureType;
             }
@@ -336,14 +403,19 @@ public class GeoGigTestData extends ExternalResource {
         AttributeDescriptor descriptor = featureType.getDescriptor(attributeName);
         Class<?> binding = descriptor.getType().getBinding();
         Object actualValue = Converters.convert(value, binding);
-        checkArgument(value == null || actualValue != null, "Unable to convert value '%s' to %s",
-                value, binding.getName());
+        checkArgument(
+                value == null || actualValue != null,
+                "Unable to convert value '%s' to %s",
+                value,
+                binding.getName());
 
         feature.setAttribute(attributeName, actualValue);
-        String parentPath = NodeRef.parentPath(featurePath);
         Context context = geogig.getContext();
         WorkingTree workingTree = context.workingTree();
-        workingTree.insert(parentPath, feature);
+        RevFeatureType type = RevFeatureTypeBuilder.build(featureType);
+        FeatureInfo info =
+                FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), featurePath);
+        workingTree.insert(info);
         return this;
     }
 
@@ -353,8 +425,12 @@ public class GeoGigTestData extends ExternalResource {
         RevTree rootWorkingTree = workingTree.getTree();
 
         @SuppressWarnings("unchecked")
-        Optional<NodeRef> ref = (Optional<NodeRef>) run(context.command(FindTreeChild.class)
-                .setParent(rootWorkingTree).setChildPath(featurePath));
+        Optional<NodeRef> ref =
+                (Optional<NodeRef>)
+                        run(
+                                context.command(FindTreeChild.class)
+                                        .setParent(rootWorkingTree)
+                                        .setChildPath(featurePath));
         checkArgument(ref.isPresent(), "No feature ref found: '%s'", featurePath);
 
         NodeRef featureRef = ref.get();
@@ -362,11 +438,15 @@ public class GeoGigTestData extends ExternalResource {
         SimpleFeatureType type = getType(featureRef.getParentPath());
 
         @SuppressWarnings("unchecked")
-        Optional<RevFeature> revFeature = (Optional<RevFeature>) run(
-                context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
+        Optional<RevFeature> revFeature =
+                (Optional<RevFeature>)
+                        run(
+                                context.command(RevObjectParse.class)
+                                        .setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
-        Feature feature = new FeatureBuilder(type).build(id, revFeature.get());
+        Feature feature =
+                new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
         return (SimpleFeature) feature;
     }
 
@@ -428,8 +508,8 @@ public class GeoGigTestData extends ExternalResource {
         }
 
         public CatalogBuilder addAllRepoLayers() {
-            List<NodeRef> featureTypeTrees = geogig.getContext().workingTree()
-                    .getFeatureTypeTrees();
+            List<NodeRef> featureTypeTrees =
+                    geogig.getContext().workingTree().getFeatureTypeTrees();
             for (NodeRef ref : featureTypeTrees) {
                 layer(ref.name());
             }
@@ -440,6 +520,19 @@ public class GeoGigTestData extends ExternalResource {
             NamespaceInfo ns = setUpNamespace(workspace, nsUri);
             WorkspaceInfo ws = setUpWorkspace(workspace);
             DataStoreInfo ds = setUpDataStore(ns, ws, storeName);
+            for (String layerName : layerNames) {
+                setUpLayer(ds, layerName);
+            }
+            return catalog;
+        }
+
+        public Catalog buildWithoutDataStores() {
+            setUpNamespace(workspace, nsUri);
+            setUpWorkspace(workspace);
+            return catalog;
+        }
+
+        public Catalog setUpLayers(DataStoreInfo ds) {
             for (String layerName : layerNames) {
                 setUpLayer(ds, layerName);
             }
@@ -470,13 +563,15 @@ public class GeoGigTestData extends ExternalResource {
             ft.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
 
             WorkingTree workingTree = geogig.getRepository().workingTree();
-            Map<String, NodeRef> trees = Maps.uniqueIndex(workingTree.getFeatureTypeTrees(),
-                    new Function<NodeRef, String>() {
-                        @Override
-                        public String apply(NodeRef treeRef) {
-                            return treeRef.name();
-                        }
-                    });
+            Map<String, NodeRef> trees =
+                    Maps.uniqueIndex(
+                            workingTree.getFeatureTypeTrees(),
+                            new Function<NodeRef, String>() {
+                                @Override
+                                public String apply(NodeRef treeRef) {
+                                    return treeRef.name();
+                                }
+                            });
             NodeRef treeRef = trees.get(layerName);
             FeatureType featureType = getType(treeRef.path());
             CoordinateReferenceSystem nativeCRS = featureType.getCoordinateReferenceSystem();
@@ -521,7 +616,8 @@ public class GeoGigTestData extends ExternalResource {
             RepositoryInfo info = new RepositoryInfo();
             info.setLocation(geogig.getRepository().getLocation());
             RepositoryManager.get().save(info);
-            connParams.put(GeoGigDataStoreFactory.REPOSITORY.key,
+            connParams.put(
+                    GeoGigDataStoreFactory.REPOSITORY.key,
                     GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
             connParams.put(GeoGigDataStoreFactory.DEFAULT_NAMESPACE.key, ns.getURI());
             catalog.add(ds);

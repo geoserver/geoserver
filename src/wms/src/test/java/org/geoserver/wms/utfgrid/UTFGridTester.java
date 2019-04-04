@@ -13,10 +13,8 @@ import net.sf.json.JSONObject;
 
 /**
  * Helper class to test UTFGrid contents
- * 
- * @author Andrea Aime - GeoSolutions
- * 
  *
+ * @author Andrea Aime - GeoSolutions
  */
 class UTFGridTester {
 
@@ -68,22 +66,18 @@ class UTFGridTester {
                 assertTrue(code < keys.size());
                 assertTrue(data.has(String.valueOf((int) code)));
             }
-
         }
     }
-    
-    /**
-     * Returns the number of keys
-     *
-     */
+
+    /** Returns the number of keys */
     int getKeyCount() {
         return keys.size();
     }
 
     /**
      * Returns the feature for the given grid code
-     * @param code
      *
+     * @param code
      */
     JSONObject getFeature(char code) {
         String key = "" + (int) gridToKey(code);
@@ -92,13 +86,17 @@ class UTFGridTester {
 
     /**
      * Check the specified code can be found in the grid at row/col
+     *
      * @param code
      * @param row
      * @param col
      */
     void assertGridPixel(char code, int row, int col) {
         String gridRow = grid.getString(row);
-        assertEquals("Expected '" + code +  "' but was '" + gridRow.charAt(col) + "'.", code, gridRow.charAt(col));
+        assertEquals(
+                "Expected '" + code + "' but was '" + gridRow.charAt(col) + "'.",
+                code,
+                gridRow.charAt(col));
     }
 
     private char gridToKey(char code) {
@@ -111,5 +109,4 @@ class UTFGridTester {
         code -= 32;
         return code;
     }
-
 }

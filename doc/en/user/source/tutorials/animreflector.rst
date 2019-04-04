@@ -37,9 +37,7 @@ It is up to the caller to ensure the provided animation parameters result in val
 
 For example, to generate an animation of a layer with the viewport scrolling towards the east,
 the WMS BBOX parameter is given the series of values ``-90,40,-60,70``, ``-80,40,-60,70`` and ``-70,40,-50,70``
-(note the escaping of the commas in the BBOX values):
-
-.. code-block:: html 
+(note the escaping of the commas in the BBOX values)::
 
    http://localhost:8080/geoserver/wms/animate
    ?layers=topp:states
@@ -47,9 +45,7 @@ the WMS BBOX parameter is given the series of values ``-90,40,-60,70``, ``-80,40
    &avalues=-90\,40\,-60\,70,-80\,40\,-60\,70,-70\,40\,-50\,70
 
 For an example of nested parameters, assume the existence of a style named ``selection`` using an SLD variable ``color``.
-The following request creates an animated map where the selection color changes between red, green and blue
-
-.. code-block:: html
+The following request creates an animated map where the selection color changes between red, green and blue::
 
     http://localhost:8080/geoserver/wms/animate
     ?layers=topp:states,topp:states
@@ -146,9 +142,7 @@ Example 1
 Requests the layer ``topp:states``, 
 using the default style (``demographic``), width (512 pixels) and height (adjusted to aspect ratio). 
 The ``aparam=bbox`` parameter specifies that the output animation has two frames, one using a whole-world extent and the other with the extent of the USA.
-This gives the effect of zooming in.
-
-.. code-block:: html
+This gives the effect of zooming in::
 
     http://localhost:8080/geoserver/wms/animate
     ?layers=topp:states
@@ -161,9 +155,7 @@ Example 2
 
 Requests the layers ``topp:states`` and ``sf:restricted``,  
 using ``format_options=gif_loop_continuosly:true`` to request an infinite loop animation.
-The output map uses the default styles, the specified width (640 pixels), and the height automatically adjusted to the aspect ratio. 
-
-.. code-block:: html
+The output map uses the default styles, the specified width (640 pixels), and the height automatically adjusted to the aspect ratio::
 
     http://localhost:8080/geoserver/wms/animate
     ?layers=topp:states,sf:restricted
@@ -178,9 +170,7 @@ Example 3
 
 The following request uses 
 the ``format_options`` of ``gif_loop_continuosly:true`` and ``gif_frames_delay:10``
-to rotate the map image fast and continously.
-
-.. code-block:: html
+to rotate the map image fast and continuously::
 
     http://localhost:8080/geoserver/wms/animate
     ?layers=topp:states,sf:restricted
@@ -198,9 +188,7 @@ It is possible to decorate each frame image with the ``avalue`` parameter value 
 The current animation parameter value can be accessed via the ``avalue`` environment variable.
 (This environment variable can also be used in :ref:`sld_variable_substitution`.)
 
-Here is an example that uses a decoration showing the frame parameter value:
-
-.. code-block:: html
+Here is an example that uses a decoration showing the frame parameter value::
 
    http://localhost:8080/geoserver/wms/animate
    ?layers=topp%3Aworld

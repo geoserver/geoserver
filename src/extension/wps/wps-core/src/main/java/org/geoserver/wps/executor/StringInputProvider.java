@@ -9,7 +9,7 @@ import org.opengis.util.ProgressListener;
 
 /**
  * A input provider for static string data
- * 
+ *
  * @author Andrea Aime - GeoSolutions
  */
 public class StringInputProvider implements InputProvider {
@@ -42,5 +42,4 @@ public class StringInputProvider implements InputProvider {
     public int longStepCount() {
         return 0;
     }
-
 }

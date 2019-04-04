@@ -13,6 +13,7 @@ import static org.geoserver.generatedgeometries.core.GeometryGenerationStrategy.
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,8 +41,10 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
@@ -231,16 +234,25 @@ public class LongLatGeometryGenerationStrategy
         if (bb instanceof BBOX) {
             BoundingBox bounds = ((BBOX) bb).getBounds();
             LongLatConfiguration configuration = getLongLatConfiguration(info);
-            PropertyIsBetween longitudeFilter =
-                    createBetweenFilter(
-                            ff,
-                            configuration.longAttributeName,
-                            bounds.getMinX(),
-                            bounds.getMaxX());
-            PropertyIsBetween latitudeFilter =
-                    createBetweenFilter(
-                            ff, configuration.latAttributeName, bounds.getMinY(), bounds.getMaxY());
-            return ff.and(longitudeFilter, latitudeFilter);
+
+            return ff.and(getLongLatFilters(bounds, ff, configuration));
+        } else if (bb instanceof Or) {
+            // https://github.com/geosolutions-it/C105-2018-EMSA-VDS/issues/73
+            Or orFilter = (Or) bb;
+            // has multiple bboxes
+            List<Filter> propertyIsBetweenLists = new ArrayList<Filter>();
+            LongLatConfiguration configuration = getLongLatConfiguration(info);
+            for (Filter f : orFilter.getChildren()) {
+                // skip if this filter is not a BBOX
+                if (!(f instanceof BBOX)) continue;
+
+                BoundingBox bounds = ((BBOX) f).getBounds();
+                And andFilter = ff.and(getLongLatFilters(bounds, ff, configuration));
+                propertyIsBetweenLists.add(andFilter);
+            }
+            // fall back to original filter if none of the filters f
+            if (propertyIsBetweenLists.isEmpty()) return filter;
+            return ff.or(propertyIsBetweenLists);
         }
 
         return filter;
@@ -279,5 +291,18 @@ public class LongLatGeometryGenerationStrategy
         Literal min = ff.literal(minValue);
         Literal max = ff.literal(maxValue);
         return ff.between(propertyName, min, max);
+    }
+
+    private List<Filter> getLongLatFilters(
+            BoundingBox bounds, FilterFactory ff, LongLatConfiguration configuration) {
+
+        PropertyIsBetween longitudeFilter =
+                createBetweenFilter(
+                        ff, configuration.longAttributeName, bounds.getMinX(), bounds.getMaxX());
+        PropertyIsBetween latitudeFilter =
+                createBetweenFilter(
+                        ff, configuration.latAttributeName, bounds.getMinY(), bounds.getMaxY());
+
+        return Arrays.asList(longitudeFilter, latitudeFilter);
     }
 }

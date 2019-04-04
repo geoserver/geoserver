@@ -24,8 +24,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -44,6 +44,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
@@ -332,5 +333,27 @@ public class LongLatGeometryGenerationStrategyTest {
 
         // then
         assertSame(q.getFilter(), convertedQuery.getFilter());
+    }
+    
+ // https://github.com/geosolutions-it/C105-2018-EMSA-VDS/issues/73
+    @Test
+    public void testMultipleBBoxFilterAsORIsConvertedToBetween() {
+        // given
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+
+        FeatureTypeInfo info = mock(FeatureTypeInfo.class);
+        MetadataMap metadata = getMetadata();
+        when(info.getMetadata()).thenReturn(metadata);
+        Filter bbox1 = ff.bbox("point", -2, -2, 2, 2, "WGS84");
+        Filter bbox2 = ff.bbox("point", -1, -1, 1, 1, "WGS84");
+
+        Filter filter = ff.or(Arrays.asList(bbox1, bbox2));
+
+        // when
+        Filter convFilter = strategy.convertFilter(info, filter);
+
+        // then
+        assertNotNull(convFilter);
+        assertTrue(convFilter instanceof Or);
     }
 }

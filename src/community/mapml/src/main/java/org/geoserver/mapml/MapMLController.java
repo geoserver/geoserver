@@ -1,11 +1,17 @@
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.*;
+
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -28,6 +34,7 @@ import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -53,18 +60,19 @@ public class MapMLController {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
     @Autowired GeoServer geoServer;
+    @Autowired WMS wms;
 
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
-        produces = MapMLConstants.MIME_TYPE
+        produces = MIME_TYPE
     )
     public Mapml mapML(
             HttpServletRequest request,
             @PathVariable("layer") String layer,
             @PathVariable("proj") String proj,
             @RequestParam("style") Optional<String> style)
-            throws NoSuchAuthorityCodeException, TransformException, FactoryException {
+            throws NoSuchAuthorityCodeException, TransformException, FactoryException, IOException {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
         if (layerInfo == null) {
             // TODO error handling
@@ -109,23 +117,23 @@ public class MapMLController {
         String styleName = style.orElse("");
         String baseUrl = ResponseUtils.baseURL(request);
         String baseUrlPattern = baseUrl;
-        
+
         // handle shard config
         Boolean enableSharding = layerMeta.get("mapml.enableSharding", Boolean.class);
         String shardListString = layerMeta.get("mapml.shardList", String.class);
         String[] shardArray = new String[0];
-        if(shardListString != null) {
+        if (shardListString != null) {
             shardArray = shardListString.split("[,\\s]+");
         }
         String shardServerPattern = layerMeta.get("mapml.shardServerPattern", String.class);
-        if(shardArray.length < 1 || shardServerPattern == null || shardServerPattern.isEmpty()) {
+        if (shardArray.length < 1 || shardServerPattern == null || shardServerPattern.isEmpty()) {
             enableSharding = Boolean.FALSE;
         }
         // if we have a valid shard config
-        if(Boolean.TRUE.equals(enableSharding)) {
+        if (Boolean.TRUE.equals(enableSharding)) {
             baseUrlPattern = shardBaseURL(request, shardServerPattern);
         }
-        
+
         // build the mapML doc
         Mapml mapml = new Mapml();
 
@@ -141,7 +149,7 @@ public class MapMLController {
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MapMLConstants.MIME_TYPE + ";projection=" + projType.value());
+        meta.setContent(MIME_TYPE + ";projection=" + projType.value());
         metas.add(meta);
         List<Link> links = head.getLinks();
 
@@ -186,13 +194,13 @@ public class MapMLController {
         Input input = new Input();
         input.setName("z");
         input.setType(InputType.ZOOM);
-        input.setValue("0"); 
+        input.setValue("0");
         input.setMin(0);
         input.setMax(0);
         extentList.add(input);
 
         // shard list
-        if(Boolean.TRUE.equals(enableSharding)) {
+        if (Boolean.TRUE.equals(enableSharding)) {
             input = new Input();
             input.setName("s");
             input.setType(InputType.HIDDEN);
@@ -202,21 +210,65 @@ public class MapMLController {
             Datalist datalist = new Datalist();
             datalist.setId("servers");
             List<Option> options = datalist.getOptions();
-            for(int s = 0; s < shardArray.length; s++) {
+            for (int s = 0; s < shardArray.length; s++) {
                 Option o = new Option();
                 o.setValue(shardArray[s]);
                 options.add(o);
             }
             extentList.add(datalist);
         }
-        
+
         String dimension = layerMeta.get("mapml.dimension", String.class);
-        if("Time".equalsIgnoreCase(dimension)) {
-            
-        } else if("Elevation".equalsIgnoreCase(dimension)) {
-            
+        boolean timeEnabled = false;
+        boolean elevationEnabled = false;
+        if ("Time".equalsIgnoreCase(dimension)) {
+            if (resourceInfo instanceof FeatureTypeInfo) {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
+                DimensionInfo timeInfo =
+                        typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if (timeInfo.isEnabled()) {
+                    timeEnabled = true;
+                    Set<Date> dates = wms.getFeatureTypeTimes(typeInfo);
+                    input = new Input();
+                    input.setName("time");
+                    input.setList("dimList");
+                    extentList.add(input);
+                    Datalist datalist = new Datalist();
+                    datalist.setId("dimList");
+                    List<Option> options = datalist.getOptions();
+                    for (Date date : dates) {
+                        Option o = new Option();
+                        o.setValue(DATE_FORMAT.format(date));
+                        options.add(o);
+                    }
+                    extentList.add(datalist);
+                }
+            }
+        } else if ("Elevation".equalsIgnoreCase(dimension)) {
+            if (resourceInfo instanceof FeatureTypeInfo) {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
+                DimensionInfo elevInfo =
+                        typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                if (elevInfo.isEnabled()) {
+                    elevationEnabled = true;
+                    Set<Double> elevs = wms.getFeatureTypeElevations(typeInfo);
+                    input = new Input();
+                    input.setName("elevation");
+                    input.setList("dimList");
+                    extentList.add(input);
+                    Datalist datalist = new Datalist();
+                    datalist.setId("dimList");
+                    List<Option> options = datalist.getOptions();
+                    for (Double elev : elevs) {
+                        Option o = new Option();
+                        o.setValue(elev.toString());
+                        options.add(o);
+                    }
+                    extentList.add(datalist);
+                }
+            }
         }
-        
+
         Boolean useTiles = layerMeta.get("mapml.useTiles", Boolean.class);
         if (Boolean.TRUE.equals(useTiles)) {
             // tile inputs
@@ -276,6 +328,8 @@ public class MapMLController {
                             + layerInfo.getName()
                             + "&styles="
                             + styleName
+                            + (timeEnabled ? "&time={time}" : "")
+                            + (elevationEnabled ? "&elevation={elevation}" : "")
                             + "&bbox={txmin},{tymin},{txmax},{tymax}&format=image/png&transparent=false&width=256&height=256");
             extentList.add(link);
         } else {
@@ -352,6 +406,8 @@ public class MapMLController {
                             + layerInfo.getName()
                             + "&styles="
                             + styleName
+                            + (timeEnabled ? "&time={time}" : "")
+                            + (elevationEnabled ? "&elevation={elevation}" : "")
                             + "&bbox={xmin},{ymin},{xmax},{ymax}&format=image/png&transparent=false&width={w}&height={h}");
             extentList.add(link);
         }
@@ -388,10 +444,13 @@ public class MapMLController {
                             + layerInfo.getName()
                             + "&styles="
                             + styleName
-                            + "&bbox={xmin},{ymin},{xmax},{ymax}"
+                            + (timeEnabled ? "&time={time}" : "")
+                            + (elevationEnabled ? "&elevation={elevation}" : "")
+                            + (Boolean.TRUE.equals(useTiles)
+                                    ? "&bbox={txmin},{tymin},{txmax},{tymax}&width=256&height=256"
+                                    : "&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}")
                             + "&info_format=text/mapml"
                             + "&transparent=false"
-                            + "&width={w}&height={h}"
                             + "&x={i}&y={j}");
             extentList.add(link);
         }
@@ -400,7 +459,7 @@ public class MapMLController {
         mapml.setBody(body);
         return mapml;
     }
-    
+
     private static String shardBaseURL(HttpServletRequest req, String shardServerPattern) {
         StringBuffer sb = new StringBuffer(req.getScheme());
         sb.append("://")

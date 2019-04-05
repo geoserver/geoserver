@@ -46,12 +46,12 @@ import javax.xml.bind.annotation.XmlType;
 public class GeometryCollection {
 
     @XmlElements({
-        @XmlElement(name = "Point", type = Point.class),
-        @XmlElement(name = "LineString", type = LineString.class),
-        @XmlElement(name = "Polygon", type = Polygon.class),
-        @XmlElement(name = "MultiPoint", type = MultiPoint.class),
-        @XmlElement(name = "MultiLineString", type = MultiLineString.class),
-        @XmlElement(name = "MultiPolygon", type = MultiPolygon.class)
+        @XmlElement(name = "point", type = Point.class),
+        @XmlElement(name = "linestring", type = LineString.class),
+        @XmlElement(name = "polygon", type = Polygon.class),
+        @XmlElement(name = "multipoint", type = MultiPoint.class),
+        @XmlElement(name = "multilinestring", type = MultiLineString.class),
+        @XmlElement(name = "multipolygon", type = MultiPolygon.class)
     })
     protected List<Object> pointOrLineStringOrPolygon;
 

@@ -104,13 +104,13 @@ imageLocation = attribute x { xsd:double }, attribute y { xsd:double }
 imageSize = attribute width { xsd:integer },attribute height { xsd:integer }
 
 GeometryContent = point | linestring | polygon | multipoint | multilinestring | multipolygon | geometrycollection   
-point = element Point { coordinatePair }
-linestring = element LineString { twoOrMoreCoordinatePairs }
-polygon = element Polygon { threeOrMoreCoordinatePairs+ }
-multipoint = element MultiPoint { coordinatePair+ }
-multilinestring = element MultiLineString { twoOrMoreCoordinatePairs+ }
-multipolygon = element MultiPolygon { polygon+ }
-geometrycollection = element GeometryCollection {
+point = element point { coordinatePair }
+linestring = element linestring { twoOrMoreCoordinatePairs }
+polygon = element polygon { threeOrMoreCoordinatePairs+ }
+multipoint = element multipoint { coordinatePair+ }
+multilinestring = element multilinestring { twoOrMoreCoordinatePairs+ }
+multipolygon = element multipolygon { polygon+ }
+geometrycollection = element geometrycollection {
     (point* & linestring* & polygon* & multipoint* & multilinestring* & multipolygon*)
 }
 coordinatePair = element coordinates  { list  { (xsd:double, xsd:double) } }

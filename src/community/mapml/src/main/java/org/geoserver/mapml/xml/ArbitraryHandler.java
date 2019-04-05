@@ -24,5 +24,4 @@ public class ArbitraryHandler implements DomHandler<String, StreamResult> {
     public Source marshal(String str, ValidationEventHandler errorHandler) {
         return new StreamSource(new StringReader(str));
     }
-
 }

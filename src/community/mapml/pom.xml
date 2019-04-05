@@ -46,6 +46,10 @@
         <artifactId>spring-oxm</artifactId>
     </dependency>
     <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>

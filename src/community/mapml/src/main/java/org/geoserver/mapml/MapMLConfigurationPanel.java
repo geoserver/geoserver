@@ -59,7 +59,7 @@ public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerIn
                         "mapml.enableSharding");
         CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
         add(enableSharding);
-        
+
         MapModel<String> shardListModel =
                 new MapModel<String>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
@@ -71,21 +71,21 @@ public class MapMLConfigurationPanel extends PublishedConfigurationPanel<LayerIn
                 new MapModel<String>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
                         "mapml.shardServerPattern");
-        TextField<String> shardServerPattern = new TextField<String>("shardServerPattern", shardServerPatternModel);
+        TextField<String> shardServerPattern =
+                new TextField<String>("shardServerPattern", shardServerPatternModel);
         add(shardServerPattern);
 
         MapModel<String> dimensionModel =
                 new MapModel<String>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
                         "mapml.dimension");
-        DropDownChoice<String> dimension = new DropDownChoice<String>(
-                        "dimension",
-                        dimensionModel,
-                        getEnabledDimensionNames(model.getObject()));
+        DropDownChoice<String> dimension =
+                new DropDownChoice<String>(
+                        "dimension", dimensionModel, getEnabledDimensionNames(model.getObject()));
         dimension.setNullValid(true);
         add(dimension);
     }
-    
+
     List<String> getEnabledDimensionNames(LayerInfo layer) {
         List<String> dimensionNames = new ArrayList<String>();
         for (Map.Entry<String, Serializable> entry : layer.getResource().getMetadata().entrySet()) {

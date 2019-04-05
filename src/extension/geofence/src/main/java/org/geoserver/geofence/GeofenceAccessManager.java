@@ -14,19 +14,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WMSLayerInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.LayerAttribute;
@@ -45,15 +33,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.security.CatalogMode;
-import org.geoserver.security.CoverageAccessLimits;
-import org.geoserver.security.DataAccessLimits;
-import org.geoserver.security.LayerGroupAccessLimits;
-import org.geoserver.security.ResourceAccessManager;
-import org.geoserver.security.StyleAccessLimits;
-import org.geoserver.security.VectorAccessLimits;
-import org.geoserver.security.WMSAccessLimits;
-import org.geoserver.security.WorkspaceAccessLimits;
+import org.geoserver.security.*;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
@@ -496,6 +476,10 @@ public class GeofenceAccessManager
             MultiPolygon rasterFilter = buildRasterFilter(rule);
 
             return new WMSAccessLimits(catalogMode, readFilter, rasterFilter, true);
+        } else if (resource instanceof WMTSLayerInfo) {
+            MultiPolygon rasterFilter = buildRasterFilter(rule);
+
+            return new WMTSAccessLimits(catalogMode, readFilter, rasterFilter);
         } else {
             throw new IllegalArgumentException("Don't know how to handle resource " + resource);
         }

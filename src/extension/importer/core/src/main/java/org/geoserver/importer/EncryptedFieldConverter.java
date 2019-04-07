@@ -5,8 +5,6 @@
  */
 package org.geoserver.importer;
 
-/** Encrypts/decrypts fields using GeoServer security manager help */
-
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 

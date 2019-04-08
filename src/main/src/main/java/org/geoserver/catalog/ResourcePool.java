@@ -103,6 +103,7 @@ import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.xml.WMSSchema;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.model.WMTSCapabilities;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleImpl;
@@ -1974,7 +1975,7 @@ public class ResourcePool {
      * @param info
      * @throws IOException
      */
-    public Layer getWMTSLayer(WMTSLayerInfo info) throws IOException {
+    public WMTSLayer getWMTSLayer(WMTSLayerInfo info) throws IOException {
 
         String name = info.getName();
         if (info.getNativeName() != null) {
@@ -1985,7 +1986,7 @@ public class ResourcePool {
 
         caps = info.getStore().getWebMapTileServer(null).getCapabilities();
 
-        for (Layer layer : caps.getLayerList()) {
+        for (WMTSLayer layer : caps.getLayerList()) {
             if (layer != null && name.equals(layer.getName())) {
                 return layer;
             }

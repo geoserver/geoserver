@@ -19,7 +19,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -153,7 +153,7 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
         return delegate.getTitle();
     }
 
-    public Layer getWMTSLayer(ProgressListener listener) throws IOException {
+    public WMTSLayer getWMTSLayer(ProgressListener listener) throws IOException {
         return delegate.getWMTSLayer(listener);
     }
 

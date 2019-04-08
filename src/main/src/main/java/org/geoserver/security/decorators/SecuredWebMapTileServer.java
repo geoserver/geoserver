@@ -32,7 +32,7 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     WebMapTileServer delegate;
 
     public SecuredWebMapTileServer(WebMapTileServer delegate) throws IOException, ServiceException {
-        super(delegate);
+        super(delegate.getCapabilities());
         this.delegate = delegate;
     }
 

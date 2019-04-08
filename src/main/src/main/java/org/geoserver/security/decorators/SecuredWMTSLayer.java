@@ -15,6 +15,8 @@ import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.StyleImpl;
 import org.geotools.ows.wms.xml.Dimension;
 import org.geotools.ows.wms.xml.Extent;
+import org.geotools.ows.wmts.model.TileMatrixSetLink;
+import org.geotools.ows.wmts.model.WMTSLayer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -23,12 +25,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
-public class SecuredWMTSLayer extends Layer {
-    Layer delegate;
+public class SecuredWMTSLayer extends WMTSLayer {
+    WMTSLayer delegate;
 
     WrapperPolicy policy;
 
-    public SecuredWMTSLayer(Layer delegate, WrapperPolicy policy) {
+    public SecuredWMTSLayer(WMTSLayer delegate, WrapperPolicy policy) {
+        super(delegate.getTitle());
         this.delegate = delegate;
         this.policy = policy;
     }
@@ -72,6 +75,64 @@ public class SecuredWMTSLayer extends Layer {
     // --------------------------------------------------------------------------------------
     // Purely delegated methods
     // --------------------------------------------------------------------------------------
+
+    public Map<String, TileMatrixSetLink> getTileMatrixLinks() {
+        return delegate.getTileMatrixLinks();
+    }
+
+    public void addTileMatrixLinks(List<TileMatrixSetLink> limitList) {
+        delegate.addTileMatrixLinks(limitList);
+    }
+
+    public void addTileMatrixLink(TileMatrixSetLink link) {
+        delegate.addTileMatrixLink(link);
+    }
+
+    public List<String> getFormats() {
+        return delegate.getFormats();
+    }
+
+    public void setFormats(List<String> formats) {
+        delegate.setFormats(formats);
+    }
+
+    public List<String> getInfoFormats() {
+        return delegate.getInfoFormats();
+    }
+
+    public void setInfoFormats(List<String> infoFormats) {
+        delegate.setInfoFormats(infoFormats);
+    }
+
+    public void putResourceURL(String format, String template) {
+        delegate.putResourceURL(format, template);
+    }
+
+    public String getTemplate(String key) {
+        return delegate.getTemplate(key);
+    }
+
+    public void addSRS(CoordinateReferenceSystem crs) {
+        delegate.addSRS(crs);
+    }
+
+    public CoordinateReferenceSystem getPreferredCRS() {
+        return delegate.getPreferredCRS();
+    }
+
+    public void setPreferredCRS(CoordinateReferenceSystem preferredCRS) {
+        delegate.setPreferredCRS(preferredCRS);
+    }
+
+    public void setDefaultStyle(StyleImpl style) {
+        delegate.setDefaultStyle(style);
+    }
+
+    public StyleImpl getDefaultStyle() {
+        return delegate.getDefaultStyle();
+    }
+
+    // ---------------------------------------------------------------------------------------
 
     public void addChildren(Layer child) {
         delegate.addChildren(child);

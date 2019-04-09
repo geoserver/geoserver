@@ -134,9 +134,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                 getNestedObject(
                         properties,
                         "relatedSamplingFeature",
-                        "SamplingFeatureComplex",
                         "relatedSamplingFeature",
-                        "SF_Specimen",
                         "properties",
                         "samplingTime",
                         "TimeInstant");
@@ -156,12 +154,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertThat(properties, is(notNullValue()));
         JSONObject samplingLocation =
                 getNestedObject(
-                        properties,
-                        "relatedSamplingFeature",
-                        "SamplingFeatureComplex",
-                        "relatedSamplingFeature",
-                        "SF_Specimen",
-                        "geometry");
+                        properties, "relatedSamplingFeature", "relatedSamplingFeature", "geometry");
         JSONArray coordinates = samplingLocation.getJSONArray("coordinates");
         assertThat(coordinates.size(), is(2));
         JSONArray c1 = coordinates.getJSONArray(0);
@@ -179,7 +172,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         print(json);
         JSONObject properties = getFeaturePropertiesById(json, "BOREHOLE.WTB5");
         assertThat(properties, is(notNullValue()));
-        JSONObject collar = getNestedObject(properties, "collarLocation", "BoreholeCollar");
+        JSONObject collar = getNestedObject(properties, "collarLocation");
         assertEquals("BOREHOLE.COLLAR.WTB5", collar.getString("id"));
         assertEquals("Feature", collar.getString("type"));
         JSONObject collarGeometry = collar.getJSONObject("geometry");

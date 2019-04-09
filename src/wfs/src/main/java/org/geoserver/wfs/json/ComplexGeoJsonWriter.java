@@ -35,6 +35,16 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.xml.sax.Attributes;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /** GeoJSON writer capable of handling complex features. */
 class ComplexGeoJsonWriter {
@@ -318,8 +328,7 @@ class ComplexGeoJsonWriter {
         for (Property property : properties) {
             // get the attributes (XML attributes) associated with the current property
             Map<NameImpl, String> attributes =
-                    (Map<NameImpl, String>)
-                            property.getUserData().get(org.xml.sax.Attributes.class);
+                    (Map<NameImpl, String>) property.getUserData().get(Attributes.class);
             if (checkIfFeatureIsLinked(property, attributes)) {
                 // we have a linked features
                 linkedFeatures.add(attributes);
@@ -371,26 +380,43 @@ class ComplexGeoJsonWriter {
     private void encodeProperty(Property property) {
         // these extra attributes should be seen as XML attributes
         Map<NameImpl, String> attributes =
-                (Map<NameImpl, String>) property.getUserData().get(org.xml.sax.Attributes.class);
+                (Map<NameImpl, String>) property.getUserData().get(Attributes.class);
+        String attributeName = property.getName().getLocalPart();
+        encodeProperty(attributeName, property, attributes);
+    }
+
+    private void encodeProperty(
+            String attributeName, Property property, Map<NameImpl, String> attributes) {
         if (property instanceof ComplexAttribute) {
             // check if we have a simple content
             ComplexAttribute complexAttribute = (ComplexAttribute) property;
+
             Object simpleValue = getSimpleContent(complexAttribute);
             if (simpleValue != null) {
-                encodeSimpleAttribute(
-                        complexAttribute.getName().getLocalPart(), simpleValue, attributes);
+                encodeSimpleAttribute(attributeName, simpleValue, attributes);
             } else {
-                // we need to encode a complex attribute
-                encodeComplexAttribute((ComplexAttribute) property, attributes);
+                // skip the property/element nesting found in GML, if possible
+                if (isGMLPropertyType(complexAttribute)) {
+                    Collection<? extends Property> value = complexAttribute.getValue();
+                    Property nested = value.iterator().next();
+                    Map<NameImpl, String> nestedAttributes =
+                            (Map<NameImpl, String>) nested.getUserData().get(Attributes.class);
+                    Map<NameImpl, String> mergedAttributes =
+                            mergeMaps(attributes, nestedAttributes);
+                    encodeProperty(attributeName, nested, mergedAttributes);
+                } else {
+                    // we need to encode a normal complex attribute
+                    encodeComplexAttribute(attributeName, complexAttribute, attributes);
+                }
             }
         } else if (property instanceof Attribute) {
             // check if we have a feature or list of features (chained features)
             List<Feature> features = getFeatures((Attribute) property);
             if (features != null) {
-                encodeChainedFeatures(property.getName().getLocalPart(), features);
+                encodeChainedFeatures(attributeName, features);
             } else {
                 // we need to encode a simple attribute
-                encodeSimpleAttribute((Attribute) property, attributes);
+                encodeSimpleAttribute(attributeName, property.getValue(), attributes);
             }
         } else {
             // unsupported attribute type provided, this will unlikely happen
@@ -399,6 +425,58 @@ class ComplexGeoJsonWriter {
                             "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported.",
                             property.getName(), property.getClass().getCanonicalName()));
         }
+    }
+
+    private <K, V> Map<K, V> mergeMaps(Map<K, V> mapA, Map<K, V> mapB) {
+        if (mapA == null) {
+            return mapB;
+        } else if (mapB == null) {
+            return mapA;
+        }
+
+        Map<K, V> merged = new HashMap<>(mapA);
+        merged.putAll(mapB);
+        return merged;
+    }
+
+    /**
+     * This code tries to determine if the current complex attribute is an example of GML
+     * property/type alternation. The GML gives us pretty much no firm indication to recognize them,
+     * there is no substitution group or inheritance, there are attribute groups sometimes found in
+     * these constructs, but not mandatory and not always present at the schema level.
+     *
+     * <p>This code works by recognizing the common alternation nomenclature, that is:
+     *
+     * <ul>
+     *   <li>The attribute type is called ${name}PropertyType
+     *   <li>It contains a single element inside, which is in turn another complex attribute itself
+     *   <li>The contained element type is called ${name}Type or the property is called ${name}
+     * </ul>
+     *
+     * Can I just say.... HACK HACK HACK!
+     */
+    private boolean isGMLPropertyType(ComplexAttribute complexAttribute) {
+        String attributeName = complexAttribute.getType().getName().getLocalPart();
+        if (!attributeName.endsWith("PropertyType")) {
+            return false;
+        }
+        Collection<? extends Property> value = complexAttribute.getValue();
+        if (value.size() != 1) {
+            return false;
+        }
+        Property containedProperty = value.iterator().next();
+        String containedPropertyTypeName = containedProperty.getType().getName().getLocalPart();
+        String containedPropertyName = containedProperty.getName().getLocalPart();
+        String propertyTypePrefix;
+        if (attributeName.endsWith("_PropertyType")) {
+            propertyTypePrefix =
+                    attributeName.substring(0, attributeName.length() - "_PropertyType".length());
+        } else {
+            propertyTypePrefix =
+                    attributeName.substring(0, attributeName.length() - "PropertyType".length());
+        }
+        return containedPropertyTypeName.equals(propertyTypePrefix + "Type")
+                || containedPropertyName.equals(propertyTypePrefix);
     }
 
     /**
@@ -503,16 +581,6 @@ class ComplexGeoJsonWriter {
         return attribute instanceof Feature
                 && (NON_FEATURE_TYPE_PROXY == null
                         || !NON_FEATURE_TYPE_PROXY.isInstance(attribute.getType()));
-    }
-
-    /**
-     * Encode a simple attribute, this means that this property will be encoded as a simple JSON
-     * attribute.
-     */
-    private void encodeSimpleAttribute(Attribute attribute, Map<NameImpl, String> attributes) {
-        String name = attribute.getName().getLocalPart();
-        Object value = attribute.getValue();
-        encodeSimpleAttribute(name, value, attributes);
     }
 
     /**

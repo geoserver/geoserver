@@ -509,7 +509,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertFalse(color.has("geometry"));
         assertFalse(color.has("properties"));
         // but value and codespace right in instead
-        color = color.getJSONObject("CGI_TermValue").getJSONObject("value");
+        color = color.getJSONObject("value");
         assertThat(color.getString("value"), anyOf(is("Blue"), is("Yellow")));
         assertThat(color.getString("@codeSpace"), is("some:uri"));
     }

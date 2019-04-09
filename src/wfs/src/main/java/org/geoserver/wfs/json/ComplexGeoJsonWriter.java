@@ -340,12 +340,21 @@ class ComplexGeoJsonWriter {
             // check if we have a simple content
             ComplexAttribute complexAttribute = (ComplexAttribute) property;
             Object simpleValue = getSimpleContent(complexAttribute);
+            String attributeName = complexAttribute.getName().getLocalPart();
             if (simpleValue != null) {
-                encodeSimpleAttribute(
-                        complexAttribute.getName().getLocalPart(), simpleValue, attributes);
+                encodeSimpleAttribute(attributeName, simpleValue, attributes);
             } else {
-                // we need to encode a complex attribute
-                encodeComplexAttribute((ComplexAttribute) property, attributes);
+                // skip the property/element nesting found in GML, if possible
+                if (isGMLPropertyType(complexAttribute)) {
+                    Collection<? extends Property> value = complexAttribute.getValue();
+                    Property nested = value.iterator().next();
+                    // use the attribute name of the local property, but encode directly the nested
+                    // value
+                    encodeComplexAttribute(attributeName, (ComplexAttribute) nested, attributes);
+                } else {
+                    // we need to encode a normal complex attribute
+                    encodeComplexAttribute(attributeName, complexAttribute, attributes);
+                }
             }
         } else if (property instanceof Attribute) {
             // check if we have a feature or list of features (chained features)
@@ -363,6 +372,44 @@ class ComplexGeoJsonWriter {
                             "Invalid property '%s' of type '%s', only 'Attribute' and 'ComplexAttribute' properties types are supported.",
                             property.getName(), property.getClass().getCanonicalName()));
         }
+    }
+
+    /**
+     * This code tries to determine if the current complex attribute is an example of GML
+     * property/type alternation. The GML gives us pretty much no firm indication to recognize them,
+     * there is no substitution group or inheritance, there are attribute groups sometimes found in
+     * these constructs, but not mandatory and not always present at the schema level.
+     *
+     * <p>This code works by recognizing the common alternation nomenclature, that is:
+     *
+     * <ul>
+     *   <li>The attribute type is called ${name}PropertyType
+     *   <li>It contains a single element inside, which is in turn another complex attribute itself
+     *   <li>The contained element type is called ${name}Type
+     * </ul>
+     *
+     * Can I just say.... HACK HACK HACK!
+     */
+    private boolean isGMLPropertyType(ComplexAttribute complexAttribute) {
+        String attributeName = complexAttribute.getType().getName().getLocalPart();
+        if (!attributeName.endsWith("PropertyType")) {
+            return false;
+        }
+        Collection<? extends Property> value = complexAttribute.getValue();
+        if (value.size() != 1) {
+            return false;
+        }
+        Property containedProperty = value.iterator().next();
+        if (containedProperty == null) {
+            return false;
+        }
+        if (!(containedProperty instanceof ComplexAttribute)) {
+            return false;
+        }
+        String containedPropertyTypeName = containedProperty.getType().getName().getLocalPart();
+        return containedPropertyTypeName.equals(
+                attributeName.substring(0, attributeName.length() - "PropertyType".length())
+                        + "Type");
     }
 
     /**
@@ -435,8 +482,7 @@ class ComplexGeoJsonWriter {
 
     /** Encode a complex attribute as a JSON object. */
     private void encodeComplexAttribute(
-            ComplexAttribute attribute, Map<NameImpl, String> attributes) {
-        String name = attribute.getName().getLocalPart();
+            String name, ComplexAttribute attribute, Map<NameImpl, String> attributes) {
         if (attribute instanceof Feature) {
             jsonWriter.key(name);
             encodeFeature((Feature) attribute);

@@ -32,6 +32,7 @@ import org.geoserver.mapml.xml.Option;
 import org.geoserver.mapml.xml.PositionType;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.mapml.xml.Select;
 import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
@@ -71,7 +72,9 @@ public class MapMLController {
             HttpServletRequest request,
             @PathVariable("layer") String layer,
             @PathVariable("proj") String proj,
-            @RequestParam("style") Optional<String> style)
+            @RequestParam("style") Optional<String> style,
+            @RequestParam("transparent") Optional<Boolean> transparent,
+            @RequestParam("format") Optional<String> format)
             throws NoSuchAuthorityCodeException, TransformException, FactoryException, IOException {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
         if (layerInfo == null) {
@@ -115,6 +118,9 @@ public class MapMLController {
         ReferencedEnvelope cbmBbox = bbox.transform(projSrs, true);
 
         String styleName = style.orElse("");
+        boolean isTransparent = transparent.orElse(!layerInfo.isOpaque());
+        String imageFormat = format.orElse("image/png");
+        
         String baseUrl = ResponseUtils.baseURL(request);
         String baseUrlPattern = baseUrl;
 
@@ -151,35 +157,64 @@ public class MapMLController {
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MIME_TYPE + ";projection=" + projType.value());
         metas.add(meta);
+        meta = new Meta();
+        meta.setName("projection");
+        meta.setContent(projType.value());
         List<Link> links = head.getLinks();
 
         String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
         String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
         if (licenseLink != null || licenseTitle != null) {
-            Link link = new Link();
-            link.setRel(RelType.LICENSE);
-            if (licenseLink != null) {
-                link.setHref(licenseLink);
-            }
+            Link titleLink = new Link();
+            titleLink.setRel(RelType.LICENSE);
             if (licenseTitle != null) {
-                link.setTitle(licenseTitle);
+                titleLink.setTitle(licenseTitle);
             }
-            links.add(link);
+            if (licenseLink != null) {
+                titleLink.setHref(licenseLink);
+            }
+            links.add(titleLink);
         }
         // styles
         Set<StyleInfo> styles = layerInfo.getStyles();
-        if (styles.size() > 1) {
-            for (StyleInfo si : styles) {
-                Link link = new Link();
-                if (si.getName().equals(styleName)) {
-                    link.setRel(RelType.SELF_STYLE);
-                } else {
-                    link.setRel(RelType.STYLE);
-                }
-                link.setHref(baseUrl + "mapml/" + layer + "/" + proj + "?style=" + si.getName());
-                link.setTitle(si.getName());
-                links.add(link);
-            }
+        String effectiveStyleName = styleName;
+        if(effectiveStyleName.isEmpty()) {
+            effectiveStyleName = layerInfo.getDefaultStyle().getName();
+        }
+
+        // style links
+        for (StyleInfo si : styles) {
+            // skip the self style case (if it is even listed)
+            if (si.getName().equals(effectiveStyleName)) continue;
+            Link styleLink = new Link();
+            styleLink.setRel(RelType.STYLE);
+            styleLink.setTitle(si.getName());
+            styleLink.setHref(baseUrl + "mapml/" + layer + "/" + proj + "?style=" + si.getName() 
+                    + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
+                    + (format.isPresent() ? "&format=" + imageFormat :""));
+            links.add(styleLink);
+        }
+        // output the self style link, taking care to handle the default empty string styleName case
+        Link selfStyleLink = new Link();
+        selfStyleLink.setRel(RelType.SELF_STYLE);
+        selfStyleLink.setTitle(effectiveStyleName);
+        selfStyleLink.setHref(baseUrl + "mapml/" + layer + "/" + proj + "?style=" + styleName
+                + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
+                + (format.isPresent() ? "&format=" + imageFormat :""));
+
+        links.add(selfStyleLink);
+
+        // alternate projection links
+        for (ProjType pt : ProjType.values()) {
+            // skip the current proj
+            if (pt.equals(projType)) continue;
+            Link styleLink = new Link();
+            styleLink.setRel(RelType.ALTERNATE);
+            styleLink.setProjection(pt);
+            styleLink.setHref(baseUrl + "mapml/" + layer + "/" + pt.value() + "?style=" + styleName
+                    + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
+                    + (format.isPresent() ? "&format=" + imageFormat :""));
+            links.add(styleLink);
         }
 
         mapml.setHead(head);
@@ -229,19 +264,16 @@ public class MapMLController {
                 if (timeInfo.isEnabled()) {
                     timeEnabled = true;
                     Set<Date> dates = wms.getFeatureTypeTimes(typeInfo);
-                    input = new Input();
-                    input.setName("time");
-                    input.setList("dimList");
-                    extentList.add(input);
-                    Datalist datalist = new Datalist();
-                    datalist.setId("dimList");
-                    List<Option> options = datalist.getOptions();
+                    Select select = new Select();
+                    select.setId("time");
+                    select.setName("time");
+                    extentList.add(select);
+                    List<Option> options = select.getOptions();
                     for (Date date : dates) {
                         Option o = new Option();
                         o.setValue(DATE_FORMAT.format(date));
                         options.add(o);
                     }
-                    extentList.add(datalist);
                 }
             }
         } else if ("Elevation".equalsIgnoreCase(dimension)) {
@@ -252,19 +284,16 @@ public class MapMLController {
                 if (elevInfo.isEnabled()) {
                     elevationEnabled = true;
                     Set<Double> elevs = wms.getFeatureTypeElevations(typeInfo);
-                    input = new Input();
-                    input.setName("elevation");
-                    input.setList("dimList");
-                    extentList.add(input);
-                    Datalist datalist = new Datalist();
-                    datalist.setId("dimList");
-                    List<Option> options = datalist.getOptions();
+                    Select select = new Select();
+                    select.setId("elevation");
+                    select.setName("elevation");
+                    extentList.add(select);
+                    List<Option> options = select.getOptions();
                     for (Double elev : elevs) {
                         Option o = new Option();
                         o.setValue(elev.toString());
                         options.add(o);
                     }
-                    extentList.add(datalist);
                 }
             }
         }
@@ -317,9 +346,9 @@ public class MapMLController {
             extentList.add(input);
 
             // tile link
-            Link link = new Link();
-            link.setRel(RelType.TILE);
-            link.setTref(
+            Link tileLink = new Link();
+            tileLink.setRel(RelType.TILE);
+            tileLink.setTref(
                     baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
@@ -330,8 +359,11 @@ public class MapMLController {
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
                             + (elevationEnabled ? "&elevation={elevation}" : "")
-                            + "&bbox={txmin},{tymin},{txmax},{tymax}&format=image/png&transparent=false&width=256&height=256");
-            extentList.add(link);
+                            + "&bbox={txmin},{tymin},{txmax},{tymax}"
+                            + "&format=" + imageFormat
+                            + "&transparent=" + isTransparent
+                            + "&width=256&height=256");
+            extentList.add(tileLink);
         } else {
             // image inputs
             // xmin
@@ -395,9 +427,9 @@ public class MapMLController {
             extentList.add(input);
 
             // image link
-            Link link = new Link();
-            link.setRel(RelType.IMAGE);
-            link.setTref(
+            Link imageLink = new Link();
+            imageLink.setRel(RelType.IMAGE);
+            imageLink.setTref(
                     baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
@@ -408,8 +440,11 @@ public class MapMLController {
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
                             + (elevationEnabled ? "&elevation={elevation}" : "")
-                            + "&bbox={xmin},{ymin},{xmax},{ymax}&format=image/png&transparent=false&width={w}&height={h}");
-            extentList.add(link);
+                            + "&bbox={xmin},{ymin},{xmax},{ymax}"
+                            + "&format=" + imageFormat
+                            + "&transparent=" + isTransparent
+                            + "&width={w}&height={h}");
+            extentList.add(imageLink);
         }
 
         // query inputs
@@ -431,9 +466,9 @@ public class MapMLController {
             extentList.add(input);
 
             // query link
-            Link link = new Link();
-            link.setRel(RelType.QUERY);
-            link.setTref(
+            Link queryLink = new Link();
+            queryLink.setRel(RelType.QUERY);
+            queryLink.setTref(
                     baseUrlPattern
                             + layerInfo.getResource().getStore().getWorkspace().getName()
                             + "/wms?version=1.3.0&service=WMS&request=GetFeatureInfo&crs=EPSG:"
@@ -450,9 +485,9 @@ public class MapMLController {
                                     ? "&bbox={txmin},{tymin},{txmax},{tymax}&width=256&height=256"
                                     : "&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}")
                             + "&info_format=text/mapml"
-                            + "&transparent=false"
+                            + "&transparent=" + isTransparent
                             + "&x={i}&y={j}");
-            extentList.add(link);
+            extentList.add(queryLink);
         }
 
         body.setExtent(extent);

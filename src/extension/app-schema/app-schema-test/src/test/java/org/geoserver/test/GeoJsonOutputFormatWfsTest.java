@@ -67,6 +67,10 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                     "Borehole",
                     "Gsml32Borehole.xml",
                     "Gsml32Borehole.properties");
+            // tricky, the above registered GSML in a different URI and here we override
+            // works, but be on the lookout for issues when modifying the test
+            putNamespace(GSML_PREFIX, GSML_URI);
+            addFeatureType(GSML_PREFIX, "Borehole", "Borehole.xml", "Borehole.properties");
         }
     }
 
@@ -154,6 +158,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                         "SamplingFeatureComplex",
                         "relatedSamplingFeature",
                         "SF_Specimen",
+                        "properties",
                         "samplingTime",
                         "TimeInstant");
         assertThat(timeInstant.getString("timePosition"), is("2014-07-02T00:00:00Z"));
@@ -173,8 +178,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                         "SamplingFeatureComplex",
                         "relatedSamplingFeature",
                         "SF_Specimen",
-                        "samplingLocation",
-                        "value");
+                        "geometry");
         JSONArray coordinates = samplingLocation.getJSONArray("coordinates");
         assertThat(coordinates.size(), is(2));
         JSONArray c1 = coordinates.getJSONArray(0);
@@ -195,5 +199,22 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
             curr = curr.getJSONObject(key);
         }
         return curr;
+    }
+
+    @Test
+    public void testNestedFeatureEncoding() throws Exception {
+        String path = "wfs?request=GetFeature&typename=gsml:Borehole&outputFormat=json";
+        JSON json = getAsJSON(path);
+        print(json);
+        JSONObject properties = getFeaturePropertiesById(json, "BOREHOLE.WTB5");
+        assertThat(properties, is(notNullValue()));
+        JSONObject collar = getNestedObject(properties, "collarLocation", "BoreholeCollar");
+        assertEquals("BOREHOLE.COLLAR.WTB5", collar.getString("id"));
+        assertEquals("Feature", collar.getString("type"));
+        JSONObject collarGeometry = collar.getJSONObject("geometry");
+        JSONArray coordinates = collarGeometry.getJSONArray("coordinates");
+        assertThat(coordinates.size(), is(2));
+        assertEquals(-28.4139, coordinates.getDouble(0), 0.1);
+        assertEquals(121.142, coordinates.getDouble(1), 0.1);
     }
 }

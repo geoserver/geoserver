@@ -489,6 +489,15 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     }
 
     @Test
+    public void testGetFeatureJSON() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1"
+                                + ".0&typename=gsml:GeologicUnit&outputFormat=application/json");
+        print(json);
+    }
+
+    @Test
     public void testGetFeatureValid() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         String newline = System.getProperty("line.separator");

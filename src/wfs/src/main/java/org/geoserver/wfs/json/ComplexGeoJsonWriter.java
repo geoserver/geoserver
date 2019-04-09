@@ -207,10 +207,15 @@ class ComplexGeoJsonWriter {
         jsonWriter.key(attributeName);
         jsonWriter.array();
         for (Feature feature : chainedFeatures) {
-            // encode each chained feature
-            jsonWriter.object();
-            encodeProperties(null, feature.getType(), feature.getProperties());
-            jsonWriter.endObject();
+            // if it's GeoJSON compatible, encode as a full blown GeoJSON feature (must have a
+            // default geometry)
+            if (feature.getType().getGeometryDescriptor() != null) {
+                encodeFeature(feature);
+            } else {
+                jsonWriter.object();
+                encodeProperties(null, feature.getType(), feature.getProperties());
+                jsonWriter.endObject();
+            }
         }
         // end the JSON chained features array
         jsonWriter.endArray();
@@ -431,21 +436,27 @@ class ComplexGeoJsonWriter {
     /** Encode a complex attribute as a JSON object. */
     private void encodeComplexAttribute(
             ComplexAttribute attribute, Map<NameImpl, String> attributes) {
-        // get the attribute name and start a JSON object
         String name = attribute.getName().getLocalPart();
-        jsonWriter.key(name);
-        jsonWriter.object();
-        // let's see if we have actually some properties to encode
-        if (attribute.getProperties() != null && !attribute.getProperties().isEmpty()) {
-            // encode the object properties, since this is not a top feature or a
-            // chained feature we don't need to explicitly handle the geometry attribute
-            encodeProperties(null, attribute.getType(), attribute.getProperties());
+        if (attribute instanceof Feature) {
+            jsonWriter.key(name);
+            encodeFeature((Feature) attribute);
+        } else {
+            // get the attribute name and start a JSON object
+
+            jsonWriter.key(name);
+            jsonWriter.object();
+            // let's see if we have actually some properties to encode
+            if (attribute.getProperties() != null && !attribute.getProperties().isEmpty()) {
+                // encode the object properties, since this is not a top feature or a
+                // chained feature we don't need to explicitly handle the geometry attribute
+                encodeProperties(null, attribute.getType(), attribute.getProperties());
+            }
+            if (attributes != null && !attributes.isEmpty()) {
+                // encode the attributes list
+                encodeAttributes(attributes);
+            }
+            jsonWriter.endObject();
         }
-        if (attributes != null && !attributes.isEmpty()) {
-            // encode the attributes list
-            encodeAttributes(attributes);
-        }
-        jsonWriter.endObject();
     }
 
     /**

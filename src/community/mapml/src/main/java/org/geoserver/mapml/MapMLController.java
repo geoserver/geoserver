@@ -120,7 +120,7 @@ public class MapMLController {
         String styleName = style.orElse("");
         boolean isTransparent = transparent.orElse(!layerInfo.isOpaque());
         String imageFormat = format.orElse("image/png");
-        
+
         String baseUrl = ResponseUtils.baseURL(request);
         String baseUrlPattern = baseUrl;
 
@@ -178,7 +178,7 @@ public class MapMLController {
         // styles
         Set<StyleInfo> styles = layerInfo.getStyles();
         String effectiveStyleName = styleName;
-        if(effectiveStyleName.isEmpty()) {
+        if (effectiveStyleName.isEmpty()) {
             effectiveStyleName = layerInfo.getDefaultStyle().getName();
         }
 
@@ -189,18 +189,32 @@ public class MapMLController {
             Link styleLink = new Link();
             styleLink.setRel(RelType.STYLE);
             styleLink.setTitle(si.getName());
-            styleLink.setHref(baseUrl + "mapml/" + layer + "/" + proj + "?style=" + si.getName() 
-                    + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
-                    + (format.isPresent() ? "&format=" + imageFormat :""));
+            styleLink.setHref(
+                    baseUrl
+                            + "mapml/"
+                            + layer
+                            + "/"
+                            + proj
+                            + "?style="
+                            + si.getName()
+                            + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
+                            + (format.isPresent() ? "&format=" + imageFormat : ""));
             links.add(styleLink);
         }
         // output the self style link, taking care to handle the default empty string styleName case
         Link selfStyleLink = new Link();
         selfStyleLink.setRel(RelType.SELF_STYLE);
         selfStyleLink.setTitle(effectiveStyleName);
-        selfStyleLink.setHref(baseUrl + "mapml/" + layer + "/" + proj + "?style=" + styleName
-                + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
-                + (format.isPresent() ? "&format=" + imageFormat :""));
+        selfStyleLink.setHref(
+                baseUrl
+                        + "mapml/"
+                        + layer
+                        + "/"
+                        + proj
+                        + "?style="
+                        + styleName
+                        + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
+                        + (format.isPresent() ? "&format=" + imageFormat : ""));
 
         links.add(selfStyleLink);
 
@@ -211,9 +225,16 @@ public class MapMLController {
             Link styleLink = new Link();
             styleLink.setRel(RelType.ALTERNATE);
             styleLink.setProjection(pt);
-            styleLink.setHref(baseUrl + "mapml/" + layer + "/" + pt.value() + "?style=" + styleName
-                    + (transparent.isPresent() ? "&transparent=" + isTransparent : "") 
-                    + (format.isPresent() ? "&format=" + imageFormat :""));
+            styleLink.setHref(
+                    baseUrl
+                            + "mapml/"
+                            + layer
+                            + "/"
+                            + pt.value()
+                            + "?style="
+                            + styleName
+                            + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
+                            + (format.isPresent() ? "&format=" + imageFormat : ""));
             links.add(styleLink);
         }
 
@@ -360,8 +381,10 @@ public class MapMLController {
                             + (timeEnabled ? "&time={time}" : "")
                             + (elevationEnabled ? "&elevation={elevation}" : "")
                             + "&bbox={txmin},{tymin},{txmax},{tymax}"
-                            + "&format=" + imageFormat
-                            + "&transparent=" + isTransparent
+                            + "&format="
+                            + imageFormat
+                            + "&transparent="
+                            + isTransparent
                             + "&width=256&height=256");
             extentList.add(tileLink);
         } else {
@@ -441,8 +464,10 @@ public class MapMLController {
                             + (timeEnabled ? "&time={time}" : "")
                             + (elevationEnabled ? "&elevation={elevation}" : "")
                             + "&bbox={xmin},{ymin},{xmax},{ymax}"
-                            + "&format=" + imageFormat
-                            + "&transparent=" + isTransparent
+                            + "&format="
+                            + imageFormat
+                            + "&transparent="
+                            + isTransparent
                             + "&width={w}&height={h}");
             extentList.add(imageLink);
         }
@@ -485,7 +510,8 @@ public class MapMLController {
                                     ? "&bbox={txmin},{tymin},{txmax},{tymax}&width=256&height=256"
                                     : "&bbox={xmin},{ymin},{xmax},{ymax}&width={w}&height={h}")
                             + "&info_format=text/mapml"
-                            + "&transparent=" + isTransparent
+                            + "&transparent="
+                            + isTransparent
                             + "&x={i}&y={j}");
             extentList.add(queryLink);
         }

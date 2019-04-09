@@ -86,7 +86,7 @@ MapML Resources
 
 MapML resources will be published for any published WMS layers. The MapML resources will be available at::
 
-  http://{serverName}/geoserver/mapml/{layerName}/{projectionName}?style={styleName}
+  http://{serverName}/geoserver/mapml/{layerName}/{projectionName}?style={styleName}&transparent={true|false}&format={wmsFormat}
   
 
 The ``{layerName}`` is the WMS layer name, and the ``{serverName}`` is the name or IP address of the server on which Geoserver is running. The ``{projectionName}`` must be one of the projections supported by MapML:
@@ -96,8 +96,16 @@ The ``{layerName}`` is the WMS layer name, and the ``{serverName}`` is the name 
 - APSTILE
 - WGS84 
 
-The ``style`` parameter is optional, but if provided the ``{styleName}`` must correspond to an available WMS style to use for the layer.
+Each of the URL query string parameters are optional, but if provided they are effectively passed-through to the underlying WMS service call. Here are some details on the parameters:
 
+**style**
+  If provided, the specified ``{styleName}`` must correspond to an available WMS style to use for the layer.
+  
+**transparent**
+  If provided, must be either ``true`` or ``false``. The same value is passed through to the underlying WMS service. If not provided, it defaults to the inverse of the "opaque" WMS publishing layer setting. 
+  
+**format**
+  If provided, must be a valid WMS format specifier. If not provided, it defaults to ``image/png``. 
 
 MapML Visualization
 -------------------
@@ -136,4 +144,4 @@ The only tool which is presently able to display MapML is a Leaflet-based MapML 
         </body>
     </html>
     
-In the above example, the placeholders ``{layerName}``, ``{serverName}``, ``{projectionName}``, and ``{styleName}`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.
+In the above example, the place-holders ``{layerName}``, ``{serverName}``, ``{projectionName}``, and ``{styleName}`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.

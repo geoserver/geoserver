@@ -16,6 +16,7 @@ import java.util.Objects;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /** Validates JSON output format for complex features. */
@@ -156,7 +157,11 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                         "SF_Specimen",
                         "samplingTime",
                         "TimeInstant");
-        assertThat(timeInstant.getString("timePosition"), is("2014-07-02T00:00:00Z"));
+        // property file uses a java.util.Date, but the database uses a java.sql.Date, hence
+        // different encodings
+        assertThat(
+                timeInstant.getString("timePosition"),
+                CoreMatchers.anyOf(is("2014-07-02T00:00:00Z"), is("2014-07-02Z")));
     }
 
     @Test

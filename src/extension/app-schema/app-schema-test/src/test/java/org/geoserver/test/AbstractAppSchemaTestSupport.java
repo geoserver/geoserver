@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -139,6 +140,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         getGeoServer().save(wfs);
         // disable schema caching in tests, as schemas are expected to provided on the classpath
         SchemaCache.disableAutomaticConfiguration();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
     /**

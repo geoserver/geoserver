@@ -292,7 +292,7 @@ public class MapMLController {
                     List<Option> options = select.getOptions();
                     for (Date date : dates) {
                         Option o = new Option();
-                        o.setValue(DATE_FORMAT.format(date));
+                        o.setContent(DATE_FORMAT.format(date));
                         options.add(o);
                     }
                 }
@@ -312,7 +312,7 @@ public class MapMLController {
                     List<Option> options = select.getOptions();
                     for (Double elev : elevs) {
                         Option o = new Option();
-                        o.setValue(elev.toString());
+                        o.setContent(elev.toString());
                         options.add(o);
                     }
                 }

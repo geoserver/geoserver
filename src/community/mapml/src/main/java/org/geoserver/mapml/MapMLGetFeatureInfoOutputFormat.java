@@ -51,11 +51,14 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             throw new ServiceException(
                     "MapML OutputFormat does not support Multiple Feature Type output.");
         }
-        FeatureCollection featureCollection = featureCollections.get(0);
-        if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+        SimpleFeatureCollection fc = null;
+        if (featureCollections.size() == 1) {
+            FeatureCollection featureCollection = featureCollections.get(0);
+            if (!(featureCollection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            fc = (SimpleFeatureCollection) featureCollection;
         }
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
 
         // build the mapML doc
         Mapml mapml = new Mapml();
@@ -84,13 +87,15 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         // extent.setUnits(projType);
         List<Object> extentList = extent.getInputOrDatalistOrLink();
 
-        List<Feature> features = body.getFeatures();
-        try (SimpleFeatureIterator iterator = fc.features()) {
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                // convert feature to xml
-                Feature f = MapMLGenerator.buildFeature(feature);
-                features.add(f);
+        if (fc != null) {
+            List<Feature> features = body.getFeatures();
+            try (SimpleFeatureIterator iterator = fc.features()) {
+                while (iterator.hasNext()) {
+                    SimpleFeature feature = iterator.next();
+                    // convert feature to xml
+                    Feature f = MapMLGenerator.buildFeature(feature);
+                    features.add(f);
+                }
             }
         }
 

@@ -262,6 +262,9 @@
         <module>wfs3</module>
         <!-- <module>monitor-hibernate</module> -->
         <module>qos</module>
+        <module>mapml</module>
+        <module>generated-geometries</module>
+        <module>web-ogr</module>
       </modules>
     </profile>
     <profile>
@@ -522,6 +525,12 @@
       </modules>
     </profile>
     <profile>
+      <id>wmts-styles</id>
+      <modules>
+        <module>wmts-styles</module>
+      </modules>
+    </profile>
+    <profile>
       <id>ows-simulate</id>
       <modules>
         <module>ows-simulate</module>
@@ -593,5 +602,23 @@
         <module>monitor-hibernate</module>
       </modules>
     </profile>
-  </profiles>  
+    <profile>
+      <id>mapml</id>
+      <modules>
+        <module>mapml</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>generated-geometries</id>
+      <modules>
+        <module>generated-geometries</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>web-ogr</id>
+      <modules>
+        <module>web-ogr</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

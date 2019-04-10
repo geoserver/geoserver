@@ -5,6 +5,8 @@
  */
 package org.geoserver.web;
 
+import static java.lang.String.format;
+
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -32,5 +34,9 @@ public class FormTestPage extends WebPage {
         Form<?> form = new Form<Object>(FORM, formModel);
         form.add(builder.buildComponent(PANEL));
         add(form);
+    }
+
+    public String getFormPagePath(String path) {
+        return format("%s:%s:%s", FORM, PANEL, path);
     }
 }

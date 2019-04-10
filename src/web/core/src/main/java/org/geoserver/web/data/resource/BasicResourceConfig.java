@@ -53,6 +53,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
+        setOutputMarkupId(true);
 
         TextField<String> name = new TextField<String>("name");
         name.setRequired(true);

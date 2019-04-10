@@ -205,6 +205,11 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-wmts-styles</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-sec-oauth2-google</artifactId>
      <version>${project.version}</version>
    </dependency>
@@ -303,6 +308,11 @@
      <artifactId>gs-wfs3</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-mapml</artifactId>
+     <version>${project.version}</version>
+   </dependency>
    <!--
    <dependency>
     <groupId>org.geoserver.community</groupId>
@@ -334,7 +344,18 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-qos</artifactId>
      <version>${project.version}</version>
-   </dependency> 
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-generated-geometries</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-web-ogr</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

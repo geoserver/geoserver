@@ -1449,3 +1449,12 @@ li.select2-results__option {
 .fullscreen #cm_editor_heigth {
    enabled: false;
 }
+
+/* --- */
+.default-margin {
+	margin: 0 0.2em;
+}
+
+.min-width {
+	min-width: 120px;
+}

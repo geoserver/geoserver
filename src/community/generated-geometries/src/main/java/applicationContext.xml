@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="generatedGeometryConfigPanel"
+        class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <property name="id" value="generatedGeometry"/>
+    <property name="titleKey" value="data.resource.config.generated-geometry"/>
+    <property name="componentClass"
+              value="org.geoserver.generatedgeometries.web.GeneratedGeometryConfigurationPanel"/>
+  </bean>
+
+
+  <bean id="longLatStrategy" class="org.geoserver.generatedgeometries.core.longitudelatitude.LongLatGeometryGenerationStrategy"/>
+
+  <bean id="longLatStrategyPanel" class="org.geoserver.generatedgeometries.web.longitudelatitude.LongLatGeometryStrategyUIGenerator">
+    <constructor-arg ref="longLatStrategy"/>
+  </bean>
+
+  <bean id="longLatGeometryResourcePoolCallback" class="org.geoserver.generatedgeometries.core.GeometryGenerationRetypingCallback">
+    <constructor-arg ref="longLatStrategy"/>
+  </bean>
+
+</beans>

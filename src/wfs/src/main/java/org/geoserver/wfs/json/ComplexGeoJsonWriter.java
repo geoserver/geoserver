@@ -37,21 +37,13 @@ import org.opengis.filter.identity.Identifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.Attributes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 /** GeoJSON writer capable of handling complex features. */
 class ComplexGeoJsonWriter {
 
     static final Logger LOGGER = Logging.getLogger(ComplexGeoJsonWriter.class);
 
     private static Class NON_FEATURE_TYPE_PROXY;
+    private static final String DATATYPE = "@dataType";
 
     static {
         try {
@@ -121,12 +113,31 @@ class ComplexGeoJsonWriter {
         // start the JSON object that will contain all the others properties
         jsonWriter.key("properties");
         jsonWriter.object();
+        jsonWriter.key("@featureType").value(getSimplifiedTypeName(feature.getType().getName()));
         // encode object properties, we pass the geometry attribute to avoid duplicate encodings
         encodeProperties(geometryAttribute, feature.getType(), feature.getProperties());
         // close the feature JSON object
         jsonWriter.endObject();
         // close the properties JSON object
         jsonWriter.endObject();
+    }
+
+    /**
+     * Returns the simplified type name, e.g., if the name is BoreCollarType the method will return
+     * "BoreCollar" (to remove yet another GML convention)
+     *
+     * @param name
+     * @return
+     */
+    private String getSimplifiedTypeName(Name name) {
+        String localName = name.getLocalPart();
+        if (localName.endsWith("_Type")) {
+            return localName.substring(0, localName.length() - "_Type".length());
+        }
+        if (localName.endsWith("Type")) {
+            return localName.substring(0, localName.length() - "Type".length());
+        }
+        return localName;
     }
 
     /**
@@ -241,7 +252,7 @@ class ComplexGeoJsonWriter {
         jsonWriter.array();
         // encode each linked feature
         for (Map<NameImpl, String> feature : linkedFeatures) {
-            encodeAttributesArray(feature);
+            encodeAttributesAsObject(feature);
         }
         // end the linked features JSON array
         jsonWriter.endArray();
@@ -549,16 +560,17 @@ class ComplexGeoJsonWriter {
 
     /** Encode a complex attribute as a JSON object. */
     private void encodeComplexAttribute(
-            ComplexAttribute attribute, Map<NameImpl, String> attributes) {
-        String name = attribute.getName().getLocalPart();
+            String name, ComplexAttribute attribute, Map<NameImpl, String> attributes) {
         if (isFullFeature(attribute)) {
             jsonWriter.key(name);
             encodeFeature((Feature) attribute);
         } else {
             // get the attribute name and start a JSON object
-
             jsonWriter.key(name);
             jsonWriter.object();
+            // encode the datatype
+            jsonWriter.key(DATATYPE);
+            jsonWriter.value(getSimplifiedTypeName(attribute.getType().getName()));
             // let's see if we have actually some properties to encode
             if (attribute.getProperties() != null && !attribute.getProperties().isEmpty()) {
                 // encode the object properties, since this is not a top feature or a
@@ -621,20 +633,19 @@ class ComplexGeoJsonWriter {
     }
 
     /**
-     * Utility method that encode an attributes map as an array of objects, each one having a single
-     * key (based on the attribute name local part ) and value . Attributes with a NULL value will
-     * not be encoded. This method assumes that it is already in an array context.
+     * Utility method that encode an attributes map as properties of an object, each one using the
+     * attribute name local part and value . Attributes with a NULL value will not be encoded.
      */
-    private void encodeAttributesArray(Map<NameImpl, String> attributes) {
+    private void encodeAttributesAsObject(Map<NameImpl, String> attributes) {
+        jsonWriter.object();
         attributes.forEach(
                 (name, value) -> {
                     if (value != null) {
                         // encode attribute, we don't take namespace into account
-                        jsonWriter.object();
-                        jsonWriter.key(name.getLocalPart()).value(value);
-                        jsonWriter.endObject();
+                        jsonWriter.key("@" + name.getLocalPart()).value(value);
                     }
                 });
+        jsonWriter.endObject();
     }
 
     /** Return TRUE if a geometry was found during the features collections encoding. */

@@ -79,6 +79,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                 getAsJSON(
                         "wfs?request=GetFeature&version=1.1.0"
                                 + "&typename=st_gml31:Station_gml31&outputFormat=application/json");
+        print(response);
         // validate the obtained response
         checkStation1Exists(response);
     }
@@ -106,7 +107,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertThat(name.get("@code"), is("st1"));
         // validate the station contact
         JSONObject contact = station.getJSONObject("contact");
-        assertThat(contact.size(), is(2));
+        assertThat(contact.size(), is(3));
         assertThat(contact.get("@mail"), is("st1@stations.org"));
         JSONObject phone = contact.getJSONObject("phone");
         assertThat(phone.size(), is(2));
@@ -116,10 +117,10 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         JSONArray measurements = station.getJSONArray("measurements");
         assertThat(measurements.size(), is(2));
         assertThat(
-                measurements.getJSONObject(0).getString("href"),
+                measurements.getJSONObject(0).getString("@href"),
                 containsString("http://www.stations.org/ms."));
         assertThat(
-                measurements.getJSONObject(1).getString("href"),
+                measurements.getJSONObject(1).getString("@href"),
                 containsString("http://www.stations.org/ms."));
     }
 
@@ -172,6 +173,11 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         print(json);
         JSONObject properties = getFeaturePropertiesById(json, "BOREHOLE.WTB5");
         assertThat(properties, is(notNullValue()));
+
+        // check the featureType attribute is there
+        assertEquals("Borehole", properties.getString("@featureType"));
+
+        // get the nested feature
         JSONObject collar = getNestedObject(properties, "collarLocation");
         assertEquals("BOREHOLE.COLLAR.WTB5", collar.getString("id"));
         assertEquals("Feature", collar.getString("type"));
@@ -180,5 +186,23 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertThat(coordinates.size(), is(2));
         assertEquals(-28.4139, coordinates.getDouble(0), 0.1);
         assertEquals(121.142, coordinates.getDouble(1), 0.1);
+
+        JSONObject collarProperties = collar.getJSONObject("properties");
+        assertEquals("BoreholeCollar", collarProperties.getString("@featureType"));
+        JSONObject indexData = properties.getJSONObject("indexData");
+        assertEquals("BoreholeDetails", indexData.getString("@dataType"));
+        assertEquals(
+                "BoundingShape", indexData.getJSONObject("coredInterval").getString("@dataType"));
+
+        // get the sampled feature, which is a linked one
+        JSONArray sampledFeatures = properties.getJSONArray("sampledFeature");
+        assertEquals(1, sampledFeatures.size());
+        JSONObject sampledFeature = sampledFeatures.getJSONObject(0);
+        assertEquals(
+                "http://www.opengis.net/def/nil/OGC/0/unknown", sampledFeature.getString("@href"));
+        assertEquals(
+                "http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html",
+                sampledFeature.getString("@role"));
+        assertEquals("unknown", sampledFeature.getString("@title"));
     }
 }

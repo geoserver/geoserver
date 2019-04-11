@@ -21,7 +21,7 @@ public class RestEnvVariableCallback extends DispatcherCallbackAdapter {
     /**
      * Parses and sets the environment variables from their "var1:value1;v2:value;..." syntax, that
      * a {@link org.springframework.stereotype.Controller} retrieved from the request some way
-     * (ideally via a "env" KVP parameter, but we don't want to be prescrictive about it, in REST
+     * (ideally via a "env" KVP parameter, but we don't want to be prescriptive about it, in REST
      * "env" could be used for something else
      *
      * @param unparsedOptions

@@ -9,10 +9,13 @@ package org.geoserver.sldservice.rest;
 import static org.geoserver.sldservice.utils.classifier.RasterSymbolizerBuilder.DEFAULT_MAX_PIXELS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -26,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.media.jai.PlanarImage;
@@ -38,6 +42,7 @@ import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -46,10 +51,12 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.function.FilterFunction_parseDouble;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.referencing.CRS;
@@ -70,6 +77,7 @@ import org.geotools.xml.styling.SLDParser;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -89,6 +97,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
             new QName(
                     SystemTestData.CITE_URI, "ClassificationPolygons", SystemTestData.CITE_PREFIX);
 
+    static final QName FILTERED_POINTS =
+            new QName(SystemTestData.CITE_URI, "FilteredPoints", SystemTestData.CITE_PREFIX);
+
     static final QName MILANOGEO =
             new QName(SystemTestData.CITE_URI, "milanogeo", SystemTestData.CITE_PREFIX);
 
@@ -100,6 +111,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     static final QName SRTM =
             new QName(SystemTestData.CITE_URI, "srtm", SystemTestData.CITE_PREFIX);
+
+    static final QName SFDEM_MOSAIC =
+            new QName(SystemTestData.CITE_URI, "sfdem_mosaic", SystemTestData.CITE_PREFIX);
 
     private static final String sldPrefix =
             "<StyledLayerDescriptor><NamedLayer><Name>feature</Name><UserStyle><FeatureTypeStyle>";
@@ -186,6 +200,24 @@ public class ClassifierTest extends SLDServiceBaseTest {
         catalog.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         catalog.add(layerInfoView);
+
+        // add a filtered view with env vars for vector env parameter testing
+        testData.addVectorLayer(
+                FILTERED_POINTS,
+                props,
+                "ClassificationPoints.properties",
+                this.getClass(),
+                catalog);
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName(FILTERED_POINTS.getLocalPart());
+        ft.setCqlFilter("group = env('group', 'Group0')");
+        catalog.save(ft);
+
+        // add a filtered mosaic with a "direction" column
+        testData.addRasterLayer(
+                SFDEM_MOSAIC, "sfdem-tiles.zip", null, null, ClassifierTest.class, catalog);
+        CoverageInfo sfdem = catalog.getCoverageByName(getLayerId(SFDEM_MOSAIC));
+        sfdem.getParameters().put("Filter", "direction = env('direction','NE')");
+        catalog.save(sfdem);
     }
 
     @Test
@@ -665,9 +697,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Rule[] rules =
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
-        checkRule(rules[0], "#690000", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#B40000", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#FF0000", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#690000", PropertyIsEqualTo.class);
+        checkRule(rules[1], "#B40000", PropertyIsEqualTo.class);
+        checkRule(rules[2], "#FF0000", PropertyIsEqualTo.class);
         TreeSet<String> orderedRules = new TreeSet<String>();
         orderedRules.add(rules[0].getTitle());
         orderedRules.add(rules[1].getTitle());
@@ -676,6 +708,69 @@ public class ClassifierTest extends SLDServiceBaseTest {
         assertEquals("bar", iter.next());
         assertEquals("foo", iter.next());
         assertEquals("foobar", iter.next());
+    }
+
+    @Test
+    public void testEnvVectorGroup2() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:FilteredPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=name&method=uniqueInterval&fullSLD=true&env=group:Group2";
+        Document dom = getAsDOM(restPath, 200);
+        List<Rule> rules = getRules(dom);
+        assertEquals(2, rules.size());
+        checkRule(rules.get(0), "#8E0000", PropertyIsEqualTo.class);
+        checkRule(rules.get(1), "#FF0000", PropertyIsEqualTo.class);
+        List<String> sortedRules =
+                rules.stream()
+                        .map(r -> r.getDescription().getTitle().toString())
+                        .sorted()
+                        .collect(Collectors.toList());
+        assertThat(sortedRules, contains("bar", "foo"));
+
+        // also make sure the env vars have been cleared, this thread is the same that run the
+        // request
+        assertNull(CQL.toExpression("env('group')").evaluate(null));
+    }
+
+    @Test
+    public void testEnvVectorGroup0() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:FilteredPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=name&method=uniqueInterval&fullSLD=true&env=group:Group0";
+        Document dom = getAsDOM(restPath, 200);
+        List<Rule> rules = getRules(dom);
+        assertEquals(2, rules.size());
+        checkRule(rules.get(0), "#8E0000", PropertyIsEqualTo.class);
+        checkRule(rules.get(1), "#FF0000", PropertyIsEqualTo.class);
+        List<String> sortedRules =
+                rules.stream()
+                        .map(r -> r.getDescription().getTitle().toString())
+                        .sorted()
+                        .collect(Collectors.toList());
+        assertThat(sortedRules, contains("foo", "foobar"));
+
+        // also make sure the env vars have been cleared, this thread is the same that run the
+        // request
+        assertNull(CQL.toExpression("env('group')").evaluate(null));
+    }
+
+    @Test
+    public void testEnvVectorNotThere() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:FilteredPoints/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "attribute=name&method=uniqueInterval&fullSLD=true&env=group:NotAGroup";
+        MockHttpServletResponse response = getAsServletResponse(restPath);
+        assertEquals(404, response.getStatus());
+        assertNull(CQL.toExpression("env('group')").evaluate(null));
     }
 
     @Test
@@ -696,9 +791,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#000069", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#0000B4", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#000069", PropertyIsEqualTo.class);
+        checkRule(rules[1], "#0000B4", PropertyIsEqualTo.class);
+        checkRule(rules[2], "#0000FF", PropertyIsEqualTo.class);
     }
 
     @Test
@@ -719,9 +814,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#0000B4", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#000069", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#0000FF", PropertyIsEqualTo.class);
+        checkRule(rules[1], "#0000B4", PropertyIsEqualTo.class);
+        checkRule(rules[2], "#000069", PropertyIsEqualTo.class);
     }
 
     @Test
@@ -765,9 +860,9 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkRules(
                         resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix), 3);
 
-        checkRule(rules[0], "#FF0000", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[1], "#7F007F", org.opengis.filter.PropertyIsEqualTo.class);
-        checkRule(rules[2], "#0000FF", org.opengis.filter.PropertyIsEqualTo.class);
+        checkRule(rules[0], "#FF0000", PropertyIsEqualTo.class);
+        checkRule(rules[1], "#7F007F", PropertyIsEqualTo.class);
+        checkRule(rules[2], "#0000FF", PropertyIsEqualTo.class);
     }
 
     private Rule[] checkRules(String resultXml, int classes) {
@@ -1312,13 +1407,31 @@ public class ClassifierTest extends SLDServiceBaseTest {
         Map<GeneralParameterDescriptor, Object> parameters =
                 getParametersMap(reader.getReadParameters());
 
-        // expect the bands selection and deferred loading
-        assertThat(
-                parameters.keySet(),
-                Matchers.containsInAnyOrder(
-                        AbstractGridFormat.BANDS, AbstractGridFormat.USE_JAI_IMAGEREAD));
+        // expect the bands selection
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.BANDS));
         int[] bands = (int[]) parameters.get(AbstractGridFormat.BANDS);
         assertArrayEquals(new int[] {0}, bands);
+
+        RenderedImage image = reader.getImage();
+        assertEquals(1, image.getSampleModel().getNumBands());
+        if (image instanceof PlanarImage) {
+            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+        }
+    }
+
+    @Test
+    public void testDeferredLoadMosaic() throws Exception {
+        // the backing reader supports deferred loading
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(SFDEM_MOSAIC));
+        ImageReader reader = new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, null).invoke();
+
+        Map<GeneralParameterDescriptor, Object> parameters =
+                getParametersMap(reader.getReadParameters());
+
+        // expect the bands selection
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.USE_JAI_IMAGEREAD));
+        Boolean imageRead = (Boolean) parameters.get(AbstractGridFormat.USE_JAI_IMAGEREAD);
+        assertTrue(imageRead);
 
         RenderedImage image = reader.getImage();
         assertEquals(1, image.getSampleModel().getNumBands());
@@ -1338,7 +1451,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 getParametersMap(reader.getReadParameters());
 
         // expect only deferred loading
-        assertThat(parameters.keySet(), Matchers.contains(AbstractGridFormat.USE_JAI_IMAGEREAD));
+        assertThat(parameters.keySet(), not(contains(AbstractGridFormat.BANDS)));
 
         // yet the image just has one band
         RenderedImage image = reader.getImage();
@@ -1359,11 +1472,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 getParametersMap(reader.getReadParameters());
 
         // expect deferred loading and restricted grid geometry
-        assertThat(
-                parameters.keySet(),
-                Matchers.containsInAnyOrder(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.READ_GRIDGEOMETRY2D));
         // reduced pixels
         GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
         assertEquals(35, gg.getGridRange2D().width);
@@ -1391,11 +1500,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // expect deferred loading and restricted grid geometry
         Map<GeneralParameterDescriptor, Object> parameters =
                 getParametersMap(reader.getReadParameters());
-        assertThat(
-                parameters.keySet(),
-                Matchers.containsInAnyOrder(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.READ_GRIDGEOMETRY2D));
         GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
         // check the grid geometry is restricted in space, but has the same scale factors as the
         // original one (from a gdalinfo output)
@@ -1433,11 +1538,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // expect deferred loading and restricted grid geometry
         Map<GeneralParameterDescriptor, Object> parameters =
                 getParametersMap(reader.getReadParameters());
-        assertThat(
-                parameters.keySet(),
-                Matchers.containsInAnyOrder(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.READ_GRIDGEOMETRY2D));
         GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
         // check the grid geometry is restricted in space, but has the same scale factors as the
         // original one (from a gdalinfo output)
@@ -1473,11 +1574,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
         // expect deferred loading and restricted grid geometry
         Map<GeneralParameterDescriptor, Object> parameters =
                 getParametersMap(reader.getReadParameters());
-        assertThat(
-                parameters.keySet(),
-                Matchers.containsInAnyOrder(
-                        AbstractGridFormat.USE_JAI_IMAGEREAD,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D));
+        assertThat(parameters.keySet(), Matchers.hasItem(AbstractGridFormat.READ_GRIDGEOMETRY2D));
         GridGeometry2D gg = (GridGeometry2D) parameters.get(AbstractGridFormat.READ_GRIDGEOMETRY2D);
         // check the grid geometry is restricted in space and also scaled down to match the max
         // pixels
@@ -1497,10 +1594,49 @@ public class ClassifierTest extends SLDServiceBaseTest {
         }
     }
 
+    @Test
+    public void testRasterEnv() throws Exception {
+        // checking the extrema of the raster in each granule, stats coming from QGIS
+        checkRasterEnv("NW", 1080, 1767);
+        checkRasterEnv("SW", 1379, 1840);
+        checkRasterEnv("NE", 1066, 1626);
+        checkRasterEnv("SE", 1214, 1735);
+    }
+
+    private void checkRasterEnv(String direction, double low, double high) throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:sfdem_mosaic/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=1&ramp=jet&fullSLD=true&env=direction:"
+                        + direction;
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(2, entries.length);
+        assertEquals(low, entries[0].getQuantity().evaluate(null, Double.class), 0.1);
+        assertEquals(high, entries[1].getQuantity().evaluate(null, Double.class), 0.1);
+    }
+
+    @Test
+    public void testRasterEnvNotFound() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:sfdem_mosaic/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=equalInterval&intervals=1&ramp=jet&fullSLD=true&env=direction:IDontExist";
+        MockHttpServletResponse servletResponse = getAsServletResponse(restPath);
+        assertEquals(404, servletResponse.getStatus());
+    }
+
     private Map<GeneralParameterDescriptor, Object> getParametersMap(
-            ArrayList<GeneralParameterValue> readParameters) {
+            List<GeneralParameterValue> readParameters) {
         return readParameters
                 .stream()
+                .filter(pv -> ((ParameterValue) pv).getValue() != null)
                 .collect(
                         Collectors.toMap(
                                 pv -> pv.getDescriptor(), pv -> ((ParameterValue) pv).getValue()));
@@ -1521,6 +1657,34 @@ public class ClassifierTest extends SLDServiceBaseTest {
             if (!(Math.abs(delta[i]) <= eps)) {
                 fail("Envelopes have not same 2D bounds: " + env1 + ", " + env2);
             }
+        }
+    }
+
+    @Test
+    public void testImageReaderEnv() throws Exception {
+        // the backing reader supports native selection
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(SFDEM_MOSAIC));
+        try {
+            EnvFunction.setLocalValue("direction", "NE");
+            ImageReader reader = new ImageReader(coverage, 1, DEFAULT_MAX_PIXELS, null).invoke();
+
+            List<GeneralParameterValue> readParameters = reader.getReadParameters();
+            Map<GeneralParameterDescriptor, Object> parameterValues =
+                    getParametersMap(readParameters);
+
+            // check no duplicates
+            Set<String> parameterCodes =
+                    readParameters
+                            .stream()
+                            .map(rp -> rp.getDescriptor().getName().getCode())
+                            .collect(Collectors.toSet());
+            assertEquals(readParameters.size(), parameterCodes.size());
+
+            // the filter has been set with env vars expanded
+            Filter filter = (Filter) parameterValues.get(ImageMosaicFormat.FILTER);
+            assertEquals(ECQL.toFilter("direction = 'NE'"), filter);
+        } finally {
+            EnvFunction.clearLocalValues();
         }
     }
 }

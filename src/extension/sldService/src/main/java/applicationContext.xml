@@ -14,5 +14,7 @@
 
   <!-- <mvc:annotation-driven/> -->
   <context:component-scan base-package="org.geoserver.sldservice.rest"/>
+  
+  <bean id="restEnvCallback" class="org.geoserver.sldservice.rest.RestEnvVariableCallback"/>
 
 </beans>

@@ -39,8 +39,31 @@
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="Name" type="xsd:string"/>
-  <xsd:element name="Title" type="xsd:string"/>
-  <xsd:element name="Abstract" type="xsd:string"/>
+  <xsd:element name="Title" type="sld:InternationalStringType"/>
+  <xsd:element name="Abstract" type="sld:InternationalStringType"/>
+  
+  <xsd:complexType name="InternationalStringType" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The "InternationalStringType" contains localized elements for the
+        container element.  A "mixed" element-content
+        model is used with localized value elements and default text value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">        
+      <xsd:element ref="sld:Localized"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:element name="Localized">
+    <xsd:complexType>
+      <xsd:simpleContent>
+          <xsd:extension base="xsd:string">
+             <xsd:attribute name="lang" type="xsd:string" />
+          </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>    
+  </xsd:element>
 
 <!-- *********************************************************************** -->
   <xsd:annotation>

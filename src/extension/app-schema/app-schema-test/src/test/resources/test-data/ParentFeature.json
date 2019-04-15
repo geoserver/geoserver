@@ -5,6 +5,7 @@
       "geometry": null,
       "id": "sc.1",
       "properties": {
+        "@featureType": "parentFeature",
         "nestedFeature": [
           {
             "nestedValue": "1GRAV"
@@ -24,6 +25,7 @@
       "geometry": null,
       "id": "sc.2",
       "properties": {
+        "@featureType": "parentFeature",
         "nestedFeature": [
           {
             "nestedValue": "1GRAV"
@@ -43,6 +45,7 @@
       "geometry": null,
       "id": "sc.3",
       "properties": {
+        "@featureType": "parentFeature",
         "nestedFeature": [
           {
             "nestedValue": "1GRAV"

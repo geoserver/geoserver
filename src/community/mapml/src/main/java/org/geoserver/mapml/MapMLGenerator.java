@@ -1,3 +1,8 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
 package org.geoserver.mapml;
 
 import java.io.IOException;
@@ -61,45 +66,36 @@ public class MapMLGenerator {
     public static GeometryContent buildGeometry(org.locationtech.jts.geom.Geometry g)
             throws IOException {
         GeometryContent geom = new GeometryContent();
-        switch (g.getGeometryType()) {
-            case "Point":
-                geom.setGeometryContent(
-                        factory.createPoint(buildPoint((org.locationtech.jts.geom.Point) g)));
-                break;
-            case "MultiPoint":
-                geom.setGeometryContent(
-                        factory.createMultiPoint(
-                                buildMultiPoint((org.locationtech.jts.geom.MultiPoint) g)));
-                break;
-            case "LinearRing":
-            case "LineString":
-                geom.setGeometryContent(
-                        factory.createLineString(
-                                buildLineString((org.locationtech.jts.geom.LineString) g)));
-                break;
-            case "MultiLineString":
-                geom.setGeometryContent(
-                        factory.createMultiLineString(
-                                buildMultiLineString(
-                                        (org.locationtech.jts.geom.MultiLineString) g)));
-                break;
-            case "Polygon":
-                geom.setGeometryContent(
-                        factory.createPolygon(buildPolygon((org.locationtech.jts.geom.Polygon) g)));
-                break;
-            case "MultiPolygon":
-                geom.setGeometryContent(
-                        factory.createMultiPolygon(
-                                buildMultiPolygon((org.locationtech.jts.geom.MultiPolygon) g)));
-                break;
-            case "GeometryCollection":
-                geom.setGeometryContent(
-                        factory.createGeometryCollection(
-                                buildGeometryCollection(
-                                        (org.locationtech.jts.geom.GeometryCollection) g)));
-                break;
-            default:
-                throw new IOException("Unknown geometry type: " + g.getGeometryType());
+        if (g instanceof org.locationtech.jts.geom.Point) {
+            geom.setGeometryContent(
+                    factory.createPoint(buildPoint((org.locationtech.jts.geom.Point) g)));
+        } else if (g instanceof org.locationtech.jts.geom.MultiPoint) {
+            geom.setGeometryContent(
+                    factory.createMultiPoint(
+                            buildMultiPoint((org.locationtech.jts.geom.MultiPoint) g)));
+        } else if (g instanceof org.locationtech.jts.geom.LinearRing
+                || g instanceof org.locationtech.jts.geom.LineString) {
+            geom.setGeometryContent(
+                    factory.createLineString(
+                            buildLineString((org.locationtech.jts.geom.LineString) g)));
+        } else if (g instanceof org.locationtech.jts.geom.MultiLineString) {
+            geom.setGeometryContent(
+                    factory.createMultiLineString(
+                            buildMultiLineString((org.locationtech.jts.geom.MultiLineString) g)));
+        } else if (g instanceof org.locationtech.jts.geom.Polygon) {
+            geom.setGeometryContent(
+                    factory.createPolygon(buildPolygon((org.locationtech.jts.geom.Polygon) g)));
+        } else if (g instanceof org.locationtech.jts.geom.MultiPolygon) {
+            geom.setGeometryContent(
+                    factory.createMultiPolygon(
+                            buildMultiPolygon((org.locationtech.jts.geom.MultiPolygon) g)));
+        } else if (g instanceof org.locationtech.jts.geom.GeometryCollection) {
+            geom.setGeometryContent(
+                    factory.createGeometryCollection(
+                            buildGeometryCollection(
+                                    (org.locationtech.jts.geom.GeometryCollection) g)));
+        } else {
+            throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
 
         return geom;

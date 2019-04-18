@@ -46,6 +46,7 @@ Mapping files are located in the ``csw`` directory inside the :ref:`datadir`. Ea
 
 * Dublin Core mapping can be found in the file ``csw/Record.properties`` inside the data directory.
 * ISO Metadata mapping can be found in the file ``csw/MD_Metadata.properties`` inside the data directory.
+* ISO Metadata Feature Catalog mapping can be found in the file ``csw/FC_FeatureCatalogue.properties`` inside the data directory.
 
 The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each ResourceInfo_ object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the ResourceInfo_ object, and all normal CQL operators and functions. 
 There is also support for complex datastructures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
@@ -114,7 +115,7 @@ You may use :ref:`rest` to view an xml model of feature types and datastores in 
 Some fields in the metadata schemes can have multiple occurences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example ``keywords``.
 It is also possible to use a filter function called ``list`` to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurences (see in ISO MetaData Profile example, mapping for the ``identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle`` field). 
 
-Placing the ``@`` symbol in front of the field will set that to use as identifier for each metadata record. This may be useful for ID filters.  Use a ``$`` sign in front of fields that are required to make sure the mapping is aware of the requirement (specifically for the purpose of property selection).
+Placing the ``@`` symbol in front of the field will set that to use as identifier for each metadata record. This is used by ID filters.  Use a ``$`` sign in front of fields that are required to make sure the mapping is aware of the requirement (specifically for the purpose of property selection).
   
 
 Dublin Core
@@ -160,11 +161,36 @@ Below is an example of an ISO Metadata Profile Mapping File::
   hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
   $contact.CI_ResponsibleParty.individualName.CharacterString=
 
-The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation.
+The full path of each field must be specified (separated with dots). XML attributes are specified with the ``@`` symbol, similar to the usual XML X-path notation. To avoid confusion with the identifier-symbol at the beginning of a mapping line, use ``\@`` (for an attribute that is not an identifier) or ``@@`` (for an attribute that is also the identifier) - see the feature catatalog mapping file for an example.
 
+The ``%`` symbol denotes where a multi-valued mapping should be split in to multiple tags. Multiple ``%`` symbols may be used for multi-dimensional mappings - see the feature catatalog mapping file for an example.
+
+Indexes with square brackets can be used to avoid merging tags that shouldn't be merged, as demonstrated above for ``resourceConstaints``.
 To keep the result XSD compliant, the parameters ``dateStamp.Date`` and ``contact.CI_ResponsibleParty.individualName.CharacterString`` must be preceded by a ``$`` sign to make sure that they are always included even when using property selection.
 
 For more information on the ISO Metadata standard, please see the `OGC Implementation Specification 07-045 <http://www.opengeospatial.org/standards/specifications/catalog>`_. 
 
+ISO Metadata Profile : Feature Catalogs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Within the ISO Metadata Profile, there is also support for ``Feature Catalogues`` that contain information about vector layer type metadata. As specified by the ISO Metadata standard these are exposed in separate records. For this purpose we have a separate mapping file::
 
+  @@uuid="metadata.custom.feature-catalog/feature-catalog-uidentifier"
+  \@id="metadata.custom.feature-catalog/feature-catalog-identifier"
+  $featureType.FC_FeatureType.typeName.LocalName=concatenate("name", 'Type')
+  $featureType.FC_FeatureType.isAbstract.Boolean='false'
+  $featureType.FC_FeatureType.featureCatalogue.@uuidref="metadata.custom.feature-catalog/feature-catalog-identifier"
+  featureType.FC_FeatureType.definition.CharacterString="metadata.custom.feature-catalog/feature-type/feature-type-definition"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.memberName.LocalName="metadata.custom.feature-catalog/feature-type/feature-attribute/name"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.valueType.TypeName.aName.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/type"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.length.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/length"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.definition.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/definition"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.cardinality.Multiplicity.range.MultiplicityRange.lower.Integer="metadata.custom.feature-catalog/feature-type/feature-attribute/min-occurrence"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.cardinality.Multiplicity.range.MultiplicityRange.upper.UnlimitedInteger="metadata.custom.feature-catalog/feature-type/feature-attribute/max-occurrence"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.cardinality.Multiplicity.range.MultiplicityRange.upper.UnlimitedInteger.@isInfinite=false
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.listedValue%.FC_ListedValue.label.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/domain/value"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.listedValue%.FC_ListedValue.definition.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/domain/definition"
+  featureType.FC_FeatureType.carrierOfCharacteristics%.FC_FeatureAttribute.listedValue%.FC_ListedValue.code.CharacterString="metadata.custom.feature-catalog/feature-type/feature-attribute/domain/code"
+
+Only records that have a non-null identifier in the catalog mapping file will have a feature catalogue record. There is no support in the standard Geoserver GUI for user configuration of this information.
+The upcoming metadata community module makes this possible.

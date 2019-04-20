@@ -46,6 +46,7 @@ import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
@@ -730,7 +731,8 @@ public class Dispatcher extends AbstractController {
                         OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
                     setBaseUrl.invoke(
-                            requestBean, new String[] {RequestUtils.baseURL(req.getHttpRequest())});
+                            requestBean,
+                            new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to

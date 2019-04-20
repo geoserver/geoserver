@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import net.opengis.cat.csw20.RecordType;
 import net.opengis.cat.csw20.SimpleLiteral;
 import net.opengis.ows10.BoundingBoxType;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.csw.records.CSWRecordBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -61,9 +60,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
         while ((record == null || offset > 0) && files.hasNext()) {
             Resource file = files.next();
             lastFile = file;
-            InputStream is = null;
-            try {
-                is = file.in();
+            try (InputStream is = file.in()) {
                 record = (RecordType) parser.parse(is);
                 if (offset > 0) {
                     offset--;
@@ -74,8 +71,6 @@ class SimpleRecordIterator implements Iterator<Feature> {
                         Level.INFO,
                         "Failed to parse the contents of " + file.path() + " as a CSW Record",
                         e);
-            } finally {
-                IOUtils.closeQuietly(is);
             }
         }
 

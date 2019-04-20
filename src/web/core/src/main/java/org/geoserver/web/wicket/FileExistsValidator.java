@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
@@ -19,6 +18,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.util.IOUtils;
 
 /** Checks the specified file exists on the file system, including checks in the data directory */
 @SuppressWarnings("serial")

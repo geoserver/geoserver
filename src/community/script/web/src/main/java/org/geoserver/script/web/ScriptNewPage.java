@@ -139,13 +139,10 @@ public class ScriptNewPage extends GeoServerSecuredPage {
 
     private void save() {
         Script s = (Script) form.getModelObject();
-        OutputStream out = s.getResource().out();
-        try {
+        try (OutputStream out = s.getResource().out()) {
             IOUtils.write(s.getContents(), out);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
 }

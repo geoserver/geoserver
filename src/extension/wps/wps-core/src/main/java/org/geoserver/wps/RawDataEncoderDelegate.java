@@ -28,9 +28,8 @@ public class RawDataEncoderDelegate implements EncoderDelegate {
     }
 
     public void encode(ContentHandler output) throws Exception {
-        InputStream is = null;
-        try {
-            is = rawData.getInputStream();
+
+        try (InputStream is = rawData.getInputStream()) {
             byte[] buffer = new byte[4096];
             int read = 0;
             while ((read = is.read(buffer)) > 0) {
@@ -45,18 +44,12 @@ public class RawDataEncoderDelegate implements EncoderDelegate {
 
                 output.characters(chars, 0, chars.length);
             }
-        } finally {
-            IOUtils.closeQuietly(is);
         }
     }
 
     public void encode(OutputStream os) throws IOException {
-        InputStream stream = null;
-        try {
-            stream = rawData.getInputStream();
+        try (InputStream stream = rawData.getInputStream()) {
             IOUtils.copy(stream, os);
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 

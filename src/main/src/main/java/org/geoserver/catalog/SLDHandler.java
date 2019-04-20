@@ -179,7 +179,7 @@ public class SLDHandler extends StyleHandler {
             }
             return sld;
         } finally {
-            IOUtils.closeQuietly(reader);
+            org.geoserver.util.IOUtils.closeQuietly(reader);
         }
     }
 

@@ -407,12 +407,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
 
         if (file.getType() == Type.RESOURCE) {
             Properties properties = new Properties();
-            InputStream fis = null;
-            try {
-                fis = file.in();
+            try (InputStream fis = file.in()) {
                 properties.load(fis);
-            } finally {
-                org.apache.commons.io.IOUtils.closeQuietly(fis);
             }
 
             String data = (String) properties.get(epsgCode.toString());

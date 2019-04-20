@@ -187,15 +187,9 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     public byte[] getBytes(URL zip) throws IOException {
-        InputStream is = null;
-        byte[] bytes;
-        try {
-            is = zip.openStream();
-            bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
+        try (InputStream is = zip.openStream()) {
+            return IOUtils.toByteArray(is);
         }
-        return bytes;
     }
 
     @Test
@@ -203,7 +197,6 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Upload of the Mosaic via REST
         URL zip = MockData.class.getResource("watertemp.zip");
         byte[] bytes = getBytes(zip);
-        InputStream is;
 
         MockHttpServletResponse response =
                 putAsServletResponse(
@@ -231,12 +224,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Harvesting of the Mosaic
         URL zipHarvest = MockData.class.getResource("harvesting.zip");
         // Extract a Byte array from the zip file
-        is = null;
-        try {
-            is = zipHarvest.openStream();
+        try (InputStream is = zipHarvest.openStream()) {
             bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
         // Create the POST request
         MockHttpServletRequest request =

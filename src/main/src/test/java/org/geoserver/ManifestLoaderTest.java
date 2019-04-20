@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
 import org.geoserver.data.test.SystemTestData;
@@ -234,12 +233,8 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
             Entry<String, String> entry = it.next();
             propertyKey = entry.getKey();
 
-            FileWriter writer = null;
-            try {
-                properties =
-                        new File(testData.getDataDirectoryRoot(), ManifestLoader.PROPERTIES_FILE);
-
-                writer = new FileWriter(properties);
+            properties = new File(testData.getDataDirectoryRoot(), ManifestLoader.PROPERTIES_FILE);
+            try (FileWriter writer = new FileWriter(properties)) {
                 writer.write(
                         ManifestLoader.VERSION_ATTRIBUTE_INCLUSIONS + "=" + propertyKey + "\n");
                 writer.write(ManifestLoader.RESOURCE_ATTRIBUTE_EXCLUSIONS + "=" + propertyKey);
@@ -249,8 +244,6 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                         Level.WARNING,
                         "Unable to write test data to:" + testData.getDataDirectoryRoot());
                 org.junit.Assert.fail(e.getLocalizedMessage());
-            } finally {
-                IOUtils.closeQuietly(writer);
             }
 
             // rebuild loader with new configuration

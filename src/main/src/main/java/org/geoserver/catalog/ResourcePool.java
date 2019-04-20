@@ -790,12 +790,8 @@ public class ResourcePool {
                     out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
                     out.write(" xmlns:gml='http://www.opengis.net/gml'");
                     out.write(">");
-                    FileInputStream fis = null;
-                    try {
-                        fis = new FileInputStream(oldSchemaFile);
-                        IOUtils.copy(fis, out);
-                    } finally {
-                        IOUtils.closeQuietly(fis);
+                    try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
+                        IOUtils.copy(fis, out, "UTF-8");
                     }
                     out.write("</xs:schema>");
                     out.flush();

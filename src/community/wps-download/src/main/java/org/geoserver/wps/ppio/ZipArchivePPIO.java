@@ -185,10 +185,8 @@ public class ZipArchivePPIO extends BinaryPPIO {
             return false;
         }
         // Check on the first Integer
-        DataInputStream in = null;
-        try {
-            in = new DataInputStream(new FileInputStream(file));
-
+        
+        try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
             int test = in.readInt();
             return test == 0x504b0304;
         } catch (IOException e) {
@@ -196,11 +194,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
                 LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
             return false;
-        } finally {
-            if (in != null) {
-                org.apache.commons.io.IOUtils.closeQuietly(in);
-            }
-        }
+        } 
     }
 
     /**
@@ -227,19 +221,12 @@ public class ZipArchivePPIO extends BinaryPPIO {
         zipout.putNextEntry(entry);
 
         // copy over the file
-        InputStream in = null;
-        try {
+        try (InputStream in = new FileInputStream(file)) {
             int c;
-            in = new FileInputStream(file);
             while (-1 != (c = in.read(buffer))) {
                 zipout.write(buffer, 0, c);
             }
             zipout.closeEntry();
-        } finally {
-            // close the input stream
-            if (in != null) {
-                org.apache.commons.io.IOUtils.closeQuietly(in);
-            }
         }
         zipout.flush();
     }

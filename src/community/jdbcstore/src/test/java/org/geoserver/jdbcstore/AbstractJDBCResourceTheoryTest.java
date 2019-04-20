@@ -4,8 +4,8 @@
  */
 package org.geoserver.jdbcstore;
 
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createMock;
 import static org.geoserver.platform.resource.ResourceMatchers.directory;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;

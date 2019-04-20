@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

@@ -5,9 +5,9 @@
  */
 package org.geoserver.script.wfs;
 
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
 
 import com.google.common.collect.Multimap;

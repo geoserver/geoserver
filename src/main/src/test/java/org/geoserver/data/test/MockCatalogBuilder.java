@@ -6,9 +6,9 @@
 package org.geoserver.data.test;
 
 import static org.easymock.EasyMock.*;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.data.test.CiteTestData.DEFAULT_LATLON_ENVELOPE;
 
 import com.google.common.base.Predicate;
@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import javax.xml.namespace.QName;
+import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.easymock.classextension.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;

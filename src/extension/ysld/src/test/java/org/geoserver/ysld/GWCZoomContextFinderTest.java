@@ -6,10 +6,10 @@
 
 package org.geoserver.ysld;
 
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.geotools.ysld.TestUtils.rangeContains;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;

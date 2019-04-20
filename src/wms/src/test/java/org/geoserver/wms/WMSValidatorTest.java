@@ -6,7 +6,7 @@ package org.geoserver.wms;
 
 import java.io.IOException;
 import java.util.Arrays;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;

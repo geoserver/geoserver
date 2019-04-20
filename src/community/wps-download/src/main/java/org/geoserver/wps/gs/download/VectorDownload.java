@@ -5,6 +5,11 @@
  */
 package org.geoserver.wps.gs.download;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -28,12 +33,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.ProgressListener;
 import org.springframework.context.ApplicationContext;
-
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The class that does the real work of checking if we are exceeeding the download limits for vector

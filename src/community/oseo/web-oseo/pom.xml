@@ -44,11 +44,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
       <classifier>tests</classifier>

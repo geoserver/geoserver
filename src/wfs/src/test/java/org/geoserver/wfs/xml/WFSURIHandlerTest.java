@@ -7,9 +7,9 @@
 package org.geoserver.wfs.xml;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 import java.net.NetworkInterface;
 import java.util.Collection;
 import java.util.Collections;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;

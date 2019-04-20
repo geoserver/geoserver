@@ -19,7 +19,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;

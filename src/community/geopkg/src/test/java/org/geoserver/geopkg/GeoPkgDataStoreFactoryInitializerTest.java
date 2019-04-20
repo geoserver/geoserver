@@ -4,8 +4,8 @@
  */
 package org.geoserver.geopkg;
 
+import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;

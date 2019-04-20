@@ -4,7 +4,7 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -15,7 +15,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.jdbcloader.DataSourceFactoryBean;
 import org.junit.Test;
 

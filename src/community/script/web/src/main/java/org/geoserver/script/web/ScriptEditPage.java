@@ -119,7 +119,7 @@ public class ScriptEditPage extends GeoServerSecuredPage {
 
     private void saveScript() {
         Script script = (Script) scriptModel.getObject();
-        try (OutputStream out = script.getResource().out()){
+        try (OutputStream out = script.getResource().out()) {
             IOUtils.write(script.getContents(), out);
         } catch (IOException e) {
             e.printStackTrace();

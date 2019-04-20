@@ -85,7 +85,7 @@ public class Script implements Serializable {
     }
 
     private String readFile(Resource file) {
-        
+
         try (InputStream in = file.in()) {
             String s = IOUtils.toString(in);
             return s;

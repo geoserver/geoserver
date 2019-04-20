@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.jdbc;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_INVALID;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_INVALID;

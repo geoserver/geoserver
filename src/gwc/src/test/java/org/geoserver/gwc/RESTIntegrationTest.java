@@ -5,15 +5,15 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -318,7 +318,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         assertEquals("ELEVATION", floatFilter.getKey());
         assertEquals("10.1", floatFilter.getDefaultValue());
-        assertEquals(1.0E-2f, floatFilter.getThreshold());
+        assertEquals(1.0E-2f, floatFilter.getThreshold(), 0d);
         assertEquals(
                 ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
                 floatFilter.getValues());
@@ -517,7 +517,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         assertEquals("ELEVATION", floatFilter.getKey());
         assertEquals("10.1", floatFilter.getDefaultValue());
-        assertEquals(1.0E-2f, floatFilter.getThreshold());
+        assertEquals(1.0E-2f, floatFilter.getThreshold(), 0d);
         assertEquals(
                 ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
                 floatFilter.getValues());

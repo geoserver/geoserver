@@ -5,10 +5,10 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static junit.framework.Assert.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.fail;
 
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;

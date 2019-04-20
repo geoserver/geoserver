@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps.gs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import org.geoserver.data.test.MockData;
@@ -85,10 +85,10 @@ public class CropCoverageTest extends WPSTestSupport {
                         .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
         double[] valueInside = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
-        assertEquals(615.0, valueInside[0]);
+        assertEquals(615.0, valueInside[0], 0d);
         double[] valueOutside = (double[]) gc.evaluate(new DirectPosition2D(145.57, -41.9));
         // this should really be NoData... (-9999 & 0xFFFF)
-        assertEquals(55537.0, valueOutside[0]);
+        assertEquals(55537.0, valueOutside[0], 0d);
 
         gc.dispose(true);
     }

@@ -5,8 +5,8 @@
  */
 package org.geoserver.wcs.test;
 
-import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.math.BigDecimal;

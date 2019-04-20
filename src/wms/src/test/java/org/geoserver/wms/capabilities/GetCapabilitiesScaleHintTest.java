@@ -4,9 +4,9 @@
  * application directory.
  */ package org.geoserver.wms.capabilities;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -227,7 +227,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")), 0d);
 
         assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
     }
@@ -257,7 +257,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")), 0d);
 
         assertEquals(
                 Double.valueOf(253427.07037725858),
@@ -289,7 +289,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(Double.valueOf(320000000), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(
+                Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
     }
 
     /**
@@ -320,7 +321,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         assertEquals(
                 Double.valueOf(126713.53518862929),
                 Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(
+                Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
     }
 
     /**

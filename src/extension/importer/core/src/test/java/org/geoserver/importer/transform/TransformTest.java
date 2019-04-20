@@ -5,7 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -74,8 +74,8 @@ public class TransformTest {
                         (SimpleFeatureType) type,
                         new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
         Point p = (Point) f.getAttribute("geom");
-        assertEquals(111319.49079327357, p.getX());
-        assertEquals(111325.14286638486, p.getY());
+        assertEquals(111319.49079327357, p.getX(), 0d);
+        assertEquals(111325.14286638486, p.getY(), 0d);
     }
 
     private SimpleFeature transform(InlineVectorTransform transform, Object... values)

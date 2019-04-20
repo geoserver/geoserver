@@ -130,13 +130,9 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
 
         // byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
-        InputStream is = null;
         byte[] bytes;
-        try {
-            is = zip.openStream();
+        try (InputStream is = zip.openStream()) {
             bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
 
         // creation of the workspace if not already present

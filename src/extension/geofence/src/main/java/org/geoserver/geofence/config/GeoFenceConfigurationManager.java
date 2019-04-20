@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.geofence.GeofenceAccessManager;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.platform.resource.Resource;
@@ -57,10 +56,8 @@ public class GeoFenceConfigurationManager {
     public void storeConfiguration() throws IOException {
         Resource configurationFile = configurer.getConfigFile();
 
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(configurationFile.out()));
-
+        try (BufferedWriter writer =
+                new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
             writer.write("### GeoFence Module configuration file\n");
             writer.write("### \n");
             writer.write("### GeoServer will read this file at boot time.\n");
@@ -69,9 +66,6 @@ public class GeoFenceConfigurationManager {
 
             saveConfiguration(writer, geofenceConfiguration);
             saveConfiguration(writer, cacheConfiguration);
-
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
     }
 

@@ -15,11 +15,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -257,18 +255,17 @@ public enum JSONType {
         // TODO: server encoding options?
         response.setCharacterEncoding(charset);
 
-        ServletOutputStream os = null;
         try {
-            os = response.getOutputStream();
             if (isJsonp) {
                 // jsonp
                 response.setContentType(JSONType.jsonp);
-                JSONType.writeJsonpException(exception, request, os, charset, verbose);
+                JSONType.writeJsonpException(
+                        exception, request, response.getOutputStream(), charset, verbose);
             } else {
                 // json
                 OutputStreamWriter outWriter = null;
                 try {
-                    outWriter = new OutputStreamWriter(os, charset);
+                    outWriter = new OutputStreamWriter(response.getOutputStream(), charset);
                     response.setContentType(JSONType.json);
                     JSONType.writeJsonException(exception, request, outWriter, verbose);
                 } finally {
@@ -277,21 +274,12 @@ public enum JSONType {
                             outWriter.flush();
                         } catch (IOException ioe) {
                         }
-                        IOUtils.closeQuietly(outWriter);
                     }
                 }
             }
         } catch (Exception e) {
             if (LOGGER != null && LOGGER.isLoggable(Level.SEVERE))
                 LOGGER.severe(e.getLocalizedMessage());
-        } finally {
-            if (os != null) {
-                try {
-                    os.flush();
-                } catch (IOException ioe) {
-                }
-                IOUtils.closeQuietly(os);
-            }
         }
     }
 
@@ -316,7 +304,6 @@ public enum JSONType {
 
         outWriter.write(")");
         outWriter.flush();
-        IOUtils.closeQuietly(outWriter);
     }
 
     private static void writeJsonException(
@@ -344,14 +331,10 @@ public enum JSONType {
                 OwsUtils.dumpExceptionMessages(exception, sb, false);
 
                 if (verbose) {
-                    ByteArrayOutputStream stackTrace = null;
-                    try {
-                        stackTrace = new ByteArrayOutputStream();
-                        exception.printStackTrace(new PrintStream(stackTrace));
+                    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                        exception.printStackTrace(new PrintStream(bos));
                         sb.append("\nDetails:\n");
-                        sb.append(new String(stackTrace.toByteArray()));
-                    } finally {
-                        IOUtils.closeQuietly(stackTrace);
+                        sb.append(new String(bos.toByteArray()));
                     }
                 }
                 json.value(sb.toString());

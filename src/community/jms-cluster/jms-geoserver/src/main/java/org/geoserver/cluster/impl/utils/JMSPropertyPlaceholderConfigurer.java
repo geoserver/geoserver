@@ -48,14 +48,8 @@ public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigu
                         JMSConfiguration.getConfigPathDir());
         if (properties.getType() != Type.RESOURCE) {
             // copy the defaults
-            InputStream inputStream = null;
-            try {
-                inputStream = defaults.getInputStream();
+            try (InputStream inputStream = defaults.getInputStream()) {
                 IOUtils.copy(inputStream, properties.out());
-            } finally {
-                if (inputStream != null) {
-                    org.apache.commons.io.IOUtils.closeQuietly(inputStream);
-                }
             }
         }
         super.setLocation(new SpringResourceAdaptor(properties));

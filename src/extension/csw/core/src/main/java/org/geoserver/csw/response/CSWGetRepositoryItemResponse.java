@@ -50,10 +50,7 @@ public class CSWGetRepositoryItemResponse extends Response {
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
-
-        InputStream input = null;
-        try {
-            input = ((RepositoryItem) value).getContents();
+        try (InputStream input = ((RepositoryItem) value).getContents()) {
             if (null != input) {
                 IOUtils.copy(input, output);
             } else {
@@ -62,7 +59,6 @@ public class CSWGetRepositoryItemResponse extends Response {
         } catch (IOException e) {
             throw new ServiceException("Failed to encode the repository item onto the output", e);
         } finally {
-            IOUtils.closeQuietly(input);
             output.flush();
         }
     }

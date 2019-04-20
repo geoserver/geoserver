@@ -141,13 +141,9 @@ public class ScriptService {
 
         // copy over the contents
         try {
-            BufferedWriter w = new BufferedWriter(new OutputStreamWriter(script.out()));
-
-            try {
+            try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(script.out()))) {
                 IOUtils.copy(request.getInputStream(), w);
                 w.flush();
-            } finally {
-                IOUtils.closeQuietly(w);
             }
         } catch (IOException e) {
             throw new RestException(

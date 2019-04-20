@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
@@ -495,56 +494,52 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      */
     public void copyFromClassPath(String classpathResource, File target, Class<?> scope)
             throws IOException {
-        InputStream is = null;
-        OutputStream os = null;
+
         byte[] buffer = new byte[4096];
         int read;
-
-        try {
-            // Get the resource
-            if (scope == null) {
-                is =
-                        Thread.currentThread()
-                                .getContextClassLoader()
-                                .getResourceAsStream(classpathResource);
-                if (is == null) {
-                    throw new IOException(
-                            "Could not load "
-                                    + classpathResource
-                                    + " from scope "
-                                    + Thread.currentThread().getContextClassLoader().toString()
-                                    + ".");
-                }
-            } else {
-                is = scope.getResourceAsStream(classpathResource);
-                if (is == null) {
-                    throw new IOException(
-                            "Could not load "
-                                    + classpathResource
-                                    + " from scope "
-                                    + scope.toString()
-                                    + ".");
-                }
-            }
-
-            // Write it to the target
-            try {
-                os = new FileOutputStream(target);
-                while ((read = is.read(buffer)) > 0) os.write(buffer, 0, read);
-            } catch (FileNotFoundException targetException) {
-                throw new IOException(
-                        "Can't write to file "
-                                + target.getAbsolutePath()
-                                + ". Check write permissions on target folder for user "
-                                + System.getProperty("user.name"));
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error trying to copy logging configuration file", e);
-            }
-        } finally {
-            // Clean up
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(os);
+        try (InputStream is = getStreamFromResource(classpathResource, scope);
+                OutputStream os = new FileOutputStream(target)) {
+            while ((read = is.read(buffer)) > 0) os.write(buffer, 0, read);
+        } catch (FileNotFoundException targetException) {
+            throw new IOException(
+                    "Can't write to file "
+                            + target.getAbsolutePath()
+                            + ". Check write permissions on target folder for user "
+                            + System.getProperty("user.name"));
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error trying to copy logging configuration file", e);
         }
+    }
+
+    private InputStream getStreamFromResource(String classpathResource, Class<?> scope)
+            throws IOException {
+        InputStream is = null;
+        if (scope == null) {
+            is =
+                    Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream(classpathResource);
+            if (is == null) {
+                throw new IOException(
+                        "Could not load "
+                                + classpathResource
+                                + " from scope "
+                                + Thread.currentThread().getContextClassLoader().toString()
+                                + ".");
+            }
+        } else {
+            is = scope.getResourceAsStream(classpathResource);
+            if (is == null) {
+                throw new IOException(
+                        "Could not load "
+                                + classpathResource
+                                + " from scope "
+                                + scope.toString()
+                                + ".");
+            }
+        }
+
+        return is;
     }
 
     /**

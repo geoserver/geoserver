@@ -76,28 +76,14 @@ public class ResumableUploadResourceManager {
         ResumableUploadResource resource = getResource(uploadId);
         Long writtenBytes = 0L;
         try {
-            final ReadableByteChannel source = entity.getChannel();
-            RandomAccessFile raf = null;
-            FileChannel outputChannel = null;
-            try {
-                raf = new RandomAccessFile(resource.getFile(), "rw");
-                outputChannel = raf.getChannel();
+            
+            
+            try (final ReadableByteChannel source = entity.getChannel(); RandomAccessFile raf = new RandomAccessFile(resource.getFile(), "rw"); FileChannel outputChannel = raf.getChannel() ) {
                 writtenBytes =
                         IOUtils.copyToFileChannel(256 * 1024, source, outputChannel, startPosition);
-            } finally {
-                try {
-                    if (raf != null) {
-                        raf.close();
-                    }
-                } finally {
-                    IOUtils.closeQuietly(source);
-                    IOUtils.closeQuietly(outputChannel);
-                }
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        } finally {
-
         }
 
         return resource.getFile().length();

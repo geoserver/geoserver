@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import net.opengis.cat.csw20.DescribeRecordType;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geotools.feature.NameImpl;
@@ -68,21 +67,18 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
             schemaLocationRoot = schemaLocationRoot.substring(0, schemaLocationRoot.length() - 1);
         }
 
-        BufferedReader reader = null;
-        try {
-            reader =
-                    new BufferedReader(
-                            new InputStreamReader(
-                                    getClass().getResourceAsStream(schemaPath),
-                                    Charset.forName("UTF-8")));
+        try (BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(
+                                getClass().getResourceAsStream(schemaPath),
+                                Charset.forName("UTF-8")))) {
+
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.replace("%SCHEMAS_ROOT%", schemaLocationRoot);
                 bw.write(line);
                 bw.write("\n");
             }
-        } finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 }

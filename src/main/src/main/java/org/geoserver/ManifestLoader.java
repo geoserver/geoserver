@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -71,30 +70,24 @@ public class ManifestLoader {
         props = new Properties();
 
         // load from jar or classpath
-        InputStream is = null;
-        try {
-            is = classLoader.getResourceAsStream("org/geoserver/" + PROPERTIES_FILE);
+        try (InputStream is = classLoader.getResourceAsStream("org/geoserver/" + PROPERTIES_FILE)) {
             if (is != null) {
                 props.load(is);
             }
         } catch (IOException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
         // override settings from datadir
-        try {
-            // datadir search
-            Resource resource = loader.get(PROPERTIES_FILE);
-            if (resource.getType() == Type.RESOURCE) {
-                is = resource.in();
+        // datadir search
+        Resource resource = loader.get(PROPERTIES_FILE);
+        if (resource.getType() == Type.RESOURCE) {
+            try (InputStream is = resource.in()) {
                 props.load(is);
+            } catch (IOException e2) {
+                LOGGER.log(Level.FINER, e2.getMessage(), e2);
             }
-        } catch (IOException e2) {
-            LOGGER.log(Level.FINER, e2.getMessage(), e2);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
+
         try {
             resourceNameRegex =
                     Pattern.compile(
@@ -158,25 +151,18 @@ public class ManifestLoader {
         try {
             Enumeration<URL> resources = loader.getResources("META-INF/MANIFEST.MF");
             while (resources.hasMoreElements()) {
-                InputStream is = null;
-                try {
-                    URL resource = resources.nextElement();
+                URL resource = resources.nextElement();
 
-                    if (LOGGER.isLoggable(Level.FINE))
-                        LOGGER.fine("Loading resources: " + resource.getFile());
-
-                    is = resource.openStream();
-
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("Loading resources: " + resource.getFile());
+                try (InputStream is = resource.openStream()) {
                     manifests.put(resource.getPath(), new Manifest(is));
-
                 } catch (IOException e) {
                     // handle
                     LOGGER.log(
                             java.util.logging.Level.SEVERE,
                             "Error loading resources file: " + e.getLocalizedMessage(),
                             e);
-                } finally {
-                    IOUtils.closeQuietly(is);
                 }
             }
         } catch (IOException e) {

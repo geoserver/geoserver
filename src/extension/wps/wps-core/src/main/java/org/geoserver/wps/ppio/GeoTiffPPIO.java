@@ -74,12 +74,8 @@ public class GeoTiffPPIO extends BinaryPPIO {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
         File f = File.createTempFile("wps", "tiff", root);
-        FileOutputStream os = null;
-        try {
-            os = new FileOutputStream(f);
+        try (FileOutputStream os = new FileOutputStream(f)) {
             IOUtils.copy(input, os);
-        } finally {
-            IOUtils.closeQuietly(os);
         }
 
         // and then we try to read it as a geotiff

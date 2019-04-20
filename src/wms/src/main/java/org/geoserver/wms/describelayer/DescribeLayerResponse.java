@@ -7,10 +7,10 @@ package org.geoserver.wms.describelayer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wms.DescribeLayer;
 import org.geoserver.wms.DescribeLayerRequest;
 import org.springframework.util.Assert;

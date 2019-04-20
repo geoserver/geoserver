@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.xml.resolver.apps.resolver;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -534,7 +535,7 @@ public class StyleController extends AbstractCatalogController {
         try {
             catalog.getResourcePool().writeStyle(info, input);
         } finally {
-            IOUtils.closeQuietly(input);
+            org.geoserver.util.IOUtils.closeQuietly(input);
         }
     }
 
@@ -547,11 +548,7 @@ public class StyleController extends AbstractCatalogController {
      */
     private Style parseSld(File sldFile) throws RestException {
         Style style = null;
-        InputStream is = null;
-
-        try {
-            is = new FileInputStream(sldFile);
-
+        try (InputStream is = new FileInputStream(sldFile)) {
             SLDParser parser = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
             EntityResolver resolver = catalog.getResourcePool().getEntityResolver();
             if (resolver != null) {
@@ -570,9 +567,6 @@ public class StyleController extends AbstractCatalogController {
         } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
             throw new RestException("Style error. " + ex.getMessage(), HttpStatus.BAD_REQUEST);
-
-        } finally {
-            IOUtils.closeQuietly(is);
         }
     }
 

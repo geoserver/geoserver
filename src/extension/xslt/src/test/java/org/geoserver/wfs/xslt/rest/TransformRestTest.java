@@ -218,13 +218,9 @@ public class TransformRestTest extends XSLTTestSupport {
         assertEquals(200, response.getStatus());
 
         TransformInfo info = repository.getTransformInfo("general");
-        InputStream is = null;
-        String actual = null;
-        try {
-            is = repository.getTransformSheet(info);
+        String actual;
+        try (InputStream is = repository.getTransformSheet(info)) {
             actual = IOUtils.toString(is, "UTF-8");
-        } finally {
-            IOUtils.closeQuietly(is);
         }
 
         assertEquals(xslt, actual);

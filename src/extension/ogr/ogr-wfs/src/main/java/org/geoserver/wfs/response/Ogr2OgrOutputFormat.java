@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.zip.ZipOutputStream;
 import org.geoserver.config.GeoServer;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatConverter;
 import org.geoserver.ogr.core.OutputType;
@@ -29,6 +28,7 @@ import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -279,24 +279,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
             // was is a single file output?
             if (format.isSingleFile() && featureCollection.getFeature().size() == 1) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(outputFile);
+                try (FileInputStream fis = new FileInputStream(outputFile)) {
                     org.apache.commons.io.IOUtils.copy(fis, output);
-                } finally {
-                    if (fis != null) {
-                        fis.close();
-                    }
                 }
             } else {
                 // scan the output directory and zip it all
-                ZipOutputStream zipOut = null;
-                try {
-                    zipOut = new ZipOutputStream(output);
+                try (ZipOutputStream zipOut = new ZipOutputStream(output)) {
                     IOUtils.zipDirectory(tempOGR, zipOut, null);
                     zipOut.finish();
-                } finally {
-                    org.apache.commons.io.IOUtils.closeQuietly(zipOut);
                 }
             }
 

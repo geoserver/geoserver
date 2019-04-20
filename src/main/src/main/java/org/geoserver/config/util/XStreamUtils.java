@@ -32,13 +32,9 @@ public final class XStreamUtils {
         // first save to a temp file
         final File temp = File.createTempFile(f.getName(), null, f.getParentFile());
 
-        BufferedOutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(temp));
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(temp))) {
             xp.save(obj, out);
             out.flush();
-        } finally {
-            if (out != null) org.apache.commons.io.IOUtils.closeQuietly(out);
         }
 
         // no errors, overwrite the original file

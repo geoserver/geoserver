@@ -5,14 +5,14 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.catalog.ResourceInfo.CUSTOM_DIMENSION_PREFIX;
 import static org.geoserver.catalog.testreader.CustomFormat.CUSTOM_DIMENSION_NAME;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;

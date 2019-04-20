@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.sextante;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;

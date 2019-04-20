@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import javax.xml.namespace.QName;

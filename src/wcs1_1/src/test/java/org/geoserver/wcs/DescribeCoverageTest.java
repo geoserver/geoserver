@@ -5,13 +5,13 @@
  */
 package org.geoserver.wcs;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.ROTATED_CAD;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -249,8 +249,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
             offsets[i] = Double.parseDouble(offsetStrs[i]);
         }
         assertTrue(offsets[0] > 0);
-        assertEquals(0.0, offsets[1]);
-        assertEquals(0.0, offsets[2]);
+        assertEquals(0.0, offsets[1], 0d);
+        assertEquals(0.0, offsets[2], 0d);
         assertTrue(offsets[3] < 0);
         // check there is one field, one axis, one key (this one is a dem, just one band)
         assertEquals(1, dom.getElementsByTagName("wcs:Field").getLength());
@@ -328,8 +328,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
             offsets[i] = Double.parseDouble(offsetStrs[i]);
         }
         assertTrue(offsets[0] > 0);
-        assertEquals(0.0, offsets[1]);
-        assertEquals(0.0, offsets[2]);
+        assertEquals(0.0, offsets[1], 0d);
+        assertEquals(0.0, offsets[2], 0d);
         assertTrue(offsets[3] < 0);
 
         // check there is one field, one axis, three keys (bands)

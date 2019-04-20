@@ -5,12 +5,12 @@
  */
 package org.geoserver.wps.web;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;

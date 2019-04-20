@@ -5,8 +5,8 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -102,7 +102,7 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
                         .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
         double[] valueInside = (double[]) gc.evaluate(new DirectPosition2D(145.55, -42));
-        assertEquals(615.0, valueInside[0]);
+        assertEquals(615.0, valueInside[0], 0d);
         double[] valueOutside = (double[]) gc.evaluate(new DirectPosition2D(145.57, -41.9));
         // this should really be NoData
         assertEquals(-9999 & 0xFFFF, (int) valueOutside[0]);

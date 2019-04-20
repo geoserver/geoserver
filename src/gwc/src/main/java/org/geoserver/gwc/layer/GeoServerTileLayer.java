@@ -49,7 +49,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.wms.GetLegendGraphicRequest;
@@ -1475,7 +1474,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         Request owsRequest = Dispatcher.REQUEST.get();
         if (owsRequest != null) {
             // retrieve the base URL from the dispatcher request
-            return RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+            return org.geoserver.ows.util.ResponseUtils.baseURL(
+                    Dispatcher.REQUEST.get().getHttpRequest());
         }
         // let's see if a REST end-point was targeted
         RequestInfo restRequest = RequestInfo.get();

@@ -4,7 +4,7 @@
  */
 package org.geoserver.jdbcstore;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 import com.google.common.base.Optional;
 import java.io.InputStream;

@@ -185,7 +185,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
             return false;
         }
         // Check on the first Integer
-        
+
         try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
             int test = in.readInt();
             return test == 0x504b0304;
@@ -194,7 +194,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
                 LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
             return false;
-        } 
+        }
     }
 
     /**

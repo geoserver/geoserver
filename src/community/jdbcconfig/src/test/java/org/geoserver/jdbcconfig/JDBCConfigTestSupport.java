@@ -5,7 +5,7 @@
  */
 package org.geoserver.jdbcconfig;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 import java.io.File;
 import java.io.IOException;

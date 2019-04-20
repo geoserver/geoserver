@@ -260,11 +260,9 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
         // try with read only user and GetFeatures request
         SecurityContextHolder.getContext().setAuthentication(roUser);
-        Request request = org.easymock.classextension.EasyMock.createNiceMock(Request.class);
-        org.easymock.classextension.EasyMock.expect(request.getRequest())
-                .andReturn("GetFeatures")
-                .anyTimes();
-        org.easymock.classextension.EasyMock.replay(request);
+        Request request = org.easymock.EasyMock.createNiceMock(Request.class);
+        org.easymock.EasyMock.expect(request.getRequest()).andReturn("GetFeatures").anyTimes();
+        org.easymock.EasyMock.replay(request);
         Dispatcher.REQUEST.set(request);
 
         // check a direct access does trigger a security challenge
@@ -326,11 +324,9 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         }
 
         // try with a getCapabilities, make sure the lists are empty
-        request = org.easymock.classextension.EasyMock.createNiceMock(Request.class);
-        org.easymock.classextension.EasyMock.expect(request.getRequest())
-                .andReturn("GetCapabilities")
-                .anyTimes();
-        org.easymock.classextension.EasyMock.replay(request);
+        request = org.easymock.EasyMock.createNiceMock(Request.class);
+        org.easymock.EasyMock.expect(request.getRequest()).andReturn("GetCapabilities").anyTimes();
+        org.easymock.EasyMock.replay(request);
         Dispatcher.REQUEST.set(request);
 
         // check the lists used to build capabilities are empty

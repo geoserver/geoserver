@@ -6,7 +6,7 @@
 
 package org.geoserver.wps;
 
-import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.EasyMock.createMock;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;

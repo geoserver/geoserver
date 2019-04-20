@@ -9,7 +9,7 @@ package org.geoserver.platform.util;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
-import org.easymock.classextension.EasyMock;
+import org.easymock.EasyMock;
 import org.geoserver.util.PropertyRule;
 import org.junit.Before;
 import org.junit.Rule;

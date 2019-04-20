@@ -63,7 +63,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteSingleLayerFilter() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimpleFilter.xml"), "UTF-8");
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("mapSimpleFilter.xml"), "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -73,7 +74,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteSingleDecorated() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("mapSimpleDecorated.xml"), "UTF-8");
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("mapSimpleDecorated.xml"), "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -115,7 +117,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testExecuteGeotiff() throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), "UTF-8");
+        String request =
+                IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), "UTF-8");
         request = request.replaceAll("image/png", "image/geotiff");
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals("image/geotiff", response.getContentType());
@@ -123,7 +126,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     }
 
     public void testExecutMultiLayerKmz(String mime) throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), "UTF-8");
+        String request =
+                IOUtils.toString(getClass().getResourceAsStream("mapMultiLayer.xml"), "UTF-8");
         request = request.replaceAll("image/png", mime);
         MockHttpServletResponse response = postAsServletResponse("wps", request);
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
@@ -178,7 +182,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testTimeFilterTimestamped() throws Exception {
         String xml =
-                IOUtils.toString(getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"), "UTF-8");
+                IOUtils.toString(
+                        getClass().getResourceAsStream("mapTimeFilterTimestamped.xml"), "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -190,7 +195,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
     public void testTimeFilterFormattedTimestamp() throws Exception {
         String xml =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"), "UTF-8");
+                        getClass().getResourceAsStream("mapTimeFilterFormattedTimestamp.xml"),
+                        "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("image/png", response.getContentType());
         BufferedImage image =
@@ -212,7 +218,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadRemoteSimple11() throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple11.xml"), "UTF-8");
+        String request =
+                IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple11.xml"), "UTF-8");
         String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"), "UTF-8");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
@@ -246,7 +253,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadRemoteSimple13() throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple13.xml"), "UTF-8");
+        String request =
+                IOUtils.toString(getClass().getResourceAsStream("mapRemoteSimple13.xml"), "UTF-8");
         String caps130 = IOUtils.toString(getClass().getResourceAsStream("caps130.xml"), "UTF-8");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "mapSimple.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);
@@ -279,7 +287,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void downloadLocalRemote() throws Exception {
-        String request = IOUtils.toString(getClass().getResourceAsStream("mapLocalRemote.xml"), "UTF-8");
+        String request =
+                IOUtils.toString(getClass().getResourceAsStream("mapLocalRemote.xml"), "UTF-8");
         String caps111 = IOUtils.toString(getClass().getResourceAsStream("caps111.xml"), "UTF-8");
         byte[] getMapBytes = FileUtils.readFileToByteArray(new File(SAMPLES + "lakes.png"));
         DownloadMapProcess process = applicationContext.getBean(DownloadMapProcess.class);

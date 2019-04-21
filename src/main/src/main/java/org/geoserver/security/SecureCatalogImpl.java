@@ -70,7 +70,7 @@ import org.springframework.util.Assert;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
- * or a {@link DataAccessManager} registered in the Spring application context
+ * registered in the Spring application context
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -103,12 +103,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     static ResourceAccessManager lookupResourceAccessManager() throws Exception {
         ResourceAccessManager manager = GeoServerExtensions.bean(ResourceAccessManager.class);
         if (manager == null) {
-            DataAccessManager daManager = lookupDataAccessManager();
-            if (daManager == null) {
-                manager = buildDefaultResourceAccessManager();
-            } else {
-                manager = new DataAccessManagerAdapter(daManager);
-            }
+            manager = buildDefaultResourceAccessManager();
         }
         CatalogFilterAccessManager lwManager = new CatalogFilterAccessManager();
         lwManager.setDelegate(manager);
@@ -119,14 +114,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return new DefaultResourceAccessManager(
                 GeoServerExtensions.bean(DataAccessRuleDAO.class),
                 (Catalog) GeoServerExtensions.bean("rawCatalog"));
-    }
-
-    static DataAccessManager lookupDataAccessManager() throws Exception {
-        DataAccessManager manager = GeoServerExtensions.bean(DataAccessManager.class);
-        if (manager != null && manager instanceof DataAccessManagerWrapper) {
-            ((DataAccessManagerWrapper) manager).setDelegate(buildDefaultResourceAccessManager());
-        }
-        return manager;
     }
 
     public SecureCatalogImpl(Catalog catalog, ResourceAccessManager manager) {

@@ -18,6 +18,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 
 /** Checks the specified file exists on the file system, including checks in the data directory */
@@ -88,7 +89,8 @@ public class FileExistsValidator implements IValidator<String> {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         if (baseDirectory != null) {
             // local to provided baseDirectory
-            relFile = Files.url(baseDirectory, uriSpec);
+            relFile = Resources.find(Resources.fromURL(Files.asResource(baseDirectory), uriSpec),
+                    true);
         } else if (loader != null) {
             // local to data directory?
             relFile = loader.url(uriSpec);

@@ -208,7 +208,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /** @deprecated use {@link Resources#fromURL(Resource, String)} */
     @Deprecated
     public File url(String url) {
-        return Files.url(baseDirectory, url);
+        return Resources.find(Resources.fromURL(get(Paths.BASE), url), true);
     }
 
     /**

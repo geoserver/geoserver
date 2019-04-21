@@ -21,6 +21,7 @@ import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
@@ -114,7 +115,7 @@ public abstract class DataFormat implements Serializable {
             return url;
         }
         File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
-        File f = Files.url(baseDirectory, url);
+        File f = Resources.find(Resources.fromURL(Files.asResource(baseDirectory), url), true);
 
         return f == null ? url : "file:" + Paths.convert(baseDirectory, f);
     }

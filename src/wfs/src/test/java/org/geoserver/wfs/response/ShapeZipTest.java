@@ -41,6 +41,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -104,7 +105,7 @@ public class ShapeZipTest extends WFSTestSupport {
     public void cleanupTemplates() throws Exception {
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        File wsDir = getDataDirectory().findWorkspaceDir(ws);
+        File wsDir = Resources.directory(getDataDirectory().get(ws));
         new File(wsDir, "shapezip.ftl").delete();
         setupESRIFormatByDefault(getGeoServer(), false);
     }
@@ -307,9 +308,10 @@ public class ShapeZipTest extends WFSTestSupport {
         // copy the new template to the data dir
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
         SimpleFeatureCollection fc =
@@ -335,9 +337,10 @@ public class ShapeZipTest extends WFSTestSupport {
         // copy the new template to the data dir
         WorkspaceInfo ws =
                 getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
@@ -363,9 +366,10 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testTemplateMultiGeomType() throws Exception {
         // copy the new template to the data dir
         WorkspaceInfo ws = getCatalog().getWorkspaceByName(ALL_DOTS.getPrefix());
-        getDataDirectory()
-                .copyToWorkspaceDir(
-                        ws, getClass().getResourceAsStream("shapeziptest.ftl"), "shapezip.ftl");
+        Resources.copy(
+                getClass().getResourceAsStream("shapeziptest.ftl"),
+                getDataDirectory().get(ws),
+                "shapezip.ftl");
 
         // setup the request params
         ShapeZipOutputFormat zip = new ShapeZipOutputFormat();

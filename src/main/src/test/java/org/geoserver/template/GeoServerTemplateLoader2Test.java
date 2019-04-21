@@ -15,7 +15,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Files;
 import org.geotools.data.DataUtilities;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -23,12 +25,20 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class GeoServerTemplateLoader2Test {
 
     static File root;
+    private File fooFile;
 
     @BeforeClass
     public static void createTmpDir() throws Exception {
         root = File.createTempFile("template", "tmp", new File("target"));
         root.delete();
         root.mkdir();
+    }
+
+    @Before
+    public void createTestFile() throws IOException {
+        this.fooFile = new File("./target/foo");
+        fooFile.delete();
+        fooFile.createNewFile(); // file needs to actually be there
     }
 
     GeoServerDataDirectory createDataDirectoryMock() {
@@ -50,7 +60,7 @@ public class GeoServerTemplateLoader2Test {
         reset(dd);
 
         FeatureTypeInfo ft = createMock(FeatureTypeInfo.class);
-        expect(dd.findSuppResourceFile(ft, "dummy.ftl")).andReturn(new File("foo")).once();
+        expect(dd.get(ft, "dummy.ftl")).andReturn(Files.asResource(fooFile)).once();
         replay(ft, dd);
 
         tl.setFeatureType(ft);
@@ -82,7 +92,7 @@ public class GeoServerTemplateLoader2Test {
         assertNull(tl.findTemplateSource("dummy.ftl"));
 
         reset(dd);
-        expect(dd.findSuppStoreFile(s, "dummy.ftl")).andReturn(new File("foo")).once();
+        expect(dd.get(s, "dummy.ftl")).andReturn(Files.asResource(fooFile)).once();
         replay(dd);
 
         assertNotNull(tl.findTemplateSource("dummy.ftl"));
@@ -108,7 +118,7 @@ public class GeoServerTemplateLoader2Test {
         assertNull(source);
 
         reset(dd);
-        expect(dd.findSuppWorkspaceFile(ws, "dummy.ftl")).andReturn(new File("foo")).once();
+        expect(dd.get(ws, "dummy.ftl")).andReturn(Files.asResource(fooFile)).once();
         replay(dd);
 
         assertNotNull(tl.findTemplateSource("dummy.ftl"));
@@ -133,7 +143,7 @@ public class GeoServerTemplateLoader2Test {
 
         reset(dd);
 
-        expect(dd.findSuppWorkspacesFile(ws, "dummy.ftl")).andReturn(new File("foo")).once();
+        expect(dd.getWorkspaces("dummy.ftl")).andReturn(Files.asResource(fooFile)).once();
         replay(dd);
 
         assertNotNull(tl.findTemplateSource("dummy.ftl"));

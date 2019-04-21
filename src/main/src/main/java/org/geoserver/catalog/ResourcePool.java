@@ -6,15 +6,34 @@
 package org.geoserver.catalog;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -29,7 +48,11 @@ import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
-import org.geoserver.catalog.event.*;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -49,8 +72,16 @@ import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.data.*;
+import org.geotools.data.DataAccess;
+import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.data.DataAccessFinder;
+import org.geotools.data.DataSourceException;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Join;
+import org.geotools.data.Repository;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -90,7 +121,11 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.*;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
@@ -788,30 +823,24 @@ public class ResourcePool {
 
     void handleSchemaOverride(List<AttributeTypeInfo> atts, FeatureTypeInfo ft) throws IOException {
         GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
-        File schemaFile = dd.findSuppResourceFile(ft, "schema.xsd");
+        File schemaFile = Resources.file(dd.get(ft, "schema.xsd"));
         if (schemaFile == null) {
-            schemaFile = dd.findSuppLegacyResourceFile(ft, "schema.xsd");
-            if (schemaFile == null) {
-                // check for the old style schema.xml
-                File oldSchemaFile = dd.findSuppResourceFile(ft, "schema.xml");
-                if (oldSchemaFile == null) {
-                    oldSchemaFile = dd.findSuppLegacyResourceFile(ft, "schema.xml");
+            // check for the old style schema.xml
+            File oldSchemaFile = Resources.file(dd.get(ft, "schema.xml"));
+            if (oldSchemaFile != null) {
+                schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
+                BufferedWriter out =
+                        new BufferedWriter(
+                                new OutputStreamWriter(new FileOutputStream(schemaFile)));
+                out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
+                out.write(" xmlns:gml='http://www.opengis.net/gml'");
+                out.write(">");
+                try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
+                    IOUtils.copy(fis, out, "UTF-8");
                 }
-                if (oldSchemaFile != null) {
-                    schemaFile = new File(oldSchemaFile.getParentFile(), "schema.xsd");
-                    BufferedWriter out =
-                            new BufferedWriter(
-                                    new OutputStreamWriter(new FileOutputStream(schemaFile)));
-                    out.write("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'");
-                    out.write(" xmlns:gml='http://www.opengis.net/gml'");
-                    out.write(">");
-                    try (FileInputStream fis = new FileInputStream(oldSchemaFile)) {
-                        IOUtils.copy(fis, out, "UTF-8");
-                    }
-                    out.write("</xs:schema>");
-                    out.flush();
-                    out.close();
-                }
+                out.write("</xs:schema>");
+                out.flush();
+                out.close();
             }
         }
 
@@ -2183,7 +2212,7 @@ public class ResourcePool {
     public void deleteStyle(StyleInfo style, boolean purgeFile) throws IOException {
         synchronized (styleCache) {
             if (purgeFile) {
-                File styleFile = dataDir().findStyleSldFile(style);
+                File styleFile = Resources.file(dataDir().style(style));
                 if (styleFile != null && styleFile.exists()) {
                     styleFile.delete();
                 }

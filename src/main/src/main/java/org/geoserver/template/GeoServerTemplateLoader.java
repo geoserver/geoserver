@@ -25,6 +25,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resources;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
@@ -214,21 +215,22 @@ public class GeoServerTemplateLoader implements TemplateLoader {
 
         if (resource != null) {
             // first check relative to set resource
-            template = dd.findSuppResourceFile(resource, path);
+            template = Resources.file(dd.get(resource, path));
 
             if (template == null) {
                 // next try relative to the store
-                template = dd.findSuppStoreFile(resource.getStore(), path);
+                template = Resources.file(dd.get(resource.getStore(), path));
             }
 
             if (template == null) {
                 // next try relative to the workspace
-                template = dd.findSuppWorkspaceFile(resource.getStore().getWorkspace(), path);
+                template = Resources.file(dd.get(resource.getStore().getWorkspace(), path));
             }
 
             if (template == null) {
                 // try global supplementary files
-                template = dd.findSuppWorkspacesFile(resource.getStore().getWorkspace(), path);
+                resource.getStore().getWorkspace();
+                template = Resources.file(dd.getWorkspaces(path));
             }
 
             if (template != null) {
@@ -239,12 +241,12 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         if (workspace != null) {
             if (template == null) {
                 // next try relative to the workspace
-                template = dd.findSuppWorkspaceFile(workspace, path);
+                template = Resources.file(dd.get(workspace, path));
             }
 
             if (template == null) {
                 // try global supplementary files
-                template = dd.findSuppWorkspacesFile(workspace, path);
+                template = Resources.file(dd.getWorkspaces(path));
             }
 
             if (template != null) {

@@ -777,7 +777,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             String layerId = getLayerId(MockData.LAKES);
             FeatureTypeInfo resource =
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
-            File parent = getDataDirectory().findOrCreateResourceDir(resource);
+            File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
             FileUtils.write(template, "${FID.value}");
 
@@ -817,7 +817,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             String layerId = getLayerId(MockData.POINTS);
             FeatureTypeInfo resource =
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
-            File parent = getDataDirectory().findOrCreateResourceDir(resource);
+            File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
             FileUtils.write(template, "${altitude.value}");
 
@@ -895,7 +895,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             String layerId = getLayerId(MockData.LAKES);
             FeatureTypeInfo resource =
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
-            File parent = getDataDirectory().findOrCreateResourceDir(resource);
+            File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
             FileUtils.write(template, "${FID.value}");
 

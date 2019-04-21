@@ -352,7 +352,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertFalse("foo".equals(lakes.getTitle()));
 
         GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
-        File info = dd.findResourceFile(lakes);
+        File info = dd.config(lakes).file();
         // File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
 
         FileReader in = new FileReader(info);

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -19,7 +20,6 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerUser;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -96,7 +96,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             } catch (UnsupportedEncodingException e1) {
                 throw new RuntimeException(e1);
             }
-            String token = new String(Base64.decode(base64Token));
+            String token = new String(Base64.getDecoder().decode(base64Token));
 
             String username = "";
             String password = "";

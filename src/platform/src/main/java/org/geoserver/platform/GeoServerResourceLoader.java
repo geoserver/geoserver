@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.geoserver.platform.resource.FileSystemResourceStore;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
@@ -203,12 +202,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      */
     public Resource fromPath(String path) {
         return Resources.fromPath(path, resources.get(Paths.BASE));
-    }
-
-    /** @deprecated use {@link Resources#fromURL(Resource, String)} */
-    @Deprecated
-    public File url(String url) {
-        return Resources.find(Resources.fromURL(get(Paths.BASE), url), true);
     }
 
     /**

@@ -33,6 +33,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -540,7 +542,12 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
-        final File storeDir = loader.url("data/wcs/mosaicfordelete");
+        final File storeDir =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(loader.getBaseDirectory()),
+                                "data/wcs/mosaicfordelete"),
+                        true);
         File[] content = storeDir.listFiles();
         assertThat(content.length, anyOf(equalTo(9), equalTo(10), equalTo(11)));
 

@@ -40,9 +40,11 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -674,13 +676,22 @@ public class ResourcePool {
                 String path = (String) value;
 
                 if (path.startsWith("file:")) {
-                    File fixedPath = loader.url(path);
+                    File fixedPath =
+                            Resources.find(
+                                    Resources.fromURL(
+                                            Files.asResource(loader.getBaseDirectory()), path),
+                                    true);
                     URL url = URLs.fileToUrl(fixedPath);
                     entry.setValue((V) url.toExternalForm());
                 }
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 URL url = (URL) value;
-                File fixedPath = loader.url(url.toString());
+                File fixedPath =
+                        Resources.find(
+                                Resources.fromURL(
+                                        Files.asResource(loader.getBaseDirectory()),
+                                        url.toString()),
+                                true);
                 entry.setValue((V) URLs.fileToUrl(fixedPath));
             } else if ((key != null)
                     && (key.equals("directory") || key.equals("database"))
@@ -689,7 +700,11 @@ public class ResourcePool {
                 // if a url is used for a directory (for example property store), convert it to path
 
                 if (path.startsWith("file:")) {
-                    File fixedPath = loader.url(path);
+                    File fixedPath =
+                            Resources.find(
+                                    Resources.fromURL(
+                                            Files.asResource(loader.getBaseDirectory()), path),
+                                    true);
                     entry.setValue((V) fixedPath.toString());
                 }
             }
@@ -1571,7 +1586,11 @@ public class ResourcePool {
 
         if (isFile) {
             GeoServerResourceLoader loader = catalog.getResourceLoader();
-            final File readerFile = loader.url(urlString);
+            final File readerFile =
+                    Resources.find(
+                            Resources.fromURL(
+                                    Files.asResource(loader.getBaseDirectory()), urlString),
+                            true);
             if (readerFile != null) {
                 readObject = readerFile;
             }

@@ -82,8 +82,9 @@ public class FileModel implements IModel<String> {
                 }
                 location = "file:" + path;
             } else {
-                File dataFile = Resources.find(
-                        Resources.fromURL(Files.asResource(rootDir), location), true);
+                File dataFile =
+                        Resources.find(
+                                Resources.fromURL(Files.asResource(rootDir), location), true);
                 if (dataFile == null || dataFile.equals(file)) {
                     // not relative to the data directory, does not need fixing
                     location = "file://" + file.getAbsolutePath();

@@ -1770,7 +1770,7 @@ public class Dispatcher extends AbstractController {
 
         if (handler == null) {
             // none found, fall back on default
-            handler = new DefaultServiceExceptionHandler();
+            handler = new OWS10ServiceExceptionHandler();
         }
 
         // if SOAP request use special SOAP exception handler, but only for OWS requests because

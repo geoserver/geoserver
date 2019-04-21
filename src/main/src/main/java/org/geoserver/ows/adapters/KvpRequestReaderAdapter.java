@@ -12,7 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.ows.HttpServletRequestAware;
+import org.geoserver.ows.Dispatcher;
 import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
 
 /**
@@ -37,20 +37,14 @@ import org.vfny.geoserver.util.requests.readers.KvpRequestReader;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
-        implements HttpServletRequestAware {
+public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader {
     Class delegateClass;
     ServiceInfo service;
-    HttpServletRequest request;
 
     public KvpRequestReaderAdapter(Class requestBean, Class delegateClass, ServiceInfo service) {
         super(requestBean);
         this.delegateClass = delegateClass;
         this.service = service;
-    }
-
-    public void setHttpRequest(HttpServletRequest request) {
-        this.request = request;
     }
 
     public Object createRequest() throws Exception {
@@ -59,6 +53,7 @@ public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
         String paramName;
         String paramValue;
 
+        HttpServletRequest request = Dispatcher.REQUEST.get().getHttpRequest();
         for (Enumeration pnames = request.getParameterNames(); pnames.hasMoreElements(); ) {
             paramName = (String) pnames.nextElement();
             paramValue = request.getParameter(paramName);

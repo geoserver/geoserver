@@ -8,18 +8,15 @@ package org.geoserver.ows.adapters;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.ows.HttpServletRequestAware;
+import org.geoserver.ows.Dispatcher;
 import org.vfny.geoserver.util.requests.readers.XmlRequestReader;
 
-public class XmlRequestReaderAdapter extends org.geoserver.ows.XmlRequestReader
-        implements HttpServletRequestAware {
+public class XmlRequestReaderAdapter extends org.geoserver.ows.XmlRequestReader {
     Class delegateClass;
     ServiceInfo service;
-    HttpServletRequest httpRequest;
 
     public XmlRequestReaderAdapter(QName element, ServiceInfo service, Class delegate) {
         super(element);
@@ -30,10 +27,6 @@ public class XmlRequestReaderAdapter extends org.geoserver.ows.XmlRequestReader
     public XmlRequestReaderAdapter(
             String namespace, String local, ServiceInfo service, Class delegate) {
         this(new QName(namespace, local), service, delegate);
-    }
-
-    public void setHttpRequest(HttpServletRequest request) {
-        this.httpRequest = request;
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
@@ -64,6 +57,6 @@ public class XmlRequestReaderAdapter extends org.geoserver.ows.XmlRequestReader
         XmlRequestReader delegate =
                 (XmlRequestReader) constructor.newInstance(new Object[] {service});
 
-        return delegate.read(reader, httpRequest);
+        return delegate.read(reader, Dispatcher.REQUEST.get().getHttpRequest());
     }
 }

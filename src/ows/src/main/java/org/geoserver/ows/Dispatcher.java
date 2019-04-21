@@ -1539,11 +1539,6 @@ public class Dispatcher extends AbstractController {
         KvpRequestReader kvpReader = findKvpRequestReader(type);
 
         if (kvpReader != null) {
-            // check for http request awareness
-            if (kvpReader instanceof HttpServletRequestAware) {
-                ((HttpServletRequestAware) kvpReader).setHttpRequest(request.getHttpRequest());
-            }
-
             Object requestBean = kvpReader.createRequest();
 
             if (requestBean != null) {
@@ -1598,10 +1593,6 @@ public class Dispatcher extends AbstractController {
         if (xmlReader == null) {
             // no xml reader, just return object passed in
             return requestBean;
-        }
-
-        if (xmlReader instanceof HttpServletRequestAware) {
-            ((HttpServletRequestAware) xmlReader).setHttpRequest(request.getHttpRequest());
         }
 
         // return xmlReader.read(input);

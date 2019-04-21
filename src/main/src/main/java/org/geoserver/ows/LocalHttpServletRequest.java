@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A thread local variable for a {@link HttpServletRequest} that was specified as part of an ows
  * request.
+ *
+ * @deprecated Use {@link Dispatcher#REQUEST} or Spring own thread locals
  */
 public class LocalHttpServletRequest {
 

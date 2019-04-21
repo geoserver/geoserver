@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class Hello implements OWS {
+public class Hello {
     public String getId() {
         return "hello";
     }

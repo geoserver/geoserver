@@ -26,6 +26,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
@@ -760,14 +761,18 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getStyleByName("foo"));
 
         // ensure the style not deleted on disk
-        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        assertTrue(
+                new File(Resources.directory(getDataDirectory().getStyles()), "foo.sld").exists());
 
         response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/styles/foo");
         assertEquals(200, response.getStatus());
 
         // ensure the style deleted on disk but backed up
-        assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
-        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld.bak").exists());
+        assertFalse(
+                new File(Resources.directory(getDataDirectory().getStyles()), "foo.sld").exists());
+        assertTrue(
+                new File(Resources.directory(getDataDirectory().getStyles()), "foo.sld.bak")
+                        .exists());
     }
 
     @Test
@@ -780,13 +785,15 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getStyleByName("foo"));
 
         // ensure the style not deleted on disk
-        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        assertTrue(
+                new File(Resources.directory(getDataDirectory().getStyles()), "foo.sld").exists());
 
         response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/styles/foo?purge=true");
         assertEquals(200, response.getStatus());
 
         // ensure the style not deleted on disk
-        assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        assertFalse(
+                new File(Resources.directory(getDataDirectory().getStyles()), "foo.sld").exists());
     }
 
     @Test

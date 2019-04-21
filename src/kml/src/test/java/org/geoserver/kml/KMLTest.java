@@ -28,6 +28,7 @@ import org.geoserver.catalog.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -376,7 +377,7 @@ public class KMLTest extends WMSTestSupport {
     public void testTimeTemplate() throws Exception {
         FeatureTypeInfo ftInfo =
                 getCatalog().getResourceByName(getLayerId(MockData.OTHER), FeatureTypeInfo.class);
-        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File resourceDir = Resources.directory(getDataDirectory().get(ftInfo));
         File templateFile = new File(resourceDir, "time.ftl");
         try {
             // create the time template
@@ -405,7 +406,7 @@ public class KMLTest extends WMSTestSupport {
     public void testTimeInvervalTemplate() throws Exception {
         FeatureTypeInfo ftInfo =
                 getCatalog().getResourceByName(getLayerId(MockData.OTHER), FeatureTypeInfo.class);
-        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File resourceDir = Resources.directory(getDataDirectory().get(ftInfo));
         File templateFile = new File(resourceDir, "time.ftl");
         try {
             // create the time template
@@ -435,7 +436,7 @@ public class KMLTest extends WMSTestSupport {
     public void testHeightTemplate() throws Exception {
         FeatureTypeInfo ftInfo =
                 getCatalog().getResourceByName(getLayerId(MockData.OTHER), FeatureTypeInfo.class);
-        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File resourceDir = Resources.directory(getDataDirectory().get(ftInfo));
         File templateFile = new File(resourceDir, "height.ftl");
         try {
             // create the height template

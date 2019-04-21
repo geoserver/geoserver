@@ -18,7 +18,9 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileLockProvider;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.executor.DefaultProcessManager;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.resource.DefaultProcessArtifactsStore;
@@ -122,7 +124,12 @@ public class WPSInitializer implements GeoServerInitializer {
                 File storage = new File(outputStorageDirectory);
                 // if it's a path relative to the data directory, make it absolute
                 if (!storage.isAbsolute()) {
-                    storage = resourceLoader.url(outputStorageDirectory);
+                    storage =
+                            Resources.find(
+                                    Resources.fromURL(
+                                            Files.asResource(resourceLoader.getBaseDirectory()),
+                                            outputStorageDirectory),
+                                    true);
                 }
                 if (storage.exists() && !storage.isDirectory()) {
                     throw new IllegalArgumentException(

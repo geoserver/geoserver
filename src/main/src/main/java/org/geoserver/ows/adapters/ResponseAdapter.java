@@ -14,8 +14,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.vfny.geoserver.Request;
-import org.vfny.geoserver.Response;
 
 /**
  * Wraps an old style {@link Response} in a new {@link org.geoserver.ows.Response}.
@@ -25,6 +23,7 @@ import org.vfny.geoserver.Response;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
+@SuppressWarnings("deprecation")
 public class ResponseAdapter extends org.geoserver.ows.Response {
     GeoServer gs;
 
@@ -36,10 +35,13 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
 
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         // get the delegate
-        Response delegate = (Response) value;
+        org.vfny.geoserver.Response delegate = (org.vfny.geoserver.Response) value;
 
         // get the requst object from the operation
-        Request request = (Request) OwsUtils.parameter(operation.getParameters(), Request.class);
+        org.vfny.geoserver.Request request =
+                (org.vfny.geoserver.Request)
+                        OwsUtils.parameter(
+                                operation.getParameters(), org.vfny.geoserver.Request.class);
 
         // the old contract specifies that execute must be called before
         // get content type
@@ -52,14 +54,14 @@ public class ResponseAdapter extends org.geoserver.ows.Response {
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         // get the delegate
-        Response delegate = (Response) value;
+        org.vfny.geoserver.Response delegate = (org.vfny.geoserver.Response) value;
 
         // write the response
         delegate.writeTo(output);
     }
 
     public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
-        Response delegate = (Response) value;
+        org.vfny.geoserver.Response delegate = (org.vfny.geoserver.Response) value;
         HashMap map = new HashMap();
         if (delegate.getContentDisposition() != null) {
             map.put("Content-Disposition", delegate.getContentDisposition());

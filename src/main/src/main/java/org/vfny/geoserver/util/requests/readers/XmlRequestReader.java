@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.ServiceException;
-import org.vfny.geoserver.Request;
 
 /**
  * This utility reads in XML requests and returns them as appropriate request objects.
@@ -20,6 +19,7 @@ import org.vfny.geoserver.Request;
  * @author Gabriel Rold?n
  * @version $Id$
  */
+@SuppressWarnings("deprecation")
 public abstract class XmlRequestReader {
     /** Class logger */
     protected static Logger LOGGER =
@@ -29,7 +29,8 @@ public abstract class XmlRequestReader {
     private ServiceInfo serviceConfig;
 
     /** */
-    public abstract Request read(Reader reader, HttpServletRequest req) throws ServiceException;
+    public abstract org.vfny.geoserver.Request read(Reader reader, HttpServletRequest req)
+            throws ServiceException;
 
     /**
      * This will create a new XmlRequestReader

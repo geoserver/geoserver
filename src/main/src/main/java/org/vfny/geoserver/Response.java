@@ -61,6 +61,7 @@ import org.geoserver.platform.ServiceException;
  * @version $Id$
  * @deprecated implement {@link org.geoserver.ows.Response} instead
  */
+@SuppressWarnings("deprecation")
 public interface Response {
     /**
      * Excecutes a request. If this method finalizes without throwing an Exception, the Response

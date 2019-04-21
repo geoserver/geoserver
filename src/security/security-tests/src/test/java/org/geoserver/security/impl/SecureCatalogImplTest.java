@@ -623,8 +623,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWideOpen() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager =
-                getResourceAccessManager(buildAccessManager("wideOpen.properties"));
+        ResourceAccessManager resourceManager = buildAccessManager("wideOpen.properties");
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -680,8 +679,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLockedDown() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager =
-                getResourceAccessManager(buildAccessManager("lockedDown.properties"));
+        ResourceAccessManager resourceManager = buildAccessManager("lockedDown.properties");
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -757,8 +755,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterWsLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager =
-                getResourceAccessManager(buildAccessManager("wsLock.properties"));
+        ResourceAccessManager resourceManager = buildAccessManager("wsLock.properties");
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -917,8 +914,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterLayerLock() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager =
-                getResourceAccessManager(buildAccessManager("layerLock.properties"));
+        ResourceAccessManager resourceManager = buildAccessManager("layerLock.properties");
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -1030,8 +1026,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testSecurityFilterComplex() throws Exception {
         // getting the resourceAccessManager
-        ResourceAccessManager resourceManager =
-                getResourceAccessManager(buildAccessManager("complex.properties"));
+        ResourceAccessManager resourceManager = buildAccessManager("complex.properties");
 
         // Workspace test
         Class<? extends CatalogInfo> clazz = WorkspaceInfo.class;
@@ -1307,18 +1302,6 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         }
         // We see arcgrid
         assertTrue(hasArcGridLayer);
-    }
-
-    protected ResourceAccessManager getResourceAccessManager(DataAccessManager manager)
-            throws Exception {
-        // Getting the DefaultResourceAccessManager
-        ResourceAccessManager resourceManager;
-        if (manager instanceof ResourceAccessManager) {
-            resourceManager = (ResourceAccessManager) manager;
-        } else {
-            throw new IllegalArgumentException("We should have a ResourceAccessManager");
-        }
-        return resourceManager;
     }
 
     static <T> void assertThatBoth(

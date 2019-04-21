@@ -57,7 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.codehaus.jettison.util.FastStack;
@@ -390,7 +390,7 @@ public class XStreamPersister {
         xs.omitField(impl(DefaultCatalogFacade.class), "layerGroups");
 
         xs.registerLocalConverter(
-                DefaultCatalogFacade.class, "stores", new StoreMultiHashMapConverter());
+                DefaultCatalogFacade.class, "stores", new StoreMultiValueMapConverter());
         xs.registerLocalConverter(
                 DefaultCatalogFacade.class, "namespaces", new SpaceMapConverter("namespace"));
         xs.registerLocalConverter(
@@ -1828,14 +1828,14 @@ public class XStreamPersister {
     }
 
     /** Converter for multi hash maps containing coverage stores and data stores. */
-    static class StoreMultiHashMapConverter implements Converter {
+    static class StoreMultiValueMapConverter implements Converter {
         public boolean canConvert(Class type) {
-            return MultiHashMap.class.equals(type);
+            return MultiValueMap.class.equals(type);
         }
 
         public void marshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            MultiHashMap map = (MultiHashMap) source;
+            MultiValueMap map = (MultiValueMap) source;
             for (Object v : map.values()) {
                 if (v instanceof DataStoreInfo) {
                     writer.startNode("dataStore");
@@ -1851,7 +1851,7 @@ public class XStreamPersister {
         }
 
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-            MultiHashMap map = new MultiHashMap();
+            MultiValueMap map = new MultiValueMap();
 
             while (reader.hasMoreChildren()) {
                 reader.moveDown();

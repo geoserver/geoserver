@@ -40,6 +40,7 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
+import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.factory.Hints;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.SampleDimensionType;

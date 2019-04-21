@@ -26,7 +26,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geotools.util.decorate.AbstractDecorator;
 
 /**
  * Delegates all methods to the provided delegate. Suclasses will override methods in order to

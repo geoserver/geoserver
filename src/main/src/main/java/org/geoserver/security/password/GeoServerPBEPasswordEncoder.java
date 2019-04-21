@@ -9,13 +9,13 @@ import static org.geoserver.security.SecurityUtils.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.KeyStoreProviderImpl;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -115,7 +115,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
         return new CharArrayPasswordEncoder() {
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                byte[] decoded = Base64.decode(encPass.getBytes());
+                byte[] decoded = Base64.getDecoder().decode(encPass.getBytes());
                 byte[] decrypted = byteEncrypter.decrypt(decoded);
 
                 char[] chars = toChars(decrypted);
@@ -131,7 +131,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
             public String encodePassword(char[] rawPass, Object salt) {
                 byte[] bytes = toBytes(rawPass);
                 try {
-                    return new String(Base64.encode(byteEncrypter.encrypt(bytes)));
+                    return new String(Base64.getEncoder().encode(byteEncrypter.encrypt(bytes)));
                 } finally {
                     scramble(bytes);
                 }
@@ -180,7 +180,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
             getCharEncoder();
         }
 
-        byte[] decoded = Base64.decode(removePrefix(encPass).getBytes());
+        byte[] decoded = Base64.getDecoder().decode(removePrefix(encPass).getBytes());
         byte[] bytes = byteEncrypter.decrypt(decoded);
         try {
             return toChars(bytes);

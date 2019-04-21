@@ -40,7 +40,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.springframework.context.ApplicationContextAware;
-import org.vfny.geoserver.Request;
 import org.vfny.geoserver.util.requests.FilterHandlerImpl;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -64,6 +63,7 @@ import org.xml.sax.helpers.ParserAdapter;
  * @author Gabriel Roldan
  * @version $Id$
  */
+@SuppressWarnings("deprecation")
 public abstract class KvpRequestReader implements ApplicationContextAware {
     /** Class logger */
     private static Logger LOGGER =
@@ -122,7 +122,8 @@ public abstract class KvpRequestReader implements ApplicationContextAware {
      * returns the propper Request subclass for the set of parameters it was setted up and the kind
      * of request it is specialized for
      */
-    public abstract Request getRequest(HttpServletRequest request) throws ServiceException;
+    public abstract org.vfny.geoserver.Request getRequest(HttpServletRequest request)
+            throws ServiceException;
 
     /**
      * Attempts to parse out the proper typeNames from the FeatureId filters. It simply uses the

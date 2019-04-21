@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.decorators;
 
-import org.geoserver.catalog.Wrapper;
 import org.geotools.data.DataStore;
+import org.geotools.util.decorate.Wrapper;
 
 /**
  * Delegates every method to the wrapped feature source. Subclasses will override selected methods

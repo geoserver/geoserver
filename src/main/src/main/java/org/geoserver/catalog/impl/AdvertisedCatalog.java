@@ -23,6 +23,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.decorators.DecoratingLayerGroupInfo;
 import org.geotools.filter.expression.InternalVolatileFunction;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 

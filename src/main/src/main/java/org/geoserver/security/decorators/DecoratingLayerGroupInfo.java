@@ -188,11 +188,6 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
     }
 
     @Override
-    public String getPrefixedName() {
-        return delegate.prefixedName();
-    }
-
-    @Override
     public PublishedType getType() {
         return delegate.getType();
     }

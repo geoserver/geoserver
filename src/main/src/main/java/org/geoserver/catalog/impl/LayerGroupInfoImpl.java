@@ -301,7 +301,6 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 .toString();
     }
 
-    @Override
     public String getPrefixedName() {
         return prefixedName();
     }

@@ -408,11 +408,6 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     @Override
-    public String getPrefixedName() {
-        return prefixedName();
-    }
-
-    @Override
     public WMSInterpolation getDefaultWMSInterpolationMethod() {
         return defaultWMSInterpolationMethod;
     }

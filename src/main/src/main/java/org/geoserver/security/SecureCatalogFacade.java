@@ -363,16 +363,8 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.getFeatureTypesByNamespace(namespace);
     }
 
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return catalog.getFeatureTypeByStore(dataStore, name);
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return catalog.getFeatureTypeByDataStore(dataStore, name);
-    }
-
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return catalog.getFeatureTypesByStore(store);
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {

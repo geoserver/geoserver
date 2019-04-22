@@ -160,7 +160,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
             if (!ANY.equals(layerName)
                     && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
                     && rawCatalog.getLayerGroupByName(root, layerName) == null)
-                LOGGER.warning("Layer " + root + " is unknown in rule + " + rule);
+                LOGGER.warning("Layer " + root + ":" + layerName + " is unknown in rule: " + rule);
         } else {
             if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null)
                 LOGGER.warning("Global layer group " + root + " is unknown in rule " + rule);

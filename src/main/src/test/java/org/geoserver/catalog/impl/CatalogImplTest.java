@@ -1173,12 +1173,6 @@ public class CatalogImplTest {
         ft3.setStore(ds2);
         catalog.add(ft3);
 
-        List<FeatureTypeInfo> ft = catalog.getFeatureTypesByStore(ds1);
-        assertEquals(2, ft.size());
-
-        ft = catalog.getFeatureTypesByStore(ds2);
-        assertEquals(1, ft.size());
-
         List<ResourceInfo> r = catalog.getResourcesByStore(ds1, ResourceInfo.class);
         assertEquals(2, r.size());
         assertTrue(r.contains(ft1));

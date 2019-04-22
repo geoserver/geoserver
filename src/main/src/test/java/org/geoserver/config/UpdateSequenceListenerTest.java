@@ -29,7 +29,7 @@ public class UpdateSequenceListenerTest extends GeoServerSystemTestSupport {
         long updateSequence = global.getUpdateSequence();
 
         // change a flag in the config
-        global.setVerbose(true);
+        global.getSettings().setVerbose(true);
         getGeoServer().save(global);
 
         long newUpdateSequence = getGeoServer().getGlobal().getUpdateSequence();

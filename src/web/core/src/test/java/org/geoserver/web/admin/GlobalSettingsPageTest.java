@@ -18,6 +18,6 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(GlobalSettingsPage.class);
         tester.assertComponent("form:verbose", CheckBox.class);
-        tester.assertModelValue("form:verbose", info.isVerbose());
+        tester.assertModelValue("form:verbose", info.getSettings().isVerbose());
     }
 }

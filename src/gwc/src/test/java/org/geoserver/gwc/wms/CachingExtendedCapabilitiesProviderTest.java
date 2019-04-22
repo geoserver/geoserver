@@ -31,7 +31,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTest
         super.onSetUp(testData);
 
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("../wms/src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("../wms/src/test/resources/geoserver");
         getGeoServer().save(global);
     }
 

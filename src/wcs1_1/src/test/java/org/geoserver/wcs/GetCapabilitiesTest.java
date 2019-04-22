@@ -169,7 +169,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testNoServiceContactInfo() throws Exception {
         // alter geoserver state so that there is no contact information
-        getGeoServer().getGlobal().setContact(new ContactInfoImpl());
+        getGeoServer().getGlobal().getSettings().setContact(new ContactInfoImpl());
 
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS");
         // print(dom);

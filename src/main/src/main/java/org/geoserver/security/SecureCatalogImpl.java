@@ -277,22 +277,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return filterResources(user(), delegate.getFeatureTypesByNamespace(namespace));
     }
 
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return checkAccess(
-                user(),
-                delegate.getFeatureTypeByStore(dataStore, name),
-                MixedModeBehavior.CHALLENGE);
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return checkAccess(
                 user(),
                 delegate.getFeatureTypeByDataStore(dataStore, name),
                 MixedModeBehavior.CHALLENGE);
-    }
-
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return filterResources(user(), delegate.getFeatureTypesByStore(store));
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {

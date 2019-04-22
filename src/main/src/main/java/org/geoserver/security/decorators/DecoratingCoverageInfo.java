@@ -177,10 +177,6 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
         return delegate.getParameters();
     }
 
-    public String getPrefixedName() {
-        return delegate.prefixedName();
-    }
-
     public String prefixedName() {
         return delegate.prefixedName();
     }

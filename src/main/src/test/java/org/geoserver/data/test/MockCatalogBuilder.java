@@ -389,7 +389,6 @@ public class MockCatalogBuilder {
         // expect(catalog.getFeatureTypeByName(or(eq(ns.getPrefix()), eq(ns.getURI())), name))
         //    .andReturn(ft).anyTimes();
 
-        expect(catalog.getFeatureTypeByStore(ds, name)).andReturn(ft).anyTimes();
         expect(catalog.getFeatureTypeByDataStore(ds, name)).andReturn(ft).anyTimes();
 
         ft.accept((CatalogVisitor) anyObject());

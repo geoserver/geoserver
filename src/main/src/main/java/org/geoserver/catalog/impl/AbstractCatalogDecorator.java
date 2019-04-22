@@ -289,16 +289,8 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         return delegate.getFeatureTypesByNamespace(namespace);
     }
 
-    public FeatureTypeInfo getFeatureTypeByStore(DataStoreInfo dataStore, String name) {
-        return delegate.getFeatureTypeByStore(dataStore, name);
-    }
-
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return delegate.getFeatureTypeByDataStore(dataStore, name);
-    }
-
-    public List<FeatureTypeInfo> getFeatureTypesByStore(DataStoreInfo store) {
-        return delegate.getFeatureTypesByStore(store);
     }
 
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {

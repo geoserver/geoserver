@@ -168,10 +168,6 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getNumDecimals();
     }
 
-    public String getPrefixedName() {
-        return delegate.prefixedName();
-    }
-
     public String prefixedName() {
         return delegate.prefixedName();
     }

@@ -185,11 +185,6 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     }
 
     @Override
-    public String getPrefixedName() {
-        return delegate.getPrefixedName();
-    }
-
-    @Override
     public WMSInterpolation getDefaultWMSInterpolationMethod() {
         return delegate.getDefaultWMSInterpolationMethod();
     }

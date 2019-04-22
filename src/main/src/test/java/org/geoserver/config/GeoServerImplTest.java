@@ -49,13 +49,13 @@ public class GeoServerImplTest {
         GeoServerInfo global2 = geoServer.getFactory().createGlobal();
         global1.setGlobalServices(Boolean.valueOf(true));
         global1.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
-        global1.setVerbose(Boolean.valueOf(false));
-        global1.setVerboseExceptions(Boolean.valueOf(false));
+        global1.getSettings().setVerbose(Boolean.valueOf(false));
+        global1.getSettings().setVerboseExceptions(Boolean.valueOf(false));
 
         global2.setGlobalServices(Boolean.valueOf(true));
         global2.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
-        global2.setVerbose(Boolean.valueOf(false));
-        global2.setVerboseExceptions(Boolean.valueOf(false));
+        global2.getSettings().setVerbose(Boolean.valueOf(false));
+        global2.getSettings().setVerboseExceptions(Boolean.valueOf(false));
         assertEquals(global1, global2);
     }
 
@@ -126,14 +126,14 @@ public class GeoServerImplTest {
 
         global = geoServer.getGlobal();
         global.setAdminPassword("foo");
-        global.setOnlineResource("bar");
+        global.getSettings().setOnlineResource("bar");
 
         assertEquals(0, tl.gPropertyNames.size());
         geoServer.save(global);
 
         assertEquals(2, tl.gPropertyNames.size());
         assertTrue(tl.gPropertyNames.contains("adminPassword"));
-        assertTrue(tl.gPropertyNames.contains("onlineResource"));
+        assertTrue(tl.gPropertyNames.contains("settings"));
     }
 
     static class TestListener extends ConfigurationListenerAdapter {

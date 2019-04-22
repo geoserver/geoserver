@@ -26,7 +26,6 @@ public class ContactPanel extends Panel {
         add(new TextField<String>("addressState"));
         add(new TextField<String>("addressPostalCode"));
         add(new TextField<String>("addressCountry"));
-        add(new TextField<String>("addressElectronicMailAddress"));
         // phone
         add(new TextField<String>("contactVoice"));
         add(new TextField<String>("contactFacsimile"));

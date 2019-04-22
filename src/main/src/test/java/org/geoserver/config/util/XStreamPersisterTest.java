@@ -114,10 +114,10 @@ public class XStreamPersisterTest {
         GeoServerInfo g1 = factory.createGlobal();
         g1.setAdminPassword("foo");
         g1.setAdminUsername("bar");
-        g1.setCharset("ISO-8859-1");
+        g1.getSettings().setCharset("ISO-8859-1");
 
         ContactInfo contact = factory.createContact();
-        g1.setContact(contact);
+        g1.getSettings().setContact(contact);
         contact.setAddress("123");
         contact.setAddressCity("Victoria");
         contact.setAddressCountry("Canada");
@@ -131,15 +131,15 @@ public class XStreamPersisterTest {
         contact.setContactPosition("hacker");
         contact.setContactVoice("+1 250 765 4321");
 
-        g1.setNumDecimals(2);
-        g1.setOnlineResource("http://acme.org");
-        g1.setProxyBaseUrl("http://proxy.acme.org");
-        g1.setSchemaBaseUrl("http://schemas.acme.org");
+        g1.getSettings().setNumDecimals(2);
+        g1.getSettings().setOnlineResource("http://acme.org");
+        g1.getSettings().setProxyBaseUrl("http://proxy.acme.org");
+        g1.getSettings().setSchemaBaseUrl("http://schemas.acme.org");
 
-        g1.setTitle("Acme's GeoServer");
+        g1.getSettings().setTitle("Acme's GeoServer");
         g1.setUpdateSequence(123);
-        g1.setVerbose(true);
-        g1.setVerboseExceptions(true);
+        g1.getSettings().setVerbose(true);
+        g1.getSettings().setVerboseExceptions(true);
         g1.getMetadata().put("one", Integer.valueOf(1));
         g1.getMetadata().put("two", new Double(2.2));
 
@@ -176,7 +176,7 @@ public class XStreamPersisterTest {
     public void testGobalContactDefault() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         ContactInfo contact = factory.createContact();
-        g1.setContact(contact);
+        g1.getSettings().setContact(contact);
 
         ByteArrayOutputStream out = out();
         persister.save(g1, out);

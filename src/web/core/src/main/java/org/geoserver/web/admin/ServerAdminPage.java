@@ -74,7 +74,11 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     public IModel<ContactInfo> getContactInfoModel() {
         return new LoadableDetachableModel<ContactInfo>() {
             public ContactInfo load() {
-                return getGeoServerApplication().getGeoServer().getGlobal().getContact();
+                return getGeoServerApplication()
+                        .getGeoServer()
+                        .getGlobal()
+                        .getSettings()
+                        .getContact();
             }
         };
     }

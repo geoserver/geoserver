@@ -362,7 +362,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         service.setMaintainer("test maintainer");
         service.setOnlineResource("http://example.com/geoserver");
         GeoServerInfo global = getGeoServer().getGlobal();
-        ContactInfo contact = global.getContact();
+        ContactInfo contact = global.getSettings().getContact();
         contact.setAddress("__address");
         contact.setAddressCity("__city");
         contact.setAddressCountry("__country");

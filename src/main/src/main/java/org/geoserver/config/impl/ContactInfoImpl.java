@@ -19,8 +19,6 @@ public class ContactInfoImpl implements ContactInfo {
 
     String addressDeliveryPoint;
 
-    @Deprecated String addressElectronicMailAddress;
-
     String addressPostalCode;
 
     String addressState;
@@ -81,24 +79,6 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setAddressDeliveryPoint(String addressDeliveryPoint) {
         this.addressDeliveryPoint = addressDeliveryPoint;
-    }
-
-    @Override
-    public String getAddressElectronicMailAddress() {
-        if (this.contactEmail != null && !this.contactEmail.isEmpty()) {
-            // this field is deprecate use contactEmail if available
-            return contactEmail;
-        }
-        return addressElectronicMailAddress;
-    }
-
-    @Override
-    public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
-        if (this.contactEmail == null || this.contactEmail.isEmpty()) {
-            // this field is deprecate - migrate value to contactEmail if available
-            this.contactEmail = addressElectronicMailAddress;
-        }
-        this.addressElectronicMailAddress = addressElectronicMailAddress;
     }
 
     public String getAddressPostalCode() {

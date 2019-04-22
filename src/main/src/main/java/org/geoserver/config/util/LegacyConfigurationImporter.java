@@ -132,8 +132,9 @@ public class LegacyConfigurationImporter {
                 (Integer) value(global.get("JaiTilePriority"), JAIInfoImpl.DEFAULT_TilePriority));
         jai.setJpegAcceleration(
                 (Boolean) value(global.get("JaiJPEGNative"), JAIInfoImpl.DEFAULT_JPEGNative));
-        jai.setPngAcceleration(
-                (Boolean) value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative));
+        if (Boolean.TRUE.equals(value(global.get("JaiPNGNative"), JAIInfoImpl.DEFAULT_PNGNative))) {
+            jai.setPngEncoderType(JAIInfo.PngEncoderType.NATIVE);
+        }
         jai.setRecycling(
                 (Boolean) value(global.get("JaiRecycling"), JAIInfoImpl.DEFAULT_Recycling));
         jai.setAllowNativeMosaic(

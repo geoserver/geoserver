@@ -52,17 +52,6 @@ public interface JAIInfo extends Cloneable, Serializable {
 
     void setMemoryThreshold(double memoryThreshold);
 
-    /**
-     * Flag controlling native PNG image processing.
-     *
-     * @deprecated Use {@link #getPngEncoderType()} instead
-     */
-    @Deprecated
-    boolean isPngAcceleration();
-
-    @Deprecated
-    void setPngAcceleration(boolean pngAcceleration);
-
     PngEncoderType getPngEncoderType();
 
     void setPngEncoderType(PngEncoderType type);
@@ -81,15 +70,6 @@ public interface JAIInfo extends Cloneable, Serializable {
     boolean isAllowNativeWarp();
 
     void setAllowNativeWarp(boolean allowNativeWarp);
-
-    /**
-     * Flag controlling the image io cache.
-     *
-     * @deprecated Replaced by {@link CoverageAccessInfo#getImageIOCacheThreshold()}
-     */
-    void setImageIOCache(boolean imageIOCache);
-    /** @deprecated */
-    boolean isImageIOCache();
 
     /** The jai instance. */
     JAI getJAI();

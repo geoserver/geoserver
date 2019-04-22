@@ -46,9 +46,7 @@ JAI Configuration:
   <li>Tile Threads:  "${properties.jAI.tileThreads}"</li>
   <li>Memory Capacity:  "${properties.jAI.memoryCapacity}"</li>
   <li>Memory Threshold:  "${properties.jAI.memoryThreshold}"</li>
-  <li>ImageIO Cache:  "${properties.jAI.imageIOCache}"</li>
   <li>PNG Encoder:  "${properties.jAI.pngEncoderType}"</li>
-  <li>PNG Acceleration:  "${properties.jAI.pngAcceleration}"</li>
   <li>JPEG Acceleration:  "${properties.jAI.jpegAcceleration}"</li>
   <li>Allow Native Mosaic:  "${properties.jAI.allowNativeMosaic}"</li>
 </ul>

@@ -126,7 +126,7 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
     }
 
     public String getPrefixedName() {
-        return delegate.getPrefixedName();
+        return delegate.prefixedName();
     }
 
     public String prefixedName() {

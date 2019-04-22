@@ -206,7 +206,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             start("wcs:CoverageOffering");
             for (MetadataLinkInfo mdl : ci.getMetadataLinks()) handleMetadataLink(mdl, "simple");
             element("wcs:description", ci.getDescription());
-            element("wcs:name", ci.getPrefixedName());
+            element("wcs:name", ci.prefixedName());
             element("wcs:label", ci.getTitle());
             handleLonLatEnvelope(ci, ci.getLatLonBoundingBox());
             handleKeywords(ci.getKeywords());

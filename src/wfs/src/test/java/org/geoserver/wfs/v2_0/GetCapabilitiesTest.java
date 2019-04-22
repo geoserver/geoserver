@@ -275,7 +275,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
             FeatureTypeInfo ft = it.next();
             if (ft.isEnabled()) {
-                String prefixedName = ft.getPrefixedName();
+                String prefixedName = ft.prefixedName();
 
                 String xpathExpr =
                         "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"

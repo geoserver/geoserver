@@ -513,7 +513,7 @@ public class GetFeature {
                                                     + " is "
                                                     + "not available "
                                                     + "for "
-                                                    + meta.getPrefixedName()
+                                                    + meta.prefixedName()
                                                     + ".  ";
 
                                     if (meta.getFeatureType() instanceof SimpleFeatureType) {
@@ -1459,12 +1459,10 @@ public class GetFeature {
             // check for a full typename prefix
             for (int j = 0; j < featureTypes.size(); j++) {
                 FeatureTypeInfo featureType = featureTypes.get(j);
-                if (propName.startsWith(featureType.getPrefixedName() + "/")) {
+                if (propName.startsWith(featureType.prefixedName() + "/")) {
                     propNames
                             .get(j)
-                            .add(
-                                    propName.substring(
-                                            (featureType.getPrefixedName() + "/").length()));
+                            .add(propName.substring((featureType.prefixedName() + "/").length()));
                     continue O;
                 }
                 if (propName.startsWith(featureType.getName() + "/")) {

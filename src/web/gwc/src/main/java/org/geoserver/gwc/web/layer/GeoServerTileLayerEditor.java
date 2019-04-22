@@ -151,7 +151,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             ResourceInfo resource = ((LayerInfo) info).getResource();
             // we need the _current_ name, regardless of it's name is being changed
             resource = ModificationProxy.unwrap(resource);
-            originalLayerName = resource.getPrefixedName();
+            originalLayerName = resource.prefixedName();
         } else if (info instanceof LayerGroupInfo) {
             createTileLayerLabelModel = new ResourceModel("createTileLayerForLayerGroup");
             // we need the _current_ name, regardless of if it's name is being changed

@@ -232,7 +232,7 @@ public abstract class FeatureTypeSchemaBuilder {
             } catch (IOException e) {
                 logger.warning(
                         "Unable to get schema location for feature type '"
-                                + featureTypeInfos[0].getPrefixedName()
+                                + featureTypeInfos[0].prefixedName()
                                 + "'. Reason: '"
                                 + e.getMessage()
                                 + "'. Building the schema manually instead.");
@@ -303,7 +303,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                     includes);
                         }
                     } else {
-                        typeNames.append(info.getPrefixedName()).append(",");
+                        typeNames.append(info.prefixedName()).append(",");
                     }
                 }
                 if (typeNames.length() > 0) {

@@ -1093,7 +1093,7 @@ public class ResourcePool {
                     if (pd == null || !(pd instanceof AttributeDescriptor)) {
                         throw new IOException(
                                 "the SimpleFeatureType "
-                                        + info.getPrefixedName()
+                                        + info.prefixedName()
                                         + " does not contains the configured attribute "
                                         + attName
                                         + ". Check your schema configuration");

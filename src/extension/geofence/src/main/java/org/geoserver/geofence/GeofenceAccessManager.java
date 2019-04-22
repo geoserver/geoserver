@@ -299,7 +299,7 @@ public class GeofenceAccessManager
                 LOGGER.log(
                         Level.FINE,
                         "Admin level access, returning " + "full rights for layer {0}",
-                        resource.getPrefixedName());
+                        resource.prefixedName());
 
                 return buildAccessLimits(resource, AccessInfo.ALLOW_ALL);
             }
@@ -372,7 +372,7 @@ public class GeofenceAccessManager
         LOGGER.log(
                 Level.FINE,
                 "Returning {0} for layer {1} and user {2}",
-                new Object[] {limits, resource.getPrefixedName(), username});
+                new Object[] {limits, resource.prefixedName(), username});
 
         return limits;
     }

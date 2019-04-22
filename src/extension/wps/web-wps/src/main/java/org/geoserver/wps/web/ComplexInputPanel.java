@@ -275,7 +275,7 @@ public class ComplexInputPanel extends Panel {
         List<String> result = new ArrayList<String>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof FeatureTypeInfo) {
-                result.add(li.getResource().getPrefixedName());
+                result.add(li.getResource().prefixedName());
             }
         }
         return result;
@@ -287,7 +287,7 @@ public class ComplexInputPanel extends Panel {
         List<String> result = new ArrayList<String>();
         for (LayerInfo li : catalog.getLayers()) {
             if (li.getResource() instanceof CoverageInfo) {
-                result.add(li.getResource().getPrefixedName());
+                result.add(li.getResource().prefixedName());
             }
         }
         return result;

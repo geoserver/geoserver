@@ -169,7 +169,7 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     }
 
     public String getPrefixedName() {
-        return delegate.getPrefixedName();
+        return delegate.prefixedName();
     }
 
     public String prefixedName() {

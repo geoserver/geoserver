@@ -30,7 +30,7 @@ public class CoverageNamesModel extends LoadableDetachableModel<List<String>> {
         // build the sorted list of names
         List<String> result = new ArrayList<String>();
         for (CoverageInfo ci : coverages) {
-            result.add(ci.getPrefixedName());
+            result.add(ci.prefixedName());
         }
         Collections.sort(result);
         return result;

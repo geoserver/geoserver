@@ -438,7 +438,7 @@ public class MonitorCallbackTest {
     MapLayerInfo createMapLayer(String name, String ns) {
         ResourceInfo r = createMock(ResourceInfo.class);
         expect(r.getName()).andReturn(name);
-        expect(r.getPrefixedName()).andReturn(ns + ":" + name);
+        expect(r.prefixedName()).andReturn(ns + ":" + name);
         expect(r.getTitle()).andReturn(name);
         expect(r.getAbstract()).andReturn(name);
         replay(r);

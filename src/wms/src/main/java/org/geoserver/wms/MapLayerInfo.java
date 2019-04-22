@@ -85,7 +85,7 @@ public final class MapLayerInfo {
         ResourceInfo resource = layerInfo.getResource();
 
         // handle InlineFeatureStuff
-        this.name = resource.getPrefixedName();
+        this.name = resource.prefixedName();
         this.label = resource.getTitle();
         this.description = resource.getAbstract();
 

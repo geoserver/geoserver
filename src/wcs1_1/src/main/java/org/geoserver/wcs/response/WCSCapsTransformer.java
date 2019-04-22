@@ -415,13 +415,13 @@ public class WCSCapsTransformer extends TransformerBase {
                         LOGGER.log(
                                 Level.SEVERE,
                                 "Skipping coverage "
-                                        + cv.getPrefixedName()
+                                        + cv.prefixedName()
                                         + " as its capabilities generation failed",
                                 e);
                     } else {
                         throw new RuntimeException(
                                 "Capabilities document generation failed on coverage "
-                                        + cv.getPrefixedName(),
+                                        + cv.prefixedName(),
                                 e);
                     }
                 }

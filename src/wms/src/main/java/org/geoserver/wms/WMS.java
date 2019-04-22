@@ -1263,7 +1263,7 @@ public class WMS implements ApplicationContextAware {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new ServiceException(
-                    "Layer " + coverage.getPrefixedName() + " does not have time support enabled");
+                    "Layer " + coverage.prefixedName() + " does not have time support enabled");
         }
 
         GridCoverage2DReader reader = null;

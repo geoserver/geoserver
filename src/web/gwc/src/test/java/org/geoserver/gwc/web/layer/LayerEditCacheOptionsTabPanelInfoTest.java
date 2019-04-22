@@ -50,7 +50,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         when(gwc.getConfig()).thenReturn(defaults);
 
         FeatureTypeInfo resource = mock(FeatureTypeInfo.class);
-        when(resource.getPrefixedName()).thenReturn("topp:states");
+        when(resource.prefixedName()).thenReturn("topp:states");
 
         layer = mock(LayerInfo.class);
         when(layer.getResource()).thenReturn(resource);

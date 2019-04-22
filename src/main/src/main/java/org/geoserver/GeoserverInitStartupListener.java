@@ -7,6 +7,7 @@ package org.geoserver;
 
 import com.google.common.collect.Lists;
 import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
+import it.geosolutions.jaiext.ConcurrentOperationRegistry;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -40,7 +41,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
-import org.geoserver.jai.ConcurrentOperationRegistry;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.CoverageFactoryFinder;

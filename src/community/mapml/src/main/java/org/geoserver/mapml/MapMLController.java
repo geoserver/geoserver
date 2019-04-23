@@ -480,7 +480,7 @@ public class MapMLController {
         // query inputs
         if (layerInfo.isQueryable()) {
             UnitType units = UnitType.MAP;
-            if(Boolean.TRUE.equals(useTiles)) {
+            if (Boolean.TRUE.equals(useTiles)) {
                 units = UnitType.TILE;
             }
             // query i value (x)

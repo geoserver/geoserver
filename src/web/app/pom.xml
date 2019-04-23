@@ -333,7 +333,7 @@
 		<inherited>true</inherited>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-war-plugin</artifactId>
-        <version>2.3</version>
+        <version>3.2.2</version>
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>
@@ -376,6 +376,7 @@
 				<configuration>
 					<artifacts>
 						<artifact>
+							<classifier>war</classifier>
 							<file>${project.build.directory}/geoserver.war</file>
 							<type>war</type>
 						</artifact>

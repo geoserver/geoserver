@@ -8,6 +8,7 @@ package org.geoserver.filters;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,6 +30,7 @@ public class LoggingFilter implements Filter {
 
     protected boolean enabled = true;
     protected boolean logBodies = true;
+    protected boolean logHeaders = true;
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
@@ -55,6 +57,15 @@ public class LoggingFilter implements Filter {
                 message += " \"" + noNull(hreq.getHeader("User-Agent"));
                 message += "\" \"" + noNull(hreq.getHeader("Referer"));
                 message += "\" \"" + noNull(hreq.getHeader("Content-type")) + "\" ";
+
+                if (logHeaders) {
+                    Enumeration<String> headerNames = hreq.getHeaderNames();
+                    message += "\n  Headers:";
+                    while (headerNames.hasMoreElements()) {
+                        String headerName = headerNames.nextElement();
+                        message += "\n    " + headerName + ": " + hreq.getHeader(headerName);
+                    }
+                }
 
                 if (logBodies
                         && (hreq.getMethod().equals("PUT") || hreq.getMethod().equals("POST"))) {
@@ -94,6 +105,7 @@ public class LoggingFilter implements Filter {
     public void init(FilterConfig filterConfig) {
         enabled = getConfigBool("enabled", filterConfig);
         logBodies = getConfigBool("log-request-bodies", filterConfig);
+        logHeaders = getConfigBool("log-request-headers", filterConfig);
     }
 
     protected boolean getConfigBool(String name, FilterConfig conf) {

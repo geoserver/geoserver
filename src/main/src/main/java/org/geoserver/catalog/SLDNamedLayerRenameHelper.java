@@ -158,7 +158,8 @@ public class SLDNamedLayerRenameHelper {
         // copy over the style contents
         try (BufferedReader reader = catalog.getResourcePool().readStyle(s)) {
             catalog.getResourcePool()
-                    .writeStyle(backup, new ByteArrayInputStream(IOUtils.toByteArray(reader)));
+                    .writeStyle(
+                            backup, new ByteArrayInputStream(IOUtils.toByteArray(reader, "UTF-8")));
         }
         return backup;
     }

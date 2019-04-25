@@ -10,17 +10,14 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Files;
-import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class GeoServerTemplateLoader2Test {
 
@@ -148,24 +145,5 @@ public class GeoServerTemplateLoader2Test {
 
         assertNotNull(tl.findTemplateSource("dummy.ftl"));
         verify(dd);
-    }
-
-    @Test
-    public void testRemoteType() throws Exception {
-        SimpleFeatureType ft =
-                DataUtilities.createType(
-                        "remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
-
-        GeoServerDataDirectory dd = createDataDirectoryMock();
-        Catalog cat = createNiceMock(Catalog.class);
-        expect(cat.getFeatureTypeByName(ft.getName())).andReturn(null).once();
-        replay(dd, cat);
-
-        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
-        tl.setCatalog(cat);
-        tl.setFeatureType(ft);
-        tl.findTemplateSource("header.ftl");
-
-        verify(cat);
     }
 }

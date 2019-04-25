@@ -7,9 +7,9 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opengis.util.SimpleEnumerationType;
+import org.opengis.util.CodeList;
 
-public class TransactionEventType extends SimpleEnumerationType<TransactionEventType> {
+public class TransactionEventType extends CodeList<TransactionEventType> {
     private static final long serialVersionUID = -4218786755116808448L;
     private static final List VALUES = new ArrayList(5);
 
@@ -47,7 +47,7 @@ public class TransactionEventType extends SimpleEnumerationType<TransactionEvent
             new TransactionEventType("PostDelete", "Features just deleted");
 
     protected TransactionEventType(String name, String description) {
-        super(VALUES, name, description);
+        super(name, VALUES);
     }
 
     public TransactionEventType[] family() {

@@ -530,7 +530,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         // GEOS-7741: verify the icon file is created if it does exist in store
         assertTrue(iconFile.exists());
 
-        ctx.destroy();
+        ctx.close();
         ctx.close();
     }
 }

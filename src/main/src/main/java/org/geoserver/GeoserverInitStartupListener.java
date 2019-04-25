@@ -125,9 +125,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
         // setup concurrent operation registry
         JAI jaiDef = JAI.getDefaultInstance();
-        if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry
-                || jaiDef.getOperationRegistry()
-                        instanceof it.geosolutions.jaiext.ConcurrentOperationRegistry)) {
+        if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
             jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
         }
 

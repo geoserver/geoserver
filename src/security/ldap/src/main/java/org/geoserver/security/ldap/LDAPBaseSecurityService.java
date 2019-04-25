@@ -15,9 +15,9 @@ import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.springframework.ldap.core.AuthenticatedLdapEntryContextCallback;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapEntryIdentification;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 
 /** @author Niels Charlier */
@@ -183,7 +183,7 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
      */
     protected void authenticateIfNeeded(AuthenticatedLdapEntryContextCallback callback) {
         if (user != null && password != null) {
-            template.authenticate(DistinguishedName.EMPTY_PATH, user, password, callback);
+            template.authenticate(LdapUtils.emptyLdapName(), user, password, callback);
         } else {
             callback.executeWithContext(null, null);
         }

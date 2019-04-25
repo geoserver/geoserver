@@ -17,9 +17,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.ldap.core.AuthenticatedLdapEntryContextCallback;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapEntryIdentification;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
@@ -147,7 +147,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             // authenticate and execute role extraction in the authenticated
             // context
             ldapTemplate.authenticate(
-                    DistinguishedName.EMPTY_PATH,
+                    LdapUtils.emptyLdapName(),
                     userDn,
                     password,
                     new AuthenticatedLdapEntryContextCallback() {

@@ -306,7 +306,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 "--AaB03x\r\nContent-Disposition: form-data; name=filedata; filename=data.csv\r\n"
                         + "Content-Type: text/plain\n"
                         + "\r\n\r\n"
-                        + FileUtils.readFileToString(locations)
+                        + FileUtils.readFileToString(locations, "UTF-8")
                         + "\r\n\r\n--AaB03x--";
 
         post("/rest/imports/" + importId + "/tasks", body, "multipart/form-data; boundary=AaB03x");

@@ -208,7 +208,7 @@ public class TransformRepositoryTest {
         assertEquals(original, reloaded);
 
         // check the file on disk
-        Document doc = XMLUnit.buildTestDocument(FileUtils.readFileToString(configFile));
+        Document doc = XMLUnit.buildTestDocument(FileUtils.readFileToString(configFile, "UTF-8"));
         XMLAssert.assertXpathEvaluatesTo("ft1-id", "/transform/featureType/id", doc);
     }
 

@@ -168,7 +168,7 @@ public class SpatialFile extends FileData {
             return null;
         }
 
-        String wkt = FileUtils.readFileToString(prj);
+        String wkt = FileUtils.readFileToString(prj, "UTF-8");
         try {
             return CRS.parseWKT(wkt);
         } catch (Exception e) {

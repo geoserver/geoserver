@@ -29,7 +29,7 @@ public interface GMLInfo extends Serializable {
      *
      * <p>
      *
-     * @deprecated use {@link SrsSyntax}
+     * Use {@link SrsSyntax} whenever possible
      */
     public static enum SrsNameStyle {
         NORMAL {

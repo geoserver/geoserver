@@ -639,7 +639,11 @@
 		<constructor-arg ref="geoServer"/>
 		<constructor-arg ref="xmlConfiguration-1.1"/>
 	</bean>
-	<bean id="shapezipOutputFormat" class="org.geoserver.wfs.response.ShapeZipOutputFormat" />
+	<bean id="shapezipOutputFormat" class="org.geoserver.wfs.response.ShapeZipOutputFormat" >
+		<constructor-arg ref="geoServer"/>
+		<constructor-arg ref="catalog"/>
+		<constructor-arg ref="resourceLoader"/>
+	</bean>
 
     <bean id="CSVOutputFormat" class="org.geoserver.wfs.response.CSVOutputFormat">
         <constructor-arg index="0" ref="geoServer"/>

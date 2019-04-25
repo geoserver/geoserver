@@ -55,6 +55,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.CoordinateXYZM;
@@ -630,7 +631,7 @@ public class ShapeZipTest extends WFSTestSupport {
 
         // create a datastore reading the uncompressed shapefile
         File shapeFile = new File(shapeFileName);
-        ShapefileDataStore ds = new ShapefileDataStore(shapeFile.toURL());
+        ShapefileDataStore ds = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
         SimpleFeatureSource fs = ds.getFeatureSource();
         SimpleFeatureCollection fc = fs.getFeatures();
         SimpleFeatureType schema = fc.getSchema();

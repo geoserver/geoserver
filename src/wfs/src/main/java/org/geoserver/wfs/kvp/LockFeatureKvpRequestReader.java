@@ -67,7 +67,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
                 EObject q = (EObject) lock.get(0);
 
                 for (int i = 1; i < m; i++) {
-                    lock.add(EMFUtils.clone(q, WfsFactory.eINSTANCE));
+                    lock.add(EMFUtils.clone(q, WfsFactory.eINSTANCE, false));
                 }
 
                 return;

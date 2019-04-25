@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geotools.util.logging.LoggerAdapter;
 import org.junit.Rule;
@@ -54,7 +55,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
         log.addHandler(capture(handlerCap));
         expectLastCall().once();
         base.evaluate();
@@ -92,7 +93,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
         final Exception ex = new IllegalArgumentException();
         log.addHandler(capture(handlerCap));
         expectLastCall().once();
@@ -136,7 +137,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
         final Exception ex = new IllegalArgumentException();
 
         final LogRecord record = createMock("record1", LogRecord.class);
@@ -183,7 +184,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
 
         final LogRecord record = createMock("record1", LogRecord.class);
 
@@ -235,7 +236,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
 
         final LogRecord record = createMock("record1", LogRecord.class);
 
@@ -283,7 +284,7 @@ public class LoggerRuleTest {
         expect(log.getLevel()).andReturn(Level.OFF);
         log.setLevel(Level.FINE);
         expectLastCall().once();
-        final Capture<Handler> handlerCap = new Capture<>();
+        final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
 
         final LogRecord record = createMock("record1", LogRecord.class);
 

@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.*;
 
 import java.util.*;
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.*;
@@ -562,7 +563,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
 
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
-        final Capture<Filter> cap = new Capture<Filter>();
+        final Capture<Filter> cap = Capture.newInstance(CaptureType.LAST);
         expect(catalog.list(eq(clazz), capture(cap)))
                 .andStubAnswer(
                         new IAnswer<CloseableIterator<T>>() {

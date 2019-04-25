@@ -135,7 +135,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Collection<GetMapOutputFormat> getMapFormats,
             Collection<ExtendedCapabilitiesProvider> extCapsProviders) {
         super();
-        Assert.notNull(wms);
+        Assert.notNull(wms, "The WMS reference cannot be null");
         Assert.notNull(schemaBaseUrl, "baseURL");
         Assert.notNull(getMapFormats, "getMapFormats");
 

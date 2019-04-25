@@ -39,7 +39,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     }
 
     protected AbstractMapOutputFormat(final String mime, Set<String> outputFormats) {
-        Assert.notNull(mime);
+        Assert.notNull(mime, "mime");
         this.mime = mime;
         if (outputFormats == null) {
             outputFormats = Collections.emptySet();

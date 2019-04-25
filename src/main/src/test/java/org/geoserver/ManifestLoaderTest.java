@@ -5,6 +5,7 @@
  */
 package org.geoserver;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -24,7 +25,6 @@ import org.geoserver.test.TestSetupFrequency;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.springframework.util.Assert;
 
 /**
  * Tests for ManifestLoader, AboutModel and ManifestModel
@@ -52,8 +52,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void manifestLoaderVersionsTest() {
-
-        Assert.notNull(ManifestLoader.getVersions());
+        assertNotNull(ManifestLoader.getVersions());
     }
 
     @Test
@@ -70,7 +69,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         // extract first resource
         ManifestModel mm = filtered.getManifests().first();
         if (mm != null) {
-            Assert.isTrue(mm.getName().matches(resourceName));
+            assertTrue(mm.getName().matches(resourceName));
         } else {
             LOGGER.log(
                     Level.WARNING,
@@ -112,7 +111,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         Iterator<ManifestModel> mit = filtered.getManifests().iterator();
         while (mit.hasNext()) {
             final ManifestModel model = mit.next();
-            Assert.isTrue(model.getEntries().containsKey(propertyKey));
+            assertTrue(model.getEntries().containsKey(propertyKey));
         }
 
         // check values
@@ -120,7 +119,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         mit = filtered.getManifests().iterator();
         while (mit.hasNext()) {
             final ManifestModel model = mit.next();
-            Assert.isTrue(model.getEntries().containsValue(propertyVal));
+            assertTrue(model.getEntries().containsValue(propertyVal));
         }
     }
 
@@ -158,10 +157,10 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         while (mit.hasNext()) {
             final ManifestModel model = mit.next();
             // check keys
-            Assert.isTrue(model.getEntries().containsKey(propertyKey));
+            assertTrue(model.getEntries().containsKey(propertyKey));
             String value = model.getEntries().get(propertyKey);
             // check value
-            Assert.isTrue(value.equals(propertyVal));
+            assertTrue(value.equals(propertyVal));
         }
     }
 
@@ -173,12 +172,12 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
         ManifestModel mm = newResources.getManifests().first();
 
-        Assert.isTrue(resources.getManifests().contains(mm));
+        assertTrue(resources.getManifests().contains(mm));
 
         // test remove
         resources.remove(mm.getName());
 
-        Assert.isTrue(!resources.getManifests().contains(mm));
+        assertTrue(!resources.getManifests().contains(mm));
     }
 
     /**
@@ -273,7 +272,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 while (it.hasNext()) {
                     Entry<String, String> entry = it.next();
                     // the propertyKey should NOT be present
-                    Assert.isTrue(!propertyKey.equals(entry.getKey()));
+                    assertTrue(!propertyKey.equals(entry.getKey()));
                 }
             }
         }
@@ -291,7 +290,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 while (it.hasNext()) {
                     Entry<String, String> entry = it.next();
                     // the propertyKey MUST be present
-                    Assert.isTrue(propertyKey.equals(entry.getKey()));
+                    assertTrue(propertyKey.equals(entry.getKey()));
                 }
             }
         }

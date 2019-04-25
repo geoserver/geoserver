@@ -6,7 +6,6 @@
 
 package org.geoserver.security.file;
 
-import java.io.File;
 import java.io.IOException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -26,24 +25,9 @@ public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoaded
         checkAndConfigure();
     }
 
-    /** @deprecated Use Resource instead of File */
-    public UserGroupFileWatcher(File file, GeoServerUserGroupService service) {
-        super(file);
-        this.service = service;
-        checkAndConfigure();
-    }
-
     public UserGroupFileWatcher(
             Resource resource, GeoServerUserGroupService service, long lastModified) {
         super(resource);
-        this.service = service;
-        this.lastModified = lastModified;
-        checkAndConfigure();
-    }
-
-    /** @deprecated Use Resource instead of File */
-    public UserGroupFileWatcher(File file, GeoServerUserGroupService service, long lastModified) {
-        super(file);
         this.service = service;
         this.lastModified = lastModified;
         checkAndConfigure();

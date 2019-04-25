@@ -716,7 +716,7 @@ public class ImporterDataTest extends ImporterTestSupport {
                 new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml2.xsd");
         File schemaFile = new File("./target/states.gml2.xsd");
         FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
         FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 
@@ -735,7 +735,7 @@ public class ImporterDataTest extends ImporterTestSupport {
                 new File("src/test/resources/org/geoserver/importer/test-data/gml/states.gml3.xsd");
         File schemaFile = new File("./target/states.gml3.xsd");
         FileUtils.copyFile(schemaSourceFile, schemaFile);
-        String gml = FileUtils.readFileToString(gmlSourceFile);
+        String gml = FileUtils.readFileToString(gmlSourceFile, "UTF-8");
         gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
         FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
 

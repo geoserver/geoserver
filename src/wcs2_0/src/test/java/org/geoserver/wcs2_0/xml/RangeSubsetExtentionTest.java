@@ -29,7 +29,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
 
         final File xml =
                 new File("./src/test/resources/rangesubset/requestGetCoverageRangeSubsetting.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -64,7 +64,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageRangeSubsettingInterval2.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -99,7 +99,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageWrongRangeSubsetting.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/xml", response.getContentType());
@@ -113,7 +113,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageRangeSubsetting9to3.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -148,7 +148,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageRangeSubsetting9to4.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -183,7 +183,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageRangeSubsetting9to7.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -218,7 +218,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         final File xml =
                 new File(
                         "./src/test/resources/rangesubset/requestGetCoverageRangeSubsettingInterval.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());

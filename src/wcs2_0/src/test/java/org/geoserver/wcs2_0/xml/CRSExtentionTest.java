@@ -26,7 +26,7 @@ public class CRSExtentionTest extends WCSTestSupport {
     @Test
     public void capabilties() throws Exception {
         final File xml = new File("./src/test/resources/getcapabilities/getCap.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         Document dom = postAsDOM("wcs", request);
         //         print(dom);
 
@@ -54,7 +54,7 @@ public class CRSExtentionTest extends WCSTestSupport {
     @Test
     public void reprojectTo3857XML() throws Exception {
         final File xml = new File("./src/test/resources/crs/requestGetCoverageOutputCRS.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -103,7 +103,7 @@ public class CRSExtentionTest extends WCSTestSupport {
     @Test
     public void testGetCoverageSubsettingCRSFullXML() throws Exception {
         final File xml = new File("./src/test/resources/crs/requestGetCoverageSubsettingCRS.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -153,7 +153,7 @@ public class CRSExtentionTest extends WCSTestSupport {
     public void testGetCoverageSubsettingTrimCRSXML() throws Exception {
         final File xml =
                 new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());
@@ -203,7 +203,7 @@ public class CRSExtentionTest extends WCSTestSupport {
     public void subsettingNativeCRSReprojectTo3857() throws Exception {
         final File xml =
                 new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS2.xml");
-        final String request = FileUtils.readFileToString(xml);
+        final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("image/tiff", response.getContentType());

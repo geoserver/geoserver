@@ -152,7 +152,8 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPostXSLT() throws Exception {
         String xslt =
                 FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"));
+                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
+                        "UTF-8");
 
         // test for missing params
         MockHttpServletResponse response =
@@ -211,7 +212,8 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPutXSLT() throws Exception {
         String xslt =
                 FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"));
+                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
+                        "UTF-8");
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wfs/transforms/general",

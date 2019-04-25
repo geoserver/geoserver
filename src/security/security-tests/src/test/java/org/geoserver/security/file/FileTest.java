@@ -72,15 +72,14 @@ public class FileTest {
             File gaFile = File.createTempFile("roles", ".xml");
             gaFile.deleteOnExit();
 
-            RoleFileWatcher gaWatcher = new RoleFileWatcher(gaFile, gaService);
+            RoleFileWatcher gaWatcher = new RoleFileWatcher(Files.asResource(gaFile), gaService);
             assertEquals(1, gaCounter);
 
-            gaWatcher.setDelay(10); // 10 millisecs
             gaWatcher.start();
 
-            UserGroupFileWatcher ugWatcher = new UserGroupFileWatcher(ugFile, ugService);
+            UserGroupFileWatcher ugWatcher =
+                    new UserGroupFileWatcher(Files.asResource(ugFile), ugService);
             assertEquals(1, ugCounter);
-            ugWatcher.setDelay(10);
             ugWatcher.start();
 
             LOGGER.info(gaWatcher.toString());

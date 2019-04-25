@@ -84,18 +84,6 @@ public abstract class Response {
         return binding;
     }
 
-    /**
-     * @deprecated use {@link #getOutputFormats()}.
-     * @return A common or well-known name for the response, may be <code>null</code>.
-     */
-    public final String getOutputFormat() {
-        if (outputFormats.isEmpty()) {
-            return null;
-        }
-
-        return outputFormats.iterator().next();
-    }
-
     /** @return Set of common or well-known name for the response, may be empty. */
     public final Set<String> getOutputFormats() {
         return outputFormats;

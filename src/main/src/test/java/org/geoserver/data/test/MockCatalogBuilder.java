@@ -643,7 +643,7 @@ public class MockCatalogBuilder {
         expect(s.getId()).andReturn(sId);
         expect(s.getName()).andReturn(name).anyTimes();
         expect(s.getFilename()).andReturn(filename).anyTimes();
-        expect(s.getSLDVersion()).andReturn(version).anyTimes();
+        expect(s.getFormatVersion()).andReturn(version).anyTimes();
         try {
             expect(s.getStyle())
                     .andReturn(

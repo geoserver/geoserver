@@ -73,14 +73,6 @@ public class StyleInfoImpl implements StyleInfo {
         this.workspace = workspace;
     }
 
-    public Version getSLDVersion() {
-        return getFormatVersion();
-    }
-
-    public void setSLDVersion(Version v) {
-        setFormatVersion(v);
-    }
-
     public String getFormat() {
         return format;
     }

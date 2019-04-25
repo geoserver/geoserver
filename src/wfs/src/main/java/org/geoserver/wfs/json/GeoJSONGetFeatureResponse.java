@@ -63,7 +63,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
     /** capabilities output format string. */
     public String getCapabilitiesElementName() {
-        return JSONType.getJSONType(getOutputFormat()).toString();
+        return JSONType.getJSONType(
+                        getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next())
+                .toString();
     }
 
     /** Returns the mime type */

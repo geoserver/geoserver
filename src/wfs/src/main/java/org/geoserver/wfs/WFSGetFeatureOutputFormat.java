@@ -110,7 +110,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * overriden in each outputformat subclass, and if it's not a warning will be issued.
      */
     public String getCapabilitiesElementName() {
-        String of = getOutputFormat();
+        String of = getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
         if (of == null) {
             return null;
         }

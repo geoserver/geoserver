@@ -149,6 +149,6 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormat();
+        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
     }
 }

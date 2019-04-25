@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -84,7 +85,7 @@ public class SecureCatalogImplFilterTest {
         expect(manager.getSecurityFilter(eq(anonymous), eq(FeatureTypeInfo.class)))
                 .andStubReturn(mockFilter); // TODO
 
-        final Capture<Filter> filterCapture = new Capture<Filter>();
+        final Capture<Filter> filterCapture = Capture.newInstance(CaptureType.LAST);
 
         final List<FeatureTypeInfo> source = new ArrayList<FeatureTypeInfo>();
 

@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -82,7 +83,7 @@ public class ConfigDatabaseTest {
         // Mock the GeoServer instance to accept a listener, and to provide that listener back when
         // asked
         geoServer = createMock(GeoServer.class);
-        final Capture<ConfigurationListener> cap = new Capture<ConfigurationListener>();
+        final Capture<ConfigurationListener> cap = Capture.newInstance(CaptureType.LAST);
         geoServer.addListener(capture(cap));
         expectLastCall().asStub();
         expect(geoServer.getListeners())

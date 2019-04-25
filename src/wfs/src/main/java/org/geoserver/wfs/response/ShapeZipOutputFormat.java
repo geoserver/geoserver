@@ -479,7 +479,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         this.maxDbfSize = maxDbfSize;
     }
 
-    static class FileNameSource {
+    class FileNameSource {
 
         private Class clazz;
 
@@ -490,7 +490,8 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         private Properties processTemplate(FeatureTypeInfo ftInfo, String geometryType) {
             try {
                 // setup template subsystem
-                GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(clazz);
+                GeoServerTemplateLoader templateLoader =
+                        new GeoServerTemplateLoader(clazz, resourceLoader);
                 templateLoader.setFeatureType(ftInfo);
 
                 // load the template

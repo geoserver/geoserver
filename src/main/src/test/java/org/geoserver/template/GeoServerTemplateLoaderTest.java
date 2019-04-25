@@ -63,7 +63,6 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
                         "remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
         GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         GeoServerTemplateLoader loader = new GeoServerTemplateLoader(getClass(), resources);
-        loader.setFeatureType(ft);
         loader.findTemplateSource("header.ftl");
     }
 

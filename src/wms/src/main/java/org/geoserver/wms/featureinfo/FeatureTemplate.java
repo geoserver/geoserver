@@ -18,6 +18,9 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
@@ -301,8 +304,11 @@ public class FeatureTemplate {
 
         // otherwise, build a loader and do the lookup
         GeoServerTemplateLoader templateLoader =
-                new GeoServerTemplateLoader(lookup != null ? lookup : getClass());
-        templateLoader.setFeatureType(featureType);
+                new GeoServerTemplateLoader(
+                        lookup != null ? lookup : getClass(),
+                        GeoServerExtensions.bean(GeoServerResourceLoader.class));
+        Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+        templateLoader.setFeatureType(catalog.getFeatureTypeByName(featureType.getName()));
 
         // Configuration is not thread safe
         synchronized (templateConfig) {

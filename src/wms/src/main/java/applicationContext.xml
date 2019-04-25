@@ -91,6 +91,7 @@
     
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
+      <constructor-arg ref="resourceLoader"/>
     </bean>
 
 	<!-- GetFeatureInfo JSONP -->

@@ -41,6 +41,8 @@ import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -74,7 +76,9 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
-        outputFormat = new HTMLFeatureInfoOutputFormat(getWMS());
+        outputFormat =
+                new HTMLFeatureInfoOutputFormat(
+                        getWMS(), GeoServerExtensions.bean(GeoServerResourceLoader.class));
 
         currentTemplate = "test_content.ftl";
         // configure template loader
@@ -283,7 +287,9 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
                         new MapLayerInfo(getCatalog().getLayerByName(featureType2.prefixedName())));
         FeatureCollectionType type2 = WfsFactory.eINSTANCE.createFeatureCollectionType();
         type2.getFeature().add(featureType2.getFeatureSource(null, null).getFeatures());
-        final HTMLFeatureInfoOutputFormat format = new HTMLFeatureInfoOutputFormat(getWMS());
+        final HTMLFeatureInfoOutputFormat format =
+                new HTMLFeatureInfoOutputFormat(
+                        getWMS(), GeoServerExtensions.bean(GeoServerResourceLoader.class));
         format.templateLoader =
                 new GeoServerTemplateLoader(getClass(), getDataDirectory()) {
                     @Override

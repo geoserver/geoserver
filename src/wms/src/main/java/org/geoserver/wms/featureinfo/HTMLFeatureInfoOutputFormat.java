@@ -19,6 +19,7 @@ import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
@@ -67,13 +68,16 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 });
     }
 
+    private final GeoServerResourceLoader resourceLoader;
+
     GeoServerTemplateLoader templateLoader;
 
     private WMS wms;
 
-    public HTMLFeatureInfoOutputFormat(final WMS wms) {
+    public HTMLFeatureInfoOutputFormat(final WMS wms, GeoServerResourceLoader resourceLoader) {
         super(FORMAT);
         this.wms = wms;
+        this.resourceLoader = resourceLoader;
     }
 
     /**

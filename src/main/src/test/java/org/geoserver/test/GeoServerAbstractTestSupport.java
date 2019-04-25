@@ -277,7 +277,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 disposeIfExists(getXSD10());
 
                 // kill the context
-                applicationContext.destroy();
+                applicationContext.close();
 
                 // kill static caches
                 GeoServerExtensionsHelper.init(null);

@@ -352,7 +352,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             disposeIfExists(getXSD10());
 
             // kill the context
-            applicationContext.destroy();
+            applicationContext.close();
 
             // kill static caches
             GeoServerExtensionsHelper.init(null);

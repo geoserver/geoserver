@@ -14,10 +14,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
@@ -82,9 +80,6 @@ public class GeoServerTemplateLoader implements TemplateLoader {
     /** Allows for workspace specific lookups */
     WorkspaceInfo workspace;
 
-    /** Reference to the GeoServer catalog so we can look up the prefix for a namespace. */
-    private Catalog catalog;
-
     /**
      * Constructs the template loader.
      *
@@ -120,17 +115,10 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         // create a file template loader to delegate to
         fileTemplateLoader = new FileTemplateLoader(dd.root());
 
-        // grab the catalog and store a reference
-        catalog = (Catalog) GeoServerExtensions.bean("catalog");
-
         // create a class template loader to delegate to
         if (caller != null) {
             classTemplateLoader = new ClassTemplateLoader(caller, "");
         }
-    }
-
-    public void setCatalog(Catalog catalog) {
-        this.catalog = catalog;
     }
 
     public void setFeatureType(FeatureTypeInfo ft) {
@@ -184,7 +172,6 @@ public class GeoServerTemplateLoader implements TemplateLoader {
 
             if (template == null) {
                 // try global supplementary files
-                resource.getStore().getWorkspace();
                 template = Resources.file(dd.getWorkspaces(path));
             }
 

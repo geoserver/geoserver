@@ -560,11 +560,6 @@ class SecureCatalogFacade implements CatalogFacade {
         return catalog.list(of, filter);
     }
 
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
-        return catalog.list(of, filter, offset, count, sortBy);
-    }
-
     @Override
     public <T extends StoreInfo> T detach(T store) {
         return facade.detach(store);

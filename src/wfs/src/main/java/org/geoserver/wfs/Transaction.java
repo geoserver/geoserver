@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import net.opengis.wfs.TransactionResponseType;
 import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -420,7 +419,6 @@ public class Transaction {
     }
 
     private TransactionRequest fireBeforeTransaction(TransactionRequest request) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
         for (TransactionCallback tp : transactionCallbacks) {
             request = tp.beforeTransaction(request);
         }
@@ -430,8 +428,6 @@ public class Transaction {
 
     private void fireAfterTransaction(
             TransactionRequest request, TransactionResponse result, boolean committed) {
-        TransactionType tx = TransactionRequest.WFS11.unadapt(request);
-        TransactionResponseType tr = TransactionResponse.WFS11.unadapt(result);
         for (TransactionCallback tp : transactionCallbacks) {
             tp.afterTransaction(request, result, committed);
         }

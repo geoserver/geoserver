@@ -15,8 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.WKTReader;
 
 public class GeoJSONBuilderTest {
@@ -52,7 +53,9 @@ public class GeoJSONBuilderTest {
     class MyPoint extends Point {
 
         public MyPoint(double x, double y) {
-            super(new Coordinate(x, y), new PrecisionModel(), -1);
+            super(
+                    new CoordinateArraySequence(new Coordinate[] {new Coordinate(x, y)}),
+                    new GeometryFactory());
         }
     }
 

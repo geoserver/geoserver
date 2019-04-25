@@ -80,8 +80,8 @@ public final class Utils {
             if (parameterParts.length < 2) {
                 continue;
             }
-            String name = URLDecoder.decode(parameterParts[0]);
-            String value = URLDecoder.decode(parameterParts[1]);
+            String name = URLDecoder.decode(parameterParts[0], "UTF-8");
+            String value = URLDecoder.decode(parameterParts[1], "UTF-8");
             String[] values = parameters.get(name);
             if (values == null) {
                 parameters.put(name, new String[] {value});

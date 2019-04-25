@@ -2488,7 +2488,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             List<URL> urls = newArrayList(forEnumeration(classLoader.getResources(resourceName)));
             return GWC.getAdvertisedCachedFormats(type, urls);
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

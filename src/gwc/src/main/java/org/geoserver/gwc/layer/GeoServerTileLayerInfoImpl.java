@@ -6,7 +6,7 @@
 package org.geoserver.gwc.layer;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Throwables.propagate;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.Serializable;
@@ -166,7 +166,8 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         try {
             clone = (GeoServerTileLayerInfoImpl) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw propagate(e);
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         clone.metaWidthHeight = metaWidthHeight.clone();
         clone.gridSubsets = nonNull((Set<XMLGridSubset>) null);

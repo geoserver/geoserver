@@ -8,7 +8,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.propagate;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 import static com.google.common.collect.Maps.newConcurrentMap;
 
 import com.google.common.base.Objects;
@@ -319,9 +319,11 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                 }
             }
         } catch (ExecutionException e) {
-            throw propagate(e.getCause());
+            throw new RuntimeException(e.getCause());
         } catch (UncheckedExecutionException e) {
-            throw propagate(e.getCause());
+            throwIfUnchecked(e.getCause());
+            // just to make it compile....
+            throw e;
         } finally {
             lock.releaseReadLock();
         }

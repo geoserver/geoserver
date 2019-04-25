@@ -5,8 +5,8 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Throwables.propagate;
-import static com.google.common.base.Throwables.propagateIfInstanceOf;
+import static com.google.common.base.Throwables.throwIfInstanceOf;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -226,7 +226,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             } catch (FileNotFoundException ignore) {
                 // ok
             } catch (Exception other) {
-                throw propagate(other);
+                throwIfUnchecked(other);
             }
 
             if (oldValue == null) {
@@ -249,9 +249,9 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
         } catch (Exception e) {
             if (e instanceof ExecutionException) {
-                propagate(((ExecutionException) e).getCause());
+                throwIfUnchecked(((ExecutionException) e).getCause());
             }
-            propagate(e);
+            throwIfUnchecked(e);
         }
         return oldValue;
     }
@@ -339,8 +339,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             if (cleanup) {
                 file.delete();
             }
-            propagateIfInstanceOf(e, IOException.class);
-            throw propagate(e);
+            throwIfInstanceOf(e, IOException.class);
+            throwIfUnchecked(e);
         }
         // sanity check
         try {
@@ -350,8 +350,9 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                     Level.WARNING,
                     "Persisted version of tile layer " + real.getName() + " can't be loaded back",
                     e);
-            propagateIfInstanceOf(e, IOException.class);
-            throw propagate(e);
+            throwIfInstanceOf(e, IOException.class);
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         rename(tmp, file);
 

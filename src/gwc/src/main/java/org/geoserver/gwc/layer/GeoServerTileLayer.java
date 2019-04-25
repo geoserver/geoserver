@@ -7,7 +7,7 @@ package org.geoserver.gwc.layer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Throwables.propagate;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
@@ -964,7 +964,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             targetCrs = CRS.decode(epsgCode, longitudeFirst);
             checkNotNull(targetCrs);
         } catch (Exception e) {
-            throw propagate(e);
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
 
         ReferencedEnvelope nativeBounds;
@@ -1018,7 +1019,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 // transform covered area in native crs to target crs
                 transformedBounds = clipped.transform(targetCrs, true, ENV_TX_POINTS);
             } catch (Exception e1) {
-                throw propagate(e1);
+                throwIfUnchecked(e);
+                throw new RuntimeException(e);
             }
         }
 

@@ -1547,7 +1547,7 @@ public class XStreamPersister {
             }
 
             GridGeometry2D gg = new GridGeometry2D(gridRange, gridToCRS, crs);
-            return serializationMethodInvoker.callReadResolve(gg);
+            return serializationMembers.callReadResolve(gg);
         }
 
         int[] toIntArray(String s) {

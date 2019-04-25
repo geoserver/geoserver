@@ -32,7 +32,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
         try {
             this.hasNext = resultSet.next();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            Throwables.throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -48,7 +49,8 @@ public class ResultSetIteratorAdapter<T extends CatalogInfo> implements Closeabl
             next = rowMapper.mapRow(resultSet, 0);
             this.hasNext = resultSet.next();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            Throwables.throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         return next;
     }

@@ -89,8 +89,10 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
             final AuthorityURLListEditor availableAuthoritiesProvider) {
         super(id, list);
         this.availableAuthoritiesProvider = availableAuthoritiesProvider;
-        Assert.notNull(list.getObject());
-        Assert.notNull(availableAuthoritiesProvider.getModelObject());
+        Assert.notNull(list.getObject(), "The list cannot be null");
+        Assert.notNull(
+                availableAuthoritiesProvider.getModelObject(),
+                "The authority provider cannot be null");
         setOutputMarkupId(true);
         initUI();
     }

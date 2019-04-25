@@ -723,7 +723,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             Authentication user,
             @Nonnull CatalogInfo info,
             MixedModeBehavior mixedModeBehavior) {
-        Assert.notNull(info);
+        Assert.notNull(info, "CatalogInfo must not be null");
 
         if (info instanceof NamespaceInfo) {
             // route the security check thru the associated workspace info

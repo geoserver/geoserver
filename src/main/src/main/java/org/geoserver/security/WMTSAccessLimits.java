@@ -23,7 +23,6 @@ public class WMTSAccessLimits extends DataAccessLimits {
      *
      * @param rasterFilter Used as a ROI on the returned data
      * @param readFilter generic filtering
-     * @deprecated use the 2 argument constructor
      */
     public WMTSAccessLimits(CatalogMode mode, Filter readFilter, MultiPolygon rasterFilter) {
         super(mode, readFilter);

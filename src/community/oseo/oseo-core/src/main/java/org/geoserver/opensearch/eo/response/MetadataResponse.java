@@ -33,7 +33,7 @@ public class MetadataResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         MetadataResults results = (MetadataResults) value;
-        IOUtils.write(results.getMetadata(), output);
+        IOUtils.write(results.getMetadata(), output, "UTF-8");
     }
 
     @Override

@@ -143,7 +143,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                             "UTF-8");
             OutputStream os = legend.out();
             try {
-                IOUtils.write(legendLayout, os);
+                IOUtils.write(legendLayout, os, "UTF-8");
             } finally {
                 os.close();
             }

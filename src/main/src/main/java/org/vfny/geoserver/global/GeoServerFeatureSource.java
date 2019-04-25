@@ -172,37 +172,6 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * <p>This factory method is public and will be used to create all required subclasses. By
      * comparison the constructors for this class have package visibility.
      *
-     * @deprecated
-     * @param featureSource
-     * @param declaredCRS
-     * @param linearizationTolerance TODO
-     * @param metadata Feature type metadata
-     */
-    public static GeoServerFeatureSource create(
-            FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
-            SimpleFeatureType schema,
-            Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS,
-            int srsHandling,
-            Double linearizationTolerance,
-            MetadataMap metadata) {
-        return create(
-                featureSource,
-                new Settings(
-                        schema,
-                        definitionQuery,
-                        declaredCRS,
-                        srsHandling,
-                        linearizationTolerance,
-                        metadata));
-    }
-
-    /**
-     * Factory that make the correct decorator for the provided featureSource.
-     *
-     * <p>This factory method is public and will be used to create all required subclasses. By
-     * comparison the constructors for this class have package visibility.
-     *
      * @param featureSource
      * @param settings Settings for this store
      */
@@ -718,7 +687,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         };
     }
 
-    protected static class Settings {
+    public static class Settings {
         protected SimpleFeatureType schema;
         protected Filter definitionQuery;
         protected CoordinateReferenceSystem declaredCRS;
@@ -736,7 +705,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
          * @param linearizationTolerance
          * @param metadata Feature type metadata
          */
-        protected Settings(
+        public Settings(
                 SimpleFeatureType schema,
                 Filter definitionQuery,
                 CoordinateReferenceSystem declaredCRS,

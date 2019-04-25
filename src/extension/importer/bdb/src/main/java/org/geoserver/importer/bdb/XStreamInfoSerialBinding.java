@@ -5,7 +5,8 @@
  */
 package org.geoserver.importer.bdb;
 
-import com.google.common.base.Throwables;
+import static com.google.common.base.Throwables.throwIfUnchecked;
+
 import com.google.common.io.ByteStreams;
 import com.ning.compress.lzf.LZFInputStream;
 import com.ning.compress.lzf.LZFOutputStream;
@@ -58,7 +59,8 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
                 in = new LZFInputStream(in);
             }
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
         T info;
 

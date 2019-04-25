@@ -50,7 +50,7 @@ public final class InfoRowMapper<T extends Info> implements RowMapper<T> {
             byte[] bytes = xml.getBytes("UTF-8");
             in = new ByteArrayInputStream(bytes);
         } catch (UnsupportedEncodingException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
         return binding.entryToObject(in, type);
     }

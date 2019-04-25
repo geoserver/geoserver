@@ -40,7 +40,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -1417,7 +1416,7 @@ public class GWCTest {
             urls = newArrayList(forEnumeration(classLoader.getResources(defaultResource)));
             urls.addAll(newArrayList(forEnumeration(classLoader.getResources(testResource))));
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties

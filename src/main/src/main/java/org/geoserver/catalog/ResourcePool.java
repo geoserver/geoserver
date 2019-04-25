@@ -134,6 +134,7 @@ import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
+import org.vfny.geoserver.global.GeoServerFeatureSource;
 import org.vfny.geoserver.util.DataStoreUtils;
 import org.xml.sax.EntityResolver;
 import si.uom.NonSI;
@@ -1369,12 +1370,13 @@ public class ResourcePool {
             // return a normal
             return GeoServerFeatureLocking.create(
                     fs,
-                    schema,
-                    info.filter(),
-                    resultCRS,
-                    info.getProjectionPolicy().getCode(),
-                    getTolerance(info),
-                    info.getMetadata());
+                    new GeoServerFeatureSource.Settings(
+                            schema,
+                            info.filter(),
+                            resultCRS,
+                            info.getProjectionPolicy().getCode(),
+                            getTolerance(info),
+                            info.getMetadata()));
         }
     }
 

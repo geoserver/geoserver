@@ -1791,7 +1791,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     void saveMasterPasswordDigest(String masterPasswdDigest) throws IOException {
         OutputStream fout = security().get(MASTER_PASSWD_DIGEST_FILENAME).out();
         try {
-            IOUtils.write(masterPasswdDigest, fout);
+            IOUtils.write(masterPasswdDigest, fout, "UTF-8");
         } finally {
             fout.close();
         }

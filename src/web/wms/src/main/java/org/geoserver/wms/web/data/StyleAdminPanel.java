@@ -386,7 +386,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     try {
                         styleResource = dd.style(si);
                         try (OutputStream os = styleResource.out()) {
-                            IOUtils.write(stylePage.editor.getInput(), os);
+                            IOUtils.write(stylePage.editor.getInput(), os, "UTF-8");
                         }
                         // guess the version, the style in the editor might be using one that's
                         // different from the

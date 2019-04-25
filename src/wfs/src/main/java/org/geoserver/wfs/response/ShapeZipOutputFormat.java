@@ -96,14 +96,6 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     private long maxShpSize = Long.getLong("GS_SHP_MAX_SIZE", Integer.MAX_VALUE);
     private long maxDbfSize = Long.getLong("GS_DBF_MAX_SIZE", Integer.MAX_VALUE);
 
-    /** @deprecated use {@link #ShapeZipOutputFormat(GeoServer)} */
-    public ShapeZipOutputFormat() {
-        this(
-                GeoServerExtensions.bean(GeoServer.class),
-                (Catalog) GeoServerExtensions.bean("catalog"),
-                (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
-    }
-
     public ShapeZipOutputFormat(
             GeoServer gs, Catalog catalog, GeoServerResourceLoader resourceLoader) {
         super(gs, "SHAPE-ZIP");

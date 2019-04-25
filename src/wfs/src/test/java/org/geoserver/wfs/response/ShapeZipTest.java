@@ -39,6 +39,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.resource.Resources;
@@ -141,7 +142,11 @@ public class ShapeZipTest extends WFSTestSupport {
     public void testCharset() throws Exception {
         FeatureSource<? extends FeatureType, ? extends Feature> fs;
         fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -316,7 +321,11 @@ public class ShapeZipTest extends WFSTestSupport {
         // setup the request params
         SimpleFeatureCollection fc =
                 getFeatureSource(SystemTestData.BASIC_POLYGONS).getFeatures(Filter.INCLUDE);
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -343,7 +352,11 @@ public class ShapeZipTest extends WFSTestSupport {
                 "shapezip.ftl");
 
         // setup the request params
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -372,7 +385,11 @@ public class ShapeZipTest extends WFSTestSupport {
                 "shapezip.ftl");
 
         // setup the request params
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
@@ -545,7 +562,11 @@ public class ShapeZipTest extends WFSTestSupport {
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
      */
     byte[] writeOut(FeatureCollection fc, long maxShpSize, long maxDbfSize) throws IOException {
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         zip.setMaxDbfSize(maxDbfSize);
         zip.setMaxShpSize(maxShpSize);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -560,7 +581,11 @@ public class ShapeZipTest extends WFSTestSupport {
      * Saves the feature source contents into a zipped shapefile, returns the output as a byte array
      */
     byte[] writeOut(FeatureCollection fc) throws IOException {
-        ShapeZipOutputFormat zip = new ShapeZipOutputFormat();
+        ShapeZipOutputFormat zip =
+                new ShapeZipOutputFormat(
+                        GeoServerExtensions.bean(GeoServer.class),
+                        (Catalog) GeoServerExtensions.bean("catalog"),
+                        (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());

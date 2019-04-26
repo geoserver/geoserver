@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.HashMap;
 import javax.media.jai.PlanarImage;
 import org.geoserver.catalog.CoverageInfo;
@@ -297,14 +297,9 @@ public class LegendLayoutTest extends BaseLegendTest {
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());
         StyleInfo roadsStyle = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
 
-        req.setLayers(
-                Arrays.asList(
-                        lakesFt.getFeatureType(),
-                        placesFt.getFeatureType(),
-                        roadsFt.getFeatureType()));
-        req.setStyles(
-                Arrays.asList(
-                        lakesStyle.getStyle(), placesStyle.getStyle(), roadsStyle.getStyle()));
+        req.getLegends().add(buildLegendRequest(lakesFt, lakesStyle));
+        req.getLegends().add(buildLegendRequest(placesFt, placesStyle));
+        req.getLegends().add(buildLegendRequest(roadsFt, roadsStyle));
 
         // Each icon will be 20px high (Labels are 14-15px)
         // Lakes have 1 icon, places have 2, and roads have 3
@@ -342,6 +337,14 @@ public class LegendLayoutTest extends BaseLegendTest {
         assertPixel(image, 10, 3 * HEIGHT_HINT + HEIGHT_HINT / 2, new Color(192, 160, 0));
     }
 
+    public GetLegendGraphicRequest.LegendRequest buildLegendRequest(
+            FeatureTypeInfo ft, StyleInfo style) throws IOException {
+        GetLegendGraphicRequest.LegendRequest request =
+                new GetLegendGraphicRequest.LegendRequest(ft.getFeatureType());
+        request.setStyle(style.getStyle());
+        return request;
+    }
+
     @Test
     public void testLayerGroupLabels() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
@@ -365,14 +368,9 @@ public class LegendLayoutTest extends BaseLegendTest {
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());
         StyleInfo roadsStyle = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
 
-        req.setLayers(
-                Arrays.asList(
-                        lakesFt.getFeatureType(),
-                        placesFt.getFeatureType(),
-                        roadsFt.getFeatureType()));
-        req.setStyles(
-                Arrays.asList(
-                        lakesStyle.getStyle(), placesStyle.getStyle(), roadsStyle.getStyle()));
+        req.getLegends().add(buildLegendRequest(lakesFt, lakesStyle));
+        req.getLegends().add(buildLegendRequest(placesFt, placesStyle));
+        req.getLegends().add(buildLegendRequest(roadsFt, roadsStyle));
 
         // Each icon will be 20px high (Labels are 14-15px)
         // Lakes have 1 icon, places have 2, and roads have 3
@@ -431,15 +429,9 @@ public class LegendLayoutTest extends BaseLegendTest {
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());
         StyleInfo roadsStyle = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
 
-        req.setLayers(
-                Arrays.asList(
-                        lakesFt.getFeatureType(),
-                        placesFt.getFeatureType(),
-                        roadsFt.getFeatureType()));
-        req.setStyles(
-                Arrays.asList(
-                        lakesStyle.getStyle(), placesStyle.getStyle(), roadsStyle.getStyle()));
-
+        req.getLegends().add(buildLegendRequest(lakesFt, lakesStyle));
+        req.getLegends().add(buildLegendRequest(placesFt, placesStyle));
+        req.getLegends().add(buildLegendRequest(roadsFt, roadsStyle));
         // Each icon will be 20px high
         // Lakes have 1 icon, places have 2, and roads have 3
         final int HEIGHT_HINT = 20;

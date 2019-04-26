@@ -199,7 +199,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         synchronized (templateConfig) {
             // setup template subsystem
             if (templateLoader == null) {
-                templateLoader = new GeoServerTemplateLoader(getClass());
+                templateLoader = new GeoServerTemplateLoader(getClass(), resourceLoader);
             }
             templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);

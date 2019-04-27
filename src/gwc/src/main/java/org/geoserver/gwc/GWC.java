@@ -8,7 +8,6 @@ package org.geoserver.gwc;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.getRootCause;
-import static com.google.common.base.Throwables.propagate;
 import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
@@ -2090,7 +2089,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         try {
             storageBroker.deleteByGridSetId(layerName, gridSetId);
         } catch (StorageException e) {
-            throw propagate(getRootCause(e));
+            Throwable throwable = getRootCause(e);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
         }
     }
 

@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.ImmutableList;
@@ -1098,7 +1097,9 @@ public class ConfigDatabase {
         } catch (CacheLoader.InvalidCacheLoadException notFound) {
             return null;
         } catch (ExecutionException e) {
-            Throwables.propagate(e.getCause());
+            Throwable throwable = e.getCause();
+            throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
         }
 
         if (info == null) {

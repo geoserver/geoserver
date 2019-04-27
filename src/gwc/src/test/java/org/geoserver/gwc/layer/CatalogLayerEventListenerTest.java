@@ -178,7 +178,7 @@ public class CatalogLayerEventListenerTest {
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
         when(tileLayer.getInfo()).thenReturn(info);
-        when(tileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
+        when(tileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
 
         when(mockMediator.getTileLayer(same(mockResourceInfo))).thenReturn(tileLayer);
         when(mockMediator.getTileLayerByName(eq(oldTileLayerName))).thenReturn(tileLayer);
@@ -218,7 +218,7 @@ public class CatalogLayerEventListenerTest {
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
         when(tileLayer.getInfo()).thenReturn(info);
-        when(tileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
+        when(tileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
 
         when(mockMediator.getTileLayer(same(mockResourceInfo))).thenReturn(tileLayer);
         String resourceName = mockResourceInfo.prefixedName();
@@ -251,7 +251,7 @@ public class CatalogLayerEventListenerTest {
                 TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
-        when(tileLayer.getLayerGroupInfo()).thenReturn(mockLayerGroupInfo);
+        when(tileLayer.getPublishedInfo()).thenReturn(mockLayerGroupInfo);
 
         when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
         when(mockMediator.getTileLayer(same(mockLayerGroupInfo))).thenReturn(tileLayer);
@@ -297,7 +297,7 @@ public class CatalogLayerEventListenerTest {
 
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
-        when(tileLayer.getLayerGroupInfo()).thenReturn(mockLayerGroupInfo);
+        when(tileLayer.getPublishedInfo()).thenReturn(mockLayerGroupInfo);
 
         when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
         when(mockMediator.getTileLayer(same(mockLayerGroupInfo))).thenReturn(tileLayer);
@@ -353,7 +353,7 @@ public class CatalogLayerEventListenerTest {
                 TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
-        when(tileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
+        when(tileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
 
         when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
         when(mockMediator.getTileLayer(same(mockResourceInfo))).thenReturn(tileLayer);
@@ -550,8 +550,7 @@ public class CatalogLayerEventListenerTest {
                                     @Override
                                     public boolean matches(Object item) {
                                         GeoServerTileLayer tl = (GeoServerTileLayer) item;
-                                        LayerInfo li = tl.getLayerInfo();
-                                        return li == mockLayerInfo;
+                                        return tl.getPublishedInfo() == mockLayerInfo;
                                     }
 
                                     @Override

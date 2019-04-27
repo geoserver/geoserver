@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -735,12 +737,10 @@ public class GeoServerTileLayerTest {
         // Checking that the getLayerInfo and getLayerGroupInfo methods
         // returns a not null object
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
-        assertNotNull(layerInfoTileLayer.getLayerInfo());
-        assertNull(layerInfoTileLayer.getLayerGroupInfo());
+        assertThat(layerInfoTileLayer.getPublishedInfo(), instanceOf(LayerInfo.class));
 
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
-        assertNull(layerGroupInfoTileLayer.getLayerInfo());
-        assertNotNull(layerGroupInfoTileLayer.getLayerGroupInfo());
+        assertThat(layerGroupInfoTileLayer.getPublishedInfo(), instanceOf(LayerGroupInfo.class));
     }
 
     @Test

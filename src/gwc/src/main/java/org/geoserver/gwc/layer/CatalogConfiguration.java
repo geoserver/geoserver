@@ -480,11 +480,11 @@ public class CatalogConfiguration implements TileLayerConfiguration {
 
         GeoServerTileLayerInfo info = tileLayer.getInfo();
 
-        LayerInfo layerInfo = tileLayer.getLayerInfo();
-        if (layerInfo != null && !isLayerExposable(layerInfo)) {
+        PublishedInfo publishedInfo = tileLayer.getPublishedInfo();
+        if (publishedInfo instanceof LayerInfo && !isLayerExposable((LayerInfo) publishedInfo)) {
             LOGGER.warning(
                     "Requested layer "
-                            + layerInfo.getName()
+                            + publishedInfo.getName()
                             + " has no geometry. Won't create TileLayer");
             return;
         }

@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.util.DateParseException;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
@@ -193,9 +194,10 @@ public class CachingWebMapService implements MethodInterceptor {
     private Integer getCacheAge(TileLayer layer) {
         Integer cacheAge = null;
         if (layer instanceof GeoServerTileLayer) {
-            LayerInfo layerInfo = ((GeoServerTileLayer) layer).getLayerInfo();
+            PublishedInfo published = ((GeoServerTileLayer) layer).getPublishedInfo();
             // configuring caching does not appear possible for layergroup
-            if (layerInfo != null) {
+            if (published instanceof LayerInfo) {
+                LayerInfo layerInfo = (LayerInfo) published;
                 MetadataMap metadata = layerInfo.getResource().getMetadata();
                 Boolean enabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
                 if (enabled != null && enabled) {

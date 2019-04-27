@@ -8,6 +8,7 @@ package org.geoserver.gwc.web;
 import java.io.Serializable;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerBasePage;
@@ -51,9 +52,9 @@ public class GWCIconFactory implements Serializable {
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
         if (layer instanceof GeoServerTileLayer) {
             GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
-            LayerInfo layerInfo = gsTileLayer.getLayerInfo();
-            if (layerInfo != null) {
-                return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
+            PublishedInfo published = gsTileLayer.getPublishedInfo();
+            if (published instanceof LayerInfo) {
+                return CatalogIconFactory.get().getSpecificLayerIcon((LayerInfo) published);
             }
             return CatalogIconFactory.GROUP_ICON;
         }

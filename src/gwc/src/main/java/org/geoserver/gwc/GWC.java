@@ -1723,12 +1723,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public boolean isQueryable(final GeoServerTileLayer geoServerTileLayer) {
         WMS wmsMediator = WMS.get();
-        LayerInfo layerInfo = geoServerTileLayer.getLayerInfo();
-        if (layerInfo != null) {
-            return wmsMediator.isQueryable(layerInfo);
+        PublishedInfo published = geoServerTileLayer.getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            return wmsMediator.isQueryable((LayerInfo) published);
         }
-        LayerGroupInfo lgi = geoServerTileLayer.getLayerGroupInfo();
-        return wmsMediator.isQueryable(lgi);
+        return wmsMediator.isQueryable((LayerGroupInfo) published);
     }
 
     /**
@@ -2379,11 +2378,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(geoServerTileLayerName);
-        LayerInfo layerInfo = layer.getLayerInfo();
-        if (layerInfo != null) {
-            return layerInfo.getResource().getCRS();
+        PublishedInfo published = layer.getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            return ((LayerInfo) published).getResource().getCRS();
         }
-        LayerGroupInfo layerGroupInfo = layer.getLayerGroupInfo();
+        LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         ReferencedEnvelope bounds = layerGroupInfo.getBounds();
         return bounds.getCoordinateReferenceSystem();
     }

@@ -25,7 +25,7 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         assertEquals(1, logoutforms.getList().size());
         ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
         String responseTxt = ComponentRenderer.renderComponent(loginForms).toString();
-        TagTester tagTester = TagTester.createTagByAttribute(responseTxt, "form");
+        TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
         assertEquals("../j_spring_security_check", tagTester.getAttribute("action"));
     }
 
@@ -41,7 +41,7 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         assertEquals(1, loginForms.getList().size());
         ListView logoutforms = (ListView) tester.getLastRenderedPage().get("logoutforms");
         String responseTxt = ComponentRenderer.renderComponent(logoutforms).toString();
-        TagTester tagTester = TagTester.createTagByAttribute(responseTxt, "form");
+        TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
         assertEquals("../j_spring_security_logout", tagTester.getAttribute("action"));
     }
 

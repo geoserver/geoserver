@@ -199,7 +199,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     @Override
     protected void onPopulateItem(Property<T> property, ListItem<Property<T>> item) {
         if (property == RENDERING_ORDER) {
-            Label label = (Label) item.get(0);
+            Label label = (Label) item.iterator().next();
             @SuppressWarnings("unchecked")
             OddEvenItem<T> rowContainer = (OddEvenItem<T>) item.getParent().getParent();
             label.setDefaultModel(new Model<Integer>(rowContainer.getIndex() + 1));

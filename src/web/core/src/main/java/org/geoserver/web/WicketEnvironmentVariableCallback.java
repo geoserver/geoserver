@@ -44,6 +44,7 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
         // nothing to do
     }

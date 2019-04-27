@@ -35,7 +35,6 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHeaderIterator;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 
 /**
@@ -43,6 +42,7 @@ import org.apache.http.protocol.HttpContext;
  *
  * @author maurobartolomeoli@gmail.com
  */
+@SuppressWarnings("deprecation")
 public class MockHttpClientConnectionManager implements HttpClientConnectionManager {
     static SimpleDateFormat dateFormat =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
@@ -205,7 +205,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                             }
 
                             @Override
-                            public HttpParams getParams() {
+                            public org.apache.http.params.HttpParams getParams() {
                                 // TODO Auto-generated method stub
                                 return null;
                             }
@@ -243,7 +243,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                             public void setHeaders(Header[] arg0) {}
 
                             @Override
-                            public void setParams(HttpParams arg0) {}
+                            public void setParams(org.apache.http.params.HttpParams arg0) {}
 
                             @Override
                             public HttpEntity getEntity() {

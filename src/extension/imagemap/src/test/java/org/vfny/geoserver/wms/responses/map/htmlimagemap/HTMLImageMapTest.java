@@ -33,6 +33,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.test.TestData;
+import org.geotools.util.URLs;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.After;
 import org.junit.Before;
@@ -146,7 +147,7 @@ public class HTMLImageMapTest {
     @Test
     public void testStates() throws Exception {
         File shapeFile = TestData.file(this, "featureTypes/states.shp");
-        ShapefileDataStore ds = new ShapefileDataStore(shapeFile.toURL());
+        ShapefileDataStore ds = new ShapefileDataStore(URLs.fileToUrl(shapeFile));
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = ds.getFeatureSource("states");
         final ReferencedEnvelope env = new ReferencedEnvelope(fs.getBounds(), WGS84);

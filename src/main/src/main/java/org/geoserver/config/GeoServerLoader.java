@@ -5,6 +5,7 @@
  */
 package org.geoserver.config;
 
+import com.google.common.base.Stopwatch;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -391,7 +392,10 @@ public abstract class GeoServerLoader {
         Resource f = resourceLoader.get("catalog.xml");
         if (!Resources.exists(f)) {
             // assume 2.x style data directory
+            Stopwatch sw = Stopwatch.createStarted();
+            LOGGER.info("Loading catalog...");
             CatalogImpl catalog2 = (CatalogImpl) readCatalog(xp);
+            LOGGER.info("Read catalog in " + sw.stop());
             // make to remove the old resource pool catalog listener
             ((CatalogImpl) catalog).sync(catalog2);
         } else {

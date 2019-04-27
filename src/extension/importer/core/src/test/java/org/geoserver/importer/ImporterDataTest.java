@@ -1159,7 +1159,7 @@ public class ImporterDataTest extends ImporterTestSupport {
      * Helper for tests exercising the style file import function.
      */
     StyleInfo writeStyleAndImport(String sld, String filename, File dir) throws IOException {
-        FileUtils.write(new File(dir, filename), sld);
+        FileUtils.write(new File(dir, filename), sld, "UTF-8");
 
         ImportContext imp = importer.createContext(new Directory(dir));
         importer.run(imp);

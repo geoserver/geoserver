@@ -779,7 +779,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
-            FileUtils.write(template, "${FID.value}");
+            FileUtils.write(template, "${FID.value}", "UTF-8");
 
             final String requestUrl = "wms/kml?layers=" + layerId + "&mode=download";
             Document doc = getAsDOM(requestUrl);
@@ -819,7 +819,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
-            FileUtils.write(template, "${altitude.value}");
+            FileUtils.write(template, "${altitude.value}", "UTF-8");
 
             final String requestUrl = "wms/kml?layers=" + layerId + "&mode=download";
             Document doc = getAsDOM(requestUrl);
@@ -897,7 +897,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                     getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, "height.ftl");
-            FileUtils.write(template, "${FID.value}");
+            FileUtils.write(template, "${FID.value}", "UTF-8");
 
             final String requestUrl = "wms/kml?layers=" + layerId + "&mode=download&extrude=false";
             Document doc = getAsDOM(requestUrl);

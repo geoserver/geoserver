@@ -53,6 +53,7 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -344,7 +345,7 @@ public class ImportProcess implements GeoServerProcess {
                 final Resource directory =
                         catalog.getResourceLoader().get(Paths.path("data", workspace, store));
                 final File file = File.createTempFile(store, ".tif", directory.dir());
-                ((CoverageStoreInfo) storeInfo).setURL(file.toURL().toExternalForm());
+                ((CoverageStoreInfo) storeInfo).setURL(URLs.fileToUrl(file).toExternalForm());
                 ((CoverageStoreInfo) storeInfo).setType("GeoTIFF");
 
                 // check the target crs

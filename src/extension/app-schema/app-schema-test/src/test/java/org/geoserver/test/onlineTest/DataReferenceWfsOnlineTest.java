@@ -1989,7 +1989,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         // the database whereas gsml:purpose is straight forward and can be pre processed on the
         // database
         assertTrue(
-                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getPattern()));
+                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getLiteral()));
         ArrayList<String> ids = new ArrayList<String>();
         while (iterator.hasNext()) {
             ids.add(iterator.next().getIdentifier().toString());

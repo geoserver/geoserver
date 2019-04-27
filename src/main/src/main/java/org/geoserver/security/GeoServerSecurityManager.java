@@ -2027,15 +2027,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * @param file
-     * @throws IOException
-     * @deprecated Use {@link #dumpMasterPassword(Resource)}
-     */
-    public boolean dumpMasterPassword(File file) throws IOException {
-        return dumpMasterPassword(Files.asResource(file));
-    }
-
-    /**
      * Method to dump master password to a file
      *
      * <p>The file name is the shared secret between the administrator and GeoServer.

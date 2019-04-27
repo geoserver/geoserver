@@ -41,6 +41,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml.producer.FeatureTransformer;
+import org.geotools.util.URLs;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
@@ -249,8 +250,8 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
         // create the first temp directory, used for dumping gs generated
         // content
-        File tempGS = org.geoserver.data.util.IOUtils.createTempDirectory("ogrtmpin");
-        File tempOGR = org.geoserver.data.util.IOUtils.createTempDirectory("ogrtmpout");
+        File tempGS = IOUtils.createTempDirectory("ogrtmpin");
+        File tempOGR = IOUtils.createTempDirectory("ogrtmpout");
 
         // build the ogr wrapper used to run the ogr2ogr commands
         ToolWrapper wrapper = new OGRWrapper(ogrExecutable, environment);
@@ -374,7 +375,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         File file = null;
         try {
             file = new File(tempDir, schema.getTypeName() + ".shp");
-            dstore = new ShapefileDataStore(file.toURL());
+            dstore = new ShapefileDataStore(URLs.fileToUrl(file));
             dstore.createSchema(schema);
 
             fstore = (SimpleFeatureStore) dstore.getFeatureSource(schema.getTypeName());

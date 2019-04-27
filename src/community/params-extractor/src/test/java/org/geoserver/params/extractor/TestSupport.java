@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.ResourceStore;
 import org.junit.After;

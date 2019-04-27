@@ -206,6 +206,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
         return formTester.getForm().get("config.className").getDefaultModelObjectAsString();
     }
 
+    @SuppressWarnings("deprecation")
     protected <T extends SecurityNamedServicePanelInfo> void setSecurityConfigClassName(
             Class<T> clazz) {
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");

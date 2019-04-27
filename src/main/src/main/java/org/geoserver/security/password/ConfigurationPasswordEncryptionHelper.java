@@ -7,11 +7,11 @@ package org.geoserver.security.password;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
@@ -36,8 +36,14 @@ public class ConfigurationPasswordEncryptionHelper {
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     /** cache of datastore factory class to fields to encrypt */
-    protected static Map<Class<? extends DataAccessFactory>, Set<String>> CACHE =
-            new HashMap<Class<? extends DataAccessFactory>, Set<String>>();
+    protected static ConcurrentMap<Class<? extends DataAccessFactory>, Set<String>> CACHE =
+            new ConcurrentHashMap<>();
+    /**
+     * cache of {@link StoreInfo#getType()} to fields to encrypt, if key not found defer to full
+     * DataAccessFactory lookup
+     */
+    protected static ConcurrentMap<String, Set<String>> STORE_INFO_TYPE_CACHE =
+            new ConcurrentHashMap<>();
 
     GeoServerSecurityManager securityManager;
 
@@ -65,7 +71,18 @@ public class ConfigurationPasswordEncryptionHelper {
             return Collections.emptySet();
         }
 
-        // find this store object data access factory
+        Set<String> toEncrypt;
+
+        // fast lookup by store type
+        final String storeType = info.getType();
+        if (storeType != null) {
+            toEncrypt = STORE_INFO_TYPE_CACHE.get(storeType);
+            if (toEncrypt != null) {
+                return toEncrypt;
+            }
+        }
+
+        // store type not cached, find this store object data access factory
         DataAccessFactory factory;
         try {
             factory = getCatalog().getResourcePool().getDataStoreFactory((DataStoreInfo) info);
@@ -94,27 +111,28 @@ public class ConfigurationPasswordEncryptionHelper {
             return Collections.emptySet();
         }
 
-        Set<String> toEncrypt = CACHE.get(factory.getClass());
+        toEncrypt = CACHE.get(factory.getClass());
         if (toEncrypt != null) {
             return toEncrypt;
         }
 
-        synchronized (CACHE) {
-            toEncrypt = CACHE.get(info.getClass());
-            if (toEncrypt != null) {
-                return toEncrypt;
-            }
+        toEncrypt = CACHE.get(info.getClass());
+        if (toEncrypt != null) {
+            return toEncrypt;
+        }
 
-            toEncrypt = Collections.emptySet();
-            if (info != null && info.getConnectionParameters() != null) {
-                toEncrypt = new HashSet<String>(3);
-                for (Param p : factory.getParametersInfo()) {
-                    if (p.isPassword()) {
-                        toEncrypt.add(p.getName());
-                    }
+        toEncrypt = Collections.emptySet();
+        if (info != null && info.getConnectionParameters() != null) {
+            toEncrypt = new HashSet<String>(3);
+            for (Param p : factory.getParametersInfo()) {
+                if (p.isPassword()) {
+                    toEncrypt.add(p.getName());
                 }
             }
-            CACHE.put(factory.getClass(), toEncrypt);
+        }
+        CACHE.put(factory.getClass(), toEncrypt);
+        if (storeType != null) {
+            STORE_INFO_TYPE_CACHE.put(storeType, toEncrypt);
         }
         return toEncrypt;
     }

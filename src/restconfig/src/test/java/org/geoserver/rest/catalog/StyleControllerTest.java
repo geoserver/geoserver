@@ -1054,7 +1054,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(in, out);
+            IOUtils.copy(in, out, "UTF-8");
             assertFalse(out.toString().startsWith("#comment!"));
         } finally {
             in.close();
@@ -1085,7 +1085,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
         try (InputStream in = style.in()) {
             out = new StringWriter();
-            IOUtils.copy(in, out);
+            IOUtils.copy(in, out, "UTF-8");
             assertTrue(out.toString().startsWith("#comment!"));
         }
     }
@@ -1131,7 +1131,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(in, out);
+            IOUtils.copy(in, out, "UTF-8");
             assertFalse(out.toString().startsWith("#comment!"));
         } finally {
             in.close();
@@ -1170,7 +1170,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(in, out);
+            IOUtils.copy(in, out, "UTF-8");
             assertTrue(out.toString().startsWith("#comment!"));
         } finally {
             in.close();

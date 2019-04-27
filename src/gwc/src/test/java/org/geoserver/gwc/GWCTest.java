@@ -24,10 +24,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -209,6 +209,7 @@ public class GWCTest {
     private BlobStoreAggregator blobStoreAggregator;
 
     @Before
+    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
 
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
@@ -934,6 +935,7 @@ public class GWCTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testReloadAndLayerRemovedExternally() throws Exception {
 
         final String removedLayer = tileLayer.getName();

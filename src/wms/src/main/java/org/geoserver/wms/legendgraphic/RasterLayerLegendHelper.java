@@ -129,7 +129,7 @@ public class RasterLayerLegendHelper {
                         "Invalid width and or height for the GetLegendGraphicRequest");
 
             final List<Symbolizer> symbolizers = applicableRules[0].symbolizers();
-            if (symbolizers.size() != 1 | symbolizers.get(0) == null)
+            if (symbolizers.size() != 1 || symbolizers.get(0) == null)
                 throw new IllegalArgumentException(
                         "Unable to create a legend for this style, we need exactly 1 Symbolizer");
 

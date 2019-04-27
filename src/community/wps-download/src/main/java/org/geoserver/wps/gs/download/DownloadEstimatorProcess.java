@@ -13,11 +13,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.Filter;
@@ -34,7 +34,7 @@ import org.opengis.util.ProgressListener;
     title = "Estimator Process",
     description = "Checks if the input file does not exceed the limits"
 )
-public class DownloadEstimatorProcess implements GSProcess {
+public class DownloadEstimatorProcess implements GeoServerProcess {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(DownloadEstimatorProcess.class);

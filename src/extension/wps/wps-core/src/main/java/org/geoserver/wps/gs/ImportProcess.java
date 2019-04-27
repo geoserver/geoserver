@@ -51,7 +51,6 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
@@ -75,7 +74,7 @@ import org.vfny.geoserver.util.WCSUtils;
     title = "Import to Catalog",
     description = "Imports a feature collection into the catalog"
 )
-public class ImportProcess implements GSProcess {
+public class ImportProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
 

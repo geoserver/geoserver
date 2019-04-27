@@ -89,7 +89,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
 
         GeneralParameterValue[] readParam =
                 wms.getWMSReadParameters(
-                        req, mapLayerInfo, Filter.INCLUDE, null, null, reader, false);
+                        req, mapLayerInfo, Filter.INCLUDE, null, null, null, reader, false);
         @SuppressWarnings("unchecked")
         ParameterValue<List<Date>> val =
                 (ParameterValue<List<Date>>) readParam[readParam.length - 1];
@@ -109,7 +109,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
 
         GeneralParameterValue[] readParam =
                 wms.getWMSReadParameters(
-                        req, mapLayerInfo, Filter.INCLUDE, null, null, reader, false);
+                        req, mapLayerInfo, Filter.INCLUDE, null, null, null, reader, false);
         @SuppressWarnings("unchecked")
         ParameterValue<List<NumberRange>> val =
                 (ParameterValue<List<NumberRange>>) readParam[readParam.length - 1];
@@ -127,7 +127,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
 
         GeneralParameterValue[] readParam =
                 wms.getWMSReadParameters(
-                        req, mapLayerInfo, Filter.INCLUDE, null, null, reader, false);
+                        req, mapLayerInfo, Filter.INCLUDE, null, null, null, reader, false);
         @SuppressWarnings("unchecked")
         ParameterValue<List<Double>> val =
                 (ParameterValue<List<Double>>) readParam[readParam.length - 1];

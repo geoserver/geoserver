@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 

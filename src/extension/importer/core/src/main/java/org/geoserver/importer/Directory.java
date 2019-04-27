@@ -30,8 +30,8 @@ import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.job.ProgressMonitor;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 
 public class Directory extends FileData {

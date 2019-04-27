@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.springframework.util.StringUtils;
 
@@ -67,6 +68,6 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
     }
 
     boolean dumpMasterPassword() throws IOException {
-        return getSecurityManager().dumpMasterPassword(new File(fileName));
+        return getSecurityManager().dumpMasterPassword(Files.asResource(new File(fileName)));
     }
 }

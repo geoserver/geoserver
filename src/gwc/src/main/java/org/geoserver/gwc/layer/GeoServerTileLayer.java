@@ -608,7 +608,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                     metaTile.setWebMap(map);
                     saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
-                    Throwables.propagateIfInstanceOf(e, GeoWebCacheException.class);
+                    Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 }
             }

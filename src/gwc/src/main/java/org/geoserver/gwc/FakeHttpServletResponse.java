@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geotools.util.logging.Logging;
 
 /** A HTTP response used when calling back into the GeoServer dispatcher */
+@SuppressWarnings("deprecation")
 public class FakeHttpServletResponse implements HttpServletResponse {
 
     private static Logger log = Logging.getLogger(HttpServletResponse.class.toString());

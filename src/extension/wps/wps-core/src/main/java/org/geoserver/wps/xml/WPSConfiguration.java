@@ -8,7 +8,7 @@ package org.geoserver.wps.xml;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.CatalogNamespaceSupport;
@@ -86,7 +86,7 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
                 buffer = new StringBuffer();
             }
 
-            String escapedXML = StringEscapeUtils.escapeXml(new String(ch, start, length));
+            String escapedXML = StringEscapeUtils.escapeXml10(new String(ch, start, length));
             buffer.append(escapedXML);
         }
 

@@ -39,7 +39,7 @@ public class InputStreamConverter extends BaseMessageConverter<InputStream> {
             Class<? extends InputStream> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
-                getClass().getName() + " does not support deserialization");
+                getClass().getName() + " does not support deserialization", inputMessage);
     }
 
     @Override

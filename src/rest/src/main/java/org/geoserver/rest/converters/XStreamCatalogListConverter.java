@@ -55,7 +55,8 @@ public abstract class XStreamCatalogListConverter
             Class<? extends RestListWrapper<?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
-                getClass().getName() + " does not support deserialization of catalog lists");
+                getClass().getName() + " does not support deserialization of catalog lists",
+                inputMessage);
     }
     //
     // writing

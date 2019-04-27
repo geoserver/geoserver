@@ -71,7 +71,7 @@ public class CatalogStyleChangeListenerTest {
         ImmutableSet<String> empty = ImmutableSet.of();
         when(mockTileLayerInfo.cachedStyles()).thenReturn(empty);
 
-        when(mockTileLayer.getLayerInfo()).thenReturn(mockLayerInfo);
+        when(mockTileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
         when(mockTileLayer.getInfo()).thenReturn(mockTileLayerInfo);
         when(mockTileLayer.getName()).thenReturn(PREFIXED_RESOURCE_NAME);
         when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME)))

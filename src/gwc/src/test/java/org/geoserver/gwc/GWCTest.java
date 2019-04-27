@@ -1539,7 +1539,7 @@ public class GWCTest {
         when(subset.boundsFromIndex(eq(new long[] {col, row, zoom}))).thenReturn(bounds);
         when(subset.getSRS()).thenReturn(srs);
         doReturn(crs).when(mediator).getCRSForGridset(eq(subset));
-        when(tileLayer.getLayerInfo()).thenReturn(layer);
+        when(tileLayer.getPublishedInfo()).thenReturn(layer);
         when(layer.getResource()).thenReturn(featureType);
         when(featureType.getCRS()).thenReturn(crs);
         when(crs.getCoordinateSystem()).thenReturn(cs);

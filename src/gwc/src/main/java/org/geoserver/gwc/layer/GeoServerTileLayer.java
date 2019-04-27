@@ -277,9 +277,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             return false;
         }
         boolean geoserverLayerEnabled;
-        LayerInfo layerInfo = getLayerInfo();
-        if (layerInfo != null) {
-            geoserverLayerEnabled = layerInfo.enabled();
+        PublishedInfo published = getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            geoserverLayerEnabled = ((LayerInfo) published).enabled();
         } else {
             // LayerGroupInfo has no enabled property, so assume true
             geoserverLayerEnabled = true;
@@ -313,8 +313,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
 
         ReferencedEnvelope latLongBbox;
-        if (getLayerInfo() == null) {
-            LayerGroupInfo groupInfo = getLayerGroupInfo();
+        if (getPublishedInfo() instanceof LayerGroupInfo) {
+            LayerGroupInfo groupInfo = (LayerGroupInfo) getPublishedInfo();
             try {
                 ReferencedEnvelope bounds = groupInfo.getBounds();
                 boolean lenient = true;
@@ -344,21 +344,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return latLongBbox;
     }
 
-    /**
-     * @return the {@link LayerInfo} for this layer, or {@code null} if it's backed by a {@link
-     *     LayerGroupInfo} instead
-     * @deprecated use getPublishedInfo instead
-     */
-    @Deprecated
-    public LayerInfo getLayerInfo() {
-        PublishedInfo info = getPublishedInfo();
-        if (info instanceof LayerInfo) {
-            return (LayerInfo) info;
-        }
-
-        return null;
-    }
-
     public PublishedInfo getPublishedInfo() {
         if (publishedInfo == null) {
             synchronized (this) {
@@ -385,24 +370,10 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         return publishedInfo;
     }
 
-    /**
-     * @return the {@link LayerGroupInfo} for this layer, or {@code null} if it's backed by a {@link
-     *     LayerInfo} instead
-     * @deprecated use getPublishedInfo instead
-     */
-    @Deprecated
-    public LayerGroupInfo getLayerGroupInfo() {
-        PublishedInfo info = getPublishedInfo();
-        if (info instanceof LayerGroupInfo) {
-            return (LayerGroupInfo) info;
-        }
-
-        return null;
-    }
-
     private ResourceInfo getResourceInfo() {
-        LayerInfo layerInfo = getLayerInfo();
-        return layerInfo == null ? null : layerInfo.getResource();
+        return getPublishedInfo() instanceof LayerInfo
+                ? ((LayerInfo) getPublishedInfo()).getResource()
+                : null;
     }
 
     /**
@@ -428,8 +399,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 keywords.add(kw.getValue());
             }
         } else {
-            LayerGroupInfo lg = getLayerGroupInfo();
-            if (lg != null) {
+            if (publishedInfo instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) publishedInfo;
                 if (lg.getTitle() != null) {
                     title = lg.getTitle();
                 }
@@ -455,12 +426,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      */
     @Override
     public String getStyles() {
-        LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
-        if (layerGroupInfo != null) {
+        PublishedInfo published = getPublishedInfo();
+        if (!(published instanceof LayerInfo)) {
             // there's no such thing as default style for a layer group
             return null;
         }
-        LayerInfo layerInfo = getLayerInfo();
+        LayerInfo layerInfo = (LayerInfo) published;
         StyleInfo defaultStyle = layerInfo.getDefaultStyle();
         if (defaultStyle == null) {
             setConfigErrorMessage("Underlying GeoSever Layer has no default style");
@@ -969,16 +940,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
 
         ReferencedEnvelope nativeBounds;
-        if (getLayerInfo() != null) {
+        if (getResourceInfo() != null) {
             // projection policy for these bounds are already taken care of by the geoserver
             // configuration
             try {
-                nativeBounds = getLayerInfo().getResource().boundingBox();
+                nativeBounds = getResourceInfo().boundingBox();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
-            nativeBounds = getLayerGroupInfo().getBounds();
+            nativeBounds = ((LayerGroupInfo) getPublishedInfo()).getBounds();
         }
         checkState(nativeBounds != null, getName(), " has no native bounds set");
 
@@ -1134,11 +1105,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             return info.getExpireClients();
         }
 
-        LayerInfo layerInfo = getLayerInfo();
-        if (layerInfo != null) {
-            return getLayerMaxAge(layerInfo);
+        PublishedInfo published = getPublishedInfo();
+        if (published instanceof LayerInfo) {
+            return getLayerMaxAge((LayerInfo) published);
         }
-        LayerGroupInfo layerGroupInfo = getLayerGroupInfo();
+        LayerGroupInfo layerGroupInfo = (LayerGroupInfo) published;
         if (layerGroupInfo != null) {
             return getGroupMaxAge(layerGroupInfo);
         } else {
@@ -1284,15 +1255,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public List<MetadataURL> getMetadataURLs() {
         List<MetadataLinkInfo> gsMetadataLinks;
         List<MetadataURL> gwcMetadataLinks = new ArrayList<>();
-        LayerInfo layerInfo = getLayerInfo();
-        if (layerInfo != null) {
+        PublishedInfo published = getPublishedInfo();
+        if (published instanceof LayerInfo) {
             // this is a normal layer
-            gsMetadataLinks = layerInfo.getResource().getMetadataLinks();
+            gsMetadataLinks = ((LayerInfo) published).getResource().getMetadataLinks();
         } else {
             // this is a layer group
             gsMetadataLinks = new ArrayList<>();
             for (LayerInfo layer :
-                    Iterables.filter(getLayerGroupInfo().getLayers(), LayerInfo.class)) {
+                    Iterables.filter(((LayerGroupInfo) published).getLayers(), LayerInfo.class)) {
                 // getting metadata of all layers of the layer group
                 List<MetadataLinkInfo> metadataLinksLayer = layer.getResource().getMetadataLinks();
                 if (metadataLinksLayer != null) {
@@ -1339,11 +1310,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     @Override
     public Map<String, org.geowebcache.config.legends.LegendInfo> getLayerLegendsInfo() {
-        LayerInfo layerInfo = getLayerInfo();
-        if (layerInfo == null) {
+        if (!(publishedInfo instanceof LayerInfo)) {
             return Collections.emptyMap();
         }
         Map<String, org.geowebcache.config.legends.LegendInfo> legends = new HashMap<>();
+        LayerInfo layerInfo = (LayerInfo) publishedInfo;
         Set<StyleInfo> styles = new HashSet<>(layerInfo.getStyles());
         styles.add(layerInfo.getDefaultStyle());
         for (StyleInfo styleInfo : styles) {

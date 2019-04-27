@@ -281,12 +281,8 @@ public class CatalogConfigurationTest {
         newState.setName(orig.getInfo().getName());
         assertFalse(orig.equals(newState));
 
-        final GeoServerTileLayer modified;
-        if (orig.getLayerInfo() != null) {
-            modified = new GeoServerTileLayer(orig.getLayerInfo(), gridSetBroker, newState);
-        } else {
-            modified = new GeoServerTileLayer(orig.getLayerGroupInfo(), gridSetBroker, newState);
-        }
+        final GeoServerTileLayer modified =
+                new GeoServerTileLayer(orig.getPublishedInfo(), gridSetBroker, newState);
 
         assertEquals(
                 orig.getInfo(),
@@ -473,7 +469,7 @@ public class CatalogConfigurationTest {
         when(tl.getId()).thenReturn("layerWithNoGeometry");
         when(tl.isTransientLayer()).thenReturn(false);
         when(tl.getInfo()).thenReturn(info);
-        when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
+        when(tl.getPublishedInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);
         when(catalog.getLayerByName(eq(tileLayerName(layerWithNoGeometry))))
                 .thenReturn(layerWithNoGeometry);

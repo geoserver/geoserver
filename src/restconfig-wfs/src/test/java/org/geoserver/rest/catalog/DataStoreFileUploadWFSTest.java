@@ -29,6 +29,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.resource.Files;
+import org.geotools.util.URLs;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
@@ -204,7 +205,7 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
             MockHttpServletResponse resp =
                     putAsServletResponse(
                             ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp",
-                            new File(f, "pds.shp").toURL().toString(),
+                            URLs.fileToUrl(new File(f, "pds.shp")).toString(),
                             "text/plain");
             assertEquals(201, resp.getStatus());
 

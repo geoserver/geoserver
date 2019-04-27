@@ -104,7 +104,6 @@ public class WicketTestApplication extends WebApplication {
 
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(1000 * 60 * 60);
-        connector.setSoLingerTime(-1);
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 

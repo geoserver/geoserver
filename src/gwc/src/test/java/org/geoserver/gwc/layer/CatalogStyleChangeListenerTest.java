@@ -107,7 +107,7 @@ public class CatalogStyleChangeListenerTest {
         // a change in the name of the default style should not cause a truncate
         verify(mockMediator, never()).truncateByLayerAndStyle(anyString(), anyString());
         // nor a save, as the default style name is dynamic
-        verify(mockMediator, never()).save((GeoServerTileLayer) anyObject());
+        verify(mockMediator, never()).save((GeoServerTileLayer) any());
 
         verify(mockTileLayer, never()).getInfo();
         verify(mockTileLayerInfo, never()).cachedStyles();
@@ -121,7 +121,7 @@ public class CatalogStyleChangeListenerTest {
         // a change in the name of the default style should not cause a truncate
         verify(mockMediator, never()).truncateByLayerAndStyle(anyString(), anyString());
         // nor a save, as the default style name is dynamic
-        verify(mockMediator, never()).save((GeoServerTileLayer) anyObject());
+        verify(mockMediator, never()).save((GeoServerTileLayer) any());
 
         verify(mockTileLayer, atLeastOnce()).getInfo();
         verify(mockTileLayerInfo, atLeastOnce()).cachedStyles();

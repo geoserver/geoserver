@@ -17,9 +17,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableList;
@@ -522,6 +522,7 @@ public class CatalogConfigurationTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void getLayerByIdWithLocalWorkspace() {
         try {
             // create test workspaces

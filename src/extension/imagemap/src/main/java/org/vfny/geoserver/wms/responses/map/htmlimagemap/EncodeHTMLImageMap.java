@@ -115,9 +115,7 @@ public class EncodeHTMLImageMap extends WebMap {
 
             final int stylesLength = styles.length;
 
-            int styleRulesLength;
             FeatureTypeStyle style;
-            int u = 0;
 
             for (int t = 0; t < stylesLength; t++) // look at each
             // featuretypestyle

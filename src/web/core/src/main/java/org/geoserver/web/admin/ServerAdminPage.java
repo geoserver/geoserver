@@ -70,7 +70,6 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
     }
 
-    @Deprecated
     public IModel<ContactInfo> getContactInfoModel() {
         return new LoadableDetachableModel<ContactInfo>() {
             public ContactInfo load() {

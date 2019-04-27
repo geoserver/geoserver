@@ -15,7 +15,7 @@ import org.geotools.util.SimpleInternationalString;
     title = "MultiOutputEcho",
     description = "Echo string process used to test processes with multiple outputs"
 )
-public class MultiOutputEchoProcess implements org.geotools.process.gs.GSProcess {
+public class MultiOutputEchoProcess implements org.geoserver.wps.gs.GeoServerProcess {
 
     static final ProcessFactory getFactory() {
         return new MultiOutputEchoProcessProcessFactory();

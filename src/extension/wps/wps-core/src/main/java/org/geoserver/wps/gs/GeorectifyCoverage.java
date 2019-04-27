@@ -45,7 +45,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.factory.DescribeResults;
-import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -64,7 +63,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
     title = "Georectify Coverage",
     description = "Georectifies a raster via Ground Control Points using gdal_warp"
 )
-public class GeorectifyCoverage implements GSProcess {
+public class GeorectifyCoverage implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(GeorectifyCoverage.class);
 

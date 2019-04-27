@@ -47,7 +47,7 @@ import org.geotools.geopkg.wps.GeoPackageProcessRequest.TilesLayer;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
+import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
@@ -59,7 +59,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 
 @DescribeProcess(title = "GeoPackage", description = "Geopackage Process")
-public class GeoPackageProcess implements GSProcess {
+public class GeoPackageProcess implements GeoServerProcess {
 
     private Catalog catalog;
 

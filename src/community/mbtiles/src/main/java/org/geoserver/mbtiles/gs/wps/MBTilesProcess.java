@@ -31,7 +31,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.process.gs.GSProcess;
+import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
@@ -39,7 +39,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 @DescribeProcess(title = "MBTiles", description = "MBTiles Process")
-public class MBTilesProcess implements GSProcess {
+public class MBTilesProcess implements GeoServerProcess {
 
     public static final String GRIDSET_NAME = "gridset";
 

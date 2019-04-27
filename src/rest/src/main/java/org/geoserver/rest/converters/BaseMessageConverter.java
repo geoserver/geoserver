@@ -106,7 +106,7 @@ public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConvert
     protected T readInternal(Class<? extends T> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
-                getClass().getName() + " does not support deserialization");
+                getClass().getName() + " does not support deserialization", inputMessage);
     }
 
     /* Default implementation provided for consistent not-implemented message */

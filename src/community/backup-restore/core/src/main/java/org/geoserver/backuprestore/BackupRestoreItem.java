@@ -874,7 +874,6 @@ public abstract class BackupRestoreItem<T> {
         target.setFormatVersion(source.getFormatVersion());
         target.setLegend(source.getLegend());
         target.setName(source.getName());
-        target.setSLDVersion(source.getSLDVersion());
 
         return target;
     }

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
@@ -146,7 +147,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
 
         if (backupFile.exists()) backupFile.delete();
 
-        fileWatcher = new PropertyFileWatcher(propFile);
+        fileWatcher = new PropertyFileWatcher(Files.asResource(propFile));
         return counter;
     }
 }

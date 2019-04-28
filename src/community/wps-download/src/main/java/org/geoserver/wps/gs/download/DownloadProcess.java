@@ -5,6 +5,14 @@
  */
 package org.geoserver.wps.gs.download;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -31,16 +39,6 @@ import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import java.io.File;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
 
 /**
  * The main DownloadProcess class.

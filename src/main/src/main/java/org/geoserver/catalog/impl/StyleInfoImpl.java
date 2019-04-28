@@ -19,7 +19,6 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected WorkspaceInfo workspace;
 
-    @Deprecated
     // not used, maininting this property for xstream backward compatability
     protected Version sldVersion = null;
 

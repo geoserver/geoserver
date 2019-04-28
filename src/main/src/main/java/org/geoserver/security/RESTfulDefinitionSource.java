@@ -66,17 +66,6 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
         return FilterInvocation.class.isAssignableFrom(clazz);
     }
 
-    /**
-     * Creates a proxy to a PathBasedFilterInvocationDefinitionMap to delegate calls.
-     * Initializations of the delegate is done here.
-     *
-     * @deprecated This is not longer used (JD)
-     */
-    public RESTfulDefinitionSource(String pathToRoleList) throws IllegalArgumentException {
-        delegate = new RESTfulPathBasedFilterInvocationDefinitionMap();
-        processPathList(pathToRoleList);
-    }
-
     public RESTfulDefinitionSource(RESTAccessRuleDAO dao) {
         this.dao = dao;
 

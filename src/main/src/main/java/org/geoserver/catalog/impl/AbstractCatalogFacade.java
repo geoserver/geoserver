@@ -36,25 +36,6 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         return ModificationProxy.unwrap(obj);
     }
 
-    /**
-     * @deprecated use {@link #beforeSaved(CatalogInfo, List, List, List)} and {@link
-     *     #afterSaved(CatalogInfo, List, List, List)} as appropriate
-     */
-    @Deprecated
-    protected void saved(CatalogInfo object) {
-        // this object is a proxy
-        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
-
-        // fire out what changed
-        List propertyNames = h.getPropertyNames();
-        List newValues = h.getNewValues();
-        List oldValues = h.getOldValues();
-
-        beforeSaved(object, propertyNames, oldValues, newValues);
-        commitProxy(object);
-        afterSaved(object, propertyNames, oldValues, newValues);
-    }
-
     protected void beforeSaved(
             CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);

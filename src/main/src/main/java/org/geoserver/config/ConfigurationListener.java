@@ -111,12 +111,6 @@ public interface ConfigurationListener {
      */
     void handleServiceRemove(ServiceInfo service);
 
-    /**
-     * A callback notifying when GeoServer configuration has been reloaded.
-     *
-     * <p>This method will be removed in recent version as the idea of a "reload" will not exist.
-     *
-     * @deprecated.
-     */
+    /** A callback notifying when GeoServer configuration has been reloaded. */
     void reloaded();
 }

@@ -32,7 +32,6 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
@@ -111,11 +110,6 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     long lastLoaded = Long.MIN_VALUE;
 
     LayerGroupContainmentCache groupsCache;
-
-    @Deprecated
-    public DefaultResourceAccessManager(DataAccessRuleDAO dao) {
-        this(dao, (Catalog) GeoServerExtensions.bean("rawCatalog"));
-    }
 
     /**
      * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the

@@ -121,7 +121,6 @@ public class PyCatalogDataTest extends ScriptTestSupport {
         replay(widgets);
 
         expect(cat.getFeatureTypeByDataStore(acme, "widgets")).andReturn(widgets).anyTimes();
-        expect(cat.getFeatureTypeByStore(acme, "widgets")).andReturn(widgets).anyTimes();
 
         // app context
         ApplicationContext app = createNiceMock(ApplicationContext.class);

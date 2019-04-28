@@ -5,7 +5,6 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import com.google.common.base.Throwables;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;

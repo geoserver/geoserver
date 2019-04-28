@@ -5,10 +5,10 @@
 package org.geoserver.security.oauth2.services;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.Map;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.springframework.http.HttpHeaders;
-import java.util.Base64;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

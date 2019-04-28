@@ -5,6 +5,7 @@
 package org.geoserver.params.extractor;
 
 import java.io.Closeable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,7 +70,8 @@ public final class Utils {
         }
     }
 
-    public static Map<String, String[]> parseParameters(Optional<String> queryString) {
+    public static Map<String, String[]> parseParameters(Optional<String> queryString)
+            throws UnsupportedEncodingException {
         Map<String, String[]> parameters = new HashMap<>();
         if (!queryString.isPresent()) {
             return parameters;

@@ -13,7 +13,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.notification.common.NotificationConfiguration;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.TransactionPlugin;
+import org.geoserver.wfs.TransactionCallback;
 import org.junit.Test;
 
 public class DefaultConfigTest extends GeoServerSystemTestSupport {
@@ -39,7 +39,8 @@ public class DefaultConfigTest extends GeoServerSystemTestSupport {
     public void testTransactionNotifierIntialization() throws IOException {
         NotificationConfiguration cfg = null;
         int counter = 0;
-        for (TransactionPlugin listener : GeoServerExtensions.extensions(TransactionPlugin.class)) {
+        for (TransactionCallback listener :
+                GeoServerExtensions.extensions(TransactionCallback.class)) {
             if (listener instanceof INotificationTransactionListener) {
                 counter++;
             }

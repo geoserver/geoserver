@@ -8,7 +8,6 @@ package org.vfny.geoserver.util;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,19 +39,6 @@ import org.xml.sax.helpers.DefaultHandler;
 public final class ResponseUtils {
 
     static Logger LOGGER = Logging.getLogger(ResponseUtils.class);
-
-    /** @deprecated moved to {@link org.geoserver.ows.util.ResponseUtils#encodeXML(String)}. */
-    public static String encodeXML(String inData) {
-        return org.geoserver.ows.util.ResponseUtils.encodeXML(inData);
-    }
-
-    /**
-     * @deprecated moved to {@link org.geoserver.ows.util.ResponseUtils#writeEscapedString(Writer,
-     *     String)}
-     */
-    public static void writeEscapedString(Writer writer, String string) throws IOException {
-        org.geoserver.ows.util.ResponseUtils.writeEscapedString(writer, string);
-    }
 
     /*
     Profixies a link url interpreting a localhost url as a back reference to the server.

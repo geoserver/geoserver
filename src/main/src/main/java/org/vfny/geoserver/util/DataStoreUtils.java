@@ -5,7 +5,6 @@
  */
 package org.vfny.geoserver.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,22 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import org.geoserver.catalog.ResourcePool;
 import org.geoserver.data.DataAccessFactoryProducer;
 import org.geoserver.data.DataStoreFactoryInitializer;
-import org.geoserver.feature.FeatureSourceUtils;
 import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureSource;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
@@ -45,23 +38,6 @@ public abstract class DataStoreUtils {
 
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.data");
-
-    /**
-     * Looks up the datastore using the given params, verbatim, and then eventually wraps it into a
-     * renaming wrapper so that feature type names are good ones from the wfs point of view (that
-     * is, no ":" in the type names)
-     *
-     * @param params
-     * @deprecated use {@link #getDataAccess(Map)}
-     */
-    public static DataStore getDataStore(Map params) throws IOException {
-        DataAccess<? extends FeatureType, ? extends Feature> store;
-        store = getDataAccess(params);
-        if (!(store instanceof DataStore)) {
-            return null;
-        }
-        return (DataStore) store;
-    }
 
     /**
      * Looks up the {@link DataAccess} using the given params, verbatim, and then eventually wraps
@@ -96,39 +72,6 @@ public abstract class DataStoreUtils {
             }
         }
         return store;
-    }
-
-    /**
-     * processed parameters with relative URLs resolved against data directory.
-     *
-     * @param m
-     * @return processed parameters with relative URLs resolved against data directory
-     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)}
-     *     directly.
-     */
-    public static <K, V> Map<K, V> getParams(Map<K, V> m) {
-        return getParams(m, null);
-    }
-
-    /**
-     * processed parameters with relative URLs resolved against data directory.
-     *
-     * @param m
-     * @param sc Context used to create GeoServerResourceLoader if required
-     * @return processed parameters with relative URLs resolved against data directory
-     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)}
-     *     directly.
-     */
-    public static <K, V> Map<K, V> getParams(Map<K, V> m, ServletContext sc) {
-        GeoServerResourceLoader loader;
-        if (sc != null) {
-            String basePath = GeoServerResourceLoader.lookupGeoServerDataDirectory(sc);
-            File baseDir = new File(basePath);
-            loader = new GeoServerResourceLoader(baseDir);
-        } else {
-            loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        }
-        return ResourcePool.getParams(m, loader);
     }
 
     /**
@@ -297,15 +240,6 @@ public abstract class DataStoreUtils {
         }
 
         return map;
-    }
-
-    /**
-     * @deprecated use {@link
-     *     org.geoserver.feature.FeatureSourceUtils#getBoundingBoxEnvelope(FeatureSource)}
-     */
-    public static Envelope getBoundingBoxEnvelope(
-            FeatureSource<? extends FeatureType, ? extends Feature> fs) throws IOException {
-        return FeatureSourceUtils.getBoundingBoxEnvelope(fs);
     }
 
     public static Collection<DataAccessFactory> getAvailableDataStoreFactories() {

@@ -26,7 +26,7 @@ public class ConfirmRemovalDataAccessRulePanel extends AbstractConfirmRemovalPan
 
     @Override
     protected String getConfirmationMessage(DataAccessRule object) throws Exception {
-        return OwsUtils.property(object, "workspace", String.class)
+        return OwsUtils.property(object, "root", String.class)
                 + "."
                 + OwsUtils.property(object, "layer", String.class)
                 + "."

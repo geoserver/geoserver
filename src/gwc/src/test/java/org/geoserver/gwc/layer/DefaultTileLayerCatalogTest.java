@@ -24,12 +24,15 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.FileSystemWatcher;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.config.XMLConfiguration;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.web.context.WebApplicationContext;
 
 public class DefaultTileLayerCatalogTest {
+
+    public @Rule TemporaryFolder tmpFolder = new TemporaryFolder();
 
     private File baseDirectory;
 
@@ -39,9 +42,7 @@ public class DefaultTileLayerCatalogTest {
 
     @Before
     public void setUp() throws Exception {
-        baseDirectory = new File("target", "mockTileLayerCatalog");
-        FileUtils.deleteDirectory(baseDirectory);
-        baseDirectory.mkdirs();
+        baseDirectory = tmpFolder.getRoot();
         resourceLoader = new GeoServerResourceLoader(baseDirectory);
 
         new File(baseDirectory, "gwc-layers").mkdir();
@@ -51,11 +52,6 @@ public class DefaultTileLayerCatalogTest {
                         new SecureXStream(), (WebApplicationContext) null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(baseDirectory);
     }
 
     @Test

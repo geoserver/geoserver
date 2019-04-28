@@ -154,21 +154,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return "GeoServer Catalog Configuration";
     }
 
-    /**
-     * Returns the list of {@link GeoServerTileLayer} objects matching the GeoServer ones.
-     *
-     * <p>The list is built dynamically on each call.
-     *
-     * @see TileLayerConfiguration#getTileLayers()
-     * @deprecated
-     */
-    @Deprecated
-    @Override
-    public List<TileLayer> getTileLayers() {
-        Iterable<TileLayer> layers = getLayers();
-        return Lists.newArrayList(layers);
-    }
-
     /** @see TileLayerConfiguration#getLayers() */
     @Override
     public Collection<TileLayer> getLayers() {
@@ -236,17 +221,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         }
     }
 
-    /**
-     * Returns a dynamic list of cached layer names out of the GeoServer {@link Catalog}
-     *
-     * @see TileLayerConfiguration#getTileLayerNames()
-     */
-    @Deprecated
-    @Override
-    public Set<String> getTileLayerNames() {
-        return getLayerNames();
-    }
-
     @Override
     public boolean containsLayer(String layerName) {
         checkNotNull(layerName, "layer id is null");
@@ -263,9 +237,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         }
     }
 
-    @Deprecated
-    @Override
-    public GeoServerTileLayer getTileLayerById(final String layerId) {
+    private GeoServerTileLayer getTileLayerById(final String layerId) {
         checkNotNull(layerId, "layer id is null");
 
         GeoServerTileLayer layer;
@@ -350,13 +322,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         return Optional.ofNullable(getTileLayerById(layerId));
     }
 
-    /** @see TileLayerConfiguration#getTileLayer(String) */
-    @Deprecated
-    @Override
-    public GeoServerTileLayer getTileLayer(final String layerName) {
-        return getTileLayerById(layerName);
-    }
-
     private String getLayerId(final String layerName) {
 
         String storedName = layerName;
@@ -434,13 +399,6 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             lock.releaseReadLock();
         }
         return count;
-    }
-
-    /** @see TileLayerConfiguration#getTileLayerCount() */
-    @Deprecated
-    @Override
-    public int getTileLayerCount() {
-        return getLayerCount();
     }
 
     @Override

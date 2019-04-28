@@ -522,7 +522,6 @@ public class CatalogConfigurationTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void getLayerByIdWithLocalWorkspace() {
         try {
             // create test workspaces
@@ -532,12 +531,12 @@ public class CatalogConfigurationTest {
             otherWorkspace.setName("other");
             // setting the local workspace equal to layers workspace
             LocalWorkspace.set(testWorkspace);
-            assertThat(config.getTileLayerById(layer1.getId()), notNullValue());
-            assertThat(config.getTileLayerById(layer2.getId()), notNullValue());
+            assertThat(config.getLayer(layer1.prefixedName()).orElse(null), notNullValue());
+            assertThat(config.getLayer(layer2.prefixedName()).orElse(null), notNullValue());
             // setting the local workspace different from layers workspaces
             LocalWorkspace.set(otherWorkspace);
-            assertThat(config.getTileLayerById(layer1.getId()), nullValue());
-            assertThat(config.getTileLayerById(layer2.getId()), nullValue());
+            assertThat(config.getLayer(layer1.prefixedName()).orElse(null), nullValue());
+            assertThat(config.getLayer(layer2.prefixedName()).orElse(null), nullValue());
         } finally {
             // cleaning
             LocalWorkspace.set(null);

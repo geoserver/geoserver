@@ -84,7 +84,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * Writes the image to the client.
      *
      * @param out The output stream to write to.
-     * @throws org.vfny.geoserver.ServiceException For problems with geoserver
+     * @throws ServiceException For problems with geoserver
      * @throws java.io.IOException For problems writing the output.
      */
     @SuppressWarnings("unchecked")

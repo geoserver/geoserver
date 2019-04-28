@@ -107,7 +107,6 @@ public class LoggingStartupContextListener implements ServletContextListener {
      * @return LoggingInfo loaded directly from logging.xml. Returns null if logging.xml does not
      *     exist
      */
-    @Deprecated
     public static @Nullable LoggingInfo getLogging(ResourceStore store) throws IOException {
         // Exposing this is a hack to provide JDBCConfig with the information it needs to compute
         // the "change" between logging.xml and the versions stored in JDBC. KS

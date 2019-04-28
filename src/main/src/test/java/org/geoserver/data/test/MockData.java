@@ -481,15 +481,6 @@ public class MockData implements TestData {
         }
     }
 
-    /**
-     * Adds the "well known" coverage types to the data directory.
-     *
-     * @deprecated use {@link #addWcs11Coverages()}
-     */
-    public void addWellKnownCoverageTypes() throws Exception {
-        addWcs11Coverages();
-    }
-
     /** Adds the wcs 1.0 coverages. */
     public void addWcs10Coverages() throws Exception {
         URL style = MockData.class.getResource("raster.sld");

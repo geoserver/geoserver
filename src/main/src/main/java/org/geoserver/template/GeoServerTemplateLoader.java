@@ -85,18 +85,6 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      *
      * @param caller The "calling" class, used to look up templates based with {@link
      *     Class#getResource(String)}, may be <code>null</code>
-     * @deprecated Use {@link #GeoServerTemplateLoader(Class, GeoServerResourceLoader)}
-     * @throws IOException
-     */
-    public GeoServerTemplateLoader(Class caller) throws IOException {
-        this(caller, GeoServerExtensions.bean(GeoServerResourceLoader.class));
-    }
-
-    /**
-     * Constructs the template loader.
-     *
-     * @param caller The "calling" class, used to look up templates based with {@link
-     *     Class#getResource(String)}, may be <code>null</code>
      * @param rl The geoserver resource loader
      * @throws IOException
      */

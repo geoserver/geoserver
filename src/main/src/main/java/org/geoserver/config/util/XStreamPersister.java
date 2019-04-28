@@ -224,27 +224,12 @@ public class XStreamPersister {
         protected void postEncodeLayerGroup(
                 LayerGroupInfo ls, HierarchicalStreamWriter writer, MarshallingContext context) {}
 
-        /**
-         * @deprecated use {@link #postEncodeReference(Object, String, String,
-         *     HierarchicalStreamWriter, MarshallingContext)}
-         */
-        protected void postEncodeReference(
-                Object obj,
-                String ref,
-                HierarchicalStreamWriter writer,
-                MarshallingContext context) {}
-
         protected void postEncodeReference(
                 Object obj,
                 String ref,
                 String prefix,
                 HierarchicalStreamWriter writer,
-                MarshallingContext context) {
-            if (prefix == null) {
-                // call other method for backward compatability
-                postEncodeReference(obj, ref, writer, context);
-            }
-        }
+                MarshallingContext context) {}
 
         protected void postEncodeWMSStore(
                 WMSStoreInfo store, HierarchicalStreamWriter writer, MarshallingContext context) {}

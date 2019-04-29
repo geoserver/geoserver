@@ -54,6 +54,19 @@ public class FeatureTest extends WFS3TestSupport {
                         "http://localhost:8080/geoserver/wfs3/collections/" + roadSegments + "?"));
     }
 
+    /** Tests the hits type result, returning only number of matches without returning features. */
+    @Test
+    public void testGetLayerHitsAsGeoJson() throws Exception {
+        String roadSegments = getEncodedName(MockData.ROAD_SEGMENTS);
+        DocumentContext json =
+                getAsJSONPath(
+                        "wfs3/collections/" + roadSegments + "/items" + "?resultType=hits", 200);
+        assertEquals("FeatureCollection", json.read("type", String.class));
+        assertEquals(0, (int) json.read("features.length()", Integer.class));
+        // numberMatched
+        assertEquals(5, (int) json.read("numberMatched", Integer.class));
+    }
+
     @Test
     public void testWorkspaceQualified() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();

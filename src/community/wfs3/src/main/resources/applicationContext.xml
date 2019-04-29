@@ -58,6 +58,7 @@
   
   <!-- KVP parsing -->
   <bean id="wfs3TimeKvpParser" class="org.geoserver.wfs3.kvp.TimeKvpParser"/>
+  <bean id="wfs3ResultTypeKvpParser" class="org.geoserver.wfs3.kvp.ResultTypeKvpParser"/>
   <bean id="wfs3BBOXKvpParser" class="org.geoserver.wfs3.kvp.WFS3BBoxKvpParser">
     <property name="service" value="WFS"/>
     <property name="version" value="3.0.0"/>

@@ -79,7 +79,7 @@ public class HitsOutputFormat extends WFSResponse {
         hits.setPrevious(featureCollection.getPrevious());
         hits.setTimeStamp(featureCollection.getTimeStamp());
 
-        encode(hits, output, wfs);
+        encode(hits, output, wfs, operation);
     }
 
     private BigInteger countFeature(FeatureCollectionResponse fct) {
@@ -101,7 +101,8 @@ public class HitsOutputFormat extends WFSResponse {
         return count;
     }
 
-    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs)
+    protected void encode(
+            FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs, Operation operation)
             throws IOException {
         Encoder encoder = new Encoder(configuration, configuration.schema());
         encoder.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));

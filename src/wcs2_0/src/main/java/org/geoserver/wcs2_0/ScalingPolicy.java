@@ -102,7 +102,7 @@ enum ScalingPolicy {
             }
 
             // return coverage unchanged if we don't scale
-            if (scaleFactors[0] == 1 && scaleFactors[1] == 0) {
+            if (scaleFactors[0] == 1 && scaleFactors[1] == 1) {
                 // NO SCALING do we need interpolation?
                 if (interpolation instanceof InterpolationNearest) {
                     return sourceGC;

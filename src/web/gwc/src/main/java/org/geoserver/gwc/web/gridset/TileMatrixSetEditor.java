@@ -64,10 +64,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
 
         @Override
         public void validate(IValidatable<List<Grid>> validatable) {
-            ValidationError error = new ValidationError();
-
             List<Grid> grids = validatable.getValue();
             if (grids == null || grids.size() == 0) {
+                ValidationError error = new ValidationError();
                 error.setMessage(
                         new ResourceModel("TileMatrixSetEditor.validation.empty").getObject());
                 validatable.error(error);
@@ -79,6 +78,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 Grid curr = grids.get(i);
 
                 if (curr.getResolution() >= prev.getResolution()) {
+                    ValidationError error = new ValidationError();
                     String message =
                             "Each resolution should be lower than it's prior one. Res["
                                     + i
@@ -95,6 +95,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 }
 
                 if (curr.getScaleDenominator() >= prev.getScaleDenominator()) {
+                    ValidationError error = new ValidationError();
                     String message =
                             "Each scale denominator should be lower "
                                     + "than it's prior one. Scale["

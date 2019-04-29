@@ -186,4 +186,30 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         GridSet created = gridSetBroker.get(gridsetName);
         assertEquals(numLevels, created.getNumLevels());
     }
+
+    @Test
+    public void testDuplicateNames() {
+
+        PageParameters params = new PageParameters().add("template", "EPSG:4326");
+        GridSetNewPage page = new GridSetNewPage(params);
+        tester.startPage(page);
+
+        FormTester ft = tester.newFormTester("gridSetForm");
+        ft.setValue("name:border:border_body:paramValue", "customWGS84");
+
+        // add two zoom levels
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
+        tester.executeAjaxEvent("gridSetForm:addZoomLevel", "click");
+
+        ft = tester.newFormTester("gridSetForm");
+        ft.setValue("tileMatrixSetEditor:container:table:gridLevels:0:name", "AName");
+        ft.setValue("tileMatrixSetEditor:container:table:gridLevels:1:name", "AName");
+        ft.submit();
+
+        // submit
+        tester.executeAjaxEvent("gridSetForm:save", "click");
+
+        tester.assertErrorMessages(
+                "Tile matrix names should not include duplicates, but the following were found: [AName]. Mind, if you left some names empty, GeoServer has automatically added in some names for you.");
+    }
 }

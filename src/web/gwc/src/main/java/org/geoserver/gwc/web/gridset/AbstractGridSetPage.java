@@ -5,7 +5,12 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.measure.Unit;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -301,6 +306,37 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     private GridSetCRSPanel crs(IModel<GridSetInfo> model) {
         GridSetCRSPanel crsPanel = new GridSetCRSPanel("crs", model);
         return crsPanel;
+    }
+
+    protected GridSet toGridSet(AjaxRequestTarget target, Form<?> form, GridSetInfo info)
+            throws Exception {
+        final GridSet newGridset = GridSetBuilder.build(info);
+
+        // the creation above can fill in the blanks of empty UI names, here is where we can
+        // check if the names are actually unique
+        List<String> names =
+                IntStream.range(0, newGridset.getNumLevels())
+                        .mapToObj(i -> newGridset.getGrid(i).getName())
+                        .sorted()
+                        .collect(Collectors.toList());
+        Set<String> duplicates = new LinkedHashSet<>();
+        for (int i = 1; i < names.size(); i++) {
+            String prevName = names.get(i - 1);
+            if (prevName.equals(names.get(i))) {
+                duplicates.add(prevName);
+            }
+        }
+        if (!duplicates.isEmpty()) {
+            // set back to make the duplicates evident
+            for (int i = 0; i < newGridset.getNumLevels(); i++) {
+                info.getLevels().get(i).setName(names.get(i));
+            }
+            throw new IllegalArgumentException(
+                    "Tile matrix names should not include duplicates, but the following were found: "
+                            + duplicates
+                            + ". Mind, if you left some names empty, GeoServer has automatically added in some names for you.");
+        }
+        return newGridset;
     }
 
     /** @author groldan */

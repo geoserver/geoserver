@@ -30,7 +30,6 @@ import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
@@ -216,7 +215,7 @@ class GMLTransformer extends TransformerBase {
             handleRangeType(gc2d);
 
             // handle coverage function
-            final GridEnvelope2D ge2D = gc2d.getGridGeometry().getGridRange2D();
+            final GridEnvelope ge2D = gc2d.getGridGeometry().getGridRange();
             handleCoverageFunction(ge2D, axisSwap);
 
             // handle range
@@ -247,7 +246,7 @@ class GMLTransformer extends TransformerBase {
          * @param gc2d
          * @param axisSwap
          */
-        public void handleCoverageFunction(GridEnvelope2D gridRange, boolean axisSwap) {
+        public void handleCoverageFunction(GridEnvelope gridRange, boolean axisSwap) {
             start("gml:coverageFunction");
             start("gml:GridFunction");
 
@@ -257,9 +256,10 @@ class GMLTransformer extends TransformerBase {
             element("gml:sequenceRule", "Linear", gridAttrs); // minOccurs 0, default Linear
             element(
                     "gml:startPoint",
-                    gridRange.x
+                    gridRange.getLow(0)
                             + " "
-                            + gridRange.y); // we start at minx, miny (this is optional though)
+                            + gridRange.getLow(
+                                    1)); // we start at minx, miny (this is optional though)
 
             end("gml:GridFunction");
             end("gml:coverageFunction");

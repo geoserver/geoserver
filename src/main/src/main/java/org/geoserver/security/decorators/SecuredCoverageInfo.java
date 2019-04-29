@@ -56,7 +56,9 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
             throws IOException {
         Request request = Dispatcher.REQUEST.get();
         if (policy.level == AccessLevel.METADATA
-                && (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest()))) {
+                && (request == null
+                        || (!"GetCapabilities".equalsIgnoreCase(request.getRequest()))
+                                && !"DescribeCoverage".equalsIgnoreCase(request.getRequest()))) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         }
         GridCoverageReader reader = super.getGridCoverageReader(listener, hints);

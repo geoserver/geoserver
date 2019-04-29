@@ -84,17 +84,6 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
     static Property<?> RENDERING_ORDER = new PropertyPlaceholder<Object>("order");
 
-    /**
-     * Deprecated, provide a loadable model for properties instead which ensures always the same
-     * exact property objects are returned (or use equality by name in the getComponentForProperty
-     * method)
-     */
-    @SuppressWarnings("serial")
-    @Deprecated
-    public ReorderableTablePanel(String id, List<T> items, List<Property<T>> properties) {
-        this(id, items, Model.ofList(properties));
-    }
-
     @SuppressWarnings("serial")
     public ReorderableTablePanel(String id, List<T> items, IModel<List<Property<T>>> properties) {
         super(id, new ReorderableDataProvider<T>(items, properties));

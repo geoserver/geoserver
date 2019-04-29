@@ -48,11 +48,6 @@ public class WMSLayerIdentifier implements LayerIdentifier {
     // WMS service configuration facade, maybe be NULL use method getWms()
     private WMS wms;
 
-    @Deprecated
-    public WMSLayerIdentifier(EntityResolverProvider resolverProvider) {
-        this(resolverProvider, null);
-    }
-
     public WMSLayerIdentifier(EntityResolverProvider resolverProvider, WMS wms) {
         this.resolverProvider = resolverProvider;
         this.wms = wms;

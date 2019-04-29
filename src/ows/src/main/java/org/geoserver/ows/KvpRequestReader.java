@@ -124,7 +124,7 @@ public class KvpRequestReader {
      * @return A new instance of the request.
      */
     public Object createRequest() throws Exception {
-        return getRequestBean().newInstance();
+        return getRequestBean().getDeclaredConstructor().newInstance();
     }
 
     /**

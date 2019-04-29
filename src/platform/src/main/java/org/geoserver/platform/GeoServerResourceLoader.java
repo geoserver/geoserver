@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -117,24 +116,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
             resources = new FileSystemResourceStore(baseDirectory);
         }
     }
-
-    /**
-     * Adds a location to the path used for resource lookups.
-     *
-     * @param searchLocation directory containing resources.
-     * @deprecated No longer used
-     */
-    public void addSearchLocation(File searchLocation) {
-        // searchLocations.add(searchLocation);
-    }
-
-    /**
-     * Sets the search locations used for resource lookups.
-     *
-     * @param searchLocations A set of {@link File}.
-     * @deprecated No longer used
-     */
-    public void setSearchLocations(Set<File> searchLocations) {}
 
     /** @return The base directory. */
     public File getBaseDirectory() {

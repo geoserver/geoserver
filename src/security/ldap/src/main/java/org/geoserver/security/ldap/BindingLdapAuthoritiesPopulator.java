@@ -341,28 +341,6 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
         return groupSearchBase;
     }
 
-    /**
-     * @deprecated Convert case in the {@code AuthenticationProvider} using a {@code
-     *     GrantedAuthoritiesMapper}.
-     */
-    @Deprecated
-    public void setConvertToUpperCase(boolean convertToUpperCase) {
-        this.convertToUpperCase = convertToUpperCase;
-    }
-
-    /**
-     * The default role which will be assigned to all users.
-     *
-     * @param defaultRole the role name, including any desired prefix.
-     * @deprecated Assign a default role in the {@code AuthenticationProvider} using a {@code
-     *     GrantedAuthoritiesMapper}.
-     */
-    @Deprecated
-    public void setDefaultRole(String defaultRole) {
-        Assert.notNull(defaultRole, "The defaultRole property cannot be set to null");
-        this.defaultRole = new SimpleGrantedAuthority(defaultRole);
-    }
-
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         Assert.notNull(groupRoleAttribute, "groupRoleAttribute must not be null");
         this.groupRoleAttribute = groupRoleAttribute;
@@ -371,19 +349,6 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
     public void setGroupSearchFilter(String groupSearchFilter) {
         Assert.notNull(groupSearchFilter, "groupSearchFilter must not be null");
         this.groupSearchFilter = groupSearchFilter;
-    }
-
-    /**
-     * Sets the prefix which will be prepended to the values loaded from the directory. Defaults to
-     * "ROLE_" for compatibility with <tt>RoleVoter/tt>.
-     *
-     * @deprecated Map the authorities in the {@code AuthenticationProvider} using a {@code
-     *     GrantedAuthoritiesMapper}.
-     */
-    @Deprecated
-    public void setRolePrefix(String rolePrefix) {
-        Assert.notNull(rolePrefix, "rolePrefix must not be null");
-        this.rolePrefix = rolePrefix;
     }
 
     /**

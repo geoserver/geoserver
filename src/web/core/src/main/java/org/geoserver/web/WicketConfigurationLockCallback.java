@@ -44,12 +44,6 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    @Deprecated
-    public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
-        onRequestTargetSet(null, requestTarget);
-    }
-
-    @Override
     public void onRequestTargetSet(
             RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
 

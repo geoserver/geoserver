@@ -332,8 +332,6 @@ public class GWCTest {
         mediator.setApplicationContext(appContext);
 
         mediator = spy(mediator);
-        when(mediator.getXmlConfiguration()).thenReturn(xmlConfig);
-
         GWC.set(mediator);
     }
 

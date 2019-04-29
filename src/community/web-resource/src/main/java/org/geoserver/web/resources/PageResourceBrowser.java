@@ -320,7 +320,8 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                     });
                         } catch (IOException | IllegalStateException e) {
                             error(e.getMessage());
-                            target.add(getFeedbackPanel());
+                            target.add(bottomFeedbackPanel);
+                            target.add(topFeedbackPanel);
                         }
                     }
                 };
@@ -625,7 +626,8 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                                                         "deleteFailed", getPage())
                                                                 .getString()
                                                                 .replace("%", res.path()));
-                                                target.add(getFeedbackPanel());
+                                                target.add(bottomFeedbackPanel);
+                                                target.add(topFeedbackPanel);
                                             }
                                         }
                                         // if deleted node was on clipboard, remove it form the

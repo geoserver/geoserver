@@ -200,4 +200,24 @@ public class WMSTest extends WMSTestSupport {
         getGeoServer().save(info);
         assertTrue(wms.isRemoteStylesCacheEnabled());
     }
+
+    @Test
+    public void testProjectionDensification() {
+        assertFalse(wms.isAdvancedProjectionDensificationEnabled());
+
+        WMSInfo info = wms.getServiceInfo();
+        info.getMetadata().put(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY, true);
+        getGeoServer().save(info);
+        assertTrue(wms.isAdvancedProjectionDensificationEnabled());
+    }
+
+    @Test
+    public void testWrappingHeuristic() {
+        assertFalse(wms.isDateLineWrappingHeuristicDisabled());
+
+        WMSInfo info = wms.getServiceInfo();
+        info.getMetadata().put(WMS.DATELINE_WRAPPING_HEURISTIC_KEY, true);
+        getGeoServer().save(info);
+        assertTrue(wms.isDateLineWrappingHeuristicDisabled());
+    }
 }

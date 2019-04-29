@@ -156,6 +156,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
     private static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION =
             "advancedProjectionHandling";
+    private static final String ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION =
+            "advancedProjectionHandlingDensification";
+    private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
+            "disableDatelineWrappingHeuristic";
 
     /** The size of a megabyte */
     private static final int KB = 1024;
@@ -448,8 +452,26 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // turn on advanced projection handling
         if (wms.isAdvancedProjectionHandlingEnabled()) {
             rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
+            if (request.getFormatOptions().get(ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION)
+                    != null) {
+                rendererParams.put(
+                        StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY,
+                        getFormatOptionAsBoolean(
+                                request, ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION));
+            } else if (wms.isAdvancedProjectionDensificationEnabled()) {
+                rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY, true);
+            }
             if (wms.isContinuousMapWrappingEnabled()) {
                 rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
+            }
+            if (request.getFormatOptions().get(DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION)
+                    != null) {
+                rendererParams.put(
+                        StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY,
+                        !getFormatOptionAsBoolean(
+                                request, DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION));
+            } else if (wms.isDateLineWrappingHeuristicDisabled()) {
+                rendererParams.put(StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY, false);
             }
         }
 

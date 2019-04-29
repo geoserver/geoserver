@@ -41,7 +41,8 @@ public class XmlObjectEncodingResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         try {
-            Configuration c = (Configuration) xmlConfiguration.newInstance();
+            Configuration c =
+                    (Configuration) xmlConfiguration.getDeclaredConstructor().newInstance();
             Encoder e = new Encoder(c);
             for (Map.Entry<String, String> entry : getSchemaLocations().entrySet()) {
                 e.setSchemaLocation(entry.getKey(), entry.getValue());

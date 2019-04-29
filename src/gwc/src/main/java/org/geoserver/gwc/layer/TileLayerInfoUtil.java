@@ -181,28 +181,6 @@ public class TileLayerInfoUtil {
     }
 
     /**
-     * Find a parameter filter by key from a set of filters.
-     *
-     * @param paramName
-     * @param parameterFilters
-     * @deprecated
-     */
-    public static ParameterFilter findParameterFilter(
-            final String paramName, Set<ParameterFilter> parameterFilters) {
-
-        if (parameterFilters == null || parameterFilters.size() == 0) {
-            return null;
-        }
-
-        for (ParameterFilter pf : parameterFilters) {
-            if (paramName.equalsIgnoreCase(pf.getKey())) {
-                return pf;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Set the styles which should be cached on a layer
      *
      * @param info
@@ -273,19 +251,6 @@ public class TileLayerInfoUtil {
             stringListFilter.setValues(new ArrayList<String>(values));
             tileLayerInfo.addParameterFilter(stringListFilter);
         }
-    }
-
-    /**
-     * Remove a parameter filter from a layer
-     *
-     * @param tileLayerInfo the layer
-     * @param paramKey the key of the parameter filter
-     * @return true if a parameter matched and was removed, false otherwise
-     * @deprecated
-     */
-    public static boolean removeParameterFilter(
-            final GeoServerTileLayerInfo tileLayerInfo, final String paramKey) {
-        return tileLayerInfo.removeParameterFilter(paramKey);
     }
 
     /**

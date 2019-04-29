@@ -607,16 +607,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Returns the top feedback panel included in the GeoServer base page
-     *
-     * @deprecated Use {@link #addFeedbackPanels(AjaxRequestTarget)} instead
-     */
-    @Deprecated
-    public FeedbackPanel getFeedbackPanel() {
-        return topFeedbackPanel;
-    }
-
-    /**
      * Sets the return page to navigate to when this page is done its task.
      *
      * @see #doReturn()

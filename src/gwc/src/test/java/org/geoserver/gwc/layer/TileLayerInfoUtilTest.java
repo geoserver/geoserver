@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -121,26 +122,23 @@ public class TileLayerInfoUtilTest {
 
         // If createParam is false and there isn't already a filter, don't create one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
-        assertNull(TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters()));
+        assertNull(findParameterFilter("ENV", info.getParameterFilters()));
 
         // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
-        ParameterFilter filter =
-                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
+        ParameterFilter filter = findParameterFilter("ENV", info.getParameterFilters());
         assertTrue(filter instanceof RegexParameterFilter);
         assertEquals(".*", ((RegexParameterFilter) filter).getRegex());
 
         // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
-        ParameterFilter filter2 =
-                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
+        ParameterFilter filter2 = findParameterFilter("ENV", info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
 
         // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
-        ParameterFilter filter3 =
-                TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters());
+        ParameterFilter filter3 = findParameterFilter("ENV", info.getParameterFilters());
         assertNotSame(filter2, filter3);
         assertEquals(filter, filter3);
     }
@@ -152,27 +150,45 @@ public class TileLayerInfoUtilTest {
 
         // If createParam is false and there isn't already a filter, don't create one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
-        assertNull(TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters()));
+        assertNull(findParameterFilter("ELEVATION", info.getParameterFilters()));
 
         // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
-        ParameterFilter filter =
-                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
+        ParameterFilter filter = findParameterFilter("ELEVATION", info.getParameterFilters());
         assertTrue(filter instanceof FloatParameterFilter);
         assertEquals(0, ((FloatParameterFilter) filter).getValues().size());
 
         // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
-        ParameterFilter filter2 =
-                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
+        ParameterFilter filter2 = findParameterFilter("ELEVATION", info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
 
         // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
-        ParameterFilter filter3 =
-                TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters());
+        ParameterFilter filter3 = findParameterFilter("ELEVATION", info.getParameterFilters());
         assertNotSame(filter2, filter3);
         assertEquals(filter, filter3);
+    }
+
+    /**
+     * Find a parameter filter by key from a set of filters.
+     *
+     * @param paramName
+     * @param parameterFilters
+     */
+    private static ParameterFilter findParameterFilter(
+            final String paramName, Set<ParameterFilter> parameterFilters) {
+
+        if (parameterFilters == null || parameterFilters.size() == 0) {
+            return null;
+        }
+
+        for (ParameterFilter pf : parameterFilters) {
+            if (paramName.equalsIgnoreCase(pf.getKey())) {
+                return pf;
+            }
+        }
+        return null;
     }
 }

@@ -96,11 +96,11 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         checkProperties();
 
         File propFile =
-                new File(getSecurityManager().getUserGroupRoot(), getUserGroupServiceName());
+                new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         propFile = new File(propFile, AUTHKEYS_FILE);
 
         File backupFile =
-                new File(getSecurityManager().getUserGroupRoot(), getUserGroupServiceName());
+                new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         backupFile = new File(backupFile, AUTHKEYS_FILE + ".backup");
 
         // check if the previous synchronize failed

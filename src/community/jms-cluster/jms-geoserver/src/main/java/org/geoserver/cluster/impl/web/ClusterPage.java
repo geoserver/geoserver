@@ -37,7 +37,7 @@ public class ClusterPage extends GeoServerSecuredPage {
 
     public ClusterPage() {
 
-        final FeedbackPanel fp = getFeedbackPanel();
+        final FeedbackPanel fp = bottomFeedbackPanel;
 
         // setup the JMSContainer exception handler
         getJMSContainerExceptionHandler().setFeedbackPanel(fp);

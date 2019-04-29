@@ -97,7 +97,6 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.ConfigurationPersistenceException;
 import org.geowebcache.config.TileLayerConfiguration;
-import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
@@ -1646,18 +1645,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 lock.release();
             }
         }
-    }
-
-    /**
-     * Looks up the {@link XMLConfiguration} from the spring context.
-     *
-     * @deprecated Only to be used for testing
-     * @return The {@link XMLConfiguration}
-     */
-    @Deprecated
-    XMLConfiguration getXmlConfiguration() {
-        XMLConfiguration mainConfig = GeoWebCacheExtensions.bean(XMLConfiguration.class);
-        return mainConfig;
     }
 
     private BlobStoreAggregator getBlobStoreAggregator() {

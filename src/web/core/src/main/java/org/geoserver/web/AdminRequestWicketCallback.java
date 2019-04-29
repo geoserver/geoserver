@@ -27,12 +27,6 @@ public class AdminRequestWicketCallback implements WicketCallback {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
-        // not using anymore as it's deprecated
-    }
-
-    @Override
     public void onAfterTargetsDetached() {}
 
     @Override

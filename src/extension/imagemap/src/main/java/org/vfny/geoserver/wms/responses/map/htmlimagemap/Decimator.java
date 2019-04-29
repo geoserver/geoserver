@@ -82,15 +82,6 @@ public final class Decimator {
         }
     }
 
-    /**
-     * @throws TransformException
-     * @deprecated use the other constructor (with rectange) see javadox. This works fine, but it
-     *     the results are often poor if you're also doing CRS xforms.
-     */
-    public Decimator(MathTransform screenToWorld) {
-        this(screenToWorld, new Rectangle()); // do at (0,0)
-    }
-
     public final void decimateTransformGeneralize(Geometry geometry, MathTransform transform)
             throws TransformException {
         if (geometry instanceof GeometryCollection) {

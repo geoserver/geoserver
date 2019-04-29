@@ -11,11 +11,13 @@ import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import net.opengis.wcs20.DescribeCoverageType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -197,16 +199,21 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
         public void handleCoverageDescription(String encodedId, CoverageInfo ci) {
 
             try {
-                // see if we have to handle time, elevation and additional dimensions
-                WCSDimensionsHelper dimensionsHelper =
-                        WCSDimensionsHelper.getWCSDimensionsHelper(
-                                encodedId, ci, RequestUtils.getCoverageReader(ci));
-
                 GridCoverage2DReader reader =
                         (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
                 if (reader == null) {
                     throw new WCS20Exception("Unable to read sample coverage for " + ci.getName());
                 }
+
+                // see if we have to handle time, elevation and additional dimensions
+                Map<String, DimensionInfo> dimensionsMap =
+                        WCSDimensionsHelper.getDimensionsFromMetadata(ci.getMetadata());
+                WCSDimensionsHelper dimensionsHelper = null;
+                if (dimensionsMap != null && !dimensionsMap.isEmpty()) {
+                    dimensionsHelper =
+                            WCSDimensionsHelper.getWCSDimensionsHelper(encodedId, ci, reader);
+                }
+
                 // get the crs and look for an EPSG code
                 final CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
                 List<String> axesNames =

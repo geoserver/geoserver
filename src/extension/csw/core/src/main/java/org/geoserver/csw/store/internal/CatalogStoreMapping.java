@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.complex.util.XPathUtil;

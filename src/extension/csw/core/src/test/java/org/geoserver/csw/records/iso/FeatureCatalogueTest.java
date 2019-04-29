@@ -30,13 +30,16 @@ public class FeatureCatalogueTest extends MDTestSupport {
         custom.put("object-catalog/max-occurence", new ArrayList<Integer>());
         custom.put("object-catalog/domain/value", new ArrayList<ArrayList<String>>());
         for (PropertyDescriptor descr : forestInfo.getFeatureType().getDescriptors()) {
-            ((ArrayList<String>) custom.get("object-catalog/name")).add(descr.getName().getLocalPart());
+            ((ArrayList<String>) custom.get("object-catalog/name"))
+                    .add(descr.getName().getLocalPart());
             ((ArrayList<String>) custom.get("object-catalog/definition"))
                     .add("definition for " + descr.getName().getLocalPart());
             ((ArrayList<String>) custom.get("object-catalog/type"))
-            .add(descr.getType().getBinding().getSimpleName());
-            ((ArrayList<Integer>) custom.get("object-catalog/min-occurence")).add(descr.getMinOccurs());
-            ((ArrayList<Integer>) custom.get("object-catalog/max-occurence")).add(descr.getMaxOccurs());
+                    .add(descr.getType().getBinding().getSimpleName());
+            ((ArrayList<Integer>) custom.get("object-catalog/min-occurence"))
+                    .add(descr.getMinOccurs());
+            ((ArrayList<Integer>) custom.get("object-catalog/max-occurence"))
+                    .add(descr.getMaxOccurs());
             ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
                     .add(new ArrayList<String>());
         }
@@ -59,7 +62,7 @@ public class FeatureCatalogueTest extends MDTestSupport {
                         + "&maxRecords=100";
 
         Document d = getAsDOM(request);
-       // print(d);
+        // print(d);
 
         assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
 

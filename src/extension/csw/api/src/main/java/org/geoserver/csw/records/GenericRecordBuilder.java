@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.geotools.data.complex.ComplexFeatureConstants;
+import org.geotools.data.complex.util.ComplexFeatureConstants;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.LenientFeatureFactoryImpl;
@@ -56,6 +56,11 @@ public class GenericRecordBuilder implements RecordBuilder {
         AttributeDescriptor descriptor = null;
 
         public abstract TreeNode clone();
+
+        public boolean cleanUp() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     protected static class TreeLeaf extends TreeNode {
@@ -89,6 +94,22 @@ public class GenericRecordBuilder implements RecordBuilder {
             }
             branch.descriptor = descriptor;
             return branch;
+        }
+
+        @Override
+        public boolean cleanUp() {
+            boolean empty = true;
+            for (List<TreeNode> child : children.values()) {
+                Iterator<TreeNode> it = child.iterator();
+                while (it.hasNext()) {
+                    if (it.next().cleanUp()) {
+                        it.remove();
+                    } else {
+                        empty = false;
+                    }
+                }
+            }
+            return empty;
         }
     }
 
@@ -191,27 +212,32 @@ public class GenericRecordBuilder implements RecordBuilder {
                                 true,
                                 (Object) null);
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
-                    TreeLeaf leaf = new TreeLeaf();
-                    leaf.userData = userData;
-                    leaf.descriptor = simpleDescriptor;
-                    leaf.value = value.size() == 1 ? value.get(0) : value.get(i);
-                    leaf.userData = userData;
-                    ((TreeBranch) treenodes.get(i))
-                            .children.put(
-                                    ComplexFeatureConstants.SIMPLE_CONTENT.getLocalPart(),
-                                    Collections.singletonList(leaf));
+                    Object item = value.size() == 1 ? value.get(0) : value.get(i);
+                    if (item != null) {
+                        TreeLeaf leaf = new TreeLeaf();
+                        leaf.userData = userData;
+                        leaf.descriptor = simpleDescriptor;
+                        leaf.value = value.size() == 1 ? value.get(0) : value.get(i);
+                        leaf.userData = userData;
+                        ((TreeBranch) treenodes.get(i))
+                                .children.put(
+                                        ComplexFeatureConstants.SIMPLE_CONTENT.getLocalPart(),
+                                        Collections.singletonList(leaf));
+                    }
                 }
 
             } else {
                 for (Object item : value) {
-                    TreeLeaf leaf = new TreeLeaf();
-                    leaf.userData = userData;
+                    if (value != null) {
+                        TreeLeaf leaf = new TreeLeaf();
+                        leaf.userData = userData;
 
-                    leaf.descriptor = descriptor;
-                    leaf.value = item;
-                    leaf.userData = userData;
+                        leaf.descriptor = descriptor;
+                        leaf.value = item;
+                        leaf.userData = userData;
 
-                    treenodes.add(leaf);
+                        treenodes.add(leaf);
+                    }
                 }
             }
         } else {
@@ -249,16 +275,18 @@ public class GenericRecordBuilder implements RecordBuilder {
 
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
                     Object item = value.size() == 1 ? value.get(0) : value.get(i);
-                    createAttribute(
-                            (TreeBranch) treenodes.get(i),
-                            index + 1,
-                            (ComplexType) descriptor.getType(),
-                            path,
-                            item instanceof List
-                                    ? (List<Object>) item
-                                    : Collections.singletonList(item),
-                            userData,
-                            splitIndex);
+                    if (item != null) {
+                        createAttribute(
+                                (TreeBranch) treenodes.get(i),
+                                index + 1,
+                                (ComplexType) descriptor.getType(),
+                                path,
+                                item instanceof List
+                                        ? (List<Object>) item
+                                        : Collections.singletonList(item),
+                                userData,
+                                splitIndex);
+                    }
                 }
             }
         }
@@ -356,6 +384,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                     new int[0]);
         }
 
+        root.cleanUp(); // remove empty tags
         for (List<TreeNode> nodes : root.children.values()) {
             for (TreeNode node : nodes) {
                 Attribute att = buildNode(node);

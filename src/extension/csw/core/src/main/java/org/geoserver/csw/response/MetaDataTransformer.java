@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw.response;
 
+import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.List;
 import net.opengis.cat.csw20.RequestBaseType;
@@ -53,6 +54,7 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
 
         public MetaDataTranslator(ContentHandler handler) {
             super(handler);
+            getNamespaceSupport().declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         }
 
         public void encode(CSWRecordsResult response, Feature f) {
@@ -78,7 +80,8 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                     Property prop =
                             ((ComplexAttribute) p)
                                     .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
-                    boolean nil = prop == null || prop.getValue() == null;
+                    boolean nil =
+                            prop == null || prop.getValue() == null || prop.getValue().equals("");
                     atts.addAttribute(
                             "http://www.w3.org/2001/XMLSchema-instance",
                             "nil",
@@ -167,9 +170,9 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                 attributes.addAttribute(
                         "http://www.w3.org/2001/XMLSchema-instance",
                         "nil",
-                        "nil",
+                        "xsi:nil",
                         "",
-                        value == null ? "true" : "false");
+                        Strings.isNullOrEmpty(value) ? "true" : "false");
             }
             element(prefix + ":" + name, value, attributes);
         }

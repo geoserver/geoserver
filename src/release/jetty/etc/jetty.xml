@@ -94,7 +94,19 @@
       -->
     </New>
 
-
+    <!-- =========================================================== -->
+    <!-- Set maxFormContentSize and maxFormKeys Request configuration-->
+    <!-- for handling hyperspectral images and large post.           -->
+    <!-- =========================================================== -->
+    <Call name="setAttribute">
+      <Arg>org.eclipse.jetty.server.Request.maxFormContentSize</Arg>
+      <Arg>500000</Arg>
+    </Call>
+    <Call name="setAttribute">
+      <Arg>org.eclipse.jetty.server.Request.maxFormKeys</Arg>
+      <Arg>2000</Arg>
+    </Call>
+    
     <!-- =========================================================== -->
     <!-- Set the default handler structure for the Server            -->
     <!-- A handler collection is used to pass received requests to   -->

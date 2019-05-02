@@ -48,8 +48,8 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate-version}</version>
-        </dependency>         
+            <version>5.2.0.Final</version>
+        </dependency>      
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>

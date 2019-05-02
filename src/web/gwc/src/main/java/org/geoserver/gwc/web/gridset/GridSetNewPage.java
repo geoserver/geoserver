@@ -22,11 +22,10 @@ public class GridSetNewPage extends AbstractGridSetPage {
     @Override
     protected void onSave(AjaxRequestTarget target, Form<?> form) {
         GridSetInfo info = (GridSetInfo) form.getModelObject();
-
-        GridSet gridset;
+        GridSet gridset = null;
         try {
-            gridset = GridSetBuilder.build(info);
-        } catch (IllegalStateException e) {
+            gridset = toGridSet(target, form, info);
+        } catch (Exception e) {
             form.error(e.getMessage());
             target.add(form);
             return;

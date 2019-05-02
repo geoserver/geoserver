@@ -159,7 +159,7 @@ public class PredicatesTest {
         expected = String.valueOf(featureType.getMaxFeatures());
         assertTrue(equal("resource.maxFeatures", expected).evaluate(vectorLayer));
 
-        expected = new Double(featureType.getMaxFeatures());
+        expected = Double.valueOf(featureType.getMaxFeatures());
         assertTrue(equal("resource.maxFeatures", expected).evaluate(vectorLayer));
 
         expected = "true";

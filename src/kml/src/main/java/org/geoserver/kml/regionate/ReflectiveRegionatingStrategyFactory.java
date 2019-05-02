@@ -48,7 +48,7 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
                 return (RegionatingStrategy) c.newInstance(gs);
             }
 
-            return (RegionatingStrategy) clazz.newInstance();
+            return (RegionatingStrategy) clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new ServiceException(e);
         }

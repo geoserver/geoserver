@@ -123,7 +123,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         if (factoryClassName != null) {
             try {
                 Class factoryClass = Class.forName(factoryClassName);
-                return (DataAccessFactory) factoryClass.newInstance();
+                return (DataAccessFactory) factoryClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RestException(
                         "Datastore format unavailable: " + factoryClassName,

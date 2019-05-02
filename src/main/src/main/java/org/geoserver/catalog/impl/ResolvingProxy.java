@@ -40,19 +40,11 @@ public class ResolvingProxy extends ProxyBase {
     public static <T> T create(String ref, String prefix, Class<T> clazz) {
         InvocationHandler h = new ResolvingProxy(ref, prefix);
 
-        T proxy;
         try {
-            Constructor<T> constructor = PROXY_CLASS_CONSTRUCTOR_CACHE.get(clazz);
-            if (constructor == null) {
-                Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
-                constructor = proxyClass.getConstructor(new Class[] {InvocationHandler.class});
-            }
-            proxy = (T) constructor.newInstance(new Object[] {h});
+            return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] {clazz}, h);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return proxy;
     }
 
     @SuppressWarnings("unchecked")

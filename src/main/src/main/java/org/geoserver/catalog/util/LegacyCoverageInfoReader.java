@@ -175,12 +175,12 @@ public class LegacyCoverageInfoReader {
             String translateX = ReaderUtils.getChildText(geoTransformElement, "translateX");
             String translateY = ReaderUtils.getChildText(geoTransformElement, "translateY");
 
-            geoTransform.put("scaleX", scaleX != null ? new Double(scaleX) : null);
-            geoTransform.put("scaleY", scaleY != null ? new Double(scaleY) : null);
-            geoTransform.put("shearX", shearX != null ? new Double(shearX) : null);
-            geoTransform.put("shearY", shearY != null ? new Double(shearY) : null);
-            geoTransform.put("translateX", translateX != null ? new Double(translateX) : null);
-            geoTransform.put("translateY", translateY != null ? new Double(translateY) : null);
+            geoTransform.put("scaleX", scaleX != null ? Double.valueOf(scaleX) : null);
+            geoTransform.put("scaleY", scaleY != null ? Double.valueOf(scaleY) : null);
+            geoTransform.put("shearX", shearX != null ? Double.valueOf(shearX) : null);
+            geoTransform.put("shearY", shearY != null ? Double.valueOf(shearY) : null);
+            geoTransform.put("translateX", translateX != null ? Double.valueOf(translateX) : null);
+            geoTransform.put("translateY", translateY != null ? Double.valueOf(translateY) : null);
 
             grid.put("geoTransform", geoTransform);
         }

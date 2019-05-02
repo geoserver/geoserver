@@ -10,6 +10,8 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.geoserver.notification.common.sender.NotificationSender;
 import org.geoserver.platform.GeoServerExtensions;
@@ -88,16 +90,14 @@ public class SenderXStreamInitializer implements NotificationXStreamInitializer 
             for (SenderXStreamInitializer serializer : serializers) {
                 if (serializer.name.equals(nodeName)) {
                     try {
-                        sender = serializer.clazz.newInstance();
+                        sender = serializer.clazz.getDeclaredConstructor().newInstance();
                         sender =
                                 (NotificationSender)
                                         context.convertAnother(sender, serializer.clazz);
                         break;
-                    } catch (InstantiationException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+                    } 
                 }
             }
 

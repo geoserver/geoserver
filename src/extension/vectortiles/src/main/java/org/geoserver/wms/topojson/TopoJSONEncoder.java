@@ -366,12 +366,12 @@ public class TopoJSONEncoder {
         if (x % 1 == 0) {
             X = Integer.valueOf((int) x);
         } else {
-            X = new Double(x);
+            X = Double.valueOf(x);
         }
         if (y % 1 == 0) {
             Y = Integer.valueOf((int) y);
         } else {
-            Y = new Double(y);
+            Y = Double.valueOf(y);
         }
 
         coord.add(new JsonPrimitive(X));

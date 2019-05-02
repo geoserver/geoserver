@@ -490,7 +490,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 WATTEMP,
                 ResourceInfo.TIME,
                 DimensionPresentation.DISCRETE_INTERVAL,
-                new Double(1000 * 60 * 60));
+                Double.valueOf(1000 * 60 * 60));
 
         Document dom =
                 getAsDOM(

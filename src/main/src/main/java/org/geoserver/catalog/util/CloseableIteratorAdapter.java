@@ -79,6 +79,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     }
 
     @Override
+    @SuppressWarnings("deprecation") // finalize is deprecated in Java 9
     protected void finalize() {
         if (whatToClose != null) {
             try {

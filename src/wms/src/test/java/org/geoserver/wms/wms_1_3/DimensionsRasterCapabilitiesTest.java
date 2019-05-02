@@ -212,7 +212,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
                 WATTEMP,
                 ResourceInfo.TIME,
                 DimensionPresentation.DISCRETE_INTERVAL,
-                new Double(1000 * 60 * 60 * 12),
+                Double.valueOf(1000 * 60 * 60 * 12),
                 null,
                 null);
 

@@ -72,7 +72,7 @@ public class RulesBuilderTest {
                                 Integer.valueOf(i + 1),
                                 names[i],
                                 Integer.valueOf(iVal[i]),
-                                new Double(dVal[i]),
+                                Double.valueOf(dVal[i]),
                                 fac.createPoint(new Coordinate(iVal[i], iVal[i])),
                                 "Group" + (i % 4)
                             },
@@ -106,7 +106,7 @@ public class RulesBuilderTest {
                             jenksType,
                             new Object[] {
                                 Integer.valueOf(i + 1),
-                                new Double(jenks71[i]),
+                                Double.valueOf(jenks71[i]),
                                 fac.createLineString(
                                         new Coordinate[] {
                                             new Coordinate(jenks71[i], jenks71[i]),

@@ -5,7 +5,6 @@
  */
 package org.geoserver.catalog;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -720,15 +719,12 @@ public interface CatalogFacade {
      */
     @SuppressWarnings("unchecked")
     static <T extends CatalogInfo> T any(Class<T> clazz) {
-        Class proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz);
         try {
             return (T)
-                    proxyClass
-                            .getConstructor(new Class[] {InvocationHandler.class})
-                            .newInstance(
-                                    new Object[] {
-                                        (InvocationHandler) (proxy, method, args) -> null
-                                    });
+                    Proxy.newProxyInstance(
+                            clazz.getClassLoader(),
+                            new Class[] {clazz},
+                            (proxy, method, args) -> null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

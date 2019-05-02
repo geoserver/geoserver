@@ -98,7 +98,7 @@ public class SecurityNamedServiceNewPage<
         // create a new config object
         T config = null;
         try {
-            config = (T) panelInfo.getServiceConfigClass().newInstance();
+            config = (T) panelInfo.getServiceConfigClass().getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new WicketRuntimeException(
                     "Unable to create config class: " + panelInfo.getServiceConfigClass(), e);

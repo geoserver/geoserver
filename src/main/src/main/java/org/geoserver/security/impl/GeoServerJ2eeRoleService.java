@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
@@ -38,7 +40,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Implementation for {@link GeoServerRoleService} obtaining roles from <b>role-name</b> elements
@@ -257,8 +258,10 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         Set<String> result = new HashSet<String>();
 
         try {
-
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            parserFactory.setNamespaceAware(true);
+            SAXParser parser = parserFactory.newSAXParser();
+            XMLReader xmlReader = parser.getXMLReader();
 
             InputSource inputSource = new InputSource(new FileInputStream(file));
 
@@ -273,7 +276,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
                         }
                     });
             xmlReader.parse(inputSource);
-        } catch (SAXException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
 

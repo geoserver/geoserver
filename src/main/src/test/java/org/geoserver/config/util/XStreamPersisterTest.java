@@ -141,7 +141,7 @@ public class XStreamPersisterTest {
         g1.getSettings().setVerbose(true);
         g1.getSettings().setVerboseExceptions(true);
         g1.getMetadata().put("one", Integer.valueOf(1));
-        g1.getMetadata().put("two", new Double(2.2));
+        g1.getMetadata().put("two", Double.valueOf(2.2));
 
         ByteArrayOutputStream out = out();
 
@@ -1207,7 +1207,7 @@ public class XStreamPersisterTest {
         metadataLink.setAbout("about");
         coverage.getMetadataLinks().add(metadataLink);
         CoverageDimensionImpl coverageDimension = new CoverageDimensionImpl("time");
-        coverageDimension.setNullValues(Collections.singletonList(new Double(0)));
+        coverageDimension.setNullValues(Collections.singletonList(Double.valueOf(0)));
         coverage.getDimensions().add(coverageDimension);
         coverage.getInterpolationMethods().add("Bilinear");
         coverage.getParameters().put("ParameterKey", "ParameterValue");

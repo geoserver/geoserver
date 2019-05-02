@@ -154,7 +154,7 @@ public class GridFormat extends RasterFormat {
             synchronized (this) {
                 if (gridFormat == null) {
                     try {
-                        gridFormat = gridFormatClass.newInstance();
+                        gridFormat = gridFormatClass.getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Unable to create instance of: " + gridFormatClass.getSimpleName(),

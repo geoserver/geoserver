@@ -25,6 +25,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.treeview.TreeNode;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -44,6 +45,8 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
     @Before
     public void initialize() throws Exception {
+        login();
+
         resourceBrowser = new PageResourceBrowser();
 
         try (OutputStream os = resourceBrowser.store().get(PATH_RES).out()) {
@@ -55,6 +58,11 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         }
 
         tester.startPage(resourceBrowser);
+    }
+
+    @After
+    public void shutdown() {
+        logout();
     }
 
     @Test

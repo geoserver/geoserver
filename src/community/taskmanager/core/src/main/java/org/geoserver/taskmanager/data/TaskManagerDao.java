@@ -202,6 +202,14 @@ public interface TaskManagerDao {
     <T extends Identifiable> T reload(T object);
 
     /**
+     * Reloads object with lock in transaction.
+     *
+     * @param object the object to be reloaded
+     * @return the reloaded object
+     */
+    <T extends Identifiable> T lockReload(T object);
+
+    /**
      * Return batch run on the basis of the scheduler reference If the scheduler reference is not
      * unique, the most recent batch run is returned.
      *

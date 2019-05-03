@@ -68,6 +68,12 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Identifiable> T reload(T object) {
+        return (T) getSession().get(object.getClass(), object.getId());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Identifiable> T lockReload(T object) {
         return (T)
                 getSession()
                         .get(

@@ -148,7 +148,7 @@
 	
   <!-- Thread pool for seeding -->
   <bean id="gwcSeederThreadPoolExec" 
-    class="org.geowebcache.seed.SeederThreadPoolExecutor">
+    class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
     <constructor-arg value="16"/><!-- Size of core pool -->
     <constructor-arg value="32"/><!-- Maximum size of pool -->
   </bean>

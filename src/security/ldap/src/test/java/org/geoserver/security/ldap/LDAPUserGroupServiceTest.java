@@ -7,6 +7,7 @@ package org.geoserver.security.ldap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.SortedSet;
 import org.apache.directory.server.annotations.CreateLdapServer;
@@ -62,7 +63,7 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
     public void testUsers() throws Exception {
         SortedSet<GeoServerUser> users = service.getUsers();
         assertNotNull(users);
-        assertEquals(3, users.size());
+        assertEquals(4, users.size());
     }
 
     @Test
@@ -99,12 +100,12 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
 
     @Test
     public void testUserCount() throws Exception {
-        assertEquals(3, service.getUserCount());
+        assertEquals(4, service.getUserCount());
     }
 
     @Test
     public void testGroupCount() throws Exception {
-        assertEquals(3, service.getGroupCount());
+        assertEquals(4, service.getGroupCount());
     }
 
     @Test
@@ -148,5 +149,29 @@ public class LDAPUserGroupServiceTest extends LDAPBaseTest {
     @Test
     public void testUserCountHavingPropertyValue() throws Exception {
         assertEquals(1, service.getUserCountHavingPropertyValue("telephoneNumber", "2"));
+    }
+
+    /** Tests Users retrieval for a hierarchical parent group. */
+    @Test
+    public void testUsersForHierarchicalGroup() throws Exception {
+        config.setUseNestedParentGroups(true);
+        service = new LDAPUserGroupService(config);
+        SortedSet<GeoServerUser> users =
+                service.getUsersForGroup(service.getGroupByGroupname("extra"));
+        assertNotNull(users);
+        assertEquals(2, users.size());
+        assertTrue(users.stream().anyMatch(x -> "nestedUser".equals(x.getUsername())));
+    }
+
+    /** Tests Hierarchical LDAP groups retrieval for an user. */
+    @Test
+    public void testHierarchicalGroupsForUser() throws Exception {
+        config.setUseNestedParentGroups(true);
+        service = new LDAPUserGroupService(config);
+        SortedSet<GeoServerUserGroup> groups =
+                service.getGroupsForUser(service.getUserByUsername("nestedUser"));
+        assertNotNull(groups);
+        assertEquals(2, groups.size());
+        assertTrue(groups.stream().anyMatch(x -> "extra".equals(x.getGroupname())));
     }
 }

@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.naming.directory.DirContext;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.springframework.ldap.core.AuthenticatedLdapEntryContextCallback;
@@ -77,6 +78,15 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
 
     /** lookup user for dn */
     protected boolean lookupUserForDn = false;
+
+    /** Activates nested groups searching */
+    protected boolean useNestedGroups = true;
+
+    /** The max recursion level for search Hierarchical groups */
+    protected int maxGroupSearchLevel = 10;
+
+    /** Pattern used for nested group filtering */
+    protected String nestedGroupSearchFilter = "member={0}";
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
@@ -173,6 +183,15 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
         } else {
             allUsersSearchFilter = userNameAttribute + "=*";
         }
+
+        // Hierarchical groups options
+        this.useNestedGroups = ldapConfig.isUseNestedParentGroups();
+        if (!isEmpty(ldapConfig.getNestedGroupSearchFilter()))
+            this.nestedGroupSearchFilter = ldapConfig.getNestedGroupSearchFilter();
+        else this.nestedGroupSearchFilter = "member= {0}";
+        if (ldapConfig.getMaxGroupSearchLevel() >= 0)
+            this.maxGroupSearchLevel = ldapConfig.getMaxGroupSearchLevel();
+        else this.maxGroupSearchLevel = 10;
     }
 
     /**
@@ -207,12 +226,15 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
                                     (DirContextOperations)
                                             LDAPUtils.getLdapTemplateInContext(ctx, template)
                                                     .lookup(user);
-                            String name = obj.getObjectAttribute(userNameAttribute).toString();
-                            Matcher m = userNamePattern.matcher(name);
-                            if (m.matches()) {
-                                name = m.group(1);
+                            Object attribute = obj.getObjectAttribute(userNameAttribute);
+                            if (attribute != null) {
+                                String name = attribute.toString();
+                                Matcher m = userNamePattern.matcher(name);
+                                if (m.matches()) {
+                                    name = m.group(1);
+                                }
+                                userName.set(name);
                             }
-                            userName.set(name);
                         }
                     });
         }
@@ -250,5 +272,24 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
             count.set(count.get() + 1);
             return null;
         };
+    }
+
+    protected String extractGroupCnFromDn(String dn) {
+        if (StringUtils.isBlank(dn)) return null;
+        String[] parts = dn.split(Pattern.quote(","));
+        for (String part : parts) {
+            if (part.startsWith(groupNameAttribute + "=")) {
+                int equalsIndex = part.indexOf("=");
+                return part.substring(equalsIndex + 1);
+            }
+        }
+        return null;
+    }
+
+    /** Checks if current depth int value is out of depth limit. */
+    protected boolean isOutOfDepthBounds(int depth) {
+        // if maxGroupSearchLevel == -1 then no limit
+        if (maxGroupSearchLevel == -1) return false;
+        return depth >= maxGroupSearchLevel;
     }
 }

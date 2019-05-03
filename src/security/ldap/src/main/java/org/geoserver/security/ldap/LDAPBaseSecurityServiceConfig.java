@@ -33,6 +33,15 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     Boolean useTLS;
 
+    /** Activates hierarchical nested parent groups search */
+    private boolean useNestedParentGroups = false;
+
+    /** The max recursion level for search Hierarchical groups */
+    private int maxGroupSearchLevel = 10;
+
+    /** Pattern used for nested group filtering */
+    private String nestedGroupSearchFilter = "(member={0})";
+
     /**
      * bind to the server before extracting groups some LDAP server require this (e.g.
      * ActiveDirectory)
@@ -206,5 +215,29 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isUseNestedParentGroups() {
+        return useNestedParentGroups;
+    }
+
+    public void setUseNestedParentGroups(boolean useNestedParentGroups) {
+        this.useNestedParentGroups = useNestedParentGroups;
+    }
+
+    public int getMaxGroupSearchLevel() {
+        return maxGroupSearchLevel;
+    }
+
+    public void setMaxGroupSearchLevel(int maxGroupSearchLevel) {
+        this.maxGroupSearchLevel = maxGroupSearchLevel;
+    }
+
+    public String getNestedGroupSearchFilter() {
+        return nestedGroupSearchFilter;
+    }
+
+    public void setNestedGroupSearchFilter(String nestedGroupSearchFilter) {
+        this.nestedGroupSearchFilter = nestedGroupSearchFilter;
     }
 }

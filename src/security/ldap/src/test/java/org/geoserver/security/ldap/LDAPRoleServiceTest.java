@@ -214,6 +214,22 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
             checkUserNamesForRole("admin", 1, false);
             checkUserNamesForRole("other", 2, false);
         }
+
+        /** Tests LDAP Hierarchical roles retrieval for an user. */
+        @Test
+        public void checkUserHierarchicalRoles() throws IOException {
+            config.setUseNestedParentGroups(true);
+            config.setNestedGroupSearchFilter("member=cn={0}");
+            config.setGroupSearchFilter("member=cn={0}");
+            config.setUserFilter("uid={0}");
+            service = new LDAPRoleService();
+            service.initializeFromConfig(config);
+            SortedSet<GeoServerRole> roles = service.getRolesForUser("nestedUser");
+            assertNotNull(roles);
+            assertEquals(2, roles.size());
+            // check parent role ROLE_EXTRA
+            assertTrue(roles.stream().anyMatch(r -> "ROLE_EXTRA".equals(r.getAuthority())));
+        }
     }
 
     @RunWith(FrameworkRunner.class)
@@ -253,6 +269,43 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
             getService().setAllowAnonymousAccess(true);
             checkUserNamesForRole("admin", 1, true);
             checkUserNamesForRole("other", 2, true);
+        }
+    }
+
+    @RunWith(FrameworkRunner.class)
+    @CreateLdapServer(
+        transports = {
+            @CreateTransport(
+                protocol = "LDAP",
+                address = "localhost",
+                port = LDAPTestUtils.LDAP_SERVER_PORT
+            )
+        },
+        allowAnonymousAccess = true
+    )
+    @CreateDS(
+        name = "myDS",
+        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
+    )
+    @ApplyLdifFiles({"data4.ldif"})
+    public static class LDAPRoleServiceLdiff4Test extends LDAPRoleServiceTest {
+
+        @Test
+        public void checkHierarchicalRolesUsers() throws IOException {
+            config.setUserNameAttribute("uid");
+            config.setGroupNameAttribute("cn");
+            config.setUseNestedParentGroups(true);
+            config.setNestedGroupSearchFilter("member={0}");
+            config.setGroupSearchFilter("member={1}");
+            config.setUserFilter("uid={0}");
+            service = new LDAPRoleService();
+            service.initializeFromConfig(config);
+            SortedSet<String> userNames =
+                    service.getUserNamesForRole(service.getRoleByName("ROLE_EXTRA"));
+            assertNotNull(userNames);
+            assertEquals(2, userNames.size());
+            // check parent role ROLE_EXTRA
+            assertTrue(userNames.stream().anyMatch(u -> "nestedUser".equals(u)));
         }
     }
 }

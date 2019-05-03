@@ -27,6 +27,7 @@ public abstract class LDAPBaseTest extends AbstractLdapTestUnit {
 
     protected Authentication authentication;
     protected Authentication authenticationOther;
+    protected Authentication authenticationNested;
     protected LDAPBaseSecurityServiceConfig config;
     private File tempFolder;
 
@@ -51,6 +52,7 @@ public abstract class LDAPBaseTest extends AbstractLdapTestUnit {
 
         authentication = new UsernamePasswordAuthenticationToken("admin", "admin");
         authenticationOther = new UsernamePasswordAuthenticationToken("other", "other");
+        authenticationNested = new UsernamePasswordAuthenticationToken("nestedUser", "other");
     }
 
     protected abstract void createConfig();

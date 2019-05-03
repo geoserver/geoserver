@@ -7,6 +7,7 @@ package org.geoserver.security.web.role;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,8 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
         List<String> computeAllowableParentRoles(GeoServerRole role) throws IOException {
             Map<String, String> parentMappings =
                     getRoleService(roleServiceName).getParentMappings();
+            // if no parent mappings, return empty list
+            if (parentMappings == null || parentMappings.isEmpty()) return Collections.emptyList();
 
             if (role != null && StringUtils.hasLength(role.getAuthority())) {
                 // filter out roles already used as parents

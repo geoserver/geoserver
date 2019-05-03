@@ -28,6 +28,27 @@
     <label for="groupAdminGroup"><wicket:message key="groupAdminGroup"></wicket:message></label>
     <input id="groupAdminGroup" wicket:id="groupAdminGroup" type="text" class="text"></input>
   </li>
+  <!-- Hierarchical groups configuration fields -->
+  <li>
+  	<input class="choiceItem" id="useNestedParentGroups" wicket:id="useNestedParentGroups" type="checkbox"></input>
+    <label for="useNestedParentGroups">
+      <wicket:message key="useNestedParentGroups"></wicket:message>
+    </label>    
+  </li>
+  <li>
+    <div id="nestedSearchFieldsContainer" wicket:id="nestedSearchFieldsContainer">
+  	  <ul>
+  	    <li>
+  		  <label for="maxGroupSearchLevel"><wicket:message key="maxGroupSearchLevel"></wicket:message></label>
+          <input id="maxGroupSearchLevel" wicket:id="maxGroupSearchLevel" type="text" class="text"></input>
+        </li>
+        <li>
+          <label for="nestedGroupSearchFilter"><wicket:message key="nestedGroupSearchFilter"></wicket:message></label>
+          <input id="nestedGroupSearchFilter" wicket:id="nestedGroupSearchFilter" type="text" class="text"></input>
+        </li>
+  	  </ul>
+    </div>
+  </li>
  </ul>
 </wicket:panel>
 </body>

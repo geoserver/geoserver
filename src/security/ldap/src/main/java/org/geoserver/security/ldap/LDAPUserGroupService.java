@@ -6,6 +6,7 @@ package org.geoserver.security.ldap;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -14,9 +15,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.DirContext;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -32,6 +36,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapEntryIdentification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.SpringSecurityLdapTemplate;
+import org.springframework.util.Assert;
 
 /**
  * LDAP implementation of {@link GeoServerUserGroupService}
@@ -269,6 +275,26 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
     public SortedSet<GeoServerUser> getUsersForGroup(final GeoServerUserGroup group) {
         final SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
 
+        if (!useNestedGroups) {
+            // no nested groups, load users from root group only
+            addUsersFromGroup(group, users);
+        } else {
+            // nested groups search activated
+            // search for all hierarchical child groups
+            Set<GeoServerUserGroup> groups = new HashSet<>();
+            groups.add(group);
+            searchAllNestedChildGroups(group, groups, 1);
+            // load users from all child groups
+            for (GeoServerUserGroup egroup : groups) {
+                addUsersFromGroup(egroup, users);
+            }
+        }
+
+        return Collections.unmodifiableSortedSet(users);
+    }
+
+    private void addUsersFromGroup(final GeoServerUserGroup group, final Set<GeoServerUser> users) {
+        final String groupDn = getGroupDn(group);
         authenticateIfNeeded(
                 new AuthenticatedLdapEntryContextCallback() {
                     @Override
@@ -280,7 +306,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                                             .searchForSingleEntry(
                                                     groupSearchBase,
                                                     groupNameFilter,
-                                                    new String[] {group.getGroupname()});
+                                                    new String[] {group.getGroupname(), groupDn});
                             if (roleObj != null) {
                                 Object[] usernames =
                                         roleObj.getObjectAttributes(groupMembershipAttribute);
@@ -291,8 +317,13 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                                         if (m.matches()) {
                                             user = m.group(1);
                                         }
-                                        users.add(
-                                                getUserByUsername(getUserNameFromMembership(user)));
+                                        String userNameFromMembership =
+                                                getUserNameFromMembership(user);
+                                        if (StringUtils.isNotBlank(userNameFromMembership)) {
+                                            GeoServerUser userByUsername =
+                                                    getUserByUsername(userNameFromMembership);
+                                            if (userByUsername != null) users.add(userByUsername);
+                                        }
                                     }
                                 }
                             }
@@ -300,8 +331,56 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                         }
                     }
                 });
+    }
 
-        return Collections.unmodifiableSortedSet(users);
+    private void searchAllNestedChildGroups(
+            GeoServerUserGroup group, Set<GeoServerUserGroup> visitedGroups, int depth) {
+        if (isOutOfDepthBounds(depth)) return;
+        for (GeoServerUserGroup echild : getChildrenGroups(group)) {
+            // check if it was already visited
+            if (!visitedGroups.contains(echild)) {
+                visitedGroups.add(echild);
+                searchAllNestedChildGroups(echild, visitedGroups, depth + 1);
+            }
+        }
+    }
+
+    private Set<GeoServerUserGroup> getChildrenGroups(GeoServerUserGroup parent) {
+        Assert.notNull(parent, "Geoserver group shouldn't be null.");
+        final String groupName = parent.getGroupname();
+        final Set<String> memberGroupDns = new HashSet<>();
+        final Set<GeoServerUserGroup> childGroups = new HashSet<>();
+        authenticateIfNeeded(
+                new AuthenticatedLdapEntryContextCallback() {
+                    @Override
+                    public void executeWithContext(
+                            DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
+                        SpringSecurityLdapTemplate authTemplate =
+                                LDAPUtils.getLdapTemplateInContext(ctx, template);
+                        Set<String> membersDns =
+                                authTemplate
+                                        .searchForSingleAttributeValues(
+                                                groupSearchBase,
+                                                groupNameFilter,
+                                                new String[] {groupName},
+                                                groupMembershipAttribute)
+                                        .stream()
+                                        .filter(
+                                                x ->
+                                                        !useNestedGroups
+                                                                || StringUtils.containsIgnoreCase(
+                                                                        x, groupSearchBase))
+                                        .collect(Collectors.toSet());
+                        memberGroupDns.addAll(membersDns);
+                    }
+                });
+
+        for (String dn : memberGroupDns) {
+            String memberGroupName = extractGroupCnFromDn(dn);
+            if (StringUtils.isNotBlank(memberGroupName))
+                childGroups.add(new GeoServerUserGroup(memberGroupName));
+        }
+        return childGroups;
     }
 
     @Override
@@ -327,7 +406,66 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                         }
                     }
                 });
+        // if nested groups search is enabled, add hierarchical parent groups
+        if (useNestedGroups) {
+            for (GeoServerUserGroup egroup : groups) {
+                addNestedParentGroups(egroup, groups, 1);
+            }
+        }
         return Collections.unmodifiableSortedSet(groups);
+    }
+
+    private void addNestedParentGroups(
+            GeoServerUserGroup group, Set<GeoServerUserGroup> visitedGroups, int depth) {
+        if (isOutOfDepthBounds(depth)) return;
+        final String groupDn = getGroupDn(group);
+        final Set<GeoServerUserGroup> parents = new HashSet<>();
+        authenticateIfNeeded(
+                new AuthenticatedLdapEntryContextCallback() {
+                    @Override
+                    public void executeWithContext(
+                            DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
+                        SpringSecurityLdapTemplate authTemplate =
+                                LDAPUtils.getLdapTemplateInContext(ctx, template);
+                        Set<String> parentGroupsNames =
+                                authTemplate.searchForSingleAttributeValues(
+                                        groupSearchBase,
+                                        groupMembershipFilter,
+                                        new String[] {group.getGroupname(), groupDn},
+                                        groupNameAttribute);
+                        for (String ename : parentGroupsNames) {
+                            parents.add(new GeoServerUserGroup(ename));
+                        }
+                    }
+                });
+        for (GeoServerUserGroup eparent : parents) {
+            if (!visitedGroups.contains(eparent)) {
+                visitedGroups.add(eparent);
+                addNestedParentGroups(eparent, visitedGroups, depth + 1);
+            }
+        }
+    }
+
+    private String getGroupDn(GeoServerUserGroup group) {
+        final String groupName = group.getGroupname();
+        final MutableObject<String> groupDnReference = new MutableObject<String>(null);
+        authenticateIfNeeded(
+                new AuthenticatedLdapEntryContextCallback() {
+                    @Override
+                    public void executeWithContext(
+                            DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
+                        final String dn =
+                                LDAPUtils.getLdapTemplateInContext(ctx, template)
+                                        .searchForSingleEntry(
+                                                groupSearchBase,
+                                                groupNameFilter,
+                                                new String[] {groupName})
+                                        .getDn()
+                                        .toString();
+                        groupDnReference.setValue(dn);
+                    }
+                });
+        return groupDnReference.getValue();
     }
 
     @Override

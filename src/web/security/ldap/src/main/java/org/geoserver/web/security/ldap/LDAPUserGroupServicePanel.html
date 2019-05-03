@@ -123,6 +123,36 @@
           </ul>
          </fieldset>
       </li>
+      <li>
+         <fieldset>
+          <legend>
+            <span><wicket:message key="hierarchicalGroups"></wicket:message></span>
+          </legend>
+          <ul>
+              <!-- Hierarchical groups configuration fields -->
+			  <li>
+			  	<input class="choiceItem" id="useNestedParentGroups" wicket:id="useNestedParentGroups" type="checkbox"></input>
+			    <label for="useNestedParentGroups">
+			      <wicket:message key="useNestedParentGroups"></wicket:message>
+			    </label>    
+			  </li>
+			  <li>
+			    <div id="nestedSearchFieldsContainer" wicket:id="nestedSearchFieldsContainer">
+			  	  <ul>
+			  	    <li>
+			  		  <label for="maxGroupSearchLevel"><wicket:message key="maxGroupSearchLevel"></wicket:message></label>
+			          <input id="maxGroupSearchLevel" wicket:id="maxGroupSearchLevel" type="text" class="text"></input>
+			        </li>
+			        <li>
+			          <label for="nestedGroupSearchFilter"><wicket:message key="nestedGroupSearchFilter"></wicket:message></label>
+			          <input id="nestedGroupSearchFilter" wicket:id="nestedGroupSearchFilter" type="text" class="text"></input>
+			        </li>
+			  	  </ul>
+			    </div>
+			  </li>
+	         </ul>
+         </fieldset>
+      </li>
     </ul>
 </wicket:extend>
 </body>

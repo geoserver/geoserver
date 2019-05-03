@@ -6,8 +6,10 @@
 package org.geoserver.web.security.ldap;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.logging.Level;
 import javax.naming.AuthenticationException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -115,14 +117,78 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
     class LDAPAuthorizationPanel extends AuthorizationPanel {
 
         private static final long serialVersionUID = 7541432269535150812L;
+        private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
+        private static final String MAX_GROUP_SEARCH_LEVEL = "maxGroupSearchLevel";
+        private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
+        private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
         public LDAPAuthorizationPanel(String id) {
             super(id);
+            setOutputMarkupId(true);
             add(new CheckBox("bindBeforeGroupSearch"));
             add(new TextField<String>("adminGroup"));
             add(new TextField<String>("groupAdminGroup"));
             add(new TextField<String>("groupSearchBase"));
             add(new TextField<String>("groupSearchFilter"));
+        }
+
+        @Override
+        protected void onInitialize() {
+            super.onInitialize();
+            hierarchicalGroupsinit();
+        }
+
+        private void hierarchicalGroupsinit() {
+            // hierarchical groups configurations
+            Optional<LDAPSecurityServiceConfig> useNestedOpt =
+                    Optional.of(this)
+                            .map(
+                                    x -> {
+                                        try {
+                                            return x.getForm();
+                                        } catch (WicketRuntimeException ex) {
+                                            // no form
+                                        }
+                                        return null;
+                                    })
+                            .map(Form::getModel)
+                            .map(IModel::getObject)
+                            .filter(x -> x instanceof LDAPSecurityServiceConfig)
+                            .map(x -> (LDAPSecurityServiceConfig) x);
+            // get initial value for use_nested checkbox
+            boolean useNestedActivated =
+                    useNestedOpt
+                            .map(LDAPSecurityServiceConfig::isUseNestedParentGroups)
+                            .orElse(false);
+            // create fields objects
+            final WebMarkupContainer nestedSearchFieldsContainer =
+                    new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
+            nestedSearchFieldsContainer.setOutputMarkupPlaceholderTag(true);
+            nestedSearchFieldsContainer.setOutputMarkupId(true);
+            nestedSearchFieldsContainer.setVisible(useNestedActivated);
+            add(nestedSearchFieldsContainer);
+            final TextField<String> maxLevelField = new TextField<String>(MAX_GROUP_SEARCH_LEVEL);
+            final TextField<String> nestedGroupSearchFilterField =
+                    new TextField<String>(NESTED_GROUP_SEARCH_FILTER);
+            final AjaxCheckBox useNestedCheckbox =
+                    new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            // get the checkbox boolean value and set visibility for fields
+                            AjaxCheckBox cb =
+                                    (AjaxCheckBox)
+                                            LDAPAuthorizationPanel.this.get(
+                                                    USE_NESTED_PARENT_GROUPS);
+                            boolean value = cb.getModelObject();
+                            nestedSearchFieldsContainer.setVisible(value);
+                            target.add(nestedSearchFieldsContainer);
+                        }
+                    };
+            add(useNestedCheckbox);
+            nestedSearchFieldsContainer.add(maxLevelField);
+            nestedSearchFieldsContainer.add(nestedGroupSearchFilterField);
         }
 
         @Override
@@ -132,6 +198,8 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             get("groupAdminGroup").setDefaultModelObject(null);
             get("groupSearchBase").setDefaultModelObject(null);
             get("groupSearchFilter").setDefaultModelObject(null);
+            // hierarchical groups reset
+            get(USE_NESTED_PARENT_GROUPS).setDefaultModelObject(false);
         }
     }
 

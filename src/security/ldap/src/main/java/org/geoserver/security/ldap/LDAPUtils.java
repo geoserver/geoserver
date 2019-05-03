@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.ldap;
 
+import java.util.function.Supplier;
 import javax.naming.directory.DirContext;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -88,6 +89,38 @@ public class LDAPUtils {
                                 public DirContext getContext(String principal, String credentials)
                                         throws NamingException {
                                     return ctx;
+                                }
+                            });
+        }
+        return authTemplate;
+    }
+
+    /** Returns an LDAP template bounded to the given context supplier, if not null. */
+    public static SpringSecurityLdapTemplate getLdapTemplateInContext(
+            Supplier<DirContext> ctxSupplier, final SpringSecurityLdapTemplate template) {
+        SpringSecurityLdapTemplate authTemplate;
+        if (ctxSupplier == null) {
+            authTemplate = template;
+            ((AbstractContextSource) authTemplate.getContextSource()).setAnonymousReadOnly(true);
+        } else {
+            authTemplate =
+                    new SpringSecurityLdapTemplate(
+                            new ContextSource() {
+
+                                @Override
+                                public DirContext getReadOnlyContext() throws NamingException {
+                                    return ctxSupplier.get();
+                                }
+
+                                @Override
+                                public DirContext getReadWriteContext() throws NamingException {
+                                    return ctxSupplier.get();
+                                }
+
+                                @Override
+                                public DirContext getContext(String principal, String credentials)
+                                        throws NamingException {
+                                    return ctxSupplier.get();
                                 }
                             });
         }

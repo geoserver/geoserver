@@ -5,6 +5,7 @@
 
 package org.geoserver.taskmanager.util;
 
+import com.thoughtworks.xstream.io.xml.JDomWriter;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
@@ -32,6 +33,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -41,6 +43,7 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,13 +54,15 @@ public class CatalogUtil {
 
     @Autowired protected GeoServerDataDirectory geoServerDataDirectory;
 
+    @Autowired protected XStreamPersisterFactory persisterFactory;
+
     private CatalogUtil() {}
 
-    public static GSResourceEncoder syncMetadata(ResourceInfo resource) {
+    public GSResourceEncoder syncMetadata(ResourceInfo resource) {
         return syncMetadata(resource, resource.getName());
     }
 
-    public static GSResourceEncoder syncMetadata(ResourceInfo resource, String name) {
+    public GSResourceEncoder syncMetadata(ResourceInfo resource, String name) {
         final GSResourceEncoder re;
         if (resource instanceof CoverageInfo) {
             CoverageInfo coverage = (CoverageInfo) resource;
@@ -71,7 +76,6 @@ public class CatalogUtil {
             for (String srs : coverage.getResponseSRS()) {
                 coverageEncoder.setResponseSRS(srs); // wrong: should be add
             }
-            coverageEncoder.setNativeCoverageName(coverage.getNativeCoverageName());
             coverageEncoder.setNativeFormat(coverage.getNativeFormat());
             re = coverageEncoder;
         } else {
@@ -93,8 +97,15 @@ public class CatalogUtil {
             re.addMetadataLinkInfo(mdli.getType(), mdli.getMetadataType(), mdli.getContent());
         }
         for (Map.Entry<String, Serializable> entry : resource.getMetadata().entrySet()) {
-            if (entry.getValue() != null) {
-                re.setMetadataString(entry.getKey(), entry.getValue().toString());
+            if (entry.getValue() instanceof String) {
+                re.addMetadataString(entry.getKey(), (String) entry.getValue());
+            } else if (entry.getValue() != null) {
+                JDomWriter writer = new JDomWriter();
+                persisterFactory
+                        .createXMLPersister()
+                        .getXStream()
+                        .marshal(entry.getValue(), writer);
+                re.addMetadata(entry.getKey(), (Element) writer.getTopLevelNodes().get(0));
             }
         }
         re.setProjectionPolicy(

@@ -188,7 +188,8 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * @return the template named <code>templateFileName</code>
      * @throws IOException if the template can't be loaded
      */
-    Template getTemplate(Name name, String templateFileName, Charset charset) throws IOException {
+    protected Template getTemplate(Name name, String templateFileName, Charset charset)
+            throws IOException {
         ResourceInfo ri = null;
         if (name != null) {
             ri = wms.getResourceInfo(name);

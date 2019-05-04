@@ -314,6 +314,9 @@
               <maxIdleTime>10000</maxIdleTime>
             </connector>
           </connectors>
+          <supportedPackagings>
+            <supportedPackaging>jar</supportedPackaging>
+          </supportedPackagings>
           <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
           <daemon>false</daemon>

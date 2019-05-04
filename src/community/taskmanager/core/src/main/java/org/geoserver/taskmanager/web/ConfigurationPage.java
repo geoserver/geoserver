@@ -441,10 +441,13 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                 Set<String> attNames = new HashSet<String>();
                                 for (Task task : tasksPanel.getSelection()) {
                                     BatchElement element =
-                                            TaskManagerBeans.get()
-                                                    .getDataUtil()
-                                                    .taskInUse(
-                                                            task, configurationModel.getObject());
+                                            configurationModel.getObject().getId() == null
+                                                    ? null
+                                                    : TaskManagerBeans.get()
+                                                            .getDataUtil()
+                                                            .taskInUse(
+                                                                    task,
+                                                                    configurationModel.getObject());
                                     if (element == null) {
                                         if (shouldCleanupModel.getObject()) {
                                             // clean-up

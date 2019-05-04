@@ -170,7 +170,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
 
             // create resource (and layer)
 
-            final GSResourceEncoder re = CatalogUtil.syncMetadata(resource, tempName);
+            final GSResourceEncoder re = catalogUtil.syncMetadata(resource, tempName);
             re.setAdvertised(false);
             postProcess(
                     re,
@@ -239,7 +239,7 @@ public abstract class AbstractRemotePublicationTaskTypeImpl implements TaskType 
             for (StyleInfo si : layer.getStyles()) {
                 layerEncoder.addStyle(
                         si.getWorkspace() != null
-                                ? si.getWorkspace() + ":" + si.getName()
+                                ? CatalogUtil.wsName(si.getWorkspace()) + ":" + si.getName()
                                 : si.getName());
             }
             if (!restManager.getPublisher().configureLayer(ws, tempName, layerEncoder)) {

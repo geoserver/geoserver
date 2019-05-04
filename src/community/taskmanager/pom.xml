@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.github.dov-vlaanderen</groupId>
             <artifactId>geoserver-manager</artifactId>
-            <version>1.8.1</version>
+            <version>1.8.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

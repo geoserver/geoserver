@@ -109,7 +109,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
             throw new TaskException("Couldn't determine store name for " + layer.getName());
         }
         // sync resource
-        GSResourceEncoder re = CatalogUtil.syncMetadata(resource);
+        GSResourceEncoder re = catalogUtil.syncMetadata(resource);
         if (!restManager.getPublisher().configureResource(ws, storeType, storeName, re)) {
             throw new TaskException(
                     "Failed to configure resource " + ws + ":" + resource.getName());
@@ -171,7 +171,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
         for (StyleInfo si : layer.getStyles()) {
             layerEncoder.addStyle(
                     si.getWorkspace() != null
-                            ? si.getWorkspace() + ":" + si.getName()
+                            ? CatalogUtil.wsName(si.getWorkspace()) + ":" + si.getName()
                             : si.getName());
         }
 

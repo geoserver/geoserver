@@ -425,8 +425,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(50, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(50, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
-            // get extrema
-            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0]);
+            // get extrema (allow some difference as sub-sampling on read will be skipping input
+            // pixels)
+            assertEquals(
+                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 1);
         } finally {
             try {
                 readerTarget.dispose();

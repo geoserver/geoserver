@@ -24,11 +24,14 @@ import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.impl.ConfigurationImpl;
+import org.geoserver.taskmanager.external.FileService;
+import org.geoserver.taskmanager.external.impl.FileServiceImpl;
 import org.geoserver.taskmanager.tasks.CopyTableTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.CreateViewTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.FileLocalPublicationTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.FileRemotePublicationTaskTypeImpl;
 import org.geoserver.taskmanager.tasks.MetadataSyncTaskTypeImpl;
+import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerBeans;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
 import org.geoserver.taskmanager.util.TaskManagerTaskUtil;
@@ -49,10 +52,15 @@ import org.junit.rules.TemporaryFolder;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConfigurationPageTest extends AbstractBatchesPanelTest<ConfigurationPage> {
 
     @Rule public TemporaryFolder tempDir = new TemporaryFolder();
+
+    @Rule public TemporaryFolder tempDestDir = new TemporaryFolder();
+
+    @Autowired LookupService<FileService> fileServiceRegistry;
 
     private TaskManagerDataUtil util;
     private TaskManagerTaskUtil tutil;
@@ -108,6 +116,15 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         scheduler = GeoServerApplication.get().getBeanOfType(Scheduler.class);
         login();
         configModel = new Model<Configuration>(createConfiguration());
+
+        // configure proper temp directory for testing
+        FileServiceImpl fs = (FileServiceImpl) fileServiceRegistry.get("temp-directory");
+        fs.setRootFolder(tempDestDir.getRoot().getAbsolutePath());
+        try {
+            tempDestDir.newFolder(); // at least one subfolder
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @After
@@ -115,6 +132,9 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         // clean-up
         dao.delete(configModel.getObject());
         logout();
+        // restore temp directory service
+        FileServiceImpl fs = (FileServiceImpl) fileServiceRegistry.get("temp-directory");
+        fs.setRootFolder("/tmp");
     }
 
     @SuppressWarnings("unchecked")

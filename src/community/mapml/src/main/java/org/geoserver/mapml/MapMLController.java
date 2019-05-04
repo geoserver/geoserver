@@ -83,7 +83,7 @@ public class MapMLController {
             throws NoSuchAuthorityCodeException, TransformException, FactoryException, IOException {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
         if (layerInfo == null) {
-            // TODO error handling
+            // TODO better error handling
             throw new RuntimeException("Invalid layer name: " + layer);
         }
 
@@ -91,7 +91,7 @@ public class MapMLController {
         try {
             projType = ProjType.fromValue(proj.toUpperCase());
         } catch (IllegalArgumentException iae) {
-            // TODO error handling
+            // TODO better error handling
             throw new RuntimeException(iae);
         }
 
@@ -365,7 +365,7 @@ public class MapMLController {
             input.setName("tymax");
             input.setType(InputType.LOCATION);
             input.setUnits(UnitType.TILEMATRIX);
-            input.setPosition(PositionType.TOP_LEFT); // TODO why is this the same as for xmin?
+            input.setPosition(PositionType.TOP_LEFT);
             input.setAxis(AxisType.NORTHING);
             input.setMin(cbmBbox.getMinY());
             input.setMax(cbmBbox.getMaxY());
@@ -398,7 +398,7 @@ public class MapMLController {
             input = new Input();
             input.setName("xmin");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.PCRS); // TODO
+            input.setUnits(UnitType.PCRS);
             input.setPosition(PositionType.TOP_LEFT);
             input.setAxis(AxisType.EASTING);
             input.setMin(cbmBbox.getMinX());
@@ -409,7 +409,7 @@ public class MapMLController {
             input = new Input();
             input.setName("ymin");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.PCRS); // TODO
+            input.setUnits(UnitType.PCRS);
             input.setPosition(PositionType.BOTTOM_LEFT);
             input.setAxis(AxisType.NORTHING);
             input.setMin(cbmBbox.getMinY());
@@ -420,7 +420,7 @@ public class MapMLController {
             input = new Input();
             input.setName("xmax");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.PCRS); // TODO
+            input.setUnits(UnitType.PCRS);
             input.setPosition(PositionType.TOP_RIGHT);
             input.setAxis(AxisType.EASTING);
             input.setMin(cbmBbox.getMinX());
@@ -431,8 +431,8 @@ public class MapMLController {
             input = new Input();
             input.setName("ymax");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.PCRS); // TODO
-            input.setPosition(PositionType.TOP_LEFT); // TODO why is this the same as for xmin?
+            input.setUnits(UnitType.PCRS);
+            input.setPosition(PositionType.TOP_LEFT);
             input.setAxis(AxisType.NORTHING);
             input.setMin(cbmBbox.getMinY());
             input.setMax(cbmBbox.getMaxY());
@@ -479,11 +479,15 @@ public class MapMLController {
 
         // query inputs
         if (layerInfo.isQueryable()) {
+            UnitType units = UnitType.MAP;
+            if (Boolean.TRUE.equals(useTiles)) {
+                units = UnitType.TILE;
+            }
             // query i value (x)
             input = new Input();
             input.setName("i");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.MAP); // TODO
+            input.setUnits(units);
             input.setAxis(AxisType.I);
             extentList.add(input);
 
@@ -491,7 +495,7 @@ public class MapMLController {
             input = new Input();
             input.setName("j");
             input.setType(InputType.LOCATION);
-            input.setUnits(UnitType.MAP); // TODO
+            input.setUnits(units);
             input.setAxis(AxisType.J);
             extentList.add(input);
 

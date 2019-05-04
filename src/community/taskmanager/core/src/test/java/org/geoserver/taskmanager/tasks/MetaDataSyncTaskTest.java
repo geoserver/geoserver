@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.HashMap;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -51,6 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Niels Charlier
  */
 public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
+
+    /** If your target geoserver supports the metadata module. */
+    private static final boolean SUPPORTS_METADATA = true;
 
     private static final String STYLE = "grass";
     private static final String SECOND_STYLE = "second_grass";
@@ -202,7 +207,13 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         ci.setTitle("new title");
         ci.setAbstract("new abstract");
         ci.getDimensions().get(0).setName("CUSTOM_DIMENSION");
-        ci.getMetadata().put("something", "anything");
+        ci.getMetadata().put("asomething", "anything");
+        if (SUPPORTS_METADATA) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("foo", "bar");
+            map.put("boo", "far");
+            ci.getMetadata().put("complex", map);
+        }
         geoServer.getCatalog().save(ci);
         li.getStyles().add(geoServer.getCatalog().getStyleByName(SECOND_STYLE));
         geoServer.getCatalog().save(li);
@@ -224,9 +235,12 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         assertEquals(
                 ci.getDimensions().get(0).getName(),
                 cov.getEncodedDimensionsInfoList().get(0).getName());
-        assertEquals("something", cov.getMetadataList().get(0).getKey());
+        assertEquals("asomething", cov.getMetadataList().get(0).getKey());
         assertEquals("anything", cov.getMetadataList().get(0).getMetadataElem().getText());
-
+        if (SUPPORTS_METADATA) {
+            assertEquals("complex", cov.getMetadataList().get(1).getKey());
+            assertNotNull(cov.getMetadataList().get(1).getMetadataElem().getChild("map"));
+        }
         layer = restManager.getReader().getLayer("wcs", "DEM");
         assertEquals(STYLE, layer.getDefaultStyle());
         assertEquals(1, layer.getStyles().size());

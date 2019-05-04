@@ -245,7 +245,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__spatio-temporal_dss");
-        // print(dom);
+        print(dom);
 
         // this one has 16 granules
         assertEquals(

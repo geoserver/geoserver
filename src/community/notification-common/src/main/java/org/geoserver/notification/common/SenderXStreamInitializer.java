@@ -10,8 +10,6 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.geoserver.notification.common.sender.NotificationSender;
 import org.geoserver.platform.GeoServerExtensions;
@@ -97,7 +95,7 @@ public class SenderXStreamInitializer implements NotificationXStreamInitializer 
                         break;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
-                    } 
+                    }
                 }
             }
 

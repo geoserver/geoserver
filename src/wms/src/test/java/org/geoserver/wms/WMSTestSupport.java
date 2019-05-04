@@ -585,7 +585,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
                 new Parser(
                         (Configuration)
                                 Class.forName("org.geotools.wms.v1_3.WMSConfiguration")
-                                        .getDeclaredConstructor().newInstance());
+                                        .getDeclaredConstructor()
+                                        .newInstance());
         p.setValidating(true);
         p.parse(new DOMSource(dom));
 

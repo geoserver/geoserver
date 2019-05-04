@@ -580,7 +580,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // File Property Mapper
         assertEquals(2, propMapper.synchronize());
 
-        File authKeyFile = new File(getSecurityManager().getUserGroupRoot(), "testAuthKey");
+        File authKeyFile = new File(getSecurityManager().userGroup().dir(), "testAuthKey");
         authKeyFile = new File(authKeyFile, "authkeys.properties");
         assertTrue(authKeyFile.exists());
 

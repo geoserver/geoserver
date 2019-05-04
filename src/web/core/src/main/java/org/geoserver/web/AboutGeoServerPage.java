@@ -33,6 +33,7 @@ public class AboutGeoServerPage extends GeoServerBasePage {
         return p != null ? p.getImplementationVersion() : null;
     }
 
+    @SuppressWarnings("deprecation") // ClassLoader.getDefinedPackage replaces in jdk 9+
     Package lookupGwcPackage() {
         try {
             return Package.getPackage("org.geowebcache");

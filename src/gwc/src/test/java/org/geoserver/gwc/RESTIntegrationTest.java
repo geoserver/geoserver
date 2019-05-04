@@ -320,7 +320,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("10.1", floatFilter.getDefaultValue());
         assertEquals(1.0E-2f, floatFilter.getThreshold(), 0d);
         assertEquals(
-                ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
+                ImmutableList.of(Float.valueOf(10.1f), Float.valueOf(10.2f), Float.valueOf(10.3f)),
                 floatFilter.getValues());
 
         assertEquals("BGCOLOR", stringFilter.getKey());
@@ -519,7 +519,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("10.1", floatFilter.getDefaultValue());
         assertEquals(1.0E-2f, floatFilter.getThreshold(), 0d);
         assertEquals(
-                ImmutableList.of(new Float(10.1f), new Float(10.2f), new Float(10.3f)),
+                ImmutableList.of(Float.valueOf(10.1f), Float.valueOf(10.2f), Float.valueOf(10.3f)),
                 floatFilter.getValues());
 
         assertEquals("STYLES", styleFilter.getKey());

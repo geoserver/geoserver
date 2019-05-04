@@ -95,8 +95,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
     public synchronized int synchronize() throws IOException {
         checkProperties();
 
-        File propFile =
-                new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
+        File propFile = new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         propFile = new File(propFile, AUTHKEYS_FILE);
 
         File backupFile =

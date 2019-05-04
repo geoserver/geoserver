@@ -445,7 +445,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 opacity = 1.0;
             }
             return new StringBuffer()
-                    .append(intToHex(new Float(255 * opacity).intValue()))
+                    .append(intToHex((int) (255 * opacity)))
                     .append(intToHex(c.getBlue()))
                     .append(intToHex(c.getGreen()))
                     .append(intToHex(c.getRed()))

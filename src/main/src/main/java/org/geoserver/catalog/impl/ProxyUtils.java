@@ -81,7 +81,6 @@ public class ProxyUtils {
      * @param h The invocation handler to intercept method calls.
      */
     public static <T> T createProxy(T proxyObject, Class<T> clazz, InvocationHandler h) {
-        T proxy;
         try {
             // proxy all interfaces implemented by the source object
             List<Class> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());

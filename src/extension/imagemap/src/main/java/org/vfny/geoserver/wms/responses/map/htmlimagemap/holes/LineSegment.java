@@ -52,7 +52,7 @@ public class LineSegment {
             v = new GVector(new double[] {origin.x, origin.y});
             v.sub(new GVector(new double[] {intersection.x, intersection.y}));
             double dist = v.norm();
-            value = new Float(dist);
+            value = Float.valueOf((float) dist);
         }
 
         return value;

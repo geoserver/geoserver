@@ -62,6 +62,11 @@
       <artifactId>json-lib</artifactId>
     </dependency>
     <dependency>
+      <groupId>flatgeobuf</groupId>
+      <artifactId>flatgeobuf</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>

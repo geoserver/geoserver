@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,7 +51,8 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
                 (UsernamePasswordAuthenticationToken) authentication;
 
         // check if name is root
-        if (GeoServerUser.ROOT_USERNAME.equals(token.getPrincipal()) == false) return null;
+        if (GeoServerUser.ROOT_USERNAME.equals(SecurityUtils.getUsername(token.getPrincipal()))
+                == false) return null;
 
         // check password
         if (token.getCredentials() != null) {

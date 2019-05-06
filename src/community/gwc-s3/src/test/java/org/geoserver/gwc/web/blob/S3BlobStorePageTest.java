@@ -20,6 +20,8 @@ import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.s3.S3BlobStoreInfo;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -28,6 +30,16 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
+
+    @Before
+    public void before() {
+        login();
+    }
+
+    @After
+    public void after() {
+        logout();
+    }
 
     @Test
     public void testPage() {

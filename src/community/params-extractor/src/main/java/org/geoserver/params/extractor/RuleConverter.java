@@ -30,7 +30,8 @@ public class RuleConverter implements Converter {
                     "parameter",
                     "transform",
                     "remove",
-                    "combine"
+                    "combine",
+                    "repeat"
                 };
         for (String property : properties) {
             Object value = OwsUtils.get(rule, property);
@@ -56,6 +57,7 @@ public class RuleConverter implements Converter {
         addParameter(reader, "transform", builder::withTransform);
         addParameter(reader, "remove", builder::withRemove, Integer::valueOf);
         addParameter(reader, "combine", builder::withCombine);
+        addParameter(reader, "repeat", builder::withRepeat, Boolean::valueOf);
         return builder.build();
     }
 

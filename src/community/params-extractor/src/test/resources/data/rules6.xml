@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Rules>
+    <Rule id="0"
+          match="^.*?(/([^/]+?))/[^/]+$"
+          parameter="cql_filter"
+          remove="1"
+          transform="seq='$2'"
+          combine="$1;$2"
+          repeat="true"/>
+</Rules>

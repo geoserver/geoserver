@@ -27,6 +27,7 @@ public class RulesModel extends GeoServerDataProvider<RuleModel> {
                     new BeanProperty<>("Transform", "transform"),
                     new BeanProperty<>("Remove", "remove"),
                     new BeanProperty<>("Combine", "combine"),
+                    new BeanProperty<>("Repeat", "repeat"),
                     new BeanProperty<>("Echo", "echo"),
                     ACTIVATE_BUTTON,
                     EDIT_BUTTON);

@@ -107,6 +107,7 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
             add(new TextField<String>("transform").setRequired(true));
             add(new NumberTextField<Integer>("remove").setMinimum(1));
             add(new TextField<String>("combine"));
+            add(new CheckBox("repeat"));
             add(new CheckBox("echo"));
         }
     }

@@ -24,6 +24,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
@@ -37,7 +38,6 @@ import org.opengis.filter.FilterFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Web Feature Service Transaction operation.
@@ -554,12 +554,7 @@ public class Transaction {
         String username = "anonymous";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                username = ((UserDetails) principal).getUsername();
-            } else if (principal instanceof String) { // OAuth
-                username = principal.toString();
-            }
+            username = SecurityUtils.getUsername(authentication.getPrincipal());
         }
 
         // Ok, this is a hack. We assume there is only one versioning datastore, the postgis one,

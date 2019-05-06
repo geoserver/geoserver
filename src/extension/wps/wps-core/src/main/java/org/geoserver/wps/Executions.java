@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServer;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.SecurityUtils;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.kvp.GetExecutionsKvpFilterBuilder;
@@ -68,8 +69,8 @@ public class Executions {
         // Check whether the user is authenticated or not and, in the second case, if it is an
         // Administrator or not
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final String principal =
-                auth != null && auth.getPrincipal() != null ? auth.getPrincipal().toString() : null;
+        final Object principal =
+                auth != null && auth.getPrincipal() != null ? auth.getPrincipal() : null;
         boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
         if (!isAdmin) {
             // Anonymous users cannot access the list of executions at all
@@ -80,7 +81,7 @@ public class Executions {
             // Non-admins are not allowed to fetch executions from other users
             else if (request.owner != null
                     && !request.owner.isEmpty()
-                    && !principal.equalsIgnoreCase(request.owner)) {
+                    && !SecurityUtils.getUsername(principal).equalsIgnoreCase(request.owner)) {
                 throw new WPSException(
                         Executions.NO_SUCH_PARAMETER_CODE, "Invalid parameter 'owner' specified.");
             }
@@ -96,7 +97,7 @@ public class Executions {
             builder.appendUserNameFilter(request.owner);
         } else if (!isAdmin) {
             // not an admin? The list should be filtered to your own processes
-            builder.appendUserNameFilter(principal);
+            builder.appendUserNameFilter(SecurityUtils.getUsername(principal));
         } // Otherwise you are an admin asking for all the processes
 
         // Filter by the Process Name (Identifier)

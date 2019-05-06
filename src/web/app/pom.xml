@@ -148,11 +148,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-mapml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-sec-ldap</artifactId>
       <version>${project.version}</version>
@@ -1671,6 +1666,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-wfs3</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mapml</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-mapml</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

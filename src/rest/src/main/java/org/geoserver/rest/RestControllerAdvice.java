@@ -12,9 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -103,7 +106,15 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleGeneralException(
             Exception e, HttpServletRequest request, HttpServletResponse response, OutputStream os)
-            throws IOException {
+            throws Exception {
+        // if there is a OGC request active, the exception was not meant for this dispatcher,
+        // nor it was if it's a security exception, in this case let servlet filters handle it
+        // instead
+        if (Dispatcher.REQUEST.get() != null
+                || e instanceof AuthenticationException
+                || e instanceof AccessDeniedException) {
+            throw e;
+        }
         LOGGER.log(Level.SEVERE, e.getMessage(), e);
         notifyExceptionToCallbacks(request, response, e);
 

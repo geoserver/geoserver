@@ -47,7 +47,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return MapMLConstants.MIME_TYPE;
+        return MapMLConstants.MAPML_MIME_TYPE;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MapMLConstants.MIME_TYPE); // ;projection=" + projType.value());
+        meta.setContent(MapMLConstants.MAPML_MIME_TYPE); // ;projection=" + projType.value());
         metas.add(meta);
         List<Link> links = head.getLinks();
 

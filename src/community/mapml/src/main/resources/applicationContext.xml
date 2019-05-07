@@ -27,19 +27,7 @@
   <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">
     <constructor-arg ref="wms"/>
   </bean>
-  <mvc:annotation-driven>
-    <mvc:message-converters>
-      <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
-        <property name="marshaller" ref="mapmlMarshaller"></property>
-        <property name="unmarshaller" ref="mapmlMarshaller"></property>
-        <property name="supportedMediaTypes">
-          <list>
-            <value>text/mapml</value>
-          </list>
-        </property>
-      </bean>
-    </mvc:message-converters>
-  </mvc:annotation-driven>
+  <bean class="org.geoserver.mapml.MapMLMessageConverter" id="mapmlMessageConverter"/>
   <bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller" id="mapmlMarshaller">
     <property name="contextPath" value="org.geoserver.mapml.xml"/>
     <property name="marshallerProperties">
@@ -52,5 +40,5 @@
         </entry>
       </map>
     </property>
-    </bean>
+  </bean>
 </beans>

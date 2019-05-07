@@ -5,12 +5,18 @@
 
 package org.geoserver.mapml;
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import org.springframework.http.MediaType;
 
 public final class MapMLConstants {
 
     /** format mime type */
-    public static final String MIME_TYPE = "text/mapml";
+    public static final String MAPML_MIME_TYPE = "text/mapml";
+
+    /** format MediaType */
+    public static final MediaType MAPML_MEDIA_TYPE =
+            new MediaType("text", "mapml", Charset.forName("UTF-8"));
 
     /** format name */
     public static final String FORMAT_NAME = "MAPML";

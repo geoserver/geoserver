@@ -40,7 +40,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
     private WMS wms;
 
     public MapMLGetFeatureInfoOutputFormat(WMS wms) {
-        super(MapMLConstants.MIME_TYPE);
+        super(MapMLConstants.MAPML_MIME_TYPE);
         this.wms = wms;
     }
 
@@ -80,7 +80,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MapMLConstants.MIME_TYPE); // ;projection=" + projType.value());
+        meta.setContent(MapMLConstants.MAPML_MIME_TYPE); // ;projection=" + projType.value());
         metas.add(meta);
         mapml.setHead(head);
 

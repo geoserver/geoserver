@@ -71,7 +71,7 @@ public class MapMLController {
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
-        produces = MIME_TYPE
+        produces = MAPML_MIME_TYPE
     )
     public Mapml mapML(
             HttpServletRequest request,
@@ -160,7 +160,7 @@ public class MapMLController {
         metas.add(meta);
         meta = new Meta();
         meta.setHttpEquiv("Content-Type");
-        meta.setContent(MIME_TYPE + ";projection=" + projType.value());
+        meta.setContent(MAPML_MIME_TYPE + ";projection=" + projType.value());
         metas.add(meta);
         meta = new Meta();
         meta.setName("projection");

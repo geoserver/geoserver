@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import net.sf.json.JSON;
@@ -79,7 +80,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                 getAsJSON(
                         "wfs?request=GetFeature&version=1.1.0"
                                 + "&typename=st_gml31:Station_gml31&outputFormat=application/json");
-        print(response);
         // validate the obtained response
         checkStation1Exists(response);
     }
@@ -93,6 +93,16 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
                                 + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
+        // check complex types with simple content that miss their value do not get a datatype
+        JSONObject station = getFeaturePropertiesById(response, "st.2");
+        assertThat(station, notNullValue());
+        JSONObject contact = station.getJSONObject("contact");
+        assertThat(contact.size(), is(3));
+        assertThat(contact.get("@mail"), is("st2@stations.org"));
+        JSONObject phone = contact.getJSONObject("phone");
+        assertThat(phone.size(), is(1));
+        assertFalse(phone.has("value"));
+        assertThat(phone.get("@timeZone"), is(""));
     }
 
     /** Helper method that station 1 exists and was correctly encoded in the GeoJSON response. */

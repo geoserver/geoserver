@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
 import org.geoserver.security.impl.GeoServerRole;
@@ -140,6 +141,43 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         FakeMapper fakeMapper = (FakeMapper) filter.getMapper();
         assertEquals("value1", fakeMapper.getMapperParameter("param1"));
         assertEquals("value2", fakeMapper.getMapperParameter("param2"));
+    }
+
+    @Test
+    public void testMapperParametersFromEnv() throws Exception {
+        String authKeyUrlParam = "myAuthKeyParams";
+        String filterName = "testAuthKeyParams2";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setAllowEnvParametrization(true);
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("fakeMapper");
+
+        final GeoServerEnvironment gsEnvironment =
+                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        System.setProperty("authkey_param1", "value1");
+        System.setProperty("authkey_param2", "value2");
+        try {
+            Map<String, String> mapperParams = new HashMap<String, String>();
+            mapperParams.put("param1", "${authkey_param1}");
+            mapperParams.put("param2", "${authkey_param2}");
+            config.setMapperParameters(mapperParams);
+
+            getSecurityManager().saveFilter(config);
+
+            GeoServerAuthenticationKeyFilter filter =
+                    (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+            assertTrue(filter.getMapper() instanceof FakeMapper);
+            FakeMapper fakeMapper = (FakeMapper) filter.getMapper();
+            assertEquals("value1", fakeMapper.getMapperParameter("param1"));
+            assertEquals("value2", fakeMapper.getMapperParameter("param2"));
+        } finally {
+            System.clearProperty("authkey_param1");
+            System.clearProperty("authkey_param2");
+        }
     }
 
     @Test

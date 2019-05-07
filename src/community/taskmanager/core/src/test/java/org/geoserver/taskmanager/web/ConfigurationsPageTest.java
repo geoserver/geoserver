@@ -45,11 +45,13 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
         config.setDescription("template description");
         config.setName("my_template");
         config = dao.save(config);
+        login();
     }
 
     @After
     public void clearDataFromDatabase() {
         dao.delete(config);
+        logout();
     }
 
     private Configuration dummyConfiguration1() {

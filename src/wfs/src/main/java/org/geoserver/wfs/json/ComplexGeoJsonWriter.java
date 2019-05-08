@@ -7,7 +7,6 @@ package org.geoserver.wfs.json;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
+import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
@@ -402,9 +402,11 @@ class ComplexGeoJsonWriter {
             // check if we have a simple content
             ComplexAttribute complexAttribute = (ComplexAttribute) property;
 
-            Object simpleValue = getSimpleContent(complexAttribute);
-            if (simpleValue != null) {
-                encodeSimpleAttribute(attributeName, simpleValue, attributes);
+            if (isSimpleContent(complexAttribute.getType())) {
+                Object value = getSimpleContentValue(complexAttribute);
+                if (value != null || (attributes != null && !attributes.isEmpty())) {
+                    encodeSimpleAttribute(attributeName, value, attributes);
+                }
             } else {
                 // skip the property/element nesting found in GML, if possible
                 if (isGMLPropertyType(complexAttribute)) {
@@ -530,7 +532,24 @@ class ComplexGeoJsonWriter {
      * Helper method that try to extract a simple content from a complex attribute, NULL is returned
      * if no simple content is present.
      */
-    private Object getSimpleContent(ComplexAttribute property) {
+    private boolean isSimpleContent(AttributeType type) {
+        if ("http://www.w3.org/2001/XMLSchema".equals(type.getName().getNamespaceURI())
+                && type.getName().getLocalPart().equals("anySimpleType")) {
+            return true;
+        }
+
+        AttributeType superType = type.getSuper();
+        if (superType == null) {
+            return false;
+        }
+        return isSimpleContent(superType);
+    }
+
+    /**
+     * Helper method that try to extract a simple content from a complex attribute, NULL is returned
+     * if no simple content is present.
+     */
+    private Object getSimpleContentValue(ComplexAttribute property) {
         Collection<Property> properties = property.getProperties();
         if (properties.isEmpty() || properties.size() > 1) {
             // no properties or more than property mean no simple content
@@ -546,16 +565,7 @@ class ComplexGeoJsonWriter {
             // not a simple content node
             return null;
         }
-        Object value = simpleContent.getValue();
-        if (value instanceof Number
-                || value instanceof String
-                || value instanceof Character
-                || value instanceof Date) {
-            // the extract value is a simple Java type
-            return value;
-        }
-        // not a valid simple content type
-        return null;
+        return simpleContent.getValue();
     }
 
     /** Encode a complex attribute as a JSON object. */
@@ -610,7 +620,9 @@ class ComplexGeoJsonWriter {
         }
         // we need to encode a list of attributes, let's first encode the main value
         jsonWriter.key(name).object();
-        jsonWriter.key("value").value(value);
+        if (value != null) {
+            jsonWriter.key("value").value(value);
+        }
         // encode the attributes list
         encodeAttributes(attributes);
         // close the values \ attributes object

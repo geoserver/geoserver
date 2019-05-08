@@ -58,6 +58,7 @@
                     <sourceExpression>
                         <OCQL>PHONE</OCQL>
                     </sourceExpression>
+                    <encodeIfEmpty>true</encodeIfEmpty>
                     <ClientProperty>
                         <name>timeZone</name>
                         <value>TIMEZONE</value>

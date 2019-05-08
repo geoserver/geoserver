@@ -34,7 +34,6 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     private String authKeyParamName = KeyAuthenticationToken.DEFAULT_URL_PARAM;
     private String userGroupServiceName;
     private Map<String, String> mapperParameters;
-    private boolean allowEnvParametrization = false;
 
     @Override
     public boolean providesAuthenticationEntryPoint() {
@@ -82,10 +81,6 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
         this.mapperParameters = mapperParameters;
     }
 
-    public void setAllowEnvParametrization(boolean allowEnvParametrization) {
-        this.allowEnvParametrization = allowEnvParametrization;
-    }
-
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
         AuthenticationKeyFilterConfig target =
@@ -100,7 +95,8 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
                         String key = param.getKey();
                         Object value = param.getValue();
 
-                        if (gsEnvironment != null && isEnvParametrizationAllowed()) {
+                        if (gsEnvironment != null
+                                && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
                             value = gsEnvironment.resolveValue(value);
                         }
 
@@ -111,9 +107,5 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
         }
 
         return target;
-    }
-
-    protected boolean isEnvParametrizationAllowed() {
-        return allowEnvParametrization || GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION;
     }
 }

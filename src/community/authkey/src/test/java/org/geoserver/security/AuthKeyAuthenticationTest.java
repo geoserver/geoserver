@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.auth.AbstractAuthenticationProviderTest;
@@ -105,10 +106,17 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         try {
+            System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
             super.setUpSpring(springContextLocations);
         } catch (Exception e) {
             // pass
         }
+    }
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        super.onTearDown(testData);
+        System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
     }
 
     @Override
@@ -149,7 +157,6 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         String filterName = "testAuthKeyParams2";
 
         AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
-        config.setAllowEnvParametrization(true);
         config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
         config.setName(filterName);
         config.setUserGroupServiceName("ug1");

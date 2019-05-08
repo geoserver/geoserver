@@ -93,13 +93,13 @@ class ComplexGeoJsonWriter {
     private void encodeFeatureCollection(FeatureIterator iterator) {
         while (iterator.hasNext()) {
             // encode the next feature
-            encodeFeature(iterator.next());
+            encodeFeature(iterator.next(), true);
             featuresCount++;
         }
     }
 
     /** Encode a feature in GeoJSON. */
-    protected void encodeFeature(Feature feature) {
+    protected void encodeFeature(Feature feature, boolean topLevelFeature) {
         // start the feature JSON object
         jsonWriter.object();
         jsonWriter.key("type").value("Feature");
@@ -116,11 +116,22 @@ class ComplexGeoJsonWriter {
         jsonWriter.key("@featureType").value(getSimplifiedTypeName(feature.getType().getName()));
         // encode object properties, we pass the geometry attribute to avoid duplicate encodings
         encodeProperties(geometryAttribute, feature.getType(), feature.getProperties());
-        // close the feature JSON object
-        jsonWriter.endObject();
         // close the properties JSON object
         jsonWriter.endObject();
+        writeExtraFeatureProperties(feature, topLevelFeature);
+        // close the feature JSON object
+        jsonWriter.endObject();
     }
+
+    /**
+     * Allows subclasses to write extra attributes after the "properties" section end. By default it
+     * does nothing.
+     *
+     * @param feature The feature being encoded
+     * @param topLevelfeature If the feature being encoded is top level in the GeoJSON output, or
+     *     nested inside another feature instead
+     */
+    protected void writeExtraFeatureProperties(Feature feature, boolean topLevelfeature) {}
 
     /**
      * Returns the simplified type name, e.g., if the name is BoreCollarType the method will return
@@ -267,7 +278,7 @@ class ComplexGeoJsonWriter {
             // if it's GeoJSON compatible, encode as a full blown GeoJSON feature (must have a
             // default geometry)
             if (feature.getType().getGeometryDescriptor() != null) {
-                encodeFeature(feature);
+                encodeFeature(feature, false);
             } else {
                 jsonWriter.object();
                 encodeProperties(null, feature.getType(), feature.getProperties());
@@ -563,7 +574,7 @@ class ComplexGeoJsonWriter {
             String name, ComplexAttribute attribute, Map<NameImpl, String> attributes) {
         if (isFullFeature(attribute)) {
             jsonWriter.key(name);
-            encodeFeature((Feature) attribute);
+            encodeFeature((Feature) attribute, false);
         } else {
             // get the attribute name and start a JSON object
             jsonWriter.key(name);

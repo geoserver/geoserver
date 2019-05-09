@@ -17,6 +17,7 @@ public final class RuleBuilder {
     private String transform;
     private Integer remove;
     private String combine;
+    private Boolean repeat;
 
     private Pattern matchPattern;
     private Pattern activationPattern;
@@ -98,6 +99,13 @@ public final class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder withRepeat(Boolean repeat) {
+        if (repeat != null) {
+            this.repeat = repeat;
+        }
+        return this;
+    }
+
     public Rule build() {
         Utils.checkCondition(
                 position == null || match == null,
@@ -121,6 +129,7 @@ public final class RuleBuilder {
                 transform,
                 remove,
                 combine,
+                Utils.withDefault(repeat, false),
                 matchPattern,
                 activationPattern);
     }

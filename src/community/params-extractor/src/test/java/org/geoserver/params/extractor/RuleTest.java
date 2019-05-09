@@ -67,6 +67,28 @@ public class RuleTest {
     }
 
     @Test
+    public void testCombineWithRepeat() throws Exception {
+        Rule rule =
+                new RuleBuilder()
+                        .withId("0")
+                        .withMatch("^.*?(/([^/]+))$")
+                        .withParameter("CQL_FILTER")
+                        .withTransform("CFCC='$2'")
+                        .withCombine("$1;$2")
+                        .withRepeat(true)
+                        .build();
+        UrlTransform urlTransform =
+                new UrlTransform(
+                        "/geoserver/wms/H11",
+                        Utils.parseParameters(Optional.of("REQUEST=GetMap&LAYERS=tiger,tiger")));
+        rule.apply(urlTransform);
+        checkParametersSize(urlTransform, 3);
+        checkParameterWithValue(urlTransform, "REQUEST", "GetMap");
+        checkParameterWithValue(urlTransform, "CQL_FILTER", "CFCC='H11';CFCC='H11'");
+        assertThat(urlTransform.getRequestUri(), is("/geoserver/wms"));
+    }
+
+    @Test
     public void testMatchRuleWithExistingParameter() throws Exception {
         Rule rule =
                 new RuleBuilder()

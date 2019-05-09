@@ -27,6 +27,8 @@ public final class Rule {
     private final Pattern matchPattern;
     private final Pattern activationPattern;
 
+    private final Boolean repeat;
+
     public Rule(
             String id,
             Boolean activated,
@@ -37,6 +39,7 @@ public final class Rule {
             String transform,
             Integer remove,
             String combine,
+            Boolean repeat,
             Pattern matchPattern,
             Pattern activationPattern) {
         this.id = id;
@@ -48,6 +51,7 @@ public final class Rule {
         this.transform = transform;
         this.remove = remove;
         this.combine = combine;
+        this.repeat = repeat;
         this.matchPattern = matchPattern;
         this.activationPattern = activationPattern;
     }
@@ -71,7 +75,7 @@ public final class Rule {
         }
         urlTransform.removeMatch(matcher.group(remove != null ? remove : 1));
         urlTransform.addParameter(
-                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine);
+                parameter, URLDecoder.decode(matcher.replaceAll(transform)), combine, repeat);
         return urlTransform;
     }
 
@@ -109,5 +113,9 @@ public final class Rule {
 
     public String getCombine() {
         return combine;
+    }
+
+    public Boolean getRepeat() {
+        return repeat;
     }
 }

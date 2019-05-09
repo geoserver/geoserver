@@ -109,6 +109,27 @@ public final class RulesDaoTest extends TestSupport {
     }
 
     @Test
+    public void testParsingCombineRepeatRule() throws Exception {
+        doWork(
+                "data/rules6.xml",
+                (InputStream inputStream) -> {
+                    List<Rule> rules = RulesDao.getRules(inputStream);
+                    assertThat(rules.size(), is(1));
+                    checkRule(
+                            rules.get(0),
+                            new RuleBuilder()
+                                    .withId("0")
+                                    .withMatch("^.*?(/([^/]+?))/[^/]+$")
+                                    .withParameter("cql_filter")
+                                    .withRemove(1)
+                                    .withTransform("seq='$2'")
+                                    .withCombine("$1;$2")
+                                    .withRepeat(true)
+                                    .build());
+                });
+    }
+
+    @Test
     public void testRuleCrud() {
         // create the rules to be used, rule C is an update of rule B (the id is the same)
         Rule ruleA =

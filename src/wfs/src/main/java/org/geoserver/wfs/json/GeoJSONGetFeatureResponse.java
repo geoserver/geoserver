@@ -209,10 +209,16 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             // encode collection with complex features
             ComplexGeoJsonWriter complexWriter =
                     new ComplexGeoJsonWriter(jsonWriter) {
+
                         @Override
-                        protected void encodeFeature(Feature feature) {
-                            super.encodeFeature(feature);
-                            writeExtraFeatureProperties(feature, operation, jsonWriter);
+                        protected void writeExtraFeatureProperties(
+                                Feature feature, boolean topLevelFeature) {
+                            // the various links should be reported only for the top feature, not
+                            // for all nested ones
+                            if (topLevelFeature) {
+                                GeoJSONGetFeatureResponse.this.writeExtraFeatureProperties(
+                                        feature, operation, jsonWriter);
+                            }
                         }
                     };
             complexWriter.write(resultsList);

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 import java.awt.image.BufferedImage;
@@ -129,6 +131,30 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
         assertEquals(exceptionText, "Could not find layer foobar");
+    }
+
+    /** Test protection against cross-site scripting attack in exception response. */
+    @Test
+    public void testExceptionCodeEscaped() throws Exception {
+        // request contains cross-site scripting attack payload
+        String path =
+                "wms?request=GetLegendGraphic&format=image/png&width=20&height=20"
+                        + "&layer=cite:Lakes&SLD=file:///this/file/should/not/exist\">"
+                        + "<a xmlns:a='http://www.w3.org/1999/xhtml'>"
+                        + "<a:body onload=\"alert('xss')\"/></a></ServiceException>"
+                        + "<ServiceException x=\"";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        String content = response.getContentAsString();
+        // sanity
+        assertThat(content, containsString("<ServiceExceptionReport "));
+        assertThat(content, containsString("</ServiceExceptionReport>"));
+        assertThat(content, containsString("<ServiceException "));
+        assertThat(content, containsString("</ServiceException>"));
+        // test that cross-site scripting attack payload is escaped
+        assertThat(content, not(containsString("<a:body onload=\"alert('xss')\"/>")));
+        assertThat(
+                content,
+                containsString("&lt;a:body onload=&quot;alert(&apos;xss&apos;)&quot;/&gt;"));
     }
 
     /** Test protection against cross-site scripting attack in exception response. */

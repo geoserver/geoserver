@@ -63,7 +63,8 @@ public class LocalSettingsController extends AbstractGeoServerController {
             MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE
-        }
+        },
+        produces = MediaType.TEXT_PLAIN_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
     public String localSettingsCreate(

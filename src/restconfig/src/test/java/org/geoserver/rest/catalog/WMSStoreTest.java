@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -266,6 +267,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
                         "text/json");
 
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/sf/wmsstores/newWMSStore"));
 

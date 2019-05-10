@@ -35,6 +35,7 @@ import org.geotools.util.URLs;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -82,6 +83,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                                 + (!autoConfigureCoverage ? "?configure=none" : ""),
                         bytes,
                         "application/zip");
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertEquals(201, response.getStatus());
     }
 

@@ -279,6 +279,7 @@ public class ProductsController extends AbstractOpenSearchController {
                         URLType.RESOURCE);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(newCollectionLocation));
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(productId, headers, HttpStatus.CREATED);
     }
 

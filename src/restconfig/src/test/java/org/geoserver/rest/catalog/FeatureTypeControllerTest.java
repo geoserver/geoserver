@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -600,6 +601,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -654,6 +656,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")

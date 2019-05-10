@@ -327,6 +327,7 @@ public class WMTSLayerController extends AbstractCatalogController {
                                 .buildAndExpand(workspaceName, storeName, resourceName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(resourceName, headers, HttpStatus.CREATED);
     }
 

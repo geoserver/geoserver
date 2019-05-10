@@ -73,6 +73,7 @@ public class RulesController extends RestBaseController {
         // return the location of the created echo parameter
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(RequestInfo.get().pageURI(newValue.getId())));
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(newValue.getId(), headers, HttpStatus.CREATED);
     }
 

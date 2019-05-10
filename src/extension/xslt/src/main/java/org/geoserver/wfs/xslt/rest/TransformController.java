@@ -220,6 +220,7 @@ public class TransformController extends AbstractCatalogController {
                         .buildAndExpand(transformInfoName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(transformInfoName, headers, status);
     }
 

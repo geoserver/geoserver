@@ -188,10 +188,11 @@ public class RulesRestController extends RestBaseController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaTypeExtensions.TEXT_JSON_VALUE
-        }
+        },
+        produces = MediaType.TEXT_PLAIN_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Long> insert(@RequestBody(required = true) JaxbRule rule) {
+    public String insert(@RequestBody(required = true) JaxbRule rule) {
         long priority = rule.getPriority() == null ? 0 : rule.getPriority().longValue();
         if (adminService.getRuleByPriority(priority) != null) {
             adminService.shift(priority, 1);
@@ -206,7 +207,7 @@ public class RulesRestController extends RestBaseController {
             adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(null));
         }
 
-        return new ResponseEntity<Long>(id, HttpStatus.CREATED);
+        return String.valueOf(id);
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)

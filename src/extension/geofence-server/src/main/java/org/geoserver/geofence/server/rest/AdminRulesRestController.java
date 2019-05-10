@@ -22,6 +22,7 @@ import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geoserver.rest.RestBaseController;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -122,7 +123,11 @@ public class AdminRulesRestController extends RestBaseController {
         return new ResponseEntity<>(adminService.insert(rule.toRule()), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/adminrules/id/{id}", method = RequestMethod.POST)
+    @RequestMapping(
+        value = "/adminrules/id/{id}",
+        method = RequestMethod.POST,
+        produces = MediaType.TEXT_PLAIN_VALUE
+    )
     public @ResponseStatus(HttpStatus.OK) void update(
             @PathVariable("id") Long id, @RequestBody JaxbAdminRule rule) {
         if (rule.getPriority() != null) {

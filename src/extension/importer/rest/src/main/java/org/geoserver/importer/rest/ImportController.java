@@ -78,6 +78,7 @@ public class ImportController extends ImportBaseController {
         }
         UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(context, headers, HttpStatus.CREATED);
     }
@@ -118,6 +119,7 @@ public class ImportController extends ImportBaseController {
             UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(uriComponents.toUri());
+            headers.setContentType(MediaType.APPLICATION_JSON);
             return new ResponseEntity<>(context, headers, HttpStatus.CREATED);
         } else {
             throw new RestException("ID must be provided for PUT", HttpStatus.BAD_REQUEST);

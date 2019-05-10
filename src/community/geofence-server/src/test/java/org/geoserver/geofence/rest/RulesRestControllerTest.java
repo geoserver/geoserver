@@ -90,7 +90,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         JaxbRule rule2 = new JaxbRule();
         rule2.setPriority(5L);
         rule2.setAccess("DENY");
-        long id2 = controller.insert(rule2).getBody();
+        long id2 = Long.parseLong(controller.insert(rule2));
 
         realRule = adminService.get(id);
         assertEquals(6L, realRule.getPriority());
@@ -622,7 +622,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
             }
         }
 
-        long id = controller.insert(rule).getBody();
+        long id = Long.parseLong(controller.insert(rule));
         return id;
     }
 

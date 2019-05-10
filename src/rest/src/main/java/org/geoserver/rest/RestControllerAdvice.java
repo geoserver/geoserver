@@ -16,6 +16,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StreamUtils;
@@ -84,6 +85,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         response.setStatus(404);
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         StreamUtils.copy(message, Charset.forName("UTF-8"), os);
     }
 
@@ -99,6 +101,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         } else {
             response.setStatus(e.getStatus().value());
         }
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
     }
 
@@ -119,6 +122,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         notifyExceptionToCallbacks(request, response, e);
 
         response.setStatus(500);
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
     }
 }

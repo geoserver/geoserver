@@ -37,6 +37,7 @@ import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -261,6 +262,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -340,6 +342,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "text/json");
 
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")
@@ -465,6 +468,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "application/zip");
         // Store is created
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
 
         Document dom =
                 getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/empty.xml");
@@ -531,6 +535,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
                         "application/zip");
         // Store is created
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         Document dom =
                 getAsDOM(

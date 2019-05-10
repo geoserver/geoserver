@@ -155,7 +155,7 @@ public class LayerGroupController extends AbstractCatalogController {
                 builder.path("/layergroups/{layerGroupName}").buildAndExpand(layerGroupName);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(uriComponents.toUri());
-
+        httpHeaders.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(layerGroupName, httpHeaders, HttpStatus.CREATED);
     }
 

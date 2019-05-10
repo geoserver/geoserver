@@ -6,13 +6,15 @@
 package org.geoserver.security.ldap;
 
 import java.io.File;
-import org.apache.directory.server.core.DefaultDirectoryService;
-import org.apache.directory.server.core.DirectoryService;
+import java.util.UUID;
+import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.directory.server.core.api.DirectoryService;
+import org.apache.directory.server.core.factory.DefaultDirectoryServiceFactory;
+import org.apache.directory.server.core.factory.DirectoryServiceFactory;
 import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
-import org.apache.directory.shared.ldap.entry.ServerEntry;
-import org.apache.directory.shared.ldap.name.DN;
 
 /**
  * Helper class for embedded Apache Directory Server.
@@ -24,8 +26,10 @@ import org.apache.directory.shared.ldap.name.DN;
  * @author Niels Charlier
  */
 public class EmbeddedLdapServer {
+
     private final DirectoryService directoryService;
     private final LdapServer ldapServer;
+    private static File workingDirectory;
 
     private EmbeddedLdapServer(DirectoryService directoryService, LdapServer ldapServer) {
         this.directoryService = directoryService;
@@ -38,24 +42,31 @@ public class EmbeddedLdapServer {
             int port,
             boolean allowAnonymousAccess)
             throws Exception {
-
-        DefaultDirectoryService directoryService = new DefaultDirectoryService();
+        DirectoryServiceFactory directoryServiceFactory = new DefaultDirectoryServiceFactory();
+        directoryServiceFactory.init("geoserver-ldap" + UUID.randomUUID().toString());
+        DirectoryService directoryService = directoryServiceFactory.getDirectoryService();
+        workingDirectory =
+                new File(
+                        System.getProperty("java.io.tmpdir")
+                                + "/apacheds-test"
+                                + UUID.randomUUID().toString());
         directoryService.setShutdownHookEnabled(true);
         directoryService.setAllowAnonymousAccess(allowAnonymousAccess);
-        directoryService.setWorkingDirectory(
-                new File(System.getProperty("java.io.tmpdir") + "/apacheds-test"));
         directoryService.getChangeLog().setEnabled(false);
 
-        JdbmPartition partition = new JdbmPartition();
+        JdbmPartition partition =
+                new JdbmPartition(
+                        directoryService.getSchemaManager(), directoryService.getDnFactory());
         partition.setId(defaultPartitionName);
-        partition.setSuffix(defaultPartitionSuffix);
+        partition.setSuffixDn(new Dn(defaultPartitionSuffix));
+        partition.setPartitionPath(workingDirectory.toURI());
         directoryService.addPartition(partition);
 
         directoryService.startup();
 
         // Inject the apache root entry if it does not already exist
         if (!directoryService.getAdminSession().exists(partition.getSuffixDn())) {
-            ServerEntry entry = directoryService.newEntry(new DN(defaultPartitionSuffix));
+            Entry entry = directoryService.newEntry(new Dn(defaultPartitionSuffix));
             entry.add("objectClass", "top", "domain", "extensibleObject");
             entry.add("dc", defaultPartitionName);
             directoryService.getAdminSession().add(entry);
@@ -69,6 +80,10 @@ public class EmbeddedLdapServer {
         ldapServer.start();
 
         return new EmbeddedLdapServer(directoryService, ldapServer);
+    }
+
+    public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
+        directoryService.setAllowAnonymousAccess(allowAnonymousAccess);
     }
 
     public void shutdown() throws Exception {

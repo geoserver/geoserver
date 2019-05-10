@@ -1,3 +1,9 @@
+version: 1
+dn: dc=example,dc=com
+objectClass: domain
+objectClass: top
+dc: example
+
 dn: ou=People,dc=example,dc=com
 objectClass: top
 objectClass: organizationalUnit

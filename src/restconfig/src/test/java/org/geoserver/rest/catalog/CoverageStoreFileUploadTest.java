@@ -47,6 +47,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -91,6 +92,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         String content = response.getContentAsString();
         Document d = dom(new ByteArrayInputStream(content.getBytes()));
@@ -132,6 +134,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -160,6 +163,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -209,6 +213,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();
@@ -293,6 +298,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
 
         // check the response contents
         String content = response.getContentAsString();

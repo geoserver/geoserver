@@ -110,6 +110,7 @@ public class NamespaceController extends AbstractCatalogController {
         UriComponents uriComponents = getUriComponents(name, builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 

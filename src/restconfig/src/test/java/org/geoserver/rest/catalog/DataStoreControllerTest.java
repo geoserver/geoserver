@@ -26,6 +26,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataStore;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -225,6 +226,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
@@ -254,6 +256,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
@@ -285,6 +288,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", json, "text/json");
 
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
@@ -408,6 +412,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(catalog.getDataStoreByName("sf", "newDataStore"));
 
         assertEquals(

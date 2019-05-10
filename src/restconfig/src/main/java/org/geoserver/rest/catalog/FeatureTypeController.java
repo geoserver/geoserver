@@ -294,6 +294,7 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 

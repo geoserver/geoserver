@@ -12,16 +12,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/exception")
 public class ExceptionThrowingController {
 
     @GetMapping
-    public void handleGet(
+    @RequestMapping(path = RestBaseController.ROOT_PATH + "/exception")
+    public void handleException(
             @RequestParam(name = "message", required = false) String message,
             @RequestParam(name = "code", required = false) Integer code) {
 
         throw new RestException(
                 message != null ? message : "Unknown error",
                 code != null ? HttpStatus.valueOf(code) : HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping
+    @RequestMapping(path = RestBaseController.ROOT_PATH + "/error")
+    public void handleError() {
+        throw new RuntimeException("An internal error occurred");
+    }
+
+    @GetMapping
+    @RequestMapping(path = RestBaseController.ROOT_PATH + "/notfound")
+    public void handleNotFound() {
+        throw new ResourceNotFoundException("I'm not there");
     }
 }

@@ -553,7 +553,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 }
             }
         } else {
-            json = (JSONObject) getAsJSON("/rest/imports/" + importId);
+            MockHttpServletResponse response = getAsServletResponse("/rest/imports/" + importId);
+            assertEquals("application/json", response.getContentType());
+            json = (JSONObject) json(response);
             state = json.getJSONObject("import").getString("state");
         }
         Thread.sleep(500);

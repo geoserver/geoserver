@@ -25,6 +25,7 @@ import org.geotools.data.h2.H2DataStoreFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -223,7 +224,7 @@ public class ImportControllerTest extends ImporterTestSupport {
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/imports/8675309", "", "application/json");
         assertEquals(201, resp.getStatus());
-
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, resp.getContentType());
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
 
@@ -240,6 +241,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         resp =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/imports/8675000", "", "application/json");
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, resp.getContentType());
         assertEquals(201, resp.getStatus());
         // it should be one more than the latest
 

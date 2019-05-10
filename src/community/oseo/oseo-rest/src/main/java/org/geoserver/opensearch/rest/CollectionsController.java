@@ -186,6 +186,7 @@ public class CollectionsController extends AbstractOpenSearchController {
                         baseURL, "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(newCollectionLocation));
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(eoId, headers, HttpStatus.CREATED);
     }
 

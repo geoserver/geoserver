@@ -57,6 +57,7 @@ public class ImportTransformController extends ImportBaseController {
                                 taskId.toString(),
                                 task.getTransform().getTransforms().size() - 1)
                         .toUri());
+        headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
     }
 

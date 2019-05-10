@@ -25,6 +25,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -172,6 +173,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                 MockHttpServletResponse response = postAsServletResponse(base, xml, "text/xml");
 
                 assertEquals(201, response.getStatus());
+                assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
                 assertNotNull(response.getHeader("Location"));
                 assertTrue(response.getHeader("Location").endsWith(base + typeName));
 

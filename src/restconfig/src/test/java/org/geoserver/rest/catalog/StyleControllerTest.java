@@ -31,9 +31,11 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.styling.Style;
 import org.geotools.util.URLs;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -293,6 +295,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/styles", xml, SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
 
@@ -307,6 +310,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/styles", xml, SLDHandler.MIMETYPE_11);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
 
@@ -340,6 +344,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/styles/foo"));
 
@@ -361,6 +366,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         SLDHandler.MIMETYPE_11);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/styles/foo"));
 
@@ -384,6 +390,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/bar"));
 
@@ -400,6 +407,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertThat(response.getHeader("Location"), endsWith("/styles/Default%20Styler"));
 
@@ -419,6 +427,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", xml);
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("gs", "foo"));
     }
 
@@ -950,6 +959,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
 
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals(nstyles + 1, l2.getStyles().size());
@@ -971,6 +981,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
 
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals(nstyles + 1, l2.getStyles().size());
@@ -993,6 +1004,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         "text/xml");
         assertEquals(201, response.getStatus());
+        assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
 
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals(nstyles, l2.getStyles().size());
@@ -1015,6 +1027,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         out.toString(),
                         PropertyStyleHandler.MIMETYPE);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
 
@@ -1057,6 +1070,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         out.toString(),
                         PropertyStyleHandler.MIMETYPE);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
 
@@ -1183,6 +1197,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         xml,
                         SLDHandler.MIMETYPE_11);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location").endsWith("/styles/foo"));
 
@@ -1207,6 +1222,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         bytes,
                         "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(cat.getStyleByName("gs", "foo"));
 
         Document d = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo.sld");
@@ -1286,6 +1302,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/styles", bytes, "application/zip");
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(cat.getStyleByName("foo"));
 
         Document d = getAsDOM(RestBaseController.ROOT_PATH + "/styles/foo.sld");

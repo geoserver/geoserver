@@ -12,6 +12,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.*;
 
 import org.easymock.EasyMock;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -21,6 +22,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
 
     DispatcherCallback callback;
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no data needed for this test
+    }
 
     @Before
     public void prepareCallback() throws Exception {

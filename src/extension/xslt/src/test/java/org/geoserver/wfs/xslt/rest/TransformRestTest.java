@@ -27,6 +27,7 @@ import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -134,6 +135,7 @@ public class TransformRestTest extends XSLTTestSupport {
                 postAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wfs/transforms", xml);
         assertEquals(201, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
         assertTrue(
                 response.getHeader("Location")

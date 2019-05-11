@@ -130,6 +130,8 @@ public class Resources {
      * @see Resource#dir()
      * @see Resource#file()
      * @param resource Resource indicated
+     * @param force false to return null for {@link Resource.Type#UNDEFINED}, true to force a File
+     *     to be created.
      * @return The file if exists, null if {@link Resource.Type#UNDEFINED} and force is false, a
      *     File with the resource path otherwise
      */

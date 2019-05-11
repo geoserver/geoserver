@@ -18,6 +18,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 
 /** Checks the specified file exists on the file system, including checks in the data directory */

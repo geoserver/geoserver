@@ -273,6 +273,20 @@ public final class Files {
         // utility class do not subclass
     }
 
+    /** @deprecated use {@link Resources#fromURL(Resource, String)} */
+    @Deprecated
+    public static File url(File baseDirectory, String url) {
+        Resource res = Resources.fromURL(asResource(baseDirectory), url);
+        if (res == null) {
+            return null;
+        }
+        File file = Resources.find(res);
+        if (file == null) {
+            return new File(baseDirectory, res.path());
+        }
+        return file;
+    }
+
     /**
      * Adapter allowing a File reference to be quickly used a Resource.
      *

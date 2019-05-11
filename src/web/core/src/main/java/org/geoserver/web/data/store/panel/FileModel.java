@@ -14,7 +14,6 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -82,9 +81,7 @@ public class FileModel implements IModel<String> {
                 }
                 location = "file:" + path;
             } else {
-                File dataFile =
-                        Resources.find(
-                                Resources.fromURL(Files.asResource(rootDir), location), true);
+                File dataFile = Files.url(rootDir, location);
                 if (dataFile == null || dataFile.equals(file)) {
                     // not relative to the data directory, does not need fixing
                     location = "file://" + file.getAbsolutePath();

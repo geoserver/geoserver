@@ -8,6 +8,7 @@ package org.geoserver.wfs.flatgeobuf;
 import flatgeobuf.geotools.FeatureCollectionConversions;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
@@ -65,9 +66,11 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
         if (isComplexFeature(featureCollection))
         	throw new RuntimeException("FlatGeobuf does not support complex features");
         
+        long featureCount = featureCollection.getNumberOfFeatures().longValue();
+        
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection) featureCollection.getFeature().get(0);
-        FeatureCollectionConversions.serialize(fc, output);
+        FeatureCollectionConversions.serialize(fc, featureCount, output);
     }
 
     /**

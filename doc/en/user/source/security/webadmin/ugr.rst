@@ -302,7 +302,7 @@ Add new LDAP role service
 
 To add a new LDAP role service, click the :guilabel:`Add new` link, and then the :guilabel:`LDAP` option at the top of the following form. The following figure shows the configuration options for a LDAP role service.
 
-.. figure:: images/ugr_roleldapsettings.png
+.. figure:: images/ldap_role_empty.png
    :align: center
 
    *Adding a role service via LDAP*
@@ -341,6 +341,13 @@ To add a new LDAP role service, click the :guilabel:`Add new` link, and then the
      - Username to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
    * - Password
      - Password to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
+	 
+   * -  Hierarchical groups options
+     - When checked all LDAP group searches will use hierarchical mode, retrieving LDAP parent groups too.
+   * - Max depth for hierarchical groups search
+     - Max depth number for hierarchical LDAP groups search, use -1 for infinite depth. Only applicable when the *Hierarchical groups options* parameter is **checked**.
+   * - Nested group search filter
+     - LDAP search pattern for searching parent groups. Only applicable when the *Hierarchical groups options* parameter is **checked**.
 
 Edit role service
 -----------------

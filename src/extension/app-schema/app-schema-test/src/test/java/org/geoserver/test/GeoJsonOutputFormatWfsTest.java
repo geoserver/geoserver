@@ -103,6 +103,14 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertThat(phone.size(), is(1));
         assertFalse(phone.has("value"));
         assertThat(phone.get("@timeZone"), is(""));
+        // check the linked features have been kept separate despite the shared element type
+        // A and B have max multiplicity > 1, C is ensured to be single
+        JSONObject featureLinkA = station.getJSONArray("featureLinkA").getJSONObject(0);
+        assertEquals("http://www.geoserver.org/featureA", featureLinkA.getString("@href"));
+        JSONObject featureLinkB = station.getJSONArray("featureLinkB").getJSONObject(0);
+        assertEquals("http://www.geoserver.org/featureB", featureLinkB.getString("@href"));
+        JSONObject featureLinkC = station.getJSONObject("featureLinkC");
+        assertEquals("http://www.geoserver.org/featureC", featureLinkC.getString("@href"));
     }
 
     /** Helper method that station 1 exists and was correctly encoded in the GeoJSON response. */
@@ -138,7 +146,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     public void testSimpleContentTimeEncoding() throws Exception {
         String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
-        print(json);
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
         assertThat(properties, is(notNullValue()));
         JSONObject timeInstant =
@@ -160,7 +167,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     public void testOneDimensionalEncoding() throws Exception {
         String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
-        print(json);
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
         assertThat(properties, is(notNullValue()));
         JSONObject samplingLocation =
@@ -180,7 +186,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     public void testNestedFeatureEncoding() throws Exception {
         String path = "wfs?request=GetFeature&typename=gsml:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
-        print(json);
         JSONObject properties = getFeaturePropertiesById(json, "BOREHOLE.WTB5");
         assertThat(properties, is(notNullValue()));
 

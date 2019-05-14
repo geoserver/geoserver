@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
@@ -16,6 +17,7 @@ import java.util.Spliterators;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
+import org.checkerframework.checker.units.qual.K;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -28,7 +30,6 @@ import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -196,31 +197,31 @@ class ComplexGeoJsonWriter {
     private void encodeProperties(
             Property geometryAttribute, PropertyType parentType, Collection<Property> properties) {
         // index all the feature available properties by their type
-        Map<PropertyType, List<Property>> index =
-                indexPropertiesByType(geometryAttribute, properties);
-        for (Map.Entry<PropertyType, List<Property>> entry : index.entrySet()) {
+        Map<PropertyDescriptor, List<Property>> index =
+                indexPropertiesByDescriptor(geometryAttribute, properties);
+        for (Map.Entry<PropertyDescriptor, List<Property>> entry : index.entrySet()) {
             // encode properties per type
             encodePropertiesByType(parentType, entry.getKey(), entry.getValue());
         }
     }
 
     /** Index the provided properties by their type, geometry property will be ignored. */
-    private Map<PropertyType, List<Property>> indexPropertiesByType(
+    private Map<PropertyDescriptor, List<Property>> indexPropertiesByDescriptor(
             Property geometryAttribute, Collection<Property> properties) {
-        Map<PropertyType, List<Property>> index = new HashMap<>();
+        Map<PropertyDescriptor, List<Property>> index = new LinkedHashMap<>();
         for (Property property : properties) {
             if (geometryAttribute != null && geometryAttribute.equals(property)) {
                 // ignore the geometry attribute that should have been encoded already
                 continue;
             }
             // update the index with the current property
-            List<Property> propertiesWithSameType = index.get(property.getType());
-            if (propertiesWithSameType == null) {
+            List<Property> propertiesWithSameDescriptor = index.get(property.getDescriptor());
+            if (propertiesWithSameDescriptor == null) {
                 // first time we see a property fo this type
-                propertiesWithSameType = new ArrayList<>();
-                index.put(property.getType(), propertiesWithSameType);
+                propertiesWithSameDescriptor = new ArrayList<>();
+                index.put(property.getDescriptor(), propertiesWithSameDescriptor);
             }
-            propertiesWithSameType.add(property);
+            propertiesWithSameDescriptor.add(property);
         }
         return index;
     }
@@ -230,43 +231,44 @@ class ComplexGeoJsonWriter {
      * properties should be encoded as a list or as elements that appear multiple times.
      */
     private void encodePropertiesByType(
-            PropertyType parentType, PropertyType type, List<Property> properties) {
-        PropertyDescriptor multipleType = isMultipleType(parentType, type);
-        if (multipleType == null) {
-            // simple JSON objects
-            properties.forEach(this::encodeProperty);
-        } else {
-            // possible chained features that need to be encoded as a list
-            List<Feature> chainedFeatures = getChainedFeatures(properties);
-            if (chainedFeatures == null || chainedFeatures.isEmpty()) {
-                // let's check if we are in the presence of linked features
-                List<Map<NameImpl, String>> linkedFeatures = getLinkedFeatures(properties);
-                if (!linkedFeatures.isEmpty()) {
-                    // encode linked features
-                    encodeLinkedFeatures(multipleType.getName().getLocalPart(), linkedFeatures);
-                } else {
-                    // no chained or linked features just encode each property
-                    properties.forEach(this::encodeProperty);
-                }
+            PropertyType parentType, PropertyDescriptor descriptor, List<Property> properties) {
+        // possible chained features that need to be encoded as a list
+        List<Feature> chainedFeatures = getChainedFeatures(properties);
+        if (chainedFeatures == null
+                || chainedFeatures.isEmpty()
+                || descriptor.getMaxOccurs() == 1) {
+            // let's check if we are in the presence of linked features
+            List<Map<NameImpl, String>> linkedFeatures = getLinkedFeatures(properties);
+            if (!linkedFeatures.isEmpty()) {
+                // encode linked features
+                encodeLinkedFeatures(descriptor, linkedFeatures);
             } else {
-                // chained features so we need to encode the chained features as an array
-                encodeChainedFeatures(multipleType.getName().getLocalPart(), chainedFeatures);
+                // no chained or linked features just encode each property
+                properties.forEach(this::encodeProperty);
             }
+        } else {
+            // chained features so we need to encode the chained features as an array
+            encodeChainedFeatures(descriptor.getName().getLocalPart(), chainedFeatures);
         }
     }
 
     /** Encodes linked features as a JSON array. */
     private void encodeLinkedFeatures(
-            String attributeName, List<Map<NameImpl, String>> linkedFeatures) {
+            PropertyDescriptor descriptor, List<Map<NameImpl, String>> linkedFeatures) {
         // start the JSON object
-        jsonWriter.key(attributeName);
-        jsonWriter.array();
+        jsonWriter.key(descriptor.getName().getLocalPart());
+        // is it multiple or single?
+        if (descriptor.getMaxOccurs() > 1) {
+            jsonWriter.array();
+        }
         // encode each linked feature
         for (Map<NameImpl, String> feature : linkedFeatures) {
             encodeAttributesAsObject(feature);
         }
-        // end the linked features JSON array
-        jsonWriter.endArray();
+        if (descriptor.getMaxOccurs() > 1) {
+            // end the linked features JSON array
+            jsonWriter.endArray();
+        }
     }
 
     /** Encodes a list of features (chained features) as a JSON array. */
@@ -287,32 +289,6 @@ class ComplexGeoJsonWriter {
         }
         // end the JSON chained features array
         jsonWriter.endArray();
-    }
-
-    /** Check if a property type should appear multiple times or be encoded as a list. */
-    private PropertyDescriptor isMultipleType(PropertyType parentType, PropertyType type) {
-        if (!(parentType instanceof ComplexType)) {
-            // only properties that belong to a complex type can be chained features
-            return null;
-        }
-        // search the current type on the parent properties
-        ComplexType complexType = (ComplexType) parentType;
-        PropertyDescriptor foundType = null;
-        for (PropertyDescriptor descriptor : complexType.getDescriptors()) {
-            if (descriptor.getType().equals(type)) {
-                // found our type
-                foundType = descriptor;
-            }
-        }
-        // if the found type can appear multiples time is not a chained feature
-        if (foundType == null) {
-            return null;
-        }
-        if (foundType.getMaxOccurs() > 1) {
-            // this type can appear more than once so it should not be encoded as a list
-            return foundType;
-        }
-        return null;
     }
 
     /**

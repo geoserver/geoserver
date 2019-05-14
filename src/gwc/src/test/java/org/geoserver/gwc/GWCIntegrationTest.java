@@ -900,6 +900,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
+        // make sure deletion is not still underway (works in a background thread)
+        waitTileBreederCompletion();
+
         // First request should be a MISS
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());

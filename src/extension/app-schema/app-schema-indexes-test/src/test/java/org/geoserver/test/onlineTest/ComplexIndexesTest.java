@@ -37,7 +37,9 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
+import org.geotools.data.complex.IndexIdIterator.IndexUniqueVisitorIterator;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -69,16 +71,26 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testPagination() throws Exception {
-        // pagination-test-query.xml
-        setupXmlUnitNamespaces();
-        String wfsQuery = resourceToString(TEST_DATA_DIR + "/pagination-test-query.xml");
-        Document responseDoc = postAsDOM("wfs", wfsQuery);
-        // without pagination-limit we'd get 3 features, test we got only 1:
-        checkCount(
-                WFS20_XPATH_ENGINE,
-                responseDoc,
-                1,
-                "//wfs:FeatureCollection/wfs:member/st:Station");
+        try {
+            IndexUniqueVisitorIterator.uniqueVisitorBuildHook = this::checkUniqueVisitorLimits;
+            // pagination-test-query.xml
+            setupXmlUnitNamespaces();
+            String wfsQuery = resourceToString(TEST_DATA_DIR + "/pagination-test-query.xml");
+            Document responseDoc = postAsDOM("wfs", wfsQuery);
+            // without pagination-limit we'd get 3 features, test we got only 1:
+            checkCount(
+                    WFS20_XPATH_ENGINE,
+                    responseDoc,
+                    1,
+                    "//wfs:FeatureCollection/wfs:member/st:Station");
+        } finally {
+            IndexUniqueVisitorIterator.uniqueVisitorBuildHook = null;
+        }
+    }
+
+    public void checkUniqueVisitorLimits(UniqueVisitor visitor) {
+        assertEquals(1, visitor.getStartIndex());
+        assertEquals(1, visitor.getMaxFeatures());
     }
 
     @Test
@@ -115,12 +127,14 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     }
 
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws Exception {
         // load the fixture file
         solrUrl = loadFixture().getProperty("solr_url");
         solrCoreName = loadFixture().getProperty("solr_core");
         // instantiate the Apache Solr client
         solrClient = new HttpSolrClient.Builder(solrUrl).build();
+        // clean all stored documents
+        solrClient.deleteByQuery("*:*");
         pgProps = loadPgProperties();
         // generate mapping and related files:
         stationSetup.setupMapping(solrUrl, solrCoreName, pgProps, TESTS_ROOT_DIR);
@@ -154,6 +168,8 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
         try {
             // remove tests root directory
             IOUtils.delete(TESTS_ROOT_DIR);
+            // clean all stored documents
+            solrClient.deleteByQuery("*:*");
         } catch (Exception exception) {
             LOGGER.log(Level.WARNING, "Error removing tests root directory.", exception);
         }

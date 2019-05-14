@@ -33,6 +33,8 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected transient Catalog catalog;
 
+    protected MetadataMap metadata = new MetadataMap();
+
     protected StyleInfoImpl() {}
 
     public StyleInfoImpl(Catalog catalog) {
@@ -117,6 +119,21 @@ public class StyleInfoImpl implements StyleInfo {
 
     public void setLegend(LegendInfo legend) {
         this.legend = legend;
+    }
+
+    @Override
+    public MetadataMap getMetadata() {
+        // non nullable
+        checkMetadataNotNull();
+        return metadata;
+    }
+
+    public void setMetadata(MetadataMap metadata) {
+        this.metadata = metadata;
+    }
+
+    private void checkMetadataNotNull() {
+        if (metadata == null) metadata = new MetadataMap();
     }
 
     public void accept(CatalogVisitor visitor) {

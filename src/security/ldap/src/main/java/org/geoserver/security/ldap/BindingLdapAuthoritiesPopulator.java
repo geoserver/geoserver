@@ -327,7 +327,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
             // search nested Ldap groups,
             // only if role was added successfully for avoiding circular references
             // if maxGroupSearchLevel == -1 -> no depth limit
-            if (maxGroupSearchLevel == -1 || (depth > 0 && addedSuccesfuly))
+            if ((maxGroupSearchLevel == -1 || depth > 0) && addedSuccesfuly)
                 searchNestedGroupMembershipRoles(
                         ctxConsumer, dn, roleNameDn.getLeft(), authorities, depth - 1);
         }

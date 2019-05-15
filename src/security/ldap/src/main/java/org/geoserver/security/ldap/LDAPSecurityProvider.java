@@ -24,6 +24,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.NestedLdapAuthoritiesPopulator;
 
 /**
  * LDAP security provider.
@@ -103,6 +104,13 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                 authPopulator =
                         new BindingLdapAuthoritiesPopulator(
                                 ldapContext, ldapConfig.getGroupSearchBase());
+                // set hierarchical configurations
+                BindingLdapAuthoritiesPopulator bindPopulator =
+                        (BindingLdapAuthoritiesPopulator) authPopulator;
+                bindPopulator.setUseNestedParentGroups(ldapConfig.isUseNestedParentGroups());
+                bindPopulator.setMaxGroupSearchLevel(ldapConfig.getMaxGroupSearchLevel());
+                bindPopulator.setNestedGroupSearchFilter(ldapConfig.getNestedGroupSearchFilter());
+
                 if (ldapConfig.getGroupSearchFilter() != null) {
                     ((BindingLdapAuthoritiesPopulator) authPopulator)
                             .setGroupSearchFilter(ldapConfig.getGroupSearchFilter());
@@ -124,9 +132,20 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                         };
             } else {
                 ldapContext.setAnonymousReadOnly(true);
-                authPopulator =
-                        new DefaultLdapAuthoritiesPopulator(
-                                ldapContext, ldapConfig.getGroupSearchBase());
+                // is hierarchical nested groups implementation required?
+                if (ldapConfig.isUseNestedParentGroups()) {
+                    // use nested implementation for nested groups support
+                    authPopulator =
+                            new NestedLdapAuthoritiesPopulator(
+                                    ldapContext, ldapConfig.getGroupSearchBase());
+                    ((NestedLdapAuthoritiesPopulator) authPopulator)
+                            .setMaxSearchDepth(ldapConfig.getMaxGroupSearchLevel());
+                } else {
+                    // no hierarchical groups required, use default implementation
+                    authPopulator =
+                            new DefaultLdapAuthoritiesPopulator(
+                                    ldapContext, ldapConfig.getGroupSearchBase());
+                }
 
                 if (ldapConfig.getGroupSearchFilter() != null) {
                     ((DefaultLdapAuthoritiesPopulator) authPopulator)

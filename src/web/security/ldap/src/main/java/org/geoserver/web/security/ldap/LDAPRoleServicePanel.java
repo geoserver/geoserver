@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -20,6 +21,11 @@ import org.geoserver.security.web.role.RoleServicePanel;
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
     private static final long serialVersionUID = -67788557484913489L;
+
+    private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
+    private static final String MAX_GROUP_SEARCH_LEVEL = "maxGroupSearchLevel";
+    private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
+    private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
     class LDAPAuthenticationPanel extends FormComponentPanel<String> {
 
@@ -70,11 +76,45 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
                         target.add(c);
                     }
                 });
+        hierarchicalGroupsInit();
+
         LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
         add(
                 new WebMarkupContainer("authenticationPanelContainer")
                         .add(authPanel)
                         .setOutputMarkupId(true));
+    }
+
+    private void hierarchicalGroupsInit() {
+        // hierarchical groups configurations
+        final WebMarkupContainer nestedSearchFieldsContainer =
+                new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
+        nestedSearchFieldsContainer.setOutputMarkupPlaceholderTag(true);
+        nestedSearchFieldsContainer.setOutputMarkupId(true);
+        add(nestedSearchFieldsContainer);
+        Optional<LDAPRoleServiceConfig> useNestedOpt =
+                Optional.of(this).map(x -> x.configModel).map(IModel::getObject);
+        // get initial value for use_nested checkbox
+        boolean useNestedActivated =
+                useNestedOpt.map(LDAPRoleServiceConfig::isUseNestedParentGroups).orElse(false);
+        nestedSearchFieldsContainer.setVisible(useNestedActivated);
+        final AjaxCheckBox useNestedCheckbox =
+                new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        AjaxCheckBox cb =
+                                (AjaxCheckBox)
+                                        LDAPRoleServicePanel.this.get(USE_NESTED_PARENT_GROUPS);
+                        boolean value = cb.getModelObject();
+                        nestedSearchFieldsContainer.setVisible(value);
+                        target.add(nestedSearchFieldsContainer);
+                    }
+                };
+        add(useNestedCheckbox);
+        nestedSearchFieldsContainer.add(new TextField<String>(MAX_GROUP_SEARCH_LEVEL));
+        nestedSearchFieldsContainer.add(new TextField<String>(NESTED_GROUP_SEARCH_FILTER));
     }
 }

@@ -39,7 +39,6 @@ cn: other
 member: uid=admin,ou=People,dc=example,dc=com
 member: uid=other,ou=People,dc=example,dc=com
 
-
 dn: uid=other,ou=People,dc=example,dc=com
 objectClass: top
 objectClass: inetOrgPerson
@@ -55,3 +54,20 @@ objectClass: top
 objectClass: groupOfNames
 cn: extra
 member: cn=extra
+member: cn=nested
+
+dn: uid=nestedUser,ou=People,dc=example,dc=com
+objectClass: top
+objectClass: inetOrgPerson
+givenName: nestedUser
+sn: nestedUser
+uid: nestedUser
+cn: uid=nestedUser,ou=People,dc=example,dc=com
+userPassword: {SHA}0JQeaNqPOBUf+Gph/Fn3xc+fyqI=
+telephoneNumber: 777
+
+dn: cn=nested,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested
+member: uid=nestedUser,ou=People,dc=example,dc=com

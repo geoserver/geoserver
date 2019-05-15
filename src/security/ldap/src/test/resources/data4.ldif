@@ -55,6 +55,7 @@ objectClass: top
 objectClass: groupOfNames
 cn: extra
 member: uid=extra,ou=People,dc=example,dc=com
+member: cn=nested,ou=Groups,dc=example,dc=com
 
 dn: uid=extra,ou=People,dc=example,dc=com
 objectClass: top
@@ -65,3 +66,20 @@ uid: extra
 cn: uid=extra,ou=People,dc=example,dc=com
 userPassword: {SHA}0JQeaNqPOBUf+Gph/Fn3xc+fyqI=
 mail: blabla@boomboom.com
+
+
+dn: uid=nestedUser,ou=People,dc=example,dc=com
+objectClass: top
+objectClass: inetOrgPerson
+givenName: nestedUser
+sn: nestedUser
+uid: nestedUser
+cn: uid=nestedUser,ou=People,dc=example,dc=com
+userPassword: {SHA}0JQeaNqPOBUf+Gph/Fn3xc+fyqI=
+telephoneNumber: 777
+
+dn: cn=nested,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: nested
+member: uid=nestedUser,ou=People,dc=example,dc=com

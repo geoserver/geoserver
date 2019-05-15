@@ -210,6 +210,83 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertTrue(result.getAuthorities().contains(role));
             assertEquals(3, result.getAuthorities().size());
         }
+
+        /** Tests LDAP hierarchical nested groups search. */
+        @Test
+        public void testHierarchicalGroupSearch() throws Exception {
+            getService().setAllowAnonymousAccess(true);
+
+            ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
+            config.setBindBeforeGroupSearch(false);
+            // activate hierarchical group search
+            config.setUseNestedParentGroups(true);
+            config.setNestedGroupSearchFilter("member=cn={1}");
+            createAuthenticationProvider();
+
+            Authentication result = authProvider.authenticate(authenticationNested);
+            assertNotNull(result);
+            assertEquals("nestedUser", result.getName());
+            assertEquals(3, result.getAuthorities().size());
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+        }
+
+        /** Tests LDAP hierarchical nested groups search. */
+        @Test
+        public void testBindBeforeHierarchicalGroupSearch() throws Exception {
+            getService().setAllowAnonymousAccess(false);
+
+            ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
+            config.setBindBeforeGroupSearch(true);
+            // activate hierarchical group search
+            config.setUseNestedParentGroups(true);
+            config.setNestedGroupSearchFilter("member=cn={1}");
+            createAuthenticationProvider();
+
+            Authentication result = authProvider.authenticate(authenticationNested);
+            assertNotNull(result);
+            assertEquals("nestedUser", result.getName());
+            assertEquals(3, result.getAuthorities().size());
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+        }
+
+        /** Tests LDAP hierarchical nested groups search disabled. */
+        @Test
+        public void testBindBeforeHierarchicalDisabledGroupSearch() throws Exception {
+            getService().setAllowAnonymousAccess(false);
+
+            ((LDAPSecurityServiceConfig) config).setUserDnPattern("uid={0},ou=People");
+            config.setBindBeforeGroupSearch(true);
+            // activate hierarchical group search
+            config.setUseNestedParentGroups(false);
+            createAuthenticationProvider();
+
+            Authentication result = authProvider.authenticate(authenticationNested);
+            assertNotNull(result);
+            assertEquals("nestedUser", result.getName());
+            assertEquals(2, result.getAuthorities().size());
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(
+                    result.getAuthorities()
+                            .stream()
+                            .noneMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+        }
     }
 
     @RunWith(FrameworkRunner.class)

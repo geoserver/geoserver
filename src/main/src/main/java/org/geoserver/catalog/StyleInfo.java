@@ -109,4 +109,12 @@ public interface StyleInfo extends CatalogInfo {
      * <pre>getName()</pre>
      */
     String prefixedName();
+
+    /**
+     * A persistent map of metadata.
+     *
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services
+     * associate various bits of data with a particular style.
+     */
+    MetadataMap getMetadata();
 }

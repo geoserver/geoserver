@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.media.jai.Interpolation;
 import javax.media.jai.RenderedOp;
 import javax.xml.namespace.QName;
@@ -106,10 +107,13 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     public static QName TAZ_BYTE = new QName(MockData.WCS_URI, "tazbyte", MockData.WCS_PREFIX);
+
+    static final QName TIFF_3035 = new QName(MockData.SF_URI, "3035", MockData.SF_PREFIX);
 
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(
@@ -461,6 +465,14 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         super.onSetUp(testData);
         testData.addDefaultRasterLayer(MockData.TASMANIA_DEM, getCatalog());
         testData.addRasterLayer(TAZ_BYTE, "tazbyte.tiff", null, getCatalog());
+
+        testData.addRasterLayer(
+                TIFF_3035,
+                "3035.zip",
+                "tif",
+                null,
+                RenderedImageMapOutputFormatTest.class,
+                getCatalog());
     }
 
     @Test
@@ -1268,6 +1280,42 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         ImageUtilities.disposePlanarImageChain(op);
         imageMap.dispose();
+    }
+
+    @Test
+    public void testReprojectionHasNoWhiteLine()
+            throws IOException, IllegalFilterException, Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?BBOX=-1137115.798172220821,2084204.190127906622,6183796.336430944502,4720584.184010294266"
+                                + "&styles=&layers=sf:3035&Format=image/png"
+                                + "&request=GetMap"
+                                + "&width=1943"
+                                + "&height=700"
+                                + "&srs=EPSG:3857");
+
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotNull(image);
+
+        // Before the fix, the image was containing a vertical stripe on this area
+        final int minX = 1025;
+        final int minY = 0;
+        final int width = 2;
+        final int height = 256;
+        Raster r = image.getData(new Rectangle(minX, minY, width, height));
+
+        final int validPixel = 237;
+        int validPixelsCount = 0;
+        for (int i = minX; i < minX + width; i++) {
+            for (int j = minY; j < minY + height; j++) {
+                if (r.getSample(i, j, 0) == validPixel) {
+                    validPixelsCount++;
+                }
+            }
+        }
+        // Make sure that stripe contains valid data
+        // Before the fix validPixelCount was 0
+        assertEquals(width * height, validPixelsCount);
     }
 
     /**

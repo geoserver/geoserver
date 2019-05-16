@@ -94,6 +94,8 @@ public class MapMLGenerator {
                     factory.createGeometryCollection(
                             buildGeometryCollection(
                                     (org.locationtech.jts.geom.GeometryCollection) g)));
+        } else if (g == null) {
+            // do nothing because geom.geometryContent is null by default
         } else {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }

@@ -13,6 +13,6 @@ Include a few sentences describing the overall goals for this PR (pull request).
 - [ ] New unit tests have been added covering the changes
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
 - [ ] This PR passes the [QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html) (QA checks results will be reported by travis-ci after opening this PR)
-- [ ] Commits chaniging the UI, existing user workflows, or add new functionality, need to include documentation updates
+- [ ] Commits changing the UI, existing user workflows, or adding new functionality, need to include documentation updates
 
 Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.

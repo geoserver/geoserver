@@ -107,7 +107,12 @@ public class Feature {
     }
 
     public void setGeometry(GeometryContent geometry) {
-        this.geometry = geometry;
+        // fixes NPE, allows MapML feature to have no <geometry> element if
+        // there is no geometry associated to the feature, a situation that
+        // comes up when querying an image for RGB values for example
+        if (geometry.getGeometryContent() != null) {
+            this.geometry = geometry;
+        }
     }
 
     public JAXBElement getBbox() {

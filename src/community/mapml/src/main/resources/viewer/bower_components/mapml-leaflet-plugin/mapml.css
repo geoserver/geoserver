@@ -1,0 +1,52 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
+ * European Research Consortium for Informatics and Mathematics, Keio    
+ * University, Beihang). All Rights Reserved. This work is distributed under the 
+ * W3C® Software License [1] in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
+ * A PARTICULAR PURPOSE.
+ * [1] http://www.w3.org/Consortium/Legal/copyright-software
+*/
+/* this is required by tiles which are actually divs with multiple images in them */
+.leaflet-tile img {
+        position: absolute;
+        left: 0;
+        top: 0;
+	}
+/* MapML treats images like map layers, so far as fade animation is concerned */
+.leaflet-fade-anim .leaflet-image-layer {
+        will-change: opacity;
+	}
+        
+.leaflet-image-layer {
+        visibility: hidden;
+}
+.leaflet-image-loaded {
+        visibility: inherit;
+}
+/* this is to indent the nested details in the layer control */
+/* details/summary is in progress 2018-03-02 on ms-edge so gonna rely on that...
+   https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6261266-details-summary-elements */
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers {
+        margin-left: 1em;
+}
+.leaflet-control-layers details.mapml-control-layers > * {
+        margin-left: 0;
+        margin-right: 0;
+}
+.leaflet-control-layers details.mapml-control-layers > select,
+.leaflet-control-layers details.mapml-control-layers > span{
+        margin-left: 1em;
+}
+.leaflet-control-layers details.mapml-control-layers > input {
+        margin-left: 1em;
+        width: 90%
+}
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span {
+    display: block;
+}
+.leaflet-control-layers details.mapml-control-layers > details.mapml-control-layers > span > label {
+    display: inline;
+}

@@ -212,8 +212,14 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     path = c.getPageRelativePath();
 
                     // check visible links
-                    ExternalLink olLink = (ExternalLink) c.get("itemProperties:3:component:ol");
-                    ExternalLink gmlLink = (ExternalLink) c.get("itemProperties:3:component:gml");
+                    ExternalLink olLink =
+                            (ExternalLink)
+                                    c.get("itemProperties:3:component:commonFormat:0")
+                                            .getDefaultModelObject();
+                    ExternalLink gmlLink =
+                            (ExternalLink)
+                                    c.get("itemProperties:3:component:commonFormat:1")
+                                            .getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost:80/context/cite/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=cite%3ALakes%20%2B%20a%20plus&amp;bbox=-180.0%2C-90.0%2C180.0%2C90.0&amp;width=768&amp;height=384&amp;srs=EPSG%3A4326&amp;format=application/openlayers",

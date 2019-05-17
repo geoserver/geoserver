@@ -318,8 +318,14 @@ public class FeatureTypeController extends AbstractCatalogController {
             @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false")
                     Boolean quietOnNotFound) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
-        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        FeatureTypeInfo ftInfo;
+        if (storeName != null) {
+            DataStoreInfo dsInfo = getExistingDataStore(workspaceName, storeName);
+            ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        } else {
+            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
+            ftInfo = catalog.getFeatureTypeByName(ns, featureTypeName);
+        }
         checkFeatureTypeExists(ftInfo, workspaceName, storeName, featureTypeName);
 
         return wrapObject(ftInfo, FeatureTypeInfo.class);

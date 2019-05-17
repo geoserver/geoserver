@@ -10,6 +10,8 @@ Include a few sentences describing the overall goals for this PR (pull request).
 - [ ] There is a ticket in Jira describing the issue/improvement/feature (a notable exemptions is, changes not visible to end users)
 - [ ] PR for bug fixes and small new features are presented as a single commit
 - [ ] Commit message must be in the form "[GEOS-XYZW] Title of the Jira ticket" (export to XML in Jira generates the message in this exact form)
+
+The following are required only for core and extension modules, while they are welcomed, but not required, for community modules:
 - [ ] New unit tests have been added covering the changes
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
 - [ ] This PR passes the [QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html) (QA checks results will be reported by travis-ci after opening this PR)

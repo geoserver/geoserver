@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import net.opengis.wfs.FeatureCollectionType;
-import org.geoserver.config.GeoServer;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Extent;
@@ -27,15 +28,15 @@ import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
     @Autowired private Jaxb2Marshaller mapmlMarshaller;
-
-    @Autowired private GeoServer geoServer;
 
     private WMS wms;
 
@@ -50,20 +51,6 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             throws ServiceException, IOException {
 
         String baseUrl = request.getBaseUrl();
-
-        List<FeatureCollection> featureCollections = results.getFeature();
-        if (featureCollections.size() > 1) {
-            throw new ServiceException(
-                    "MapML OutputFormat does not support Multiple Feature Type output.");
-        }
-        SimpleFeatureCollection fc = null;
-        if (featureCollections.size() == 1) {
-            FeatureCollection featureCollection = featureCollections.get(0);
-            if (!(featureCollection instanceof SimpleFeatureCollection)) {
-                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
-            }
-            fc = (SimpleFeatureCollection) featureCollection;
-        }
 
         // build the mapML doc
         Mapml mapml = new Mapml();
@@ -89,17 +76,32 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         mapml.setBody(body);
         Extent extent = new Extent();
         body.setExtent(extent);
-        // extent.setUnits(projType);
-        List<Object> extentList = extent.getInputOrDatalistOrLink();
 
-        if (fc != null) {
+        List<FeatureCollection> featureCollections = results.getFeature();
+        SimpleFeatureCollection fc;
+        if (featureCollections.size() > 0) {
+            int lastFeatureCollection = featureCollections.size() - 1;
+            if (!(featureCollections.get(lastFeatureCollection)
+                    instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            fc = (SimpleFeatureCollection) featureCollections.get(lastFeatureCollection);
             List<Feature> features = body.getFeatures();
-            try (SimpleFeatureIterator iterator = fc.features()) {
-                while (iterator.hasNext()) {
-                    SimpleFeature feature = iterator.next();
+            SimpleFeatureIterator iterator = fc.features();
+            while (iterator.hasNext()) {
+                SimpleFeature feature;
+                try {
+                    // this can throw due to the feature not fitting into
+                    // the extent of the CRS when it's transformed. Could
+                    // see if in such a case we could just return the
+                    // scalar properties
+                    feature = iterator.next();
                     // convert feature to xml
                     Feature f = MapMLGenerator.buildFeature(feature);
                     features.add(f);
+                    break; // stop after one feature
+                } catch (IllegalStateException e) {
+                    LOGGER.log(Level.INFO, "Error transforming feature.");
                 }
             }
         }

@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +6,8 @@
 package org.geoserver.mapml;
 
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.http.MediaType;
 
 public final class MapMLConstants {
@@ -21,6 +22,14 @@ public final class MapMLConstants {
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
 
-    public static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    public static final String REL_ZOOMIN = "zoomin";
+    public static final String REL_ZOOMOUT = "zoomout";
+    public static final String REL_NEXT = "next";
+    public static final String REL_LICENSE = "license";
+
+    public static final List<String> ZOOM_RELS = Arrays.asList(REL_ZOOMIN, REL_ZOOMOUT);
+
+    public static int PAGESIZE = 100;
 }

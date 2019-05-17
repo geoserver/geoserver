@@ -110,7 +110,13 @@ Each of the URL query string parameters are optional, but if provided they are e
 MapML Visualization
 -------------------
 
-The only tool which is presently able to display MapML is a Leaflet-based MapML client. This client can be imported into an HTML page with the appropriate ``<map>`` and ``<layer>`` elements to reference the MapML resources defined above. Here is a simple, self-contained example of such an HTML page: 
+With the MapML Community Module installed, the GeoServer Layer Preview page is modified to add a link to the MapML resources for each layer and layer group.  The MapML link in the Layer Preview table intercepted by the MapML module, and an HTML Web map page is created on the fly which refers to the MapML resource:
+
+.. figure:: images/mapml_preview_ui.png
+
+You can add layers to the map as you like, by dragging the link URL from the Layer Preview table and dropping it onto another layer's MapML preview.  If all goes well, you should see the layers stacked on the map and in the layer control.
+
+The only tool which is presently able to display MapML is a Leaflet-based MapML client. You can get your own copy of the client by using the npm "bower" package management tool.  Once you have bower installed, you can install the web-map client in a directory of your choice, by running the "bower install web-map" command in that directory. This will create a "bower_components" directory in the directory in which you execute the command. This client can be imported into an HTML page with the appropriate ``<map>`` and ``<layer>`` elements to reference the MapML resources defined above. Here is a simple, self-contained example of such an HTML page: 
 
 .. code-block:: html
 
@@ -118,8 +124,8 @@ The only tool which is presently able to display MapML is a Leaflet-based MapML 
         <head>
             <title>MapML Test Map</title>
             <meta charset="utf-8" />
-            <script src="http://geogratis.gc.ca/api/beta/mapml/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-            <link rel="import" href="http://geogratis.gc.ca/api/beta/mapml/client/bower_components/web-map/web-map.html">
+            <script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+            <link rel="import" href="./bower_components/web-map/web-map.html">
             <style>
                 /* make the map fullscreen */
                 html, body {
@@ -138,10 +144,10 @@ The only tool which is presently able to display MapML is a Leaflet-based MapML 
             </style>
         </head>
         <body>
-            <map is="web-map" projection="{projectionName}" zoom="2" lat="61.209125" lon="-90.850837" controls>
-                <layer- label="{layerName}" src="http://{serverName}/geoserver/mapml/{layerName}/{projectionName}?style={styleName}" checked hidden></layer->
+            <map is="web-map" projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
+                <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
             </map>
         </body>
     </html>
     
-In the above example, the place-holders ``{layerName}``, ``{serverName}``, ``{projectionName}``, and ``{styleName}`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.
+In the above example, the place-holders ``topp:states``, ``localhost:8080``, ``osmtile``, and ``population`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.  You may also like to "View Source" on the preview page to see what the markup looks like for any layer.  This code can be copied and pasted without harm, and you should try it and see what works and what the limitations are.  For further information about MapML, and the Maps for HTML Community Group, please visit http://maps4html.org.

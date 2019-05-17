@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +15,7 @@ import org.geoserver.mapml.xml.GeometryContent;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryType;
@@ -94,9 +95,7 @@ public class MapMLGenerator {
                     factory.createGeometryCollection(
                             buildGeometryCollection(
                                     (org.locationtech.jts.geom.GeometryCollection) g)));
-        } else if (g == null) {
-            // do nothing because geom.geometryContent is null by default
-        } else {
+        } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
 
@@ -175,14 +174,9 @@ public class MapMLGenerator {
             org.locationtech.jts.geom.MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
         List<JAXBElement<List<String>>> mpCoords = multiPoint.getCoordinatePair();
-        for (int i = 0; i < mp.getNumGeometries(); i++) {
-            mpCoords.add(
-                    factory.createMultiPointCoordinates(
-                            buildCoordinates(
-                                    ((org.locationtech.jts.geom.LineString) (mp.getGeometryN(i)))
-                                            .getCoordinateSequence(),
-                                    null)));
-        }
+        mpCoords.add(
+                factory.createMultiPointCoordinates(
+                        buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), null)));
         return multiPoint;
     }
 

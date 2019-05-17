@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,20 +8,25 @@ package org.geoserver.mapml;
 import static org.geoserver.mapml.MapMLConstants.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.mapml.tcrs.LatLngBounds;
+import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
@@ -43,7 +48,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.util.logging.Logging;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
@@ -63,18 +68,149 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/mapml")
 @CrossOrigin
 public class MapMLController {
-    private static final Logger LOGGER = Logging.getLogger("org.geoserver.mapml");
 
     @Autowired GeoServer geoServer;
     @Autowired WMS wms;
 
+    public static final HashMap<String, TiledCRS> previewTcrsMap = new HashMap<>();
+
+    static {
+        previewTcrsMap.put("OSMTILE", new TiledCRS("OSMTILE"));
+        previewTcrsMap.put("CBMTILE", new TiledCRS("CBMTILE"));
+        previewTcrsMap.put("APSTILE", new TiledCRS("APSTILE"));
+        // TODO add WGS84 support
+    }
+
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
-        produces = MAPML_MIME_TYPE
+        produces = {"text/html", "text/html;charset=UTF-8", "!" + MAPML_MIME_TYPE}
+    )
+    public String Html(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable("layer") String layer,
+            @PathVariable("proj") String proj,
+            @RequestParam("style") Optional<String> style,
+            @RequestParam("transparent") Optional<Boolean> transparent,
+            @RequestParam("format") Optional<String> format) {
+        LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        ResourceInfo resourceInfo = null;
+        LayerGroupInfo layerGroupInfo;
+        boolean isLayerGroup = (layerInfo == null);
+        String layerName = "";
+        if (isLayerGroup) {
+            layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
+            if (layerGroupInfo == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return "Invalid layer or layer group name: " + layer;
+            }
+            for (LayerInfo li : layerGroupInfo.layers()) {
+                bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
+            }
+            // if the layerGroupInfo.getName() is empty, the layer group isn't
+            // available to a getMap request, so we should probably throw in
+            // that case, or perhaps let the mapML method deal with iterating
+            // the child layers.
+            layerName =
+                    layerGroupInfo.getTitle() == null || layerGroupInfo.getTitle().isEmpty()
+                            ? layerGroupInfo.getName().isEmpty() ? layer : layerGroupInfo.getName()
+                            : layerGroupInfo.getTitle();
+        } else {
+            resourceInfo = layerInfo.getResource();
+            bbox = layerInfo.getResource().getLatLonBoundingBox();
+            layerName =
+                    resourceInfo.getTitle().isEmpty()
+                            ? layerInfo.getName().isEmpty() ? layer : layerInfo.getName()
+                            : resourceInfo.getTitle();
+        }
+        ProjType projType;
+        try {
+            projType = ProjType.fromValue(proj.toUpperCase());
+        } catch (IllegalArgumentException iae) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "Invalid TCRS name: " + proj;
+        }
+
+        Double longitude = bbox.centre().getX();
+        Double latitude = bbox.centre().getY();
+
+        // convert bbox to projected bounds
+
+        // allowing for the data to be displayed at 1024x768 pixels, figure out
+        // the zoom level at which the projected bounds fits into 1024x768
+        // create a function that accepts a display size e.g. 1024,768 (w,h)
+        // and a lat-long bounds, and a tcrs name and returns a zoom
+        // recommended for display of the bounds on that screen size
+
+        int zoom =
+                previewTcrsMap
+                        .get(projType.value())
+                        .fitLatLngBoundsToDisplay(new LatLngBounds(bbox), 1024, 768);
+
+        String viewerPath = request.getContextPath() + request.getServletPath() + "/viewer";
+        String title = "GeoServer MapML preview " + layerName;
+
+        // figure out JavaScript to make the map responsively fill the
+        // browser window. This would be a media query I think... and the
+        // map could receive a zoom parameter based on the media query
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html>\n")
+                .append("<html>\n")
+                .append("<head>\n")
+                .append("<title>")
+                .append(title)
+                .append("</title>\n")
+                .append("<meta charset='utf-8'>\n")
+                .append("<script src=\"")
+                .append(viewerPath)
+                .append("/bower_components/webcomponentsjs/webcomponents-lite.min.js\"></script>\n")
+                .append("<link rel=\"import\" href=\"")
+                .append(viewerPath)
+                .append("/bower_components/web-map/web-map.html\">\n")
+                .append("<style>\n")
+                .append("* {margin: 0;padding: 0;}\n")
+                .append("map { display: flexbox; height: 100vh;}\n")
+                .append("</style>")
+                .append("</head>\n")
+                .append("<body>\n")
+                .append("<map is=\"web-map\" projection=\"")
+                .append(projType.value())
+                .append("\" ")
+                .append("zoom=\"")
+                .append(zoom)
+                .append("\" lat=\"")
+                .append(latitude)
+                .append("\" ")
+                .append("lon=\"")
+                .append(longitude)
+                .append("\" controls>\n")
+                .append("<layer- label=\"")
+                .append(layerName)
+                .append("\" ")
+                .append("src=\"")
+                .append(request.getContextPath())
+                .append(request.getServletPath())
+                .append("/")
+                .append(layer)
+                .append("/")
+                .append(proj)
+                .append("/\" checked></layer->\n")
+                .append("</body>\n")
+                .append("</html>");
+        return sb.toString();
+    }
+
+    @RequestMapping(
+        value = "/{layer}/{proj}",
+        method = {RequestMethod.GET, RequestMethod.POST},
+        produces = {MAPML_MIME_TYPE, "!text/html;charset=UTF-8"}
     )
     public Mapml mapML(
             HttpServletRequest request,
+            HttpServletResponse response,
             @PathVariable("layer") String layer,
             @PathVariable("proj") String proj,
             @RequestParam("style") Optional<String> style,
@@ -82,24 +218,61 @@ public class MapMLController {
             @RequestParam("format") Optional<String> format)
             throws NoSuchAuthorityCodeException, TransformException, FactoryException, IOException {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
-        if (layerInfo == null) {
-            // TODO better error handling
-            throw new RuntimeException("Invalid layer name: " + layer);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        ResourceInfo resourceInfo = null;
+        MetadataMap layerMeta;
+        LayerGroupInfo layerGroupInfo;
+        String workspace = "";
+        boolean isTransparent = true;
+        boolean queryable = false;
+        boolean isLayerGroup = (layerInfo == null);
+        String layerName = "";
+        if (isLayerGroup) {
+            layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
+            if (layerGroupInfo == null) {
+                try {
+                    response.sendError(
+                            HttpServletResponse.SC_NOT_FOUND,
+                            "Invalid layer or layer group name: " + layer);
+                } catch (IOException ioe) {
+                }
+                return null;
+            }
+            for (LayerInfo li : layerGroupInfo.layers()) {
+                bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
+            }
+            layerMeta = layerGroupInfo.getMetadata();
+            workspace =
+                    (layerGroupInfo.getWorkspace() != null
+                            ? layerGroupInfo.getWorkspace().getName()
+                            : "");
+            queryable = !layerGroupInfo.isQueryDisabled();
+            layerName = layerGroupInfo.getName();
+        } else {
+            resourceInfo = layerInfo.getResource();
+            bbox = layerInfo.getResource().getLatLonBoundingBox();
+            layerMeta = resourceInfo.getMetadata();
+            workspace =
+                    (resourceInfo.getStore().getWorkspace() != null
+                            ? resourceInfo.getStore().getWorkspace().getName()
+                            : "");
+            queryable = layerInfo.isQueryable();
+            isTransparent = transparent.orElse(!layerInfo.isOpaque());
+            layerName = layerInfo.getName();
         }
 
         ProjType projType;
         try {
             projType = ProjType.fromValue(proj.toUpperCase());
         } catch (IllegalArgumentException iae) {
-            // TODO better error handling
-            throw new RuntimeException(iae);
+            try {
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST, "Invalid TCRS name: " + proj);
+            } catch (IOException ioe) {
+            }
+            return null;
         }
 
-        ResourceInfo resourceInfo = layerInfo.getResource();
-        MetadataMap layerMeta = resourceInfo.getMetadata();
-
-        // convert the data's bbox into the lcc projection
-        ReferencedEnvelope bbox = resourceInfo.getLatLonBoundingBox();
         CoordinateReferenceSystem projSrs = CRS.decode("EPSG:" + projType.epsgCode);
         Collection<? extends GeographicExtent> geoExtents =
                 projSrs.getDomainOfValidity().getGeographicElements();
@@ -123,7 +296,6 @@ public class MapMLController {
         ReferencedEnvelope cbmBbox = bbox.transform(projSrs, true);
 
         String styleName = style.orElse("");
-        boolean isTransparent = transparent.orElse(!layerInfo.isOpaque());
         String imageFormat = format.orElse("image/png");
 
         String baseUrl = ResponseUtils.baseURL(request);
@@ -150,7 +322,7 @@ public class MapMLController {
 
         // build the head
         HeadContent head = new HeadContent();
-        head.setTitle(layerInfo.getName());
+        head.setTitle(layerName);
         Base base = new Base();
         base.setHref(baseUrl + "mapml");
         head.setBase(base);
@@ -180,57 +352,62 @@ public class MapMLController {
             }
             links.add(titleLink);
         }
-        // styles
-        Set<StyleInfo> styles = layerInfo.getStyles();
-        String effectiveStyleName = styleName;
-        if (effectiveStyleName.isEmpty()) {
-            effectiveStyleName = layerInfo.getDefaultStyle().getName();
-        }
 
-        // style links
-        for (StyleInfo si : styles) {
-            // skip the self style case (if it is even listed)
-            if (si.getName().equals(effectiveStyleName)) continue;
-            Link styleLink = new Link();
-            styleLink.setRel(RelType.STYLE);
-            styleLink.setTitle(si.getName());
-            styleLink.setHref(
+        if (!isLayerGroup) {
+
+            // styles
+            Set<StyleInfo> styles = layerInfo.getStyles();
+            String effectiveStyleName = styleName;
+            if (effectiveStyleName.isEmpty()) {
+                effectiveStyleName = layerInfo.getDefaultStyle().getName();
+            }
+
+            // style links
+            for (StyleInfo si : styles) {
+                // skip the self style case (if it is even listed)
+                if (si.getName().equals(effectiveStyleName)) continue;
+                Link styleLink = new Link();
+                styleLink.setRel(RelType.STYLE);
+                styleLink.setTitle(si.getName());
+                styleLink.setHref(
+                        baseUrl
+                                + "mapml/"
+                                + layer
+                                + "/"
+                                + proj
+                                + "?style="
+                                + si.getName()
+                                + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
+                                + (format.isPresent() ? "&format=" + imageFormat : ""));
+                links.add(styleLink);
+            }
+            // output the self style link, taking care to handle the default empty string styleName
+            // case
+            Link selfStyleLink = new Link();
+            selfStyleLink.setRel(RelType.SELF_STYLE);
+            selfStyleLink.setTitle(effectiveStyleName);
+            selfStyleLink.setHref(
                     baseUrl
                             + "mapml/"
                             + layer
                             + "/"
                             + proj
                             + "?style="
-                            + si.getName()
+                            + styleName
                             + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
                             + (format.isPresent() ? "&format=" + imageFormat : ""));
-            links.add(styleLink);
-        }
-        // output the self style link, taking care to handle the default empty string styleName case
-        Link selfStyleLink = new Link();
-        selfStyleLink.setRel(RelType.SELF_STYLE);
-        selfStyleLink.setTitle(effectiveStyleName);
-        selfStyleLink.setHref(
-                baseUrl
-                        + "mapml/"
-                        + layer
-                        + "/"
-                        + proj
-                        + "?style="
-                        + styleName
-                        + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
-                        + (format.isPresent() ? "&format=" + imageFormat : ""));
 
-        links.add(selfStyleLink);
+            links.add(selfStyleLink);
+        }
 
         // alternate projection links
         for (ProjType pt : ProjType.values()) {
             // skip the current proj
             if (pt.equals(projType)) continue;
-            Link styleLink = new Link();
-            styleLink.setRel(RelType.ALTERNATE);
-            styleLink.setProjection(pt);
-            styleLink.setHref(
+            Link projectionLink = new Link();
+            projectionLink.setRel(RelType.ALTERNATE);
+            projectionLink.setProjection(pt);
+            projectionLink.setHref(
                     baseUrl
                             + "mapml/"
                             + layer
@@ -240,7 +417,7 @@ public class MapMLController {
                             + styleName
                             + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
                             + (format.isPresent() ? "&format=" + imageFormat : ""));
-            links.add(styleLink);
+            links.add(projectionLink);
         }
 
         mapml.setHead(head);
@@ -297,7 +474,7 @@ public class MapMLController {
                     List<Option> options = select.getOptions();
                     for (Date date : dates) {
                         Option o = new Option();
-                        o.setContent(DATE_FORMAT.format(date));
+                        o.setContent(new SimpleDateFormat(DATE_FORMAT).format(date));
                         options.add(o);
                     }
                 }
@@ -376,11 +553,11 @@ public class MapMLController {
             tileLink.setRel(RelType.TILE);
             tileLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
@@ -459,11 +636,11 @@ public class MapMLController {
             imageLink.setRel(RelType.IMAGE);
             imageLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
@@ -478,7 +655,7 @@ public class MapMLController {
         }
 
         // query inputs
-        if (layerInfo.isQueryable()) {
+        if (queryable) {
             UnitType units = UnitType.MAP;
             if (Boolean.TRUE.equals(useTiles)) {
                 units = UnitType.TILE;
@@ -504,13 +681,13 @@ public class MapMLController {
             queryLink.setRel(RelType.QUERY);
             queryLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetFeatureInfo&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetFeatureInfo&FEATURE_COUNT=50&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&query_layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")

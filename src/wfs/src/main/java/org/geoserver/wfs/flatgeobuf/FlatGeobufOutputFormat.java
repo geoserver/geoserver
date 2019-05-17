@@ -66,7 +66,7 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
         if (isComplexFeature(featureCollection))
         	throw new RuntimeException("FlatGeobuf does not support complex features");
         
-        long featureCount = featureCollection.getNumberOfFeatures().longValue();
+        long featureCount = featureCollection.getTotalNumberOfFeatures().longValue();
         
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection) featureCollection.getFeature().get(0);

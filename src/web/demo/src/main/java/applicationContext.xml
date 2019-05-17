@@ -35,7 +35,25 @@
     <property name="scope" value="org.geoserver.web.demo.MapPreviewPage"/>
     <property name="javaScriptFilename" value="mappreview_keyshortcut.js"/>
   </bean>
-    
+  
+  <bean id="openLayersPreview" class="org.geoserver.web.demo.OpenLayersFormatLink">
+    <property name="id" value="ol"/>
+    <property name="titleKey" value="ol.title"/>
+    <property name="order" value="10"/>
+  </bean>
+  <bean id="gMLPreview" class="org.geoserver.web.demo.GMLFormatLink">
+    <property name="id" value="gml"/>
+    <property name="titleKey" value="gml.title"/>
+    <property name="order" value="20"/>
+    <property name="geoserver">
+      <ref bean="geoServer"/>
+    </property>
+  </bean>
+  <bean id="kMLPreview" class="org.geoserver.web.demo.KMLFormatLink">
+    <property name="id" value="kml"/>
+    <property name="titleKey" value="kml.title"/>
+    <property name="order" value="30"/>
+  </bean>
   <bean id="demoRequests" class="org.geoserver.web.DemoLinkInfo">
     <property name="id" value="demoRequests"/>
     <property name="titleKey" value="DemoRequestsPage.title"/>

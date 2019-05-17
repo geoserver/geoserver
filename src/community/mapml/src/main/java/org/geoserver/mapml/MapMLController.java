@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +10,7 @@ import static org.geoserver.mapml.MapMLConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +23,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.mapml.tcrs.LatLngBounds;
+import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
@@ -68,10 +71,117 @@ public class MapMLController {
     @Autowired GeoServer geoServer;
     @Autowired WMS wms;
 
+    public static final HashMap<String, TiledCRS> previewTcrsMap = new HashMap<>();
+
+    static {
+        previewTcrsMap.put("OSMTILE", new TiledCRS("OSMTILE"));
+        previewTcrsMap.put("CBMTILE", new TiledCRS("CBMTILE"));
+        previewTcrsMap.put("APSTILE", new TiledCRS("APSTILE"));
+        // TODO add WGS84 support
+    }
+
     @RequestMapping(
         value = "/{layer}/{proj}",
         method = {RequestMethod.GET, RequestMethod.POST},
-        produces = MAPML_MIME_TYPE
+        produces = {"text/html", "text/html;charset=UTF-8", "!" + MAPML_MIME_TYPE}
+    )
+    public String Html(
+            HttpServletRequest request,
+            @PathVariable("layer") String layer,
+            @PathVariable("proj") String proj,
+            @RequestParam("style") Optional<String> style,
+            @RequestParam("transparent") Optional<Boolean> transparent,
+            @RequestParam("format") Optional<String> format) {
+        LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
+        if (layerInfo == null) {
+            // TODO better error handling
+            throw new RuntimeException("Invalid layer name: " + layer);
+        }
+        ProjType projType;
+        try {
+            projType = ProjType.fromValue(proj.toUpperCase());
+        } catch (IllegalArgumentException iae) {
+            // TODO better error handling
+            throw new RuntimeException(iae);
+        }
+        ResourceInfo resourceInfo = layerInfo.getResource();
+
+        ReferencedEnvelope bbox = resourceInfo.getLatLonBoundingBox();
+        Double longitude = bbox.centre().getX();
+        Double latitude = bbox.centre().getY();
+
+        // convert bbox to projected bounds
+
+        // allowing for the data to be displayed at 1024x768 pixels, figure out
+        // the zoom level at which the projected bounds fits into 1024x768
+        // create a function that accepts a display size e.g. 1024,768 (w,h)
+        // and a lat-long bounds, and a tcrs name and returns a zoom
+        // recommended for display of the bounds on that screen size
+
+        int zoom =
+                previewTcrsMap
+                        .get(projType.value())
+                        .fitLatLngBoundsToDisplay(new LatLngBounds(bbox), 1024, 768);
+
+        String label = resourceInfo.getTitle().isEmpty() ? layer : resourceInfo.getTitle();
+        String viewerPath = request.getContextPath() + request.getServletPath() + "/viewer";
+        String title = "GeoServer MapML preview " + label;
+
+        // figure out JavaScript to make the map responsively fill the
+        // browser window. This would be a media query I think... and the
+        // map could receive a zoom parameter based on the media query
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html>\n")
+                .append("<html>\n")
+                .append("<head>\n")
+                .append("<title>")
+                .append(title)
+                .append("</title>\n")
+                .append("<meta charset='utf-8'>\n")
+                .append("<script src=\"")
+                .append(viewerPath)
+                .append("/bower_components/webcomponentsjs/webcomponents-lite.min.js\"></script>\n")
+                .append("<link rel=\"import\" href=\"")
+                .append(viewerPath)
+                .append("/bower_components/web-map/web-map.html\">\n")
+                .append("<style>\n")
+                .append("* {margin: 0;padding: 0;}\n")
+                .append("map { display: flexbox; height: 100vh;}\n")
+                .append("</style>")
+                .append("</head>\n")
+                .append("<body>\n")
+                .append("<map is=\"web-map\" projection=\"")
+                .append(projType.value())
+                .append("\" ")
+                .append("zoom=\"")
+                .append(zoom)
+                .append("\" lat=\"")
+                .append(latitude)
+                .append("\" ")
+                .append("lon=\"")
+                .append(longitude)
+                .append("\" controls>\n")
+                .append("<layer- label=\"")
+                .append(label)
+                .append("\" ")
+                .append("src=\"")
+                .append(request.getContextPath())
+                .append(request.getServletPath())
+                .append("/")
+                .append(layer)
+                .append("/")
+                .append(proj)
+                .append("/\" checked></layer->\n")
+                .append("</body>\n")
+                .append("</html>");
+        return sb.toString();
+    }
+
+    @RequestMapping(
+        value = "/{layer}/{proj}",
+        method = {RequestMethod.GET, RequestMethod.POST},
+        produces = {MAPML_MIME_TYPE, "!text/html;charset=UTF-8"}
     )
     public Mapml mapML(
             HttpServletRequest request,

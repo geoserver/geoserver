@@ -27,6 +27,7 @@
   <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">
     <constructor-arg ref="wms"/>
   </bean>
+  <mvc:resources mapping="/mapml/viewer/**" location="classpath:/viewer/"/>
   <bean class="org.geoserver.mapml.MapMLMessageConverter" id="mapmlMessageConverter"/>
   <bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller" id="mapmlMarshaller">
     <property name="contextPath" value="org.geoserver.mapml.xml"/>
@@ -40,5 +41,10 @@
         </entry>
       </map>
     </property>
+  </bean>
+  <bean id="mapmlPreview" class="org.geoserver.web.demo.MapMLFormatLink">
+    <property name="id" value="mapml"/>
+    <property name="titleKey" value="MapMLPreviewLink.title"/>
+    <property name="order" value="35"/>
   </bean>
 </beans>

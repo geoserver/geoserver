@@ -8,7 +8,7 @@ Include a few sentences describing the overall goals for this PR (pull request).
 
 For all pull requests:
 
-- [ ] Confirm you have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) - 
+- [ ] Confirm you have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) 
 - [ ] You have sent a Contribution Licence Agreement (CLA) as necessary (not required for small changes, e.g., fixing typos in documentation)
 
 The following are required only for core and extension modules, while they are welcomed, but not required, for community modules:

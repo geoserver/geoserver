@@ -23,6 +23,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.security.DisabledServiceResourceFilter;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wfs.xml.GML32OutputFormat;
@@ -342,6 +343,21 @@ public class PreviewLayer {
         // recursively check super types
         AttributeType parent = featureType.getSuper();
         return findFeatureTypeGmlVersion(parent);
+    }
+    /**
+     * Returns true if serviceName is available for resource, otherwise false
+     *
+     * @param serviceName "WFS" or "WMS"
+     */
+    public boolean hasServiceSupport(String serviceName) {
+        LayerInfo linfo = GeoServerApplication.get().getCatalog().getLayerByName(this.getName());
+        if (linfo != null && linfo.getResource() != null && serviceName != null) {
+            List<String> disabledServices =
+                    DisabledServiceResourceFilter.disabledServices(linfo.getResource());
+            return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
+        }
+        // layer group and backward compatibility
+        return true;
     }
 
     private boolean isAbstractFeatureType(AttributeType type) {

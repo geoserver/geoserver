@@ -37,7 +37,10 @@ public class AbstractMapPreviewPageTest extends GeoServerWicketTestSupport {
         // collect GML links model objects
         List<String> gmlLinks = new ArrayList<String>();
         for (int i = 1; i <= EXPECTED_GML_LINKS.size(); i++) {
-            ExternalLink gmlLink = (ExternalLink) items.get(i + ":itemProperties:3:component:gml");
+            ExternalLink gmlLink =
+                    (ExternalLink)
+                            items.get(i + ":itemProperties:3:component:commonFormat:1")
+                                    .getDefaultModelObject();
             assertNotNull(gmlLink);
             gmlLinks.add(gmlLink.getDefaultModelObjectAsString());
         }

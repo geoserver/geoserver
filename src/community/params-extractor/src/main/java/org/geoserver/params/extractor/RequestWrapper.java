@@ -18,7 +18,8 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     private final UrlTransform urlTransform;
     private final Map originalParameters;
 
-    private final Pattern pathsPattern;
+    private final Pattern pathInfoPattern;
+    private final Pattern servletPathPattern;
 
     private final String pathInfo;
     private final String servletPath;
@@ -29,11 +30,8 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
         super(request);
         this.urlTransform = urlTransform;
         originalParameters = request.getParameterMap();
-        pathsPattern =
-                Pattern.compile(
-                        "^"
-                                + request.getContextPath()
-                                + "(/[^\\?^/]+)(/[^\\?]*[^/^\\?])?/?(\\??.*)?$");
+        pathInfoPattern = Pattern.compile("^" + request.getContextPath() + "([^/]+?).*$");
+        servletPathPattern = Pattern.compile("^" + request.getContextPath() + "[^/]+?/([^/]+?).*$");
         pathInfo = extractPathInfo(urlTransform.getOriginalRequestUri());
         servletPath = extractServletPath(urlTransform.getOriginalRequestUri());
         parameters = new HashMap<>(super.getParameterMap());
@@ -93,15 +91,15 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String extractPathInfo(String requestUri) {
-        Matcher matcher = pathsPattern.matcher(requestUri);
+        Matcher matcher = pathInfoPattern.matcher(requestUri);
         if (matcher.matches()) {
-            return matcher.group(2);
+            return matcher.group(1);
         }
         return "";
     }
 
     private String extractServletPath(String requestUri) {
-        Matcher matcher = pathsPattern.matcher(requestUri);
+        Matcher matcher = servletPathPattern.matcher(requestUri);
         if (matcher.matches()) {
             return matcher.group(1);
         }

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +19,6 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     private final UrlTransform urlTransform;
     private final Map originalParameters;
 
-    private final Pattern pathsPattern;
-
     private final String pathInfo;
     private final String servletPath;
 
@@ -29,13 +28,20 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
         super(request);
         this.urlTransform = urlTransform;
         originalParameters = request.getParameterMap();
-        pathsPattern =
+        // extract URL portions for servletpath and pathinfo
+        final Pattern pathsPattern =
                 Pattern.compile(
                         "^"
                                 + request.getContextPath()
-                                + "(/[^\\?^/]+)(/[^\\?]*[^/^\\?])?/?(\\??.*)?$");
-        pathInfo = extractPathInfo(urlTransform.getOriginalRequestUri());
-        servletPath = extractServletPath(urlTransform.getOriginalRequestUri());
+                                + "(/[^?/#]+)(/[^?#]*[^/?#])?(?:/|/?[?#].*)?$");
+        Matcher matcher = pathsPattern.matcher(urlTransform.getOriginalRequestUri());
+        if (matcher.matches()) {
+            servletPath = Optional.ofNullable(matcher.group(1)).orElse("");
+            pathInfo = Optional.ofNullable(matcher.group(2)).orElse("");
+        } else {
+            pathInfo = "";
+            servletPath = "";
+        }
         parameters = new HashMap<>(super.getParameterMap());
         parameters.putAll(urlTransform.getParameters());
     }
@@ -90,21 +96,5 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String[] getParameterValues(final String name) {
         return getParameterMap().get(name);
-    }
-
-    private String extractPathInfo(String requestUri) {
-        Matcher matcher = pathsPattern.matcher(requestUri);
-        if (matcher.matches()) {
-            return matcher.group(2);
-        }
-        return "";
-    }
-
-    private String extractServletPath(String requestUri) {
-        Matcher matcher = pathsPattern.matcher(requestUri);
-        if (matcher.matches()) {
-            return matcher.group(1);
-        }
-        return "";
     }
 }

@@ -9,6 +9,7 @@ import it.geosolutions.jaiext.lookup.LookupTable;
 import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
+import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -1488,6 +1489,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 iw.crop(0, 0, mapWidth, mapHeight);
                 image = iw.getRenderedImage();
             }
+        }
+        if (LOGGER.isLoggable(Level.FINE) && image != null) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Direct rendering path produced the following image chain:\n"
+                            + RenderedImageBrowser.dumpChain(image));
         }
         return image;
     }

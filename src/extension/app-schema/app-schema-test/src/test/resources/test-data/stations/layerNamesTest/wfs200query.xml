@@ -1,0 +1,14 @@
+<wfs:GetFeature service="WFS" version="2.0.0"
+      xmlns:st_gml32="http://www.stations_gml32.org/1.0"
+      xmlns:wfs="http://www.opengis.net/wfs/2.0"
+      xmlns:fes="http://www.opengis.net/fes/2.0"
+      xmlns:gml="http://www.opengis.net/gml/3.2">
+      <wfs:Query typeNames="st_gml32:lyr_Station_gml32">
+        <fes:Filter>
+          <fes:PropertyIsLike wildCard="*" singleChar="." escapeChar="\">
+            <fes:ValueReference>st_gml32:Station_gml32/st_gml32:name</fes:ValueReference>
+            <fes:Literal>*station1*</fes:Literal>
+          </fes:PropertyIsLike>
+        </fes:Filter>
+      </wfs:Query>
+    </wfs:GetFeature>

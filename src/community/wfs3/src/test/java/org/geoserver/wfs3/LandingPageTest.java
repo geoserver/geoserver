@@ -46,6 +46,10 @@ public class LandingPageTest extends WFS3TestSupport {
                 "alternate",
                 "alternate",
                 "alternate");
+        checkJSONLandingPageShared(json);
+    }
+
+    private void checkJSONLandingPageShared(DocumentContext json) {
         // check API links
         assertJSONList(
                 json,
@@ -94,7 +98,18 @@ public class LandingPageTest extends WFS3TestSupport {
     public void testLandingPageYaml() throws Exception {
         String yaml = getAsString("wfs3/?f=application/x-yaml");
         // System.out.println(yaml);
-        // TODO: add actual tests in here
+        DocumentContext json = convertYamlToJsonPath(yaml);
+        assertJSONList(
+                json,
+                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "self");
+        assertJSONList(
+                json,
+                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*wfs3\\/\\?.*/)].rel",
+                "alternate",
+                "alternate",
+                "alternate");
+        checkJSONLandingPageShared(json);
     }
 
     @Test

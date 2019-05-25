@@ -14,7 +14,6 @@ import static org.junit.Assert.assertThat;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -42,6 +41,10 @@ public class CollectionsTest extends WFS3TestSupport {
     @Test
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("wfs3/collections", 200);
+        testCollectionsJson(json);
+    }
+
+    private void testCollectionsJson(DocumentContext json) throws Exception {
         int expected = getCatalog().getFeatureTypes().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
@@ -103,8 +106,8 @@ public class CollectionsTest extends WFS3TestSupport {
     @Test
     public void testCollectionsYaml() throws Exception {
         String yaml = getAsString("wfs3/collections/?f=application/x-yaml");
-        LOGGER.log(Level.INFO, yaml);
-        // TODO: add actual tests
+        DocumentContext json = convertYamlToJsonPath(yaml);
+        testCollectionsJson(json);
     }
 
     @Test

@@ -22,6 +22,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
@@ -37,6 +38,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class TransactionTest extends WFSTestSupport {
@@ -1031,5 +1033,50 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals(200, response.getStatus());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         checkOws10Exception(dom, "InvalidParameterValue");
+    }
+
+    /** Tests XML entity expansion limit on parsing with system property configuration. */
+    @Test
+    public void testEntityExpansionLimitOnTransaction() throws Exception {
+        try {
+            System.getProperties().setProperty(WFSXmlUtils.ENTITY_EXPANSION_LIMIT, "1");
+            Document dom = postAsDOM("wfs", xmlEntityExpansionLimitBody());
+            NodeList serviceExceptionList = dom.getElementsByTagName("ows:ExceptionText");
+            assertEquals(1, serviceExceptionList.getLength());
+            Node serviceException = serviceExceptionList.item(0);
+            // the service exception should contain the JAXP00010001 error code, that means entity
+            // expansion limit is working.
+            assertTrue(serviceException.getTextContent().contains("JAXP00010001"));
+        } finally {
+            System.getProperties().remove(WFSXmlUtils.ENTITY_EXPANSION_LIMIT);
+        }
+    }
+
+    private String xmlEntityExpansionLimitBody() {
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE convert [ <!ENTITY lol \"lol\"><!ENTITY lol1 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;\"> ]>\n"
+                + "<Transaction xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" xmlns:xxx=\"https://www.be/cbb\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.1.0\" xsi:schemaLocation=\"\">\n"
+                + "   <Insert xmlns=\"http://www.opengis.net/wfs\">\n"
+                + "    <xxx_all_service_city xmlns=\"https://www.be/cbb\">\n"
+                + "      <NAME xmlns=\"https://www.be/cbb\">GENT PTEST1</NAME>\n"
+                + "      <DESCRIPTION xmlns=\"https://www.be/cbb\">ptest1</DESCRIPTION>\n"
+                + "      <STATUS xmlns=\"https://www.be/cbb\">default</STATUS>\n"
+                + "      <CREATED_BY xmlns=\"https://www.be/cbb\">upload service</CREATED_BY>\n"
+                + "      <CREATED_DT xmlns=\"https://www.be/cbb\">2019-04-04Z</CREATED_DT>\n"
+                + "      <EXTERNAL_ID xmlns=\"https://www.be/cbb\">City1ptest1</EXTERNAL_ID>\n"
+                + "      <EXTERNAL_SOURCE xmlns=\"https://www.be/cbb\">RIAN</EXTERNAL_SOURCE>\n"
+                + "      <TYPE xmlns=\"https://www.be/cbb\">TYPE.CITY</TYPE>\n"
+                + "      <WAVE xmlns=\"https://www.be/cbb\">3</WAVE>\n"
+                + "      <GEOM xmlns=\"https://www.be/cbb\">\n"
+                + "        <gml:Polygon srsName=\"EPSG:31370\">\n"
+                + "          <gml:outerBoundaryIs>\n"
+                + "            <gml:LinearRing>\n"
+                + "              <gml:coordinates cs=\",\" ts=\" \">&lol1;</gml:coordinates>\n"
+                + "            </gml:LinearRing>\n"
+                + "          </gml:outerBoundaryIs>\n"
+                + "        </gml:Polygon>\n"
+                + "      </GEOM>\n"
+                + "    </xxx_all_service_city>\n"
+                + "  </Insert>\n"
+                + "</Transaction>";
     }
 }

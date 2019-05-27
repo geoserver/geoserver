@@ -122,3 +122,16 @@ Option :guilabel:`Override MIME Type` allows the selection of the MIME type that
 .. figure:: img/services_WFS_mimetype.png
 
 The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; subtype=gml/3.2`` and ``text/xml``. 
+
+Configure XML Entity Expansion limit on WFS XML readers
+-------------------------------------------------------
+
+By default WFS XML readers sets Entity Expansion limit to 100, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property / web.xml init parameter / Environment variable.
+
+For example on command line we can adjust adding parameter:
+
+    -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
+	
+Or in Tomcat properties file (``{TOMCAT_HOME}/conf/catalina.properties``) adding the line:
+
+    org.geoserver.wfs.xml.entityExpansionLimit=50

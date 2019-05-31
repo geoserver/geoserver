@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -46,6 +47,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.metadata.extent.GeographicBoundingBox;
@@ -93,9 +95,37 @@ public class MapMLController {
             @RequestParam("transparent") Optional<Boolean> transparent,
             @RequestParam("format") Optional<String> format) {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
-        if (layerInfo == null) {
-            // TODO better error handling
-            throw new RuntimeException("Invalid layer name: " + layer);
+        // TODO Is DefaultGeographicCRS.WGS84 compatible with Web Mercator / EPSG:3857 ?
+        // If I understand the remarks on www.epsg-registry.org on this account,
+        // the answer is yes, but EPSG:3857 sucks and don't use it. sigh.
+        ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        ResourceInfo resourceInfo = null;
+        LayerGroupInfo layerGroupInfo;
+        boolean isLayerGroup = (layerInfo == null);
+        String layerName = "";
+        if (isLayerGroup) {
+            layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
+            if (layerGroupInfo == null) {
+                throw new RuntimeException("Invalid layer or layer group name: " + layer);
+            }
+            for (LayerInfo li : layerGroupInfo.layers()) {
+                bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
+            }
+            // if the layerGroupInfo.getName() is empty, the layer group isn't
+            // available to a getMap request, so we should probably throw in
+            // that case, or perhaps let the mapML method deal with iterating
+            // the child layers.
+            layerName =
+                    layerGroupInfo.getTitle().isEmpty()
+                            ? layerGroupInfo.getName().isEmpty() ? layer : layerGroupInfo.getName()
+                            : layerGroupInfo.getTitle();
+        } else {
+            resourceInfo = layerInfo.getResource();
+            bbox = layerInfo.getResource().getLatLonBoundingBox();
+            layerName =
+                    resourceInfo.getTitle().isEmpty()
+                            ? layerInfo.getName().isEmpty() ? layer : layerInfo.getName()
+                            : resourceInfo.getTitle();
         }
         ProjType projType;
         try {
@@ -104,9 +134,7 @@ public class MapMLController {
             // TODO better error handling
             throw new RuntimeException(iae);
         }
-        ResourceInfo resourceInfo = layerInfo.getResource();
 
-        ReferencedEnvelope bbox = resourceInfo.getLatLonBoundingBox();
         Double longitude = bbox.centre().getX();
         Double latitude = bbox.centre().getY();
 
@@ -123,9 +151,8 @@ public class MapMLController {
                         .get(projType.value())
                         .fitLatLngBoundsToDisplay(new LatLngBounds(bbox), 1024, 768);
 
-        String label = resourceInfo.getTitle().isEmpty() ? layer : resourceInfo.getTitle();
         String viewerPath = request.getContextPath() + request.getServletPath() + "/viewer";
-        String title = "GeoServer MapML preview " + label;
+        String title = "GeoServer MapML preview " + layerName;
 
         // figure out JavaScript to make the map responsively fill the
         // browser window. This would be a media query I think... and the
@@ -163,7 +190,7 @@ public class MapMLController {
                 .append(longitude)
                 .append("\" controls>\n")
                 .append("<layer- label=\"")
-                .append(label)
+                .append(layerName)
                 .append("\" ")
                 .append("src=\"")
                 .append(request.getContextPath())
@@ -192,9 +219,44 @@ public class MapMLController {
             @RequestParam("format") Optional<String> format)
             throws NoSuchAuthorityCodeException, TransformException, FactoryException, IOException {
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer);
-        if (layerInfo == null) {
-            // TODO better error handling
-            throw new RuntimeException("Invalid layer name: " + layer);
+        // TODO Is DefaultGeographicCRS.WGS84 compatible with Web Mercator / EPSG:3857 ?
+        // If I understand the remarks on www.epsg-registry.org on this account,
+        // the answer is yes, but EPSG:3857 sucks and don't use it. sigh.
+        ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        ResourceInfo resourceInfo = null;
+        MetadataMap layerMeta;
+        LayerGroupInfo layerGroupInfo;
+        String workspace = "";
+        boolean isTransparent = true;
+        boolean queryable = false;
+        boolean isLayerGroup = (layerInfo == null);
+        String layerName = "";
+        if (isLayerGroup) {
+            layerGroupInfo = geoServer.getCatalog().getLayerGroupByName(layer);
+            if (layerGroupInfo == null) {
+                throw new RuntimeException("Invalid layer or layer group name: " + layer);
+            }
+            for (LayerInfo li : layerGroupInfo.layers()) {
+                bbox.expandToInclude(li.getResource().getLatLonBoundingBox());
+            }
+            layerMeta = layerGroupInfo.getMetadata();
+            workspace =
+                    (layerGroupInfo.getWorkspace() != null
+                            ? layerGroupInfo.getWorkspace().getName()
+                            : "");
+            queryable = !layerGroupInfo.isQueryDisabled();
+            layerName = layerGroupInfo.getName();
+        } else {
+            resourceInfo = layerInfo.getResource();
+            bbox = layerInfo.getResource().getLatLonBoundingBox();
+            layerMeta = resourceInfo.getMetadata();
+            workspace =
+                    (resourceInfo.getStore().getWorkspace() != null
+                            ? resourceInfo.getStore().getWorkspace().getName()
+                            : "");
+            queryable = layerInfo.isQueryable();
+            isTransparent = transparent.orElse(!layerInfo.isOpaque());
+            layerName = layerInfo.getName();
         }
 
         ProjType projType;
@@ -205,11 +267,6 @@ public class MapMLController {
             throw new RuntimeException(iae);
         }
 
-        ResourceInfo resourceInfo = layerInfo.getResource();
-        MetadataMap layerMeta = resourceInfo.getMetadata();
-
-        // convert the data's bbox into the lcc projection
-        ReferencedEnvelope bbox = resourceInfo.getLatLonBoundingBox();
         CoordinateReferenceSystem projSrs = CRS.decode("EPSG:" + projType.epsgCode);
         Collection<? extends GeographicExtent> geoExtents =
                 projSrs.getDomainOfValidity().getGeographicElements();
@@ -233,7 +290,6 @@ public class MapMLController {
         ReferencedEnvelope cbmBbox = bbox.transform(projSrs, true);
 
         String styleName = style.orElse("");
-        boolean isTransparent = transparent.orElse(!layerInfo.isOpaque());
         String imageFormat = format.orElse("image/png");
 
         String baseUrl = ResponseUtils.baseURL(request);
@@ -260,7 +316,7 @@ public class MapMLController {
 
         // build the head
         HeadContent head = new HeadContent();
-        head.setTitle(layerInfo.getName());
+        head.setTitle(layerName);
         Base base = new Base();
         base.setHref(baseUrl + "mapml");
         head.setBase(base);
@@ -290,57 +346,62 @@ public class MapMLController {
             }
             links.add(titleLink);
         }
-        // styles
-        Set<StyleInfo> styles = layerInfo.getStyles();
-        String effectiveStyleName = styleName;
-        if (effectiveStyleName.isEmpty()) {
-            effectiveStyleName = layerInfo.getDefaultStyle().getName();
-        }
 
-        // style links
-        for (StyleInfo si : styles) {
-            // skip the self style case (if it is even listed)
-            if (si.getName().equals(effectiveStyleName)) continue;
-            Link styleLink = new Link();
-            styleLink.setRel(RelType.STYLE);
-            styleLink.setTitle(si.getName());
-            styleLink.setHref(
+        if (!isLayerGroup) {
+
+            // styles
+            Set<StyleInfo> styles = layerInfo.getStyles();
+            String effectiveStyleName = styleName;
+            if (effectiveStyleName.isEmpty()) {
+                effectiveStyleName = layerInfo.getDefaultStyle().getName();
+            }
+
+            // style links
+            for (StyleInfo si : styles) {
+                // skip the self style case (if it is even listed)
+                if (si.getName().equals(effectiveStyleName)) continue;
+                Link styleLink = new Link();
+                styleLink.setRel(RelType.STYLE);
+                styleLink.setTitle(si.getName());
+                styleLink.setHref(
+                        baseUrl
+                                + "mapml/"
+                                + layer
+                                + "/"
+                                + proj
+                                + "?style="
+                                + si.getName()
+                                + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
+                                + (format.isPresent() ? "&format=" + imageFormat : ""));
+                links.add(styleLink);
+            }
+            // output the self style link, taking care to handle the default empty string styleName
+            // case
+            Link selfStyleLink = new Link();
+            selfStyleLink.setRel(RelType.SELF_STYLE);
+            selfStyleLink.setTitle(effectiveStyleName);
+            selfStyleLink.setHref(
                     baseUrl
                             + "mapml/"
                             + layer
                             + "/"
                             + proj
                             + "?style="
-                            + si.getName()
+                            + styleName
                             + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
                             + (format.isPresent() ? "&format=" + imageFormat : ""));
-            links.add(styleLink);
-        }
-        // output the self style link, taking care to handle the default empty string styleName case
-        Link selfStyleLink = new Link();
-        selfStyleLink.setRel(RelType.SELF_STYLE);
-        selfStyleLink.setTitle(effectiveStyleName);
-        selfStyleLink.setHref(
-                baseUrl
-                        + "mapml/"
-                        + layer
-                        + "/"
-                        + proj
-                        + "?style="
-                        + styleName
-                        + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
-                        + (format.isPresent() ? "&format=" + imageFormat : ""));
 
-        links.add(selfStyleLink);
+            links.add(selfStyleLink);
+        }
 
         // alternate projection links
         for (ProjType pt : ProjType.values()) {
             // skip the current proj
             if (pt.equals(projType)) continue;
-            Link styleLink = new Link();
-            styleLink.setRel(RelType.ALTERNATE);
-            styleLink.setProjection(pt);
-            styleLink.setHref(
+            Link projectionLink = new Link();
+            projectionLink.setRel(RelType.ALTERNATE);
+            projectionLink.setProjection(pt);
+            projectionLink.setHref(
                     baseUrl
                             + "mapml/"
                             + layer
@@ -350,7 +411,7 @@ public class MapMLController {
                             + styleName
                             + (transparent.isPresent() ? "&transparent=" + isTransparent : "")
                             + (format.isPresent() ? "&format=" + imageFormat : ""));
-            links.add(styleLink);
+            links.add(projectionLink);
         }
 
         mapml.setHead(head);
@@ -486,11 +547,11 @@ public class MapMLController {
             tileLink.setRel(RelType.TILE);
             tileLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
@@ -569,11 +630,11 @@ public class MapMLController {
             imageLink.setRel(RelType.IMAGE);
             imageLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetMap&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")
@@ -588,7 +649,7 @@ public class MapMLController {
         }
 
         // query inputs
-        if (layerInfo.isQueryable()) {
+        if (queryable) {
             UnitType units = UnitType.MAP;
             if (Boolean.TRUE.equals(useTiles)) {
                 units = UnitType.TILE;
@@ -614,13 +675,13 @@ public class MapMLController {
             queryLink.setRel(RelType.QUERY);
             queryLink.setTref(
                     baseUrlPattern
-                            + layerInfo.getResource().getStore().getWorkspace().getName()
-                            + "/wms?version=1.3.0&service=WMS&request=GetFeatureInfo&crs=EPSG:"
+                            + (workspace.isEmpty() ? "" : workspace + "/")
+                            + "wms?version=1.3.0&service=WMS&request=GetFeatureInfo&FEATURE_COUNT=50&crs=EPSG:"
                             + projType.epsgCode
                             + "&layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&query_layers="
-                            + layerInfo.getName()
+                            + layerName
                             + "&styles="
                             + styleName
                             + (timeEnabled ? "&time={time}" : "")

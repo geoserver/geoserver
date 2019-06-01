@@ -575,7 +575,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             GeoServerDataDirectory dd =
                                     GeoServerApplication.get()
                                             .getBeanOfType(GeoServerDataDirectory.class);
-                            Resource res = dd.getStyles(style.getWorkspace(), imageFileName);
+                            Resource res =
+                                    dd.getStyles(
+                                            styleModel.getObject().getWorkspace(), imageFileName);
                             while (Resources.exists(res)) {
                                 imageFileName =
                                         FilenameUtils.getBaseName(fu.getClientFileName())
